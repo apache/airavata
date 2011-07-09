@@ -1,0 +1,13 @@
+<!-- An xsdconfig file must begin with a "config" element in the
+        http://www.bea.com/2002/09/xbean/config namespace. Also, be sure
+        to declare any namespaces used to qualify types in your schema (here,
+        the namespace corresponding to the pol prefix. -->
+<xb:config  xmlns:xb="http://www.bea.com/2002/09/xbean/config">
+
+    <!-- Use the "namespace" element to map a namespace to the Java package
+        name that should be generated. -->
+    <xb:namespace uri="http://www.calderproject.org/calder_notification_types">
+        <xb:package>edu.indiana.extreme.lead.calder.types</xb:package>
+    </xb:namespace>
+    
+</xb:config>

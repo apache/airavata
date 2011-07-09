@@ -1,0 +1,87 @@
+<!--
+
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+
+-->
+
+<?xml version="1.0"?>
+
+
+<project name="wsmgsamples" default="run" basedir=".">
+
+	<property file="build.properties" />
+	<property name="lib.path" value="../../" />
+	<property name="dest.dir" value="bin" />
+	<property name="src.dir" value="src" />
+	<property name="conf.dir" location="conf" />
+
+	<path id="broker.libs.path">
+		<fileset dir="${lib.path}">
+			<include name="*.jar" />
+		</fileset>
+
+		<fileset dir="${axis2.home}/lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+
+	<path id="broker.class.path">
+		<fileset dir="${lib.path}">
+			<include name="*.jar" />
+		</fileset>
+
+		<fileset dir="${axis2.home}/lib">
+			<include name="*.jar" />
+		</fileset>
+
+		<path location="${conf.dir}" />
+
+		<pathelement location="${dest.dir}" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${dest.dir}" />
+	</target>
+
+	<target name="build" depends="makeDest">
+		<antcall target="compile" />
+	</target>
+
+	<target name="makeDest">
+		<mkdir dir="${dest.dir}" />
+	</target>
+
+
+	<target name="compile" depends="makeDest">
+		<javac debug="true" srcdir="${src.dir}" destdir="${dest.dir}">
+			<classpath refid="broker.libs.path" />
+		</javac>
+	</target>
+
+
+	<target name="run" depends="build">
+
+		<java classname="org.apache.airavata.wsmg.samples.wse.XpathSubscribe" fork="true">
+			<classpath refid="broker.class.path" />
+		</java>
+
+	</target>
+
+
+</project>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!-- This file was auto-generated from WSDL -->
+	<!--
+		by the Apache Axis2 version: 1.4 Built on : Apr 26, 2008 (06:24:30
+		EDT)
+	-->
+<serviceGroup>
+	<service name="MsgBoxService" scope="application"
+		class="edu.indiana.extreme.www.xgws.msgbox.MsgBoxServiceLifeCycle">
+		<messageReceivers>
+			<messageReceiver mep="http://www.w3.org/ns/wsdl/in-out"
+				class="edu.indiana.extreme.www.xgws.msgbox.MsgBoxServiceMessageReceiverInOut" />
+		</messageReceivers>
+		<parameter name="ServiceClass">edu.indiana.extreme.www.xgws.msgbox.MsgBoxServiceSkeleton
+		</parameter>
+		<parameter name="useOriginalwsdl">false</parameter>
+		<parameter name="modifyUserWSDLPortAddress">true</parameter>
+		<operation name="storeMessages" mep="http://www.w3.org/ns/wsdl/in-out"
+			namespace="http://www.extreme.indiana.edu/xgws/msgbox/2004/">
+			<actionMapping>http://www.extreme.indiana.edu/xgws/msgbox/2004/storeMessages
+			</actionMapping>
+			<outputActionMapping>http://www.extreme.indiana.edu/xgws/msgbox/2004/MsgBoxPT/storeMessagesResponse
+			</outputActionMapping>
+		</operation>
+		<operation name="destroyMsgBox" mep="http://www.w3.org/ns/wsdl/in-out"
+			namespace="http://www.extreme.indiana.edu/xgws/msgbox/2004/">
+			<actionMapping>http://www.extreme.indiana.edu/xgws/msgbox/2004/destroyMsgBox
+			</actionMapping>
+			<outputActionMapping>http://www.extreme.indiana.edu/xgws/msgbox/2004/MsgBoxPT/destroyMsgBoxResponse
+			</outputActionMapping>
+		</operation>
+		<operation name="takeMessages" mep="http://www.w3.org/ns/wsdl/in-out"
+			namespace="http://www.extreme.indiana.edu/xgws/msgbox/2004/">
+			<actionMapping>http://www.extreme.indiana.edu/xgws/msgbox/2004/takeMessages
+			</actionMapping>
+			<outputActionMapping>http://www.extreme.indiana.edu/xgws/msgbox/2004/MsgBoxPT/takeMessagesResponse
+			</outputActionMapping>
+		</operation>
+		<operation name="createMsgBox" mep="http://www.w3.org/ns/wsdl/in-out"
+			namespace="http://www.extreme.indiana.edu/xgws/msgbox/2004/">
+			<actionMapping>http://www.extreme.indiana.edu/xgws/msgbox/2004/createMsgBox
+			</actionMapping>
+			<outputActionMapping>http://www.extreme.indiana.edu/xgws/msgbox/2004/MsgBoxPT/createMsgBoxResponse
+			</outputActionMapping>
+		</operation>
+		<parameter name="configuration.file.name" locked="false">msgBox.properties</parameter>
+	</service>
+
+</serviceGroup>

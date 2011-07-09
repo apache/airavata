@@ -1,0 +1,155 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <artifactId>ws-messenger</artifactId>
+        <groupId>Airavata</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>Airavata</groupId>
+    <artifactId>messagebroker</artifactId>
+    <name>Message Broker</name>
+    <url>http://incubator.apache.org/airavata/</url>
+    <packaging>jar</packaging>
+    <build>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>org.apache.airavata.wsmg.gui.NotificationViewer</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-aar-maven-plugin</artifactId>
+                <version>1.5</version>
+                <configuration>
+                    <servicesXmlFile>src/main/resources/services.xml</servicesXmlFile>
+                    <!--wsdlFile>src/main/resources/services.wsdl</wsdlFile-->
+
+                    <fileSets>
+                        <fileSet>
+                            <directory>customLibs</directory>
+                            <outputDirectory>lib/</outputDirectory>
+                            <includes>
+                                <include>*.jar</include>
+                            </includes>
+                        </fileSet>
+                        <fileSet>
+                            <directory>customLibs/activeMQ</directory>
+                            <outputDirectory>lib/</outputDirectory>
+                            <includes>
+                                <include>*.jar</include>
+                            </includes>
+                        </fileSet>
+                    </fileSets>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>createAAR</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>aar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+            </plugin>
+        </plugins>
+    </build>
+    <repositories>
+        <repository>
+            <id>ibiblio</id>
+            <name>ibiblio Repository</name>
+            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2
+            </url>
+        </repository>
+        <repository>
+            <id>ogce.m2.all</id>
+            <name>ogce.m2.all</name>
+            <url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
+        </repository>
+        <repository>
+            <id>maven 2 java.net</id>
+            <name>2 java.net Maven Repository</name>
+            <url>http://download.java.net/maven/2/
+            </url>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <id>apache-repo</id>
+            <name>Apache Yfilter repo</name>
+            <url>http://people.apache.org/~lahiru/maven-repo</url>
+        </repository>
+
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>edu.berkeley</groupId>
+            <artifactId>yfilter</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-transport-http</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-transport-local</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>Airavata</groupId>
+            <artifactId>MessageBox</artifactId>
+            <version>${airavata.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+    </dependencies>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+</project>

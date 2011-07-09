@@ -1,0 +1,1467 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<wsdl:definitions targetNamespace="http://extreme.indiana.edu/xregistry2/2007_02_21" xmlns:msgns="http://extreme.indiana.edu/xregistry2/2007_02_21" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:ns="http://extreme.indiana.edu/xregistry2/2007_02_21" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://extreme.indiana.edu/xregistry2/2007_02_21" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:complexType name="ResourceData">
+                <xs:sequence>
+                    <xs:element name="resourceID" type="xs:string" />
+                    <xs:element name="name" type="xs:QName" />
+                    <xs:element name="owner" type="xs:string" />
+                    <xs:element name="allowedAction" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+           <xs:complexType name="OGCEResourceData">
+                <xs:sequence>
+                    <xs:element name="resourceID" type="xs:QName" />
+                    <xs:element name="resourceName" type="xs:string" />
+                    <xs:element name="resourceType" type="xs:string" />
+                    <xs:element name="resourceDesc" type="xs:string" />
+                    <xs:element name="resourceDocument" type="xs:string" />
+                    <xs:element name="created"   type="xs:dateTime" />
+                    <xs:element name="name" type="xs:QName" />
+                    <xs:element name="owner" type="xs:string" />
+                    <xs:element name="allowedAction" type="xs:string" />
+                    <xs:element name="parentTypedID" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+
+
+            <xs:complexType name="ServiceDescData">
+                <xs:complexContent>
+                    <xs:extension base="ns:ResourceData">
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="HostDescData">
+                <xs:complexContent>
+                    <xs:extension base="ns:ResourceData">
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="WsdlData">
+                <xs:complexContent>
+                    <xs:extension base="ns:ResourceData">
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            
+            <xs:element name="getAbstractWsdl">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="wsdlQName" type="xs:QName" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAbstractWsdlResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="wsdlAsStr" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAppDesc">
+                <xs:complexType>
+                    <xs:sequence>
+                    <xs:element name="appQName" type="xs:string" />
+                    <xs:element name="hostName" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAppDescResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="appdescAsStr" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getConcreateWsdl">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="wsdlQname" type="xs:QName" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getConcreateWsdlResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                    <xs:element name="wsdlAsStr" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getHostDesc">
+                <xs:complexType>
+                    <xs:sequence>
+                    <xs:element name="hostName" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getHostDescResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="hostDescAsStr" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceDesc">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="serviceQname" type="xs:QName" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceDescResponse">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="serviceDescAsStr" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            </xs:element>
+            <xs:element name="registerAppDesc">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="appDescAsStr" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="registerAppDescResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="resourceID" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="registerConcreteWsdl">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="wsdlAsStr" type="xs:string" />
+                        <xs:element name="lifetimeAsSeconds" type="xs:int" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="registerConcreteWsdlResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="resourceID" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="registerHostDesc">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="hostDescAsStr" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="registerHostDescResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="resourceID" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="registerServiceDesc">
+                <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="serviceDescAsStr" type="xs:string" />
+                    <xs:element name="awsdlAdStr" type="xs:string" />
+                </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="registerServiceDescResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="resourceID" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="app2Hosts">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="appName" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="app2HostsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" name="host" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="findHosts">
+                <xs:complexType>
+                    <xs:sequence>
+                    <xs:element name="hostNameSearchStr" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="findHostsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" name="results" nillable="true" type="ns:HostDescData" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="findServiceDesc">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="serviceQNameSearchStr" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="findServiceDescResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" name="serviceName" nillable="true" type="ns:ServiceDescData" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="findServiceInstance">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="serviceQnameSearchStr" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="findServiceInstanceResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" name="serviceInstance" nillable="true" type="ns:WsdlData" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listGroups">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="groupSearchStr" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listGroupsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" name="group" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listGroupsGivenAUser">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="userName" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listGroupsGivenAUserResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" name="group" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listUsers">
+                <xs:complexType />
+            </xs:element>
+            <xs:element name="listUsersResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" name="user" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="listSubActorsGivenAGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="1" maxOccurs="1" name="group" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>                   
+            </xs:element>
+            <xs:element name="listSubActorsGivenAGroupResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" name="actor" minOccurs="0">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element maxOccurs="1" minOccurs="1" name="actor" type="xs:string" />
+                                    <xs:element maxOccurs="1" minOccurs="1" name="isUser" type="xs:boolean" />                                  
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="findAppDesc">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="appNameSearchStr" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="findAppDescResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" name="appData" nillable="true"> 
+                            <xs:complexType>
+                                <xs:complexContent>
+                                    <xs:extension base="ns:ResourceData">
+                                        <xs:sequence>
+                                            <xs:element name="hostName" type="xs:string" />
+                                        </xs:sequence>  
+                                    </xs:extension>
+                                </xs:complexContent>
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addUsertoGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="group" nillable="true" type="xs:string" />
+                        <xs:element name="userToAdd" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addGrouptoGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="group" nillable="true" type="xs:string" />
+                        <xs:element name="groupToAdd" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="createGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="groupName" nillable="true" type="xs:string" />
+                        <xs:element name="description" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="createUser">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="userName" nillable="true" type="xs:string" />
+                        <xs:element name="description" nillable="true" type="xs:string" />
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        <xs:element name="deleteGroup">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="groupName" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="deleteUser">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="userName" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="addCapability">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resourceID" nillable="true" type="xs:string" />
+                    <xs:element name="actor" nillable="true" type="xs:string" />
+                    <xs:element name="isActorAUser" nillable="true" type="xs:boolean" />
+                    <xs:element name="action" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="addCapabilityToken">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resourceID" nillable="true" type="xs:string" />
+                    <xs:element name="actor" nillable="true" type="xs:string" />
+                    <xs:element name="actorType" nillable="true" type="xs:boolean" />
+                    <xs:element name="assertions" nillable="true" type="xs:string" />
+                    <xs:element name="notbefore" nillable="true" type="xs:dateTime" />
+                    <xs:element name="notafter" nillable="true" type="xs:dateTime" />
+                    <xs:element name="action" nillable="true" type="xs:string" />
+                </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="getCapability">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="user" type="xs:string" minOccurs="0" maxOccurs="1"/> 
+                    <xs:element name="resourceID"  type="xs:string" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="actorType"  type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="action" nillable="true" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+
+        <xs:complexType name="CapabilityToken">
+            <xs:sequence>
+                <xs:element name="resourceID" nillable="true" type="xs:string"/>
+                <xs:element name="actor" nillable="true" type="xs:string" />
+                <xs:element name="actorType" nillable="true" type="xs:boolean" />
+                <xs:element name="assertions" nillable="true" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="notbefore" nillable="true" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="notafter" nillable="true" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="action" nillable="true" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+        
+        <xs:element name="getCapabilityResponse">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="token" minOccurs="0" maxOccurs="unbounded" type="ns:CapabilityToken" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="isAuthorizedToAcsses">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resourceID" nillable="true" type="xs:string"/>
+                    <xs:element name="actor" nillable="true" type="xs:string" />
+                    <xs:element name="action" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="isAuthorizedToAcssesResponse">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="decision" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        
+        
+        
+        
+        <xs:element name="removeAppDesc">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="appName" nillable="true" type="xs:QName" />
+                    <xs:element name="hostName" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="removeCapability">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resourceID" nillable="true" type="xs:string" />
+                    <xs:element name="actor" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="removeConcreteWsdl">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="wsdlQName" nillable="true" type="xs:QName" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="removeGroupFromGroup">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="masterGroup" nillable="true" type="xs:string" />
+                    <xs:element name="groupToremove" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="removeHostDesc">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="hostName" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="removeServiceDesc">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="serviceQname" nillable="true" type="xs:QName" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="removeUserFromGroup">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="userName" nillable="true" type="xs:string" />
+                    <xs:element name="groupName" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="addResource">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resourceName"  type="xs:QName" />
+                    <xs:element name="resourceAsStr" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="addResourceResponse"><xs:complexType/></xs:element>
+
+        <xs:element name="findResource">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resourceNameQuery" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="findResourceResponse">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resource"  minOccurs="0" maxOccurs="unbounded" type="ns:ResourceData" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+
+        <xs:element name="removeResource">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resourceName" nillable="true" type="xs:QName" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="removeResourceResponse"><xs:complexType/></xs:element>
+        
+        <xs:element name="getResource">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resourceName" nillable="true" type="xs:QName" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="getResourceResponse">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resourceAsStr"  type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>       
+        <xs:element name="addOGCEResource">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resourceID"  type="xs:QName" />
+                    <xs:element name="resourceName" nillable="true"  type="xs:string" />
+                     <xs:element name="resourceType"  type="xs:string" />
+                     <xs:element name="resourceDesc" nillable="true"  type="xs:string" />
+                      <xs:element name="resourceDocument" nillable="true"   type="xs:string" />
+                     <xs:element name="parentTypedID" nillable="true" type="xs:string" />
+                    <xs:element name="owner" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="addOGCEResourceResponse"><xs:complexType/></xs:element>
+           <xs:element name="findOGCEResource">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resourceNameQuery" nillable="true" type="xs:string" />
+                    <xs:element name="resourceName" nillable="true"  type="xs:string" />
+                    <xs:element name="resourceType" nillable="true" type="xs:string" />
+                    <xs:element name="parentTypedID" nillable="true" type="xs:string" />
+                    <xs:element name="owner" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+       <xs:element name="getOGCEResource">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resourceID" nillable="true" type="xs:QName" />
+                    <xs:element name="resourceName" nillable="true"  type="xs:string" />
+                    <xs:element name="resourceType" nillable="true" type="xs:string" />
+                    <xs:element name="parentTypedID" nillable="true" type="xs:string" />
+                    <xs:element name="owner" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="getOGCEResourceResponse">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resourceAsStr"  type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="findOGCEResourceResponse">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resource"  minOccurs="0" maxOccurs="unbounded" type="ns:OGCEResourceData" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+          <xs:element name="removeOGCEResource">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="resourceID" nillable="true" type="xs:QName" />
+                     <xs:element name="resourceType" nillable="true" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+        </xs:element>
+        <xs:element name="removeOGCEResourceResponse"><xs:complexType/></xs:element>
+        <xs:element name="addCapabilityResponse"><xs:complexType/></xs:element>
+        <xs:element name="addCapabilityTokenResponse"><xs:complexType/></xs:element>
+        <xs:element name="addUsertoGroupResponse"><xs:complexType/></xs:element>
+        <xs:element name="addGrouptoGroupResponse"><xs:complexType/></xs:element>
+        <xs:element name="createGroupResponse"><xs:complexType/></xs:element>
+        <xs:element name="createUserResponse"><xs:complexType/></xs:element>
+        <xs:element name="deleteGroupResponse"><xs:complexType/></xs:element>
+        <xs:element name="deleteUserResponse"><xs:complexType/></xs:element>
+        <xs:element name="removeAppDescResponse"><xs:complexType/></xs:element>
+        <xs:element name="removeCapabilityResponse"><xs:complexType/></xs:element>
+        <xs:element name="removeConcreteWsdlResponse"><xs:complexType/></xs:element>
+        <xs:element name="removeGroupFromGroupResponse"><xs:complexType/></xs:element>
+        <xs:element name="removeHostDescResponse"><xs:complexType/></xs:element>
+        <xs:element name="removeServiceDescResponse"><xs:complexType/></xs:element>
+        <xs:element name="removeUserFromGroupResponse"><xs:complexType/></xs:element>
+    </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="getAbstractWsdlMessage">
+        <wsdl:part name="part1" element="ns:getAbstractWsdl" />
+    </wsdl:message>
+    <wsdl:message name="getAbstractWsdlResponseMessage">
+        <wsdl:part name="part1" element="ns:getAbstractWsdlResponse" />
+    </wsdl:message>
+    <wsdl:message name="getAppDescMessage">
+        <wsdl:part name="part1" element="ns:getAppDesc" />
+    </wsdl:message>
+    <wsdl:message name="getAppDescResponseMessage">
+        <wsdl:part name="part1" element="ns:getAppDescResponse" />
+    </wsdl:message>
+    <wsdl:message name="getConcreateWsdlMessage">
+        <wsdl:part name="part1" element="ns:getConcreateWsdl" />
+    </wsdl:message>
+    <wsdl:message name="getConcreateWsdlResponseMessage">
+        <wsdl:part name="part1" element="ns:getConcreateWsdlResponse" />
+    </wsdl:message>
+    <wsdl:message name="getHostDescMessage">
+        <wsdl:part name="part1" element="ns:getHostDesc" />
+    </wsdl:message>
+    <wsdl:message name="getHostDescResponseMessage">
+        <wsdl:part name="part1" element="ns:getHostDescResponse" />
+    </wsdl:message>
+    <wsdl:message name="getServiceDescMessage">
+        <wsdl:part name="part1" element="ns:getServiceDesc" />
+    </wsdl:message>
+    <wsdl:message name="getServiceDescResponseMessage">
+        <wsdl:part name="part1" element="ns:getServiceDescResponse" />
+    </wsdl:message>
+    <wsdl:message name="registerAppDescMessage">
+        <wsdl:part name="part1" element="ns:registerAppDesc" />
+    </wsdl:message>
+    <wsdl:message name="registerAppDescResponseMessage">
+        <wsdl:part name="part1" element="ns:registerAppDescResponse" />
+    </wsdl:message>
+    <wsdl:message name="registerConcreteWsdlMessage">
+        <wsdl:part name="part1" element="ns:registerConcreteWsdl" />
+    </wsdl:message>
+    <wsdl:message name="registerConcreteWsdlResponseMessage">
+        <wsdl:part name="part1" element="ns:registerConcreteWsdlResponse" />
+    </wsdl:message>
+    <wsdl:message name="registerHostDescMessage">
+        <wsdl:part name="part1" element="ns:registerHostDesc" />
+    </wsdl:message>
+    <wsdl:message name="registerHostDescResponseMessage">
+        <wsdl:part name="part1" element="ns:registerHostDescResponse" />
+    </wsdl:message>
+    <wsdl:message name="registerServiceDescMessage">
+        <wsdl:part name="part1" element="ns:registerServiceDesc" />
+    </wsdl:message>
+    <wsdl:message name="registerServiceDescResponseMessage">
+        <wsdl:part name="part1" element="ns:registerServiceDescResponse" />
+    </wsdl:message>
+    <wsdl:message name="app2HostsMessage">
+        <wsdl:part name="part1" element="ns:app2Hosts" />
+    </wsdl:message>
+    <wsdl:message name="app2HostsResponseMessage">
+        <wsdl:part name="part1" element="ns:app2HostsResponse" />
+    </wsdl:message>
+    <wsdl:message name="findHostsMessage">
+        <wsdl:part name="part1" element="ns:findHosts" />
+    </wsdl:message>
+    <wsdl:message name="findHostsResponseMessage">
+        <wsdl:part name="part1" element="ns:findHostsResponse" />
+    </wsdl:message>
+    <wsdl:message name="findServiceDescMessage">
+        <wsdl:part name="part1" element="ns:findServiceDesc" />
+    </wsdl:message>
+    <wsdl:message name="findServiceDescResponseMessage">
+        <wsdl:part name="part1" element="ns:findServiceDescResponse" />
+    </wsdl:message>
+    <wsdl:message name="findServiceInstanceMessage">
+        <wsdl:part name="part1" element="ns:findServiceInstance" />
+    </wsdl:message>
+    <wsdl:message name="findServiceInstanceResponseMessage">
+        <wsdl:part name="part1" element="ns:findServiceInstanceResponse" />
+    </wsdl:message>
+    <wsdl:message name="listGroupsMessage">
+        <wsdl:part name="part1" element="ns:listGroups" />
+    </wsdl:message>
+    <wsdl:message name="listGroupsResponseMessage">
+        <wsdl:part name="part1" element="ns:listGroupsResponse" />
+    </wsdl:message>
+    <wsdl:message name="listGroupsGivenAUserMessage">
+        <wsdl:part name="part1" element="ns:listGroupsGivenAUser" />
+    </wsdl:message>
+    <wsdl:message name="listGroupsGivenAUserResponseMessage">
+        <wsdl:part name="part1" element="ns:listGroupsGivenAUserResponse" />
+    </wsdl:message>
+    <wsdl:message name="listUsersMessage">
+        <wsdl:part name="part1" element="ns:listUsers" />
+    </wsdl:message>
+    <wsdl:message name="listUsersResponseMessage">
+        <wsdl:part name="part1" element="ns:listUsersResponse" />
+    </wsdl:message>
+    <wsdl:message name="listSubActorsGivenAGroupMessage">
+        <wsdl:part name="part1" element="ns:listSubActorsGivenAGroup" />
+    </wsdl:message>
+    <wsdl:message name="listSubActorsGivenAGroupResponseMessage">
+        <wsdl:part name="part1" element="ns:listSubActorsGivenAGroupResponse" />
+    </wsdl:message>
+    <wsdl:message name="findAppDescMessage">
+        <wsdl:part name="part1" element="ns:findAppDesc" />
+    </wsdl:message>
+    <wsdl:message name="findAppDescResponseMessage">
+        <wsdl:part name="part1" element="ns:findAppDescResponse" />
+    </wsdl:message>
+    <wsdl:message name="addCapabilityMessage">
+        <wsdl:part name="part1" element="ns:addCapability" />
+    </wsdl:message>
+    <wsdl:message name="addCapabilityTokenMessage">
+        <wsdl:part name="part1" element="ns:addCapabilityToken" />
+    </wsdl:message>
+    <wsdl:message name="addUsertoGroupMessage">
+        <wsdl:part name="part1" element="ns:addUsertoGroup" />
+    </wsdl:message>
+    <wsdl:message name="addGrouptoGroupMessage">
+        <wsdl:part name="part1" element="ns:addGrouptoGroup" />
+    </wsdl:message>
+    <wsdl:message name="createGroupMessage">
+        <wsdl:part name="part1" element="ns:createGroup" />
+    </wsdl:message>
+    <wsdl:message name="createUserMessage">
+        <wsdl:part name="part1" element="ns:createUser" />
+    </wsdl:message>
+    <wsdl:message name="deleteGroupMessage">
+        <wsdl:part name="part1" element="ns:deleteGroup" />
+    </wsdl:message>
+    <wsdl:message name="deleteUserMessage">
+        <wsdl:part name="part1" element="ns:deleteUser" />
+    </wsdl:message>
+    <wsdl:message name="getCapabilityMessage">
+        <wsdl:part name="part1" element="ns:getCapability" />
+    </wsdl:message>
+    
+    <wsdl:message name="getCapabilityResponseMessage">
+        <wsdl:part name="part1" element="ns:getCapabilityResponse" />
+    </wsdl:message>
+    
+    <wsdl:message name="removeAppDescMessage">
+        <wsdl:part name="part1" element="ns:removeAppDesc" />
+    </wsdl:message>
+    <wsdl:message name="removeCapabilityMessage">
+        <wsdl:part name="part1" element="ns:removeCapability" />
+    </wsdl:message>
+    <wsdl:message name="removeConcreteWsdlMessage">
+        <wsdl:part name="part1" element="ns:removeConcreteWsdl" />
+    </wsdl:message>
+    <wsdl:message name="removeGroupFromGroupMessage">
+        <wsdl:part name="part1" element="ns:removeGroupFromGroup" />
+    </wsdl:message>
+    <wsdl:message name="removeHostDescMessage">
+        <wsdl:part name="part1" element="ns:removeHostDesc" />
+    </wsdl:message>
+    <wsdl:message name="removeServiceDescMessage">
+        <wsdl:part name="part1" element="ns:removeServiceDesc" />
+    </wsdl:message>
+    <wsdl:message name="removeUserFromGroupMessage">
+        <wsdl:part name="part1" element="ns:removeUserFromGroup" />
+    </wsdl:message>
+    <wsdl:message name="addCapabilityResponseMessage">
+        <wsdl:part name="part1" element="ns:addCapabilityResponse" />
+    </wsdl:message>
+    <wsdl:message name="addCapabilityTokenResponseMessage">
+        <wsdl:part name="part1" element="ns:addCapabilityTokenResponse" />
+    </wsdl:message>
+    <wsdl:message name="addUsertoGroupResponseMessage">
+        <wsdl:part name="part1" element="ns:addUsertoGroupResponse" />
+    </wsdl:message>
+    <wsdl:message name="addGrouptoGroupResponseMessage">
+        <wsdl:part name="part1" element="ns:addGrouptoGroupResponse" />
+    </wsdl:message>
+    <wsdl:message name="createGroupResponseMessage">
+        <wsdl:part name="part1" element="ns:createGroupResponse" />
+    </wsdl:message>
+    <wsdl:message name="createUserResponseMessage">
+        <wsdl:part name="part1" element="ns:createUserResponse" />
+    </wsdl:message>
+    <wsdl:message name="deleteGroupResponseMessage">
+        <wsdl:part name="part1" element="ns:deleteGroupResponse" />
+    </wsdl:message>
+    <wsdl:message name="deleteUserResponseMessage">
+        <wsdl:part name="part1" element="ns:deleteUserResponse" />
+    </wsdl:message>
+    <wsdl:message name="removeAppDescResponseMessage">
+        <wsdl:part name="part1" element="ns:removeAppDescResponse" />
+    </wsdl:message>
+    <wsdl:message name="removeCapabilityResponseMessage">
+        <wsdl:part name="part1" element="ns:removeCapabilityResponse" />
+    </wsdl:message>
+    <wsdl:message name="removeConcreteWsdlResponseMessage">
+        <wsdl:part name="part1" element="ns:removeConcreteWsdlResponse" />
+    </wsdl:message>
+    <wsdl:message name="removeGroupFromGroupResponseMessage">
+        <wsdl:part name="part1" element="ns:removeGroupFromGroupResponse" />
+    </wsdl:message>
+    <wsdl:message name="removeHostDescResponseMessage">
+        <wsdl:part name="part1" element="ns:removeHostDescResponse" />
+    </wsdl:message>
+    <wsdl:message name="removeServiceDescResponseMessage">
+        <wsdl:part name="part1" element="ns:removeServiceDescResponse" />
+    </wsdl:message>
+    <wsdl:message name="removeUserFromGroupResponseMessage">
+        <wsdl:part name="part1" element="ns:removeUserFromGroupResponse" />
+    </wsdl:message>    
+    
+    <wsdl:message name="isAuthorizedToAcssesMessage">
+        <wsdl:part name="part1" element="ns:isAuthorizedToAcsses" />
+    </wsdl:message>    
+    
+    <wsdl:message name="isAuthorizedToAcssesResponseMessage">
+        <wsdl:part name="part1" element="ns:isAuthorizedToAcssesResponse" />
+    </wsdl:message>    
+    
+    <wsdl:message name="addResourceMessage">
+        <wsdl:part name="part1" element="ns:addResource" />
+    </wsdl:message>    
+    <wsdl:message name="addResourceResponseMessage">
+        <wsdl:part name="part1" element="ns:addResourceResponse" />
+    </wsdl:message>    
+    
+    <wsdl:message name="removeResourceMessage">
+        <wsdl:part name="part1" element="ns:removeResource" />
+    </wsdl:message>    
+    <wsdl:message name="removeResourceResponseMessage">
+        <wsdl:part name="part1" element="ns:removeResourceResponse" />
+    </wsdl:message>    
+    <wsdl:message name="findResourceMessage">
+        <wsdl:part name="part1" element="ns:findResource" />
+    </wsdl:message>    
+    <wsdl:message name="findResourceResponseMessage">
+        <wsdl:part name="part1" element="ns:findResourceResponse" />
+    </wsdl:message>  
+    <wsdl:message name="getResourceMessage">
+        <wsdl:part name="part1" element="ns:getResource" />
+    </wsdl:message>    
+    <wsdl:message name="getResourceResponseMessage">
+        <wsdl:part name="part1" element="ns:getResourceResponse" />
+    </wsdl:message>  
+      <wsdl:message name="addOGCEResourceMessage">
+        <wsdl:part name="part1" element="ns:addOGCEResource" />
+    </wsdl:message>    
+    <wsdl:message name="addOGCEResourceResponseMessage">
+        <wsdl:part name="part1" element="ns:addOGCEResourceResponse" />
+    </wsdl:message>  
+      <wsdl:message name="getOGCEResourceMessage">
+        <wsdl:part name="part1" element="ns:getOGCEResource" />
+    </wsdl:message>    
+    <wsdl:message name="getOGCEResourceResponseMessage">
+        <wsdl:part name="part1" element="ns:getOGCEResourceResponse" />
+    </wsdl:message>    
+      <wsdl:message name="findOGCEResourceMessage">
+        <wsdl:part name="part1" element="ns:findOGCEResource" />
+    </wsdl:message>    
+    <wsdl:message name="findOGCEResourceResponseMessage">
+        <wsdl:part name="part1" element="ns:findOGCEResourceResponse" />
+    </wsdl:message>  
+     <wsdl:message name="removeOGCEResourceMessage">
+        <wsdl:part name="part1" element="ns:removeOGCEResource" />
+    </wsdl:message>    
+    <wsdl:message name="removeOGCEResourceResponseMessage">
+        <wsdl:part name="part1" element="ns:removeOGCEResourceResponse" />
+    </wsdl:message>   
+    <wsdl:portType name="IXregistryPortType">
+        <wsdl:operation name="getAbstractWsdl">
+            <wsdl:input message="msgns:getAbstractWsdlMessage" />
+            <wsdl:output message="msgns:getAbstractWsdlResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="getAppDesc">
+            <wsdl:input message="msgns:getAppDescMessage" />
+            <wsdl:output message="msgns:getAppDescResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="getConcreateWsdl">
+            <wsdl:input message="msgns:getConcreateWsdlMessage" />
+            <wsdl:output message="msgns:getConcreateWsdlResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="getHostDesc">
+            <wsdl:input message="msgns:getHostDescMessage" />
+            <wsdl:output message="msgns:getHostDescResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="getServiceDesc">
+            <wsdl:input message="msgns:getServiceDescMessage" />
+            <wsdl:output message="msgns:getServiceDescResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="registerAppDesc">
+            <wsdl:input message="msgns:registerAppDescMessage" />
+            <wsdl:output message="msgns:registerAppDescResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="registerConcreteWsdl">
+            <wsdl:input message="msgns:registerConcreteWsdlMessage" />
+            <wsdl:output message="msgns:registerConcreteWsdlResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="registerHostDesc">
+            <wsdl:input message="msgns:registerHostDescMessage" />
+            <wsdl:output message="msgns:registerHostDescResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="registerServiceDesc">
+            <wsdl:input message="msgns:registerServiceDescMessage" />
+            <wsdl:output message="msgns:registerServiceDescResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="app2Hosts">
+            <wsdl:input message="msgns:app2HostsMessage" />
+            <wsdl:output message="msgns:app2HostsResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="findHosts">
+            <wsdl:input message="msgns:findHostsMessage" />
+            <wsdl:output message="msgns:findHostsResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="findServiceDesc">
+            <wsdl:input message="msgns:findServiceDescMessage" />
+            <wsdl:output message="msgns:findServiceDescResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="findServiceInstance">
+            <wsdl:input message="msgns:findServiceInstanceMessage" />
+            <wsdl:output message="msgns:findServiceInstanceResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="listGroups">
+            <wsdl:input message="msgns:listGroupsMessage" />
+            <wsdl:output message="msgns:listGroupsResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="listGroupsGivenAUser">
+            <wsdl:input message="msgns:listGroupsGivenAUserMessage" />
+            <wsdl:output message="msgns:listGroupsGivenAUserResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="listUsers">
+            <wsdl:input message="msgns:listUsersMessage" />
+            <wsdl:output message="msgns:listUsersResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="listSubActorsGivenAGroup">
+            <wsdl:input message="msgns:listSubActorsGivenAGroupMessage" />
+            <wsdl:output message="msgns:listSubActorsGivenAGroupResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="findAppDesc">
+            <wsdl:input message="msgns:findAppDescMessage" />
+            <wsdl:output message="msgns:findAppDescResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="addCapability">
+            <wsdl:input message="msgns:addCapabilityMessage" />
+            <wsdl:output message="msgns:addCapabilityResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="addCapabilityToken">
+            <wsdl:input message="msgns:addCapabilityTokenMessage" />
+            <wsdl:output message="msgns:addCapabilityTokenResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="addUsertoGroup">
+            <wsdl:input message="msgns:addUsertoGroupMessage" />
+            <wsdl:output message="msgns:addUsertoGroupResponseMessage" />
+        </wsdl:operation>
+         <wsdl:operation name="addGrouptoGroup">
+            <wsdl:input message="msgns:addGrouptoGroupMessage" />
+            <wsdl:output message="msgns:addGrouptoGroupResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="createGroup">
+            <wsdl:input message="msgns:createGroupMessage" />
+            <wsdl:output message="msgns:createGroupResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="createUser">
+            <wsdl:input message="msgns:createUserMessage" />
+            <wsdl:output message="msgns:createUserResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="deleteGroup">
+            <wsdl:input message="msgns:deleteGroupMessage" />
+            <wsdl:output message="msgns:deleteGroupResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="deleteUser">
+            <wsdl:input message="msgns:deleteUserMessage" />
+            <wsdl:output message="msgns:deleteUserResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="getCapability">
+            <wsdl:input message="msgns:getCapabilityMessage" />
+            <wsdl:output message="msgns:getCapabilityResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="removeAppDesc">
+            <wsdl:input message="msgns:removeAppDescMessage" />
+            <wsdl:output message="msgns:removeAppDescResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="removeCapability">
+            <wsdl:input message="msgns:removeCapabilityMessage" />
+            <wsdl:output message="msgns:removeCapabilityResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="removeConcreteWsdl">
+            <wsdl:input message="msgns:removeConcreteWsdlMessage" />
+            <wsdl:output message="msgns:removeConcreteWsdlResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="removeGroupFromGroup">
+            <wsdl:input message="msgns:removeGroupFromGroupMessage" />
+            <wsdl:output message="msgns:removeGroupFromGroupResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="removeHostDesc">
+            <wsdl:input message="msgns:removeHostDescMessage" />
+            <wsdl:output message="msgns:removeHostDescResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="removeServiceDesc">
+            <wsdl:input message="msgns:removeServiceDescMessage" />
+            <wsdl:output message="msgns:removeServiceDescResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="removeUserFromGroup">
+            <wsdl:input message="msgns:removeUserFromGroupMessage" />
+            <wsdl:output message="msgns:removeUserFromGroupResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="isAuthorizedToAcsses">
+            <wsdl:input message="msgns:isAuthorizedToAcssesMessage" />
+            <wsdl:output message="msgns:isAuthorizedToAcssesResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="addResource">
+            <wsdl:input message="msgns:addResourceMessage" />
+            <wsdl:output message="msgns:addResourceResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="removeResource">
+            <wsdl:input message="msgns:removeResourceMessage" />
+            <wsdl:output message="msgns:removeResourceResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="findResource">
+            <wsdl:input message="msgns:findResourceMessage" />
+            <wsdl:output message="msgns:findResourceResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="getResource">
+            <wsdl:input message="msgns:getResourceMessage" />
+            <wsdl:output message="msgns:getResourceResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="addOGCEResource">
+            <wsdl:input message="msgns:addOGCEResourceMessage" />
+            <wsdl:output message="msgns:addOGCEResourceResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="getOGCEResource">
+            <wsdl:input message="msgns:getOGCEResourceMessage" />
+            <wsdl:output message="msgns:getOGCEResourceResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="removeOGCEResource">
+            <wsdl:input message="msgns:removeOGCEResourceMessage" />
+            <wsdl:output message="msgns:removeOGCEResourceResponseMessage" />
+        </wsdl:operation>
+        <wsdl:operation name="findOGCEResource">
+            <wsdl:input message="msgns:findOGCEResourceMessage" />
+            <wsdl:output message="msgns:findOGCEResourceResponseMessage" />
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="IXregistrySOAP11Binding" type="msgns:IXregistryPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="getAbstractWsdl">
+            <soap:operation soapAction="urn:getAbstractWsdl" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getAppDesc">
+            <soap:operation soapAction="urn:getAppDesc" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getConcreateWsdl">
+            <soap:operation soapAction="urn:getConcreateWsdl" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getHostDesc">
+            <soap:operation soapAction="urn:getHostDesc" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceDesc">
+            <soap:operation soapAction="urn:getServiceDesc" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="registerAppDesc">
+            <soap:operation soapAction="urn:registerAppDesc" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="registerConcreteWsdl">
+            <soap:operation soapAction="urn:registerConcreteWsdl" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="registerHostDesc">
+            <soap:operation soapAction="urn:registerHostDesc" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="registerServiceDesc">
+            <soap:operation soapAction="urn:registerServiceDesc" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="app2Hosts">
+            <soap:operation soapAction="urn:app2Hosts" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="findHosts">
+            <soap:operation soapAction="urn:findHosts" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="findServiceDesc">
+            <soap:operation soapAction="urn:findServiceDesc" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="findServiceInstance">
+            <soap:operation soapAction="urn:findServiceInstance" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listGroups">
+            <soap:operation soapAction="urn:listGroups" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listGroupsGivenAUser">
+            <soap:operation soapAction="urn:listGroupsGivenAUser" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listUsers">
+            <soap:operation soapAction="urn:listUsers" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="listSubActorsGivenAGroup">
+            <soap:operation soapAction="urn:listSubActorsGivenAGroup" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="findAppDesc">
+            <soap:operation soapAction="urn:findAppDesc" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addCapability">
+            <soap:operation soapAction="urn:addCapability" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addCapabilityToken">
+            <soap:operation soapAction="urn:addCapabilityToken" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addUsertoGroup">
+            <soap:operation soapAction="urn:addUsertoGroup" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addGrouptoGroup">
+            <soap:operation soapAction="urn:addGrouptoGroup" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="createGroup">
+            <soap:operation soapAction="urn:createGroup" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="createUser">
+            <soap:operation soapAction="urn:createUser" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteGroup">
+            <soap:operation soapAction="urn:deleteGroup" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteUser">
+            <soap:operation soapAction="urn:deleteUser" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getCapability">
+            <soap:operation soapAction="urn:getCapability" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="removeAppDesc">
+            <soap:operation soapAction="urn:removeAppDesc" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="removeCapability">
+            <soap:operation soapAction="urn:removeCapability" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="removeConcreteWsdl">
+            <soap:operation soapAction="urn:removeConcreteWsdl" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="removeGroupFromGroup">
+            <soap:operation soapAction="urn:removeGroupFromGroup" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="removeHostDesc">
+            <soap:operation soapAction="urn:removeHostDesc" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="removeServiceDesc">
+            <soap:operation soapAction="urn:removeServiceDesc" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="removeUserFromGroup">
+            <soap:operation soapAction="urn:removeUserFromGroup" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="isAuthorizedToAcsses">
+            <soap:operation soapAction="urn:isAuthorizedToAcsses" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="addResource">
+            <soap:operation soapAction="urn:isAuthorizedToAcsses" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="removeResource">
+            <soap:operation soapAction="urn:isAuthorizedToAcsses" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="findResource">
+            <soap:operation soapAction="urn:isAuthorizedToAcsses" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getResource">
+            <soap:operation soapAction="urn:isAuthorizedToAcsses" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+              <wsdl:operation name="addOGCEResource">
+            <soap:operation soapAction="urn:isAuthorizedToAcsses" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getOGCEResource">
+            <soap:operation soapAction="urn:isAuthorizedToAcsses" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        
+        <wsdl:operation name="removeOGCEResource">
+            <soap:operation soapAction="urn:isAuthorizedToAcsses" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="findOGCEResource">
+            <soap:operation soapAction="urn:isAuthorizedToAcsses" style="document" />
+            <wsdl:input>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    
+    <wsdl:service name="IXregistry">
+        <wsdl:port name="IXregistrySOAP11port" binding="msgns:IXregistrySOAP11Binding">
+            <soap:address location="http://linbox3.extreme.indiana.edu:6666/xregistry" />
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

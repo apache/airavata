@@ -1,0 +1,424 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
+package org.apache.airavata.xbaya;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Vector;
+
+import org.apache.airavata.xbaya.gui.ErrorMessages;
+
+import xsul5.MLogger;
+
+/**
+ * @author Satoshi Shirasuna
+ */
+public class XBaya {
+
+    private static MLogger logger = MLogger.getLogger();
+
+    private XBayaConfiguration config;
+
+    private XBayaEngine engine;
+
+    public static Vector<String> time = new Vector<String>();
+    //
+    // public static Vector<String> all = new Vector<String>();
+
+    public static int preservice = 0;
+
+    /**
+     * Constructs an XBayaEngine.
+     * 
+     * @param args
+     */
+    public XBaya(String[] args) {
+        parseArguments(args);
+        try {
+            this.engine = new XBayaEngine(this.config);
+            //
+            // new MyProxyDialog(this.engine).show();
+            // try {
+            // URLComponentRegistry serviceRegistry = new URLComponentRegistry(
+            // new URI(
+            // "https://pagodatree.cs.indiana.edu:17443/axis2/services/Echo?wsdl"));
+            //
+            // new ComponentRegistryLoader(engine).load(serviceRegistry);
+            // ComponentTreeNode com = (ComponentTreeNode) serviceRegistry
+            // .getComponentTree().getChildAt(0);
+            // GraphCanvas graphCanvas = this.engine.getGUI().getGraphCanvas();
+            // boolean stream = true;
+            // for (int g = 29; g < 31; ++g) {
+            // int nodes = g;
+            // for (int z = 0; z < 20; ++z) {
+            // for (int i = nodes; i < nodes + 1; i++) {
+            // this.engine.getGUI().closeGraphCanvas();
+            // this.engine.getGUI().closeGraphCanvas();
+            // DataPort inputPort;
+            //
+            // InputNode in = (InputNode) graphCanvas.addNode(
+            // new InputComponent(), new Point(10, 10));
+            // if (stream) {
+            // StreamSourceComponent streamSourceComponent = new StreamSourceComponent();
+            // StreamSourceNode strsrc = (StreamSourceNode) graphCanvas
+            // .addNode(streamSourceComponent,
+            // new Point(5, 5));
+            // strsrc.addInputNode(in);
+            // }
+            // Port outputPort = in.getOutputPort(0);
+            // for (int j = 0; j < i; j++) {
+            //
+            // Node node = graphCanvas.addNode(
+            // com.getComponentReference()
+            // .getComponent(), new Point(
+            // 50 + 50 * j, 50 + 50 * j));
+            // graphCanvas.getGraph().addEdge(outputPort,
+            // node.getInputPort(0));
+            // // inputPort = node.getInputPort(0);
+            // outputPort = node.getOutputPort(0);
+            // }
+            //
+            // Node outnode = graphCanvas.addNode(
+            // new OutputComponent(), new Point(10, 300));
+            // graphCanvas.getGraph().addEdge(outputPort,
+            // outnode.getInputPort(0));
+            //
+            // graphCanvas.setNameAndDescription(StringUtil
+            // .convertToJavaIdentifier("WttTest" + i),
+            // "WFTest" + i);
+            // ((GraphImpl) graphCanvas.getGraph())
+            // .setID("WttTest" + i);
+            // new ODEDeploymentWindow(this.engine).deploy();
+            //
+            // Thread.sleep(10000);
+            // }
+            //
+            // }
+            //
+            //
+            //
+            // int c = 29;
+            // FileWriter out = new FileWriter(g+"out"+c+".txt");
+            // for (int i = 0; i < time.size(); ++i) {
+            // if(i%20 == 0 && 1 != 0){
+            // System.out.println("----------------------------"+c);
+            // ++c;
+            // out.close();
+            // out = new FileWriter(g+"out"+c+".txt");
+            // }
+            // System.out.println(time.get(i));
+            // out.write(time.get(i)+"\n");
+            //
+            // }
+            //
+            // }
+            // // for (int i = 0; i < time.size(); ++i) {
+            // // if (i % 2 == 0) {
+            // // String type = time.get(i);
+            // // System.out.println(type);
+            // //
+            // // }
+            // //
+            // // }
+            // // System.out.println();
+            // // System.out.println();
+            // // System.out.println();
+            // // for (int i = 0; i < time.size(); ++i) {
+            // // if (i % 2 != 0) {
+            // // String type = time.get(i);
+            // // System.out.println(type);
+            // //
+            // // }
+            // //
+            // // }
+            // //
+            //
+            // } catch (Exception e) {
+            // // TODO Auto-generated catch block
+            // e.printStackTrace();
+            // }
+
+        } catch (RuntimeException e) {
+            logger.caught(e);
+            try {
+                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            } catch (Throwable t) {
+                // Cannot do anything
+            }
+        } catch (Error e) {
+            logger.caught(e);
+            try {
+                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            } catch (Throwable t) {
+                // Cannot do anything
+            }
+        }
+    }
+
+    /**
+     * Returns the XBayaEngine.
+     * 
+     * @return The XBayaEngine
+     */
+    public XBayaEngine getEngine() {
+        return this.engine;
+    }
+
+    private void printUsage() {
+        System.err.println("Usage: java " + XBaya.class.getName() + " [-help]" + "[-config file]" + " [-title title]"
+                + " [-workflow workflow]" + " [-enableLocalRegistry]" + " [-localRegistry dir]"
+                + " [-gpelEngineURL url]" + " [-templateID templateID]" + " [-instanceID instanceID]"
+                + " [-xRegistryURL url]" + " [-gfacURL url]" + " [-dscURL url" + " [-myLeadAgentURL url]"
+                + " [-myLeadUser userDN]" + " [-myLeadProject projectID]" + " [-myLeadWorkflow workflow]"
+                + " [-myLeadSampleUser userDN]" + " [-myLeadSampleProject projectID]" + " [-startMonitor {true,false}]"
+                + " [-brokerURL url]" + " [-topic topic]" + " [-pullMode {true,false}]" + " [-myProxyServer host]"
+                + " [-karmaURL url]" + " [-karmaWorkflowInstanceID]" + " [-myProxyPort port]"
+                + " [-myProxyUsername username]" + " [-myProxyLifetime sec]" + " [-loadMyProxy {true,false}]"
+                + " [-messageBoxURL url]" + " [-width width]" + " [-height height]" + " [-exitOnClose false/true]");
+    }
+
+    private void parseArguments(String[] args) {
+        try {
+            this.config = new XBayaConfiguration();
+
+            int index = 0;
+            while (index < args.length) {
+                String arg = args[index];
+                String possibleValue = "";
+                if ((index + 1) < args.length) {
+                    possibleValue = args[index + 1];
+                }
+                logger.info("arg: " + arg + " " + possibleValue);
+                if ("-help".equalsIgnoreCase(arg)) {
+                    printUsage();
+                    System.exit(0);
+                } else if ("-config".equalsIgnoreCase(arg)) {
+                    index++;
+                    String configPath = args[index];
+                    try {
+                        this.config.loadConfiguration(configPath);
+                    } catch (RuntimeException e) {
+                        String message = "Error while reading config file, " + configPath;
+                        logger.warning(message, e);
+                        this.config.addError(new XBayaException(message, e));
+                    }
+                } else if ("-title".equalsIgnoreCase(arg)) {
+                    index++;
+                    this.config.setTitle(args[index]);
+                } else if ("-workflow".equalsIgnoreCase(arg)) {
+                    index++;
+                    this.config.setWorkflow(args[index]);
+                } else if ("-xRegistryURL".equalsIgnoreCase(arg)) {
+                    index++;
+                    String url = args[index];
+                    try {
+                        this.config.setXRegistryURL(parseURL(url));
+                    } catch (URISyntaxException e) {
+                        String message = "The XRegistry URL is in wrong format: " + url;
+                        logger.warning(message, e);
+                        this.config.addError(new XBayaException(message, e));
+                    }
+                } else if ("-gfacURL".equalsIgnoreCase(arg)) {
+                    index++;
+                    String url = args[index];
+                    try {
+                        this.config.setGFacURL(parseURL(url));
+                    } catch (URISyntaxException e) {
+                        String message = "The GFac URL is in wrong format: " + url;
+                        logger.warning(message, e);
+                        this.config.addError(new XBayaException(message, e));
+                    }
+                } else if ("-dscURL".equalsIgnoreCase(arg)) {
+                    index++;
+                    String url = args[index];
+                    try {
+                        this.config.setDSCURL(parseURL(url));
+                    } catch (URISyntaxException e) {
+                        String message = "The DSC URL is in wrong format: " + url;
+                        logger.warning(message, e);
+                        this.config.addError(new XBayaException(message, e));
+                    }
+                } else if ("-startMonitor".equalsIgnoreCase(arg)) {
+                    this.config.setStartMonitor(true);
+                } else if ("-brokerURL".equalsIgnoreCase(arg)) {
+                    index++;
+                    String brokerURL = args[index];
+                    try {
+                        this.config.setBrokerURL(parseURL(brokerURL));
+                    } catch (URISyntaxException e) {
+                        String message = "The broker URL is in wrong format: " + brokerURL;
+                        logger.warning(message, e);
+                        this.config.addError(new XBayaException(message, e));
+                    }
+                } else if ("-odeEngine".equalsIgnoreCase(arg)) {
+                    index++;
+                    this.config.setOdeURL(args[index]);
+
+                } else if ("-templateID".equalsIgnoreCase(arg)) {
+                    index++;
+                    this.config.setWorkflow(args[index]);
+
+                } else if ("-topic".equalsIgnoreCase(arg)) {
+
+                    index++;
+                    this.config.setTopic(args[index]);
+                } else if ("-pullMode".equalsIgnoreCase(arg)) {
+                    if (index < args.length - 1) {
+                        String nextArg = args[index + 1];
+                        if (nextArg.startsWith("-")) {
+                            this.config.setPullMode(true);
+                        } else if ("true".equalsIgnoreCase(nextArg)) {
+                            index++;
+                            this.config.setPullMode(true);
+                        } else if ("false".equalsIgnoreCase(nextArg)) {
+                            index++;
+                            this.config.setPullMode(false);
+                        } else {
+                            String message = "-pullMode has to be either true or false, not " + nextArg;
+                            logger.warning(message);
+                            this.config.addError(new XBayaException(message));
+                        }
+                    } else {
+                        // This is the last arg
+                        this.config.setPullMode(true);
+                    }
+                } else if ("-messageBoxURL".equalsIgnoreCase(arg) || "-msgBoxURL".equalsIgnoreCase(arg)) {
+                    index++;
+                    String messageBoxURL = args[index];
+                    try {
+                        this.config.setMessageBoxURL(parseURL(messageBoxURL));
+                    } catch (URISyntaxException e) {
+                        String message = "The message box URL is in wrong format: " + messageBoxURL;
+                        logger.warning(message, e);
+                        this.config.addError(new XBayaException(message, e));
+                    }
+                } else if ("-myProxyServer".equalsIgnoreCase(arg)) {
+                    index++;
+                    String server = args[index];
+                    if ("null".equalsIgnoreCase(server)) {
+                        // This is a workaround that JNLP doesn't take empty
+                        // string as an argument.
+                        server = null;
+                    }
+                    this.config.setMyProxyServer(server);
+                } else if ("-myProxyPort".equalsIgnoreCase(arg)) {
+                    index++;
+                    String port = args[index];
+                    try {
+                        this.config.setMyProxyPort(Integer.parseInt(port));
+                    } catch (NumberFormatException e) {
+                        String message = "The myProxyPort must be an integer: " + port;
+                        logger.warning(message, e);
+                        this.config.addError(new XBayaException(message, e));
+                    }
+                } else if ("-myProxyUsername".equalsIgnoreCase(arg)) {
+                    index++;
+                    this.config.setMyProxyUsername(args[index]);
+                } else if ("-myProxyPassphrase".equalsIgnoreCase(arg)) {
+                    index++;
+                    this.config.setMyProxyPassphrase(args[index]);
+                } else if ("-myProxyLifetime".equalsIgnoreCase(arg)) {
+                    index++;
+                    String lifetime = args[index];
+                    try {
+                        this.config.setMyProxyLifetime(Integer.parseInt(lifetime));
+                    } catch (NumberFormatException e) {
+                        String message = "The myProxyLifetime must be an integer: " + lifetime;
+                        logger.warning(message, e);
+                        this.config.addError(new XBayaException(message, e));
+                    }
+                } else if ("-loadMyProxy".equalsIgnoreCase(arg)) {
+                    index++;
+                    String load = args[index];
+                    if ("true".equalsIgnoreCase(load)) {
+                        this.config.setLoadMyProxy(true);
+                    } else if ("false".equalsIgnoreCase(load)) {
+                        this.config.setLoadMyProxy(false);
+                    } else {
+                        String message = "-loadMyProxy has to be either true or false, not " + load;
+                        logger.warning(message);
+                        this.config.addError(new XBayaException(message));
+                    }
+                } else if ("-width".equalsIgnoreCase(arg)) {
+                    index++;
+                    String width = args[index];
+                    try {
+                        this.config.setWidth(Integer.parseInt(width));
+                    } catch (NumberFormatException e) {
+                        String message = "The width must be an integer: " + width;
+                        logger.warning(message, e);
+                        this.config.addError(new XBayaException(message, e));
+                    }
+                } else if ("-height".equalsIgnoreCase(arg)) {
+                    index++;
+                    String height = args[index];
+                    try {
+                        this.config.setHeight(Integer.parseInt(height));
+                    } catch (NumberFormatException e) {
+                        String message = "The height must be an integer: " + height;
+                        logger.warning(message, e);
+                        this.config.addError(new XBayaException(message, e));
+                    }
+                } else if ("-exitOnClose".equalsIgnoreCase(arg)) {
+                    index++;
+                    String exit = args[index];
+                    if ("false".equalsIgnoreCase(exit)) {
+                        this.config.setCloseOnExit(false);
+                    }
+                } else {
+                    String message = "Unknown option: " + arg;
+                    logger.severe(message);
+                    this.config.addError(new XBayaException(message));
+                }
+                index++;
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            String message = "Argument is missing after " + args[args.length - 1];
+            logger.severe(message, e);
+            this.config.addError(new XBayaException(message));
+        } catch (Throwable e) {
+            logger.caught(e);
+            String message = "Unknown error while parsing the arguments";
+            this.config.addError(new XBayaException(message, e));
+        }
+    }
+
+    private URI parseURL(String urlString) throws URISyntaxException {
+        if (urlString.trim().length() == 0) {
+            // This makes it possible to not use some of our default services.
+            return null;
+        } else if ("null".equalsIgnoreCase(urlString)) {
+            // This is a workaround that JNLP doesn't take empty string as an
+            // argument.
+            return null;
+        } else {
+            return new URI(urlString).parseServerAuthority();
+        }
+    }
+
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        new XBaya(args);
+    }
+}

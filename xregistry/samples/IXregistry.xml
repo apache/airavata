@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<wsdl:definitions xmlns:axis2="http://ws.apache.org/axis2" 
+	xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" 
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" 
+	xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" 
+	xmlns:ns="http://ws.apache.org/axis2/xsd" 
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://extreme.indiana.edu/xregistry2/2007_02_21">
+	<wsdl:types>
+		<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="qualified" elementFormDefault="qualified" 
+			targetNamespace="http://extreme.indiana.edu/xregistry2/2007_02_21/xsd">
+			<xs:element name="getAbstractWsdl">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="wsdlQName" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="getAbstractWsdlResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="wsdlAsStr" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="getAppDesc">
+				<xs:complexType>
+					<xs:sequence>
+					<xs:element name="appQName" type="xs:string" />
+					<xs:element name="hostName" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="getAppDescResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="appdescAsStr" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="getConcreateWsdl">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="wsdlQname" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="getConcreateWsdlResponse">
+				<xs:complexType>
+					<xs:sequence>
+					<xs:element name="wsdlAsStr" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="getHostDesc">
+				<xs:complexType>
+					<xs:sequence>
+					<xs:element name="hostName" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="getHostDescResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="hostDescAsStr" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="getServiceDesc">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="serviceQname" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="getServiceDescResponse">
+			<xs:complexType>
+				<xs:sequence>
+					<xs:element name="serviceDescAsStr" nillable="true" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			</xs:element>
+			<xs:element name="registerAppDesc">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="appDescAsStr" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="registerAppDescResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="resourceID" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="registerConcreteWsdl">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="wsdlAsStr" type="xs:string" />
+						<xs:element name="lifetimeAsSeconds" type="xs:int" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="registerConcreteWsdlResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="resourceID" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="registerHostDesc">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="hostName" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="registerHostDescResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="resourceID" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="registerServiceDesc">
+				<xs:complexType>
+				<xs:sequence>
+					<xs:element name="serviceDescAsStr" type="xs:string" />
+					<xs:element name="awsdlAdStr" type="xs:string" />
+				</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="registerServiceDescResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="resourceID" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="app2Hosts">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="appName" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="app2HostsResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element maxOccurs="unbounded" name="host" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="findHosts">
+				<xs:complexType>
+					<xs:sequence>
+					<xs:element name="hostNameSearchStr" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="findHostsResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element maxOccurs="unbounded" name="results" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="findServiceDesc">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="serviceQNameSearchStr" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="findServiceDescResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element maxOccurs="unbounded" name="serviceName" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="findServiceInstance">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="serviceQnameSearchStr" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="findServiceInstanceResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element maxOccurs="unbounded" name="serviceInstance" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="listGroups">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="groupSearchStr" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="listGroupsResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element maxOccurs="unbounded" name="group" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="listGroupsGivenAUser">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="userName" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="listGroupsGivenAUserResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element maxOccurs="unbounded" name="group" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="listUsers">
+				<xs:complexType/>
+			</xs:element>
+			<xs:element name="listUsersResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element maxOccurs="unbounded" name="user" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="listUsersGivenAGroup">
+				<xs:complexType/>
+			</xs:element>
+			<xs:element name="listUsersGivenAGroupResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element maxOccurs="unbounded" name="user" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="findAppDesc">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="appNameSearchStr" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="findAppDescResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="appName" nillable="true" type="xs:anyType" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="addCapability">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="resourceID" nillable="true" type="xs:string" />
+						<xs:element name="actor" nillable="true" type="xs:string" />
+						<xs:element name="isActorAUser" nillable="true" type="xs:boolean" />
+						<xs:element name="action" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="addCapabilityToken">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="resourceID" nillable="true" type="xs:string" />
+						<xs:element name="actor" nillable="true" type="xs:string" />
+						<xs:element name="actorType" nillable="true" type="xs:boolean" />
+						<xs:element name="assertions" nillable="true" type="xs:string" />
+						<xs:element name="notbefore" nillable="true" type="xs:string" />
+						<xs:element name="notafter" nillable="true" type="xs:string" />
+					</xs:sequence>
+					</xs:complexType>
+			</xs:element>
+			<xs:element name="addUsertoGroup">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="group" nillable="true" type="xs:string" />
+						<xs:element name="userToAdd" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="createGroup">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="groupName" nillable="true" type="xs:string" />
+						<xs:element name="description" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="createUser">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="userName" nillable="true" type="xs:string" />
+						<xs:element name="description" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+<xs:element name="deleteGroup">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="param0" nillable="true" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="deleteUser">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="param0" nillable="true" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="getCapability">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="param0" nillable="true" type="xs:string" />
+<xs:element name="param1" nillable="true" type="xs:string" />
+<xs:element name="param2" nillable="true" type="xs:boolean" />
+<xs:element name="param3" nillable="true" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="removeAppDesc">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="param0" nillable="true" type="xs:string" />
+<xs:element name="param1" nillable="true" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="removeCapability">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="param0" nillable="true" type="xs:string" />
+<xs:element name="param1" nillable="true" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="removeConcreteWsdl">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="param0" nillable="true" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="removeGroupFromGroup">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="param0" nillable="true" type="xs:string" />
+<xs:element name="param1" nillable="true" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="removeHostDesc">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="param0" nillable="true" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="removeServiceDesc">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="param0" nillable="true" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="removeUserFromGroup">
+<xs:complexType>
+<xs:sequence>
+<xs:element name="param0" nillable="true" type="xs:string" />
+<xs:element name="param1" nillable="true" type="xs:string" />
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+</xs:schema></wsdl:types><wsdl:message name="getAbstractWsdlMessage"><wsdl:part name="part1" element="ns:getAbstractWsdl" /></wsdl:message><wsdl:message name="getAbstractWsdlResponseMessage"><wsdl:part name="part1" element="ns:getAbstractWsdlResponse" /></wsdl:message><wsdl:message name="getAppDescMessage"><wsdl:part name="part1" element="ns:getAppDesc" /></wsdl:message><wsdl:message name="getAppDescResponseMessage"><wsdl:part name="part1" element="ns:getAppDescResponse" /></wsdl:message><wsdl:message name="getConcreateWsdlMessage"><wsdl:part name="part1" element="ns:getConcreateWsdl" /></wsdl:message><wsdl:message name="getConcreateWsdlResponseMessage"><wsdl:part name="part1" element="ns:getConcreateWsdlResponse" /></wsdl:message><wsdl:message name="getHostDescMessage"><wsdl:part name="part1" element="ns:getHostDesc" /></wsdl:message><wsdl:message name="getHostDescResponseMessage"><wsdl:part name="part1" element="ns:getHostDescResponse" /></wsdl:message><wsdl:message name="getServiceDescMessage"><wsdl:part name="part1" element="ns:getServiceDesc" /></wsdl:message><wsdl:message name="getServiceDescResponseMessage"><wsdl:part name="part1" element="ns:getServiceDescResponse" /></wsdl:message><wsdl:message name="registerAppDescMessage"><wsdl:part name="part1" element="ns:registerAppDesc" /></wsdl:message><wsdl:message name="registerAppDescResponseMessage"><wsdl:part name="part1" element="ns:registerAppDescResponse" /></wsdl:message><wsdl:message name="registerConcreteWsdlMessage"><wsdl:part name="part1" element="ns:registerConcreteWsdl" /></wsdl:message><wsdl:message name="registerConcreteWsdlResponseMessage"><wsdl:part name="part1" element="ns:registerConcreteWsdlResponse" /></wsdl:message><wsdl:message name="registerHostDescMessage"><wsdl:part name="part1" element="ns:registerHostDesc" /></wsdl:message><wsdl:message name="registerHostDescResponseMessage"><wsdl:part name="part1" element="ns:registerHostDescResponse" /></wsdl:message><wsdl:message name="registerServiceDescMessage"><wsdl:part name="part1" element="ns:registerServiceDesc" /></wsdl:message><wsdl:message name="registerServiceDescResponseMessage"><wsdl:part name="part1" element="ns:registerServiceDescResponse" /></wsdl:message><wsdl:message name="app2HostsMessage"><wsdl:part name="part1" element="ns:app2Hosts" /></wsdl:message><wsdl:message name="app2HostsResponseMessage"><wsdl:part name="part1" element="ns:app2HostsResponse" /></wsdl:message><wsdl:message name="findHostsMessage"><wsdl:part name="part1" element="ns:findHosts" /></wsdl:message><wsdl:message name="findHostsResponseMessage"><wsdl:part name="part1" element="ns:findHostsResponse" /></wsdl:message><wsdl:message name="findServiceDescMessage"><wsdl:part name="part1" element="ns:findServiceDesc" /></wsdl:message><wsdl:message name="findServiceDescResponseMessage"><wsdl:part name="part1" element="ns:findServiceDescResponse" /></wsdl:message><wsdl:message name="findServiceInstanceMessage"><wsdl:part name="part1" element="ns:findServiceInstance" /></wsdl:message><wsdl:message name="findServiceInstanceResponseMessage"><wsdl:part name="part1" element="ns:findServiceInstanceResponse" /></wsdl:message><wsdl:message name="listGroupsMessage"><wsdl:part name="part1" element="ns:listGroups" /></wsdl:message><wsdl:message name="listGroupsResponseMessage"><wsdl:part name="part1" element="ns:listGroupsResponse" /></wsdl:message><wsdl:message name="listGroupsGivenAUserMessage"><wsdl:part name="part1" element="ns:listGroupsGivenAUser" /></wsdl:message><wsdl:message name="listGroupsGivenAUserResponseMessage"><wsdl:part name="part1" element="ns:listGroupsGivenAUserResponse" /></wsdl:message><wsdl:message name="listUsersMessage"><wsdl:part name="part1" element="ns:listUsers" /></wsdl:message><wsdl:message name="listUsersResponseMessage"><wsdl:part name="part1" element="ns:listUsersResponse" /></wsdl:message><wsdl:message name="listUsersGivenAGroupMessage"><wsdl:part name="part1" element="ns:listUsersGivenAGroup" /></wsdl:message><wsdl:message name="listUsersGivenAGroupResponseMessage"><wsdl:part name="part1" element="ns:listUsersGivenAGroupResponse" /></wsdl:message><wsdl:message name="findAppDescMessage"><wsdl:part name="part1" element="ns:findAppDesc" /></wsdl:message><wsdl:message name="findAppDescResponseMessage"><wsdl:part name="part1" element="ns:findAppDescResponse" /></wsdl:message><wsdl:message name="addCapabilityMessage"><wsdl:part name="part1" element="ns:addCapability" /></wsdl:message><wsdl:message name="addCapabilityTokenMessage"><wsdl:part name="part1" element="ns:addCapabilityToken" /></wsdl:message><wsdl:message name="addUsertoGroupMessage"><wsdl:part name="part1" element="ns:addUsertoGroup" /></wsdl:message><wsdl:message name="createGroupMessage"><wsdl:part name="part1" element="ns:createGroup" /></wsdl:message><wsdl:message name="createUserMessage"><wsdl:part name="part1" element="ns:createUser" /></wsdl:message><wsdl:message name="deleteGroupMessage"><wsdl:part name="part1" element="ns:deleteGroup" /></wsdl:message><wsdl:message name="deleteUserMessage"><wsdl:part name="part1" element="ns:deleteUser" /></wsdl:message><wsdl:message name="getCapabilityMessage"><wsdl:part name="part1" element="ns:getCapability" /></wsdl:message><wsdl:message name="removeAppDescMessage"><wsdl:part name="part1" element="ns:removeAppDesc" /></wsdl:message><wsdl:message name="removeCapabilityMessage"><wsdl:part name="part1" element="ns:removeCapability" /></wsdl:message><wsdl:message name="removeConcreteWsdlMessage"><wsdl:part name="part1" element="ns:removeConcreteWsdl" /></wsdl:message><wsdl:message name="removeGroupFromGroupMessage"><wsdl:part name="part1" element="ns:removeGroupFromGroup" /></wsdl:message><wsdl:message name="removeHostDescMessage"><wsdl:part name="part1" element="ns:removeHostDesc" /></wsdl:message><wsdl:message name="removeServiceDescMessage"><wsdl:part name="part1" element="ns:removeServiceDesc" /></wsdl:message><wsdl:message name="removeUserFromGroupMessage"><wsdl:part name="part1" element="ns:removeUserFromGroup" /></wsdl:message><wsdl:portType name="IXregistryPortType"><wsdl:operation name="getAbstractWsdl"><wsdl:input message="axis2:getAbstractWsdlMessage" /><wsdl:output message="axis2:getAbstractWsdlResponseMessage" /></wsdl:operation><wsdl:operation name="getAppDesc"><wsdl:input message="axis2:getAppDescMessage" /><wsdl:output message="axis2:getAppDescResponseMessage" /></wsdl:operation><wsdl:operation name="getConcreateWsdl"><wsdl:input message="axis2:getConcreateWsdlMessage" /><wsdl:output message="axis2:getConcreateWsdlResponseMessage" /></wsdl:operation><wsdl:operation name="getHostDesc"><wsdl:input message="axis2:getHostDescMessage" /><wsdl:output message="axis2:getHostDescResponseMessage" /></wsdl:operation><wsdl:operation name="getServiceDesc"><wsdl:input message="axis2:getServiceDescMessage" /><wsdl:output message="axis2:getServiceDescResponseMessage" /></wsdl:operation><wsdl:operation name="registerAppDesc"><wsdl:input message="axis2:registerAppDescMessage" /><wsdl:output message="axis2:registerAppDescResponseMessage" /></wsdl:operation><wsdl:operation name="registerConcreteWsdl"><wsdl:input message="axis2:registerConcreteWsdlMessage" /><wsdl:output message="axis2:registerConcreteWsdlResponseMessage" /></wsdl:operation><wsdl:operation name="registerHostDesc"><wsdl:input message="axis2:registerHostDescMessage" /><wsdl:output message="axis2:registerHostDescResponseMessage" /></wsdl:operation><wsdl:operation name="registerServiceDesc"><wsdl:input message="axis2:registerServiceDescMessage" /><wsdl:output message="axis2:registerServiceDescResponseMessage" /></wsdl:operation><wsdl:operation name="app2Hosts"><wsdl:input message="axis2:app2HostsMessage" /><wsdl:output message="axis2:app2HostsResponseMessage" /></wsdl:operation><wsdl:operation name="findHosts"><wsdl:input message="axis2:findHostsMessage" /><wsdl:output message="axis2:findHostsResponseMessage" /></wsdl:operation><wsdl:operation name="findServiceDesc"><wsdl:input message="axis2:findServiceDescMessage" /><wsdl:output message="axis2:findServiceDescResponseMessage" /></wsdl:operation><wsdl:operation name="findServiceInstance"><wsdl:input message="axis2:findServiceInstanceMessage" /><wsdl:output message="axis2:findServiceInstanceResponseMessage" /></wsdl:operation><wsdl:operation name="listGroups"><wsdl:input message="axis2:listGroupsMessage" /><wsdl:output message="axis2:listGroupsResponseMessage" /></wsdl:operation><wsdl:operation name="listGroupsGivenAUser"><wsdl:input message="axis2:listGroupsGivenAUserMessage" /><wsdl:output message="axis2:listGroupsGivenAUserResponseMessage" /></wsdl:operation><wsdl:operation name="listUsers"><wsdl:input message="axis2:listUsersMessage" /><wsdl:output message="axis2:listUsersResponseMessage" /></wsdl:operation><wsdl:operation name="listUsersGivenAGroup"><wsdl:input message="axis2:listUsersGivenAGroupMessage" /><wsdl:output message="axis2:listUsersGivenAGroupResponseMessage" /></wsdl:operation><wsdl:operation name="findAppDesc"><wsdl:input message="axis2:findAppDescMessage" /><wsdl:output message="axis2:findAppDescResponseMessage" /></wsdl:operation><wsdl:operation name="addCapability"><wsdl:input message="axis2:addCapabilityMessage" /></wsdl:operation><wsdl:operation name="addCapabilityToken"><wsdl:input message="axis2:addCapabilityTokenMessage" /></wsdl:operation><wsdl:operation name="addUsertoGroup"><wsdl:input message="axis2:addUsertoGroupMessage" /></wsdl:operation><wsdl:operation name="createGroup"><wsdl:input message="axis2:createGroupMessage" /></wsdl:operation><wsdl:operation name="createUser"><wsdl:input message="axis2:createUserMessage" /></wsdl:operation><wsdl:operation name="deleteGroup"><wsdl:input message="axis2:deleteGroupMessage" /></wsdl:operation><wsdl:operation name="deleteUser"><wsdl:input message="axis2:deleteUserMessage" /></wsdl:operation><wsdl:operation name="getCapability"><wsdl:input message="axis2:getCapabilityMessage" /></wsdl:operation><wsdl:operation name="removeAppDesc"><wsdl:input message="axis2:removeAppDescMessage" /></wsdl:operation><wsdl:operation name="removeCapability"><wsdl:input message="axis2:removeCapabilityMessage" /></wsdl:operation><wsdl:operation name="removeConcreteWsdl"><wsdl:input message="axis2:removeConcreteWsdlMessage" /></wsdl:operation><wsdl:operation name="removeGroupFromGroup"><wsdl:input message="axis2:removeGroupFromGroupMessage" /></wsdl:operation><wsdl:operation name="removeHostDesc"><wsdl:input message="axis2:removeHostDescMessage" /></wsdl:operation><wsdl:operation name="removeServiceDesc"><wsdl:input message="axis2:removeServiceDescMessage" /></wsdl:operation><wsdl:operation name="removeUserFromGroup"><wsdl:input message="axis2:removeUserFromGroupMessage" /></wsdl:operation></wsdl:portType><wsdl:binding name="IXregistrySOAP11Binding" type="axis2:IXregistryPortType"><soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" /><wsdl:operation name="getAbstractWsdl"><soap:operation soapAction="urn:getAbstractWsdl" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="getAppDesc"><soap:operation soapAction="urn:getAppDesc" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="getConcreateWsdl"><soap:operation soapAction="urn:getConcreateWsdl" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="getHostDesc"><soap:operation soapAction="urn:getHostDesc" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="getServiceDesc"><soap:operation soapAction="urn:getServiceDesc" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="registerAppDesc"><soap:operation soapAction="urn:registerAppDesc" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="registerConcreteWsdl"><soap:operation soapAction="urn:registerConcreteWsdl" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="registerHostDesc"><soap:operation soapAction="urn:registerHostDesc" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="registerServiceDesc"><soap:operation soapAction="urn:registerServiceDesc" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="app2Hosts"><soap:operation soapAction="urn:app2Hosts" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="findHosts"><soap:operation soapAction="urn:findHosts" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="findServiceDesc"><soap:operation soapAction="urn:findServiceDesc" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="findServiceInstance"><soap:operation soapAction="urn:findServiceInstance" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="listGroups"><soap:operation soapAction="urn:listGroups" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="listGroupsGivenAUser"><soap:operation soapAction="urn:listGroupsGivenAUser" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="listUsers"><soap:operation soapAction="urn:listUsers" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="listUsersGivenAGroup"><soap:operation soapAction="urn:listUsersGivenAGroup" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="findAppDesc"><soap:operation soapAction="urn:findAppDesc" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="addCapability"><soap:operation soapAction="urn:addCapability" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="addCapabilityToken"><soap:operation soapAction="urn:addCapabilityToken" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="addUsertoGroup"><soap:operation soapAction="urn:addUsertoGroup" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="createGroup"><soap:operation soapAction="urn:createGroup" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="createUser"><soap:operation soapAction="urn:createUser" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="deleteGroup"><soap:operation soapAction="urn:deleteGroup" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="deleteUser"><soap:operation soapAction="urn:deleteUser" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="getCapability"><soap:operation soapAction="urn:getCapability" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="removeAppDesc"><soap:operation soapAction="urn:removeAppDesc" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="removeCapability"><soap:operation soapAction="urn:removeCapability" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="removeConcreteWsdl"><soap:operation soapAction="urn:removeConcreteWsdl" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="removeGroupFromGroup"><soap:operation soapAction="urn:removeGroupFromGroup" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="removeHostDesc"><soap:operation soapAction="urn:removeHostDesc" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="removeServiceDesc"><soap:operation soapAction="urn:removeServiceDesc" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="removeUserFromGroup"><soap:operation soapAction="urn:removeUserFromGroup" style="document" /><wsdl:input><soap:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation></wsdl:binding><wsdl:binding name="IXregistrySOAP12Binding" type="axis2:IXregistryPortType"><soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" /><wsdl:operation name="getAbstractWsdl"><soap12:operation soapAction="urn:getAbstractWsdl" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="getAppDesc"><soap12:operation soapAction="urn:getAppDesc" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="getConcreateWsdl"><soap12:operation soapAction="urn:getConcreateWsdl" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="getHostDesc"><soap12:operation soapAction="urn:getHostDesc" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="getServiceDesc"><soap12:operation soapAction="urn:getServiceDesc" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="registerAppDesc"><soap12:operation soapAction="urn:registerAppDesc" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="registerConcreteWsdl"><soap12:operation soapAction="urn:registerConcreteWsdl" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="registerHostDesc"><soap12:operation soapAction="urn:registerHostDesc" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="registerServiceDesc"><soap12:operation soapAction="urn:registerServiceDesc" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="app2Hosts"><soap12:operation soapAction="urn:app2Hosts" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="findHosts"><soap12:operation soapAction="urn:findHosts" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="findServiceDesc"><soap12:operation soapAction="urn:findServiceDesc" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="findServiceInstance"><soap12:operation soapAction="urn:findServiceInstance" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="listGroups"><soap12:operation soapAction="urn:listGroups" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="listGroupsGivenAUser"><soap12:operation soapAction="urn:listGroupsGivenAUser" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="listUsers"><soap12:operation soapAction="urn:listUsers" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="listUsersGivenAGroup"><soap12:operation soapAction="urn:listUsersGivenAGroup" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="findAppDesc"><soap12:operation soapAction="urn:findAppDesc" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input><wsdl:output><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:output></wsdl:operation><wsdl:operation name="addCapability"><soap12:operation soapAction="urn:addCapability" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="addCapabilityToken"><soap12:operation soapAction="urn:addCapabilityToken" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="addUsertoGroup"><soap12:operation soapAction="urn:addUsertoGroup" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="createGroup"><soap12:operation soapAction="urn:createGroup" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="createUser"><soap12:operation soapAction="urn:createUser" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="deleteGroup"><soap12:operation soapAction="urn:deleteGroup" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="deleteUser"><soap12:operation soapAction="urn:deleteUser" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="getCapability"><soap12:operation soapAction="urn:getCapability" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="removeAppDesc"><soap12:operation soapAction="urn:removeAppDesc" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="removeCapability"><soap12:operation soapAction="urn:removeCapability" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="removeConcreteWsdl"><soap12:operation soapAction="urn:removeConcreteWsdl" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="removeGroupFromGroup"><soap12:operation soapAction="urn:removeGroupFromGroup" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="removeHostDesc"><soap12:operation soapAction="urn:removeHostDesc" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="removeServiceDesc"><soap12:operation soapAction="urn:removeServiceDesc" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation><wsdl:operation name="removeUserFromGroup"><soap12:operation soapAction="urn:removeUserFromGroup" style="document" /><wsdl:input><soap12:body use="literal" namespace="http://extreme.indiana.edu/xregistry2/2007_02_21" /></wsdl:input></wsdl:operation></wsdl:binding><wsdl:service name="IXregistry"><wsdl:port name="IXregistrySOAP11port" binding="axis2:IXregistrySOAP11Binding"><soap:address location="http://localhost:8080/axis2/services/IXregistry" /></wsdl:port><wsdl:port name="IXregistrySOAP12port" binding="axis2:IXregistrySOAP12Binding"><soap12:address location="http://localhost:8080/axis2/services/IXregistry" /></wsdl:port></wsdl:service></wsdl:definitions>

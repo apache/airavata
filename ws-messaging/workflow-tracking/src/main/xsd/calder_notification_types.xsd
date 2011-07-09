@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<schema
+    targetNamespace="http://www.calderproject.org/calder_notification_types"
+	xmlns:cnt="http://www.calderproject.org/calder_notification_types"
+    xmlns:wft="http://lead.extreme.indiana.edu/namespaces/2006/06/workflow_tracking"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    attributeFormDefault="qualified"
+    elementFormDefault="qualified">
+
+    <!-- ========================================================================================== -->
+    <!-- Authors:                                                                                   -->
+    <!--   Yogesh L. Simmhan*                                                                       -->
+    <!--   Alek Slominski                                                                           -->
+    <!--   Marcus Christie                                                                          -->
+    <!--   Scott Jensen                                                                             -->    
+    <!--                                                                                            -->    
+    <!--   Version: 2.1                                                                             -->    
+    <!--   Date: 2006-08-15                                                                         -->    
+    <!--                                                                                            -->    
+    <!--   Copyright (c) 2006 Extreme! Lab, Indiana University. All rights reserved.                -->    
+    <!--   This software is open source. See http://extreme.indiana.edu/license.txt for license.    -->
+    <!-- ========================================================================================== -->
+    
+	<complexType name="CalderNotificationType">
+	    <complexContent>
+		<extension base="wft:BaseNotificationType">
+		    <sequence>
+			<element name="radarName" type="string" />
+		    </sequence>
+		</extension>
+	    </complexContent>
+	</complexType>
+
+	<complexType name="CalderClusterNotificationType">
+	    <complexContent>
+		<extension base="wft:BaseNotificationType">
+		    <sequence>
+		      <element name="ctrlon" type="float">
+      <annotation><documentation xml:lang="en">
+        Center Longitude (-180 ... 180)
+      </documentation></annotation>
+    </element>
+
+    <element name="ctrlat" type="float">
+      <annotation><documentation xml:lang="en">
+        Center Latitude (-90 ... +90)
+      </documentation></annotation>
+    </element>
+
+    <element name="westbc" type="float">
+      <annotation><documentation xml:lang="en">
+        Longitude of left side of bounding box (-180..180).  This is also 
+the "westbc"
+        element in the LEAD Metadata Schema.
+      </documentation></annotation>
+    </element>
+
+    <element name="eastbc" type="float">
+      <annotation><documentation xml:lang="en">
+        Longitude of right side of bounding box (-180..180).  This is also 
+the "eastbc"
+        element in the LEAD Metadata Schema.
+      </documentation></annotation>
+    </element>
+
+    <element name="southbc" type="float">
+      <annotation><documentation xml:lang="en">
+        Latitude of bottom side of bounding box (-90..90).  This is also 
+the "southbc"
+        element in the LEAD Metadata Schema.
+      </documentation></annotation>
+    </element>
+
+    <element name="northbc" type="float">
+      <annotation><documentation xml:lang="en">
+        Latitude of top side of bounding box (-90..90).  This is also the 
+"northbc"
+        element in the LEAD Metadata Schema.
+      </documentation></annotation>
+    </element>
+		    
+			</sequence>
+		</extension>
+	    </complexContent>
+	</complexType>
+
+
+    <element name="queryStarted" type="cnt:CalderNotificationType" />
+    <element name="queryFailedToStart" type="cnt:CalderNotificationType" />
+    <element name="queryActive" type="cnt:CalderNotificationType" />
+    <element name="queryExpired" type="cnt:CalderNotificationType" />
+    <element name="triggerFound" type="cnt:CalderNotificationType" />
+    <element name="queryPublishResult" type="cnt:CalderClusterNotificationType" />
+    <element name="queryNoDetection" type="cnt:CalderNotificationType" />
+</schema>

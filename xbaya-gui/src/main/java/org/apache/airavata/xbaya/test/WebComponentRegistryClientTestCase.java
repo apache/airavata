@@ -1,0 +1,226 @@
+/*
+ * Copyright (c) 2005-2007 Extreme! Lab, Indiana University. All rights reserved.
+ *
+ * This software is open source. See the bottom of this file for the license.
+ *
+ * $Id: 
+ */
+package org.apache.airavata.xbaya.test;
+
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
+import java.awt.Point;
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.airavata.xbaya.XBayaConstants;
+import org.apache.airavata.xbaya.component.Component;
+import org.apache.airavata.xbaya.component.ComponentException;
+import org.apache.airavata.xbaya.component.registry.WebComponentRegistry;
+import org.apache.airavata.xbaya.component.system.InputComponent;
+import org.apache.airavata.xbaya.component.system.OutputComponent;
+import org.apache.airavata.xbaya.graph.Graph;
+import org.apache.airavata.xbaya.graph.GraphException;
+import org.apache.airavata.xbaya.graph.Node;
+import org.apache.airavata.xbaya.graph.system.InputNode;
+import org.apache.airavata.xbaya.graph.system.OutputNode;
+import org.apache.airavata.xbaya.jython.script.JythonScript;
+import org.apache.airavata.xbaya.util.IOUtil;
+import org.apache.airavata.xbaya.util.XMLUtil;
+import org.apache.airavata.xbaya.wf.Workflow;
+import org.xmlpull.infoset.XmlElement;
+
+/**
+ * @author Satoshi Shirasuna
+ */
+public class WebComponentRegistryClientTestCase extends XBayaTestCase {
+
+    /**
+     * MATH_ADDER_WSDL
+     */
+    private static final String MATH_ADDER_WSDL = "adder-wsdl.xml";
+
+    /**
+     * MATH_MULTIPLIER_WSDL
+     */
+    private static final String MATH_MULTIPLIER_WSDL = "multiplier-wsdl.xml";
+
+    // private static final MLogger logger = MLogger.getLogger();
+
+    private Component inputComponent;
+
+    private Component outputComponent;
+
+    private WebComponentRegistry componentRegistry;
+
+    private File temporaryDirectory;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        this.temporaryDirectory = new File("tmp");
+        this.temporaryDirectory.mkdir();
+
+        this.componentRegistry = new WebComponentRegistry(XBayaConstants.DEFAULT_WEB_REGISTRY.toURL());
+        this.componentRegistry.getComponentTree(); // To read components
+        this.inputComponent = new InputComponent();
+        this.outputComponent = new OutputComponent();
+    }
+
+    /**
+     * @throws GraphException
+     * @throws ComponentException
+     * @throws IOException
+     */
+    public void testComplexMath() throws GraphException, ComponentException, IOException {
+
+        Workflow workflow = createComplexMathWorkflow();
+        File workflowFile = new File(this.temporaryDirectory, "web-complex-math.xwf");
+        XMLUtil.saveXML(workflow.toXML(), workflowFile);
+
+        // Load the same graph again from the file, saves it, and compare them.
+        XmlElement workflowElement = XMLUtil.loadXML(workflowFile);
+        Workflow workflow2 = new Workflow(workflowElement);
+        File workflowFile2 = new File(this.temporaryDirectory, "web-complex-math-2.xwf");
+        XMLUtil.saveXML(workflow2.toXML(), workflowFile2);
+
+        String workflowFileString = IOUtil.readFileToString(workflowFile);
+        String workflowFile2String = IOUtil.readFileToString(workflowFile2);
+        assertEquals(workflowFileString, workflowFile2String);
+
+        // Create a Jython script
+        File jythonFile = new File(this.temporaryDirectory, "web-complex-math.py");
+        JythonScript script = new JythonScript(workflow, this.configuration);
+        script.create();
+        IOUtil.writeToFile(script.getJythonString(), jythonFile);
+    }
+
+    /**
+     * @return The graph
+     * @throws GraphException
+     */
+    private Workflow createComplexMathWorkflow() throws GraphException {
+
+        Workflow workflow = new Workflow();
+
+        // Name, description
+        workflow.setName("Complex math workflow");
+        workflow.setDescription("Complex math workflow");
+
+        Graph graph = workflow.getGraph();
+
+        // Adder nodes
+        Component adderComp = this.componentRegistry.getComponents(MATH_ADDER_WSDL).get(0);
+
+        Node adderNode1 = workflow.addNode(adderComp);
+        adderNode1.setPosition(new Point(170, 50));
+
+        Node adderNode2 = workflow.addNode(adderComp);
+        adderNode2.setPosition(new Point(170, 210));
+
+        // Multiplier node
+        Component multiComp = this.componentRegistry.getComponents(MATH_MULTIPLIER_WSDL).get(0);
+
+        Node multiNode = workflow.addNode(multiComp);
+        multiNode.setPosition(new Point(320, 130));
+
+        // Parameter node 1
+        InputNode paramNode1 = (InputNode) workflow.addNode(this.inputComponent);
+        paramNode1.setPosition(new Point(20, 30));
+        String paramValue1 = "2";
+        paramNode1.setDefaultValue(paramValue1);
+
+        // Parameter node 2
+        InputNode paramNode2 = (InputNode) workflow.addNode(this.inputComponent);
+        paramNode2.setPosition(new Point(20, 100));
+        String paramValue2 = "3";
+        paramNode2.setDefaultValue(paramValue2);
+
+        // Parameter node 3
+        InputNode paramNode3 = (InputNode) workflow.addNode(this.inputComponent);
+        paramNode3.setPosition(new Point(20, 170));
+        String paramValue3 = "4";
+        paramNode3.setDefaultValue(paramValue3);
+
+        // Parameter node 4
+        InputNode paramNode4 = (InputNode) workflow.addNode(this.inputComponent);
+        paramNode4.setPosition(new Point(20, 240));
+        String paramValue4 = "5";
+        paramNode4.setDefaultValue(paramValue4);
+
+        OutputNode outParamNode = (OutputNode) workflow.addNode(this.outputComponent);
+        outParamNode.setPosition(new Point(370, 240));
+
+        // Connect ports
+        graph.addEdge(paramNode1.getOutputPort(0), adderNode1.getInputPort(0));
+        graph.addEdge(paramNode2.getOutputPort(0), adderNode1.getInputPort(1));
+        graph.addEdge(paramNode3.getOutputPort(0), adderNode2.getInputPort(0));
+        graph.addEdge(paramNode4.getOutputPort(0), adderNode2.getInputPort(1));
+        graph.addEdge(adderNode1.getOutputPort(0), multiNode.getInputPort(0));
+        graph.addEdge(adderNode2.getOutputPort(0), multiNode.getInputPort(1));
+        graph.addEdge(multiNode.getOutputPort(0), outParamNode.getInputPort(0));
+
+        return workflow;
+    }
+}
+
+/*
+ * Indiana University Extreme! Lab Software License, Version 1.2
+ * 
+ * Copyright (c) 2005-2007 The Trustees of Indiana University. All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
+ * following conditions are met:
+ * 
+ * 1) All redistributions of source code must retain the above copyright notice, the list of authors in the original
+ * source code, this list of conditions and the disclaimer listed in this license;
+ * 
+ * 2) All redistributions in binary form must reproduce the above copyright notice, this list of conditions and the
+ * disclaimer listed in this license in the documentation and/or other materials provided with the distribution;
+ * 
+ * 3) Any documentation included with all redistributions must include the following acknowledgement:
+ * 
+ * "This product includes software developed by the Indiana University Extreme! Lab. For further information please
+ * visit http://www.extreme.indiana.edu/"
+ * 
+ * Alternatively, this acknowledgment may appear in the software itself, and wherever such third-party acknowledgments
+ * normally appear.
+ * 
+ * 4) The name "Indiana University" or "Indiana University Extreme! Lab" shall not be used to endorse or promote
+ * products derived from this software without prior written permission from Indiana University. For written permission,
+ * please contact http://www.extreme.indiana.edu/.
+ * 
+ * 5) Products derived from this software may not use "Indiana University" name nor may "Indiana University" appear in
+ * their name, without prior written permission of the Indiana University.
+ * 
+ * Indiana University provides no reassurances that the source code provided does not infringe the patent or any other
+ * intellectual property rights of any other entity. Indiana University disclaims any liability to any recipient for
+ * claims brought by any other entity based on infringement of intellectual property rights or otherwise.
+ * 
+ * LICENSEE UNDERSTANDS THAT SOFTWARE IS PROVIDED "AS IS" FOR WHICH NO WARRANTIES AS TO CAPABILITIES OR ACCURACY ARE
+ * MADE. INDIANA UNIVERSITY GIVES NO WARRANTIES AND MAKES NO REPRESENTATION THAT SOFTWARE IS FREE OF INFRINGEMENT OF
+ * THIRD PARTY PATENT, COPYRIGHT, OR OTHER PROPRIETARY RIGHTS. INDIANA UNIVERSITY MAKES NO WARRANTIES THAT SOFTWARE IS
+ * FREE FROM "BUGS", "VIRUSES", "TROJAN HORSES", "TRAP DOORS", "WORMS", OR OTHER HARMFUL CODE. LICENSEE ASSUMES THE
+ * ENTIRE RISK AS TO THE PERFORMANCE OF SOFTWARE AND/OR ASSOCIATED MATERIALS, AND TO THE PERFORMANCE AND VALIDITY OF
+ * INFORMATION GENERATED USING SOFTWARE.
+ */

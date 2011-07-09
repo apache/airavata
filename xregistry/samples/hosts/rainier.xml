@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<HostDescription xmlns="http://www.extreme.indiana.edu/namespaces/2004/01/gFac"
+            xmlns:lead="http://www.extreme.indiana.edu/lead">
+
+    <documentInfo>
+        <documentName targetNamespace="http://www.extreme.indiana.edu/lead">Rainier</documentName>
+    </documentInfo>
+
+    <hostName>rainier.extreme.indiana.edu</hostName>
+    <hostConfiguration>
+        <gFacPath>/u/hperera/svncode/sgfac2/target/dist-bin</gFacPath>
+        <java>
+            <name>java1.5</name>
+            <path>/l/jdk1.5/bin/java</path>
+        </java>
+        <portRange>
+            <start>12346</start>
+            <end>12446</end>
+        </portRange>
+        <tmpDir>/tmp</tmpDir>
+        <hostEnv>
+            <name>LOG_OPTS</name>
+            <value>-Dlog=:ALL</value>
+        </hostEnv>
+    </hostConfiguration>
+</HostDescription>

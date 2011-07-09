@@ -1,0 +1,146 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+*/
+
+package org.apache.airavata.services.gfac.axis2;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
+import org.apache.airavata.core.gfac.context.InvocationContext;
+import org.apache.airavata.core.gfac.context.SecurityContext;
+import org.apache.airavata.core.gfac.context.impl.ExecutionContextImpl;
+import org.apache.airavata.core.gfac.context.impl.ParameterContextImpl;
+import org.apache.airavata.core.gfac.factory.PropertyServiceFactory;
+import org.apache.airavata.core.gfac.notification.DummyNotification;
+import org.apache.airavata.core.gfac.services.GenericService;
+import org.apache.airavata.services.gfac.axis2.handlers.AmazonSecurityHandler;
+import org.apache.airavata.services.gfac.axis2.handlers.MyProxySecurityHandler;
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.description.AxisService;
+import org.apache.axis2.engine.AxisConfiguration;
+import org.apache.axis2.engine.Phase;
+import org.apache.axis2.engine.ServiceLifeCycle;
+
+public class GFacService implements ServiceLifeCycle {
+
+	public static final String SECURITY_CONTEXT = "security_context";
+
+	public static GenericService service;
+
+	public void startUp(ConfigurationContext configctx, AxisService service) {
+		AxisConfiguration config = null;
+		List<Phase> phases = null;
+
+		config = service.getAxisConfiguration();
+		phases = config.getInFlowPhases();
+
+		for (Iterator iterator = phases.iterator(); iterator.hasNext();) {
+			Phase phase = (Phase) iterator.next();
+			if ("Security".equals(phase.getPhaseName())) {
+				phase.addHandler(new MyProxySecurityHandler());
+				phase.addHandler(new AmazonSecurityHandler());
+				return;
+			}
+		}
+
+	}
+
+	public void shutDown(ConfigurationContext configctx, AxisService service) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public OMElement getWSDL(String serviceName) {
+		return null;
+	}
+
+	public OMElement invoke(String serviceName, OMElement input) {
+		
+		OMElement output = null;
+
+		try {
+			InvocationContext ct = new InvocationContext();
+			ct.setExecutionContext(new ExecutionContextImpl());
+
+			ct.getExecutionContext().setNotificationService(new DummyNotification());
+
+			MessageContext msgContext = MessageContext.getCurrentMessageContext();			
+			Map<String, Object> m = (Map)msgContext.getProperty(SECURITY_CONTEXT);
+			for (String key : m.keySet()) {
+				ct.addSecurityContext(key, (SecurityContext)m.get(key));
+			}
+			ct.setServiceName(serviceName);
+
+			// TODO define real parameter passing in SOAP body
+			//handle parameter
+			for (Iterator iterator = input.getChildren(); iterator.hasNext();) {
+				OMElement element = (OMElement) iterator.next();
+				String name = element.getQName().getLocalPart();
+				String type = element.getAttribute(new QName("type")).getAttributeValue();
+				String value = element.getText();
+				
+				org.apache.airavata.core.gfac.context.MessageContext x = new ParameterContextImpl();
+				x.addParameter(name, type, value);	
+				ct.addMessageContext("input", x);	
+			}
+
+			if (service == null) {
+				service = new PropertyServiceFactory().createService();
+			}
+			
+			//invoke service
+			service.execute(ct);
+			
+			
+			//TODO also define how output too
+			/*
+			 * Process Output
+			 */
+			OMFactory fac = OMAbstractFactory.getOMFactory();
+	        OMNamespace omNs = fac.createOMNamespace("http://ws.apache.org/axis2/xsd", "ns1");
+	        output = fac.createOMElement("output", omNs);	        
+		
+	        org.apache.airavata.core.gfac.context.MessageContext context = ct.getMessageContext("output");
+			for (Iterator<String> iterator = context.getParameterNames(); iterator.hasNext();) {
+				String name = iterator.next();
+				OMElement ele = fac.createOMElement(name, omNs);
+				ele.addAttribute("type", context.getParameterType(name), omNs);
+				ele.setText(context.getParameterValue(name).toString());
+				
+				//add output
+				output.addChild(ele);
+			}
+						
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+		return output;
+	}
+}
