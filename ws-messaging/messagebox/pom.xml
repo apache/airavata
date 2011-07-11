@@ -8,7 +8,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>Airavata</groupId>
-    <artifactId>MessageBox</artifactId>
+    <artifactId>messagebox</artifactId>
     <packaging>jar</packaging>
     <name>MessageBox</name>
     <url>http://incubator.apache.org/airavata/</url>

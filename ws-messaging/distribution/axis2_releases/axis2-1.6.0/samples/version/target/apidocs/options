@@ -1,0 +1,78 @@
+-classpath
+'/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/samples/version/target/classes:/opt/lib/java/build/m2_repo/org/apache/geronimo/specs/geronimo-javamail_1.4_spec/1.6/geronimo-javamail_1.4_spec-1.6.jar:/opt/lib/java/build/m2_repo/org/apache/geronimo/specs/geronimo-activation_1.1_spec/1.0.2/geronimo-activation_1.1_spec-1.0.2.jar:/opt/lib/java/build/m2_repo/javax/ws/rs/jsr311-api/1.0/jsr311-api-1.0.jar:/opt/lib/java/build/m2_repo/org/apache/ws/commons/axiom/axiom-api/1.2.11/axiom-api-1.2.11.jar:/opt/lib/java/build/m2_repo/org/apache/geronimo/specs/geronimo-jta_1.1_spec/1.1/geronimo-jta_1.1_spec-1.1.jar:/opt/lib/java/build/m2_repo/org/apache/ws/commons/schema/XmlSchema/1.4.7/XmlSchema-1.4.7.jar:/opt/lib/java/build/m2_repo/org/apache/ws/commons/axiom/axiom-impl/1.2.11/axiom-impl-1.2.11.jar:/opt/lib/java/build/m2_repo/javax/servlet/servlet-api/2.3/servlet-api-2.3.jar:/opt/lib/java/build/m2_repo/jaxen/jaxen/1.1.1/jaxen-1.1.1.jar:/opt/lib/java/build/m2_repo/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar:/opt/lib/java/build/m2_repo/org/apache/woden/woden-impl-dom/1.0M9/woden-impl-dom-1.0M9.jar:/opt/lib/java/build/m2_repo/org/apache/woden/woden-api/1.0M9/woden-api-1.0M9.jar:/opt/lib/java/build/m2_repo/org/apache/neethi/neethi/2.0.5/neethi-2.0.5.jar:/opt/lib/java/build/m2_repo/org/apache/geronimo/specs/geronimo-ws-metadata_2.0_spec/1.1.2/geronimo-ws-metadata_2.0_spec-1.1.2.jar:/opt/lib/java/build/m2_repo/org/apache/woden/woden-impl-commons/1.0M9/woden-impl-commons-1.0M9.jar:/opt/lib/java/build/m2_repo/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar:/opt/lib/java/build/m2_repo/commons-fileupload/commons-fileupload/1.2/commons-fileupload-1.2.jar:/opt/lib/java/build/m2_repo/org/codehaus/woodstox/wstx-asl/3.2.9/wstx-asl-3.2.9.jar:/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/kernel/target/axis2-kernel-1.6.0.jar:/opt/lib/java/build/m2_repo/wsdl4j/wsdl4j/1.6.2/wsdl4j-1.6.2.jar:/opt/lib/java/build/m2_repo/commons-codec/commons-codec/1.3/commons-codec-1.3.jar:/opt/lib/java/build/m2_repo/org/apache/geronimo/specs/geronimo-stax-api_1.0_spec/1.0.1/geronimo-stax-api_1.0_spec-1.0.1.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/samples/version/src'
+-author
+-bottom
+'Copyright &#169; 2004-2011 <a href="http://www.apache.org/">The Apache Software Foundation</a>. All Rights Reserved.'
+-charset
+'UTF-8'
+-d
+'/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/samples/version/target/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'Apache Axis2 - Version Service 1.6.0 API'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-kernel/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/kernel/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-adb/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/adb/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-transport-local/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/transport/local/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-transport-http/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/transport/http/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-codegen/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/codegen/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-adb-codegen/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/adb-codegen/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-mar-maven-plugin/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/tool/axis2-mar-maven-plugin/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/addressing/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/addressing/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-java2wsdl/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/java2wsdl/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-repo-maven-plugin/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/tool/axis2-repo-maven-plugin/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-fastinfoset/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/fastinfoset/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-clustering/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/clustering/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/scripting/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/scripting/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-jaxbri/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/jaxbri/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-saaj/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/saaj/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-metadata/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/metadata/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-jaxws/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/jaxws/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-testutils/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/testutils/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-jibx/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/jibx/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-json/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/json/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-mtompolicy/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/mtompolicy/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-spring/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/spring/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/org.apache.axis2.osgi/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/osgi/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-xmlbeans/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/xmlbeans/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/mex/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/mex/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/mtompolicy/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/mtompolicy-mar/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/ping/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/ping/target/apidocs'
+-linkoffline
+'http://axis.apache.org/axis2/java/core/axis2-aar-maven-plugin/apidocs' '/opt/dev/code/apache/axis2/releases/1.6/code/target/checkout/modules/tool/axis2-aar-maven-plugin/target/apidocs'
+-use
+-version
+-windowtitle
+'Apache Axis2 - Version Service 1.6.0 API'

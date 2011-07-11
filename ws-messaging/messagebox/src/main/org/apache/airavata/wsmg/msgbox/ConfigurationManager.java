@@ -28,7 +28,7 @@ public class ConfigurationManager {
 
     public ConfigurationManager(String configFileName) {
         try {
-            configurations.load(this.getClass().getClassLoader().getResourceAsStream("/" + configFileName));
+            configurations.load(this.getClass().getClassLoader().getResourceAsStream(configFileName));
 
         } catch (Exception e) {
             throw new RuntimeException("unable to load configurations", e);

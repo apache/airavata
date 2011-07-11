@@ -210,7 +210,8 @@
                 <module>messagebroker</module>
                 <module>messenger</module>
                 <module>workflow-tracking</module>
-            </modules>
+            	<module>distribution</module>
+	    </modules>
         </profile>
     </profiles>
     <properties>
@@ -218,7 +219,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <airavata.version>0.0.1-SNAPSHOT</airavata.version>
         <release.version>1.1.1</release.version>
-        <axis2.version>1.5</axis2.version>
+        <axis2.version>1.6.0</axis2.version>
     </properties>
 
 </project>

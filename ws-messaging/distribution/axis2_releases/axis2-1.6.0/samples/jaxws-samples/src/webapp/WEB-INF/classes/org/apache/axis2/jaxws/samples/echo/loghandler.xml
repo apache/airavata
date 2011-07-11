@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<handler-chains xmlns="http://java.sun.com/xml/ns/javaee">
+	<handler-chain>
+         <service-name-pattern xmlns:ns1="http://org/apache/axis2/jaxws/samples/echo/">ns1:*</service-name-pattern>
+         <handler>
+			<handler-class>org.apache.axis2.jaxws.samples.handler.LoggingSOAPHandler</handler-class>
+		</handler>
+	</handler-chain>
+</handler-chains>
