@@ -20,17 +20,6 @@
             <url>scp://rainier.extreme.indiana.edu/l/extreme/java/repository/</url>
         </repository>
     </distributionManagement>
-    <repositories>
-        <repository>
-            <id>m2-snapshot-repository</id>
-            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
-            <releases>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

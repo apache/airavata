@@ -13,9 +13,7 @@
     <url>http://incubator.apache.org/airavata/</url>
     <packaging>jar</packaging>
     <build>
-
         <plugins>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -28,7 +26,6 @@
                     </archive>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.axis2</groupId>
                 <artifactId>axis2-aar-maven-plugin</artifactId>
@@ -68,32 +65,6 @@
             </plugin>
         </plugins>
     </build>
-    <repositories>
-        <repository>
-            <id>ibiblio</id>
-            <name>ibiblio Repository</name>
-            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2
-            </url>
-        </repository>
-        <repository>
-            <id>ogce.m2.all</id>
-            <name>ogce.m2.all</name>
-            <url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
-        </repository>
-        <repository>
-            <id>maven 2 java.net</id>
-            <name>2 java.net Maven Repository</name>
-            <url>http://download.java.net/maven/2/
-            </url>
-            <layout>default</layout>
-        </repository>
-        <repository>
-            <id>apache-repo</id>
-            <name>Apache Yfilter repo</name>
-            <url>http://people.apache.org/~lahiru/maven-repo</url>
-        </repository>
-
-    </repositories>
 
     <dependencies>
         <dependency>

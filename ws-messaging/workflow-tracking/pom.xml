@@ -72,29 +72,6 @@
             </plugin>
         </plugins>
     </build>
-    <repositories>
-        <repository>
-            <id>ibiblio mvn2</id>
-            <name>ibiblio Repository m2</name>
-            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2
-            </url>
-        </repository>
-        <repository>
-            <id>ibiblio mvn 1</id>
-            <name>ibiblio Repository</name>
-            <url>http://mirrors.ibiblio.org/pub/mirrors/maven
-            </url>
-        </repository>
-
-        <repository>
-            <id>java.net mvn2</id>
-            <name>java repo maven 2</name>
-            <url>http://download.java.net/maven/2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
     <dependencies>
         <dependency>
             <groupId>org.apache.axis2</groupId>

@@ -14,6 +14,33 @@
             <name>ogce.m2.all</name>
             <url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
         </repository>
+        <repository>
+            <id>m2-snapshot-repository</id>
+            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+            <releases>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>ibiblio</id>
+            <name>ibiblio Repository</name>
+            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2
+            </url>
+        </repository>
+        <repository>
+            <id>maven 2 java.net</id>
+            <name>2 java.net Maven Repository</name>
+            <url>http://download.java.net/maven/2/
+            </url>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <id>apache-repo</id>
+            <name>Apache Yfilter repo</name>
+            <url>http://people.apache.org/~lahiru/maven-repo</url>
+        </repository>
     </repositories>
     <dependencyManagement>
         <dependencies>
