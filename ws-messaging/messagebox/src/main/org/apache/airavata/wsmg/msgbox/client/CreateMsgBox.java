@@ -47,7 +47,7 @@ public class CreateMsgBox {
     public CreateMsgBox(String msgBoxLocation, long timeout) {
         this.msgBoxEndPointReference = msgBoxLocation;
         responseEl = OMAbstractFactory.getOMFactory().createOMElement(
-                new QName("http://www.extreme.indiana.edu/xgws/msgbox/2004/", "MsgBoxId"));
+                new QName("http://org.apache.airavata/xgws/msgbox/2004/", "MsgBoxId"));
 
         timeoutInMilliSeconds = timeout;
     }

@@ -172,7 +172,7 @@ public class TestUtilServer {
                 "http://schemas.xmlsoap.org/ws/2004/08/eventing/UnsubscribeResponse");
         createOperation(eventingService, "publish",
                 new org.apache.airavata.wsmg.broker.wseventing.WSEventingPublishMsgReceiver(),
-                "http://www.extreme.indiana.edu/WseNotification", null);
+                "http://org.apache.airavata/WseNotification", null);
 
         return eventingService;
     }

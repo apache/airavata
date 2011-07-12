@@ -34,8 +34,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
 
 import wsmg.samples.util.ConfigKeys;
-import edu.indiana.extreme.www.xgws.msgbox.client.MsgBoxClient;
-import edu.indiana.extreme.www.xgws.msgbox.util.MsgBoxUtils;
+import org.apache.airavata.wsmg.msgbox.client.MsgBoxClient;
+import org.apache.airavata.wsmg.msgbox.util.MsgBoxUtils;
 
 public class SimpleMsgBoxExec {
 

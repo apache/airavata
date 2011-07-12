@@ -21,6 +21,7 @@
 
 package org.apache.airavata.wsmg.msgbox;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -57,7 +58,7 @@ public class MsgBoxServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
         overrideAddressingPhaseHander(configurationcontext);
 
         // Load the configuration file from the classpath
-        ConfigurationManager confmanager = new ConfigurationManager("msgBox.properties");
+        ConfigurationManager confmanager = new ConfigurationManager("conf" + File.separator + "msgBox.properties");
         configurationcontext.setProperty(MsgBoxCommonConstants.CONF_MANAGER, confmanager);
         initDatabase(configurationcontext, confmanager);
         configurationcontext.setProperty(MsgBoxCommonConstants.INIT_MSG_BOX_SKELETON_TRUE, false);

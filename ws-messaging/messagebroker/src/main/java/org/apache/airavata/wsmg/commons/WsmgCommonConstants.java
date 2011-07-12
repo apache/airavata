@@ -63,7 +63,7 @@ public class WsmgCommonConstants {
 
     public final static String WSN_ActionPrefix = WSN1_2_ActionPrefix;
 
-    public final static String WSMG_PUBLISH_SOAP_ACTION = "http://www.extreme.indiana.edu/WseNotification";
+    public final static String WSMG_PUBLISH_SOAP_ACTION = "http://org.apache.airavata/WseNotification";
     /**
      * Constants to switch between different web service Stacks and Transports
      * 

@@ -72,7 +72,7 @@
 
 		<fileSet>
 			<directory>resources</directory>
-			<outputDirectory>standalone-server</outputDirectory>
+			<outputDirectory>standalone-server/conf</outputDirectory>
 			<includes>
 				<include>*properties*</include>
 			</includes>

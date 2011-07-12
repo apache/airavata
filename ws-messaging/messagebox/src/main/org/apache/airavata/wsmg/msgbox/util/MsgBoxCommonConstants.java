@@ -30,7 +30,7 @@ public class MsgBoxCommonConstants {
     public static final String CONF_MANAGER = "conf.manager";
     public static final String INIT_MSG_BOX_SKELETON_TRUE = "init.msgbox.skeleton";
     public static final String AXIS_MODULE_NAME_ADDRESSING = "addressing";
-    public static final QName MSG_BOXID_QNAME = new QName("http://www.extreme.indiana.edu/xgws/msgbox/2004/",
+    public static final QName MSG_BOXID_QNAME = new QName("http://org.apache.airavata/xgws/msgbox/2004/",
             "MsgBoxId");
 
 }

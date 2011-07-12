@@ -66,19 +66,19 @@ public class ProcessingContext {
     protected String soapAction;
     protected String messageID;
     protected String localMsgBoxAddr;
-    public static final QName STOREMSG_QNAME = new QName("http://www.extreme.indiana.edu/xgws/msgbox/2004/",
+    public static final QName STOREMSG_QNAME = new QName("http://org.apache.airavata/xgws/msgbox/2004/",
             "storeMessages", "msg");
-    public static final QName DESTROYMSG_QNAME = new QName("http://www.extreme.indiana.edu/xgws/msgbox/2004/",
+    public static final QName DESTROYMSG_QNAME = new QName("http://org.apache.airavata/xgws/msgbox/2004/",
             "destroyMsgBox", "msg");
-    public static final QName TAKEMSGS_QNAME = new QName("http://www.extreme.indiana.edu/xgws/msgbox/2004/",
+    public static final QName TAKEMSGS_QNAME = new QName("http://org.apache.airavata/xgws/msgbox/2004/",
             "takeMessages", "ns1");
-    public static final QName CREATEMSG_BOX = new QName("http://www.extreme.indiana.edu/xgws/msgbox/2004/",
+    public static final QName CREATEMSG_BOX = new QName("http://org.apache.airavata/xgws/msgbox/2004/",
             "createMsgBox", "msg");
-    public static final QName STOREMSG_RESP_QNAME = new QName("http://www.extreme.indiana.edu/xgws/msgbox/2004/",
+    public static final QName STOREMSG_RESP_QNAME = new QName("http://org.apache.airavata/xgws/msgbox/2004/",
             "storeMessagesResponse", "msg");
-    public static final QName DESTROY_MSGBOX_RESP_QNAME = new QName("http://www.extreme.indiana.edu/xgws/msgbox/2004/",
+    public static final QName DESTROY_MSGBOX_RESP_QNAME = new QName("http://org.apache.airavata/xgws/msgbox/2004/",
             "destroyMsgBoxResponse", "ns1");
-    public static final QName CREATE_MSGBOX_RESP_QNAME = new QName("http://www.extreme.indiana.edu/xgws/msgbox/2004/",
+    public static final QName CREATE_MSGBOX_RESP_QNAME = new QName("http://org.apache.airavata/xgws/msgbox/2004/",
             "createMsgBoxResponse", "msg");
 
 }

@@ -133,17 +133,17 @@ public class InMemoryMessageBoxServer {
         axisService.setServiceLifeCycle(new MsgBoxServiceLifeCycle());
 
         createOperation(axisService, "storeMessages", new MsgBoxServiceMessageReceiverInOut(),
-                "http://www.extreme.indiana.edu/xgws/msgbox/2004/storeMessages",
-                "http://www.extreme.indiana.edu/xgws/msgbox/2004/MsgBoxPT/storeMessagesResponse");
+                "http://org.apache.airavata/xgws/msgbox/2004/storeMessages",
+                "http://org.apache.airavata/xgws/msgbox/2004/MsgBoxPT/storeMessagesResponse");
         createOperation(axisService, "destroyMsgBox", new MsgBoxServiceMessageReceiverInOut(),
-                "http://www.extreme.indiana.edu/xgws/msgbox/2004/destroyMsgBox",
-                "http://www.extreme.indiana.edu/xgws/msgbox/2004/MsgBoxPT/destroyMsgBoxResponse");
+                "http://org.apache.airavata/xgws/msgbox/2004/destroyMsgBox",
+                "http://org.apache.airavata/xgws/msgbox/2004/MsgBoxPT/destroyMsgBoxResponse");
         createOperation(axisService, "takeMessages", new MsgBoxServiceMessageReceiverInOut(),
-                "http://www.extreme.indiana.edu/xgws/msgbox/2004/takeMessages",
-                "http://www.extreme.indiana.edu/xgws/msgbox/2004/MsgBoxPT/takeMessagesResponse");
+                "http://org.apache.airavata/xgws/msgbox/2004/takeMessages",
+                "http://org.apache.airavata/xgws/msgbox/2004/MsgBoxPT/takeMessagesResponse");
         createOperation(axisService, "createMsgBox", new MsgBoxServiceMessageReceiverInOut(),
-                "http://www.extreme.indiana.edu/xgws/msgbox/2004/createMsgBox",
-                "http://www.extreme.indiana.edu/xgws/msgbox/2004/MsgBoxPT/createMsgBoxResponse");
+                "http://org.apache.airavata/xgws/msgbox/2004/createMsgBox",
+                "http://org.apache.airavata/xgws/msgbox/2004/MsgBoxPT/createMsgBoxResponse");
         axisService.addParameter("configuration.file.name", "msgBox.properties");
         axisService.addParameter("ServiceClass", "edu.indiana.extreme.www.xgws.msgbox.MsgBoxServiceSkeleton");
 

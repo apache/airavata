@@ -34,7 +34,7 @@ import org.apache.axis2.util.JavaUtils;
 import org.apache.log4j.Logger;
 
 public class StoreMessageHandler extends AddressingBasedDispatcher {
-    private static final String WSMG_MSGSTORE_SOAP_ACTION = "http://www.extreme.indiana.edu/xgws/msgbox/2004/storeMessages";
+    private static final String WSMG_MSGSTORE_SOAP_ACTION = "http://org.apache.airavata/xgws/msgbox/2004/storeMessages";
     private static final String ADDRESSING_VALIDATE_ACTION = "addressing.validateAction";
     Logger logger = Logger.getLogger(StoreMessageHandler.class);
     private Phase addressingPhase = null;

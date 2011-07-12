@@ -73,7 +73,7 @@
 		<operation name="publish">
 			<messageReceiver
 				class="org.apache.airavata.wsmg.broker.wseventing.WSEventingPublishMsgReceiver" />
-			<actionMapping>http://www.extreme.indiana.edu/WseNotification
+			<actionMapping>http://org.apache.airavata/WseNotification
 			</actionMapping>
 		</operation>
 

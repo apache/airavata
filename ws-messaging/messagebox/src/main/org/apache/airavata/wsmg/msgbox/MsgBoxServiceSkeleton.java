@@ -68,7 +68,7 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
     public OMElement createMsgBox() throws Exception {
         OMElement dd = factory.createOMElement(ProcessingContext.CREATE_MSGBOX_RESP_QNAME);
         String createdMsgBoxId = "";
-        OMNamespace omNs = factory.createOMNamespace("http://www.extreme.indiana.edu/xgws/msgbox/2004/", "ns1");
+        OMNamespace omNs = factory.createOMNamespace("http://org.apache.airavata/xgws/msgbox/2004/", "ns1");
         OMElement url = factory.createOMElement("msgboxid", omNs);
         try {
             createdMsgBoxId = storage.createMsgBox();

@@ -30,5 +30,5 @@ public class MsgBoxNameSpConsts {
     private final static OMFactory factory = OMAbstractFactory.getOMFactory();
 
     public final static OMNamespace MSG_BOX = factory.createOMNamespace(
-            "http://www.extreme.indiana.edu/xgws/msgbox/2004", "msg");
+            "http://org.apache.airavata/xgws/msgbox/2004", "msg");
 }

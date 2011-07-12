@@ -173,7 +173,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
             if (msgBoxAddr.getAllReferenceParameters() == null)
                 throw new MsgBrokerClientException("Invalid Message Box EPR, no reference parameters found");
             String msgBoxId = msgBoxAddr.getAllReferenceParameters()
-                    .get(new QName("http://www.extreme.indiana.edu/xgws/msgbox/2004/", "MsgBoxAddr")).getText();
+                    .get(new QName("http://org.apache.airavata/xgws/msgbox/2004/", "MsgBoxAddr")).getText();
             if (msgBoxId == null)
                 throw new MsgBrokerClientException("Invalid Message Box EPR, reference parameter MsgBoxAddr is missing");
             String format = msgBoxEventSink.endsWith("/") ? "%sclientid/%s" : "%s/clientid/%s";

@@ -23,7 +23,7 @@ package org.apache.airavata.wsmg.commons;
 
 public interface XMLConstants {
 
-    public static final String WSNT_PUBLISH_ACTION = "http://www.extreme.indiana.edu/WseNotification";
+    public static final String WSNT_PUBLISH_ACTION = "http://org.apache.airavata/WseNotification";
 
     public static final String XMLNS_WIDGET = "widget";
 

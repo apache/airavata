@@ -269,7 +269,7 @@ public class SimpleWorkflowExecution extends TestCase {
             success.body = XmlObject.Factory
                     .parse("<S:Body "
                             + "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:wsa=\"http://www.w3.org/2005/08/addressing\" xmlns:wsp=\"http://schemas.xmlsoap.org/ws/2002/12/policy\" xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\">"
-                            + "<gfac:Run_OutputParams xmlns:gfac=\"http://www.extreme.indiana.edu/namespaces/2004/01/gFac\">"
+                            + "<gfac:Run_OutputParams xmlns:gfac=\"http://org.apache.airavata/namespaces/2004/01/gFac\">"
                             + "<gfac:WRF_Ininitialization_Files><value>gsiftp://grid-hg.ncsa.teragrid.org//scratch/hperera/Wed_Aug_02_15_10_23_EST_2006_ARPS2WRF/outputData/namelist.input</value><value>gsiftp://grid-hg.ncsa.teragrid.org//scratch/hperera/Wed_Aug_02_15_10_23_EST_2006_ARPS2WRF/outputData/wrfbdy_d01</value><value>gsiftp://grid-hg.ncsa.teragrid.org//scratch/hperera/Wed_Aug_02_15_10_23_EST_2006_ARPS2WRF/outputData/wrfinput_d01</value></gfac:WRF_Ininitialization_Files>"
                             + "</gfac:Run_OutputParams>" + "</S:Body>");
 

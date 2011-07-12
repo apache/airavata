@@ -217,14 +217,14 @@ public class SimpleTest {
  * 3) Any documentation included with all redistributions must include the following acknowledgement:
  * 
  * "This product includes software developed by the Indiana University Extreme! Lab. For further information please
- * visit http://www.extreme.indiana.edu/"
+ * visit http://org.apache.airavata/"
  * 
  * Alternatively, this acknowledgment may appear in the software itself, and wherever such third-party acknowledgments
  * normally appear.
  * 
  * 4) The name "Indiana University" or "Indiana University Extreme! Lab" shall not be used to endorse or promote
  * products derived from this software without prior written permission from Indiana University. For written permission,
- * please contact http://www.extreme.indiana.edu/.
+ * please contact http://org.apache.airavata/.
  * 
  * 5) Products derived from this software may not use "Indiana University" name nor may "Indiana University" appear in
  * their name, without prior written permission of the Indiana University.

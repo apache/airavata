@@ -70,7 +70,7 @@ public class MsgboxHandler {
         String clientId = toAddress.substring(biginIndex + "clientid".length() + 1);
 
         if ((msgBoxAddr.getAllReferenceParameters() == null || msgBoxAddr.getAllReferenceParameters()
-                .get(new QName("http://www.extreme.indiana.edu/xgws/msgbox/2004/", "MsgBoxAddr")).getText() == null)
+                .get(new QName("http://org.apache.airavata/xgws/msgbox/2004/", "MsgBoxAddr")).getText() == null)
                 && biginIndex == -1)
             throw new MsgBrokerClientException("Invalid Message Box Address");
         this.msgBoxUser = new MsgBoxClient();
@@ -91,7 +91,7 @@ public class MsgboxHandler {
             if (msgBoxEpr.getAllReferenceParameters() == null)
                 throw new MsgBrokerClientException("Invalid Message Box EPR, no reference parameters found");
             String msgBoxId = msgBoxEpr.getAllReferenceParameters()
-                    .get(new QName("http://www.extreme.indiana.edu/xgws/msgbox/2004/", "MsgBoxAddr")).getText();
+                    .get(new QName("http://org.apache.airavata/xgws/msgbox/2004/", "MsgBoxAddr")).getText();
             if (msgBoxId == null)
                 throw new MsgBrokerClientException("Invalid Message Box EPR, reference parameter MsgBoxAddr is missing");
             String format = msgBoxEventSink.endsWith("/") ? "%sclientid/%s" : "%s/clientid/%s";

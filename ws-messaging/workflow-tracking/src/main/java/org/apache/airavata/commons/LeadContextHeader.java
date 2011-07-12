@@ -283,7 +283,7 @@ public class LeadContextHeader {
 
     private static final org.apache.log4j.Logger logger = Logger.getLogger(LeadContextHeader.class);
     private static final OMFactory factory;
-    public static final String GFAC_NAMESPACE = "http://www.extreme.indiana.edu/namespaces/2004/01/gFac";
+    public static final String GFAC_NAMESPACE = "http://org.apache.airavata/namespaces/2004/01/gFac";
     public static final QName TYPE;
     public static final QName MAPPINGLISTTYPE;
     public static final OMNamespace NS;

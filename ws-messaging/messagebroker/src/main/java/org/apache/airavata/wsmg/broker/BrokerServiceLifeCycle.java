@@ -21,6 +21,7 @@
 
 package org.apache.airavata.wsmg.broker;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class BrokerServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
         WsmgConfigurationContext wsmgConfig = new WsmgConfigurationContext();
         configContext.setProperty(WsmgCommonConstants.BROKER_WSMGCONFIG, wsmgConfig);
 
-        ConfigurationManager configMan = new ConfigurationManager(WsmgCommonConstants.BROKER_CONFIGURATION_FILE_NAME);
+        ConfigurationManager configMan = new ConfigurationManager("conf" + File.separator + WsmgCommonConstants.BROKER_CONFIGURATION_FILE_NAME);
 
         wsmgConfig.setConfigurationManager(configMan);
 
