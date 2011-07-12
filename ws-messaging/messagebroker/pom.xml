@@ -106,7 +106,7 @@
         </dependency>
         <dependency>
             <groupId>Airavata</groupId>
-            <artifactId>MessageBox</artifactId>
+            <artifactId>messagebox</artifactId>
             <version>${airavata.version}</version>
         </dependency>
 

@@ -74,7 +74,7 @@
 
         <dependency>
             <groupId>Airavata</groupId>
-            <artifactId>MessageBroker</artifactId>
+            <artifactId>messagebroker</artifactId>
             <version>${airavata.version}</version>
             <type>jar</type>
             <scope>compile</scope>
