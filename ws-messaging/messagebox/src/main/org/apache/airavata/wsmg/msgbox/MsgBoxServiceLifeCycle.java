@@ -30,8 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.airavata.wsmg.msgbox.Storage.DB_Pool.DatabaseStorageImpl;
-import org.apache.airavata.wsmg.msgbox.Storage.DB_Pool.JdbcStorage;
+import org.apache.airavata.wsmg.msgbox.Storage.dbpool.DatabaseStorageImpl;
+import org.apache.airavata.wsmg.msgbox.Storage.dbpool.JdbcStorage;
 import org.apache.airavata.wsmg.msgbox.Storage.memory.InMemoryImpl;
 import org.apache.airavata.wsmg.msgbox.util.ConfigKeys;
 import org.apache.airavata.wsmg.msgbox.util.MsgBoxCommonConstants;

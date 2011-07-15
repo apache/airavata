@@ -19,11 +19,8 @@
  *
  */
 
-package org.apache.airavata.wsmg.msgbox.Storage.DB_Pool;
+package org.apache.airavata.wsmg.msgbox.Storage.dbpool;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

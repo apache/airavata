@@ -18,7 +18,7 @@
  * under the License.
  *
  */
-package org.apache.airavata.wsmg.msgbox.Storage.DB_Pool;
+package org.apache.airavata.wsmg.msgbox.Storage.dbpool;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

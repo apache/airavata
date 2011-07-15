@@ -42,20 +42,18 @@ import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionEntry;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
 import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.config.ConfigurationManager;
 import org.apache.airavata.wsmg.config.WSMGParameter;
-import org.apache.airavata.wsmg.msgbox.Storage.DB_Pool.DatabaseCreator;
+import org.apache.airavata.wsmg.msgbox.Storage.dbpool.DatabaseCreator;
 import org.apache.airavata.wsmg.util.Counter;
 import org.apache.airavata.wsmg.util.TimerThread;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
 import org.apache.log4j.Logger;
-import org.apache.airavata.wsmg.msgbox.Storage.DB_Pool.ConnectionPool;
 
 public class WsmgPersistantStorage implements WsmgStorage {
     org.apache.log4j.Logger logger = Logger.getLogger(WsmgPersistantStorage.class);

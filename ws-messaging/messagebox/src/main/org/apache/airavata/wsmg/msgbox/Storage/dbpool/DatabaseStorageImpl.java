@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.wsmg.msgbox.Storage.DB_Pool;
+package org.apache.airavata.wsmg.msgbox.Storage.dbpool;
 
 import java.io.IOException;
 import java.sql.SQLException;
