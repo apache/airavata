@@ -57,8 +57,9 @@ public class JdbcStorage {
             DatabaseCreator dbCreator = new DatabaseCreator(connectionPool);
             if (!dbCreator.isDatabaseStructureCreated("SELECT * from subscription")) {
                 dbCreator.createMsgBrokerDatabase();
+                log.info("New Database created for Message Broker");
             } else {
-                log.error("Database already created !");
+                log.info("Database already created for Message Broker!");
             }
         } catch (Exception e) {
             // TODO Auto-generated catch block

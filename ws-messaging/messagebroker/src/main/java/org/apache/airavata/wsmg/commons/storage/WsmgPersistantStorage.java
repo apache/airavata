@@ -161,7 +161,6 @@ public class WsmgPersistantStorage implements WsmgStorage {
     }
 
     public int insert(SubscriptionState subscription) {
-
         PreparedStatement stmt = null;
         String address = subscription.getConsumerReference().getAddress();
         Map<QName, OMElement> referenceParametersMap = subscription.getConsumerReference().getAllReferenceParameters();
@@ -207,12 +206,14 @@ public class WsmgPersistantStorage implements WsmgStorage {
             stmt = connection.prepareStatement(sql);
 
             stmt.setString(1, subscription.getId());
-            stmt.setString(2, subscription.getSubscribeXml());
+            stmt.setBinaryStream(2, new ByteArrayInputStream(subscription.getSubscribeXml().getBytes()),
+                    subscription.getSubscribeXml().getBytes().length);
             stmt.setInt(3, policyValue);
             stmt.setString(4, subscription.getLocalTopic());
             stmt.setString(5, subscription.getXpathString());
             stmt.setString(6, address);
-            stmt.setString(7, consumerReferenceParameters);
+            stmt.setBinaryStream(7, new ByteArrayInputStream(consumerReferenceParameters.getBytes()),
+                    consumerReferenceParameters.getBytes().length);
             stmt.setTimestamp(8, now);
             result = db.executeUpdate(stmt);
             storeToDBCounter.addCounter();
@@ -234,7 +235,6 @@ public class WsmgPersistantStorage implements WsmgStorage {
         return result;
 
     }
-
     /*
      * (non-Javadoc)
      * 
@@ -569,18 +569,20 @@ public class WsmgPersistantStorage implements WsmgStorage {
             bError = false;
             stmt.clearBatch();
             int totalStatement = 0;
-            // add SQL statements
-            stmt.addBatch("lock tables disQ write, MaxIDTable write, MinIDTable write;");
-            // System.out.println("locked tables (maxId and minId) 5");
-            stmt.addBatch("Delete from disQ;");
-            stmt.addBatch("Delete from MaxIDTable;");
-            stmt.addBatch("Delete from MinIDTable;");
             String databaseType = "";
             try {
                 databaseType = DatabaseCreator.getDatabaseType(conn);
             } catch (Exception e) {
                 logger.error("Error evaluating database type");
             }
+            // add SQL statements
+            if("mysql".equals(databaseType)){
+                stmt.addBatch("lock tables disQ write, MaxIDTable write, MinIDTable write;");
+            }
+            // System.out.println("locked tables (maxId and minId) 5");
+            stmt.addBatch("Delete from disQ;");
+            stmt.addBatch("Delete from MaxIDTable;");
+            stmt.addBatch("Delete from MinIDTable;");
 
             if ("mysql".equals(databaseType)) {
                 stmt.addBatch("unlock tables;");
@@ -712,13 +714,13 @@ public class WsmgPersistantStorage implements WsmgStorage {
         }
 
         if ("derby".equals(databaseType)) {
-            sql = "lock table " + QueueContants.TABLE_NAME_MAXID + " IN SHARE MODE";
-            stmt = connection.prepareStatement(sql);
-            stmt.executeUpdate();
-            sql = "lock table " + QueueContants.TABLE_NAME_MINID + " IN SHARE MODE";
-            connection.prepareStatement(sql);
-            stmt.executeUpdate();
-            stmt.close();
+//            sql = "lock table " + QueueContants.TABLE_NAME_MAXID + " IN SHARE MODE";
+//            stmt = connection.prepareStatement(sql);
+//            stmt.executeUpdate();
+//            sql = "lock table " + QueueContants.TABLE_NAME_MINID + " IN SHARE MODE";
+//            connection.prepareStatement(sql);
+//            stmt.executeUpdate();
+//            stmt.close();
         } else if ("mysql".equals(databaseType)) {
             sql = "lock tables " + QueueContants.TABLE_NAME_MAXID + " write" + ","
                     + QueueContants.TABLE_NAME_MINID + " write";

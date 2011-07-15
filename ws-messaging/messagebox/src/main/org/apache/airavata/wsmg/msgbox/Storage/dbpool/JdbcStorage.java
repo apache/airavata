@@ -79,8 +79,9 @@ public class JdbcStorage {
                 DatabaseCreator dbCreator = new DatabaseCreator(connectionPool);
                 if(!dbCreator.isDatabaseStructureCreated("SELECT * from msgBoxes")){
                     dbCreator.createMsgBoxDatabase();
+                    log.info("New Database created for Message Box");
                 }else{
-                    log.error("Database already created !");
+                    log.info("Database already created for Message Box !");
                 }
 
 //            }

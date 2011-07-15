@@ -24,7 +24,7 @@ package org.apache.airavata.wsmg.samples.wse;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
-
+import java.io.*;
 import org.apache.airavata.wsmg.client.MsgBrokerClientException;
 import org.apache.airavata.wsmg.client.WseClientAPI;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
