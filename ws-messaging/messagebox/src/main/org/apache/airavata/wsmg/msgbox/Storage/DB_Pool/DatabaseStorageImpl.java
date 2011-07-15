@@ -31,6 +31,10 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
 import org.apache.axiom.om.OMElement;
 
+/**
+ * Database message Storage Implementation, if msgBox.properties configured to use database this will set as the storage
+ * for MsgBoxSerivceSkeleton
+ */
 public class DatabaseStorageImpl implements MsgBoxStorage {
 
     // private MessageBoxDB messageBoxDB;

@@ -42,17 +42,20 @@ import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionEntry;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
 import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.config.ConfigurationManager;
 import org.apache.airavata.wsmg.config.WSMGParameter;
+import org.apache.airavata.wsmg.msgbox.Storage.DB_Pool.DatabaseCreator;
 import org.apache.airavata.wsmg.util.Counter;
 import org.apache.airavata.wsmg.util.TimerThread;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
 import org.apache.log4j.Logger;
+import org.apache.airavata.wsmg.msgbox.Storage.DB_Pool.ConnectionPool;
 
 public class WsmgPersistantStorage implements WsmgStorage {
     org.apache.log4j.Logger logger = Logger.getLogger(WsmgPersistantStorage.class);
@@ -83,7 +86,6 @@ public class WsmgPersistantStorage implements WsmgStorage {
         // Lets connect to the database and create tables if they are not
         // already there.
 
-        initDatabaseTables(db);
 
         // inject dbname to sql statement.
 
@@ -136,12 +138,12 @@ public class WsmgPersistantStorage implements WsmgStorage {
 
                 // Reposition at the beginning of the ResultSet to take up
                 // rs.next() call.
-                rs.beforeFirst();
+//                rs.beforeFirst();
 
                 while (rs.next()) {
                     SubscriptionEntry subscriptionEntry = new SubscriptionEntry();
                     subscriptionEntry.setSubscriptionId(rs.getString("SubscriptionId"));
-                    subscriptionEntry.setSubscribeXml(rs.getString("xml"));
+                    subscriptionEntry.setSubscribeXml(rs.getString("content"));
 
                     /*
                      * int policyValue = rs.getInt("wsrm"); subscriptionEntry[i] .setWsrmPolicy(policyValue ==
@@ -337,10 +339,8 @@ public class WsmgPersistantStorage implements WsmgStorage {
         try {
             connection = db.connect();
 
-            PreparedStatement stmt;
-            stmt = connection.prepareStatement("lock tables " + QueueContants.TABLE_NAME_MAXID + " write");
-            stmt.executeQuery();
-            stmt.close();
+            PreparedStatement stmt = null;
+            lockTables(connection,stmt);
             // System.out.println("locked maxId table");
 
             stmt = connection.prepareStatement(QueueContants.SQL_MAX_ID_SEPERATE_TABLE);
@@ -363,9 +363,7 @@ public class WsmgPersistantStorage implements WsmgStorage {
                 stmt.executeUpdate();
                 stmt.close();
             }
-            stmt = connection.prepareStatement("unlock tables");
-            stmt.executeQuery();
-            stmt.close();
+            unLockTables(connection,stmt);
 
             stmt = connection.prepareStatement(QueueContants.SQL_INSERT_STATEMENT);
 
@@ -407,12 +405,10 @@ public class WsmgPersistantStorage implements WsmgStorage {
 
     private void initMessageQueueStorage() throws SQLException {
         Connection connection = db.connect();
-
-        PreparedStatement stmt;
-        stmt = connection.prepareStatement("lock tables " + QueueContants.TABLE_NAME_MAXID + " write" + ","
-                + QueueContants.TABLE_NAME_MINID + " write");
-        stmt.executeQuery();
-        stmt.close();
+        String sql = "";
+        String databaseType = "";
+        PreparedStatement stmt = null;
+        lockTables(connection,stmt);
         // System.out.println("locked tables (maxId and minId)4");
         stmt = connection.prepareStatement(QueueContants.SQL_MAX_ID_SEPERATE_TABLE);
         ResultSet result = stmt.executeQuery();
@@ -434,10 +430,7 @@ public class WsmgPersistantStorage implements WsmgStorage {
             stmt.executeUpdate();
             stmt.close();
         }
-
-        stmt = connection.prepareStatement("unlock tables");
-        stmt.executeQuery();
-        stmt.close();
+        unLockTables(connection,stmt);
         db.closeConnection(connection);
         // System.out.println("unlocked tables (maxId and minId)4");
     }
@@ -456,11 +449,7 @@ public class WsmgPersistantStorage implements WsmgStorage {
         boolean connectionClosed = false;
         long wait = 1000;
         while (loop) {
-            // System.out.println("Checking Queue DB");
-            stmt = connection.prepareStatement("lock tables " + QueueContants.TABLE_NAME_MAXID + " write" + ","
-                    + QueueContants.TABLE_NAME_MINID + " write");
-            stmt.executeQuery();
-            stmt.close();
+            lockTables(connection,stmt);
             // System.out.println("locked maxId and minId table");
             // System.out.println("looping in retrive");
 
@@ -488,38 +477,20 @@ public class WsmgPersistantStorage implements WsmgStorage {
                 throw new RuntimeException("Queue init has failed earlier");
             }
 
-            // stmt = connection.prepareStatement(SQL_MAX_ID_SEPERATE_TABLE);
-            // result = stmt.executeQuery();
-            //
-            // if (result.next()) {
-            // nextkey = result.getInt(1);
-            // result.close();
-            // stmt.close();
-            //
-            // } else {
-            // throw new RuntimeException("Queue init has failed earlier");
-            // }
 
-            stmt = connection.prepareStatement("unlock tables");
-            stmt.executeQuery();
-            stmt.close();
+            unLockTables(connection,stmt);
             // System.out.println("unlocked tables (maxId and minId)1");
             if (maxid > nextkey) {
                 loop = false;
                 stmt = connection.prepareStatement(QueueContants.SQL_MIN_ID_INCREMENT + (nextkey));
                 stmt.executeUpdate();
                 stmt.close();
-                stmt = connection.prepareStatement("unlock tables");
-                stmt.executeQuery();
-                stmt.close();
+                unLockTables(connection,stmt);
                 // System.out.println("unlocked tables (maxId and minId) 2");
 
             } else {
                 try {
-                    stmt = connection.prepareStatement("unlock tables");
-                    // System.out.println("unlocked tables (maxId and minId) 3");
-                    stmt.executeQuery();
-                    stmt.close();
+                    unLockTables(connection,stmt);
                     db.closeConnection(connection);
                     connectionClosed = true;
                     wait = Math.min((wait + 1000), QueueContants.FINAL_WAIT_IN_MILI);
@@ -606,7 +577,16 @@ public class WsmgPersistantStorage implements WsmgStorage {
             stmt.addBatch("Delete from disQ;");
             stmt.addBatch("Delete from MaxIDTable;");
             stmt.addBatch("Delete from MinIDTable;");
-            stmt.addBatch("unlock tables;");
+            String databaseType = "";
+            try {
+                databaseType = DatabaseCreator.getDatabaseType(conn);
+            } catch (Exception e) {
+                logger.error("Error evaluating database type");
+            }
+
+            if ("mysql".equals(databaseType)) {
+                stmt.addBatch("unlock tables;");
+            }
             // System.out.println("unlocked tables (maxId and minId) 5");
             totalStatement = 5;
 
@@ -684,7 +664,7 @@ public class WsmgPersistantStorage implements WsmgStorage {
 
     private static class SubscriptionConstants {
 
-        public static String INSERT_SQL_QUERY = "INSERT INTO %s(SubscriptionId, xml, wsrm, Topics, XPath, ConsumerAddress, ReferenceProperties, CreationTime) "
+        public static String INSERT_SQL_QUERY = "INSERT INTO %s(SubscriptionId, content, wsrm, Topics, XPath, ConsumerAddress, ReferenceProperties, CreationTime) "
                 + "VALUES( ? , ? , ? , ? , ? , ? , ? , ?)";
 
         public static String ORDINARY_SUBSCRIPTION_INSERT_QUERY = null;
@@ -723,6 +703,47 @@ public class WsmgPersistantStorage implements WsmgStorage {
 
         public static String SQL_MIN_ID_INCREMENT = "UPDATE " + TABLE_NAME_MINID + " SET minID = minID+1 WHERE minID =";
 
+    }
+    private void lockTables(Connection connection,PreparedStatement stmt)throws SQLException{
+        String sql = "";
+        String databaseType = "";
+        try {
+            databaseType = DatabaseCreator.getDatabaseType(connection);
+        } catch (Exception e) {
+            logger.error("Error evaluating database type");
+        }
+
+        if ("derby".equals(databaseType)) {
+            sql = "lock table " + QueueContants.TABLE_NAME_MAXID + " IN SHARE MODE";
+            stmt = connection.prepareStatement(sql);
+            stmt.executeUpdate();
+            sql = "lock table " + QueueContants.TABLE_NAME_MINID + " IN SHARE MODE";
+            connection.prepareStatement(sql);
+            stmt.executeUpdate();
+            stmt.close();
+        } else if ("mysql".equals(databaseType)) {
+            sql = "lock tables " + QueueContants.TABLE_NAME_MAXID + " write" + ","
+                    + QueueContants.TABLE_NAME_MINID + " write";
+            stmt = connection.prepareStatement(sql);
+            stmt.executeQuery();
+            stmt.close();
+        }
+    }
+        private void unLockTables(Connection connection,PreparedStatement stmt)throws SQLException{
+        String sql = "";
+        String databaseType = "";
+        try {
+            databaseType = DatabaseCreator.getDatabaseType(connection);
+        } catch (Exception e) {
+            logger.error("Error evaluating database type");
+        }
+
+        if ("mysql".equals(databaseType)) {
+            sql = "unlock tables";
+            stmt = connection.prepareStatement(sql);
+            stmt.executeQuery();
+            stmt.close();
+        }
     }
 
 }

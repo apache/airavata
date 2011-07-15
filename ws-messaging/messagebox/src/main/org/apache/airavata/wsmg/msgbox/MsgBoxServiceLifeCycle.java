@@ -41,6 +41,10 @@ import org.apache.axis2.engine.Handler;
 import org.apache.axis2.engine.Phase;
 import org.apache.log4j.Logger;
 
+/**
+ * This class initialize the messageBox service by setting the messageStore based on the configuration done by the user
+ * This is the LifeCycle class
+ */
 public class MsgBoxServiceLifeCycle implements org.apache.axis2.engine.ServiceLifeCycle {
 
     private static final String CONFIGURATION_FILE_NAME = "configuration.file.name";
@@ -74,6 +78,7 @@ public class MsgBoxServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
             }
             db = new JdbcStorage(true, confmanager);
             try {
+                /* This fails if the table: msgBoxes is not there in the database */
                 MsgBoxServiceSkeleton.setStorage(new DatabaseStorageImpl(db));
             } catch (SQLException e) {
                 throw new RuntimeException("Database failure");

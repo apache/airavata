@@ -33,6 +33,9 @@ import org.apache.axis2.engine.Phase;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.log4j.Logger;
 
+/**
+ * This Dispatcher is used to validate the incoming message, this is set to Handler list in MsgBoxServiceLifeCycle.
+ */
 public class StoreMessageHandler extends AddressingBasedDispatcher {
     private static final String WSMG_MSGSTORE_SOAP_ACTION = "http://org.apache.airavata/xgws/msgbox/2004/storeMessages";
     private static final String ADDRESSING_VALIDATE_ACTION = "addressing.validateAction";

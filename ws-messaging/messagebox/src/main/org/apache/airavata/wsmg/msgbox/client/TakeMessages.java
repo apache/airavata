@@ -35,6 +35,10 @@ import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.log4j.Logger;
 
+/**
+ * This class can be used to invoke takeMessages operation of msgBoxService and returns the resultant operation status
+ *
+ */
 public class TakeMessages {
     private final OMFactory factory = OMAbstractFactory.getOMFactory();
     protected EndpointReference msgBoxEndPointReference;

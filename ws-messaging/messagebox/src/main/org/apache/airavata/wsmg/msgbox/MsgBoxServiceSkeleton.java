@@ -42,9 +42,9 @@ import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.service.Lifecycle;
 import org.apache.log4j.Logger;
 
-// Referenced classes of package edu.indiana.extreme.www.xgws.msgbox._2004:
-//            ProcessingContext
-
+/**
+ * Service class for MsgBoxService this get calle by MsgBoxServiceMessageReceiverInOut with ProcessingContext
+ */
 public class MsgBoxServiceSkeleton implements Lifecycle {
 
     public MsgBoxServiceSkeleton() {

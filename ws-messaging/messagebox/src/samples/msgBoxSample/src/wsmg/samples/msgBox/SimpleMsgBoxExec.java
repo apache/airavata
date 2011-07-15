@@ -27,15 +27,13 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.UUID;
-
 import javax.xml.stream.XMLStreamException;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
-
 import wsmg.samples.util.ConfigKeys;
 import org.apache.airavata.wsmg.msgbox.client.MsgBoxClient;
 import org.apache.airavata.wsmg.msgbox.util.MsgBoxUtils;
+import java.io.*;
 
 public class SimpleMsgBoxExec {
 
@@ -49,15 +47,13 @@ public class SimpleMsgBoxExec {
 	public static void main(String[] args) throws IOException {
 
 		Properties configurations = new Properties(getDefaults());
-		URL configURL = ClassLoader
-				.getSystemResource(ConfigKeys.CONFIG_FILE_NAME);
+		try {
+			InputStream ioStream = new FileInputStream("conf" + File.separator + ConfigKeys.CONFIG_FILE_NAME);
+			configurations.load(ioStream);
+		} catch (IOException ioe) {
 
-		if (configURL != null) {
-			configurations.load(configURL.openStream());
-
-		} else {
-			System.out
-					.println("unable to load configurations defaults will be used");
+			System.out.println("unable to load configuration file, "
+					+ "default settings will be used");
 		}
 
 		String msgBoxId = UUID.randomUUID().toString();

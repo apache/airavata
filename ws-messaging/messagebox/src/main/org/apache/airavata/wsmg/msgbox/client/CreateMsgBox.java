@@ -36,6 +36,10 @@ import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.log4j.Logger;
 
+/**
+ * This class can be used to invoke createMsgBox operation of msgBoxService and returns the resultant messageBoxId
+ * as EndpointReference
+ */
 public class CreateMsgBox {
     org.apache.log4j.Logger logger = Logger.getLogger(CreateMsgBox.class);
     private final OMFactory factory = OMAbstractFactory.getOMFactory();

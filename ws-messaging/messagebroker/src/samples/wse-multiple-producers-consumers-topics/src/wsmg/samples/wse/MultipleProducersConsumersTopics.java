@@ -21,10 +21,7 @@
 
 package org.apache.airavata.wsmg.samples.wse;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -33,6 +30,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 import org.apache.airavata.wsmg.samples.util.ConfigKeys;
 
@@ -61,14 +60,8 @@ public class MultipleProducersConsumersTopics {
 
 		Properties configurations = new Properties(getDefaults());
 		try {
-
-			URL url = ClassLoader
-					.getSystemResource(ConfigKeys.CONFIG_FILE_NAME);
-			if (url == null) {
-				throw new IOException("configuration file not found");
-			}
-			configurations.load(url.openStream());
-
+			InputStream ioStream = new FileInputStream("conf" + File.separator + ConfigKeys.CONFIG_FILE_NAME);
+			configurations.load(ioStream);
 		} catch (IOException ioe) {
 
 			System.out.println("unable to load configuration file, "

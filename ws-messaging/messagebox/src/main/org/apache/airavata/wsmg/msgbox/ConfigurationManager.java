@@ -23,21 +23,21 @@ package org.apache.airavata.wsmg.msgbox;
 
 import java.util.Properties;
 
+/**
+ * This class loads the configuration from properties files
+ */
 public class ConfigurationManager {
     protected Properties configurations = new Properties();
 
     public ConfigurationManager(String configFileName) {
         try {
             configurations.load(this.getClass().getClassLoader().getResourceAsStream(configFileName));
-
         } catch (Exception e) {
             throw new RuntimeException("unable to load configurations", e);
         }
-
     }
 
     public String getConfig(String configName) {
-
         return configurations.getProperty(configName);
     }
 

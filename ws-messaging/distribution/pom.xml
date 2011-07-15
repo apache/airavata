@@ -34,9 +34,21 @@
 			</plugin>
 		</plugins>
 	</build>
-	<properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derby</artifactId>
+			<version>${derby.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derbytools</artifactId>
+			<version>${derby.version}</version>
+		</dependency>
+	</dependencies>
+<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<archieve.name>airavta-ws-messenger</archieve.name>
-		<used.axis2.release>1.6.0</used.axis2.release>
+		<used.axis2.release>${axis2.version}</used.axis2.release>
 	</properties>
 </project>

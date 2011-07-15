@@ -21,7 +21,10 @@
 
 package org.apache.airavata.wsmg.samples.wse;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
@@ -50,13 +53,8 @@ public class MultipleProducersConsumers {
 		Properties configurations = new Properties(getDefaults());
 		try {
 
-			URL url = ClassLoader
-					.getSystemResource(ConfigKeys.CONFIG_FILE_NAME);
-			if (url == null) {
-				throw new IOException("configuration file not found");
-			}
-			configurations.load(url.openStream());
-			
+			InputStream ioStream = new FileInputStream("conf" + File.separator + ConfigKeys.CONFIG_FILE_NAME);
+			configurations.load(ioStream);
 		} catch (IOException ioe) {
 			
 			System.out.println("unable to load configuration file, default settings will be used");

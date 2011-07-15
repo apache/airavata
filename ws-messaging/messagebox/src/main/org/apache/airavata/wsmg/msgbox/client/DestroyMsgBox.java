@@ -32,7 +32,10 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.log4j.Logger;
-
+/**
+ * This class can be used to invoke destroyMsgBox operation of msgBoxService and returns the resultant messageBoxId
+ * as EndpointReference
+ */
 public class DestroyMsgBox {
     private EndpointReference msgBoxEndPointReference = null;
     private long timeoutInMilliSeconds = 0;

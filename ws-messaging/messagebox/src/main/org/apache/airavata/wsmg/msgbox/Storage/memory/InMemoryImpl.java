@@ -29,6 +29,10 @@ import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
 import org.apache.axiom.om.OMElement;
 import org.apache.log4j.Logger;
 
+/**
+ * This is the inmemoery storage implementation for MsgBoxService, this will be initialized if msgBox.properties is
+ * configured not to use database implementation.
+ */
 public class InMemoryImpl implements MsgBoxStorage {
     static Logger logger = Logger.getLogger(InMemoryImpl.class);
 

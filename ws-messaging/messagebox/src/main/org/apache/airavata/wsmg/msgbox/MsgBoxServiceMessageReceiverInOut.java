@@ -30,7 +30,7 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.log4j.Logger;
 
 /**
- * MsgBoxServiceMessageReceiverInOut message receiver
+ * MsgBoxServiceMessageReceiverInOut message receiver, this is the actual location where the service operations get invoked.
  */
 
 public class MsgBoxServiceMessageReceiverInOut extends org.apache.axis2.receivers.AbstractInOutMessageReceiver {

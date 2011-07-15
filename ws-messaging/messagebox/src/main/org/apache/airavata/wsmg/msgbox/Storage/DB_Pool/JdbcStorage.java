@@ -21,6 +21,9 @@
 
 package org.apache.airavata.wsmg.msgbox.Storage.DB_Pool;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,9 +33,16 @@ import java.sql.Statement;
 
 import org.apache.airavata.wsmg.msgbox.ConfigurationManager;
 import org.apache.airavata.wsmg.msgbox.util.ConfigKeys;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+
+/**
+ * This is used by DatabaseStorageImpl for database access to msgBoxes table, this is the core jdbc implementation for
+ * msgBox service
+ */
 public class JdbcStorage {
-
+    private static Log log = LogFactory.getLog(JdbcStorage.class);
     private String jdbcUrl = null;
 
     private String messagePreservationDays;
@@ -67,7 +77,17 @@ public class JdbcStorage {
             } else {
                 connectionPool = new ConnectionPool(jdbcDriver, jdbcUrl, 10, 50, true);
             }
-        } catch (SQLException e) {
+//            String value = System.getProperty("setup");
+//            if(value != null){
+                DatabaseCreator dbCreator = new DatabaseCreator(connectionPool);
+                if(!dbCreator.isDatabaseStructureCreated("SELECT * from msgBoxes")){
+                    dbCreator.createMsgBoxDatabase();
+                }else{
+                    log.error("Database already created !");
+                }
+
+//            }
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             // e.printStackTrace();
             throw new RuntimeException("Failed to create database connection poll.", e);
@@ -168,5 +188,4 @@ public class JdbcStorage {
         if (connectionPool != null)
             connectionPool.closeAllConnections();
     }
-
 }

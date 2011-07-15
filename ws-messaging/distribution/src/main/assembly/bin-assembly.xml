@@ -114,7 +114,7 @@
 			<directory>../messagebroker/target</directory>
 			<outputDirectory>client-api</outputDirectory>
 			<includes>
-				<include>broker*.jar</include>
+				<include>messagebroker*.jar</include>
 			</includes>
 		</fileSet>
 
@@ -212,19 +212,30 @@
 
 		<fileSet>
 			<directory>../messagebroker/src/main/resources/database_scripts</directory>
-			<outputDirectory>database_scripts</outputDirectory>
+			<outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
 			<includes>
 				<include>*sql*</include>
 			</includes>
 		</fileSet>
 
 		<fileSet>
-			<directory>../messagebox/resources</directory>
-			<outputDirectory>database_scripts</outputDirectory>
+			<directory>../messagebox/src/main/resources/database_scripts</directory>
+			<outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
 			<includes>
 				<include>*sql*</include>
 			</includes>
 		</fileSet>
 
 	</fileSets>
+    <dependencySets>
+
+            <dependencySet>
+                <outputDirectory>standalone-server/lib</outputDirectory>
+                <includes>
+                    <include>org.apache.derby:derby:jar</include>
+                    <include>org.apache.derby:derbytools:jar</include>
+                </includes>
+                    </dependencySet>
+        </dependencySets>
+
 </assembly>

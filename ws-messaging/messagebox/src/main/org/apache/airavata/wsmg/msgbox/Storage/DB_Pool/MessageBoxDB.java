@@ -44,6 +44,10 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
 import org.apache.log4j.Logger;
 
+/**
+ * This is the core class which used by DatabaseStorageImpl to perform all the service operations, DatabaseStorageImpl class
+ * simply use this class in its operation methods to perform the actual funcationality.
+ */
 public class MessageBoxDB {
 
     static Logger logger = Logger.getLogger(MessageBoxDB.class);
@@ -54,7 +58,7 @@ public class MessageBoxDB {
 
     private static JdbcStorage db;
 
-    public static String SQL_STORE_MESSAGE_STATEMENT = "INSERT INTO msgbox (xml, msgboxid, messageid,soapaction) VALUES (?,?,?,?)";
+    public static String SQL_STORE_MESSAGE_STATEMENT = "INSERT INTO msgbox (content, msgboxid, messageid,soapaction) VALUES (?,?,?,?)";
 
     public static String SQL_CREATE_MSGBOX_STATEMENT = "INSERT INTO %s (msgboxid) VALUES ('%s')";
 
@@ -72,6 +76,7 @@ public class MessageBoxDB {
         if (!msgBoxids.contains(messageBoxId)) {
             Connection connection = db.connect();
             Statement statement = connection.createStatement();
+            System.out.println(tableName + ":" + messageBoxId);
             statement.execute(String.format(SQL_CREATE_MSGBOX_STATEMENT, tableName, messageBoxId));
             connection.commit();
             db.closeConnection(connection);
@@ -125,10 +130,10 @@ public class MessageBoxDB {
             PreparedStatement stmt = connection.prepareStatement(String.format(SQL_SELECT_STATEMENT1, "msgbox",
                     msgBoxId, String.format("%s.%s", "msgbox", "id")));
             ResultSet resultSet = stmt.executeQuery();
-            resultSet.beforeFirst();
+//            resultSet.beforeFirst();
 
             while (resultSet.next()) {
-                InputStream in = resultSet.getAsciiStream("xml");
+                InputStream in = resultSet.getAsciiStream("content");
                 ObjectInputStream s = new ObjectInputStream(in);
                 String xmlString = (String) s.readObject();
                 System.out.println(xmlString);

@@ -25,6 +25,9 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 
+/**
+ * This class is used to invoke actual methods of MsgBoxService inside MsgBoxServiceMessageReceiverInOut.
+ */
 public class ProcessingContext {
 
     public ProcessingContext() {

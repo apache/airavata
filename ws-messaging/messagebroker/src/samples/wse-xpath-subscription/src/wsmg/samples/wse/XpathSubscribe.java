@@ -24,7 +24,8 @@ package org.apache.airavata.wsmg.samples.wse;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
-
+import java.io.FileInputStream;
+import java.io.InputStream;
 import org.apache.airavata.wsmg.client.MsgBrokerClientException;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.wsmg.samples.util.ConfigKeys;
@@ -36,14 +37,8 @@ public class XpathSubscribe {
 		Properties configurations = new Properties();
 
 		try {
-
-			URL url = ClassLoader
-					.getSystemResource(ConfigKeys.CONFIG_FILE_NAME);
-			if (url == null) {
-				throw new IOException("configuration file not found");
-			}
-			configurations.load(url.openStream());
-
+            InputStream ioStream = new FileInputStream("conf" + File.separator + ConfigKeys.CONFIG_FILE_NAME);
+            configurations.load(ioStream);
 		} catch (IOException ioe) {
 
 			System.out

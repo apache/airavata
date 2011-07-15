@@ -72,7 +72,7 @@
                 <artifactId>axis2-aar-maven-plugin</artifactId>
                 <version>${axis2.version}</version>
                 <configuration>
-                    <servicesXmlFile>resources/services.xml</servicesXmlFile>
+                    <servicesXmlFile>src/main/resources/services.xml</servicesXmlFile>
                 </configuration>
                 <executions>
                     <execution>

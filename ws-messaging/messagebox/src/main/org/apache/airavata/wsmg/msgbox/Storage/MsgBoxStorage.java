@@ -26,7 +26,7 @@ import java.util.List;
 import org.apache.axiom.om.OMElement;
 
 /**
- * Message Box storage backend.
+ * Message Box storage backend. This has implemented in two ways inmemory and database.
  */
 public interface MsgBoxStorage {
     public String createMsgBox() throws Exception;

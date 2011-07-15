@@ -21,14 +21,20 @@
 
 package org.apache.airavata.wsmg.commons.storage;
 
+import org.apache.airavata.wsmg.msgbox.Storage.DB_Pool.DatabaseCreator;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.apache.airavata.wsmg.msgbox.Storage.DB_Pool.ConnectionPool;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class JdbcStorage {
+    private static Log log = LogFactory.getLog(JdbcStorage.class);
 
     private PreparedStatement stmt = null;
 
@@ -48,7 +54,13 @@ public class JdbcStorage {
             } else {
                 connectionPool = new ConnectionPool(driver, url, 3, 50, true);
             }
-        } catch (SQLException e) {
+            DatabaseCreator dbCreator = new DatabaseCreator(connectionPool);
+            if (!dbCreator.isDatabaseStructureCreated("SELECT * from subscription")) {
+                dbCreator.createMsgBrokerDatabase();
+            } else {
+                log.error("Database already created !");
+            }
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             // e.printStackTrace();
             throw new RuntimeException("Failed to create database connection poll.", e);
@@ -57,7 +69,7 @@ public class JdbcStorage {
     }
 
     public JdbcStorage(String jdbcUrl, String jdbcDriver) {
-        this(jdbcUrl, jdbcDriver, false);
+        this(jdbcUrl, jdbcDriver, true);
     }
 
     public Connection connect() {

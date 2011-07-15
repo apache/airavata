@@ -29,6 +29,8 @@ import org.apache.airavata.wsmg.client.MsgBrokerClientException;
 import org.apache.airavata.wsmg.client.WseClientAPI;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.wsmg.samples.util.ConfigKeys;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 public class TopicSubscribe {
 
@@ -37,14 +39,8 @@ public class TopicSubscribe {
 		Properties configurations = new Properties();
 
 		try {
-
-			URL url = ClassLoader
-					.getSystemResource(ConfigKeys.CONFIG_FILE_NAME);
-			if (url == null) {
-				throw new IOException("configuration file not found");
-			}
-			configurations.load(url.openStream());
-
+            InputStream ioStream = new FileInputStream("conf" + File.separator + ConfigKeys.CONFIG_FILE_NAME);
+            configurations.load(ioStream);
 		} catch (IOException ioe) {
 
 			System.out

@@ -28,6 +28,10 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.log4j.Logger;
 
+/**
+ * This is the client class to invoke MsgBoxService this is using four separate classes to invoke four methods
+ * createMsgBox,destroyMsgBox,takeMessages and storeMessages operations of the service.
+ */
 public class MsgBoxClient {
 
     int msgsAtOnce = 10;
