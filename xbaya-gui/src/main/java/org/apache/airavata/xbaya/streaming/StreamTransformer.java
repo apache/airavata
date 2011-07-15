@@ -270,8 +270,7 @@ public class StreamTransformer {
 
         Iterator<XmlElement> schemas = types.elements(null, "schema").iterator();
         while (schemas.hasNext()) {
-            (XmlElement) schemas.next();
-
+            schemas.next();
         }
 
         WSNode node = (WSNode) activeNode;
