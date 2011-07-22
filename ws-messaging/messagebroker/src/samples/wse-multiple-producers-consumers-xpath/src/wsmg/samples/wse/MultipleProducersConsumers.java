@@ -24,8 +24,7 @@ package org.apache.airavata.wsmg.samples.wse;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 
 import org.apache.airavata.wsmg.samples.util.ConfigKeys;
 
