@@ -1,6 +1,0 @@
-broker.jdbc.driver=com.mysql.jdbc.Driver
-broker.jdbc.url=jdbc:mysql://localhost:3306/wsmg?user=wsmg&password=wsmg
-broker.start.delivery.thread=true
-broker.socket.timeout=30000
-broker.storage.type=memory
-axis2.repository=/home/ramith/Documents/axis2-1.5

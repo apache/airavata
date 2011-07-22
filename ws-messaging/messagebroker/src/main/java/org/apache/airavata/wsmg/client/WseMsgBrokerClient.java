@@ -179,7 +179,7 @@ public class WseMsgBrokerClient implements MessageBrokerClient {
             client.cleanupTransport();
 
         } catch (AxisFault e) {
-            throw new MsgBrokerClientException("unableto send subscribe msg", e);
+            throw new MsgBrokerClientException("unable to send subscribe msg", e);
         }
 
         return true;

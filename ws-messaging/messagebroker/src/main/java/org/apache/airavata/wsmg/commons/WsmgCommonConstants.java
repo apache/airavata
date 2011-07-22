@@ -81,7 +81,7 @@ public class WsmgCommonConstants {
     public static final int DEFAULT_SENDING_BATCH_SIZE = 10;
     public static final int DEFAULT_SENDING_THREAD_POOL_SIZE = 4;
 
-    public static final long DEFAULT_CLIENT_SOCKET_TIME_OUT_MILLIES = 3000L;
+    public static final long DEFAULT_CLIENT_SOCKET_TIME_OUT_MILLIES = 300000L;
     public static final int DEFAULT_SUBSCRIPTION_EXPIRATION_TIME = 1000 * 60 * 60 * 72; // 72 hours
 
     public static final String CONFIGURATION_FILE_NAME = "configuration.file.name";

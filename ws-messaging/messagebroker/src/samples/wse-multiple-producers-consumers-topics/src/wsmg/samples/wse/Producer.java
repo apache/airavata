@@ -80,9 +80,7 @@ public class Producer extends Thread {
 			System.out.println("interruped");
 		} catch (MsgBrokerClientException f) {
 			f.printStackTrace();
-			System.out
-					.println("unable to publish messages - producer will stop.");
-
+			System.out.println("unable to publish messages - producer will stop.");
 		}
 	}
 
