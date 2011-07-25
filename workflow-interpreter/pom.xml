@@ -360,7 +360,7 @@
 					<generateTestcase>true</generateTestcase>
 					<outputDirectory>target/generated/wsdl2code</outputDirectory>
 					<packageName>org.apache.airavata.workflow.interpreter</packageName>
-					<wsdlFile>src/main/resources/WorkflowInterpretor.wsdl</wsdlFile>
+					<wsdlFile>${pom.basedir}/src/main/resources/WorkflowInterpretor.wsdl</wsdlFile>
 					<databindingName>xmlbeans</databindingName>
 				</configuration>
 				<executions>
@@ -376,8 +376,8 @@
 				<artifactId>axis2-aar-maven-plugin</artifactId>
 				<version>${axis2.version}</version>
 				<configuration>
-					<servicesXmlFile>src/main/resources/services.xml</servicesXmlFile>
-					<wsdlFile>src/main/resources/WorkflowInterpretor.wsdl</wsdlFile>
+					<servicesXmlFile>${pom.basedir}/src/main/resources/services.xml</servicesXmlFile>
+					<wsdlFile>${pom.basedir}/src/main/resources/WorkflowInterpretor.wsdl</wsdlFile>
 				</configuration>
 				<executions>
 					<execution>
