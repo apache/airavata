@@ -26,6 +26,7 @@ import java.io.StringReader;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.airavata.wsmg.client.msgbox.MessagePuller;
 import org.apache.airavata.wsmg.commons.NotificationProducer;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
@@ -298,5 +299,4 @@ public class WseClientAPI extends CommonClientProcessing implements WsmgClientAP
         }
         return subscribe(brokerLocation, formattedEventSink, topicExpression, xpathExpression, null, null, -1);
     }
-
 }

@@ -9,7 +9,7 @@
     <modelVersion>4.0.0</modelVersion>
     <name>Messenger</name>
     <groupId>Airavata</groupId>
-    <artifactId>messenger</artifactId>
+    <artifactId>airavata-messenger</artifactId>
     <url>http://incubator.apache.org/airavata/</url>
     <packaging>war</packaging>
 
@@ -45,7 +45,7 @@
 
         <dependency>
             <groupId>Airavata</groupId>
-            <artifactId>messagebroker</artifactId>
+            <artifactId>airavata-messagebroker</artifactId>
             <version>${airavata.version}</version>
             <type>jar</type>
             <scope>compile</scope>

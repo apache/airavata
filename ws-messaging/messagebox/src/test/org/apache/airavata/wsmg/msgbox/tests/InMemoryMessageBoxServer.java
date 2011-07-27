@@ -129,7 +129,7 @@ public class InMemoryMessageBoxServer {
     public static void startMessageBox() throws Exception {
 
         AxisService axisService = new AxisService("MsgBoxService");
-        axisService.addParameter("configuration.file.name", "wsmg.broker.properties");
+        axisService.addParameter("configuration.file.name", "msgBroker.properties");
         axisService.setServiceLifeCycle(new MsgBoxServiceLifeCycle());
 
         createOperation(axisService, "storeMessages", new MsgBoxServiceMessageReceiverInOut(),

@@ -8,7 +8,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>Airavata</groupId>
-    <artifactId>messagebroker</artifactId>
+    <artifactId>airavata-messagebroker</artifactId>
     <name>Message Broker</name>
     <url>http://incubator.apache.org/airavata/</url>
     <packaging>jar</packaging>
@@ -101,13 +101,8 @@
         </dependency>
         <dependency>
             <groupId>Airavata</groupId>
-            <artifactId>messagebox</artifactId>
+            <artifactId>airavata-messagebox</artifactId>
             <version>${airavata.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>

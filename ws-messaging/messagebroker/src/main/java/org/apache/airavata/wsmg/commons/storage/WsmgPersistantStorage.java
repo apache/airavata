@@ -448,9 +448,6 @@ public class WsmgPersistantStorage implements WsmgStorage {
         long wait = 1000;
         while (loop) {
             lockTables(connection,stmt);
-            // System.out.println("locked maxId and minId table");
-            // System.out.println("looping in retrive");
-
             stmt = connection.prepareStatement(QueueContants.SQL_MIN_ID_SEPERATE_TABLE);
             result = stmt.executeQuery();
 

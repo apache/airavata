@@ -30,7 +30,6 @@ import org.apache.axis2.AxisFault;
 
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
 import org.apache.airavata.wsmg.client.MsgBrokerClientException;
-import org.apache.airavata.wsmg.client.WseClientAPI;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.wsmg.samples.util.ConfigKeys;
 
