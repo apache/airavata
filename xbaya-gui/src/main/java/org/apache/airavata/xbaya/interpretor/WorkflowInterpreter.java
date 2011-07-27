@@ -26,6 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -714,92 +715,136 @@ public class WorkflowInterpreter {
         node.getGUI().setBodyColor(NodeState.FINISHED.color);
     }
 
-    private void handleForEach(Node node) throws XBayaException {
-        final ForEachNode forEachNode = (ForEachNode) node;
-        EndForEachNode endForEachNode = null;
-        Collection<Node> repeatNodes = node.getOutputPort(0).getToNodes();
-        // we will support only one for now
-        if (repeatNodes.size() != 1) {
-            throw new WorkFlowInterpreterException("Only one node allowed inside foreach");
-        }
-        Iterator<Node> iterator = repeatNodes.iterator();
-        if (iterator.hasNext()) {
+	private void handleForEach(Node node) throws XBayaException {
+		final ForEachNode forEachNode = (ForEachNode) node;
+		EndForEachNode endForEachNode = null;
+		Collection<Node> repeatNodes = node.getOutputPort(0).getToNodes();
+		// we will support only one for now
+		if (repeatNodes.size() != 1) {
+			throw new WorkFlowInterpreterException(
+					"Only one node allowed inside foreach");
+		}
+		Iterator<Node> iterator = repeatNodes.iterator();
+		if (iterator.hasNext()) {
 
-            Node middleNode = iterator.next();
+			Node middleNode = iterator.next();
 
-            if (!(middleNode instanceof WSNode)) {
-                throw new WorkFlowInterpreterException("Encountered Node inside foreach that is not a WSNode"
-                        + middleNode);
-            }
-            Iterator<Node> endForEachNodeItr = middleNode.getOutputPort(0).getToNodes().iterator();
-            while (endForEachNodeItr.hasNext()) {
-                Node node2 = endForEachNodeItr.next();
-                if (!(node2 instanceof EndForEachNode)) {
-                    throw new WorkFlowInterpreterException("Found More than one node inside foreach");
-                } else {
-                    endForEachNode = (EndForEachNode) node2;
-                }
+			if (!(middleNode instanceof WSNode)) {
+				throw new WorkFlowInterpreterException(
+						"Encountered Node inside foreach that is not a WSNode"
+								+ middleNode);
+			}
+			Iterator<Node> endForEachNodeItr = middleNode.getOutputPort(0)
+					.getToNodes().iterator();
+			while (endForEachNodeItr.hasNext()) {
+				Node node2 = endForEachNodeItr.next();
+				if (!(node2 instanceof EndForEachNode)) {
+					throw new WorkFlowInterpreterException(
+							"Found More than one node inside foreach");
+				} else {
+					endForEachNode = (EndForEachNode) node2;
+				}
 
-            }
-            final WSNode foreachWSNode = (WSNode) middleNode;
-            WorkflowInvoker workflowInvoker = this.invokerMap.get(forEachNode.getInputPort(0).getFromNode());
-            final LinkedList<String> listOfValues = new LinkedList<String>();
-            if (workflowInvoker != null) {
-                if (workflowInvoker instanceof GenericInvoker) {
-                    String message = ((GenericInvoker) workflowInvoker).getOutputs().toString();
-                    XmlElement msgElmt = XmlConstants.BUILDER.parseFragmentFromString(message);
-                    Iterator children = msgElmt.children().iterator();
-                    while (children.hasNext()) {
-                        Object object = children.next();
-                        if (object instanceof XmlElement) {
-                            XmlElement child = (XmlElement) object;
-                            Iterator valItr = child.children().iterator();
-                            if (valItr.hasNext()) {
-                                Object object2 = valItr.next();
-                                if (object2 instanceof String) {
-                                    listOfValues.add(object2.toString());
-                                }
+			}
+			final WSNode foreachWSNode = (WSNode) middleNode;
+			final LinkedList<String> listOfValues = new LinkedList<String>();
 
-                            }
-                        }
+			Node forEachInputNode = forEachNode.getInputPort(0).getFromNode();
+			// if input node for for-each is WSNode
+			if (forEachInputNode instanceof WSNode) {
+				WorkflowInvoker workflowInvoker = this.invokerMap
+						.get(forEachInputNode);
+				if (workflowInvoker != null) {
+					if (workflowInvoker instanceof GenericInvoker) {
+						/*
+						 * TODO How this code handle object from GenericInvoker
+						 */
+						String message = ((GenericInvoker) workflowInvoker)
+								.getOutputs().toString();
+						XmlElement msgElmt = XmlConstants.BUILDER
+								.parseFragmentFromString(message);
+						Iterator children = msgElmt.children().iterator();
+						while (children.hasNext()) {
+							Object object = children.next();
+							if (object instanceof XmlElement) {
+								XmlElement child = (XmlElement) object;
+								Iterator valItr = child.children().iterator();
+								if (valItr.hasNext()) {
+									Object object2 = valItr.next();
+									if (object2 instanceof String) {
+										listOfValues.add(object2.toString());
+									}
+								}
+							}
+						}
+					} else if (workflowInvoker instanceof WorkflowInvokerWrapperForGFacInvoker) {
+						String outputName = forEachInputNode.getOutputPort(0)
+								.getName();
+						org.xmlpull.v1.builder.XmlElement msgElmt = (org.xmlpull.v1.builder.XmlElement) workflowInvoker
+								.getOutput(outputName);
+						Iterator children = msgElmt.children();
+						while (children.hasNext()) {
+							Object object = children.next();
+							if (object instanceof org.xmlpull.v1.builder.XmlElement) {
+								org.xmlpull.v1.builder.XmlElement child = (org.xmlpull.v1.builder.XmlElement) object;
+								Iterator valItr = child.children();
+								if (valItr.hasNext()) {
+									Object object2 = valItr.next();
+									if (object2 instanceof String) {
+										listOfValues.add(object2.toString());
+									}
+								}
+							}
+						}
+					}
+				} else {
+					throw new WorkFlowInterpreterException(
+							"Did not find inputs from WS to foreach");
+				}
+				// if input node for for-each is input
+			} else if (forEachInputNode instanceof InputNode) {
+				for (DataPort dataPort : forEachNode.getInputPorts()) {
+					Object val = findInputFromPort(dataPort);
+					if (null == val) {
+						throw new WorkFlowInterpreterException(
+								"Unable to find input for the node:"
+										+ node.getID());
+					}
+					String[] vals = val.toString().split(",");
+					listOfValues.addAll(Arrays.asList(vals));
+				}
+			} else {
+				throw new WorkFlowInterpreterException(
+						"Did not find inputs to foreach");
+			}
 
-                    }
-                }
-                if (listOfValues.size() > 0) {
-                    forEachNode.getGUI().setBodyColor(NodeState.EXECUTING.color);
-                    foreachWSNode.getGUI().setBodyColor(NodeState.EXECUTING.color);
-                    endForEachNode.getGUI().setBodyColor(NodeState.EXECUTING.color);
-                    final EndForEachNode tempendForEachNode = endForEachNode;
-                    final SystemComponentInvoker systemInvoker = new SystemComponentInvoker();
-                    this.invokerMap.put(endForEachNode, systemInvoker);
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            try {
-                                runInThread(listOfValues, forEachNode, foreachWSNode, tempendForEachNode, systemInvoker);
-                            } catch (XBayaException e) {
-                                WorkflowInterpreter.this.engine.getErrorWindow().error(e);
-                            }
-                        }
+			if (listOfValues.size() > 0) {
+				forEachNode.getGUI().setBodyColor(NodeState.EXECUTING.color);
+				foreachWSNode.getGUI().setBodyColor(NodeState.EXECUTING.color);
+				endForEachNode.getGUI().setBodyColor(NodeState.EXECUTING.color);
+				final EndForEachNode tempendForEachNode = endForEachNode;
+				final SystemComponentInvoker systemInvoker = new SystemComponentInvoker();
+				this.invokerMap.put(endForEachNode, systemInvoker);
+				new Thread() {
+					@Override
+					public void run() {
+						try {
+							runInThread(listOfValues, forEachNode,
+									foreachWSNode, tempendForEachNode,
+									systemInvoker);
+						} catch (XBayaException e) {
+							WorkflowInterpreter.this.engine
+									.getErrorWindow().error(e);
+						}
+					}
 
-                    }.start();
-                } else {
-                    throw new WorkFlowInterpreterException("No array values found for foreach");
-                }
-
-                // Iterator parts =DynamicComponent
-                // workflowInvoker.getOutputs().parts().iterator();
-                // while (parts.hasNext()) {
-                // Object object = (Object) parts.next();
-                // System.out.println(object);
-                //
-                // }
-            } else {
-                throw new WorkFlowInterpreterException("Did not find inputs to foreach");
-            }
-
-        }
-    }
+				}.start();
+			} else {
+				throw new WorkFlowInterpreterException(
+						"No array values found for foreach");
+			}
+		}
+	}
 
     private void handleIf(Node node) throws XBayaException {
         IfNode ifNode = (IfNode) node;
@@ -873,120 +918,203 @@ public class WorkflowInterpreter {
         node.getGUI().setBodyColor(NodeState.FINISHED.color);
     }
 
-    private void runInThread(LinkedList<String> listOfValues, ForEachNode forEachNode, WSNode foreachWSNode,
-            EndForEachNode endForEachNode, SystemComponentInvoker tempInvoker) throws XBayaException {
-        WSComponent wsComponent = foreachWSNode.getComponent();
-        QName portTypeQName = wsComponent.getPortTypeQName();
+	private void runInThread(LinkedList<String> listOfValues,
+			ForEachNode forEachNode, WSNode foreachWSNode,
+			EndForEachNode endForEachNode, SystemComponentInvoker tempInvoker)
+			throws XBayaException {
+		WSComponent wsComponent = foreachWSNode.getComponent();
+		QName portTypeQName = wsComponent.getPortTypeQName();
 
-        WorkflowInvoker invoker = null;
-        LinkedList<WorkflowInvoker> invokerList = new LinkedList<WorkflowInvoker>();
-        for (Iterator<String> iterator = listOfValues.iterator(); iterator.hasNext();) {
-            String input = iterator.next();
-            String wsdlLocation = getEPR(foreachWSNode);
-            final String gfacURLString = this.engine.getConfiguration().getGFacURL().toString();
-            if (null == wsdlLocation) {
-                if (gfacURLString.startsWith("https")) {
-                    GSSCredential proxy = null;
-                    if (this.mode == GUI_MODE) {
-                        this.myProxyChecker.loadIfNecessary();
-                        MyProxyClient myProxyClient = this.engine.getMyProxyClient();
-                        proxy = myProxyClient.getProxy();
-                    } else {
-                        proxy = SecurityUtil.getGSSCredential(this.username, this.password,
-                                this.configuration.getMyProxyServer());
-                    }
-                    GsiInvoker secureInvoker = new GsiInvoker(proxy, XBayaSecurity.getTrustedCertificates());
-                    LeadContextHeader leadCtxHeader = null;
-                    try {
-                        // leadCtxHeader = WSDLUtil.buildLeadContextHeader(
-                        // this.workflow, engine.getConfiguration(),
-                        // this.engine.getMyLead(), engine.getMonitor()
-                        // .getConfiguration(), foreachWSNode
-                        // .getID(), null);
+		WorkflowInvoker invoker = null;
+		LinkedList<WorkflowInvoker> invokerList = new LinkedList<WorkflowInvoker>();
+		for (Iterator<String> iterator = listOfValues.iterator(); iterator
+				.hasNext();) {
+			String input = iterator.next();
+			String wsdlLocation = getEPR(foreachWSNode);
+			final String gfacURLString = this.engine.getConfiguration()
+					.getGFacURL().toString();
 
-                        if (this.mode == GUI_MODE) {
-                            leadCtxHeader = WSDLUtil.buildLeadContextHeader(this.workflow, this.configuration,
-                                    this.engine.getMyLead(),
-                                    new MonitorConfiguration(this.configuration.getBrokerURL(), this.topic, true,
-                                            this.configuration.getMessageBoxURL()), foreachWSNode.getID(), null);
-                        } else {
-                            leadCtxHeader = WSDLUtil.buildLeadContextHeader(this.workflow,
-                                    this.configuration,
-                                    // //////////Set the userdn in
-                                    // the right proxy if necessary
-                                    new MyLead(new MyLeadConfiguration(), proxy),
-                                    new MonitorConfiguration(this.configuration.getBrokerURL(), this.topic, true,
-                                            this.configuration.getMessageBoxURL()), foreachWSNode.getID(), null);
-                        }
+			/*
+			 * Duplication start Code below copied from handleWSComponent
+			 */
+			if (null == wsdlLocation) {
+				if (gfacURLString.startsWith("https")) {
+					GSSCredential proxy = null;
+					if (this.mode == GUI_MODE) {
+						this.myProxyChecker.loadIfNecessary();
+						MyProxyClient myProxyClient = this.engine
+								.getMyProxyClient();
+						proxy = myProxyClient.getProxy();
+					} else {
+						proxy = SecurityUtil.getGSSCredential(this.username,
+								this.password,
+								this.configuration.getMyProxyServer());
+					}
 
-                    } catch (URISyntaxException e) {
-                        raiseException(e);
-                    }
-                    // SecureGFacInvoker secureGFacInvoker = new
-                    // SecureGFacInvoker(portTypeQName,
-                    // WSDLUtil.wsdlDefinitions5ToWsdlDefintions3
-                    // (wsNode.getComponent().getWSDL()), node
-                    // .getID(), gfacURLString, notifier, secureInvoker,
-                    // leadCtxHeader, wsComponent.getOperationName());
-                    SecureGFacInvoker secureGFacInvoker = new SecureGFacInvoker(portTypeQName,
-                            WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(foreachWSNode.getComponent().getWSDL()),
-                            foreachWSNode.getID(), gfacURLString, this.notifier, secureInvoker, leadCtxHeader,
-                            wsComponent.getOperationName());
-                    invoker = secureGFacInvoker;
-                } else {
-                    invoker = new GenericInvoker(portTypeQName,
-                            WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(foreachWSNode.getComponent().getWSDL()),
-                            foreachWSNode.getID(), this.configuration.getMessageBoxURL().toString(), gfacURLString,
-                            this.notifier);
-                }
+					LeadContextHeader leadCtxHeader = null;
+					try {
+						if (this.mode == GUI_MODE) {
+							leadCtxHeader = WSDLUtil.buildLeadContextHeader(
+									this.workflow,
+									this.configuration,
+									this.engine.getMyLead(),
+									new MonitorConfiguration(this.configuration
+											.getBrokerURL(), this.topic, true,
+											this.configuration
+													.getMessageBoxURL()),
+									foreachWSNode.getID(), null);
+						} else {
+							leadCtxHeader = WSDLUtil
+									.buildLeadContextHeader(
+											this.workflow,
+											this.configuration,
+											// Set the userdn in the right proxy
+											// if necessary
+											new MyLead(
+													new MyLeadConfiguration(),
+													proxy),
+											new MonitorConfiguration(
+													this.configuration
+															.getBrokerURL(),
+													this.topic, true,
+													this.configuration
+															.getMessageBoxURL()),
+											foreachWSNode.getID(), null);
+						}
+					} catch (URISyntaxException e) {
+						throw new XBayaException(e);
+					}
 
-            } else {
-                if (!wsdlLocation.endsWith("?wsdl")) {
-                    wsdlLocation += "?wsdl";
-                }
-                invoker = new GenericInvoker(portTypeQName, wsdlLocation, foreachWSNode.getID(), this.configuration
-                        .getMessageBoxURL().toString(), gfacURLString, this.notifier);
-            }
-            invoker.setup();
-            invoker.setOperation(wsComponent.getOperationName());
-            invokerList.add(invoker);
-            // find inputs
-            List<DataPort> inputPorts = foreachWSNode.getInputPorts();
-            for (DataPort port : inputPorts) {
-                Object inputVal = findInputFromPort(port);
+					leadCtxHeader.setServiceId(foreachWSNode.getID());
+					try {
+						leadCtxHeader.setWorkflowId(new URI(this.workflow
+								.getName()));
 
-                /*
-                 * Handle ForEachNode
-                 */
-                Node fromNode = port.getFromNode();
-                if (fromNode instanceof ForEachNode) {
-                    inputVal = input;
-                }
+						/*
+						 * We do this so that the wsdl resolver can is setup
+						 * wsdlresolver.getInstance is static so once this is
+						 * done rest of the loading should work.
+						 */
+						XBayaSecurity.init();
 
-                if (null == inputVal) {
-                    throw new WorkFlowInterpreterException("Unable to find inputs for the node:"
-                            + foreachWSNode.getID());
-                }
-                invoker.setInput(port.getName(), inputVal);
-            }
-            invoker.invoke();
-        }
+					} catch (URISyntaxException e) {
+						throw new XBayaRuntimeException(e);
+					}
 
-        String arrayElementName = foreachWSNode.getOperationName() + "ArrayResponse";
-        String outputStr = "<" + arrayElementName + ">";
-        for (Iterator<WorkflowInvoker> iterator = invokerList.iterator(); iterator.hasNext();) {
-            WorkflowInvoker workflowInvoker = iterator.next();
-            Object output = workflowInvoker.getOutput(foreachWSNode.getOutputPort(0).getName());
-            outputStr += "\n<" + foreachWSNode.getOutputPort(0).getName() + ">" + output + "</"
-                    + foreachWSNode.getOutputPort(0).getName() + ">";
-        }
-        outputStr += "\n</" + arrayElementName + ">";
-        tempInvoker.addOutput(endForEachNode.getOutputPort(0).getName(), outputStr);
-        forEachNode.getGUI().setBodyColor(NodeState.FINISHED.color);
-        foreachWSNode.getGUI().setBodyColor(NodeState.FINISHED.color);
-        endForEachNode.getGUI().setBodyColor(NodeState.FINISHED.color);
+					/*
+					 * Resource Mapping Header
+					 */
+					if (this.resourceMapping != null) {
+						leadCtxHeader.setResourceMapping(this.resourceMapping);
+					}
 
-    }
+					/*
+					 * If there is a instance control component connects to this
+					 * component send information in soap header
+					 */
+					for (Node n : foreachWSNode.getControlInPort()
+							.getFromNodes()) {
+						if (n instanceof InstanceNode) {
+							// TODO make it as constant
+							LeadResourceMapping x = new LeadResourceMapping(
+									"AMAZON");
+
+							x.addAttribute("ACCESS_KEY", AmazonCredential
+									.getInstance().getAwsAccessKeyId());
+							x.addAttribute("SECRET_KEY", AmazonCredential
+									.getInstance().getAwsSecretAccessKey());
+
+							if (((InstanceNode) n).isStartNewInstance()) {
+								x.addAttribute("AMI_ID",
+										((InstanceNode) n).getIdAsValue());
+								x.addAttribute("INS_TYPE",
+										((InstanceNode) n).getInstanceType());
+							} else {
+								x.addAttribute("INS_ID",
+										((InstanceNode) n).getIdAsValue());
+							}
+
+							x.addAttribute("USERNAME",
+									((InstanceNode) n).getUsername());
+
+							// set to leadHeader
+							leadCtxHeader.setResourceMapping(x);
+						}
+					}
+
+					invoker = new WorkflowInvokerWrapperForGFacInvoker(
+							portTypeQName,
+							gfacURLString,
+							this.configuration.getMessageBoxURL().toString(),
+							leadCtxHeader,
+							this.notifier
+									.createServiceNotificationSender(foreachWSNode
+											.getID()));
+				} else {
+					invoker = new GenericInvoker(
+							portTypeQName,
+							WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(foreachWSNode
+									.getComponent().getWSDL()),
+							foreachWSNode.getID(), this.configuration
+									.getMessageBoxURL().toString(),
+							gfacURLString, this.notifier, this.configuration,
+							null);
+				}
+
+			} else {
+				if (!wsdlLocation.endsWith("?wsdl")) {
+					wsdlLocation += "?wsdl";
+				}
+				invoker = new GenericInvoker(portTypeQName, wsdlLocation,
+						foreachWSNode.getID(), this.configuration
+								.getMessageBoxURL().toString(), gfacURLString,
+						this.notifier);
+			}
+			/*
+			 * End duplication
+			 */
+
+			invoker.setup();
+			invoker.setOperation(wsComponent.getOperationName());
+			invokerList.add(invoker);
+			// find inputs
+			List<DataPort> inputPorts = foreachWSNode.getInputPorts();
+			for (DataPort port : inputPorts) {
+				Object inputVal = findInputFromPort(port);
+
+				/*
+				 * Handle ForEachNode
+				 */
+				Node fromNode = port.getFromNode();
+				if (fromNode instanceof ForEachNode) {
+					inputVal = input;
+				}
+
+				if (null == inputVal) {
+					throw new WorkFlowInterpreterException(
+							"Unable to find inputs for the node:"
+									+ foreachWSNode.getID());
+				}
+				invoker.setInput(port.getName(), inputVal);
+			}
+			invoker.invoke();
+		}
+
+		String outputStr = "";
+		for (Iterator<WorkflowInvoker> iterator = invokerList.iterator(); iterator
+				.hasNext();) {
+			WorkflowInvoker workflowInvoker = iterator.next();
+			Object output = workflowInvoker.getOutput(foreachWSNode
+					.getOutputPort(0).getName());
+			outputStr += "\n<value>" + output + "</value>";
+		}
+		tempInvoker.addOutput(endForEachNode.getOutputPort(0).getName(),
+				outputStr);
+		forEachNode.getGUI().setBodyColor(NodeState.FINISHED.color);
+		foreachWSNode.getGUI().setBodyColor(NodeState.FINISHED.color);
+		endForEachNode.getGUI().setBodyColor(NodeState.FINISHED.color);
+
+	}
 
     private ArrayList<Node> getReadyOutputNodesDynamically() {
         ArrayList<Node> list = new ArrayList<Node>();
