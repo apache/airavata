@@ -1,4 +1,4 @@
-##Used for mySQL database
+CREATE DATABASE IF NOT EXISTS wsmg;
 CREATE TABLE `subscription` (
                 `SubscriptionId` varchar(200) NOT NULL default '',
                 `Topics` varchar(255) default '',

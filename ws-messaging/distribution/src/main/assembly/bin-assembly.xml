@@ -26,7 +26,7 @@
 
 	<fileSets>
 		<!--
-			********************** copy axis2 distribution **********************
+			********************** copy axis2 distribution from messenger folder **********************
 		-->
 
 		<fileSet>
@@ -73,7 +73,7 @@
 			<outputDirectory>standalone-server/repository/services
 			</outputDirectory>
 			<includes>
-				<include>messagebroker*.aar</include>
+				<include>airavata-messagebroker*.aar</include>
 			</includes>
 		</fileSet>
 
@@ -86,7 +86,7 @@
 			<outputDirectory>standalone-server/repository/services
 			</outputDirectory>
 			<includes>
-				<include>messagebox*.aar</include>
+				<include>airavata-messagebox*.aar</include>
 			</includes>
 		</fileSet>
 
@@ -126,9 +126,9 @@
 
 		<fileSet>
 			<directory>../messagebroker/target</directory>
-			<outputDirectory>client-api</outputDirectory>
+			<outputDirectory>client-api/lib</outputDirectory>
 			<includes>
-				<include>messagebroker*.jar</include>
+				<include>airavata-messagebroker*.jar</include>
 			</includes>
 		</fileSet>
 
@@ -138,9 +138,9 @@
 
 		<fileSet>
 			<directory>../messagebox/target</directory>
-			<outputDirectory>client-api</outputDirectory>
+			<outputDirectory>client-api/lib</outputDirectory>
 			<includes>
-				<include>messagebox*.jar</include>
+				<include>airavata-messagebox*.jar</include>
 			</includes>
 		</fileSet>
 
@@ -151,9 +151,9 @@
 
 		<fileSet>
 			<directory>../workflow-tracking/target</directory>
-			<outputDirectory>client-api</outputDirectory>
+			<outputDirectory>client-api/lib</outputDirectory>
 			<includes>
-				<include>workflow*.jar</include>
+				<include>airavata-workflow*.jar</include>
 			</includes>
 		</fileSet>
 
@@ -201,7 +201,7 @@
 			<directory>../messenger/target</directory>
 			<outputDirectory>messenger</outputDirectory>
 			<includes>
-				<include>messenger*.war</include>
+				<include>airavata-messenger*.war</include>
 			</includes>
 		</fileSet>
 

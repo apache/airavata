@@ -5,7 +5,7 @@ DISTRIBUTION_ROOT=$(dirname `pwd`)
 BROKER_CLASS_PATH=""
 
 #broker libraries 
-for f in "$DISTRIBUTION_ROOT"/client-api/broker*.jar
+for f in "$DISTRIBUTION_ROOT"/client-api/lib/airavata-messagebroker*.jar
 do
   BROKER_CLASS_PATH="$BROKER_CLASS_PATH":$f
 done
@@ -20,6 +20,6 @@ done
 echo $BROKER_CLASS_PATH
 
 
-java -classpath "$BROKER_CLASS_PATH" wsmg.gui.NotificationViewer 
+java -classpath "$BROKER_CLASS_PATH" org.apache.airavata.wsmg.gui.NotificationViewer
 
 

@@ -101,7 +101,7 @@ public class WsmgCommonConstants {
     public static final String TABLE_NAME_EXPIRABLE_SUBCRIPTIONS = "subscription";
     public static final String TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS = "specialSubscription";
 
-    public static final String BROKER_CONFIGURATION_FILE_NAME = "org.apache.airavata.wsmg.broker.properties";
+    public static final String BROKER_CONFIGURATION_FILE_NAME = "msgBroker.properties";
 
     public static final String DELIVERY_PROTOCOL = "broker.delivery.protocol";
 

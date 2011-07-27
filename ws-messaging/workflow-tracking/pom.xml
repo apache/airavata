@@ -8,7 +8,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>Airavata</groupId>
-    <artifactId>workflow_tracking</artifactId>
+    <artifactId>airavata-workflowtracking</artifactId>
     <packaging>jar</packaging>
     <name>workflow-tracking</name>
     <url>http://incubator.apache.org/airavata/</url>
@@ -62,7 +62,7 @@
                 </executions>
                 <inherited>true</inherited>
                 <configuration>
-                    <outputJar>target/workflow_tracking_types-${pom.version}.jar</outputJar>
+                    <outputJar>target/airavata-workflowtrackingtypes-${pom.version}.jar</outputJar>
                     <xmlConfigs>
                         <xmlConfig implementation="java.io.File">src/main/xsdconfig/notification_types_ng.xsdconfig
                         </xmlConfig>
@@ -80,12 +80,12 @@
         </dependency>
         <dependency>
             <groupId>Airavata</groupId>
-            <artifactId>messagebox</artifactId>
+            <artifactId>airavata-messagebox</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
             <groupId>Airavata</groupId>
-            <artifactId>messagebroker</artifactId>
+            <artifactId>airavata-messagebroker</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>

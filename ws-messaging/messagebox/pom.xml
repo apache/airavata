@@ -8,7 +8,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>Airavata</groupId>
-    <artifactId>messagebox</artifactId>
+    <artifactId>airavata-messagebox</artifactId>
     <packaging>jar</packaging>
     <name>MessageBox</name>
     <url>http://incubator.apache.org/airavata/</url>
@@ -30,10 +30,6 @@
             <artifactId>axis2-kernel</artifactId>
             <version>${axis2.version}</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.axis2</groupId>

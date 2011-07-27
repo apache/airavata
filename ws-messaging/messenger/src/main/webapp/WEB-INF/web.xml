@@ -15,7 +15,7 @@
 		</init-param>
 		<init-param>
 			<param-name>configuration.file.name</param-name>
-			<param-value>wsmg.broker.properties</param-value>
+			<param-value>msgBroker.properties</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>

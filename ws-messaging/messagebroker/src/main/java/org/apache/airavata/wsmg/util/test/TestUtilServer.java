@@ -129,7 +129,7 @@ public class TestUtilServer {
         ServiceLifeCycle brokerLifeCycle = new BrokerServiceLifeCycle();
 
         final String configFileParam = "configuration.file.name";
-        final String configFileValue = "org.apache.airavata.wsmg.broker.properties";
+        final String configFileValue = "msgBroker.properties";
 
         AxisService notificationService = getNotificationService();
         notificationService.addParameter(configFileParam, configFileValue);

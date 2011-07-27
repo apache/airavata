@@ -25,12 +25,13 @@ import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.sun.tools.doclets.internal.toolkit.MethodWriter;
+import org.apache.airavata.wsmg.client.WseClientAPI;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
 
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
 import org.apache.airavata.wsmg.client.MsgBrokerClientException;
-import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.wsmg.samples.util.ConfigKeys;
 
 public class Consumer extends Thread {
@@ -75,7 +76,8 @@ public class Consumer extends Thread {
 
 		String subscriptionId = null;
 
-		WseMsgBrokerClient client = new WseMsgBrokerClient();
+//		WseMsgBrokerClient client = new WseMsgBrokerClient();
+        WseClientAPI client = new WseClientAPI();
 		client.init(brokerLocation);
 		try {
 			consumerEprs = client.startConsumerService(consumerPort,

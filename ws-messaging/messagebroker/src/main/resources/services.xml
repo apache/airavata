@@ -153,6 +153,6 @@
 
 	</service>
 	
-	 <parameter name="configuration.file.name" locked="false">org.apache.airavata.wsmg.broker.properties</parameter>
+	 <parameter name="configuration.file.name" locked="false">msgBroker.properties</parameter>
 	  
 </serviceGroup>
