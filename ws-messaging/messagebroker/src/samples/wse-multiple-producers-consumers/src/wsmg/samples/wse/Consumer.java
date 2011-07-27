@@ -24,7 +24,7 @@ package org.apache.airavata.wsmg.samples.wse;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import com.sun.tools.doclets.internal.toolkit.MethodWriter;
 import org.apache.airavata.wsmg.client.WseClientAPI;
 import org.apache.axiom.soap.SOAPEnvelope;
@@ -76,8 +76,7 @@ public class Consumer extends Thread {
 
 		String subscriptionId = null;
 
-//		WseMsgBrokerClient client = new WseMsgBrokerClient();
-        WseClientAPI client = new WseClientAPI();
+		WseMsgBrokerClient client = new WseMsgBrokerClient();
 		client.init(brokerLocation);
 		try {
 			consumerEprs = client.startConsumerService(consumerPort,
