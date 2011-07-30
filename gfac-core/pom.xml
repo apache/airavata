@@ -14,7 +14,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>Airavata</groupId>
+	<groupId>airavata</groupId>
 	<artifactId>GFac-Core</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>GFac-Core</name>
@@ -23,14 +23,6 @@
 		<org.slf4j.version>1.6.1</org.slf4j.version>
 		<log4j.version>1.2.16</log4j.version>
 	</properties>
-	<repositories>
-		<repository>
-			<name>ogce.m2.all</name>
-			<id>ogce.m2.all</id>
-			<url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all
-				</url>
-		</repository>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>cog-jglobus</groupId>

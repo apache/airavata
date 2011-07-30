@@ -2,8 +2,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <artifactId>ws-messenger</artifactId>
-        <groupId>Airavata</groupId>
+        <artifactId>airavata-ws-messenger</artifactId>
+        <groupId>airavata</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -13,13 +13,6 @@
     <name>MessageBox</name>
     <url>http://incubator.apache.org/airavata/</url>
 
-    <distributionManagement>
-        <repository>
-            <id>extreme-lab-maven2-repository</id>
-            <name>Extreme Lab Maven2 Repository</name>
-            <url>scp://rainier.extreme.indiana.edu/l/extreme/java/repository/</url>
-        </repository>
-    </distributionManagement>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

@@ -2,19 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>ws-messenger</artifactId>
-    <groupId>Airavata</groupId>
+    <artifactId>airavata-ws-messenger</artifactId>
+    <groupId>airavata</groupId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Airavata-WS-Messenger</name>
     <url>http://maven.apache.org</url>
 
     <repositories>
-        <repository>
-            <id>ogce.m2.all</id>
-            <name>ogce.m2.all</name>
-            <url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
-        </repository>
         <repository>
             <id>m2-snapshot-repository</id>
             <url>http://people.apache.org/repo/m2-snapshot-repository</url>

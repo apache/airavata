@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
 	<parent>
-		<artifactId>ws-messenger</artifactId>
-		<groupId>Airavata</groupId>
+		<artifactId>airavata-ws-messenger</artifactId>
+		<groupId>airavata</groupId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
