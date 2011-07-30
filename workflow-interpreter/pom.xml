@@ -15,22 +15,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>airavata</groupId>
-	<artifactId>workflow.interpreter</artifactId>
+	<artifactId>airavata-workflow.interpreter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Airavata Workflow Interpreter</name>
 	<url>http://incubator.apache.org/airavata</url>
-
-	<repositories>
-		<repository>
-			<name>ogce.m2.all</name>
-			<id>ogce.m2.all</id>
-			<url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all
-			</url>
-			<snapshots>
-				<updatePolicy>daily</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
 
 	<properties>
 		<axis2.version>1.5.4</axis2.version>

@@ -2,15 +2,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
-        <artifactId>ws-messenger</artifactId>
-        <groupId>Airavata</groupId>
+        <artifactId>airavata-ws-messenger</artifactId>
+        <groupId>airavata</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>Airavata</groupId>
+    <groupId>airavata</groupId>
     <artifactId>airavata-workflowtracking</artifactId>
     <packaging>jar</packaging>
-    <name>workflow-tracking</name>
+    <name>Airavata Workflow Tracking</name>
     <url>http://incubator.apache.org/airavata/</url>
 
     <build>
@@ -79,12 +79,12 @@
             <artifactId>axis2</artifactId>
         </dependency>
         <dependency>
-            <groupId>Airavata</groupId>
+            <groupId>airavata</groupId>
             <artifactId>airavata-messagebox</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
-            <groupId>Airavata</groupId>
+            <groupId>airavata</groupId>
             <artifactId>airavata-messagebroker</artifactId>
             <version>${airavata.version}</version>
         </dependency>

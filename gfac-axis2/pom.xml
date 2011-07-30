@@ -25,14 +25,6 @@
 		<axis2.version>1.5.4</axis2.version>
 		<axiom.version>1.2.8</axiom.version>
 	</properties>
-	<repositories>
-		<repository>
-			<name>ogce.m2.all</name>
-			<id>ogce.m2.all</id>
-			<url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all
-				</url>
-		</repository>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.axis2</groupId>
