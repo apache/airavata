@@ -27,7 +27,6 @@ import org.apache.airavata.xbaya.XBayaException;
  * The ComponentException class represents an Exception related to Components. Mostly, it is thrown when parsing a
  * Component XML.
  * 
- * @author Satoshi Shirasuna
  */
 public class ComponentException extends XBayaException {
 

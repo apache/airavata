@@ -1,5 +1,3 @@
-package org.apache.airavata.xbaya.workflow;
-
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,11 +19,10 @@ package org.apache.airavata.xbaya.workflow;
  *
  */
 
+package org.apache.airavata.xbaya.workflow;
+
 import org.apache.airavata.xbaya.XBayaException;
 
-/**
- * @author: Eran Chinthaka (eran.chinthaka@gmail.com)
- */
 public class WorkflowEngineException extends XBayaException {
     public WorkflowEngineException() {
         super(); // To change body of overridden methods use File | Settings | File Templates.

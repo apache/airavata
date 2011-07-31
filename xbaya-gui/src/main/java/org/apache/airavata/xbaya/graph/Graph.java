@@ -27,9 +27,6 @@ import java.util.List;
 import org.apache.airavata.xbaya.graph.gui.GraphGUI;
 import org.xmlpull.infoset.XmlElement;
 
-/**
- * @author Satoshi Shirasuna
- */
 public interface Graph extends GraphPiece {
 
     /**

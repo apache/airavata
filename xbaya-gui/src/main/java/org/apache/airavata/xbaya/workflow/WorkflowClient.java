@@ -1,5 +1,3 @@
-package org.apache.airavata.xbaya.workflow;
-
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,6 +19,8 @@ package org.apache.airavata.xbaya.workflow;
  *
  */
 
+package org.apache.airavata.xbaya.workflow;
+
 import java.net.URI;
 import java.util.Map;
 
@@ -41,9 +41,6 @@ import org.gpel.client.security.GpelUserX509Credential;
 import xsul5.MLogger;
 import xsul5.wsdl.WsdlDefinitions;
 
-/**
- * @author : Eran Chinthaka ( eran.chinthaka@gmail.com )
- */
 public abstract class WorkflowClient extends EventProducer {
     /**
      * Either workflow template or workflow instance

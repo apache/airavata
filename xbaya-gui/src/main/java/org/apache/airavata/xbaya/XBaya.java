@@ -29,9 +29,6 @@ import org.apache.airavata.xbaya.gui.ErrorMessages;
 
 import xsul5.MLogger;
 
-/**
- * @author Satoshi Shirasuna
- */
 public class XBaya {
 
     private static MLogger logger = MLogger.getLogger();
