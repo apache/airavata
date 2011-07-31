@@ -51,9 +51,6 @@ import xsul5.wsdl.WsdlMessagePart;
 import xsul5.wsdl.WsdlPortType;
 import xsul5.wsdl.WsdlPortTypeOperation;
 
-/**
- * @author Chathura Herath
- */
 public class StreamTransformer {
 
     /**
