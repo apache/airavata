@@ -1,5 +1,3 @@
-package org.apache.airavata.xbaya.security;
-
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,6 +19,8 @@ package org.apache.airavata.xbaya.security;
  *
  */
 
+package org.apache.airavata.xbaya.security;
+
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 
@@ -32,7 +32,6 @@ import org.ietf.jgss.GSSCredential;
  * this was not exposed within GpelUserX509Credential. GSSCredential needs to be passed in to WorkflowProxyClient as it
  * will be used when talking to XRegsitry.
  * 
- * @author: Eran Chinthaka (eran.chinthaka@gmail.com)
  */
 public class UserX509Credential extends GpelUserX509Credential {
     private GSSCredential gssCredential;
