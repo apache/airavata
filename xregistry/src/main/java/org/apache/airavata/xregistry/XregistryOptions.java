@@ -28,6 +28,8 @@ public interface XregistryOptions {
     
     public static final String DBURL ="databaseUrl";
     
+    public static final String JDBCDRIVERURL ="jdbcDriver";
+    
     public static final String PORT = "port";
     
     public static final String SECURITY_ENABLED = "securityEnabled";

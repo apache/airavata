@@ -31,7 +31,7 @@ public class JdbcStorage {
 
     // private String jdbcUrl=
     // "jdbc:mysql://156.56.104.175:3306/wsnt?user=root";
-    private String jdbcUrl = null;;
+    private String jdbcUrl = null;
     
 
     private PreparedStatement stmt = null;
