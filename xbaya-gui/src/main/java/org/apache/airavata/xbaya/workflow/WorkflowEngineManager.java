@@ -1,8 +1,3 @@
-/**
- * @author: Eran Chinthaka (eran.chinthaka@gmail.com)
- */
-package org.apache.airavata.xbaya.workflow;
-
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -23,6 +18,8 @@ package org.apache.airavata.xbaya.workflow;
  * under the License.
  *
  */
+
+package org.apache.airavata.xbaya.workflow;
 
 import java.net.URI;
 

@@ -1,5 +1,3 @@
-package org.apache.airavata.xbaya.workflow.proxy;
-
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,6 +18,8 @@ package org.apache.airavata.xbaya.workflow.proxy;
  * under the License.
  *
  */
+
+package org.apache.airavata.xbaya.workflow.proxy;
 
 import org.apache.airavata.xbaya.util.Pair;
 import org.ietf.jgss.GSSException;

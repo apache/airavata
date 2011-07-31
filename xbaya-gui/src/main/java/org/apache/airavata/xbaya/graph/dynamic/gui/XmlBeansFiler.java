@@ -30,23 +30,6 @@ import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
 
-//import org.apache.tools.ant.Project;
-//import org.apache.tools.ant.Target;
-//import org.apache.tools.ant.launch.Launcher;
-//import org.apache.tools.ant.taskdefs.Ant;
-//import org.apache.tools.ant.taskdefs.Javac;
-//import org.apache.tools.ant.types.Path;
-//import org.apache.xmlbeans.Filer;
-//import org.apache.xmlbeans.impl.common.JarHelper;
-//import org.apache.xmlbeans.impl.tool.CodeGenUtil;
-//
-//import sun.tools.java.ClassPath;
-//
-//import com.sun.tools.javac.Main;
-
-/**
- * @author Chathura Herath
- */
 public class XmlBeansFiler /* implements Filer */{
 
     private String path;

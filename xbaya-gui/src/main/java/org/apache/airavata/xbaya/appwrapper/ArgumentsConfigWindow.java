@@ -37,9 +37,6 @@ import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.util.StringUtil;
 import org.ogce.schemas.gfac.beans.utils.ParamObject;
 
-/**
- * @author Ye Fan
- */
 public class ArgumentsConfigWindow {
     private XBayaDialog dialog;
 
