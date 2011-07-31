@@ -30,7 +30,19 @@
 			<id>ogce.m2.all</id>
 			<url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
 		</repository>
+		 <repository>
+            <id>ibiblio</id>
+            <name>ibiblio Repository</name>
+            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2
+            </url>
+        </repository>
 	</repositories>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <airavata.version>0.0.1-SNAPSHOT</airavata.version>
+        <derby.version>10.8.1.2</derby.version>
+    </properties>
 	<profiles>
 		<profile>
 			<id>standalone</id>
@@ -38,9 +50,12 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<databaseUrl>jdbc:mysql://localhost:3306/xregistry_ogce</databaseUrl>
-				<databaseUser>xreg_ogce</databaseUser>
-				<databasePass>xreg_pass</databasePass>
+				<!-- 
+				<databaseDriver>org.apache.derby.jdbc.EmbeddedDriver</databaseDriver>
+				<databaseUrl>jdbc:derby:xregistry;create=true</databaseUrl>
+				 -->
+				<databaseDriver>com.mysql.jdbc.Driver</databaseDriver>
+				<databaseUrl>jdbc:mysql://localhost:3306/xregistry_ogce?user=xreg_ogce&amp;password=xreg_pass</databaseUrl>
 				<xregistry.typesVersion>0.8.3</xregistry.typesVersion>
 				<dist.dir>${basedir}/target/dist-bin/</dist.dir>
 				<port>6666</port>
@@ -49,23 +64,6 @@
 				<ssl.hostcertsKeyFile>conf/ogce_services_key.pem</ssl.hostcertsKeyFile>
 			</properties>
 		</profile>
-		<!--profile>
-			<id>collective</id>
-			<activation>
-				<file>
-					<exists>betacollective</exists>
-				</file>
-			</activation>
-			<properties>
-				<dist.dir>
-					${basedir}/target/dist-bin/
-		  		</dist.dir>
-		  		<xregistry.typesVersion>0.8.3</xregistry.typesVersion>
-				<ssl.trustedCertsFile>${trustedCertsLocation}</ssl.trustedCertsFile>
-				<ssl.hostcertsKeyFile>conf/ogce_services_key.pem</ssl.hostcertsKeyFile>
-				<port>${xregistry.port}</port>
-			</properties>
-		</profile>-->
 	</profiles>
 
 	<build>
@@ -160,7 +158,8 @@
 									<filterset>
 										<filter token="keyfile" value="${ssl.hostcertsKeyFile}"/>
 										<filter token="trustedcert" value="${ssl.trustedCertsFile}"/>
-										<filter token="dburl" value="${databaseUrl}?user=${databaseUser}&amp;password=${databasePass}"/>
+										<filter token="dbDriver" value="${databaseDriver}"/>
+				   					    <filter token="dburl" value="${databaseUrl}"/>
 										<filter token="port" value="${port}"/>
 									</filterset>
 								</copy>
@@ -288,13 +287,23 @@
 			<artifactId>xutil</artifactId>
 			<version>0.1.2</version>
 		</dependency>
-
-		<dependency>
+        
+        <dependency>
+      		<groupId>org.apache.derby</groupId>
+      		<artifactId>derby</artifactId>
+      		<version>${derby.version}</version>
+    	</dependency>
+    	<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>derbytools</artifactId>
+			<version>${derby.version}</version>
+		</dependency>
+		<!-- dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.12</version>
 			<scope>provided</scope>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>

@@ -16,6 +16,7 @@
 */
 package org.apache.airavata.xregistry.doc;
 
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -80,6 +81,7 @@ public class DocumentRegistryImpl implements SQLConstants, DocumentRegistry {
                 statement = connection.prepareStatement(sql);
                 for (int i = 0; i < sqlParams.length; i++) {
                     SqlParam param = sqlParams[i];
+                    log.info("Sql Data Type : " + param.getType());
                     switch (param.getType()) {
                     case Int:
                         statement.setInt(i + 1, Integer.parseInt(param.getValue()));
@@ -90,6 +92,8 @@ public class DocumentRegistryImpl implements SQLConstants, DocumentRegistry {
                     case Long:
                         statement.setLong(i + 1, Long.parseLong(param.getValue()));
                         break;
+                    case CLOB:
+                    	statement.setAsciiStream(1+1,  new ByteArrayInputStream(param.getValue().getBytes("UTF-8")));
                     default:
                         throw new XregistryException("Unknown SQL param type " + param.getType());
                     }

@@ -73,7 +73,7 @@ public interface SQLConstants {
     public static final String GET_USERS_GIVEN_GROUP = "SELECT userid from user_groups_table WHERE groupid =?";
     public static final String GET_GROUPS_GIVEN_USER = "SELECT groupid from user_groups_table WHERE  userid=?";
     public static final String GET_SUBGROUPS_GIVEN_GROUP = "SELECT contained_groupid from group_group_table WHERE  groupid=?";
-    public static final String GET_ADMIN_USERS_SQL = "SELECT userid from user_table WHERE isAdmin=true";
+    public static final String GET_ADMIN_USERS_SQL = "SELECT userid from user_table WHERE isAdmin=?";
     
    
     public static final String ADD_RESOURCE_SQL = "INSERT INTO resource_table (resourceid ,owner) VALUES (?, ?)";

@@ -20,7 +20,6 @@ package org.apache.airavata.xregistry;
 public interface XregistryConstants {
     public static final String LOGGER_NAME = "xregistry.logger";
     public static final String X_REGISTRY_PROPERTY_FILE = "xregistry.properties";
-    public static final String XREGISTRY_SQL_FILE = "tables.sql";
     public static final String ANONYMOUS_USER = "/C=US/O=Extreme Lab Indiana University/CN=Anonymous User";
     public static final String PUBLIC_GROUP = "public";
     public static final String DEFAULTPARENT = "default";
@@ -29,7 +28,7 @@ public interface XregistryConstants {
     public static enum Action {All,AddNew,Read,Write,ResourceAdmin,SysAdmin};
     
     public static enum DocType{ServiceDesc,AppDesc,HostDesc,CWsdl};
-    public static enum SqlParmType{String,Int,Long};
+    public static enum SqlParmType{String,Int,Long,CLOB};
     
 }
 
