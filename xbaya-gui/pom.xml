@@ -196,31 +196,6 @@
 			<version>0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>lead</groupId>
-			<artifactId>lead-metadata</artifactId>
-			<version>1.8.1</version>
-		</dependency>
-		<dependency>
-			<groupId>lead</groupId>
-			<artifactId>lead-metadata-util</artifactId>
-			<version>1.6.2</version>
-		</dependency>
-		<dependency>
-			<groupId>mylead</groupId>
-			<artifactId>xmccat-types-metadata</artifactId>
-			<version>1.2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>mylead</groupId>
-			<artifactId>lead-xmccat-domain-metadata</artifactId>
-			<version>1.2.0</version>
-		</dependency>
-		<dependency>
-			<groupId>mylead</groupId>
-			<artifactId>mylead-agent-typelib</artifactId>
-			<version>3.4</version>
-		</dependency>
-		<dependency>
 			<groupId>xregistry</groupId>
 			<artifactId>xregistry-client</artifactId>
 			<version>1.1</version>

@@ -66,7 +66,7 @@ public class MyProxyDialog {
     private boolean blocking;
 
     /**
-     * Constructs a MyLeadSaveWorkflowWindow.
+     * Constructs a SaveWorkflowWindow.
      * 
      * @param engine
      */

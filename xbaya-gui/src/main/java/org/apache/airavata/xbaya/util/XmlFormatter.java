@@ -38,8 +38,8 @@ import org.xml.sax.SAXException;
 
 /**
  * Pretty-prints xml, supplied as a string.
- *         <p/>
- *         eg. <code>
+ * <p/>
+ * eg. <code>
  * String formattedXml = new XmlFormatter().format("<tag><nested>hello</nested></tag>");
  * </code>
  */

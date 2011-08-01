@@ -39,7 +39,6 @@ import org.apache.airavata.xbaya.experiment.gui.ExperimentMenu;
 import org.apache.airavata.xbaya.file.gui.FileMenu;
 import org.apache.airavata.xbaya.gpel.gui.GPELMenu;
 import org.apache.airavata.xbaya.monitor.gui.MonitorMenu;
-import org.apache.airavata.xbaya.mylead.gui.MyLeadMenu;
 import org.apache.airavata.xbaya.myproxy.gui.MyProxyMenu;
 import org.apache.airavata.xbaya.pegasus.gui.PegasusMenu;
 import org.apache.airavata.xbaya.wf.gui.WorkflowMenu;
@@ -61,8 +60,6 @@ public class XBayaMenu implements XBayaComponent {
     private PegasusMenu pegasusMenu;
 
     private AmazonEC2Menu amazonEC2Menu;
-
-    private MyLeadMenu myLeadMenu;
 
     private ComponentMenu componentMenu;
 
@@ -86,7 +83,6 @@ public class XBayaMenu implements XBayaComponent {
         this.gpelMenu = new GPELMenu(this.engine);
         this.pegasusMenu = new PegasusMenu(this.engine);
         this.amazonEC2Menu = new AmazonEC2Menu(this.engine);
-        this.myLeadMenu = new MyLeadMenu(this.engine);
         this.componentMenu = new ComponentMenu(this.engine);
         this.monitorMenu = new MonitorMenu(this.engine);
         this.myProxyMenu = new MyProxyMenu(this.engine);
@@ -118,7 +114,6 @@ public class XBayaMenu implements XBayaComponent {
         this.menuBar.add(this.gpelMenu.getMenu());
         this.menuBar.add(this.pegasusMenu.getMenu());
         this.menuBar.add(this.amazonEC2Menu.getMenu());
-        this.menuBar.add(this.myLeadMenu.getMenu());
         this.menuBar.add(this.myProxyMenu.getMenu());
         this.menuBar.add(this.monitorMenu.getMenu());
         this.menuBar.add(this.registerApplications.getMenu());

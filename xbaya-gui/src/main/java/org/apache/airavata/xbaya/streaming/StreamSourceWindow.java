@@ -20,6 +20,7 @@
  */
 
 package org.apache.airavata.xbaya.streaming;
+
 public class StreamSourceWindow {
 
 }

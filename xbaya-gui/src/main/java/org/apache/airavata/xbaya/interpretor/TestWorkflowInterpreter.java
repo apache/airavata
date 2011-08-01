@@ -214,7 +214,6 @@ public class TestWorkflowInterpreter {
         configuration.setDSCURL(XBayaConstants.DEFAULT_DSC_URL);
         configuration.setGFacURL(XBayaConstants.DEFAULT_GFAC_URL);
         configuration.setMessageBoxURL(XBayaConstants.DEFAULT_MESSAGE_BOX_URL);
-        configuration.setMyLeadAgentURL(XBayaConstants.DEFAULT_MYLEAD_AGENT_URL);
         configuration.setMyProxyLifetime(XBayaConstants.DEFAULT_MYPROXY_LIFTTIME);
         configuration.setMyProxyPort(XBayaConstants.DEFAULT_MYPROXY_PORT);
         configuration.setMyProxyServer(XBayaConstants.DEFAULT_MYPROXY_SERVER);

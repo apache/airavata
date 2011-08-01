@@ -83,26 +83,6 @@ public class XBayaConstants {
     public static final URI DEFAULT_DSC_URL = URI.create("https://silktree.cs.indiana.edu:52520/");
 
     /**
-     * Default myLead agent URL
-     */
-    public static final URI DEFAULT_MYLEAD_AGENT_URL = URI.create("https://pagodatree.cs.indiana.edu:20243/agent");
-
-    /**
-     * DEFAULT_MYLEAD_SAMPLE_USER
-     */
-    public static final String DEFAULT_MYLEAD_SAMPLE_USER = "/O=LEAD Project/OU=Indiana University Extreme Lab/OU=linbox1.extreme.indiana.edu/OU=extreme.indiana.edu/CN=drworkflow/EMAIL=drlead@cs.indiana.edu ";
-
-    /**
-     * DEFAULT_MYLEAD_SAMPLE_PROJECT_NAME
-     */
-    public static final String DEFAULT_MYLEAD_SAMPLE_PROJECT_NAME = "Sample Workflows";
-
-    /**
-     * DEFAULT_MYLEAD_SAMPLE_PROJECT_ID
-     */
-    public static final String DEFAULT_MYLEAD_SAMPLE_PROJECT_ID = "urn:uuid:8cfe9f0f-4d2a-45a1-abe5-c858411d9832";
-
-    /**
      * DEFAULT_MYPROXY_SERVER
      */
     public static final String DEFAULT_MYPROXY_SERVER = "myproxy.teragrid.org";

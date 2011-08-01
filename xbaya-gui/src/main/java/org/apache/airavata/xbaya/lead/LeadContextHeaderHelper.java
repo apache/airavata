@@ -26,7 +26,6 @@ import java.net.URI;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
-import org.apache.airavata.xbaya.mylead.MyLeadConfiguration;
 import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 
@@ -93,15 +92,6 @@ public class LeadContextHeaderHelper {
     }
 
     /**
-     * @param myLeadAgentURL
-     */
-    public void setMyLeadAgentURL(URI myLeadAgentURL) {
-        if (myLeadAgentURL != null) {
-            this.leadContextHeader.setMyleadAgentUrl(WSDLUtil.appendWSDLQuary(myLeadAgentURL));
-        }
-    }
-
-    /**
      * @param brokerURL
      * @param topic
      */
@@ -148,14 +138,6 @@ public class LeadContextHeaderHelper {
     }
 
     /**
-     * @param myleadConfiguration
-     */
-    public void setMyLeadConfiguration(MyLeadConfiguration myleadConfiguration) {
-        setUser(myleadConfiguration.getUser());
-        setMyLeadAgentURL(myleadConfiguration.getURL());
-    }
-
-    /**
      * @param monitorConfiguration
      */
     public void setMonitorConfiguration(MonitorConfiguration monitorConfiguration) {
@@ -163,7 +145,7 @@ public class LeadContextHeaderHelper {
     }
 
     /**
-     * This method has to be called before setMyLeadConfiguration() or setMonitorConfiguration because this will
+     * This method has to be called before setMonitorConfiguration because this will
      * overwrite some variables.
      * 
      * @param xbayaConfiguration
@@ -175,8 +157,6 @@ public class LeadContextHeaderHelper {
         // The followings might overwrite some variables.
         setWorkflowTemplateID(xbayaConfiguration.getGPELTemplateID());
         setWorkflowInstanceID(xbayaConfiguration.getGPELInstanceID());
-        setUser(xbayaConfiguration.getMyLeadUser());
-        setMyLeadAgentURL(xbayaConfiguration.getMyLeadAgentURL());
         setEventSink(xbayaConfiguration.getBrokerURL(), xbayaConfiguration.getTopic());
     }
 

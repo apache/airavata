@@ -61,14 +61,6 @@ public abstract class XBayaTestCase extends TestCase {
             this.configuration.setTopic("xbaya-test");
         }
 
-        // MyLEAD
-        if (this.configuration.getMyLeadUser() == null) {
-            this.configuration.setMyLeadUser(SAMPLE_MY_LEAD_USER);
-        }
-        if (this.configuration.getMyLeadProject() == null) {
-            this.configuration.setMyLeadProject(SAMPLE_MY_LEAD_PROJECT);
-        }
-
         // Overwrite some default setting.
         String gpelURLString = System.getProperty("gpel.url");
         if (gpelURLString != null) {

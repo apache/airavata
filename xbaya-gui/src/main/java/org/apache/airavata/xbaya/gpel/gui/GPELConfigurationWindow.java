@@ -52,7 +52,7 @@ public class GPELConfigurationWindow {
     private XBayaTextField uriField;
 
     /**
-     * Constructs a MyLeadSaveWorkflowWindow.
+     * Constructs a SaveWorkflowWindow.
      * 
      * @param engine
      */

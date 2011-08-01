@@ -44,7 +44,6 @@ public class WorkflowInterpretorSkeleton {
 
     public static final String XREGISTRY = "xregistry";
     public static final String PROXYSERVER = "proxyserver";
-    public static final String MYLEAD = "mylead";
     public static final String MSGBOX = "msgbox";
     public static final String GFAC = "gfac";
     public static final String DSC = "dsc";
@@ -133,8 +132,6 @@ public class WorkflowInterpretorSkeleton {
         configuration.setGFacURL(new URI(findValue(vals, GFAC, XBayaConstants.DEFAULT_GFAC_URL.toString())));
         configuration.setMessageBoxURL(new URI(findValue(vals, MSGBOX,
                 XBayaConstants.DEFAULT_MESSAGE_BOX_URL.toString())));
-        configuration.setMyLeadAgentURL(new URI(findValue(vals, MYLEAD,
-                XBayaConstants.DEFAULT_MYLEAD_AGENT_URL.toString())));
         configuration.setMyProxyLifetime(XBayaConstants.DEFAULT_MYPROXY_LIFTTIME);
         configuration.setMyProxyPort(XBayaConstants.DEFAULT_MYPROXY_PORT);
         configuration.setMyProxyServer(findValue(vals, PROXYSERVER, XBayaConstants.DEFAULT_MYPROXY_SERVER));

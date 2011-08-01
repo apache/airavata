@@ -62,14 +62,6 @@ import xsul.xhandler_soap_sticky_header.StickySoapHeaderHandler;
 import xsul.xwsif_runtime.WSIFClient;
 import xsul.xwsif_runtime.XmlBeansWSIFRuntime;
 import xsul5.wsdl.WsdlDefinitions;
-import edu.indiana.dde.mylead.agent.AgentPortType;
-import edu.indiana.dde.mylead.agent.xmlbeans.CollectionType;
-import edu.indiana.dde.mylead.agent.xmlbeans.CreateCollectionsRequestType;
-import edu.indiana.dde.mylead.agent.xmlbeans.CreateExperimentsRequestDocument;
-import edu.indiana.dde.mylead.agent.xmlbeans.OperationResponseDocument;
-import edu.indiana.extreme.lead.metadata.LEADResourceType;
-import edu.indiana.extreme.lead.metadata.ThemeType;
-import edu.indiana.extreme.lead.metadata.util.MinimalLEADMetadata;
 
 public class ODEClient {
 
@@ -258,7 +250,6 @@ public class ODEClient {
         leadContextHelper.setGFacURL(XBayaConstants.DEFAULT_GFAC_URL);
 
         leadContextHelper.setUser(usedDN);
-        leadContextHelper.setMyLeadAgentURL(XBayaConstants.DEFAULT_MYLEAD_AGENT_URL);
         leadContextHelper.setWorkflowInstanceID(instanceID);
         leadContextHelper.setWorkflowTemplateID(workflow.getUniqueWorkflowName());
 
@@ -420,59 +411,6 @@ public class ODEClient {
         // XBayaConstants.DEFAULT_ODE_URL,
         // client.getDefaultLeadHeader(workflow1, "topic", userDN,
         // URI.create(instanceID), null, null));
-
-    }
-
-    /**
-     * @param client
-     * @param instanceID
-     * @param userDN
-     * @param wsdlLoc
-     * @param experimentName
-     * @param experimentDescription
-     * @return
-     */
-    private static OperationResponseDocument createExperiment(String instanceID, String templateID, String userDN,
-            String wsdlLoc, String experimentName, String experimentDescription) {
-        AgentPortType stub = new ODEClient().createStub(userDN, wsdlLoc);
-        CreateExperimentsRequestDocument experimentDoc = CreateExperimentsRequestDocument.Factory.newInstance();
-        CreateCollectionsRequestType createCollectionReq = CreateCollectionsRequestType.Factory.newInstance();
-        CollectionType collectionInfo = createCollectionReq.addNewCollectionInfo();
-
-        MinimalLEADMetadata minimalLEADMetadata = new MinimalLEADMetadata(userDN, experimentName, experimentDescription);
-
-        LEADResourceType leadResource = minimalLEADMetadata.getLeadResourceDoc().getLEADresource();
-        ThemeType theme = leadResource.addNewData().addNewIdinfo().addNewKeywords().addNewTheme();
-
-        theme.addNewThemekey().setStringValue(instanceID);
-        theme.setThemekt("ROOT_WORKFLOW_ID");
-
-        theme = leadResource.addNewData().addNewIdinfo().addNewKeywords().addNewTheme();
-
-        theme.addNewThemekey().setStringValue(templateID);
-        theme.setThemekt("ROOT_WORKFLOW_INSTANCE_ID");
-
-        collectionInfo.setLEADresource(leadResource);
-
-        collectionInfo.setAssignNewResourceID(true);
-
-        experimentDoc.setCreateExperimentsRequest(createCollectionReq);
-
-        OperationResponseDocument res = stub.createExperiments(experimentDoc);
-        return res;
-    }
-
-    private AgentPortType createStub(String dn, String wsdlLoc) {
-        LeadContextHeader leadContextHeader = new LeadContextHeader("NEI", dn);
-        leadContextHeader.setUserDn(dn);
-        StickySoapHeaderHandler soapHeaderHandler = new StickySoapHeaderHandler("use-lead-header", leadContextHeader);
-
-        WSIFClient wcl = XmlBeansWSIFRuntime.newClient(wsdlLoc);
-        wcl.addHandler(soapHeaderHandler);
-
-        AgentPortType stub = (AgentPortType) wcl.generateDynamicStub(AgentPortType.class);
-
-        return stub;
 
     }
 

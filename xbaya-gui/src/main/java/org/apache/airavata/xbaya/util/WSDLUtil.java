@@ -39,7 +39,6 @@ import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
-import org.apache.airavata.xbaya.mylead.MyLead;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.xmlpull.infoset.XmlAttribute;
 import org.xmlpull.infoset.XmlBuilderException;
@@ -480,7 +479,7 @@ public class WSDLUtil {
         XBayaConfiguration configuration = engine.getConfiguration();
         Workflow workflow = engine.getWorkflow();
 
-        LeadContextHeader leadContext = buildLeadContextHeader(workflow, configuration, engine.getMyLead(),
+        LeadContextHeader leadContext = buildLeadContextHeader(workflow, configuration,
                 monitorConfiguration, nodeId, resourceMapping);
 
         return leadContext;
@@ -494,16 +493,14 @@ public class WSDLUtil {
      * @param resourceMapping
      * @param configuration
      * @param workflow
-     * @param myLead
      * @return
      * @throws URISyntaxException
      */
     public static LeadContextHeader buildLeadContextHeader(Workflow workflow, XBayaConfiguration configuration,
-            MyLead myLead, MonitorConfiguration monitorConfiguration, String nodeId, LeadResourceMapping resourceMapping)
+            MonitorConfiguration monitorConfiguration, String nodeId, LeadResourceMapping resourceMapping)
             throws URISyntaxException {
         LeadContextHeaderHelper leadContextHelper = new LeadContextHeaderHelper();
         leadContextHelper.setXBayaConfiguration(configuration);
-        leadContextHelper.setMyLeadConfiguration(myLead.getConfiguration());
 
         leadContextHelper.setWorkflowInstanceID(workflow.getGPELInstanceID());
         leadContextHelper.setWorkflowTemplateID(workflow.getUniqueWorkflowName());

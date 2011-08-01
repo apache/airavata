@@ -61,7 +61,6 @@ public class GPELWorkflowContext implements WorkflowContext {
         leadContextHeader.setWorkflowTemplateId(workflow.getGPELTemplateID());
         leadContextHeader.setWorkflowInstanceId(new URI(client.getInstanceID()));
         leadContextHeader.setUserDn(proxy.getName().toString());
-        leadContextHeader.setMyleadAgentUrl(new URI(XBayaConstants.DEFAULT_MYLEAD_AGENT_URL.toString() + "?wsdl"));
         WsaEndpointReference eventSink = WseClientAPI.createEndpointReference(
                 XBayaConstants.DEFAULT_BROKER_URL.toString(), topic);
         leadContextHeader.setEventSink(eventSink);
