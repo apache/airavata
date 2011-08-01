@@ -40,8 +40,6 @@ public class XBayaSecurity {
 
     public static final String OGCE_TRUSTED_CERTIFICATES = "/ogce-teragrid-cas.pem";
 
-    public static final String LEAD_TRUSTED_CERTIFICATES = "/lead-trusted-cas.pem";
-
     private static final String ANONYMOUS_CERTIFICATE = "/hostcertkey-annonymous.pem";
 
     private static X509Certificate[] trustedCertificates;
@@ -57,11 +55,9 @@ public class XBayaSecurity {
         }
 
         List<X509Certificate> ogceTrustedCertificates = getTrustedCertificates(OGCE_TRUSTED_CERTIFICATES);
-        List<X509Certificate> leadTrustedCertificates = getTrustedCertificates(LEAD_TRUSTED_CERTIFICATES);
 
         List<X509Certificate> allTrustedCertificates = new ArrayList<X509Certificate>();
         allTrustedCertificates.addAll(ogceTrustedCertificates);
-        allTrustedCertificates.addAll(leadTrustedCertificates);
 
         trustedCertificates = allTrustedCertificates.toArray(new X509Certificate[allTrustedCertificates.size()]);
         return trustedCertificates;
