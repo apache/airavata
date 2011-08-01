@@ -286,7 +286,8 @@ public class WorkflowInterpreter {
                 if (readyNodes.size() == 0) {
                     try {
                         Thread.sleep(400);
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException
+                            e) {
                         e.printStackTrace();
                     }
                 }
@@ -627,13 +628,16 @@ public class WorkflowInterpreter {
                 }
 
             } else {
+                if(wsdlLocation.endsWith("/")){
+                    wsdlLocation = wsdlLocation.substring(0,wsdlLocation.length() -1);
+                }
                 if (!wsdlLocation.endsWith("?wsdl")) {
                     wsdlLocation += "?wsdl";
                 }
                 invoker = new GenericInvoker(portTypeQName, wsdlLocation, node.getID(), this.configuration
                         .getMessageBoxURL().toString(), gfacURLString, this.notifier);
             }
-            invoker.setup();
+                invoker.setup();
             this.invokerMap.put(node, invoker);
             invoker.setOperation(wsComponent.getOperationName());
         }
