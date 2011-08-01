@@ -39,7 +39,7 @@ public class WorkflowInterpreterInvoker implements HeaderConstants {
             throws AxisFault, RemoteException, ComponentException {
 
         String workflowAsString = workflow.toXMLText();
-        NameValue[] configurations = new NameValue[7];
+        NameValue[] configurations = new NameValue[6];
         configurations[0] = new NameValue();
         configurations[0].setName(HEADER_ELEMENT_GFAC);
         configurations[0].setValue(XBayaConstants.DEFAULT_GFAC_URL.toString());
@@ -49,21 +49,18 @@ public class WorkflowInterpreterInvoker implements HeaderConstants {
         configurations[2] = new NameValue();
         configurations[2].setName(HEADER_ELEMENT_PROXYSERVER);
         configurations[2].setValue(XBayaConstants.DEFAULT_MYPROXY_SERVER);
+
         configurations[3] = new NameValue();
-        configurations[3].setName(HEADER_ELEMENT_MYLEAD);
-        configurations[3].setValue(XBayaConstants.DEFAULT_MYLEAD_AGENT_URL.toString());
+        configurations[3].setName(HEADER_ELEMENT_MSGBOX);
+        configurations[3].setValue(XBayaConstants.DEFAULT_MESSAGE_BOX_URL.toString());
 
         configurations[4] = new NameValue();
-        configurations[4].setName(HEADER_ELEMENT_MSGBOX);
-        configurations[4].setValue(XBayaConstants.DEFAULT_MESSAGE_BOX_URL.toString());
+        configurations[4].setName(HEADER_ELEMENT_DSC);
+        configurations[4].setValue(XBayaConstants.DEFAULT_DSC_URL.toString());
 
         configurations[5] = new NameValue();
-        configurations[5].setName(HEADER_ELEMENT_DSC);
-        configurations[5].setValue(XBayaConstants.DEFAULT_DSC_URL.toString());
-
-        configurations[6] = new NameValue();
-        configurations[6].setName(HEADER_ELEMENT_BROKER);
-        configurations[6].setValue(XBayaConstants.DEFAULT_BROKER_URL.toString());
+        configurations[5].setName(HEADER_ELEMENT_BROKER);
+        configurations[5].setValue(XBayaConstants.DEFAULT_BROKER_URL.toString());
 
         LinkedList<NameValue> nameValPairsList = new LinkedList<NameValue>();
         List<InputNode> wfInputs = new ODEClient().getInputNodes(workflow);

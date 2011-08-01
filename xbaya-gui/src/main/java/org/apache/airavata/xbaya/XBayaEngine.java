@@ -45,8 +45,6 @@ import org.apache.airavata.xbaya.gui.XBayaGUI;
 import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.gui.MonitorStarter;
-import org.apache.airavata.xbaya.mylead.MyLead;
-import org.apache.airavata.xbaya.mylead.MyLeadConfiguration;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.myproxy.gui.MyProxyDialog;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
@@ -68,8 +66,6 @@ public class XBayaEngine {
     private XBayaConfiguration configuration;
 
     private XBayaGUI gui;
-
-    private MyLead myLead;
 
     private WorkflowClient workflowClient;
 
@@ -112,7 +108,6 @@ public class XBayaEngine {
         // These have to be before the GUI setup.
         this.workflowClient = WorkflowEngineManager.getWorkflowClient();
         this.workflowClient.setXBayaEngine(this);
-        this.myLead = new MyLead();
 
         this.subWorkflowUpdater = new SubWorkflowUpdater(this);
 
@@ -172,15 +167,6 @@ public class XBayaEngine {
      */
     public SubWorkflowUpdater getSubWorkflowUpdater() {
         return this.subWorkflowUpdater;
-    }
-
-    /**
-     * Returns the MyLeadConnection.
-     * 
-     * @return the MyLeadConnection
-     */
-    public MyLead getMyLead() {
-        return this.myLead;
     }
 
     /**
@@ -248,7 +234,6 @@ public class XBayaEngine {
         // load myProxy before loading components from registries.
         loadMyProxy();
 
-        initMyLead();
         initRegistry();
 
         // TODO May be we need to load a default workflow from Xregistry.
@@ -283,18 +268,6 @@ public class XBayaEngine {
                 dialog.show(true); // blocking
             }
 
-        }
-    }
-
-    private void initMyLead() {
-        MyLeadConfiguration myLeadConfiguration = this.myLead.getConfiguration();
-        try {
-            myLeadConfiguration.set(this.configuration.getMyLeadAgentURL(), this.configuration.getMyLeadUser(),
-                    this.configuration.getMyLeadProject());
-        } catch (RuntimeException e) {
-            getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-        } catch (Error e) {
-            getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         }
     }
 
@@ -397,9 +370,6 @@ public class XBayaEngine {
      */
     private void loadDefaultGraph() {
         this.configuration.getGPELTemplateID();
-        if (null != this.configuration.getMyLeadWorkflowNS() && null != this.configuration.getMyLeadWorkflowName()) {
-            new QName(this.configuration.getMyLeadWorkflowNS(), this.configuration.getMyLeadWorkflowName());
-        }
         String localWorkflow = this.configuration.getWorkflow();
         if (null != localWorkflow && !"".equals(localWorkflow)) {
             XRegistryAccesser xregistryAccesser = new XRegistryAccesser(this.configuration.getMyProxyUsername(),

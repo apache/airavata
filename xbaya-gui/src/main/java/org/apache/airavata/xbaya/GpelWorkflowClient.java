@@ -252,7 +252,6 @@ public class GpelWorkflowClient implements Callback {
         leadContextHeader.setWorkflowTemplateId(new URI(workflow.getGPELTemplateID().toString()));
         leadContextHeader.setWorkflowInstanceId(new URI(instance.getInstanceId().toString()));
         leadContextHeader.setUserDn(proxy.getName().toString());
-        leadContextHeader.setMyleadAgentUrl(new URI(XBayaConstants.DEFAULT_MYLEAD_AGENT_URL.toString() + "?wsdl"));
         WsaEndpointReference eventSink = WseClientAPI.createEndpointReference(
                 XBayaConstants.DEFAULT_BROKER_URL.toString(), topic);
         leadContextHeader.setEventSink(eventSink);

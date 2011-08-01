@@ -67,22 +67,6 @@ public class XBayaConfiguration {
 
     private URI dscURL = XBayaConstants.DEFAULT_DSC_URL;
 
-    // MyLead related
-
-    private URI myLeadAgentURL = XBayaConstants.DEFAULT_MYLEAD_AGENT_URL;
-
-    private String myLeadUser = null;
-
-    private String myLeadProject = null;
-
-    private String myLeadWorkflowName = null;
-
-    private String myLeadWorkflowNS = null;
-
-    private String myLeadSampleUser = XBayaConstants.DEFAULT_MYLEAD_SAMPLE_USER;
-
-    private String myLeadSampleProject = XBayaConstants.DEFAULT_MYLEAD_SAMPLE_PROJECT_ID;
-
     // Monitor related
 
     private boolean startMonitor = false;
@@ -169,10 +153,6 @@ public class XBayaConfiguration {
         URI dsc = config.getDscUrl();
         if (dsc != null) {
             this.dscURL = dsc;
-        }
-        URI mylead = config.getMyLeadAgentUrl();
-        if (mylead != null) {
-            this.myLeadAgentURL = mylead;
         }
         URI broker = config.getBrokerUrl();
         if (broker != null) {
@@ -360,139 +340,6 @@ public class XBayaConfiguration {
      */
     public void setDSCURL(URI dscURL) {
         this.dscURL = dscURL;
-    }
-
-    /**
-     * Returns the myLeadAgentUrl.
-     * 
-     * @return The myLeadAgentUrl
-     */
-    public URI getMyLeadAgentURL() {
-        return this.myLeadAgentURL;
-    }
-
-    /**
-     * Sets myLeadAgentUrl.
-     * 
-     * @param myLeadAgentURL
-     *            The myLeadAgentUrl to set.
-     */
-    public void setMyLeadAgentURL(URI myLeadAgentURL) {
-        this.myLeadAgentURL = myLeadAgentURL;
-    }
-
-    /**
-     * Returns the myLeadProject.
-     * 
-     * @return The myLeadProject
-     */
-    public String getMyLeadProject() {
-        return this.myLeadProject;
-    }
-
-    /**
-     * Sets myLeadProject.
-     * 
-     * @param myLeadProject
-     *            The myLeadProject to set.
-     */
-    public void setMyLeadProject(String myLeadProject) {
-        this.myLeadProject = myLeadProject;
-    }
-
-    /**
-     * Returns the myLeadUser.
-     * 
-     * @return The myLeadUser
-     */
-    public String getMyLeadUser() {
-        return this.myLeadUser;
-    }
-
-    /**
-     * Sets myLeadUser.
-     * 
-     * @param myLeadUser
-     *            The myLeadUser to set.
-     */
-    public void setMyLeadUser(String myLeadUser) {
-        this.myLeadUser = myLeadUser;
-    }
-
-    /**
-     * Returns the myLeadWorkflowName.
-     * 
-     * @return The myLeadWorkflowName
-     */
-    public String getMyLeadWorkflowName() {
-        return this.myLeadWorkflowName;
-    }
-
-    /**
-     * Sets myLeadWorkflowName.
-     * 
-     * @param myLeadWorkflowName
-     *            The myLeadWorkflowName to set.
-     */
-    public void setMyLeadWorkflowName(String myLeadWorkflowName) {
-        this.myLeadWorkflowName = myLeadWorkflowName;
-    }
-
-    /**
-     * Returns the myLeadWorkflowNS.
-     * 
-     * @return The myLeadWorkflowNS
-     */
-    public String getMyLeadWorkflowNS() {
-        return this.myLeadWorkflowNS;
-    }
-
-    /**
-     * Sets myLeadWorkflowNS.
-     * 
-     * @param myLeadWorkflowNS
-     *            The myLeadWorkflowNS to set.
-     */
-    public void setMyLeadWorkflowNS(String myLeadWorkflowNS) {
-        this.myLeadWorkflowNS = myLeadWorkflowNS;
-    }
-
-    /**
-     * Returns the myLeadSampleProject.
-     * 
-     * @return The myLeadSampleProject
-     */
-    public String getMyLeadSampleProject() {
-        return this.myLeadSampleProject;
-    }
-
-    /**
-     * Sets myLeadSampleProject.
-     * 
-     * @param myLeadSampleProject
-     *            The myLeadSampleProject to set.
-     */
-    public void setMyLeadSampleProject(String myLeadSampleProject) {
-        this.myLeadSampleProject = myLeadSampleProject;
-    }
-
-    /**
-     * Returns the myLeadSampleUser.
-     * 
-     * @return The myLeadSampleUser
-     */
-    public String getMyLeadSampleUser() {
-        return this.myLeadSampleUser;
-    }
-
-    /**
-     * Sets myLeadSampleUser.
-     * 
-     * @param myLeadSampleUser
-     *            The myLeadSampleUser to set.
-     */
-    public void setMyLeadSampleUser(String myLeadSampleUser) {
-        this.myLeadSampleUser = myLeadSampleUser;
     }
 
     /**

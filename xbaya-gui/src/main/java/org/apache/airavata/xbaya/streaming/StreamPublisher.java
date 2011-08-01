@@ -60,7 +60,6 @@ public class StreamPublisher {
         LeadContextHeaderHelper leadContextHelper = new LeadContextHeaderHelper();
         XBayaConfiguration configuration = engine.getConfiguration();
         leadContextHelper.setXBayaConfiguration(configuration);
-        leadContextHelper.setMyLeadConfiguration(engine.getMyLead().getConfiguration());
         leadContextHelper.setWorkflowInstanceID(engine.getWorkflow().getGPELInstanceID());
         leadContextHelper.setWorkflowTemplateID(engine.getWorkflow()
 

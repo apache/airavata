@@ -94,16 +94,6 @@ public interface ErrorMessages {
     public static final String COMPONENT_FORMAT_ERROR = "The component is in wrong format.";
 
     /**
-     * Errro while connecting to the myLead agent.
-     */
-    public static final String MYLEAD_CONNECTION_ERROR = "Failed to connect to the myLead agent.";
-
-    /**
-     * Error while loading a template name list.
-     */
-    public static final String MYLEAD_TEMPLATE_NAME_LIST_LOAD_ERROR = "Failed to load the workflow template name list from myLead.";
-
-    /**
      * GPEL_ERROR
      */
     public static final String GPEL_ERROR = "Error occured while communicating with the GPEL Engine.";
@@ -152,16 +142,6 @@ public interface ErrorMessages {
      * WORKFLOW_WSDL_ERROR
      */
     public static final String WORKFLOW_WSDL_ERROR = "The workflow WSDL is in wrong format.";
-
-    /**
-     * Error while saving a template.
-     */
-    public static final String MYLEAD_SAVE_TEMPLATE_ERROR = "Failed to save the workflow template to myLead.";
-
-    /**
-     * Error while loading a template.
-     */
-    public static final String MYLEAD_LOAD_TEMPLATE_ERROR = "Failed to load the workflow template from myLead.";
 
     /**
      * Error while subscribing to notification.

@@ -42,7 +42,7 @@ public class ComponentRegistryLoader implements Cancelable {
     private WaitDialog loadingDialog;
 
     /**
-     * Constructs a MyLeadWorkflowLoader.
+     * Constructs a WorkflowLoader.
      * 
      * @param engine
      */

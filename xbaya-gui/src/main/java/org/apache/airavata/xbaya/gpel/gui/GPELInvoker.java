@@ -184,7 +184,6 @@ public class GPELInvoker implements Cancelable {
         try {
             LeadContextHeaderHelper leadContextHelper = new LeadContextHeaderHelper();
             leadContextHelper.setXBayaConfiguration(xbayaConfiguration);
-            leadContextHelper.setMyLeadConfiguration(this.engine.getMyLead().getConfiguration());
             leadContextHelper.setWorkflow(workflow);
             leadContextHelper.setMonitorConfiguration(monitorConfiguration);
 
