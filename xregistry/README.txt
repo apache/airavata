@@ -17,3 +17,16 @@ The XRegistry service is compiled using Maven2.
 mvn clean install
 cd target/dist-bin
 ./xregistry.sh xregistry.properties
+
+To configure MySQL server for production purpose. 
+
+While building service
+uncomment mysql dependency in pom.xml
+Change databaseDriver and databaseUrl in pom.xml and rebuild by mvn clean install
+
+After build
+Download the mysql driver "mysql-connector-java" and copy it to target/dist-bin/lib
+Update xregistry.properties for jdbcDriver and databaseUrl.
+cd target/dist-bin
+./xregistry.sh xregistry.properties
+
