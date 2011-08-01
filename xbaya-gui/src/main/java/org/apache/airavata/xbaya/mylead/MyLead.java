@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.xbaya.mylead.gui;
+package org.apache.airavata.xbaya.mylead;
 
 import java.net.URI;
 import java.net.URISyntaxException;
