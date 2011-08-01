@@ -23,9 +23,7 @@ package performance_evaluator.rtt;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.airavata.wsmg.client.WseClientAPI;
-import org.apache.airavata.wsmg.client.WsmgClientAPI;
-import org.apache.airavata.wsmg.client.WsntClientAPI;
+import org.apache.airavata.wsmg.client.*;
 
 public class PublisherThread extends Thread {
     private String brokerURL;
@@ -37,7 +35,7 @@ public class PublisherThread extends Thread {
 
     private String payload = "";
     String msg = "";
-    private WsmgClientAPI client = null;
+    private MessageBrokerClient client = null;
     int trackId = 0;
     int threadId = 0;
 
@@ -51,15 +49,17 @@ public class PublisherThread extends Thread {
         this.threadId = threadIdIn;
         if ("wse".equalsIgnoreCase(protocolIn)) {
 
-            WseClientAPI wseClient = new WseClientAPI();
-            wseClient.setTimeOutInMilliSeconds(0);
-            client = wseClient;
+            WseMsgBrokerClient wseMsgBrokerClient = new WseMsgBrokerClient();
+            wseMsgBrokerClient.setTimeoutInMilliSeconds(0);
+            wseMsgBrokerClient.init(brokerURL);
+            client = wseMsgBrokerClient;
 
         } else {
 
-            WsntClientAPI wsntClient = new WsntClientAPI();
-            wsntClient.setTimeOutInMilliSeconds(0);
-            client = wsntClient;
+            WsntMsgBrokerClient wsntMsgBrokerClient = new WsntMsgBrokerClient();
+            wsntMsgBrokerClient.setTimeoutInMilliSeconds(0);
+            wsntMsgBrokerClient.init(brokerURL);
+            client = wsntMsgBrokerClient;
         }
 
     }
@@ -80,7 +80,7 @@ public class PublisherThread extends Thread {
                         + "</perf:trackId></perf:trackInfo>"
                         + "<perf:payload>" + payload + "</perf:payload></perf:performancetest>";
                 long publishStartTime = System.currentTimeMillis();
-                client.publish(brokerURL, topic, msg);
+                client.publish(topic, msg);
                 totPublishTime += System.currentTimeMillis() - publishStartTime;
                 trackId++;
             }

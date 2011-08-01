@@ -31,7 +31,7 @@ import javax.xml.stream.XMLStreamException;
 import junit.framework.TestCase;
 
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
-import org.apache.airavata.wsmg.client.WseClientAPI;
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
@@ -90,18 +90,19 @@ public class TestWseXpathAndTopicSubscription extends TestCase implements Consum
 
             String brokerEPR = configs.getProperty(ConfigKeys.BROKER_EVENTING_SERVICE_EPR);
 
-            WseClientAPI clientApi = new WseClientAPI(new EndpointReference(brokerEPR));
+            WseMsgBrokerClient msgBrokerClient = new WseMsgBrokerClient();
+            msgBrokerClient.init(brokerEPR);
 
-            String[] consumerEPRs = clientApi.startConsumerService(consumerPort, this);
+            String[] consumerEPRs = msgBrokerClient.startConsumerService(consumerPort, this);
 
             assertTrue(consumerEPRs.length > 0);
 
             String xpathExpression = "/c/b/a";
 
-            String subscriptionID = clientApi.subscribe(brokerEPR, consumerEPRs[0], null, xpathExpression);
+            String subscriptionID = msgBrokerClient.subscribe(consumerEPRs[0], null, xpathExpression);
 
-            clientApi.publish(validMsg);
-            clientApi.publish(invalidMsg);
+            msgBrokerClient.publish(null,validMsg);
+            msgBrokerClient.publish(null,invalidMsg);
 
             try {
                 SOAPEnvelope env = getMsgQueue().take();
@@ -128,8 +129,8 @@ public class TestWseXpathAndTopicSubscription extends TestCase implements Consum
                 fail("invalid xml recieved: " + e.getMessage());
             }
 
-            clientApi.unSubscribe(brokerEPR, subscriptionID, null);
-            clientApi.shutdownConsumerService();
+            msgBrokerClient.unSubscribe(subscriptionID);
+            msgBrokerClient.shutdownConsumerService();
 
         } catch (AxisFault e) {
             e.printStackTrace();

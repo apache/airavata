@@ -29,7 +29,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import junit.framework.TestCase;
 
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
-import org.apache.airavata.wsmg.client.WseClientAPI;
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
 import org.junit.Test;
@@ -63,32 +63,32 @@ public class BrokerWSETest extends TestCase implements ConsumerNotificationHandl
             long value = System.currentTimeMillis();
             String msg = String.format("<msg> current time is : %d </msg>", value);
 
-            WseClientAPI clientApi = new WseClientAPI(null, 1000000);
-
+            WseMsgBrokerClient wseMsgBrokerClient = new WseMsgBrokerClient();
+            wseMsgBrokerClient.init(brokerEPR);
             int consumerPort = 6767;
 
-            String[] consumerEPRs = clientApi.startConsumerService(consumerPort, this);
+            String[] consumerEPRs = wseMsgBrokerClient.startConsumerService(consumerPort, this);
 
             assertTrue(consumerEPRs.length > 0);
 
             String topic = "WseRoundTripTestTopic";
 
-            String subscriptionID = clientApi.subscribe(brokerEPR, consumerEPRs[0], topic);
-            clientApi.subscribe(brokerEPR, consumerEPRs[0], topic, "/foo/bar");
+            String subscriptionID = wseMsgBrokerClient.subscribe(brokerEPR, consumerEPRs[0], topic);
+            wseMsgBrokerClient.subscribe(consumerEPRs[0], topic, "/foo/bar");
 
-            clientApi.publish(brokerEPR, topic, msg);
+            wseMsgBrokerClient.publish(topic, msg);
 
-            clientApi.publish(brokerEPR, topic, "<foo><bar>Test</bar></foo>");
+            wseMsgBrokerClient.publish(topic, "<foo><bar>Test</bar></foo>");
 
             Thread.sleep(2000);
 
             try {
-                clientApi.unSubscribe(brokerEPR, subscriptionID, null);
+                wseMsgBrokerClient.unSubscribe(subscriptionID);
             } catch (AxisFault e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            clientApi.shutdownConsumerService();
+            wseMsgBrokerClient.shutdownConsumerService();
 
         } catch (AxisFault e) {
             e.printStackTrace();

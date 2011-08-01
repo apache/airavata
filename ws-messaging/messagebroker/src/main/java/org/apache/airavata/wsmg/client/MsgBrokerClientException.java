@@ -21,7 +21,9 @@
 
 package org.apache.airavata.wsmg.client;
 
-public class MsgBrokerClientException extends Exception {
+import org.apache.axis2.AxisFault;
+
+public class MsgBrokerClientException extends AxisFault {
 
     private static final long serialVersionUID = 5609577226544941146L;
 

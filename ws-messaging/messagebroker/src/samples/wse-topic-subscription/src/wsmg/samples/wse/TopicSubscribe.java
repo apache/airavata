@@ -26,7 +26,6 @@ import java.net.URL;
 import java.util.Properties;
 import java.io.*;
 import org.apache.airavata.wsmg.client.MsgBrokerClientException;
-import org.apache.airavata.wsmg.client.WseClientAPI;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.wsmg.samples.util.ConfigKeys;
 import java.io.FileInputStream;

@@ -22,7 +22,7 @@
 package performance_evaluator.rtt;
 
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
-import org.apache.airavata.wsmg.client.WsmgClientAPI;
+import org.apache.airavata.wsmg.client.MessageBrokerClient;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.log4j.Logger;
 
@@ -33,14 +33,14 @@ public class Subscription {
     private String topic;
     private final static org.apache.log4j.Logger logger = Logger.getLogger(Subscription.class);
     private ConsumerNotificationHandler handler;
-    private WsmgClientAPI client;
+    private MessageBrokerClient client;
     private EndpointReference messageBoxEPR;
     private String xpath;
     private String brokerURL;
 
     private String protocol;
 
-    public Subscription(WsmgClientAPI clientIn, String subscriptionID, String topic,
+    public Subscription(MessageBrokerClient clientIn, String subscriptionID, String topic,
             ConsumerNotificationHandler callback, String brokerURL, String protocolIn) {
         super();
         this.subscriptionID = subscriptionID;
@@ -51,7 +51,7 @@ public class Subscription {
         this.protocol = protocolIn;
     }
 
-    public Subscription(WsmgClientAPI clientIn, String subscriptionID, String topic, String xpath,
+    public Subscription(MessageBrokerClient clientIn, String subscriptionID, String topic, String xpath,
             ConsumerNotificationHandler callback, String brokerURL, String protocolIn) {
         super();
         this.client = clientIn;
