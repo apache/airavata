@@ -50,12 +50,12 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<!-- 
 				<databaseDriver>org.apache.derby.jdbc.EmbeddedDriver</databaseDriver>
 				<databaseUrl>jdbc:derby:xregistry;create=true</databaseUrl>
-				 -->
+				<!-- MySQL properties 
 				<databaseDriver>com.mysql.jdbc.Driver</databaseDriver>
 				<databaseUrl>jdbc:mysql://localhost:3306/xregistry_ogce?user=xreg_ogce&amp;password=xreg_pass</databaseUrl>
+				-->
 				<xregistry.typesVersion>0.8.3</xregistry.typesVersion>
 				<dist.dir>${basedir}/target/dist-bin/</dist.dir>
 				<port>6666</port>
