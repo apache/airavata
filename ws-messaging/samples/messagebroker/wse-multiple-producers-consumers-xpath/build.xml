@@ -25,7 +25,7 @@
 <project name="wsmgsamples" default="run" basedir=".">
 
 	<property file="build.properties" />
-	<property name="lib.path" value="../../lib" />
+	<property name="lib.path" value="../../../lib" />
 	<property name="dest.dir" value="bin" />
 	<property name="src.dir" value="src" />
 	<property name="conf.dir" location="conf" />
@@ -49,9 +49,9 @@
 		<fileset dir="${axis2.home}/lib">
 			<include name="*.jar" />
 		</fileset>
-
+		
 		<path location="${conf.dir}" />
-
+		
 		<pathelement location="${dest.dir}" />
 	</path>
 
@@ -77,7 +77,7 @@
 
 	<target name="run" depends="build">
 
-		<java classname="org.apache.airavata.wsmg.samples.wse.TopicSubscribe" fork="true">
+		<java classname="org.apache.airavata.wsmg.samples.wse.MultipleProducersConsumers" fork="true">
 			<classpath refid="broker.class.path" />
 		</java>
 

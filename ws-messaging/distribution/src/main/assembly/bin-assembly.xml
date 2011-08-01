@@ -163,20 +163,14 @@
 		-->
 
 		<fileSet>
-			<directory>../messagebroker/src/samples</directory>
+			<directory>../samples</directory>
 			<outputDirectory>client-api/samples</outputDirectory>
 			<includes>
 				<include>**/*</include>
 			</includes>
 		</fileSet>
 
-		<fileSet>
-			<directory>../messagebox/src/samples</directory>
-			<outputDirectory>client-api/samples</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
+
 
 
 		<!--

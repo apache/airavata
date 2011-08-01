@@ -25,7 +25,7 @@
 <project name="wsmgsamples" default="run" basedir=".">
 
 	<property file="build.properties" />
-	<property name="lib.path" value="../../lib" />
+	<property name="lib.path" value="../../../lib" />
 	<path id="broker.class.path">
 		<fileset dir="${lib.path}">
 			<include name="*.jar" />

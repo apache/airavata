@@ -45,11 +45,7 @@
 			<artifactId>derbytools</artifactId>
 			<version>${derby.version}</version>
 		</dependency>
-	<dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-        </dependency>
-	</dependencies>
+		</dependencies>
 <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<archieve.name>airavta-ws-messenger</archieve.name>

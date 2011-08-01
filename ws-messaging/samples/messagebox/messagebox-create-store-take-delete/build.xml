@@ -23,7 +23,7 @@
 <project name="msgboxsamples" default="run" basedir=".">
 
 	<property file="build.properties" />
-	<property name="lib.path" value="../../lib" />
+	<property name="lib.path" value="../../../lib" />
 	<property name="dest.dir" value="bin" />
 	<property name="src.dir" value="src" />
 	<property name="conf.dir" location="conf" />
