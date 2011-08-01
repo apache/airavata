@@ -31,7 +31,7 @@ import javax.xml.stream.XMLStreamException;
 import junit.framework.TestCase;
 
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
-import org.apache.airavata.wsmg.client.WseClientAPI;
+import org.apache.airavata.wsmg.client.*;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
@@ -90,18 +90,19 @@ public class TestWseXpathSubscription extends TestCase implements ConsumerNotifi
 
             String brokerEPR = configs.getProperty(ConfigKeys.BROKER_EVENTING_SERVICE_EPR);
 
-            WseClientAPI clientApi = new WseClientAPI(new EndpointReference(brokerEPR));
+            WseMsgBrokerClient wseMsgBrokerClient = new WseMsgBrokerClient();
+            wseMsgBrokerClient.init(brokerEPR);
 
-            String[] consumerEPRs = clientApi.startConsumerService(consumerPort, this);
+            String[] consumerEPRs = wseMsgBrokerClient.startConsumerService(consumerPort, this);
 
             assertTrue(consumerEPRs.length > 0);
 
             String xpathExpression = "/c/b/a";
 
-            String subscriptionID = clientApi.subscribe(brokerEPR, consumerEPRs[0], null, xpathExpression);
+            String subscriptionID = wseMsgBrokerClient.subscribe(consumerEPRs[0], null, xpathExpression);
 
-            clientApi.publish(validMsg);
-            clientApi.publish(invalidMsg);
+            wseMsgBrokerClient.publish(null,validMsg);
+            wseMsgBrokerClient.publish(null,invalidMsg);
 
             try {
                 SOAPEnvelope env = getMsgQueue().take();
@@ -128,8 +129,8 @@ public class TestWseXpathSubscription extends TestCase implements ConsumerNotifi
                 fail("invalid xml recieved: " + e.getMessage());
             }
 
-            clientApi.unSubscribe(brokerEPR, subscriptionID, null);
-            clientApi.shutdownConsumerService();
+            wseMsgBrokerClient.unSubscribe(subscriptionID);
+            wseMsgBrokerClient.shutdownConsumerService();
 
         } catch (AxisFault e) {
             e.printStackTrace();
@@ -154,19 +155,20 @@ public class TestWseXpathSubscription extends TestCase implements ConsumerNotifi
 
             String brokerEPR = configs.getProperty(ConfigKeys.BROKER_EVENTING_SERVICE_EPR);
 
-            WseClientAPI clientApi = new WseClientAPI(new EndpointReference(brokerEPR));
+            WseMsgBrokerClient wseMsgBrokerClient = new WseMsgBrokerClient();
+            wseMsgBrokerClient.init(brokerEPR);
 
-            String[] consumerEPRs = clientApi.startConsumerService(consumerPort, this);
+            String[] consumerEPRs = wseMsgBrokerClient.startConsumerService(consumerPort, this);
 
             assertTrue(consumerEPRs.length > 0);
 
             String xpathExpression = "/c/b/a";
             String topicExpression = "XpathAndTopicTestWse";
 
-            String subscriptionID = clientApi.subscribe(brokerEPR, consumerEPRs[0], topicExpression, xpathExpression);
+            String subscriptionID = wseMsgBrokerClient.subscribe(consumerEPRs[0], topicExpression, xpathExpression);
 
-            clientApi.publish(brokerEPR, topicExpression, validMsg);
-            clientApi.publish(brokerEPR, topicExpression, invalidMsg);
+            wseMsgBrokerClient.publish(topicExpression, validMsg);
+            wseMsgBrokerClient.publish(topicExpression, invalidMsg);
 
             try {
                 SOAPEnvelope env = getMsgQueue().take();
@@ -193,8 +195,8 @@ public class TestWseXpathSubscription extends TestCase implements ConsumerNotifi
                 fail("invalid xml recieved: " + e.getMessage());
             }
 
-            clientApi.unSubscribe(brokerEPR, subscriptionID, null);
-            clientApi.shutdownConsumerService();
+            wseMsgBrokerClient.unSubscribe(subscriptionID);
+            wseMsgBrokerClient.shutdownConsumerService();
 
         } catch (AxisFault e) {
             e.printStackTrace();

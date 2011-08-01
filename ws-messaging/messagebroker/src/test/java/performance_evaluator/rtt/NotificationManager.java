@@ -25,16 +25,12 @@ import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
-import org.apache.airavata.wsmg.client.WseClientAPI;
-import org.apache.airavata.wsmg.client.WsmgClientAPI;
-import org.apache.airavata.wsmg.client.WsntClientAPI;
+import org.apache.airavata.wsmg.client.*;
 import org.apache.axiom.soap.SOAPEnvelope;
-import org.apache.axis2.AxisFault;
 
 public class NotificationManager implements ConsumerNotificationHandler {
 
-    private WsmgClientAPI client = null;
+    private MessageBrokerClient client = null;
     private String[] eprs = null;
     private String brokerLocation = null;
     private String protocol = null;
@@ -45,7 +41,7 @@ public class NotificationManager implements ConsumerNotificationHandler {
     private int multipleThreadSupportIndex = 1;
 
     public NotificationManager(String brokerLocationIn, int consumerServerPortIn, String protocolIn,
-            int numMultiThreadSupportPerSub) throws AxisFault {
+            int numMultiThreadSupportPerSub) throws MsgBrokerClientException {
 
         this.brokerLocation = brokerLocationIn;
         this.consumerServerPort = consumerServerPortIn;
@@ -54,13 +50,15 @@ public class NotificationManager implements ConsumerNotificationHandler {
 
         if (client == null) {
             if (protocol.equalsIgnoreCase("wse")) {
-                WseClientAPI wseClient = new WseClientAPI();
-                wseClient.setTimeOutInMilliSeconds(200000000);
+                WsntMsgBrokerClient wseClient = new WsntMsgBrokerClient();
+                wseClient.init(this.brokerLocation);
+                wseClient.setTimeoutInMilliSeconds(200000000);
                 eprs = wseClient.startConsumerService(consumerServerPort, this);
                 client = wseClient;
             } else {
-                WsntClientAPI wsntClient = new WsntClientAPI();
-                wsntClient.setTimeOutInMilliSeconds(200000000);
+                WsntMsgBrokerClient wsntClient = new WsntMsgBrokerClient();
+                wsntClient.init(this.brokerLocation);
+                wsntClient.setTimeoutInMilliSeconds(200000000);
                 eprs = wsntClient.startConsumerService(consumerServerPort, this);
                 client = wsntClient;
             }
@@ -88,7 +86,7 @@ public class NotificationManager implements ConsumerNotificationHandler {
             multipleThreadSupportIndex = 1;
         }
 
-        String subscriptionId = client.subscribe(brokerLocation, eprs[0] + "user" + multipleThreadSupportIndex++,
+        String subscriptionId = client.subscribe(eprs[0] + "user" + multipleThreadSupportIndex++,
                 topicExpression, xpathExpression);
         subscriptionIds.add(subscriptionId);
         Subscription subscription = new Subscription(client, subscriptionId, topicExpression, xpathExpression, this,
@@ -96,27 +94,27 @@ public class NotificationManager implements ConsumerNotificationHandler {
         return subscription;
     }
 
-    public void cleanup() throws AxisFault {
+    public void cleanup() throws MsgBrokerClientException {
 
-        WseClientAPI wseClient = null;
-        WsntClientAPI wsntClient = null;
+        WseMsgBrokerClient wseClient = null;
+        WsntMsgBrokerClient wsntClient = null;
 
         if ("wse".equalsIgnoreCase(this.protocol)) {
-            wseClient = (WseClientAPI) client;
+            wseClient = (WseMsgBrokerClient) client;
         } else {
-            wsntClient = (WsntClientAPI) client;
+            wsntClient = (WsntMsgBrokerClient) client;
         }
 
         if (subscriptionIds != null) {
             if (wseClient != null) {
                 while (!subscriptionIds.isEmpty()) {
                     String subId = subscriptionIds.remove();
-                    wseClient.unSubscribe(brokerLocation, subId, null);
+                    wseClient.unSubscribe(subId);
                 }
             } else {
                 while (!subscriptionIds.isEmpty()) {
                     String subId = subscriptionIds.remove();
-                    wsntClient.unSubscribe(brokerLocation, subId, null);
+                    wsntClient.unSubscribe(subId);
                 }
 
             }

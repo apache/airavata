@@ -37,7 +37,7 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 
-public class WsntMsgBrokerClient implements MessageBrokerClient {
+public class WsntMsgBrokerClient extends CommonMsgBrokerClient implements MessageBrokerClient {
 
     protected long timeoutInMilliSeconds = WsmgCommonConstants.DEFAULT_CLIENT_SOCKET_TIME_OUT_MILLIES;
 
@@ -187,29 +187,4 @@ public class WsntMsgBrokerClient implements MessageBrokerClient {
     public void shutdownConsumerService() {
         consumerServerHandler.shutdownConsumerService();
     }
-
-    public String subscribeMsgBox(EndpointReference msgBoxEpr, String topicExpression, String xpathExpression,
-            long expireTime) throws MsgBrokerClientException {
-        String msgBoxEventSink = msgBoxEpr.getAddress();
-
-        String formattedEventSink = null;
-
-        if (msgBoxEpr.getAddress().contains("clientid")) {
-            formattedEventSink = msgBoxEventSink;
-        } else {
-            if (msgBoxEpr.getAllReferenceParameters() == null)
-                throw new MsgBrokerClientException("Invalid Message Box EPR, no reference parameters found");
-            String msgBoxId = msgBoxEpr.getAllReferenceParameters()
-                    .get(new QName("http://org.apache.airavata/xgws/msgbox/2004/", "MsgBoxAddr")).getText();
-            if (msgBoxId == null)
-                throw new MsgBrokerClientException("Invalid Message Box EPR, reference parameter MsgBoxAddr is missing");
-            String format = msgBoxEventSink.endsWith("/") ? "%sclientid/%s" : "%s/clientid/%s";
-
-            formattedEventSink = String.format(format, msgBoxEventSink, msgBoxId);
-
-        }
-
-        return subscribe(new EndpointReference(formattedEventSink), topicExpression, xpathExpression, expireTime);
-    }
-
 }

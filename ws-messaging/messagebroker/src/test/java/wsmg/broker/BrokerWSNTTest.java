@@ -29,7 +29,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import junit.framework.TestCase;
 
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
-import org.apache.airavata.wsmg.client.WsntClientAPI;
+import org.apache.airavata.wsmg.client.WsntMsgBrokerClient;
 import org.apache.airavata.wsmg.util.test.TestUtilServer;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
@@ -62,40 +62,42 @@ public class BrokerWSNTTest extends TestCase implements ConsumerNotificationHand
             long value = System.currentTimeMillis();
             String msg = String.format("<msg> current time is : %d </msg>", value);
 
-            WsntClientAPI clientApi = new WsntClientAPI(1000000);
+            WsntMsgBrokerClient wsntMsgBrokerClient = new WsntMsgBrokerClient();
 
             int consumerPort = 6767;
 
             String brokerEPR = "http://127.0.0.1:5555/axis2/services/NotificationService";
-            String[] consumerEPRs = clientApi.startConsumerService(consumerPort, this);
+            wsntMsgBrokerClient.init(brokerEPR);
+            String[] consumerEPRs = wsntMsgBrokerClient.startConsumerService(consumerPort, this);
 
             assertTrue(consumerEPRs.length > 0);
 
             String topic = "WsntRoundTripTestTopic";
 
-            String topicSubscriptionID = clientApi.subscribe(brokerEPR, consumerEPRs[0], topic);
+            String topicSubscriptionID = wsntMsgBrokerClient.subscribe(brokerEPR, consumerEPRs[0], topic);
 
             System.out.println("topic subscription id: " + topicSubscriptionID);
 
-            String xpathSubscriptionID = clientApi.subscribe(brokerEPR, consumerEPRs[0], topic, "/foo/bar");
+            String xpathSubscriptionID = wsntMsgBrokerClient.subscribe(consumerEPRs[0], topic, "/foo/bar");
 
             System.out.println("xpath subscription id: " + xpathSubscriptionID);
 
-            clientApi.publish(brokerEPR, topic, msg);
 
-            clientApi.publish(brokerEPR, topic, "<foo><bar>eligible to</bar></foo>");
+            wsntMsgBrokerClient.publish(topic, msg);
+
+            wsntMsgBrokerClient.publish(topic, "<foo><bar>eligible to</bar></foo>");
 
             Thread.sleep(2000);
 
             try {
-                clientApi.unSubscribe(brokerEPR, topicSubscriptionID, null);
-                clientApi.unSubscribe(brokerEPR, xpathSubscriptionID, null);
+                wsntMsgBrokerClient.unSubscribe(topicSubscriptionID);
+                wsntMsgBrokerClient.unSubscribe(xpathSubscriptionID);
             } catch (AxisFault e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
-            clientApi.shutdownConsumerService();
+            wsntMsgBrokerClient.shutdownConsumerService();
 
         } catch (AxisFault e) {
             e.printStackTrace();

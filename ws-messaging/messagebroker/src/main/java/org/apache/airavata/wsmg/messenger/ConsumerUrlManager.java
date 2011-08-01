@@ -94,7 +94,7 @@ public class ConsumerUrlManager {
 
         RunTimeStatistics.addNewSuccessfulDeliverTime(timeTaken);
 
-        FailedConsumerInfo info = failedConsumerUrls.remove(consumerEndpointReference.getAddress());
+       FailedConsumerInfo info = failedConsumerUrls.remove(consumerEndpointReference.getAddress());
 
         if (info != null) {
             logger.debug(String.format("message was delivered to " + "previously %d times failed url : %s",

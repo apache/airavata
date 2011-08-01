@@ -29,7 +29,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import junit.framework.TestCase;
 
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
-import org.apache.airavata.wsmg.client.WseClientAPI;
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
@@ -101,7 +101,8 @@ public class TestAddtionalWseXpathAndTopicScenarios extends TestCase {
             EndpointReference brokerEpr = new EndpointReference(
                     configs.getProperty(ConfigKeys.BROKER_EVENTING_SERVICE_EPR));
 
-            WseClientAPI topicOnlyReceiverApi = new WseClientAPI(brokerEpr);
+            WseMsgBrokerClient topicOnlyReceiverApi = new WseMsgBrokerClient();
+            topicOnlyReceiverApi.init(brokerEpr.getAddress());
             NotificationReciever topicOnlyMsgReceiver = new NotificationReciever("Topic Only");
 
             String[] topicConsumerEPRs = topicOnlyReceiverApi.startConsumerService(consumerPort, topicOnlyMsgReceiver);
@@ -110,19 +111,21 @@ public class TestAddtionalWseXpathAndTopicScenarios extends TestCase {
 
             String topicOnlySubId = topicOnlyReceiverApi.subscribe(brokerEpr.getAddress(), topicConsumerEPRs[0], topic);
 
-            WseClientAPI xpathAndTopicReceiverApi = new WseClientAPI(brokerEpr);
+            WseMsgBrokerClient xpathAndTopicReceiverApi = new WseMsgBrokerClient();
+            xpathAndTopicReceiverApi.init(brokerEpr.getAddress());
             NotificationReciever topicAndXpathMsgReceiver = new NotificationReciever("Topic And Xpath");
             String[] topicAndXpathConsumerEPRs = xpathAndTopicReceiverApi.startConsumerService(consumerPort + 1,
                     topicAndXpathMsgReceiver);
 
             assertTrue("invalid consumer eprs returned", topicAndXpathConsumerEPRs.length > 0);
 
-            String topicAndXpathSubId = xpathAndTopicReceiverApi.subscribe(brokerEpr.getAddress(),
+            String topicAndXpathSubId = xpathAndTopicReceiverApi.subscribe(
                     topicAndXpathConsumerEPRs[0], topic, xpathExpression);
 
-            WseClientAPI senderApi = new WseClientAPI(brokerEpr);
-            senderApi.publish(brokerEpr.getAddress(), topic, matchingMsg);
-            senderApi.publish(brokerEpr.getAddress(), topic, unmatchingMsg);
+            WseMsgBrokerClient senderApi = new WseMsgBrokerClient();
+            senderApi.init(brokerEpr.getAddress());
+            senderApi.publish(topic, matchingMsg);
+            senderApi.publish(topic, unmatchingMsg);
 
             try {
 
@@ -139,10 +142,10 @@ public class TestAddtionalWseXpathAndTopicScenarios extends TestCase {
                 fail("interrupted while waiting for message");
             }
 
-            topicOnlyReceiverApi.unSubscribe(brokerEpr.getAddress(), topicOnlySubId, null);
+            topicOnlyReceiverApi.unSubscribe(topicOnlySubId);
             topicOnlyReceiverApi.shutdownConsumerService();
 
-            xpathAndTopicReceiverApi.unSubscribe(brokerEpr.getAddress(), topicAndXpathSubId, null);
+            xpathAndTopicReceiverApi.unSubscribe(topicAndXpathSubId);
             xpathAndTopicReceiverApi.shutdownConsumerService();
 
         } catch (AxisFault e) {

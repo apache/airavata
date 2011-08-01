@@ -26,7 +26,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import com.sun.tools.doclets.internal.toolkit.MethodWriter;
-import org.apache.airavata.wsmg.client.WseClientAPI;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
 
