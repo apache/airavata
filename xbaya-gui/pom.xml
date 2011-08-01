@@ -156,12 +156,9 @@
 						<alias>xbaya</alias>
 						<validity>365</validity>
 
-						<dnameCn>Open Gateway Computing Environments</dnameCn>
-						<dnameOu>Pervasive Technology Institute</dnameOu>
-						<dnameO>Indiana University</dnameO>
-						<dnameL>Bloomington</dnameL>
-						<dnameSt>Indiana</dnameSt>
-						<dnameC>US</dnameC>
+						<dnameCn>Airavata</dnameCn>
+						<dnameOu>Apache</dnameOu>
+						<dnameO>Apache Software Foundation</dnameO>
 
 						<keystoreConfig>
 							<delete>true</delete>
