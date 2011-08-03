@@ -1,0 +1,11 @@
+<xb:config  xmlns:xb="http://www.bea.com/2002/09/xbean/config">
+
+    <xb:namespace uri="http://schemas.airavata.apache.org/gfac">
+        <xb:package>org.apache.airavata.schemas.gfac</xb:package>
+    </xb:namespace>
+
+   <xb:namespace uri="http://inca.sdsc.edu/dataModel/application1.0">
+        <xb:package>org.apache.airavata.schemas.gfac.inca.faults</xb:package>
+    </xb:namespace>
+    
+</xb:config>

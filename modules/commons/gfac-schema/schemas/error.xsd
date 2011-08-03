@@ -1,0 +1,83 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+
+<schema xmlns = "http://www.w3.org/2001/XMLSchema"
+        targetNamespace = "http://inca.sdsc.edu/dataModel/application1.0"
+        xmlns:app = "http://inca.sdsc.edu/dataModel/application1.0"
+        xmlns:xsd = "http://www.w3.org/2001/XMLSchema"
+        elementFormDefault = "unqualified">
+
+  <!-- Represents an action in an application/workflow that succeeded or
+       failed.  -->
+  <element name = "action">
+    <complexType>
+      <sequence>
+        <!-- Some identifier unique to identify the action - e.g.,
+             workflow id -->
+        <element name = "id" type = "string"/>
+
+        <!-- Type of application (for Inca).  E.g., LEAD -->
+        <element name = "application" type = "string" minOccurs = "0"/>
+
+        <!-- Name of API/tool used. E.g., CoG 1.2 -->
+        <element name = "api" type = "string"/>
+
+        <!-- type of action -->
+        <choice maxOccurs = "unbounded">
+          <element name = "dataTransfer" type="app:dataTransfer"/>
+          <element name = "fileSystem" type="app:fileSystem"/>
+          <element name = "job" type = "app:job"/>
+          <element name = "cmdapplication" type = "app:Application"/>
+        </choice>
+
+        <!-- For jobs, startTime and endTime are probably useful
+             For data transfers, maybe just startTime or endTime -->
+        <element name = "startTime" type = "string" minOccurs = "0"/>
+        <element name = "endTime" type = "string" minOccurs = "0"/>
+      </sequence>
+    </complexType>
+  </element>
+  
+  <complexType  name = "dataTransfer">
+    <sequence>
+      <!-- Set if 3rd party transfer -->
+      <element name = "origHost" type = "string" minOccurs = "0"/>
+      <!-- GridFTP URL -->
+      <element name = "source" type = "string"/>
+      <!-- GridFTP URL -->
+      <element name = "dest" type = "string"/>
+      <!-- Flags -->
+      <element name = "options" type = "string"/>
+    </sequence>
+  </complexType>
+
+  <complexType name = "fileSystem">
+    <sequence>
+      <!-- Command and arguments.  E.g., mkdir someDir -->
+      <element name = "command" type = "string"/>
+      <!-- GridFTP URL -->
+      <element name = "contact" type = "string"/>
+    </sequence>
+  </complexType>
+
+  <complexType name = "job">
+    <sequence>
+      <!-- hostname -->
+      <element name = "submitHost" type = "string"/>
+      <!-- Full GRAM contact string -->
+      <element name = "contact" type = "string"/>
+      <!-- RSL string - is this XML now? -->
+      <element name = "rsl" type = "string"/>
+    </sequence>
+  </complexType>
+  
+  <complexType name = "Application">
+    <sequence>
+      <element name = "appHost" type = "string"/>
+      <element name = "appWorkDir" type = "string"/>
+      <element name = "execuatable" type = "string"/>
+      <element name = "serviceHost" type = "string"/>
+      <element name = "appStdoutAsStr" type = "string"/>
+    </sequence>
+  </complexType>
+
+</schema>

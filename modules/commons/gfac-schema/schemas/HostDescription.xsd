@@ -1,0 +1,83 @@
+<schema targetNamespace="http://schemas.airavata.apache.org/gfac"
+        xmlns:gFac="http://schemas.airavata.apache.org/gfac"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified">
+	<import namespace="http://schemas.airavata.apache.org/gfac" schemaLocation="BasicTypes.xsd"></import>
+
+    <element name="HostDescription" type="gFac:hostDescriptionType"/>
+
+    <complexType name="hostDescriptionType">
+        <sequence>
+            <element name="authorInfo" type="gFac:authorInfoType" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="documentInfo" type="gFac:documentInfoType" minOccurs="0" maxOccurs="1"/>
+            <element name="hostName" type="xsd:string" minOccurs="1" maxOccurs="1" />
+            <element name="hostConfiguration" type="gFac:hostConfigurationType" minOccurs="1" maxOccurs="1" />
+        </sequence>
+    </complexType>
+
+    <complexType name="hostConfigurationType">
+        <sequence>
+            <!-- This is the path to the GFac installation -->
+            <element name="gFacPath" type="xsd:string" minOccurs="1" maxOccurs="1" />
+
+            <!-- Temporary directory on this host -->
+            <element name="tmpDir" type="xsd:string" minOccurs="1" maxOccurs="1" />
+
+            <!-- Port range to start the service -->
+            <element name="portRange" type="gFac:portRangeType" minOccurs="0" maxOccurs="1" />
+
+            <!-- JAVA -->
+            <element name="java" type="gFac:packageType" minOccurs="0" maxOccurs="unbounded" />
+
+            <!-- Other packages -->
+            <element name="package" type="gFac:packageType" minOccurs="0" maxOccurs="unbounded" />
+
+            <!-- This can be used to pass env variables to the service
+            or application at startup. Unused as of now -->
+            <element name="hostEnv" type="gFac:nameValuePairType" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="globusGatekeeper" type="gFac:globusGatekeeperType" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="gridFTP" type="gFac:gridFTPType" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="sshEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+
+    <complexType name="globusGatekeeperType" >
+        <sequence>
+            <element name="name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="endPointReference" type="xsd:anyURI" minOccurs="1" maxOccurs="1"/>
+            <element name="jobmanagertype" type="gFac:globusJobManagerType" minOccurs="1" maxOccurs="1"/>
+        </sequence>
+        <attribute name="wsGram" type="xsd:boolean" use="optional"/>
+    </complexType>
+
+    <complexType name="gridFTPType" >
+        <sequence>
+            <element name="name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="endPointReference" type="xsd:anyURI" minOccurs="1" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+
+    <!-- Specifies the range of ports that can be used for starting the service. If the
+    start = end, then the service will be started on the given port -->
+    <complexType name="portRangeType">
+        <sequence>
+            <element name="start" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+            <element name="end" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+
+    <simpleType name="globusJobManagerType">
+      <restriction base="xsd:string">
+        <enumeration value="PBS"/>
+        <enumeration value="SGE"/>
+        <enumeration value="FORK"/>
+        <enumeration value="LSF"/>
+        <enumeration value="MULTI"/>
+        <enumeration value="CONDOR"/>
+        <enumeration value="SPRUCE"/>
+        <enumeration value="Loadleveler"/>        
+      </restriction>
+    </simpleType>
+
+</schema>
