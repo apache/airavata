@@ -1,0 +1,222 @@
+<schema targetNamespace="http://schemas.airavata.apache.org/gfac"
+        xmlns:gFac="http://schemas.airavata.apache.org/gfac"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified">
+	<import namespace="http://schemas.airavata.apache.org/gfac" schemaLocation="gfac.xsd"/>
+	<import namespace="http://schemas.airavata.apache.org/gfac" schemaLocation="BasicTypes.xsd"></import>
+	
+    <element name="ServiceMap" type="gFac:serviceMapType"/>
+
+    <complexType name="serviceMapType">
+        <sequence>
+            <element name="authorInfo" type="gFac:authorInfoType" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="documentInfo" type="gFac:documentInfoType" minOccurs="0" maxOccurs="1"/>
+            <element name="service" type="gFac:serviceType" minOccurs="1" maxOccurs="1" />
+            <element name="portType" type="gFac:portTypeType" minOccurs="0" maxOccurs="unbounded" />
+            <!-- Security policy for this service -->
+            <element name="securityPolicy" type="gFac:securityPolicyType" minOccurs="0" maxOccurs="1" />
+            <element name="lifeTime" type="gFac:lifeTimeType" minOccurs="0" maxOccurs="1"/>
+            <element name="configuration" type="gFac:ConfigurationType" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+
+    <complexType name="serviceType">
+        <sequence>
+            <element name="serviceName" minOccurs="1" maxOccurs="1">
+                <complexType>
+                    <simpleContent>
+                        <extension base="xsd:string" >
+                            <attribute name="targetNamespace" type="xsd:string" use="required"/>
+                        </extension>
+                    </simpleContent>
+                </complexType>
+            </element>
+            <element name="serviceDescription" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element ref="gFac:anyMetadata" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+        <attribute name="selfReplicating" type="xsd:boolean" use="optional"/>
+        <attribute name="executeLocally" type="xsd:boolean" use="optional"/>
+    </complexType>
+
+    <complexType name="portTypeType">
+        <sequence>
+            <element name="portName" type="xsd:QName" minOccurs="0" maxOccurs="1"/>
+            <element name="portDescription" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="method" type="gFac:methodType" minOccurs="1" maxOccurs="unbounded" />
+
+            <!-- Security policy for this port type -->
+            <element name="securityPolicy" type="gFac:securityPolicyType" minOccurs="0" maxOccurs="1" />
+            <element ref="gFac:anyMetadata" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+
+    <complexType name="methodType">
+        <sequence>
+            <element name="methodName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <element name="methodDescription" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+
+            <!-- The application that will be run by this method -->
+            <element name="application" type="gFac:applicationType" minOccurs="1" maxOccurs="1" />
+            <element name="inputParameter" type="gFac:inputParameterType" minOccurs="0" maxOccurs="unbounded" />
+            <element name="outputParameter" type="gFac:outputParameterType" minOccurs="0" maxOccurs="unbounded" />
+
+            <!-- Security policy for this method -->
+            <element name="securityPolicy" type="gFac:securityPolicyType" minOccurs="0" maxOccurs="1" />
+            <element ref="gFac:anyMetadata" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+        <attribute name="systemDefined" type="xsd:boolean" use="optional"/>
+        <!-- specifies that output data files be staged to the client's host -->
+        <attribute name="stageOutputDataFiles" type="xsd:boolean" use="optional"/>
+        <attribute name="forceFileStagingToWorkDir" type="xsd:boolean" use="optional"/>
+    </complexType>
+
+    <complexType name="applicationType">
+        <sequence>
+            <element name="applicationName" minOccurs="1" maxOccurs="1">
+                <complexType>
+                    <simpleContent>
+                        <extension base="xsd:string" >
+                            <attribute name="targetNamespace" type="xsd:string" use="required"/>
+                        </extension>
+                    </simpleContent>
+                </complexType>
+            </element>
+            <element name="applicationDescription" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element ref="gFac:anyMetadata" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+
+        <!-- Specifies that the application must be passed only the paramValues and
+        not paramName/paramValue pairs -->
+        <attribute name="paramValuesOnly" type="xsd:boolean" use="optional"/>
+
+        <!-- Specifies that a FORTRAN NameList file be used instead of command line arguments -->
+        <attribute name="useLEADNameListFile" type="xsd:boolean" use="optional"/>
+
+        <!-- Specifies that the FORTAN NameList file must be updated with the values
+        specified in the NameList properties file. This is passed along with the
+        SOAP header -->
+        <attribute name="useLEADNameListPropertiesFile" type="xsd:boolean" use="optional"/>
+    </complexType>
+
+    <complexType name="inputParameterType">
+        <sequence>
+            <element name="parameterName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <element name="parameterDescription" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="parameterValue" type="gFac:parameterValueType" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="parameterType" type="gFac:inputDataType" minOccurs="1" maxOccurs="1" />
+            <element name="anyMetadata" type="xsd:anyType" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+        <!-- This attribute is used by the service to generate the input element in the HTML form
+        for this parameter. For inputDataType="RemoteFile", you must specify "File" here -->
+        <attribute name="displayAs" use="optional">
+            <simpleType>
+                <restriction base="xsd:string">
+                    <enumeration value="ListBox"/>
+                    <enumeration value="RadioButton"/>
+                </restriction>
+            </simpleType>
+        </attribute>
+    </complexType>
+
+    <complexType name="outputParameterType">
+        <sequence>
+            <element name="parameterName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <element name="parameterDescription" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="parameterType" type="gFac:outputDataType" minOccurs="1" maxOccurs="1" />
+            <!-- The regular expression that represents the pattern of the output of the
+            application. This regular expression will be used by the service to
+            search for output of the application in its stdout -->
+            <element name="regExp" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="anyMetadata" type="xsd:anyType" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+
+    <complexType name="parameterValueType">
+        <sequence>
+            <element name="value" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <element name="description" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+
+
+    <!-- An enumeration of supported input data types -->
+    <simpleType name="inputDataType">
+      <restriction base="xsd:string">
+        <enumeration value="String"/>
+        <enumeration value="Integer"/>
+        <enumeration value="Float"/>
+        <enumeration value="Double"/>
+        <enumeration value="Boolean"/>
+        <enumeration value="URI"/>
+        <enumeration value="StringArray"/>
+        <enumeration value="IntegerArray"/>
+        <enumeration value="FloatArray"/>
+        <enumeration value="DoubleArray"/>
+        <enumeration value="BooleanArray"/>
+        <enumeration value="URIArray"/>
+        <enumeration value="LEADFileID"/>
+        <enumeration value="LEADFileIDArray"/>
+        <enumeration value="LEADNameListFile"/>
+        <enumeration value="LEADNameListPropertiesFile"/>
+        <enumeration value="HostName"/>
+        <enumeration value="LeadCrosscutParameters"/>
+        <enumeration value="XmlElement"/>
+	    <enumeration value="DataID"/>
+        <enumeration value="DataIDArray"/>        
+      </restriction>
+    </simpleType>
+
+    <!-- An enumeration of supported output data types -->
+    <simpleType name="outputDataType">
+      <restriction base="xsd:string">
+        <enumeration value="String"/>
+        <enumeration value="Integer"/>
+        <enumeration value="Float"/>
+        <enumeration value="Double"/>
+        <enumeration value="Boolean"/>
+        <enumeration value="URI"/>
+        <enumeration value="StringArray"/>
+        <enumeration value="IntegerArray"/>
+        <enumeration value="FloatArray"/>
+        <enumeration value="DoubleArray"/>
+        <enumeration value="BooleanArray"/>
+        <enumeration value="URIArray"/>
+        <enumeration value="LEADFileID"/>
+        <enumeration value="LEADFileIDArray"/>
+        <enumeration value="StdOut"/>
+        <enumeration value="StdErr"/>
+        <enumeration value="XmlElement"/>
+        <enumeration value="DataID"/>
+        <enumeration value="DataIDArray"/>
+      </restriction>
+    </simpleType>
+
+    <complexType name="boolFlagsType">
+        <sequence>
+            <element name="value" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+            <element name="description" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+
+    <complexType name="doubleFlagsType">
+        <sequence>
+            <element name="value" type="xsd:double" minOccurs="1" maxOccurs="1"/>
+            <element name="description" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+
+    <complexType name="stringFlagsType">
+        <sequence>
+            <element name="value" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+            <element name="description" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+
+    <complexType name="lifeTimeType">
+        <sequence>
+            <element name="notAfterInactiveMinutes" type="xsd:int" minOccurs="1" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+
+</schema>

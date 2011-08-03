@@ -1,0 +1,97 @@
+<schema targetNamespace="http://schemas.airavata.apache.org/gfac"
+        xmlns:gFac="http://schemas.airavata.apache.org/gfac"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified">
+	<import namespace="http://schemas.airavata.apache.org/gfac" schemaLocation="BasicTypes.xsd"></import>
+    <element name="ApplicationDescription" type="gFac:applicationDescriptionType"/>
+
+    <complexType name="applicationDescriptionType">
+        <sequence>
+            <element name="authorInfo" type="gFac:authorInfoType" minOccurs="0" maxOccurs="unbounded"/>
+            <element name="documentInfo" type="gFac:documentInfoType" minOccurs="0" maxOccurs="1"/>
+            <element name="applicationName" minOccurs="1" maxOccurs="1">
+                <complexType>
+                    <simpleContent>
+                        <extension base="xsd:string" >
+                            <attribute name="targetNamespace" type="xsd:string" use="required"/>
+                        </extension>
+                    </simpleContent>
+                </complexType>
+            </element>
+            <!-- The type of job that this application is; mpi, condor, multiple, single -->
+            <element name="jobType" type="gFac:jobTypeType" minOccurs="0" maxOccurs="1"/>
+            <!-- Describes the project that must be charged for the job -->
+            <element name="project" type="gFac:projectType" minOccurs="0" maxOccurs="1"/>
+            <!-- Describes the queue that must be used to submit this job -->
+            <element name="queue" type="gFac:queueType" minOccurs="0" maxOccurs="1"/>
+            <!-- Explicitly set the maximum walltime for a single execution of the executable.  The units is in minutes. -->
+            <element name="maxWallTime" type="xsd:int" minOccurs="0" maxOccurs="1" />
+            <!-- The number of processors to use for the job -->
+            <element name="count" type="xsd:int" minOccurs="0" maxOccurs="1" />
+            <element name="deploymentDescription" type="gFac:deploymentDescriptionType" minOccurs="1" maxOccurs="1" />
+            <element name="securityPolicy" type="gFac:securityPolicyType" minOccurs="0" maxOccurs="1" />
+            <!-- The packages on which this application is dependent on -->
+            <element name="dependency" type="gFac:packageType" minOccurs="0" maxOccurs="unbounded" />
+            <element name="hostCount" type="xsd:int" minOccurs="0" maxOccurs="1" />
+            <element name="minMemory" type="xsd:int" minOccurs="0" maxOccurs="1" />
+            <element name="rslparm" type="gFac:RSLParmType" minOccurs="0" maxOccurs="unbounded" />
+        </sequence>
+    </complexType>
+
+    <complexType name="deploymentDescriptionType">
+        <sequence>
+            <!-- Host on which the service must be started -->
+            <element name="hostName" type="xsd:string" minOccurs="1" maxOccurs="1" />
+
+            <!-- The executable or script that needs to be executed -->
+            <element name="executable" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+
+            <!-- The path to the LEAD Namelist file for this application on this host -->
+            <!-- This is used only if the application is a LEAD application that uses Namelists for input -->
+            <element name="leadNameListFile" type="xsd:anyURI" minOccurs="0" maxOccurs="1"/>
+
+            <!-- This is the working directory for the service. Each application in the service
+            can have a different working directory -->
+            <element name="workDir" type="xsd:string" minOccurs="0" maxOccurs="1" />
+
+            <!-- Tmp directory for this deployment of the application -->
+            <element name="tmpDir" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+
+            <!-- This can be used to pass env variables to the service at startup. Unused as of now -->
+            <element name="applicationEnv" type="gFac:nameValuePairType" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+
+    <simpleType name="jobTypeType">
+        <restriction base="xsd:string">
+            <enumeration value="mpi"/>
+            <enumeration value="multiple"/>
+            <enumeration value="single"/>
+            <enumeration value="condor"/>
+        </restriction>
+    </simpleType>
+
+    <complexType name="projectType">
+        <sequence>
+            <element name="projectName" type="xsd:string" minOccurs="1" maxOccurs="1" />
+            <element name="projectDescription" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element ref="gFac:anyMetadata" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+
+    <complexType name="queueType">
+        <sequence>
+            <element name="queueName" type="xsd:string" minOccurs="1" maxOccurs="1" />
+            <element name="queueDescription" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+
+	<complexType name="RSLParmType">
+		<simpleContent>
+            <extension base="xsd:string" >
+                <attribute name="name" type="xsd:string" use="required"/>
+            </extension>
+        </simpleContent>
+    </complexType>
+</schema>
