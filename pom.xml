@@ -122,12 +122,12 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>xregistry</module>
-                <module>gfac-core</module>
-                <module>gfac-axis2</module>
-                <module>ws-messaging</module>
-                <module>workflow-interpreter</module>
-            	<module>xbaya-gui</module>
+                <module>modules/xregistry</module>
+                <module>modules/gfac-core</module>
+                <module>modules/gfac-axis2</module>
+                <module>modules/ws-messenger</module>
+                <module>modules/workflow-interpreter</module>
+                <module>modules/xbaya-gui</module>
 	    </modules>
         </profile>
     </profiles>
