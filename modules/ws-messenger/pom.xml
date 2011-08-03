@@ -227,7 +227,6 @@
                 <module>messagebox</module>
                 <module>messagebroker</module>
                 <module>messenger</module>
-                <module>workflow-tracking</module>
             	<module>distribution</module>
 	    </modules>
         </profile>
