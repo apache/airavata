@@ -60,7 +60,7 @@ public class SimpleWorkflowExecution extends TestCase {
      */
     Subscription subscription;
     Properties configs = new Properties();
-    String BROKER_URL = "http://127.0.0.1:8081/axis2/services/EventingService/topic/Foo";
+    String BROKER_URL = "http://127.0.0.1:8080/axis2/services/EventingService/topic/Foo";
 
     private EndpointReference epr = new EndpointReference(BROKER_URL);
 
@@ -145,7 +145,7 @@ public class SimpleWorkflowExecution extends TestCase {
         // BEGIN SERVICE1
         {
             // prepare to invoke service1
-            InvocationEntity service1 = notifier.createEntity(context, myServiceID, SERVICE_1, "NODE1", 1);
+            InvocationEntity service1 = notifier.createEntity(myServiceID, SERVICE_1, "NODE1", 1);
             InvocationContext service1Invocation = notifier.invokingService(context, service1,
                     XmlObject.Factory.parse("<soapHeader/>"), XmlObject.Factory.parse("<soapBody>input1</soapBody>"),
                     "This workflow is invoking a service");
@@ -183,7 +183,7 @@ public class SimpleWorkflowExecution extends TestCase {
         // BEGIN SERVICE2
         {
             // prepare to invoke service1
-            InvocationEntity service2 = notifier.createEntity(context, myServiceID, SERVICE_2, "NODE2", 2);
+            InvocationEntity service2 = notifier.createEntity(myServiceID, SERVICE_2, "NODE2", 2);
             InvocationContext service1Invocation = notifier.invokingService(context, service2,
                     XmlObject.Factory.parse("<soapHeader/>"),
                     XmlObject.Factory.parse("<soapBody>input2,input3</soapBody>"),
@@ -412,7 +412,7 @@ public class SimpleWorkflowExecution extends TestCase {
 
         {
             GenericNotifier notifier = NotifierFactory.createGenericNotifier();
-            InvocationEntity initiatingService = notifier.createEntity(context, null, SERVICE_0, null, null);
+            InvocationEntity initiatingService = notifier.createEntity(null, SERVICE_0, null, null);
 
             runWorkflow1(initiatingService, null, WORKFLOW_1, null, null);
         }

@@ -46,7 +46,7 @@ public class Listener {
      */
     public static void main(String[] args) {
 
-        String brokerLocation = args.length > 0 ? args[0] : "rainier.extreme.indiana.edu:12346";
+        String brokerLocation = args.length > 0 ? args[0] : "localhost:8080/axis2/services/EventingService";
         String topic = "pickTheTOpicThatWorkflowPublishTheEventsFrom";
 
         Subscription subscription = null;
