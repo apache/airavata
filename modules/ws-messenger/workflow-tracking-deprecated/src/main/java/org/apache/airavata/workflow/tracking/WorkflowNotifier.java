@@ -110,7 +110,8 @@ public interface WorkflowNotifier extends ServiceNotifier {
      * @param receiver
      *            identity of this workflow invocation
      * @param initiator
-     *            identity of entity that invoked this workflow
+     *            identity of entity
+     *            that invoked this workflow
      * @param descriptionAndAnnotation
      *            optional vararg. The first element is used as the human readable description for this notification.
      *            The subsequent strings need to be serialized XML fragments that are added as annotation to the

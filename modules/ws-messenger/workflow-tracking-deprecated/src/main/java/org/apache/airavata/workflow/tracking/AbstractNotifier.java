@@ -58,13 +58,13 @@ public abstract class AbstractNotifier {
         WorkflowTrackingContext workflowTrackingContext = new WorkflowTrackingContext();
         workflowTrackingContext.setGlobalAnnotations(golbalProperties);
         workflowTrackingContext.setBrokerEpr(epr);
-        workflowTrackingContext.setMyself(createEntity(workflowTrackingContext, workflowID, serviceID, workflowNodeID,
+        workflowTrackingContext.setMyself(createEntity(workflowID, serviceID, workflowNodeID,
                 workflowTimestep));
         return workflowTrackingContext;
     }
 
-    public InvocationEntity createEntity(WorkflowTrackingContext context, URI workflowID, URI serviceID,
-            String workflowNodeID, Integer workflowTimestep) {
+    public InvocationEntity createEntity(URI workflowID, URI serviceID,
+                                         String workflowNodeID, Integer workflowTimestep) {
         InvocationEntityImpl invocationEntityImpl = new InvocationEntityImpl(workflowID, serviceID, workflowNodeID,
                 workflowTimestep);
         return invocationEntityImpl;
