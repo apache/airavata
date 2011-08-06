@@ -21,13 +21,14 @@
 
 package org.apache.airavata.core.gfac.type;
 
+import org.apache.airavata.core.gfac.type.parameter.StringParameter;
 import org.junit.Test;
 
 public class StringParameterTest {
     @Test
     public void getName() {
         StringParameter x = new StringParameter();
-        x.fromString("xxx");
-        System.out.println(x.getTypeName());
+        x.parseStringVal("xxx");
+        System.out.println(x.getType());
     }
 }

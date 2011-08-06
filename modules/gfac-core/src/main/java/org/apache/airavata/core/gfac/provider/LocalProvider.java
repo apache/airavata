@@ -28,21 +28,20 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.airavata.core.gfac.context.ExecutionContext;
 import org.apache.airavata.core.gfac.context.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
-import org.apache.airavata.core.gfac.exception.JobSubmissionFault;
-import org.apache.airavata.core.gfac.notification.NotificationService;
+import org.apache.airavata.core.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.core.gfac.type.HostDescription;
+import org.apache.airavata.core.gfac.type.ServiceDescription;
+import org.apache.airavata.core.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
-import org.apache.airavata.core.gfac.utils.GFacOptions.CurrentProviders;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
-
-import edu.indiana.extreme.lead.workflow_tracking.common.DurationObj;
 
 public class LocalProvider extends AbstractProvider {
 
@@ -58,46 +57,50 @@ public class LocalProvider extends AbstractProvider {
     }
 
     public void initialize(InvocationContext invocationContext) throws GfacException {
-        ExecutionContext context = invocationContext.getExecutionContext();
+        ApplicationDeploymentDescription app = invocationContext.getGfacContext().getApp();
 
-        log.info("working diectroy = " + context.getExecutionModel().getWorkingDir());
-        log.info("temp directory = " + context.getExecutionModel().getTmpDir());
-        new File(context.getExecutionModel().getWorkingDir()).mkdir();
-        new File(context.getExecutionModel().getTmpDir()).mkdir();
-        new File(context.getExecutionModel().getInputDataDir()).mkdir();
-        new File(context.getExecutionModel().getOutputDataDir()).mkdir();
+        log.info("working diectroy = " + app.getWorkingDir());
+        log.info("temp directory = " + app.getTmpDir());
+        new File(app.getWorkingDir()).mkdir();
+        new File(app.getTmpDir()).mkdir();
+        new File(app.getInputDir()).mkdir();
+        new File(app.getOutputDir()).mkdir();
     }
 
-    public void execute(InvocationContext invocationContext) throws GfacException {
-        ExecutionContext context = invocationContext.getExecutionContext();
-
+    public void execute(InvocationContext context) throws GfacException {
+        HostDescription host = context.getGfacContext().getHost();
+        ShellApplicationDeployment app = (ShellApplicationDeployment)context.getGfacContext().getApp();
+        ServiceDescription service = context.getGfacContext().getService();
+        
+        // input parameter
+        ArrayList<String> tmp = new ArrayList<String>();
+        for (Iterator<String> iterator = context.getMessageContext("input").getParameterNames(); iterator.hasNext();) {
+            String key = iterator.next();
+            tmp.add(context.getMessageContext("input").getStringParameterValue(key));
+        }
+        
         List<String> cmdList = new ArrayList<String>();
 
         try {
             /*
-             * Notifier
-             */
-            NotificationService notifier = context.getNotificationService();
-
-            /*
              * Builder Command
              */
-            cmdList.add(context.getExecutionModel().getExecutable());
-            cmdList.addAll(context.getExecutionModel().getInputParameters());
+            cmdList.add(app.getExecutable());
+            cmdList.addAll(tmp);
 
             // create process builder from command
             ProcessBuilder builder = new ProcessBuilder(cmdList);
 
             // get the env of the host and the application
-            Map<String, String> nv = context.getExecutionModel().getEnv();
+            Map<String, String> nv = app.getEnv();
             builder.environment().putAll(nv);
 
             // extra env's
-            builder.environment().put(GFacConstants.INPUT_DATA_DIR, context.getExecutionModel().getInputDataDir());
-            builder.environment().put(GFacConstants.OUTPUT_DATA_DIR, context.getExecutionModel().getOutputDataDir());
+            builder.environment().put(GFacConstants.INPUT_DATA_DIR, app.getInputDir());
+            builder.environment().put(GFacConstants.OUTPUT_DATA_DIR, app.getOutputDir());
 
             // working directory
-            builder.directory(new File(context.getExecutionModel().getWorkingDir()));
+            builder.directory(new File(app.getWorkingDir()));
 
             // log info
             log.info("Command = " + buildCommand(cmdList));
@@ -106,18 +109,13 @@ public class LocalProvider extends AbstractProvider {
                 log.info("Env[" + key + "] = " + builder.environment().get(key));
             }
 
-            // notify start
-            DurationObj compObj = notifier.computationStarted();
-
             // running cmd
             Process process = builder.start();
 
             final BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
             final BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            final BufferedWriter stdoutWtiter = new BufferedWriter(new FileWriter(context.getExecutionModel()
-                    .getStdOut()));
-            final BufferedWriter stdErrWtiter = new BufferedWriter(new FileWriter(context.getExecutionModel()
-                    .getStderr()));
+            final BufferedWriter stdoutWtiter = new BufferedWriter(new FileWriter(app.getStdOut()));
+            final BufferedWriter stdErrWtiter = new BufferedWriter(new FileWriter(app.getStdErr()));
 
             Thread t1 = new Thread(new Runnable() {
 
@@ -193,9 +191,6 @@ public class LocalProvider extends AbstractProvider {
             // wait for the process (application) to finish executing
             int returnValue = process.waitFor();
 
-            // notify end
-            notifier.computationFinished(compObj);
-
             // make sure other two threads are done
             t1.join();
             t2.join();
@@ -211,24 +206,31 @@ public class LocalProvider extends AbstractProvider {
             }
 
             StringBuffer buf = new StringBuffer();
-            buf.append("Executed ").append(buildCommand(cmdList)).append(" on the localHost, working directory =")
-                    .append(context.getExecutionModel().getWorkingDir()).append("tempDirectory =")
-                    .append(context.getExecutionModel().getTmpDir()).append("With the status")
+            buf.append("Executed ")
+            		.append(buildCommand(cmdList))
+            		.append(" on the localHost, working directory = ")
+                    .append(app.getWorkingDir())
+                    .append(" tempDirectory = ")
+                    .append(app.getTmpDir())
+                    .append(" With the status ")
                     .append(String.valueOf(returnValue));
-            context.getNotificationService().info(buf.toString());
 
             log.info(buf.toString());
 
-            context.getExecutionModel().setStdoutStr(GfacUtils.readFile(context.getExecutionModel().getStdOut()));
-            context.getExecutionModel().setStderrStr(GfacUtils.readFile(context.getExecutionModel().getStderr()));
+            String stdOutStr = GfacUtils.readFile(app.getStdOut());
+            String stdErrStr = GfacUtils.readFile(app.getStdErr());
 
             // set to context
-            OutputUtils.fillOutputFromStdout(invocationContext.getMessageContext("output"), context.getExecutionModel()
-                    .getStdoutStr(), context.getExecutionModel().getStderrStr());
+            OutputUtils.fillOutputFromStdout(context.getMessageContext("output"), stdOutStr, stdErrStr);
 
         } catch (IOException e) {
-            throw new JobSubmissionFault(e, "", "", buildCommand(cmdList), CurrentProviders.Local);
+        	log.error("error", e);
+            throw new GfacException(e, FaultCode.LocalError);
         } catch (InterruptedException e) {
+        	log.error("error", e);
+            throw new GfacException(e, FaultCode.LocalError);
+        } catch (Exception e){
+        	log.error("error", e);
             throw new GfacException(e, FaultCode.LocalError);
         }
 

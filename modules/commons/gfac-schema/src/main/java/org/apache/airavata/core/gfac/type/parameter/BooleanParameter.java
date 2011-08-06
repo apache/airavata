@@ -19,19 +19,23 @@
  *
  */
 
-package org.apache.airavata.core.gfac.context;
+package org.apache.airavata.core.gfac.type.parameter;
 
-import java.util.Iterator;
+import org.apache.airavata.core.gfac.type.DataType;
 
-public interface MessageContext<T> {
+public class BooleanParameter extends AbstractParameter {
 
-    public Iterator<String> getParameterNames();
-
-    public T getParameterValue(String name);
-
-    public String getStringParameterValue(String name);
-
-    public void addParameter(String name, T value);
-
-    public void setValue(String name, T value);
+    private Boolean value;
+    
+	public void parseStringVal(String val){
+		this.value = Boolean.parseBoolean(val);
+	}
+	
+	public String toStringVal(){
+		return this.value.toString();
+	}
+	
+	public DataType getType() {
+		return DataType.Boolean;
+	}			
 }

@@ -19,19 +19,13 @@
  *
  */
 
-package org.apache.airavata.core.gfac.context;
+package org.apache.airavata.core.gfac.type.parameter;
 
-import java.util.Iterator;
+import org.apache.airavata.core.gfac.type.DataType;
+import org.apache.airavata.core.gfac.type.Parameter;
 
-public interface MessageContext<T> {
-
-    public Iterator<String> getParameterNames();
-
-    public T getParameterValue(String name);
-
-    public String getStringParameterValue(String name);
-
-    public void addParameter(String name, T value);
-
-    public void setValue(String name, T value);
+public abstract class AbstractParameter extends Parameter {
+	public abstract DataType getType();
+	public abstract void parseStringVal(String val);
+	public abstract String toStringVal();
 }

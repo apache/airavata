@@ -21,17 +21,31 @@
 
 package org.apache.airavata.core.gfac.context;
 
-import java.util.Iterator;
+import org.apache.airavata.core.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.core.gfac.type.HostDescription;
+import org.apache.airavata.core.gfac.type.ServiceDescription;
 
-public interface MessageContext<T> {
-
-    public Iterator<String> getParameterNames();
-
-    public T getParameterValue(String name);
-
-    public String getStringParameterValue(String name);
-
-    public void addParameter(String name, T value);
-
-    public void setValue(String name, T value);
+public class GFACContext{
+    private HostDescription host;
+    private ApplicationDeploymentDescription app;
+    private ServiceDescription service;
+    
+    public HostDescription getHost() {
+        return host;
+    }
+    public void setHost(HostDescription host) {
+        this.host = host;
+    }
+    public ApplicationDeploymentDescription getApp() {
+        return app;
+    }
+    public void setApp(ApplicationDeploymentDescription app) {
+        this.app = app;
+    }
+    public ServiceDescription getService() {
+        return service;
+    }
+    public void setService(ServiceDescription service) {
+        this.service = service;
+    }
 }

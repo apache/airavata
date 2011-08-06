@@ -102,7 +102,6 @@ public class EC2Provider extends AbstractProvider {
         return buff.toString();
     }
 
-    @Override
     public void initialize(InvocationContext invocationContext) throws GfacException {
         ExecutionContext appExecContext = invocationContext.getExecutionContext();
         ExecutionModel model = appExecContext.getExecutionModel();
@@ -236,7 +235,6 @@ public class EC2Provider extends AbstractProvider {
         }
     }
 
-    @Override
     public void execute(InvocationContext invocationContext) throws GfacException {
         ExecutionContext context = invocationContext.getExecutionContext();
         ExecutionModel model = context.getExecutionModel();
@@ -363,13 +361,11 @@ public class EC2Provider extends AbstractProvider {
         }
     }
 
-    @Override
     public void dispose(InvocationContext invocationContext) throws GfacException {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
     public void abort(InvocationContext invocationContext) throws GfacException {
         // TODO Auto-generated method stub
 

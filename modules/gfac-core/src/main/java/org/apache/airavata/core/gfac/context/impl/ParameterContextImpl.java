@@ -26,41 +26,36 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.airavata.core.gfac.context.MessageContext;
-import org.apache.airavata.core.gfac.type.Parameter;
+import org.apache.airavata.core.gfac.type.parameter.AbstractParameter;
 
-@SuppressWarnings("rawtypes")
-public class ParameterContextImpl implements MessageContext<Parameter> {
+public class ParameterContextImpl implements MessageContext<AbstractParameter> {
 
-    private Map<String, Parameter> value;
+    private Map<String, AbstractParameter> value;
 
     public ParameterContextImpl() {
-        this.value = new HashMap<String, Parameter>();
+        this.value = new HashMap<String, AbstractParameter>();
     }
 
     public Iterator<String> getParameterNames() {
         return this.value.keySet().iterator();
     }
 
-    public Parameter getParameterValue(String name) {
+    public AbstractParameter getParameterValue(String name) {
         return this.value.get(name);
-    }
-
-    public String getParameterType(String name) {
-        return this.value.get(name).getTypeName();
     }
 
     public String getStringParameterValue(String name) {
         if (this.value.containsKey(name))
-            return this.value.get(name).toString();
+            return this.value.get(name).toStringVal();
         else
             return null;
     }
 
-    public void addParameter(String name, String type, Parameter value) {
+    public void addParameter(String name, AbstractParameter value) {
         this.value.put(name, value);
     }
 
-    public void setValue(String name, Parameter value) {
+    public void setValue(String name, AbstractParameter value) {
         this.value.put(name, value);
     }
 
