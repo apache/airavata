@@ -26,11 +26,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.airavata.core.gfac.context.MessageContext;
-import org.apache.airavata.core.gfac.type.Parameter;
+import org.apache.airavata.core.gfac.type.parameter.AbstractParameter;
 
 public class OutputUtils {
 
-    public static void fillOutputFromStdout(MessageContext<Parameter> outMessage, String stdout, String stderr) {
+    public static void fillOutputFromStdout(MessageContext<AbstractParameter> outMessage, String stdout, String stderr) {
 
         for (Iterator<String> iterator = outMessage.getParameterNames(); iterator.hasNext();) {
             String parameterName = iterator.next();
@@ -40,8 +40,8 @@ public class OutputUtils {
                 continue;
             }
 
-            Parameter x = outMessage.getParameterValue(parameterName);
-            x.fromString(parseStdout(stdout, parameterName));
+            AbstractParameter x = outMessage.getParameterValue(parameterName);
+            x.parseStringVal(parseStdout(stdout, parameterName));
         }
     }
 

@@ -23,6 +23,17 @@
 		<org.slf4j.version>1.6.1</org.slf4j.version>
 		<log4j.version>1.2.16</log4j.version>
 	</properties>
+	<repositories>
+		<repository>
+			<name>ogce.m2.all</name>
+			<id>ogce.m2.all</id>
+			<url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
+			<snapshots>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+	
 	<dependencies>
 		<dependency>
 			<groupId>cog-jglobus</groupId>
@@ -33,11 +44,6 @@
 			<groupId>cog-4_1_6_rc2</groupId>
 			<artifactId>puretls</artifactId>
 			<type>jar</type>
-			<version>cog-4_1_6</version>
-		</dependency>
-		<dependency>
-			<groupId>cog-4_1_6_rc2</groupId>
-			<artifactId>cryptix32</artifactId>
 			<version>cog-4_1_6</version>
 		</dependency>
 		<dependency>
@@ -91,17 +97,18 @@
 			<version>0.4.3</version>
 		</dependency>
 		<dependency>
-			<groupId>xpp3</groupId>
-			<artifactId>xpp3</artifactId>
-			<version>1.1.4c</version>
+			<groupId>airavata</groupId>
+			<artifactId>airavata-gfac-schema-utils</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+			
+		<!-- Workflow Tracking -->
 		<dependency>
 			<groupId>workflow-tracking</groupId>
 			<artifactId>workflow_tracking</artifactId>
 			<version>2.7.1</version>
 			<type>jar</type>
 		</dependency>
-
 		<dependency>
 			<groupId>workflow-tracking</groupId>
 			<artifactId>workflow_tracking_types</artifactId>
@@ -109,15 +116,11 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>xmlbeans</groupId>
-			<artifactId>xbean</artifactId>
-			<version>2.3.0</version>
-		</dependency>
-		<dependency>
 			<groupId>workflow-context-header</groupId>
 			<artifactId>workflow-context-header</artifactId>
 			<version>1.0</version>
 		</dependency>
+		
 		<!-- Xregistry jars -->
 		<dependency>
 			<groupId>xregistry</groupId>

@@ -28,7 +28,7 @@ import org.apache.airavata.core.gfac.context.impl.ExecutionContextImpl;
 import org.apache.airavata.core.gfac.context.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.context.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.notification.DummyNotification;
-import org.apache.airavata.core.gfac.type.StringParameter;
+import org.apache.airavata.core.gfac.type.parameter.StringParameter;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -68,8 +68,8 @@ public class PropertiesBasedServiceImplTest {
             // parameter
             ParameterContextImpl x = new ParameterContextImpl();
             StringParameter parameter = new StringParameter();
-            parameter.fromString("Hello");
-            x.addParameter("echo", parameter.getTypeName(), parameter);
+            parameter.parseStringVal("Hello");
+            x.addParameter("echo", parameter);
             ct.addMessageContext("input", x);
 
             PropertiesBasedServiceImpl service = new PropertiesBasedServiceImpl();

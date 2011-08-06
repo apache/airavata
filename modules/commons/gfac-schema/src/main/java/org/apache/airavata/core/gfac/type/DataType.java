@@ -21,5 +21,10 @@
 
 package org.apache.airavata.core.gfac.type;
 
-public interface DataType extends Type{	
+public enum DataType{
+	String,
+	Double,
+	Integer,
+	Float,
+	Boolean
 }

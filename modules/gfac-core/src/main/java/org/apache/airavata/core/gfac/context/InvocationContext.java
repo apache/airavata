@@ -33,7 +33,8 @@ public class InvocationContext {
 
     private String serviceName;
     private ExecutionContext executionContext;
-    private Map<String, MessageContext> messageContextMap = new HashMap<String, MessageContext>();
+    private GFACContext gfacContext;
+   	private Map<String, MessageContext> messageContextMap = new HashMap<String, MessageContext>();
     private Map<String, SecurityContext> securityContextMap = new HashMap<String, SecurityContext>();;
 
     public String getServiceName() {
@@ -44,6 +45,14 @@ public class InvocationContext {
         this.serviceName = serviceName;
     }
 
+    public GFACContext getGfacContext() {
+		return gfacContext;
+	}
+
+	public void setGfacContext(GFACContext gfacContext) {
+		this.gfacContext = gfacContext;
+	}
+    
     public ExecutionContext getExecutionContext() {
         return executionContext;
     }

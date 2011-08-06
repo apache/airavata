@@ -38,7 +38,7 @@ import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
 import org.apache.airavata.core.gfac.extension.DataServiceChain;
 import org.apache.airavata.core.gfac.model.ExecutionModel;
 import org.apache.airavata.core.gfac.registry.RegistryService;
-import org.apache.airavata.core.gfac.type.StringParameter;
+import org.apache.airavata.core.gfac.type.parameter.StringParameter;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.xmlbeans.XmlException;
 import org.ogce.schemas.gfac.documents.ApplicationDescriptionDocument;
@@ -155,8 +155,7 @@ public class RegistryDataService extends DataServiceChain {
                     ParameterContextImpl outtmp = new ParameterContextImpl();
                     for (OutputParameterType output : serviceMap.getPortTypeArray(0).getMethodArray(0)
                             .getOutputParameterArray()) {
-                        outtmp.addParameter(output.getParameterName(), output.getParameterType().toString(),
-                                new StringParameter());
+                        outtmp.addParameter(output.getParameterName(), new StringParameter());
                     }
                     context.addMessageContext(OUTPUT_MESSAGE_CONTEXT, outtmp);
                 }
