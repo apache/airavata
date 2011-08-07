@@ -58,8 +58,6 @@ public class MonitorMenu implements EventListener {
 
     private JMenuItem resetMenuItem;
 
-    private JMenuItem historyItem;
-
     private JMenuItem differenceMenuItem;
 
     /**
@@ -114,7 +112,6 @@ public class MonitorMenu implements EventListener {
         this.startMenuItem = createStartItem();
         this.stopMenuItem = createStopItem();
         this.resetMenuItem = createResetItem();
-        this.historyItem = createHistoryItem();
         this.differenceMenuItem = createDifferenceItem();
 
         menu.add(this.configMenuItem);
@@ -123,7 +120,6 @@ public class MonitorMenu implements EventListener {
         menu.add(this.stopMenuItem);
         menu.add(this.resetMenuItem);
         menu.addSeparator();
-        menu.add(this.historyItem);
         menu.addSeparator();
         menu.add(this.differenceMenuItem);
         return menu;
@@ -196,22 +192,6 @@ public class MonitorMenu implements EventListener {
             }
         });
         item.setEnabled(false);
-        return item;
-    }
-
-    private JMenuItem createHistoryItem() {
-        JMenuItem item = new JMenuItem("Load History");
-        item.setMnemonic(KeyEvent.VK_H);
-        item.addActionListener(new AbstractAction() {
-            private ProvenanceDialog window;
-
-            public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    this.window = new ProvenanceDialog(MonitorMenu.this.engine);
-                }
-                this.window.show();
-            }
-        });
         return item;
     }
 
