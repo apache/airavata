@@ -278,16 +278,6 @@
 			<version>2.6</version>
 		</dependency>
 		<dependency>
-			<groupId>karma</groupId>
-			<artifactId>karma</artifactId>
-			<version>2.4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>karma</groupId>
-			<artifactId>karma_types</artifactId>
-			<version>2.4</version>
-		</dependency>
-		<dependency>
 			<groupId>xutil</groupId>
 			<artifactId>xutil</artifactId>
 			<version>0.2</version>

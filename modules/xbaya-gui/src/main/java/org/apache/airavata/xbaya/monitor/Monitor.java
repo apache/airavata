@@ -32,7 +32,6 @@ import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.event.Event;
 import org.apache.airavata.xbaya.event.Event.Type;
 import org.apache.airavata.xbaya.event.EventProducer;
-import org.apache.airavata.xbaya.monitor.KarmaClient.Rate;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul5.MLogger;
@@ -113,19 +112,6 @@ public class Monitor extends EventProducer {
             }
 
         }
-    }
-
-    /**
-     * @param kermaURL
-     * @param workflowInstanceID
-     * @param rate
-     */
-    public synchronized void startKarma(URI kermaURL, URI workflowInstanceID, Rate rate) {
-        KarmaClient karma = new KarmaClient(this, kermaURL, workflowInstanceID, rate);
-        karma.start();
-
-        // Enable/disable some menu items and show the monitor panel.
-        sendSafeEvent(new Event(Type.KARMA_STARTED));
     }
 
     /**
