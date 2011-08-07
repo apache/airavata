@@ -1,15 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
-    <parent>
-        <artifactId>airavata-ws-messenger</artifactId>
-        <groupId>airavata</groupId>
-        <version>0.0.1-SNAPSHOT</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>airavata</groupId>
     <artifactId>airavata-workflowtracking</artifactId>
     <packaging>jar</packaging>
+    <version>0.0.1-SNAPSHOT</version>
     <name>Airavata Workflow Tracking</name>
     <url>http://incubator.apache.org/airavata/</url>
 
@@ -31,7 +27,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-		<version>1.5</version>
+				<version>1.5</version>
                 <executions>
                     <execution>
                         <id>add-source</id>
@@ -62,12 +58,10 @@
                 </executions>
                 <inherited>true</inherited>
                 <configuration>
+                	<schemaDirectory>schemas</schemaDirectory>
                     <outputJar>target/airavata-workflowtrackingtypes-${pom.version}.jar</outputJar>
                     <xmlConfigs>
-                        <xmlConfig implementation="java.io.File">src/main/xsdconfig/notification_types_ng.xsdconfig
-                        </xmlConfig>
-                        <xmlConfig implementation="java.io.File">src/main/xsdconfig/calder_notification_types.xsdconfig
-                        </xmlConfig>
+                        <xmlConfig implementation="java.io.File">schemas/workflow_tracking_types.xsdconfig</xmlConfig>
                     </xmlConfigs>
                 </configuration>
             </plugin>
@@ -77,6 +71,8 @@
         <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2</artifactId>
+            <version>${axis2.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>airavata</groupId>
@@ -97,14 +93,38 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <version>4.7</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
+            <version>1.2.15</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.mail</groupId>
+                    <artifactId>mail</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.jms</groupId>
+                    <artifactId>jms</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jdmk</groupId>
+                    <artifactId>jmxtools</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.jmx</groupId>
+                    <artifactId>jmxri</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <airavata.version>0.0.1-SNAPSHOT</airavata.version>
+        <axis2.version>1.5.1</axis2.version>
     </properties>
 </project>

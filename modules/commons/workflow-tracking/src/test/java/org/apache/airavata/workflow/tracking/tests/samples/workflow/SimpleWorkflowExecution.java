@@ -33,7 +33,6 @@ import org.apache.airavata.workflow.tracking.Notifier;
 import org.apache.airavata.workflow.tracking.NotifierFactory;
 import org.apache.airavata.workflow.tracking.ProvenanceNotifier;
 import org.apache.airavata.workflow.tracking.WorkflowNotifier;
-import org.apache.airavata.workflow.tracking.calder.CalderNotifier;
 import org.apache.airavata.workflow.tracking.client.Subscription;
 import org.apache.airavata.workflow.tracking.common.AnnotationConsts;
 import org.apache.airavata.workflow.tracking.common.AnnotationProps;
@@ -336,13 +335,6 @@ public class SimpleWorkflowExecution extends TestCase {
 
         notifier.dataProduced(context, DATA_URI_5, DATA_URLS_5);
         notifier.dataProduced(context, DATA_URI_6, DATA_URLS_6);
-
-        CalderNotifier calderNotifier = NotifierFactory.createCalderNotifier();
-        calderNotifier.queryStarted(context, "KIND");
-        calderNotifier.queryFailedToStart(context, "KIND");
-        calderNotifier.queryExpired(context, "KIND");
-        calderNotifier.queryActive(context, "KIND");
-        calderNotifier.triggerFound(context, "KIND");
 
         boolean successResult = true;
 

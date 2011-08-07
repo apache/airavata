@@ -6,8 +6,8 @@
 
     <!-- Use the "namespace" element to map a namespace to the Java package
         name that should be generated. -->
-    <xb:namespace uri="http://www.calderproject.org/calder_notification_types">
-        <xb:package>edu.indiana.extreme.lead.calder.types</xb:package>
+    <xb:namespace uri="http://airavata.apache.org/schemas/workflow_tracking_types">
+        <xb:package>org.apache.airavata.workflow.tracking.types</xb:package>
     </xb:namespace>
     
 </xb:config>

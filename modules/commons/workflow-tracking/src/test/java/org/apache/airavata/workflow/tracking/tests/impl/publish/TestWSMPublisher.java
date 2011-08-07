@@ -52,7 +52,7 @@ public class TestWSMPublisher {
             WSMPublisher publisher = new WSMPublisher(10, false, "http://invalid/broker/address", "TestTopic1");
 
         } catch (IOException e) {
-//            fail("Test failed");
+            // fail("Test failed");
         }
 
     }
@@ -67,7 +67,7 @@ public class TestWSMPublisher {
 
         } catch (Exception e) {
             e.printStackTrace();
-//            fail();
+            // fail();
         }
     }
 
@@ -86,7 +86,7 @@ public class TestWSMPublisher {
 
         } catch (Exception e) {
             e.printStackTrace();
-//            fail();
+            // fail();
         }
     }
 

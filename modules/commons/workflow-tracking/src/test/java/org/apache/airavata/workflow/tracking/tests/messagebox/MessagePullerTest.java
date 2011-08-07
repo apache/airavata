@@ -89,7 +89,7 @@ public class MessagePullerTest extends TestCase {
         Callback testCallback1 = new Callback() {
             public void deliverMessage(String topic, NotificationType type, XmlObject messageObj) {
                 System.out.println("Notification Received, notification of type:" + type);
-//                assertEquals(type, NotificationType.WorkflowInitialized);
+                // assertEquals(type, NotificationType.WorkflowInitialized);
                 wait = false;
             }
         };
@@ -116,7 +116,7 @@ public class MessagePullerTest extends TestCase {
 
                 System.out.println("Notification Received, notification of type:" + type);
                 // This assertion is wrong because type and NotificationType.WorkflowInitialized are two different types
-//                assertEquals(type, NotificationType.WorkflowInitialized);
+                // assertEquals(type, NotificationType.WorkflowInitialized);
                 wait = false;
 
             }

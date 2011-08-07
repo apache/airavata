@@ -183,9 +183,10 @@ public class LeadContextHeader {
         setUriValue(NS, "gfac-url", url);
     }
 
-    public void setEventSinkEpr(EndpointReference epr){
-        setUriValue(NS,"event-sink-epr",URI.create(epr.getAddress()));
+    public void setEventSinkEpr(EndpointReference epr) {
+        setUriValue(NS, "event-sink-epr", URI.create(epr.getAddress()));
     }
+
     public URI getGfacUrl() {
         return lookupUriValue(NS, "gfac-url");
     }
