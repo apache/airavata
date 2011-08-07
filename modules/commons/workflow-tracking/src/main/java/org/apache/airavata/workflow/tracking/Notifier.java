@@ -21,8 +21,6 @@
 
 package org.apache.airavata.workflow.tracking;
 
-import org.apache.airavata.workflow.tracking.calder.CalderNotifier;
-
 /**
  * Convenience interface that groups all methods used to send Lead notification messages. This extends the application
  * and workflow notifier interfaces.
@@ -65,8 +63,7 @@ import org.apache.airavata.workflow.tracking.calder.CalderNotifier;
  * @version $Revision: 1.6 $
  * @author
  */
-public interface Notifier extends ProvenanceNotifier, PerformanceNotifier, AuditNotifier, ResourceNotifier,
-        CalderNotifier {
+public interface Notifier extends ProvenanceNotifier, PerformanceNotifier, AuditNotifier, ResourceNotifier{
 
     // public static final String WORKFLOW_ID = "workflow_tracking.workflow_id";
     // public static final String NODE_ID = "workflow_tracking.node_id";

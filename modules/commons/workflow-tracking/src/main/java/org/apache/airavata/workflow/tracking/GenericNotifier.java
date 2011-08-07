@@ -94,7 +94,7 @@ public interface GenericNotifier {
      * responder to an invocation. This object is created for the entity that is invoked and its remote invokee, and/or
      * for the entity and the remote entity it invokes.
      * 
-     *
+     * 
      * @param workflowID
      *            an URI
      * @param serviceID
@@ -103,12 +103,11 @@ public interface GenericNotifier {
      *            a String
      * @param workflowTimestep
      *            an int
-     *
+     * 
      * @return an InvocationEntity
      * 
      */
-    public InvocationEntity createEntity(URI workflowID, URI serviceID,
-                                         String workflowNodeID, Integer workflowTimestep);
+    public InvocationEntity createEntity(URI workflowID, URI serviceID, String workflowNodeID, Integer workflowTimestep);
 
     /**
      * Send a Log message with level INFO

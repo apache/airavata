@@ -1,27 +1,10 @@
 <?xml version='1.0' encoding='utf-8' ?>
 <schema
-    targetNamespace="http://lead.extreme.indiana.edu/namespaces/2006/06/workflow_tracking"
-    xmlns:wft="http://lead.extreme.indiana.edu/namespaces/2006/06/workflow_tracking"
+    targetNamespace="http://airavata.apache.org/schemas/workflow_tracking_types"
+    xmlns:wft="http://airavata.apache.org/schemas/workflow_tracking_types"
     xmlns="http://www.w3.org/2001/XMLSchema"
     attributeFormDefault="qualified"
     elementFormDefault="qualified">
-
-    <!-- ========================================================================================== -->
-    <!-- Authors:                                                                                   -->
-    <!--   Yogesh L. Simmhan*                                                                       -->
-    <!--   Alek Slominski                                                                           -->
-    <!--   Marcus Christie                                                                          -->
-    <!--   Scott Jensen                                                                             -->
-    <!--                                                                                            -->
-    <!--   Version: 2.1                                                                             -->
-    <!--   Date: 2006-08-15                                                                         -->
-    <!--                                                                                            -->
-    <!--   Copyright (c) 2006 Extreme! Lab, Indiana University. All rights reserved.                -->
-    <!--   This software is open source. See http://extreme.indiana.edu/license.txt for license.    -->
-    <!-- ========================================================================================== -->
-
-
-    <!-- ========================================================================================== -->
 
     <annotation>
 	<documentation>

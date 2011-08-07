@@ -21,7 +21,6 @@
 
 package org.apache.airavata.workflow.tracking;
 
-import org.apache.airavata.workflow.tracking.calder.CalderNotifier;
 import org.apache.airavata.workflow.tracking.impl.GenericNotifierImpl;
 import org.apache.airavata.workflow.tracking.impl.NotifierImpl;
 import org.apache.airavata.workflow.tracking.impl.ProvenanceNotifierImpl;
@@ -60,10 +59,6 @@ public class NotifierFactory {
     }
 
     public static AuditNotifier createAuditNotifier() {
-        return new NotifierImpl();
-    }
-
-    public static CalderNotifier createCalderNotifier() {
         return new NotifierImpl();
     }
 

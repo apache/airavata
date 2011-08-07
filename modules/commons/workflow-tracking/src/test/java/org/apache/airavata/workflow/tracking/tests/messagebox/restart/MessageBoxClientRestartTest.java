@@ -110,7 +110,7 @@ public class MessageBoxClientRestartTest extends TestCase {
 
                         System.out.println("Notification Received, notification of type:" + type);
                         System.out.println("Topic[" + topic + "]");
-//                        assertEquals(type, NotificationType.WorkflowInitialized);
+                        // assertEquals(type, NotificationType.WorkflowInitialized);
                         wait = false;
 
                     }
