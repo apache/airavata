@@ -46,7 +46,7 @@ public class WsntMsgBrokerClient extends CommonMsgBrokerClient implements Messag
 
     private EndpointReference brokerEndpointRef = null;
 
-    public EndpointReference createEndpointReference(String brokerURL, String topic) {
+    public static EndpointReference createEndpointReference(String brokerURL, String topic) {
         // TODO : implement
         return null;
     }

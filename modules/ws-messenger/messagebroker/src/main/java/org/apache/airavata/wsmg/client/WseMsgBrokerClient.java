@@ -48,7 +48,7 @@ public class WseMsgBrokerClient extends CommonMsgBrokerClient implements Message
     protected NotificationProducer notificationProducer = new NotificationProducer();
     protected ConsumerServerHandler consumerServerHandler = new ConsumerServerHandler();
 
-    public EndpointReference createEndpointReference(String brokerURL, String topic) {
+    public static EndpointReference createEndpointReference(String brokerURL, String topic) {
 
         return WSEProtocolSupport.Client.createEndpointReference(brokerURL, topic);
     }

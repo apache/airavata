@@ -24,8 +24,8 @@ package org.apache.airavata.xbaya.test;
 import java.net.URI;
 import java.util.ArrayList;
 
-import wsmg.WseClientAPI;
-import xsul.ws_addressing.WsaEndpointReference;
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
+import org.apache.axis2.addressing.EndpointReference;
 import edu.indiana.extreme.lead.workflow_tracking.Notifier;
 import edu.indiana.extreme.lead.workflow_tracking.NotifierFactory;
 import edu.indiana.extreme.lead.workflow_tracking.common.ConstructorConsts;
@@ -41,7 +41,7 @@ public class MonitorTestCase extends XBayaTestCase {
     /**
      */
     public void test() {
-        WsaEndpointReference brokerEPR = WseClientAPI.createEndpointReference(this.configuration.getBrokerURL()
+        EndpointReference brokerEPR = WseMsgBrokerClient.createEndpointReference(this.configuration.getBrokerURL()
                 .toString(), this.configuration.getTopic());
 
         ConstructorProps props = ConstructorProps.newProps();

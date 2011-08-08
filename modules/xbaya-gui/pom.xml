@@ -75,6 +75,7 @@
 	
 	<properties>
 		<axis2.version>1.5.1</axis2.version>
+        <airavata.version>0.0.1-SNAPSHOT</airavata.version>
 	</properties>
 
 	<!--
@@ -384,5 +385,15 @@
 			<artifactId>jets3t</artifactId>
 			<version>0.8.0</version>
 		</dependency>
+        <dependency>
+            <groupId>airavata</groupId>
+            <artifactId>airavata-messagebroker</artifactId>
+            <version>${airavata.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>airavata</groupId>
+            <artifactId>airavata-workflowtracking</artifactId>
+            <version>${airavata.version}</version>
+        </dependency>
 	</dependencies>
 </project>

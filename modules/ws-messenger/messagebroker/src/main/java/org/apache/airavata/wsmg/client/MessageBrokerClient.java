@@ -37,14 +37,6 @@ public interface MessageBrokerClient {
      */
     public void init(String brokerLocation);
 
-    /**
-     * this is only a helper method
-     * 
-     * @param brokerURL
-     * @param topic
-     * @return
-     */
-    public EndpointReference createEndpointReference(String brokerURL, String topic);
 
     /**
      * 

@@ -23,15 +23,16 @@ package org.apache.airavata.xbaya.test;
 
 import java.net.URI;
 
-import org.apache.airavata.xbaya.util.XMLUtil;
-
-import wsmg.WseClientAPI;
-import xsul.ws_addressing.WsaEndpointReference;
 import edu.indiana.extreme.lead.workflow_tracking.Notifier;
 import edu.indiana.extreme.lead.workflow_tracking.NotifierFactory;
 import edu.indiana.extreme.lead.workflow_tracking.common.ConstructorConsts;
 import edu.indiana.extreme.lead.workflow_tracking.common.ConstructorProps;
 import edu.indiana.extreme.lead.workflow_tracking.common.InvocationEntity;
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
+import org.apache.airavata.xbaya.util.XMLUtil;
+
+import org.apache.axis2.addressing.EndpointReference;
+import xsul.ws_addressing.WsaEndpointReference;
 
 public class ResourceNotifierTestCase extends XBayaTestCase {
 
@@ -39,11 +40,12 @@ public class ResourceNotifierTestCase extends XBayaTestCase {
      * 
      */
     public void test() {
-        WsaEndpointReference brokerEPR = WseClientAPI.createEndpointReference(this.configuration.getBrokerURL()
+        EndpointReference brokerEPR = WseMsgBrokerClient.createEndpointReference(this.configuration.getBrokerURL()
                 .toString(), this.configuration.getTopic());
-
+        //TODO remove the xsul dependency here to WsaEndpointReference object
+        URI temporaryURI = URI.create(brokerEPR.getAddress());
         ConstructorProps props = ConstructorProps.newProps();
-        props.set(ConstructorConsts.BROKER_EPR, XMLUtil.xmlElementToString(brokerEPR));
+        props.set(ConstructorConsts.BROKER_EPR, XMLUtil.xmlElementToString(new WsaEndpointReference(temporaryURI)));
         Notifier notifier = NotifierFactory.createNotifier(props);
 
         URI initiatorWorkflowID = URI.create("Workflow");
