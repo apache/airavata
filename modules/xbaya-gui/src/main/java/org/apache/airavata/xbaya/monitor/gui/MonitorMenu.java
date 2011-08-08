@@ -99,8 +99,6 @@ public class MonitorMenu implements EventListener {
         } else if (type.equals(Event.Type.MONITOR_STOPED)) {
             this.startMenuItem.setEnabled(true);
             this.stopMenuItem.setEnabled(false);
-        } else if (type.equals(Event.Type.KARMA_STARTED)) {
-            this.resetMenuItem.setEnabled(true);
         }
     }
 

@@ -24,13 +24,14 @@ package org.apache.airavata.xbaya.workflow.proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.security.SecurityUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.axis2.addressing.EndpointReference;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 
-import wsmg.WseClientAPI;
 import xsul.lead.LeadContextHeader;
 import xsul.ws_addressing.WsaEndpointReference;
 
@@ -61,9 +62,10 @@ public class GPELWorkflowContext implements WorkflowContext {
         leadContextHeader.setWorkflowTemplateId(workflow.getGPELTemplateID());
         leadContextHeader.setWorkflowInstanceId(new URI(client.getInstanceID()));
         leadContextHeader.setUserDn(proxy.getName().toString());
-        WsaEndpointReference eventSink = WseClientAPI.createEndpointReference(
+        EndpointReference eventSink = WseMsgBrokerClient.createEndpointReference(
                 XBayaConstants.DEFAULT_BROKER_URL.toString(), topic);
-        leadContextHeader.setEventSink(eventSink);
+        WsaEndpointReference eprReference = new WsaEndpointReference(URI.create(eventSink.getAddress()));
+        leadContextHeader.setEventSink(eprReference);
         leadContextHeader.setExperimentId("urn:uuid:" + topic);
         this.header = leadContextHeader;
     }

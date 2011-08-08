@@ -27,6 +27,13 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.airavata.commons.WorkFlowUtils;
+import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
+import org.apache.airavata.wsmg.client.MsgBrokerClientException;
+import org.apache.airavata.wsmg.client.NotificationHandler;
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
+import org.apache.airavata.wsmg.client.msgbox.MessagePuller;
+import org.apache.airavata.wsmg.msgbox.client.MsgBoxClient;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.graph.EPRPort;
 import org.apache.airavata.xbaya.graph.Edge;
@@ -47,28 +54,23 @@ import org.apache.airavata.xbaya.monitor.WsmgClient;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.xmlpull.infoset.XmlBuilderException;
-import org.xmlpull.infoset.XmlElement;
+import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axis2.addressing.EndpointReference;
 
-import wsmg.NotificationHandler;
-import wsmg.WseClientAPI;
-import wsmg.XmlConsumer;
-import wsmg.pull.MessagePuller;
-import wsmg.util.WsmgUtil;
-import xsul.ws_addressing.WsaEndpointReference;
+import org.xmlpull.infoset.XmlElement;
 import xsul5.MLogger;
 
-public class WorkflowInterpretorEventListener implements NotificationHandler {
+import javax.xml.stream.XMLStreamException;
+
+public class WorkflowInterpretorEventListener implements NotificationHandler,ConsumerNotificationHandler {
 
     private Workflow workflow;
-    private WsmgClient wsmgClient;
     private boolean pullMode;
-    private WseClientAPI wseClient;
+    private WseMsgBrokerClient wseClient;
     private URI brokerURL;
     private String topic;
     private URI messageBoxURL;
     private String subscriptionID;
-    private XmlConsumer xmlConsumer;
     private MessagePuller messagePuller;
 
     private static MLogger logger = MLogger.getLogger();
@@ -79,8 +81,8 @@ public class WorkflowInterpretorEventListener implements NotificationHandler {
         this.topic = configuration.getTopic();
         this.pullMode = true;
         this.messageBoxURL = configuration.getMessageBoxURL();
-
-        this.wseClient = new WseClientAPI();
+        this.wseClient = new WseMsgBrokerClient();
+        this.wseClient.init(this.brokerURL.toString());
     }
 
     public void start() throws MonitorException {
@@ -98,15 +100,13 @@ public class WorkflowInterpretorEventListener implements NotificationHandler {
         }
         try {
             if (this.pullMode) {
-                WsaEndpointReference messageBoxEPR = this.wseClient.createPullMsgBox(this.messageBoxURL.toString());
-                URI address = messageBoxEPR.getAddress();
-                this.subscriptionID = this.wseClient.subscribe(this.brokerURL.toString(), address.toString(),
+                EndpointReference messageBoxEPR = this.wseClient.createPullMsgBox(this.messageBoxURL.toString());
+                this.subscriptionID = this.wseClient.subscribe(this.brokerURL.toString(), messageBoxEPR.getAddress(),
                         this.topic);
-                this.messagePuller = this.wseClient.startPullingEventsFromMsgBox(messageBoxEPR, this, 1000L);
+                this.messagePuller = this.wseClient.startPullingEventsFromMsgBox(messageBoxEPR, this, 1000L,20000L);
             } else {
-                this.xmlConsumer = new XmlConsumer(0, this);
-                this.xmlConsumer.start();
-                URL consumerUrl = new URL(this.xmlConsumer.getServer().getLocation());
+                String[] endpoints = this.wseClient.startConsumerService(2222,this);
+                URL consumerUrl = new URL(endpoints[0]);
                 this.subscriptionID = this.wseClient.subscribe(this.brokerURL.toString(), consumerUrl.getHost() + ":"
                         + consumerUrl.getPort(), this.topic);
             }
@@ -132,25 +132,25 @@ public class WorkflowInterpretorEventListener implements NotificationHandler {
             if (this.pullMode) {
                 this.messagePuller.stopPulling();
             } else {
-                this.xmlConsumer.shutdown();
+                this.wseClient.unSubscribe(this.subscriptionID);
             }
-            this.wseClient.unSubscribe(this.brokerURL.toString(), this.subscriptionID);
-        } catch (RuntimeException e) {
+            this.wseClient.unSubscribe(this.subscriptionID);
+        } catch (MsgBrokerClientException e) {
             throw new MonitorException("Failed to unsubscribe.", e);
         }
 
     }
 
     /**
-     * @see wsmg.NotificationHandler#handleNotification(java.lang.String)
+     * @see org.apache.airavata.wsmg.client.NotificationHandler#handleNotification(java.lang.String)
      */
     public void handleNotification(String message) {
         try {
-            String soapBody = WsmgUtil.getSoapBodyContent(message);
+            String soapBody = WorkFlowUtils.getSoapBodyContent(message);
             XmlElement event = XMLUtil.stringToXmlElement(soapBody);
             handleEvent(new MonitorEvent(event), true, this.workflow.getGraph());
 
-        } catch (XmlBuilderException e) {
+        } catch (XMLStreamException e) {
             // Just log them because they can be unrelated messages sent to
             // this topic by accident.
             logger.warning("Could not parse received notification: " + message, e);
@@ -320,4 +320,12 @@ public class WorkflowInterpretorEventListener implements NotificationHandler {
             }
         }
     }
+    /**
+        * @see org.apache.airavata.wsmg.client.NotificationHandler#handleNotification(java.lang.String)
+        */
+       public void handleNotification(SOAPEnvelope message) {
+           String soapBody = message.getBody().toString();
+           this.handleNotification(soapBody);
+       }
+
 }

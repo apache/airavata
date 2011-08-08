@@ -23,12 +23,12 @@ package org.apache.airavata.xbaya.jython.lib;
 
 import java.net.URI;
 
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.xbaya.util.StringUtil;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.python.core.PyObject;
 import org.xmlpull.infoset.XmlElement;
 
-import wsmg.WseClientAPI;
 import xsul.XmlConstants;
 import xsul.ws_addressing.WsaEndpointReference;
 import xsul5.MLogger;
@@ -83,8 +83,9 @@ public class NotificationSender {
         this.topic = topic;
         this.brokerURL = brokerURL;
         this.workflowID = URI.create(StringUtil.convertToJavaIdentifier(this.topic));
-
-        this.eventSink = WseClientAPI.createEndpointReference(this.brokerURL, this.topic);
+        //todo have to remove the xsul dependency completely
+        URI temporaryURI = URI.create(WseMsgBrokerClient.createEndpointReference(this.brokerURL, this.topic).getAddress());
+        this.eventSink = new WsaEndpointReference(temporaryURI);
         ConstructorProps props = ConstructorProps.newProps();
         props.set(ConstructorConsts.BROKER_EPR, XmlConstants.BUILDER.serializeToString(this.eventSink));
         AnnotationProps annotationProps = AnnotationProps.newProps();

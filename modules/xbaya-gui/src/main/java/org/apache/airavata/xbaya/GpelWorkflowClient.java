@@ -32,6 +32,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.gpel.GPELClient;
@@ -46,12 +47,12 @@ import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
+import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlObject;
 import org.gpel.client.GcInstance;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 
-import wsmg.WseClientAPI;
 import xsul.XmlConstants;
 import xsul.invoker.gsi.GsiInvoker;
 import xsul.lead.LeadContextHeader;
@@ -117,7 +118,7 @@ public class GpelWorkflowClient implements Callback {
      * @throws IOException
      * @throws GraphException
      * @throws ComponentException
-     * @throws WorkflowEngineExceptiona
+     * @throws WorkflowEngineException
      */
     public static Workflow getWorkflow(String workflowFileName) throws FileNotFoundException, IOException,
             GraphException, ComponentException, WorkflowEngineException {
@@ -252,9 +253,10 @@ public class GpelWorkflowClient implements Callback {
         leadContextHeader.setWorkflowTemplateId(new URI(workflow.getGPELTemplateID().toString()));
         leadContextHeader.setWorkflowInstanceId(new URI(instance.getInstanceId().toString()));
         leadContextHeader.setUserDn(proxy.getName().toString());
-        WsaEndpointReference eventSink = WseClientAPI.createEndpointReference(
+        EndpointReference eventSink = WseMsgBrokerClient.createEndpointReference(
                 XBayaConstants.DEFAULT_BROKER_URL.toString(), topic);
-        leadContextHeader.setEventSink(eventSink);
+        WsaEndpointReference eprReference = new WsaEndpointReference(URI.create(eventSink.getAddress()));
+        leadContextHeader.setEventSink(eprReference);
         return leadContextHeader;
     }
 

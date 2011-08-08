@@ -23,13 +23,14 @@ package org.apache.airavata.xbaya.lead;
 
 import java.net.URI;
 
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 
-import wsmg.WseClientAPI;
+import org.apache.axis2.addressing.EndpointReference;
 import xsul.lead.LeadContextHeader;
 import xsul.ws_addressing.WsaEndpointReference;
 
@@ -100,8 +101,10 @@ public class LeadContextHeaderHelper {
             if (topic == null || topic.length() == 0) {
                 topic = XBayaConstants.DEFAULT_TOPIC;
             }
-            WsaEndpointReference eventSink = WseClientAPI.createEndpointReference(brokerURL.toString(), topic);
-            this.leadContextHeader.setEventSink(eventSink);
+        //TODO remove the xsul dependency here to WsaEndpointReference object
+            EndpointReference eventSink = WseMsgBrokerClient.createEndpointReference(brokerURL.toString(), topic);
+            WsaEndpointReference eprReference = new WsaEndpointReference(URI.create(eventSink.getAddress()));
+            this.leadContextHeader.setEventSink(eprReference);
         }
     }
 
