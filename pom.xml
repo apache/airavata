@@ -64,7 +64,7 @@
                 </property>
             </activation>
             <modules>
-                <module>xregistry</module>
+                <module>modules/xregistry</module>
             </modules>
         </profile>
         <profile>
@@ -76,8 +76,9 @@
                 </property>
             </activation>
             <modules>
-                <module>gfac-core</module>
-                <module>gfac-axis2</module>
+                <module>modules/gfac-core</module>
+                <module>modules/gfac-axis2</module>
+		<module>modules/commons</module>
             </modules>
         </profile>
          <profile>
@@ -89,7 +90,7 @@
                 </property>
             </activation>
             <modules>
-                <module>ws-messaging</module>
+                <module>modules/ws-messaging</module>
             </modules>
         </profile>
          <profile>
@@ -101,9 +102,23 @@
                 </property>
             </activation>
             <modules>
-                <module>workflow-interpreter</module>
+                <module>modules/workflow-interpreter</module>
             </modules>
         </profile>
+
+         <profile>
+            <id>profile-workflow-tracking</id>
+            <activation>
+                <property>
+                    <name>module</name>
+                    <value>workflow-tracking</value>
+                </property>
+            </activation>
+            <modules>
+                <module>modules/commons</module>
+            </modules>
+        </profile>
+
          <profile>
             <id>profile-xbaya</id>
             <activation>
@@ -113,7 +128,8 @@
                 </property>
             </activation>
             <modules>
-                <module>xbaya-gui</module>
+                <module>modules/xbaya-gui</module>
+		<module>modules/commons</module>
             </modules>
         </profile>
         <profile>
@@ -128,6 +144,7 @@
                 <module>modules/ws-messenger</module>
                 <module>modules/workflow-interpreter</module>
                 <module>modules/xbaya-gui</module>
+		<module>modules/commons</module>
 	    </modules>
         </profile>
     </profiles>
