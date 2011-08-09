@@ -145,20 +145,6 @@
 		</fileSet>
 
 		<!--
-			********************** copy workflow tracking jar
-			**********************
-		-->
-
-		<fileSet>
-			<directory>../workflow-tracking/target</directory>
-			<outputDirectory>client-api/lib</outputDirectory>
-			<includes>
-				<include>airavata-workflow*.jar</include>
-			</includes>
-		</fileSet>
-
-
-		<!--
 			********************** copy messagebroker+ messagebox samples **********************
 		-->
 

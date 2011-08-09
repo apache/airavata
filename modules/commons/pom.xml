@@ -2,11 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-ws-messenger</artifactId>
+    <artifactId>airavata-commons</artifactId>
     <groupId>airavata</groupId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Airavata-WS-Messenger</name>
+    <name>Airavat Commons</name>
     <url>http://maven.apache.org</url>
 
     <repositories>
@@ -38,87 +38,6 @@
             <url>http://people.apache.org/~lahiru/maven-repo</url>
         </repository>
     </repositories>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.7</version>
-                <scope>test</scope>
-            </dependency>
-	    
-            <dependency>
-                <groupId>org.apache.ws.commons.axiom</groupId>
-                <artifactId>axiom-api</artifactId>
-                <version>1.2.8</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.ws.commons.axiom</groupId>
-                <artifactId>axiom-impl</artifactId>
-                <type>jar</type>
-                <version>1.2.8</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.axis2</groupId>
-                <artifactId>axis2</artifactId>
-                <version>${axis2.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>2.5</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.15</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.mail</groupId>
-                        <artifactId>mail</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>javax.jms</groupId>
-                        <artifactId>jms</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.sun.jdmk</groupId>
-                        <artifactId>jmxtools</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.sun.jmx</groupId>
-                        <artifactId>jmxri</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>5.1.6</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.axis2</groupId>
-                <artifactId>axis2-transport-local</artifactId>
-                <version>${axis2.version}</version>
-                <scope>compile</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.axis2</groupId>
-                <artifactId>axis2-transport-http</artifactId>
-                <version>${axis2.version}</version>
-                <scope>compile</scope>
-            </dependency>
-
-        </dependencies>
-    </dependencyManagement>
     <build>
             <plugins>
             <plugin>
@@ -170,52 +89,50 @@
     </build>
     <profiles>
         <profile>
-            <id>profile-messagebox</id>
+            <id>profile-workflow-tracking</id>
             <activation>
                 <property>
                     <name>module</name>
-                    <value>messagebox</value>
+                    <value>workflow-tracking</value>
                 </property>
             </activation>
             <modules>
-                <module>messagebox</module>
+                <module>workflow-tracking</module>
             </modules>
         </profile>
-        <profile>
-            <id>profile-messagebroker</id>
+	<profile>
+            <id>profile-xbaya</id>
             <activation>
                 <property>
                     <name>module</name>
-                    <value>messagebroker</value>
+                    <value>xbaya</value>
                 </property>
             </activation>
             <modules>
-                <module>messagebroker</module>
+                <module>workflow-tracking</module>
             </modules>
         </profile>
-        <profile>
-            <id>profile-messenger</id>
+	<profile>
+            <id>profile-gfac</id>
             <activation>
                 <property>
                     <name>module</name>
-                    <value>messenger</value>
+                    <value>gfac</value>
                 </property>
             </activation>
             <modules>
-                <module>messenger</module>
+                <module>gfac-schema</module>
             </modules>
         </profile>
+
         <profile>
             <id>default</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <!--module>wsmg-commons</module-->
-                <module>messagebox</module>
-                <module>messagebroker</module>
-                <module>messenger</module>
-            	<module>distribution</module>
+                <module>workflow-tracking</module>
+            	<module>gfac-schema</module>
 	    </modules>
         </profile>
     </profiles>

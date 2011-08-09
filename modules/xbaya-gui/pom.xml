@@ -75,7 +75,7 @@
 	
 	<properties>
 		<axis2.version>1.5.1</axis2.version>
-        <airavata.version>0.0.1-SNAPSHOT</airavata.version>
+        	<airavata.version>0.0.1-SNAPSHOT</airavata.version>
 	</properties>
 
 	<!--

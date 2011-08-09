@@ -22,7 +22,7 @@
 	<properties>
 		<org.slf4j.version>1.6.1</org.slf4j.version>
 		<log4j.version>1.2.16</log4j.version>
-		<axis2.version>1.5.4</axis2.version>
+		<axis2.version>1.5.1</axis2.version>
 		<axiom.version>1.2.8</axiom.version>
 	</properties>
 	<dependencies>
@@ -44,7 +44,7 @@
 		<dependency>
 			<groupId>Airavata</groupId>
 			<artifactId>GFac-Core</artifactId>
-			<version>0.0.1-20110626.224602-1</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<build>
