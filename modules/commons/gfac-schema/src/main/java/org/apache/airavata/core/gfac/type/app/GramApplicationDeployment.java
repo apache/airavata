@@ -27,8 +27,9 @@ public class GramApplicationDeployment extends ShellApplicationDeployment {
     private int wallTime;
     private int nodeCount;
     private int cpuCount;
-    
-    public String getProjectName() {
+    private String jobType;
+        
+	public String getProjectName() {
         return projectName;
     }
     public void setProjectName(String projectName) {
@@ -57,5 +58,11 @@ public class GramApplicationDeployment extends ShellApplicationDeployment {
     }
     public void setCpuCount(int cpuCount) {
         this.cpuCount = cpuCount;
-    }   
+    }
+    public String getJobType() {
+		return jobType;
+	}
+	public void setJobType(String jobType) {
+		this.jobType = jobType;
+	}
 }
