@@ -21,18 +21,20 @@
 
 package org.apache.airavata.core.gfac.provider.utils;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.airavata.core.gfac.context.ExecutionContext;
+import org.apache.airavata.core.gfac.context.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
+import org.apache.airavata.core.gfac.type.ServiceDescription;
+import org.apache.airavata.core.gfac.type.app.GramApplicationDeployment;
+import org.apache.airavata.core.gfac.type.host.GlobusHost;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.globus.gram.GramAttributes;
 import org.ogce.namespaces.x2010.x08.x30.workflowContextHeader.WorkflowContextHeaderDocument.WorkflowContextHeader;
 import org.ogce.namespaces.x2010.x08.x30.workflowResourceMapping.ResourceMappingDocument.ResourceMapping;
-import org.ogce.schemas.gfac.documents.ApplicationDescriptionType;
-import org.ogce.schemas.gfac.documents.RSLParmType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,92 +45,96 @@ public class GramRSLGenerator {
         SINGLE, MPI, MULTIPLE, CONDOR
     };
 
-    public static GramAttributes configureRemoteJob(ExecutionContext appExecContext) throws GfacException {
+    public static GramAttributes configureRemoteJob(InvocationContext context) throws GfacException {
+    	GlobusHost host = (GlobusHost)context.getGfacContext().getHost();
+    	GramApplicationDeployment app = (GramApplicationDeployment)context.getGfacContext().getApp();
+        ServiceDescription service = context.getGfacContext().getService();
+    	
+    	
         GramAttributes jobAttr = new GramAttributes();
-        jobAttr.setExecutable(appExecContext.getExecutionModel().getExecutable());
-        jobAttr.setDirectory(appExecContext.getExecutionModel().getWorkingDir());
-        jobAttr.setStdout(appExecContext.getExecutionModel().getStdOut());
-        jobAttr.setStderr(appExecContext.getExecutionModel().getStderr());
+        jobAttr.setExecutable(app.getExecutable());
+        jobAttr.setDirectory(app.getWorkingDir());
+        jobAttr.setStdout(app.getStdOut());
+        jobAttr.setStderr(app.getStdErr());
 
-        // The env here contains the env of the host and the application. i.e
-        // the env specified in
-        // the host description and application description documents
-        Map<String, String> nv = appExecContext.getExecutionModel().getEnv();
-
+        /*
+         * The env here contains the env of the host and the application. i.e the env specified in the host description and application description documents
+         */
+        Map<String, String> nv = app.getEnv();
         for (String key : nv.keySet()) {
             jobAttr.addEnvVariable(key, nv.get(key));
         }
 
-        jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR, appExecContext.getExecutionModel().getInputDataDir());
-        String outputDataDir = GFacConstants.OUTPUT_DATA_DIR;
-        if (!outputDataDir.isEmpty()) {
-            jobAttr.addEnvVariable(outputDataDir, appExecContext.getExecutionModel().getOutputDataDir());
-        }
-        ApplicationDescriptionType app = appExecContext.getExecutionModel().getAplicationDesc();
-        WorkflowContextHeader contextHeader = appExecContext.getWorkflowHeader();
+        jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR, app.getInputDir());        
+        jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR, app.getOutputDir());
+        
+        WorkflowContextHeader contextHeader = context.getExecutionContext().getWorkflowHeader();
         ResourceMapping resourceMapping = null;
         if (contextHeader != null) {
             resourceMapping = contextHeader.getResourceMappings().getResourceMappingArray(0);
         }
-
-        log.info("Configure using App Desc = " + app.xmlText());
+        
         if (resourceMapping != null && resourceMapping.getMaxWallTime() > 0) {
             log.info("Header Setting Max Wall Time" + resourceMapping.getMaxWallTime());
             jobAttr.setMaxWallTime(resourceMapping.getMaxWallTime());
 
-        } else if (app.getMaxWallTime() > 0) {
-            log.info("Setting max wall clock time to " + app.getMaxWallTime());
+        } else if (app.getWallTime() > 0) {
+            log.info("Setting max wall clock time to " + app.getWallTime());
 
-            if (app.getMaxWallTime() > 30 && app.getQueue() != null && app.getQueue().equals("debug")) {
+            if (app.getWallTime() > 30 && app.getQueueName() != null && app.getQueueName().equals("debug")) {
                 throw new GfacException("NCSA debug Queue only support jobs < 30 minutes", FaultCode.InvalidConfig);
             }
 
-            jobAttr.setMaxWallTime(app.getMaxWallTime());
+            jobAttr.setMaxWallTime(app.getWallTime());
             jobAttr.set("proxy_timeout", "1");
         } else {
             jobAttr.setMaxWallTime(29);
         }
 
-        if (appExecContext.getExecutionModel().getStdIn() != null) {
-            jobAttr.setStdin(appExecContext.getExecutionModel().getStdIn());
+        if (app.getStdIn() != null) {
+            jobAttr.setStdin(app.getStdIn());
         } else {
-            Iterator<String> values = appExecContext.getExecutionModel().getInputParameters().iterator();
-            while (values.hasNext()) {
-                jobAttr.addArgument(values.next());
-            }
+        	// input parameter
+            ArrayList<String> tmp = new ArrayList<String>();
+            for (Iterator<String> iterator = context.getMessageContext("input").getParameterNames(); iterator.hasNext();) {
+                String key = iterator.next();
+                jobAttr.addArgument(context.getMessageContext("input").getStringParameterValue(key));
+            }        	
         }
 
         if (resourceMapping != null && resourceMapping.getNodeCount() > 0) {
             log.info("Setting number of procs to " + resourceMapping.getNodeCount());
             jobAttr.set("hostCount", String.valueOf(resourceMapping.getNodeCount()));
-        } else if (app.getHostCount() > 1) {
-            jobAttr.set("hostCount", String.valueOf(app.getHostCount()));
+        } else if (app.getNodeCount() > 1) {
+            jobAttr.set("hostCount", String.valueOf(app.getNodeCount()));
         }
         if (resourceMapping != null && resourceMapping.getCpuCount() > 0) {
             log.info("Setting host count to " + resourceMapping.getCpuCount());
             jobAttr.setNumProcs(resourceMapping.getCpuCount());
 
-        } else if (app.getCount() > 1) {
-            log.info("Setting number of procs to " + app.getCount());
-            jobAttr.setNumProcs(app.getCount());
+        } else if (app.getCpuCount() > 1) {
+            log.info("Setting number of procs to " + app.getCpuCount());
+            jobAttr.setNumProcs(app.getCpuCount());
         }
 
-        if (app.getProject() != null && app.getProject().getProjectName() != null) {
-            log.info("Setting project to " + app.getProject());
-            jobAttr.setProject(app.getProject().getProjectName());
+        if (app.getProjectName() != null){
+            log.info("Setting project to " + app.getProjectName());
+            jobAttr.setProject(app.getProjectName());
         }
 
         if (resourceMapping != null && resourceMapping.getQueueName() != null) {
             jobAttr.setQueue(resourceMapping.getQueueName());
-        } else if (app.getQueue() != null && app.getQueue().getQueueName() != null) {
-            log.info("Setting job queue to " + app.getQueue());
-            jobAttr.setQueue(app.getQueue().getQueueName());
+        } else if (app.getQueueName() != null) {
+            log.info("Setting job queue to " + app.getQueueName());
+            jobAttr.setQueue(app.getQueueName());
         }
+        
+        
         String jobType = JobType.SINGLE.toString();
-
         if (app.getJobType() != null) {
             jobType = app.getJobType().toString();
         }
+        
         if (jobType.equalsIgnoreCase(JobType.SINGLE.toString())) {
             log.info("Setting job type to single");
             jobAttr.setJobType(GramAttributes.JOBTYPE_SINGLE);
@@ -140,27 +146,9 @@ public class GramRSLGenerator {
             jobAttr.setJobType(GramAttributes.JOBTYPE_MULTIPLE);
         } else if (jobType.equalsIgnoreCase(JobType.CONDOR.toString())) {
             jobAttr.setJobType(GramAttributes.JOBTYPE_CONDOR);
-        }
+        }       
 
-        // Support to add the Additional RSL parameters
-        RSLParmType[] rslParams = app.getRslparmArray();
-        if (rslParams.length > 0) {
-            for (RSLParmType rslType : rslParams) {
-                log.info("Adding rsl param of [" + rslType.getName() + "," + rslType.getStringValue() + "]");
-                if (rslType.getName() != "") {
-                    jobAttr.set(rslType.getName(), rslType.getStringValue());
-                }
-            }
-        }
-
-        // support urgency/SPRUCE case
-        // only add spruce rsl parameter if this host has a spruce jobmanager
-        // configured
-        if (appExecContext.getWorkflowHeader() != null && appExecContext.getWorkflowHeader().getURGENCY() != null
-        // && GfacUtils.getSpruceGatekeeper(appExecContext) != null
-        ) {
-            jobAttr.set("urgency", appExecContext.getWorkflowHeader().getURGENCY());
-        }
+        //TODO rsl parameter & urgency/SPRUCE
 
         return jobAttr;
     }

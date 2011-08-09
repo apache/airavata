@@ -23,6 +23,7 @@ package org.apache.airavata.core.gfac.type;
 
 public class Parameter implements Type{
     private String name;
+    private String description;
     private DataType type;
     
     public String getName() {
@@ -30,8 +31,14 @@ public class Parameter implements Type{
     }
     public void setName(String name) {
         this.name = name;
-    }
-    public DataType getType() {
+    }    
+    public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public DataType getType() {
         return type;
     }
     public void setType(DataType type) {

@@ -22,6 +22,8 @@
 package org.apache.airavata.core.gfac.provider.utils;
 
 import org.apache.airavata.core.gfac.context.ExecutionContext;
+import org.apache.airavata.core.gfac.context.GFACContext;
+import org.apache.airavata.core.gfac.context.InvocationContext;
 import org.apache.airavata.core.gfac.context.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
@@ -35,16 +37,18 @@ import org.slf4j.LoggerFactory;
 
 public class JobSubmissionListener implements GramJobListener {
 
+	public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";
+	
     private boolean finished;
     private int error;
     private int status;
-    private ExecutionContext executionContext;
+    private InvocationContext context;
     private GramJob job;
     protected final Logger log = LoggerFactory.getLogger(JobSubmissionListener.class);
 
-    public JobSubmissionListener(GramJob job, ExecutionContext executionContext) {
+    public JobSubmissionListener(GramJob job, InvocationContext context) {
         this.job = job;
-        this.executionContext = executionContext;
+        this.context = context;
     }
 
     // waits for DONE or FAILED status
@@ -53,9 +57,9 @@ public class JobSubmissionListener implements GramJobListener {
             int proxyExpTime = job.getCredentials().getRemainingLifetime();
             if (proxyExpTime < 900) {
                 log.info("Job proxy expired. Trying to renew proxy");
-                GSSCredential newgssCred = ((GSISecurityContext) executionContext.getSecurityContext())
-                        .getGssCredentails();
-                job.renew(newgssCred);
+                GSSCredential gssCred = ((GSISecurityContext) context
+                        .getSecurityContext(MYPROXY_SECURITY_CONTEXT)).getGssCredentails();
+                job.renew(gssCred);
             }
             // job status is changed but method isn't invoked
             if (status != 0) {
@@ -82,7 +86,7 @@ public class JobSubmissionListener implements GramJobListener {
         String jobStatusMessage = GfacUtils.formatJobStatus(jobId, statusString);
         log.info(jobStatusMessage);
         status = jobStatus;
-        executionContext.getNotificationService().info(jobStatusMessage);
+        context.getExecutionContext().getNotificationService().info(jobStatusMessage);
         if (jobStatus == GramJob.STATUS_DONE) {
             finished = true;
         } else if (jobStatus == GramJob.STATUS_FAILED) {
