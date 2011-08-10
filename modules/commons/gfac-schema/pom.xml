@@ -32,6 +32,16 @@
 	</repositories>
 	<dependencies>
 		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<version>1.1.1</version>
+		</dependency>	
+		<dependency>
+			<groupId>javax.jcr</groupId>
+			<artifactId>jcr</artifactId>
+			<version>2.0</version>
+		</dependency>	
+		<dependency>
 			<groupId>xmlbeans</groupId>
 			<artifactId>xbean</artifactId>
 			<version>2.5.0</version>
@@ -61,6 +71,26 @@
 			<artifactId>wsdl4j</artifactId>
 			<version>1.5.2</version>
 			<type>jar</type>
+		</dependency>
+		
+		<!-- Testing -->
+		<dependency>
+			<groupId>org.apache.jackrabbit</groupId>
+			<artifactId>jackrabbit-core</artifactId>
+			<version>2.2.7</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.5.11</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.jackrabbit</groupId>
+			<artifactId>jackrabbit-jcr-rmi</artifactId>
+			<version>2.2.7</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
