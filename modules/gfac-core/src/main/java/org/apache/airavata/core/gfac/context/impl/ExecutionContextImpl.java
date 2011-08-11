@@ -21,12 +21,12 @@
 
 package org.apache.airavata.core.gfac.context.impl;
 
+import org.apache.airavata.core.gfac.api.Registry;
 import org.apache.airavata.core.gfac.context.ExecutionContext;
 import org.apache.airavata.core.gfac.context.SecurityContext;
 import org.apache.airavata.core.gfac.context.ServiceContext;
 import org.apache.airavata.core.gfac.model.ExecutionModel;
 import org.apache.airavata.core.gfac.notification.NotificationService;
-import org.apache.airavata.core.gfac.registry.RegistryService;
 import org.ogce.namespaces.x2010.x08.x30.workflowContextHeader.WorkflowContextHeaderDocument.WorkflowContextHeader;
 
 public class ExecutionContextImpl implements ExecutionContext {
@@ -34,7 +34,7 @@ public class ExecutionContextImpl implements ExecutionContext {
     private ExecutionModel executionModel;
     private WorkflowContextHeader workflowContextHeader;
     private NotificationService notificationService;
-    private RegistryService registryService;
+    private Registry registryService;
     private SecurityContext securityContext;
 
     public ExecutionModel getExecutionModel() {
@@ -81,11 +81,11 @@ public class ExecutionContextImpl implements ExecutionContext {
 
     }
 
-    public RegistryService getRegistryService() {
+    public Registry getRegistryService() {
         return this.registryService;
     }
 
-    public void setRegistryService(RegistryService registryService) {
+    public void setRegistryService(Registry registryService) {
         this.registryService = registryService;
     }
 
