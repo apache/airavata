@@ -23,82 +23,132 @@ package org.apache.airavata.core.gfac.services.impl;
 
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.airavata.core.gfac.api.impl.JCRRegistry;
 import org.apache.airavata.core.gfac.context.InvocationContext;
 import org.apache.airavata.core.gfac.context.impl.ExecutionContextImpl;
-import org.apache.airavata.core.gfac.context.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.context.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.notification.DummyNotification;
+import org.apache.airavata.core.gfac.type.DataType;
+import org.apache.airavata.core.gfac.type.HostDescription;
+import org.apache.airavata.core.gfac.type.Parameter;
+import org.apache.airavata.core.gfac.type.ServiceDescription;
+import org.apache.airavata.core.gfac.type.app.ShellApplicationDeployment;
+import org.apache.airavata.core.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.type.parameter.StringParameter;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class PropertiesBasedServiceImplTest {
+	@Before
+	public void setUp() throws Exception {
+		/*
+		 * Create database
+		 */
+		JCRRegistry jcrRegistry = new JCRRegistry(
+				"org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
+				"admin", null);
 
-    @Test
-    public void testInit() {
-        try {
-            InvocationContext ct = new InvocationContext();
-            ct.setExecutionContext(new ExecutionContextImpl());
+		/*
+		 * Host
+		 */
+		HostDescription host = new HostDescription();
+		host.setName("localhost");
 
-            PropertiesBasedServiceImpl service = new PropertiesBasedServiceImpl();
-            service.init();
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("ERROR");
-        }
-    }
+		/*
+		 * App
+		 */
+		ShellApplicationDeployment app = new ShellApplicationDeployment();
+		app.setName("EchoLocal");
+		app.setExecutable("/bin/echo");
+		app.setTmpDir("/tmp");
+		app.setWorkingDir("/tmp");
+		app.setInputDir("/tmp/input");
+		app.setOutputDir("/tmp/output");
+		app.setStdOut("/tmp/echo.stdout");
+		app.setStdErr("/tmp/echo.stdout");
+		app.setEnv(new HashMap<String, String>());
 
-    @Test
-    public void testExecute() {
-        try {
-            InvocationContext ct = new InvocationContext();
-            ct.setExecutionContext(new ExecutionContextImpl());
+		/*
+		 * Service
+		 */
+		ServiceDescription serv = new ServiceDescription();
+		serv.setName("SimpleEcho");
 
-            ct.getExecutionContext().setNotificationService(new DummyNotification());
+		Parameter input = new Parameter();
+		input.setName("echo_input");
+		input.setType(DataType.String);
+		List<Parameter> inputList = new ArrayList<Parameter>();
+		inputList.add(input);
 
-            GSISecurityContext gsiSecurityContext = new GSISecurityContext();
-            gsiSecurityContext.setMyproxyServer("myproxy.teragrid.org");
-            gsiSecurityContext.setMyproxyUserName("ogce");
-            gsiSecurityContext.setMyproxyPasswd("Jdas7wph");
-            gsiSecurityContext.setMyproxyLifetime(14400);
-            ct.addSecurityContext("myproxy", gsiSecurityContext);
+		Parameter output = new Parameter();
+		output.setName("echo_output");
+		output.setType(DataType.String);
+		List<Parameter> outputList = new ArrayList<Parameter>();
+		outputList.add(output);
 
-            ct.setServiceName("{http://www.extreme.indiana.edu/namespaces/2004/01/gFac}Echo_Service");
+		serv.setInputParameters(inputList);
+		serv.setOutputParameters(outputList);
 
-            // parameter
-            ParameterContextImpl x = new ParameterContextImpl();
-            StringParameter parameter = new StringParameter();
-            parameter.parseStringVal("Hello");
-            x.addParameter("echo", parameter);
-            ct.addMessageContext("input", x);
+		/*
+		 * Save to registry
+		 */
+		jcrRegistry.saveHostDescription(host.getName(), host);
+		jcrRegistry.saveDeploymentDescription(serv.getName(), host.getName(),
+				app);
+		jcrRegistry.saveServiceDescription(serv.getName(), serv);
+		jcrRegistry.deployServiceOnHost(serv.getName(), host.getName());
+	}
 
-            PropertiesBasedServiceImpl service = new PropertiesBasedServiceImpl();
-            service.init();
-            service.execute(ct);
+	@Test
+	public void testExecute() {
+		try {
 
-            Assert.assertNotNull(ct.getMessageContext("output"));
-            Assert.assertNotNull(ct.getMessageContext("output").getParameterValue("Echoed_Output"));
-            Assert.assertEquals("\"Hello\"", ct.getMessageContext("output").getParameterValue("Echoed_Output")
-                    .toString());
+			InvocationContext ct = new InvocationContext();
+			ct.setExecutionContext(new ExecutionContextImpl());
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("ERROR");
-        }
-    }
+			ct.getExecutionContext().setNotificationService(
+					new DummyNotification());
 
-    @Test
-    public void testDispose() {
-        try {
-            InvocationContext ct = new InvocationContext();
-            ct.setExecutionContext(new ExecutionContextImpl());
+			ct.setServiceName("SimpleEcho");
 
-            PropertiesBasedServiceImpl service = new PropertiesBasedServiceImpl();
-            service.dispose();
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("ERROR");
-        }
-    }
+			/*
+			 * Input
+			 */
+			ParameterContextImpl input = new ParameterContextImpl();
+			StringParameter echo_input = new StringParameter();
+			echo_input.parseStringVal("echo_output=hello");
+			input.addParameter("echo_input", echo_input);
 
+			/*
+			 * Output
+			 */
+			ParameterContextImpl output = new ParameterContextImpl();
+			StringParameter echo_output = new StringParameter();
+			output.addParameter("echo_output", echo_output);
+
+			// parameter
+			ct.addMessageContext("input", input);
+			ct.addMessageContext("output", output);
+
+			PropertiesBasedServiceImpl service = new PropertiesBasedServiceImpl();
+			service.init();
+			service.execute(ct);
+
+			Assert.assertNotNull(ct.getMessageContext("output"));
+			Assert.assertNotNull(ct.getMessageContext("output")
+					.getParameterValue("echo_output"));
+			Assert.assertEquals("hello",
+					((AbstractParameter) ct.getMessageContext("output")
+							.getParameterValue("echo_output")).toStringVal());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail("ERROR");
+		}
+	}
 }

@@ -21,86 +21,109 @@
 
 package org.apache.airavata.core.gfac.scheduler.impl;
 
-import javax.xml.namespace.QName;
+import java.util.Iterator;
+import java.util.List;
 
+import org.apache.airavata.core.gfac.api.Registry;
+import org.apache.airavata.core.gfac.context.GFACContext;
 import org.apache.airavata.core.gfac.context.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
 import org.apache.airavata.core.gfac.provider.GramProvider;
 import org.apache.airavata.core.gfac.provider.LocalProvider;
 import org.apache.airavata.core.gfac.provider.Provider;
-import org.apache.airavata.core.gfac.registry.RegistryService;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
+import org.apache.airavata.core.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.core.gfac.type.HostDescription;
+import org.apache.airavata.core.gfac.type.ServiceDescription;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
-import org.apache.xmlbeans.XmlException;
-import org.ogce.schemas.gfac.documents.ServiceMapDocument;
-import org.ogce.schemas.gfac.documents.ServiceMapType;
 
 public class SchedulerImpl implements Scheduler {
 
-    public Provider schedule(InvocationContext context) throws GfacException {
+	public Provider schedule(InvocationContext context) throws GfacException {
 
-        String hostName = null;
+		Registry registryService = context.getExecutionContext()
+				.getRegistryService();
 
-        /*
-         * Load host and app description from registry
-         */
-        RegistryService registryService = context.getExecutionContext().getRegistryService();
-        String serviceMapStr = registryService.getServiceMap(context.getServiceName());
+		/*
+		 * Load Service
+		 */
+		ServiceDescription serviceDesc = registryService
+				.getServiceDescription(context.getServiceName());
 
-        if (serviceMapStr != null) {
-            try {
+		if (serviceDesc == null)
+			throw new GfacException("Service Desciption for "
+					+ context.getServiceName()
+					+ " does not found on resource Catalog " + registryService,
+					FaultCode.InvalidRequest);
 
-                ServiceMapType serviceMap = ServiceMapDocument.Factory.parse(serviceMapStr).getServiceMap();
-                QName appName = GfacUtils.findApplcationName(serviceMap);
+		/*
+		 * Load host
+		 */
+		HostDescription host = scheduleToHost(registryService,
+				context.getServiceName());
 
-                // host name
-                hostName = findHostFromServiceMap(registryService, appName);
+		if (host == null)
+			throw new GfacException("Host Desciption for "
+					+ context.getServiceName()
+					+ " does not found on resource Catalog " + registryService,
+					FaultCode.InvalidRequest);
 
-            } catch (XmlException e) {
-                throw new GfacException(e, FaultCode.InitalizationError);
-            }
-        } else {
-            throw new GfacException("Service Map for " + context.getServiceName()
-                    + " does not found on resource Catalog " + registryService, FaultCode.InvalidRequest);
-        }
+		/*
+		 * Load app
+		 */
+		ApplicationDeploymentDescription app = registryService
+				.getDeploymentDescription(context.getServiceName(),
+						host.getName());
 
-        /*
-         * Determine provider
-         */
-        if (GfacUtils.isLocalHost(hostName)) {
-            return new LocalProvider();
-        } else {
-            // set Security context for executionContext
-            if (context.getSecurityContext(GramProvider.MYPROXY_SECURITY_CONTEXT) != null) {
-                context.getExecutionContext().setSecurityContext(
-                        context.getSecurityContext(GramProvider.MYPROXY_SECURITY_CONTEXT));
-            } else {
-                throw new GfacException("Cannot get security context to run on Gram", FaultCode.InvalidRequest);
-            }
+		if (app == null)
+			throw new GfacException("App Desciption for "
+					+ context.getServiceName()
+					+ " does not found on resource Catalog " + registryService,
+					FaultCode.InvalidRequest);
 
-            return new GramProvider();
-        }
-    }
+		/*
+		 * Binding
+		 */
 
-    private String findHostFromServiceMap(RegistryService regService, QName appName) throws GfacException {
+		if (context.getGfacContext() == null) {
+			context.setGfacContext(new GFACContext());
+		}
+		context.getGfacContext().setHost(host);
+		context.getGfacContext().setService(serviceDesc);
+		context.getGfacContext().setApp(app);
 
-        System.out.println("Searching registry for some deployed application hosts\n");
-        String[] hosts = regService.app2Hosts(appName.toString());
-        if (hosts.length > 1) {
-            String hostNames = "";
-            for (int i = 0; i < hosts.length; i++) {
-                hostNames = hostNames + hosts[i];
-            }
-            System.out.println("Application deployed on more than one machine. The full Host list is " + hostNames
-                    + "\n");
-        }
-        if (hosts.length >= 1) {
-            System.out.println("Found Host = " + hosts[0]);
-            return hosts[0];
-        } else {
-            System.out.println("Applcation  " + appName.getLocalPart() + " not found in registry");
-            return null;
-        }
-    }
+		/*
+		 * Determine provider
+		 */
+		String hostName = host.getName();
+		if (GfacUtils.isLocalHost(hostName)) {
+			return new LocalProvider();
+		} else {
+			return new GramProvider();
+		}
+
+	}
+
+	private HostDescription scheduleToHost(Registry regService,
+			String serviceName) {
+
+		System.out
+				.println("Searching registry for some deployed application hosts\n");
+		List<HostDescription> hosts = regService
+				.getServiceLocation(serviceName);
+		if (hosts != null && hosts.size() > 0) {
+			HostDescription result = null;
+			for (Iterator iterator = hosts.iterator(); iterator.hasNext();) {
+				result = (HostDescription) iterator.next();
+
+				System.out.println("Found service on: " + result.getName());
+			}
+			return result;
+		} else {
+			System.out.println("Applcation  " + serviceName
+					+ " not found in registry");
+			return null;
+		}
+	}
 }

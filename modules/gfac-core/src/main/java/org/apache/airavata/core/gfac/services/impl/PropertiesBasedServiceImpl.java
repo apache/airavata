@@ -23,8 +23,13 @@ package org.apache.airavata.core.gfac.services.impl;
 
 import java.lang.reflect.Array;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
+import org.apache.airavata.core.gfac.api.Registry;
+import org.apache.airavata.core.gfac.api.impl.JCRRegistry;
 import org.apache.airavata.core.gfac.context.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
@@ -32,8 +37,6 @@ import org.apache.airavata.core.gfac.extension.DataServiceChain;
 import org.apache.airavata.core.gfac.extension.ExitableChain;
 import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.extension.PreExecuteChain;
-import org.apache.airavata.core.gfac.registry.RegistryService;
-import org.apache.airavata.core.gfac.registry.impl.XregistryServiceWrapper;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 
 /**
@@ -44,13 +47,15 @@ import org.apache.airavata.core.gfac.scheduler.Scheduler;
 public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     private static final String FILENAME = "service.properties";
-    public static final String REGISTY_URL_NAME = "registryURL";
-    public static final String SSL_TRUSTED_CERTS_FILE = "ssl.trustedCertsFile";
-    public static final String SSL_HOSTCERTS_KEY_FILE = "ssl.hostcertsKeyFile";
     public static final String SCHEDULER_CLASS = "scheduler.class";
     public static final String DATA_CHAIN_CLASS = "datachain.classes";
     public static final String PRE_CHAIN_CLASS = "prechain.classes";
     public static final String POST_CHAIN_CLASS = "postchain.classes";
+    
+    /*
+     * JCR properties
+     */
+    public static final String JCR_CLASS = "jcr.class";
 
     private Properties properties;
     private Scheduler scheduler;
@@ -58,7 +63,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     private PostExecuteChain[] postChain;
     private DataServiceChain[] dataChain;
 
-    private RegistryService registryService;
+    private Registry registryService;
 
     /*
      * (non-Javadoc)
@@ -75,14 +80,26 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
             this.properties = new Properties();
             this.properties.load(url.openStream());
+            
+            //JCR
+            String jcrClass = loadFromProperty(JCR_CLASS, true);
+            
+            /*
+             * Remove unnecessary key
+             */
+            Map<String, String> map = new HashMap<String, String>((Map) this.properties);
+            map.remove(JCR_CLASS);
+            map.remove(SCHEDULER_CLASS);
+            map.remove(DATA_CHAIN_CLASS);
+            map.remove(PRE_CHAIN_CLASS);
+            map.remove(POST_CHAIN_CLASS);
+            if(map.size() == 0)
+            	map = null;
 
-            String registryURL = loadFromProperty(REGISTY_URL_NAME, true);
-            String trustcerts = loadFromProperty(SSL_TRUSTED_CERTS_FILE, true);
-            String hostcerts = loadFromProperty(SSL_HOSTCERTS_KEY_FILE, true);
-
-            this.registryService = new XregistryServiceWrapper(registryURL, trustcerts, hostcerts);
+            this.registryService = new JCRRegistry(jcrClass, "admin", "admin", map);
 
         } catch (Exception e) {
+        	e.printStackTrace();
             throw new GfacException("Error initialize the generic service", e);
         }
     }
