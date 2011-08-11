@@ -25,8 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
-
 import org.apache.airavata.core.gfac.context.InvocationContext;
 import org.apache.airavata.core.gfac.context.SecurityContext;
 import org.apache.airavata.core.gfac.context.impl.ExecutionContextImpl;
@@ -34,6 +32,7 @@ import org.apache.airavata.core.gfac.context.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.factory.PropertyServiceFactory;
 import org.apache.airavata.core.gfac.notification.DummyNotification;
 import org.apache.airavata.core.gfac.services.GenericService;
+import org.apache.airavata.core.gfac.type.parameter.StringParameter;
 import org.apache.airavata.services.gfac.axis2.handlers.AmazonSecurityHandler;
 import org.apache.airavata.services.gfac.axis2.handlers.MyProxySecurityHandler;
 import org.apache.axiom.om.OMAbstractFactory;
@@ -102,11 +101,12 @@ public class GFacService implements ServiceLifeCycle {
 			for (Iterator iterator = input.getChildren(); iterator.hasNext();) {
 				OMElement element = (OMElement) iterator.next();
 				String name = element.getQName().getLocalPart();
-				String type = element.getAttribute(new QName("type")).getAttributeValue();
-				String value = element.getText();
 				
-				org.apache.airavata.core.gfac.context.MessageContext x = new ParameterContextImpl();
-				x.addParameter(name, type, value);	
+				StringParameter value = new StringParameter();
+				value.parseStringVal(element.getText());
+				
+				ParameterContextImpl x = new ParameterContextImpl();
+				x.addParameter(name, value);	
 				ct.addMessageContext("input", x);	
 			}
 
@@ -126,11 +126,11 @@ public class GFacService implements ServiceLifeCycle {
 	        OMNamespace omNs = fac.createOMNamespace("http://ws.apache.org/axis2/xsd", "ns1");
 	        output = fac.createOMElement("output", omNs);	        
 		
-	        org.apache.airavata.core.gfac.context.MessageContext context = ct.getMessageContext("output");
+	        ParameterContextImpl context = (ParameterContextImpl)ct.getMessageContext("output");
 			for (Iterator<String> iterator = context.getParameterNames(); iterator.hasNext();) {
 				String name = iterator.next();
 				OMElement ele = fac.createOMElement(name, omNs);
-				ele.addAttribute("type", context.getParameterType(name), omNs);
+				ele.addAttribute("type", context.getParameterValue(name).getType().toString(), omNs);
 				ele.setText(context.getParameterValue(name).toString());
 				
 				//add output
