@@ -21,32 +21,170 @@ package org.apache.airavata.services.gfac.axis2.reciever;
  *
 */
 
+import org.apache.airavata.core.gfac.context.InvocationContext;
+import org.apache.airavata.core.gfac.context.SecurityContext;
+import org.apache.airavata.core.gfac.context.impl.ExecutionContextImpl;
+import org.apache.airavata.core.gfac.context.impl.ParameterContextImpl;
+import org.apache.airavata.core.gfac.factory.PropertyServiceFactory;
+import org.apache.airavata.core.gfac.notification.DummyNotification;
+import org.apache.airavata.core.gfac.services.GenericService;
+import org.apache.airavata.core.gfac.type.parameter.StringParameter;
 import org.apache.airavata.services.gfac.axis2.utils.GFacServiceOperations;
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.engine.AxisEngine;
 import org.apache.axis2.engine.MessageReceiver;
-import org.apache.axis2.receivers.AbstractMessageReceiver;
 import org.apache.axis2.util.MessageContextBuilder;
+import org.apache.axis2.util.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.Session;
+import javax.xml.namespace.QName;
+import java.util.Iterator;
+import java.util.Map;
 
 public class GFacMessageReciever implements MessageReceiver {
 
     private static final Log log = LogFactory.getLog(GFacMessageReciever.class);
+    public static final String SECURITY_CONTEXT = "security_context";
+    GenericService service = null;
 
     public void receive(org.apache.axis2.context.MessageContext axisRequestMsgCtx)
             throws AxisFault {
         GFacServiceOperations operation = GFacServiceOperations.valueFrom(axisRequestMsgCtx.getOperationContext().getOperationName());
         switch (operation) {
             case INVOKE: {
+                processInvokeOperation(axisRequestMsgCtx);
                 log.info("Invoke operation invoked !!");
             }
             break;
             case GETWSDL: {
+                processgetWSDLOperation(axisRequestMsgCtx);
                 log.info("getWSDL operation invoked !!");
             }
         }
+    }
+
+    public void processInvokeOperation(MessageContext messageContext) {
+        MessageContext response = null;
+        String serviceName = getOriginalServiceName(messageContext);
+        OMElement input = messageContext.getEnvelope().getBody().getFirstChildWithName(new QName("input"));
+        OMElement output = invokeApplication(serviceName, input);
+        SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
+        SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
+        sf.createSOAPBody(responseEnv);
+        responseEnv.getBody().addChild(output);
+        try {
+            response = MessageContextBuilder.createOutMessageContext(messageContext);
+            response.setEnvelope(responseEnv);
+            response.getOperationContext().addMessageContext(response);
+            AxisEngine.send(response);
+        } catch (AxisFault fault) {
+            log.error("Error creating response");
+        }
+    }
+
+    private OMElement invokeApplication(String serviceName, OMElement input) {
+        OMElement output = null;
+        try {
+            InvocationContext ct = new InvocationContext();
+            ct.setExecutionContext(new ExecutionContextImpl());
+
+            ct.getExecutionContext().setNotificationService(new DummyNotification());
+
+            MessageContext msgContext = MessageContext.getCurrentMessageContext();
+            Map<String, Object> m = (Map) msgContext.getProperty(SECURITY_CONTEXT);
+            for (String key : m.keySet()) {
+                ct.addSecurityContext(key, (SecurityContext) m.get(key));
+            }
+            ct.setServiceName(serviceName);
+
+            // TODO define real parameter passing in SOAP body
+            //handle parameter
+            for (Iterator iterator = input.getChildren(); iterator.hasNext(); ) {
+                OMElement element = (OMElement) iterator.next();
+                String name = element.getQName().getLocalPart();
+
+                StringParameter value = new StringParameter();
+                value.parseStringVal(element.getText());
+
+                ParameterContextImpl x = new ParameterContextImpl();
+                x.addParameter(name, value);
+                ct.addMessageContext("input", x);
+            }
+
+            if (service == null) {
+                service = new PropertyServiceFactory().createService();
+            }
+
+            //invoke service
+            service.execute(ct);
+
+
+            //TODO also define how output too
+            /*
+             * Process Output
+             */
+            OMFactory fac = OMAbstractFactory.getOMFactory();
+            OMNamespace omNs = fac.createOMNamespace("http://ws.apache.org/axis2/xsd", "ns1");
+            output = fac.createOMElement("output", omNs);
+
+            ParameterContextImpl context = (ParameterContextImpl) ct.getMessageContext("output");
+            for (Iterator<String> iterator = context.getParameterNames(); iterator.hasNext(); ) {
+                String name = iterator.next();
+                OMElement ele = fac.createOMElement(name, omNs);
+                ele.addAttribute("type", context.getParameterValue(name).getType().toString(), omNs);
+                ele.setText(context.getParameterValue(name).toString());
+                output.addChild(ele);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        return output;
+    }
+
+    public void processgetWSDLOperation(MessageContext messageContext) {
+        MessageContext response = null;
+        String serviceName = getOriginalServiceName(messageContext);
+        ConfigurationContext context = messageContext.getConfigurationContext();
+        //todo this logic has to change based on the logic we are storing data into repository
+        try {
+            Session session = (Session) context.getProperty("repositorySession");
+            Node node = session.getNode("wsdls").getNode(serviceName);
+            Property propertyContent = node.getProperty("content");
+            String wsdlContent = propertyContent.getString();
+            SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
+            SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
+            OMElement wsdlElement = sf.createOMElement(wsdlContent, "", "");
+            sf.createSOAPBody(responseEnv);
+            responseEnv.getBody().addChild(wsdlElement);
+            response = MessageContextBuilder.createOutMessageContext(messageContext);
+            response.setEnvelope(responseEnv);
+            response.getOperationContext().addMessageContext(response);
+            AxisEngine.send(response);
+        } catch (Exception fault) {
+            log.error("Error creating response");
+        }
+    }
+
+    private String getOriginalServiceName(MessageContext messageContext) {
+        String toAddress = messageContext.getTo().getAddress();
+        String[] values = Utils.parseRequestURLForServiceAndOperation(toAddress,
+                messageContext
+                        .getConfigurationContext().getServiceContextPath());
+        return values[0];
     }
 
 }
