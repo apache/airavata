@@ -21,6 +21,7 @@ package org.apache.airavata.axis2.artifacts.dispatchers;
  */
 
 import com.sun.corba.se.spi.activation.Server;
+import org.apache.airavata.axis2.artifacts.dispatchers.utils.GFacAxis2ArtifactsConstants;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
@@ -67,27 +68,29 @@ public class GFacURIBasedDispatcher extends AbstractServiceDispatcher {
                 AxisService service = registry.getService(values[0]);
                 if (service == null) {
                     service = registry.getService("GFacService");
-                    if(service != null){
-                    if ("getWSDL".equals(values[1]) || "invoke".equals(values[1])) {
-                        if (service != null) {
-                            //todo get the wsdl from registry and add the endpoints to messagecontext
-                            messageContext.setAxisService(service);
+                    if (service != null) {
+                        messageContext.setAxisService(service);
+                        if (GFacAxis2ArtifactsConstants.OPERATIONINVOKE.equals(values[1])) {
                             messageContext.setAxisOperation(
-                                    service.getOperation(new QName("getWSDL")));
+                                    service.getOperation(new QName(GFacAxis2ArtifactsConstants.OPERATIONINVOKE)));
+                        } else if (GFacAxis2ArtifactsConstants.OPERATIONGETWSDL.equals(values[1])) {
+                            //todo get the wsdl from registry and add the endpoints to messagecontext
+                            messageContext.setAxisOperation(
+                                    service.getOperation(new QName(GFacAxis2ArtifactsConstants.OPERATIONGETWSDL)));
                         } else {
-                            log.error("GFacService is not deployed, Please deploy the GFac service or double check the service name");
+                            log.error("Wrong Service Name :" + values[0]);
                         }
-                        return service;
-                    }}else{
-                        log.error("GfacService is not deployed");
+                    } else {
+                        log.error("GFacService is not deployed");
                     }
                 }
+                return service;
             }
         }
         return null;
     }
 
-     public void initDispatcher() {
+    public void initDispatcher() {
         init(new HandlerDescription(NAME));
     }
 }
