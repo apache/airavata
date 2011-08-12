@@ -15,10 +15,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>airavata</groupId>
-	<artifactId>airavata-gfac-axis2-interface</artifactId>
+	<artifactId>airavata-axis2-artifacts</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>GFac-Axis2-Interface</name>
-	<description>Axis2 Interface to the GFac-Core</description>
+	<name>GFac-Axis2-Artifacts</name>
+	<description>Axis2 Artifacts for Gfac funcationality</description>
 	<properties>
 		<org.slf4j.version>1.6.1</org.slf4j.version>
 		<log4j.version>1.2.16</log4j.version>
@@ -41,31 +41,48 @@
 			<artifactId>axiom-impl</artifactId>
 			<version>${axiom.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>airavata</groupId>
-			<artifactId>gfac-core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
-	<build>
+<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.axis2</groupId>
-				<artifactId>axis2-aar-maven-plugin</artifactId>
-				<version>${axis2.version}</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<servicesXmlFile>src/main/resources/services.xml</servicesXmlFile>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>createAAR</id>
-						<phase>package</phase>
+						<id>copy-dependencies</id>
+						<phase>compile</phase>
 						<goals>
-							<goal>aar</goal>
+							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>
 			</plugin>
-		</plugins>
-	</build>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/lib</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+    </plugins>
+    </build>
 </project>

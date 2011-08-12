@@ -11,13 +11,24 @@
 	OF ANY ~ KIND, either express or implied. See the License for the specific 
 	language governing permissions and limitations under the License. -->
 
-<service name="GfacService">
-	<Description>
-		Gfac contact point
-	</Description>
-	<messageReceivers>
-		<messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-only" class="org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver" />
-		<messageReceiver  mep="http://www.w3.org/2004/08/wsdl/in-out"  class="org.apache.axis2.rpc.receivers.RPCMessageReceiver"/>
-	</messageReceivers>
-	<parameter name="ServiceClass" locked="false">org.apache.airavata.services.gfac.axis2.GFacService</parameter>
-</service>
+
+<serviceGroup>
+    <service name="GFacService" class="org.apache.airavata.services.gfac.axis2.GFacService">
+        <Description>Gfac contact point</Description>
+        <operation name="getWSDL">
+            <messageReceiver class="org.apache.airavata.services.gfac.axis2.reciever.GFacMessageReciever"/>
+            <actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/Renew
+            </actionMapping>
+            <outputActionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/RenewResponse
+            </outputActionMapping>
+        </operation>
+        <operation name="invoke">
+            <messageReceiver class="org.apache.airavata.services.gfac.axis2.reciever.GFacMessageReciever"/>
+
+            <actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/Renew
+            </actionMapping>
+            <outputActionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/RenewResponse
+            </outputActionMapping>
+        </operation>
+    </service>
+</serviceGroup>

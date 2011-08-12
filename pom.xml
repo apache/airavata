@@ -78,6 +78,7 @@
             <modules>
                 <module>modules/gfac-core</module>
                 <module>modules/gfac-axis2</module>
+		<module>modules/gfac-axis2-artifacts</module>
 		<module>modules/commons</module>
             </modules>
         </profile>
@@ -141,8 +142,8 @@
                 <module>modules/xregistry</module>
                 <module>modules/gfac-core</module>
                 <module>modules/gfac-axis2</module>
+		<module>modules/gfac-axis2-artifacts</module>
                 <module>modules/ws-messenger</module>
-                <module>modules/workflow-interpreter</module>
                 <module>modules/xbaya-gui</module>
 		<module>modules/commons</module>
 	    </modules>
