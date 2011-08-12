@@ -21,30 +21,21 @@
 
 package org.apache.airavata.services.gfac.axis2;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.io.FileInputStream;
+import java.lang.reflect.Constructor;
+import java.util.*;
 
-import org.apache.airavata.core.gfac.context.InvocationContext;
-import org.apache.airavata.core.gfac.context.SecurityContext;
-import org.apache.airavata.core.gfac.context.impl.ExecutionContextImpl;
-import org.apache.airavata.core.gfac.context.impl.ParameterContextImpl;
-import org.apache.airavata.core.gfac.factory.PropertyServiceFactory;
-import org.apache.airavata.core.gfac.notification.DummyNotification;
 import org.apache.airavata.core.gfac.services.GenericService;
-import org.apache.airavata.core.gfac.type.parameter.StringParameter;
 import org.apache.airavata.services.gfac.axis2.handlers.AmazonSecurityHandler;
 import org.apache.airavata.services.gfac.axis2.handlers.MyProxySecurityHandler;
-import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
 import org.apache.axis2.context.ConfigurationContext;
-import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.engine.ServiceLifeCycle;
+
+import javax.jcr.*;
 
 public class GFacService implements ServiceLifeCycle {
 
@@ -55,9 +46,10 @@ public class GFacService implements ServiceLifeCycle {
 	public void startUp(ConfigurationContext configctx, AxisService service) {
 		AxisConfiguration config = null;
 		List<Phase> phases = null;
-
 		config = service.getAxisConfiguration();
 		phases = config.getInFlowPhases();
+
+        initializeRepository(configctx);
 
 		for (Iterator iterator = phases.iterator(); iterator.hasNext();) {
 			Phase phase = (Phase) iterator.next();
@@ -67,80 +59,27 @@ public class GFacService implements ServiceLifeCycle {
 				return;
 			}
 		}
-
 	}
-
+    private void initializeRepository(ConfigurationContext context) {
+      Properties properties = new Properties();
+        try {
+            String axis2Home = System.getenv("AXIS2_HOME");
+            properties.load(new FileInputStream(axis2Home + File.separator + "conf/repository.properties"));
+            Map<String, String> map = new HashMap<String, String>((Map) properties);
+            Class registryRepositoryFactory = Class.forName(map.get("repository.factory"));
+            Constructor c = registryRepositoryFactory.getConstructor();
+            RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
+            Repository repository = repositoryFactory.getRepository(map);
+            Credentials credentials = new SimpleCredentials(map.get("userName"), (map.get("password")).toCharArray());
+            Session session = repository.login(credentials);
+            context.setProperty("credentials",credentials);
+            context.setProperty("repositorySession",session);
+    } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
 	public void shutDown(ConfigurationContext configctx, AxisService service) {
 		// TODO Auto-generated method stub
 
-	}
-
-	public OMElement getWSDL(String serviceName) {
-		return null;
-	}
-
-	public OMElement invoke(String serviceName, OMElement input) {
-		
-		OMElement output = null;
-
-		try {
-			InvocationContext ct = new InvocationContext();
-			ct.setExecutionContext(new ExecutionContextImpl());
-
-			ct.getExecutionContext().setNotificationService(new DummyNotification());
-
-			MessageContext msgContext = MessageContext.getCurrentMessageContext();			
-			Map<String, Object> m = (Map)msgContext.getProperty(SECURITY_CONTEXT);
-			for (String key : m.keySet()) {
-				ct.addSecurityContext(key, (SecurityContext)m.get(key));
-			}
-			ct.setServiceName(serviceName);
-
-			// TODO define real parameter passing in SOAP body
-			//handle parameter
-			for (Iterator iterator = input.getChildren(); iterator.hasNext();) {
-				OMElement element = (OMElement) iterator.next();
-				String name = element.getQName().getLocalPart();
-				
-				StringParameter value = new StringParameter();
-				value.parseStringVal(element.getText());
-				
-				ParameterContextImpl x = new ParameterContextImpl();
-				x.addParameter(name, value);	
-				ct.addMessageContext("input", x);	
-			}
-
-			if (service == null) {
-				service = new PropertyServiceFactory().createService();
-			}
-			
-			//invoke service
-			service.execute(ct);
-			
-			
-			//TODO also define how output too
-			/*
-			 * Process Output
-			 */
-			OMFactory fac = OMAbstractFactory.getOMFactory();
-	        OMNamespace omNs = fac.createOMNamespace("http://ws.apache.org/axis2/xsd", "ns1");
-	        output = fac.createOMElement("output", omNs);	        
-		
-	        ParameterContextImpl context = (ParameterContextImpl)ct.getMessageContext("output");
-			for (Iterator<String> iterator = context.getParameterNames(); iterator.hasNext();) {
-				String name = iterator.next();
-				OMElement ele = fac.createOMElement(name, omNs);
-				ele.addAttribute("type", context.getParameterValue(name).getType().toString(), omNs);
-				ele.setText(context.getParameterValue(name).toString());
-				
-				//add output
-				output.addChild(ele);
-			}
-						
-		} catch (Exception e) {
-			e.printStackTrace();
-
-		}
-		return output;
 	}
 }
