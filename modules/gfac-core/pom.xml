@@ -46,6 +46,11 @@
 			<type>jar</type>
 			<version>cog-4_1_6</version>
 		</dependency>
+        <dependency>
+            <groupId>cog-4_1_6_rc2</groupId>
+            <artifactId>cryptix32</artifactId>
+            <version>cog-4_1_6</version>
+        </dependency>        
 		<dependency>
 			<groupId>cog-4_1_6_rc2</groupId>
 			<artifactId>cryptix-asn1</artifactId>

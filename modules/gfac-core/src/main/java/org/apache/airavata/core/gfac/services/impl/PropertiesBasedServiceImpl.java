@@ -38,6 +38,8 @@ import org.apache.airavata.core.gfac.extension.ExitableChain;
 import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This generic service implementation will load Registry service and Data Catalog from property file. It selects
@@ -46,6 +48,8 @@ import org.apache.airavata.core.gfac.scheduler.Scheduler;
  */
 public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
+    private static Log log = LogFactory.getLog(PropertiesBasedServiceImpl.class);
+    
     private static final String FILENAME = "service.properties";
     public static final String SCHEDULER_CLASS = "scheduler.class";
     public static final String DATA_CHAIN_CLASS = "datachain.classes";
@@ -63,7 +67,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     private PostExecuteChain[] postChain;
     private DataServiceChain[] dataChain;
 
-    private Registry registryService;
+    private Registry registryService;        
 
     /*
      * (non-Javadoc)
@@ -154,6 +158,8 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                 }
 
                 this.scheduler = spiClass.newInstance();
+                
+                log.info("Scheduler:" + className + " is loaded");
 
             } catch (ClassNotFoundException ex) {
                 throw new GfacException("Scheduler " + className + " not found", ex);
@@ -245,8 +251,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
         T[] chain = (T[]) Array.newInstance(type, classNames.length);
         for (int i = 0; i < classNames.length; i++) {
 
-            String className = classNames[i];
-            System.out.println(className);
+            String className = classNames[i].trim();
 
             try {
                 ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -259,6 +264,9 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                 }
 
                 chain[i] = (T) spiClass.newInstance();
+                
+                log.info(type.getName() + " : " + className + " is loaded");
+                
             } catch (ClassNotFoundException ex) {
                 ex.printStackTrace();
                 // TODO proper throw out
