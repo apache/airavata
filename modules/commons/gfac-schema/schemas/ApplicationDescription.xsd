@@ -70,6 +70,13 @@
         </sequence>
     </complexType>
 
+<complexType name="RSLParmType">
+               <simpleContent>
+            <extension base="xsd:string" >
+                <attribute name="name" type="xsd:string" use="required"/>
+            </extension>
+        </simpleContent>
+    </complexType>
     <simpleType name="jobTypeType">
         <restriction base="xsd:string">
             <enumeration value="mpi"/>
