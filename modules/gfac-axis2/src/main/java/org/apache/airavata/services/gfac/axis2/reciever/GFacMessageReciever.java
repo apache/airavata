@@ -73,7 +73,11 @@ public class GFacMessageReciever implements MessageReceiver {
             }
             break;
             case GETWSDL: {
-                processgetWSDLOperation(axisRequestMsgCtx);
+                try {
+                    processgetWSDLOperation(axisRequestMsgCtx);
+                } catch (Exception e) {
+                    throw new AxisFault("Error retrieving the WSDL");
+                }
                 log.info("getWSDL operation invoked !!");
             }
         }
