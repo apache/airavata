@@ -34,6 +34,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axis2.AxisFault;
@@ -50,6 +51,9 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.Session;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
+import java.io.StringReader;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -155,19 +159,21 @@ public class GFacMessageReciever implements MessageReceiver {
         return output;
     }
 
-    public void processgetWSDLOperation(MessageContext messageContext) {
+    public void processgetWSDLOperation(MessageContext messageContext)throws Exception {
         MessageContext response = null;
         String serviceName = getOriginalServiceName(messageContext);
         ConfigurationContext context = messageContext.getConfigurationContext();
         //todo this logic has to change based on the logic we are storing data into repository
         try {
             Session session = (Session) context.getProperty("repositorySession");
-            Node node = session.getNode("wsdls").getNode(serviceName);
+            Node node = session.getRootNode().getNode("wsdls").getNode(serviceName);
             Property propertyContent = node.getProperty("content");
-            String wsdlContent = propertyContent.getString();
+            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader
+                    (new StringReader(propertyContent.getString()));
+            StAXOMBuilder builder = new StAXOMBuilder(reader);
+            OMElement wsdlElement = builder.getDocumentElement();
             SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
             SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
-            OMElement wsdlElement = sf.createOMElement(wsdlContent, "", "");
             sf.createSOAPBody(responseEnv);
             responseEnv.getBody().addChild(wsdlElement);
             response = MessageContextBuilder.createOutMessageContext(messageContext);
@@ -176,6 +182,7 @@ public class GFacMessageReciever implements MessageReceiver {
             AxisEngine.send(response);
         } catch (Exception fault) {
             log.error("Error creating response");
+            throw fault;
         }
     }
 

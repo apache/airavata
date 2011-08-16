@@ -33,11 +33,10 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.Phase;
-import org.apache.axis2.engine.ServiceLifeCycle;
 
 import javax.jcr.*;
 
-public class GFacService implements ServiceLifeCycle {
+public class GFacService implements org.apache.axis2.engine.ServiceLifeCycle {
 
 	public static final String SECURITY_CONTEXT = "security_context";
 
