@@ -148,16 +148,15 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
              * init instance of that class
              */
             try {
-                ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-                Class<? extends Scheduler> spiClass;
+//                ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+                Class spiClass = Class.forName(className).asSubclass(Scheduler.class);
+//                if (classLoader == null) {
+//                    spiClass = Class.forName(className).asSubclass(Scheduler.class);
+//                } else {
+//                    spiClass = classLoader.loadClass(className).asSubclass(Scheduler.class);
+//                }
 
-                if (classLoader == null) {
-                    spiClass = Class.forName(className).asSubclass(Scheduler.class);
-                } else {
-                    spiClass = classLoader.loadClass(className).asSubclass(Scheduler.class);
-                }
-
-                this.scheduler = spiClass.newInstance();
+                this.scheduler = (Scheduler)spiClass.newInstance();
                 
                 log.info("Scheduler:" + className + " is loaded");
 
