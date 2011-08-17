@@ -253,19 +253,14 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
             String className = classNames[i].trim();
 
             try {
-                ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
                 Class<? extends ExitableChain> spiClass;
 
-                if (classLoader == null) {
-                    spiClass = Class.forName(className).asSubclass(ExitableChain.class);
-                } else {
-                    spiClass = classLoader.loadClass(className).asSubclass(ExitableChain.class);
-                }
-
+//                    spiClass = Class.forName(className).asSubclass(ExitableChain.class);
+                spiClass = Class.forName(className).asSubclass(ExitableChain.class);
                 chain[i] = (T) spiClass.newInstance();
-                
+
                 log.info(type.getName() + " : " + className + " is loaded");
-                
+
             } catch (ClassNotFoundException ex) {
                 ex.printStackTrace();
                 // TODO proper throw out
