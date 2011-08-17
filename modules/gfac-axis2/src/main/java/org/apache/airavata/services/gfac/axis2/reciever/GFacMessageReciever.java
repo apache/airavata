@@ -21,12 +21,15 @@ package org.apache.airavata.services.gfac.axis2.reciever;
  *
 */
 
+import com.sun.tools.doclets.internal.toolkit.Configuration;
+import org.apache.airavata.core.gfac.api.impl.JCRRegistry;
 import org.apache.airavata.core.gfac.context.InvocationContext;
 import org.apache.airavata.core.gfac.context.SecurityContext;
 import org.apache.airavata.core.gfac.context.impl.ExecutionContextImpl;
 import org.apache.airavata.core.gfac.context.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.factory.PropertyServiceFactory;
 import org.apache.airavata.core.gfac.notification.DummyNotification;
+import org.apache.airavata.core.gfac.registry.RegistryService;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.core.gfac.type.parameter.StringParameter;
 import org.apache.airavata.services.gfac.axis2.utils.GFacServiceOperations;
@@ -47,9 +50,7 @@ import org.apache.axis2.util.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.jcr.Node;
-import javax.jcr.Property;
-import javax.jcr.Session;
+import javax.jcr.*;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -86,13 +87,14 @@ public class GFacMessageReciever implements MessageReceiver {
     public void processInvokeOperation(MessageContext messageContext) {
         MessageContext response = null;
         String serviceName = getOriginalServiceName(messageContext);
+        try {        
+        ConfigurationContext context = messageContext.getConfigurationContext();
         OMElement input = messageContext.getEnvelope().getBody().getFirstChildWithName(new QName("input"));
-        OMElement output = invokeApplication(serviceName, input);
+        OMElement output = invokeApplication(serviceName, input,context);
         SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
         SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
         sf.createSOAPBody(responseEnv);
         responseEnv.getBody().addChild(output);
-        try {
             response = MessageContextBuilder.createOutMessageContext(messageContext);
             response.setEnvelope(responseEnv);
             response.getOperationContext().addMessageContext(response);
@@ -102,35 +104,27 @@ public class GFacMessageReciever implements MessageReceiver {
         }
     }
 
-    private OMElement invokeApplication(String serviceName, OMElement input) {
+    private OMElement invokeApplication(String serviceName, OMElement input,ConfigurationContext context) {
         OMElement output = null;
         try {
             InvocationContext ct = new InvocationContext();
+            Repository repository = (Repository)context.getProperty("repository");
+            Credentials credentials = (Credentials)context.getProperty("credentials");
             ct.setExecutionContext(new ExecutionContextImpl());
-
-            ct.getExecutionContext().setNotificationService(new DummyNotification());
-
-            MessageContext msgContext = MessageContext.getCurrentMessageContext();
-            Map<String, Object> m = (Map) msgContext.getProperty(SECURITY_CONTEXT);
-            for (String key : m.keySet()) {
-                ct.addSecurityContext(key, (SecurityContext) m.get(key));
-            }
             ct.setServiceName(serviceName);
+            ct.getExecutionContext().setRegistryService(new JCRRegistry(repository,credentials));
+            ParameterContextImpl x = new ParameterContextImpl();
 
             // TODO define real parameter passing in SOAP body
             //handle parameter
             for (Iterator iterator = input.getChildren(); iterator.hasNext(); ) {
                 OMElement element = (OMElement) iterator.next();
                 String name = element.getQName().getLocalPart();
-
                 StringParameter value = new StringParameter();
                 value.parseStringVal(element.getText());
-
-                ParameterContextImpl x = new ParameterContextImpl();
                 x.addParameter(name, value);
-                ct.addMessageContext("input", x);
             }
-
+            ct.addMessageContext("input", x);
             if (service == null) {
                 service = new PropertyServiceFactory().createService();
             }
@@ -147,12 +141,12 @@ public class GFacMessageReciever implements MessageReceiver {
             OMNamespace omNs = fac.createOMNamespace("http://ws.apache.org/axis2/xsd", "ns1");
             output = fac.createOMElement("output", omNs);
 
-            ParameterContextImpl context = (ParameterContextImpl) ct.getMessageContext("output");
-            for (Iterator<String> iterator = context.getParameterNames(); iterator.hasNext(); ) {
+            ParameterContextImpl paramContext = (ParameterContextImpl) ct.getMessageContext("output");
+            for (Iterator<String> iterator = paramContext.getParameterNames(); iterator.hasNext(); ) {
                 String name = iterator.next();
                 OMElement ele = fac.createOMElement(name, omNs);
-                ele.addAttribute("type", context.getParameterValue(name).getType().toString(), omNs);
-                ele.setText(context.getParameterValue(name).toString());
+                ele.addAttribute("type", paramContext.getParameterValue(name).getType().toString(), omNs);
+                ele.setText(paramContext.getParameterValue(name).toString());
                 output.addChild(ele);
             }
 
@@ -169,7 +163,8 @@ public class GFacMessageReciever implements MessageReceiver {
         ConfigurationContext context = messageContext.getConfigurationContext();
         //todo this logic has to change based on the logic we are storing data into repository
         try {
-            Session session = (Session) context.getProperty("repositorySession");
+            Credentials credentials = (Credentials) context.getProperty("credentials");
+            Session session = ((Repository)context.getProperty("repository")).login(credentials);
             Node node = session.getRootNode().getNode("wsdls").getNode(serviceName);
             Property propertyContent = node.getProperty("content");
             XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader
