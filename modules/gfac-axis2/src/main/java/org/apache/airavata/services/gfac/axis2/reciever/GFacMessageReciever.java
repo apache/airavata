@@ -105,15 +105,16 @@ public class GFacMessageReciever implements MessageReceiver {
     }
 
     private OMElement invokeApplication(String serviceName, OMElement input,ConfigurationContext context) {
-        OMElement output = null;
+        OMElement outputElement = null;
         try {
-            InvocationContext ct = new InvocationContext();
             Repository repository = (Repository)context.getProperty("repository");
             Credentials credentials = (Credentials)context.getProperty("credentials");
+
+            InvocationContext ct = new InvocationContext();
             ct.setExecutionContext(new ExecutionContextImpl());
             ct.setServiceName(serviceName);
             ct.getExecutionContext().setRegistryService(new JCRRegistry(repository,credentials));
-            ParameterContextImpl x = new ParameterContextImpl();
+            ParameterContextImpl inputParam = new ParameterContextImpl();
 
             // TODO define real parameter passing in SOAP body
             //handle parameter
@@ -121,40 +122,46 @@ public class GFacMessageReciever implements MessageReceiver {
                 OMElement element = (OMElement) iterator.next();
                 String name = element.getQName().getLocalPart();
                 StringParameter value = new StringParameter();
-                value.parseStringVal(element.getText());
-                x.addParameter(name, value);
+                value.parseStringVal("output=" + element.getText());
+                inputParam.addParameter(name, value);
             }
-            ct.addMessageContext("input", x);
+
+            ParameterContextImpl outputParam = new ParameterContextImpl();
+			StringParameter echo_output = new StringParameter();
+			outputParam.addParameter("output", echo_output);
+
+            ct.addMessageContext("input", inputParam);
+            ct.addMessageContext("output",outputParam);
             if (service == null) {
                 service = new PropertyServiceFactory().createService();
             }
-
+            service.init();
             //invoke service
             service.execute(ct);
 
 
-            //TODO also define how output too
+            //TODO also define how outputParam too
             /*
              * Process Output
              */
             OMFactory fac = OMAbstractFactory.getOMFactory();
             OMNamespace omNs = fac.createOMNamespace("http://ws.apache.org/axis2/xsd", "ns1");
-            output = fac.createOMElement("output", omNs);
+            outputElement = fac.createOMElement("output", omNs);
 
             ParameterContextImpl paramContext = (ParameterContextImpl) ct.getMessageContext("output");
             for (Iterator<String> iterator = paramContext.getParameterNames(); iterator.hasNext(); ) {
                 String name = iterator.next();
                 OMElement ele = fac.createOMElement(name, omNs);
                 ele.addAttribute("type", paramContext.getParameterValue(name).getType().toString(), omNs);
-                ele.setText(paramContext.getParameterValue(name).toString());
-                output.addChild(ele);
+                ele.setText(paramContext.getParameterValue(name).toStringVal());
+                outputElement.addChild(ele);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
 
         }
-        return output;
+        return outputElement;
     }
 
     public void processgetWSDLOperation(MessageContext messageContext)throws Exception {
