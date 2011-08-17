@@ -70,9 +70,8 @@ public class GFacService implements org.apache.axis2.engine.ServiceLifeCycle {
             RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
             Repository repository = repositoryFactory.getRepository(map);
             Credentials credentials = new SimpleCredentials(map.get("userName"), (map.get("password")).toCharArray());
-            Session session = repository.login(credentials);
+            context.setProperty("repository",repository);
             context.setProperty("credentials",credentials);
-            context.setProperty("repositorySession",session);
     } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
