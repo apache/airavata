@@ -84,6 +84,11 @@ public class JCRRegistry implements Registry {
 		}
 	}
 
+    public JCRRegistry(Repository repo,Credentials credentials){
+        this.repository = repo;
+        this.credentials = credentials;
+    }
+
 	private Session getSession() throws RepositoryException {
 		return repository.login(credentials);
 	}
