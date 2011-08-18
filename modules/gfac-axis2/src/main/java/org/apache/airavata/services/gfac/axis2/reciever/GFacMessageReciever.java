@@ -21,15 +21,11 @@ package org.apache.airavata.services.gfac.axis2.reciever;
  *
 */
 
-import com.sun.tools.doclets.internal.toolkit.Configuration;
 import org.apache.airavata.core.gfac.api.impl.JCRRegistry;
 import org.apache.airavata.core.gfac.context.InvocationContext;
-import org.apache.airavata.core.gfac.context.SecurityContext;
 import org.apache.airavata.core.gfac.context.impl.ExecutionContextImpl;
 import org.apache.airavata.core.gfac.context.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.factory.PropertyServiceFactory;
-import org.apache.airavata.core.gfac.notification.DummyNotification;
-import org.apache.airavata.core.gfac.registry.RegistryService;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.core.gfac.type.parameter.StringParameter;
 import org.apache.airavata.services.gfac.axis2.utils.GFacServiceOperations;
@@ -56,7 +52,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import java.io.StringReader;
 import java.util.Iterator;
-import java.util.Map;
 
 public class GFacMessageReciever implements MessageReceiver {
 

@@ -24,6 +24,7 @@ package org.apache.airavata.services.gfac.axis2;
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Constructor;
+import java.net.URL;
 import java.util.*;
 
 import org.apache.airavata.core.gfac.services.GenericService;
@@ -39,7 +40,7 @@ import javax.jcr.*;
 public class GFacService implements org.apache.axis2.engine.ServiceLifeCycle {
 
 	public static final String SECURITY_CONTEXT = "security_context";
-
+    public static final String REPOSITORY_PROPERTIES = "repository.properties";
 	public static GenericService service;
 
 	public void startUp(ConfigurationContext configctx, AxisService service) {
@@ -62,8 +63,8 @@ public class GFacService implements org.apache.axis2.engine.ServiceLifeCycle {
     private void initializeRepository(ConfigurationContext context) {
       Properties properties = new Properties();
         try {
-            String axis2Home = System.getenv("AXIS2_HOME");
-            properties.load(new FileInputStream(axis2Home + File.separator + "conf/repository.properties"));
+            URL url = ClassLoader.getSystemResource(REPOSITORY_PROPERTIES);
+            properties.load(url.openStream());
             Map<String, String> map = new HashMap<String, String>((Map) properties);
             Class registryRepositoryFactory = Class.forName(map.get("repository.factory"));
             Constructor c = registryRepositoryFactory.getConstructor();
