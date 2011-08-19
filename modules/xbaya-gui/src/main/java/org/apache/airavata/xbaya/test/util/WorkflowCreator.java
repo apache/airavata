@@ -57,7 +57,7 @@ public class WorkflowCreator {
     /**
      * GFAC_TEST_AWSDL
      */
-    public static final String GFAC_TEST_AWSDL = "test/TestCMD_Example1_AWSDL.xml";
+    public static final String GFAC_TEST_AWSDL = "TestCMD_Example1_AWSDL.xml";
 
     private Component inputComponent;
 
