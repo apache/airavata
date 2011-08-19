@@ -28,12 +28,13 @@ public interface XBayaPathConstants {
     /**
      * Root directory of the server.
      */
-    public static final String XBAYA_DIRECTORY = ".";
+    public static final String XBAYA_DIRECTORY = "modules" + File.separator + "xbaya-gui";
 
     /**
      * The path of the directory that stores component definitions.
      */
-    public static final String WSDL_DIRECTORY = XBAYA_DIRECTORY + File.separator + "wsdls";
+    public static final String WSDL_DIRECTORY = XBAYA_DIRECTORY + File.separator + "src" +
+            File.separator + "main" + File.separator + "resources" +  File.separator + "wsdls";
 
     /**
      * The path of the directory that stores graphs.
