@@ -122,8 +122,7 @@ public class GridFtp {
 
             System.out.println("the remote file is " + remoteFile);
 
-            ftpClient.put(remoteFile, new DataSourceStream(io), new MarkerListener() {                
-                @Override
+            ftpClient.put(remoteFile, new DataSourceStream(io), new MarkerListener() {
                 public void markerArrived(Marker marker) {
                 }
             });
