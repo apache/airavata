@@ -31,8 +31,8 @@ public class ContactInfo {
 
     public ContactInfo(String hostName, int port) {
         if (port <= 0 || port == 80) {
-            log.info(hostName + "port recived " + port + " setting it to " + GFacConstants.GSI_FTP_PORT);
-            port = GFacConstants.GSI_FTP_PORT;
+            log.info(hostName + "port recived " + port + " setting it to " + GFacConstants.DEFAULT_GSI_FTP_PORT);
+            port = GFacConstants.DEFAULT_GSI_FTP_PORT;
         }
         this.hostName = hostName;
         this.port = port;

@@ -21,16 +21,6 @@
 
 package org.apache.airavata.core.gfac.exception;
 
-import java.text.DateFormat;
-import java.util.Date;
-
-import org.apache.xmlbeans.XmlObject;
-import org.ogce.schemas.gfac.inca.faults.ActionDocument;
-import org.ogce.schemas.gfac.inca.faults.ActionDocument.Action;
-import org.ogce.schemas.gfac.inca.faults.Application;
-import org.ogce.schemas.gfac.inca.faults.DataTransfer;
-import org.ogce.schemas.gfac.inca.faults.FileSystem;
-import org.ogce.schemas.gfac.inca.faults.Job;
 
 public class GfacException extends Exception {
 
@@ -39,8 +29,6 @@ public class GfacException extends Exception {
     };
 
     private static final long serialVersionUID = 1L;
-    private static DateFormat formatter = DateFormat.getTimeInstance();
-    protected ActionDocument errorActionDocument;
 
     protected String faultCode;
 
@@ -73,29 +61,5 @@ public class GfacException extends Exception {
 
     public void setFaultCode(String faultCode) {
         this.faultCode = faultCode;
-    }
-
-    public ActionDocument createFaultData(XmlObject fault, String api, Throwable e) {
-        ActionDocument document = ActionDocument.Factory.newInstance();
-        Action type = document.addNewAction();
-        type.setId("");
-        type.setApplication("lead");
-        type.setApi(api);
-
-        if (fault instanceof DataTransfer) {
-            type.setDataTransferArray(new DataTransfer[] { (DataTransfer) fault });
-        } else if (fault instanceof Job) {
-            type.setJobArray(new Job[] { (Job) fault });
-        } else if (fault instanceof Job) {
-            type.setFileSystemArray(new FileSystem[] { (FileSystem) fault });
-        } else if (fault instanceof Application) {
-            type.setCmdapplicationArray(new Application[] { (Application) fault });
-        }
-        type.setEndTime(formatter.format(new Date()));
-        Throwable cause = e;
-        while (cause.getCause() != null) {
-            cause = cause.getCause();
-        }
-        return document;
-    }
+    }   
 }

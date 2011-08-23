@@ -65,8 +65,8 @@ public class GramRSLGenerator {
             jobAttr.addEnvVariable(key, nv.get(key));
         }
 
-        jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR, app.getInputDir());        
-        jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR, app.getOutputDir());
+        jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());        
+        jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getOutputDir());
         
         WorkflowContextHeader contextHeader = context.getExecutionContext().getWorkflowHeader();
         ResourceMapping resourceMapping = null;

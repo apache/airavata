@@ -25,7 +25,6 @@ import org.apache.airavata.core.gfac.context.SecurityContext;
 import org.apache.airavata.core.gfac.context.impl.utils.MyProxyManager;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
-import org.apache.airavata.core.gfac.utils.GlobalConfiguration;
 import org.globus.tools.MyProxy;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
@@ -49,35 +48,9 @@ public class GSISecurityContext implements SecurityContext {
     private String trustedCertLoc;
 
     private GSSCredential gssCredentails;
-    private GlobalConfiguration globalConfiguration;
 
     public GSISecurityContext() {
 
-    }
-
-    public GSISecurityContext(GlobalConfiguration globalConfiguration) throws GfacException {
-        try {
-            this.globalConfiguration = globalConfiguration;
-            myproxyUserName = globalConfiguration.getProperty("myproxyUserName");
-            myproxyPasswd = globalConfiguration.getProperty("myproxyPasswd");
-            myproxyServer = globalConfiguration.getProperty("myproxyServer");
-            String lifetime = globalConfiguration.getProperty("myproxyLifetime");
-            trustedCertLoc = globalConfiguration.getTrustedCertsFile();
-            // Load the Credential configurations
-            if (myproxyUserName != null && myproxyPasswd != null && myproxyServer != null && lifetime != null) {
-                this.myproxyLifetime = Integer.parseInt(lifetime);
-                this.proxyRenewer = new MyProxyManager(myproxyUserName, myproxyPasswd, MyProxy.MYPROXY_SERVER_PORT,
-                        myproxyLifetime, myproxyServer, trustedCertLoc);
-                log.info("loaded credentails from Proxy server");
-            } else {
-                log.info(myproxyUserName + " " + (myproxyPasswd != null) + " " + myproxyServer + " " + myproxyLifetime);
-                this.proxyRenewer = null;
-            }
-        } catch (NumberFormatException e) {
-            throw new GfacException(e, FaultCode.InvaliedLocalArgumnet);
-        } catch (Exception e) {
-            throw new GfacException(e, FaultCode.InternalServiceError);
-        }
     }
 
     public GSSCredential getGssCredentails() throws GfacException, GSSException {

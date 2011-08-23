@@ -23,27 +23,14 @@ package org.apache.airavata.core.gfac.context.impl;
 
 import org.apache.airavata.core.gfac.api.Registry;
 import org.apache.airavata.core.gfac.context.ExecutionContext;
-import org.apache.airavata.core.gfac.context.SecurityContext;
-import org.apache.airavata.core.gfac.context.ServiceContext;
-import org.apache.airavata.core.gfac.model.ExecutionModel;
 import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.ogce.namespaces.x2010.x08.x30.workflowContextHeader.WorkflowContextHeaderDocument.WorkflowContextHeader;
 
 public class ExecutionContextImpl implements ExecutionContext {
 
-    private ExecutionModel executionModel;
     private WorkflowContextHeader workflowContextHeader;
     private NotificationService notificationService;
     private Registry registryService;
-    private SecurityContext securityContext;
-
-    public ExecutionModel getExecutionModel() {
-        return executionModel;
-    }
-
-    public void setExectionModel(ExecutionModel model) {
-        this.executionModel = model;
-    }
 
     public WorkflowContextHeader getWorkflowHeader() {
         return workflowContextHeader;
@@ -59,25 +46,6 @@ public class ExecutionContextImpl implements ExecutionContext {
 
     public void setNotificationService(NotificationService service) {
         this.notificationService = service;
-
-    }
-
-    public SecurityContext getSecurityContext() {
-        return this.securityContext;
-    }
-
-    public void setSecurityContext(SecurityContext context) {
-        this.securityContext = context;
-
-    }
-
-    public ServiceContext getServiceContext() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public void setServiceContext(ServiceContext context) {
-        // TODO Auto-generated method stub
 
     }
 

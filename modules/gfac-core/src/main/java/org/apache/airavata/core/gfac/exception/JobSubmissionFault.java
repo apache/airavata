@@ -21,16 +21,10 @@
 
 package org.apache.airavata.core.gfac.exception;
 
-import org.apache.airavata.core.gfac.utils.GFacOptions.CurrentProviders;
-import org.ogce.schemas.gfac.inca.faults.Job;
+import org.apache.airavata.core.gfac.provider.Provider;
 
 public class JobSubmissionFault extends GfacException {
-    public JobSubmissionFault(Throwable cause, String submitHost, String contact, String rsl, CurrentProviders api) {
+    public JobSubmissionFault(Throwable cause, String submitHost, String contact, String rsl, Provider api) {
         super(cause, FaultCode.ErrorAtDependentService);
-        Job job = Job.Factory.newInstance();
-        job.setContact(contact);
-        job.setRsl(rsl);
-        job.setSubmitHost(submitHost);
-        errorActionDocument = createFaultData(job, api.toString(), cause);
     }
 }

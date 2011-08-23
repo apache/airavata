@@ -22,15 +22,10 @@
 package org.apache.airavata.core.gfac.context;
 
 import org.apache.airavata.core.gfac.api.Registry;
-import org.apache.airavata.core.gfac.model.ExecutionModel;
 import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.ogce.namespaces.x2010.x08.x30.workflowContextHeader.WorkflowContextHeaderDocument.WorkflowContextHeader;
 
 public interface ExecutionContext {
-
-    ExecutionModel getExecutionModel();
-
-    void setExectionModel(ExecutionModel model);
 
     WorkflowContextHeader getWorkflowHeader();
 
@@ -38,15 +33,7 @@ public interface ExecutionContext {
 
     NotificationService getNotificationService();
 
-    void setNotificationService(NotificationService service);
-
-    SecurityContext getSecurityContext();
-
-    void setSecurityContext(SecurityContext context);
-
-    ServiceContext getServiceContext();
-
-    void setServiceContext(ServiceContext context);
+    void setNotificationService(NotificationService service);    
 
     Registry getRegistryService();
 

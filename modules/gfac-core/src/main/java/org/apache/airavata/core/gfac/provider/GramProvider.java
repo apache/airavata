@@ -22,13 +22,11 @@
 package org.apache.airavata.core.gfac.provider;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.core.gfac.context.ExecutionContext;
 import org.apache.airavata.core.gfac.context.InvocationContext;
 import org.apache.airavata.core.gfac.context.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
@@ -43,7 +41,6 @@ import org.apache.airavata.core.gfac.type.app.GramApplicationDeployment;
 import org.apache.airavata.core.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.core.gfac.type.host.GlobusHost;
 import org.apache.airavata.core.gfac.utils.ErrorCodes;
-import org.apache.airavata.core.gfac.utils.GFacOptions.CurrentProviders;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 import org.globus.gram.GramAttributes;
@@ -164,7 +161,7 @@ public class GramProvider extends AbstractProvider {
             if (jobStatus == GramJob.STATUS_FAILED) {
                 errCode = listener.getError();                
                 String errorMsg = "Job " + job.getID() + " on host " + host.getName() + " Error Code = " + errCode;                
-                GfacException error = new JobSubmissionFault(new Exception(errorMsg), "GFAC HOST", gatekeeper, rsl, CurrentProviders.Gram);
+                GfacException error = new JobSubmissionFault(new Exception(errorMsg), "GFAC HOST", gatekeeper, rsl, this);
                 if (errCode == 8) {
                 	error.setFaultCode(ErrorCodes.JOB_CANCELED);
                 } else {
@@ -210,7 +207,7 @@ public class GramProvider extends AbstractProvider {
             jobSucsseful = true;
         } catch (GramException e) {
             String localHost = "xxxx";
-            GfacException error = new JobSubmissionFault(e, localHost, gatekeeper, rsl, CurrentProviders.Gram);
+            GfacException error = new JobSubmissionFault(e, localHost, gatekeeper, rsl, this);
             if (errCode == 8) {
                 error.setFaultCode(ErrorCodes.JOB_CANCELED);
             } else {
@@ -218,7 +215,7 @@ public class GramProvider extends AbstractProvider {
             }
             throw error;
         } catch (GSSException e) {
-            throw new JobSubmissionFault(e, "GFAC HOST", gatekeeper, rsl, CurrentProviders.Gram);
+            throw new JobSubmissionFault(e, "GFAC HOST", gatekeeper, rsl, this);
         } catch (URISyntaxException e) {
             throw new GfacException(e, FaultCode.ErrorAtDependentService);
         } catch (InterruptedException e) {
@@ -238,21 +235,7 @@ public class GramProvider extends AbstractProvider {
 
     }
 
-    public void abort(InvocationContext invocationContext) throws GfacException {
-        try {
-            ExecutionContext context = invocationContext.getExecutionContext();
-            GramJob job = new GramJob("");
-            job.setID(context.getExecutionModel().getJobID());
-            job.setCredentials(((GSISecurityContext) context.getSecurityContext()).getGssCredentails());
-            job.cancel();
-        } catch (MalformedURLException e) {
-            throw new GfacException(e, FaultCode.ErrorAtDependentService);
-        } catch (GramException e) {
-            throw new GfacException(e, FaultCode.ErrorAtDependentService);
-        } catch (GSSException e) {
-            throw new GfacException(e, FaultCode.ErrorAtDependentService);
-        }
-
+    public void abort(InvocationContext invocationContext) throws GfacException {       
     }
 
 }
