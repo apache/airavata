@@ -138,7 +138,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     @Override
     public void preProcess(InvocationContext context) throws GfacException {
-        if (context.getExecutionContext() != null && context.getExecutionContext().getRegistryService() != null) {
+        if (context.getExecutionContext() == null || context.getExecutionContext().getRegistryService() == null) {
 
             if (this.registryService == null) {
                 log.info("try to create default registry service (JCR Implementation)");
