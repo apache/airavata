@@ -26,7 +26,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.airavata.core.gfac.api.Registry;
 import org.apache.airavata.core.gfac.api.impl.JCRRegistry;
@@ -60,6 +59,8 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
      * JCR properties
      */
     public static final String JCR_CLASS = "jcr.class";
+    public static final String JCR_USER = "jcr.user";
+    public static final String JCR_PASS = "jcr.pass";
 
     private Properties properties;
     private Scheduler scheduler;
@@ -67,8 +68,25 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     private PostExecuteChain[] postChain;
     private DataServiceChain[] dataChain;
 
-    private Registry registryService;        
+    private Registry registryService;
 
+    /**
+     * Default constructor
+     */
+    public PropertiesBasedServiceImpl(){        
+    }
+    
+    /**
+     * Constructor with passing properties
+     * 
+     * @param prop
+     */
+    public PropertiesBasedServiceImpl(Properties prop){
+        this.properties = prop;
+    }
+    
+    
+    
     /*
      * (non-Javadoc)
      * 
@@ -76,32 +94,17 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
      * InvocationContext)
      */
     public void init() throws GfacException {
-        /*
-         * Load properties and create XRegistry service
-         */
         try {
-            URL url = ClassLoader.getSystemResource(FILENAME);
-
-            this.properties = new Properties();
-            this.properties.load(url.openStream());
-            
-            //JCR
-            String jcrClass = loadFromProperty(JCR_CLASS, true);
             
             /*
-             * Remove unnecessary key
+             * Load properties only it is not loaded
              */
-            Map<String, String> map = new HashMap<String, String>((Map) this.properties);
-            map.remove(JCR_CLASS);
-            map.remove(SCHEDULER_CLASS);
-            map.remove(DATA_CHAIN_CLASS);
-            map.remove(PRE_CHAIN_CLASS);
-            map.remove(POST_CHAIN_CLASS);
-            if(map.size() == 0)
-            	map = null;
-
-            this.registryService = new JCRRegistry(jcrClass, "admin", "admin", map);
-
+            if(this.properties == null){
+                URL url = ClassLoader.getSystemResource(FILENAME);
+    
+                this.properties = new Properties();
+                this.properties.load(url.openStream());
+            }
         } catch (Exception e) {
         	e.printStackTrace();
             throw new GfacException("Error initialize the generic service", e);
@@ -115,19 +118,43 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
      * InvocationContext)
      */
     public void dispose() throws GfacException {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void preProcess(InvocationContext context) throws GfacException {
-        // set Fix Registry location for every requests
-        context.getExecutionContext().setRegistryService(this.registryService);
+        if(context.getExecutionContext() != null
+                && context.getExecutionContext().getRegistryService() != null){
+            
+            if(this.registryService == null){
+                //JCR
+                String jcrClass = loadFromProperty(JCR_CLASS, true);
+                String userName = loadFromProperty(JCR_USER, false);
+                String password = loadFromProperty(JCR_PASS, false);
+                
+                /*
+                 * Remove unnecessary key
+                 */
+                Map<String, String> map = new HashMap<String, String>((Map) this.properties);
+                map.remove(JCR_CLASS);
+                map.remove(SCHEDULER_CLASS);
+                map.remove(DATA_CHAIN_CLASS);
+                map.remove(PRE_CHAIN_CLASS);
+                map.remove(POST_CHAIN_CLASS);
+                map.remove(JCR_USER);
+                map.remove(JCR_PASS);
+                if(map.size() == 0)
+                    map = null;
+
+                this.registryService = new JCRRegistry(jcrClass, userName, password, map);                
+            }
+            
+            // set Fix Registry location for every requests
+            context.getExecutionContext().setRegistryService(this.registryService);            
+        }
     }
 
     @Override
     public void postProcess(InvocationContext context) throws GfacException {
-        // TODO Auto-generated method stub
     }
 
     /*
@@ -148,13 +175,8 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
              * init instance of that class
              */
             try {
-//                ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
                 Class spiClass = Class.forName(className).asSubclass(Scheduler.class);
-//                if (classLoader == null) {
-//                    spiClass = Class.forName(className).asSubclass(Scheduler.class);
-//                } else {
-//                    spiClass = classLoader.loadClass(className).asSubclass(Scheduler.class);
-//                }
 
                 this.scheduler = (Scheduler)spiClass.newInstance();
                 
@@ -254,8 +276,6 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
             try {
                 Class<? extends ExitableChain> spiClass;
-
-//                    spiClass = Class.forName(className).asSubclass(ExitableChain.class);
                 spiClass = Class.forName(className).asSubclass(ExitableChain.class);
                 chain[i] = (T) spiClass.newInstance();
 
