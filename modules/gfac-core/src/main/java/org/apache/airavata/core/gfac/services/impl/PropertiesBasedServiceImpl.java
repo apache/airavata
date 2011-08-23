@@ -21,6 +21,7 @@
 
 package org.apache.airavata.core.gfac.services.impl;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.HashMap;
@@ -37,24 +38,33 @@ import org.apache.airavata.core.gfac.extension.ExitableChain;
 import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
+import org.apache.airavata.core.gfac.utils.LogUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * This generic service implementation will load Registry service and Data Catalog from property file. It selects
- * provider and execute it base on execution context.
+ * This generic service implementation will load Registry service and Data
+ * Catalog from property file. It selects provider and execute it base on
+ * execution context.
  * 
  */
 public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     private static Log log = LogFactory.getLog(PropertiesBasedServiceImpl.class);
-    
+
+    /*
+     * default properties file location
+     */
     private static final String FILENAME = "service.properties";
+
+    /*
+     * Scheduler and chains
+     */
     public static final String SCHEDULER_CLASS = "scheduler.class";
     public static final String DATA_CHAIN_CLASS = "datachain.classes";
     public static final String PRE_CHAIN_CLASS = "prechain.classes";
     public static final String POST_CHAIN_CLASS = "postchain.classes";
-    
+
     /*
      * JCR properties
      */
@@ -73,64 +83,71 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     /**
      * Default constructor
      */
-    public PropertiesBasedServiceImpl(){        
+    public PropertiesBasedServiceImpl() {
+        log.debug("Create Default PropertiesBasedServiceImpl");
     }
-    
+
     /**
      * Constructor with passing properties
      * 
      * @param prop
      */
-    public PropertiesBasedServiceImpl(Properties prop){
+    public PropertiesBasedServiceImpl(Properties prop) {
         this.properties = prop;
+        log.debug("Create PropertiesBasedServiceImpl with Properties");
+        LogUtils.displayProperties(log, prop);
     }
-    
-    
-    
+
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.airavata.core.gfac.services.GenericService#init(org.apache.airavata.core.gfac.context.
-     * InvocationContext)
+     * @see
+     * org.apache.airavata.core.gfac.services.GenericService#init(org.apache
+     * .airavata.core.gfac.context. InvocationContext)
      */
     public void init() throws GfacException {
         try {
-            
+
             /*
              * Load properties only it is not loaded
              */
-            if(this.properties == null){
+            if (this.properties == null) {
+                log.info("try to load default properties: " + FILENAME);
                 URL url = ClassLoader.getSystemResource(FILENAME);
-    
+
                 this.properties = new Properties();
                 this.properties.load(url.openStream());
+
+                log.info("Properties loaded");
+                LogUtils.displayProperties(log, properties);
             }
-        } catch (Exception e) {
-        	e.printStackTrace();
-            throw new GfacException("Error initialize the generic service", e);
+        } catch (IOException e) {
+            throw new GfacException("Error initialize the PropertiesBasedServiceImpl", e);
         }
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.airavata.core.gfac.services.GenericService#dispose(org.apache.airavata.core.gfac.context.
-     * InvocationContext)
+     * @see
+     * org.apache.airavata.core.gfac.services.GenericService#dispose(org.apache
+     * .airavata.core.gfac.context. InvocationContext)
      */
     public void dispose() throws GfacException {
     }
 
     @Override
     public void preProcess(InvocationContext context) throws GfacException {
-        if(context.getExecutionContext() != null
-                && context.getExecutionContext().getRegistryService() != null){
-            
-            if(this.registryService == null){
-                //JCR
+        if (context.getExecutionContext() != null && context.getExecutionContext().getRegistryService() != null) {
+
+            if (this.registryService == null) {
+                log.info("try to create default registry service (JCR Implementation)");
+                                
+                // JCR
                 String jcrClass = loadFromProperty(JCR_CLASS, true);
                 String userName = loadFromProperty(JCR_USER, false);
                 String password = loadFromProperty(JCR_PASS, false);
-                
+
                 /*
                  * Remove unnecessary key
                  */
@@ -142,14 +159,18 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                 map.remove(POST_CHAIN_CLASS);
                 map.remove(JCR_USER);
                 map.remove(JCR_PASS);
-                if(map.size() == 0)
+                if (map.size() == 0)
                     map = null;
 
-                this.registryService = new JCRRegistry(jcrClass, userName, password, map);                
+                this.registryService = new JCRRegistry(jcrClass, userName, password, map);
+                
+                log.info("Default registry service is created");
             }
-            
-            // set Fix Registry location for every requests
-            context.getExecutionContext().setRegistryService(this.registryService);            
+
+            /*
+             * If there is no specific registry service, use the default one. 
+             */
+            context.getExecutionContext().setRegistryService(this.registryService);
         }
     }
 
@@ -160,12 +181,15 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.airavata.core.gfac.services.GenericService#getScheduler(org.apache.airavata.core.gfac.context
-     * .InvocationContext)
+     * @see
+     * org.apache.airavata.core.gfac.services.GenericService#getScheduler(org
+     * .apache.airavata.core.gfac.context .InvocationContext)
      */
     public Scheduler getScheduler(InvocationContext context) throws GfacException {
         String className = null;
         if (this.scheduler == null) {
+            log.info("try to create scheduler");
+            
             /*
              * get class names
              */
@@ -178,8 +202,8 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
                 Class spiClass = Class.forName(className).asSubclass(Scheduler.class);
 
-                this.scheduler = (Scheduler)spiClass.newInstance();
-                
+                this.scheduler = (Scheduler) spiClass.newInstance();
+
                 log.info("Scheduler:" + className + " is loaded");
 
             } catch (ClassNotFoundException ex) {
@@ -194,11 +218,13 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.airavata.core.gfac.services.GenericService#getPreExecutionSteps(org.ogce.gfac
-     * .context.InvocationContext)
+     * @see
+     * org.apache.airavata.core.gfac.services.GenericService#getPreExecutionSteps
+     * (org.ogce.gfac .context.InvocationContext)
      */
     public PreExecuteChain[] getPreExecutionSteps(InvocationContext context) throws GfacException {
         if (this.preChain == null) {
+            log.info("try to load pre-execution chain");
             this.preChain = loadClassFromProperties(PRE_CHAIN_CLASS, PreExecuteChain.class);
         }
         return preChain;
@@ -207,11 +233,13 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     /*
      * (non-Javadoc)
      * 
-     * @see org.apache.airavata.core.gfac.services.GenericService#getPostExecuteSteps(org.ogce.gfac
-     * .context.InvocationContext)
+     * @see
+     * org.apache.airavata.core.gfac.services.GenericService#getPostExecuteSteps
+     * (org.ogce.gfac .context.InvocationContext)
      */
     public PostExecuteChain[] getPostExecuteSteps(InvocationContext context) throws GfacException {
         if (this.postChain == null) {
+            log.info("try to load post-execution chain");
             this.postChain = loadClassFromProperties(POST_CHAIN_CLASS, PostExecuteChain.class);
         }
         return postChain;
@@ -221,11 +249,12 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
      * (non-Javadoc)
      * 
      * @see
-     * org.apache.airavata.core.gfac.services.impl.OGCEGenericService#getDataChains(org.apache.airavata.core.gfac.context
-     * .InvocationContext)
+     * org.apache.airavata.core.gfac.services.impl.OGCEGenericService#getDataChains
+     * (org.apache.airavata.core.gfac.context .InvocationContext)
      */
     public DataServiceChain[] getDataChains(InvocationContext context) throws GfacException {
         if (this.dataChain == null) {
+            log.info("try to load data chain");
             this.dataChain = loadClassFromProperties(DATA_CHAIN_CLASS, DataServiceChain.class);
         }
         return dataChain;
@@ -282,11 +311,11 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                 log.info(type.getName() + " : " + className + " is loaded");
 
             } catch (ClassNotFoundException ex) {
-                ex.printStackTrace();
-                // TODO proper throw out
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                // TODO proper throw out
+                throw new GfacException("Cannot find the class: " + className, ex);
+            } catch (IllegalAccessException ex) {
+                throw new GfacException("Cannot access the class: " + className, ex);
+            } catch (InstantiationException ex) {
+                throw new GfacException("Cannot init the class: " + className, ex);
             }
         }
         return chain;

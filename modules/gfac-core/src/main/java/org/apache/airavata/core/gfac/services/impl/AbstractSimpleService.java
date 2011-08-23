@@ -30,8 +30,12 @@ import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.provider.Provider;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.services.GenericService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public abstract class AbstractSimpleService implements GenericService {
+    
+    private static Log log = LogFactory.getLog(AbstractSimpleService.class);
 
     public abstract void preProcess(InvocationContext context) throws GfacException;
 
@@ -47,50 +51,70 @@ public abstract class AbstractSimpleService implements GenericService {
 
     public final void execute(InvocationContext context) throws GfacException {
 
+        log.debug("Before preprocess");
+        
         /*
          * Pre-Process
          */
         preProcess(context);
+        
+        log.debug("After preprocess, try to get Scheduler and schedule");
 
         /*
          * Determine provider
          */
         Provider provider = getScheduler(context).schedule(context);
+        
+        log.debug("After scheduling, try to run data chain");
 
         /*
          * Load data necessary data
          */
         buildChains(getDataChains(context)).start(context);
 
+        log.debug("After data chain, try to init provider");
+        
         /*
          * Init
          */
         provider.initialize(context);
+        
+        log.debug("After provider initialization, try to run pre-execution chain");
 
         /*
          * Pre-Execution
          */
         buildChains(getPreExecutionSteps(context)).start(context);
 
+        log.debug("After pre-execution chain, try to execute provider");
+        
         /*
          * Execute
          */
         provider.execute(context);
+        
+        log.debug("After provider execution, try to run post-execution chain");
 
         /*
          * Post-Execution
          */
         buildChains(getPostExecuteSteps(context)).start(context);
 
+        log.debug("After pre-execution chain, try to dispose provider");
+        
         /*
          * Destroy
          */
         provider.dispose(context);
+        
+        log.debug("After provider disposal, try to run postprocess");
 
         /*
          * Pre-Process
          */
         postProcess(context);
+        
+        log.debug("After postprocess");
     }
 
     private ExitableChain buildChains(ExitableChain[] list) {
