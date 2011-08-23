@@ -99,11 +99,6 @@
 
 		<!-- GFAC schemas -->
 		<dependency>
-			<groupId>gfac</groupId>
-			<artifactId>gfac-schema-utils</artifactId>
-			<version>0.4.3</version>
-		</dependency>
-		<dependency>
 			<groupId>airavata</groupId>
 			<artifactId>airavata-gfac-schema-utils</artifactId>
 			<version>0.0.1-SNAPSHOT</version>

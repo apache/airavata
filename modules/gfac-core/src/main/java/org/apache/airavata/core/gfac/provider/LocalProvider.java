@@ -96,8 +96,8 @@ public class LocalProvider extends AbstractProvider {
             builder.environment().putAll(nv);
 
             // extra env's
-            builder.environment().put(GFacConstants.INPUT_DATA_DIR, app.getInputDir());
-            builder.environment().put(GFacConstants.OUTPUT_DATA_DIR, app.getOutputDir());
+            builder.environment().put(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());
+            builder.environment().put(GFacConstants.OUTPUT_DATA_DIR_VAR_NAME, app.getOutputDir());
 
             // working directory
             builder.directory(new File(app.getWorkingDir()));

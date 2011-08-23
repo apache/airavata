@@ -23,6 +23,7 @@ package org.apache.airavata.core.gfac.provider;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -34,11 +35,11 @@ import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Session.Command;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
-import org.apache.airavata.core.gfac.context.ExecutionContext;
 import org.apache.airavata.core.gfac.context.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.model.ExecutionModel;
 import org.apache.airavata.core.gfac.notification.NotificationService;
+import org.apache.airavata.core.gfac.type.HostDescription;
+import org.apache.airavata.core.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
@@ -58,14 +59,14 @@ public class SSHProvider extends AbstractProvider {
         return buff.toString();
     }
 
-    public void initialize(InvocationContext invocationContext) throws GfacException {
-        ExecutionContext appExecContext = invocationContext.getExecutionContext();
-        ExecutionModel model = appExecContext.getExecutionModel();
+    public void initialize(InvocationContext context) throws GfacException {
+        HostDescription host = context.getGfacContext().getHost();
+        ShellApplicationDeployment app = (ShellApplicationDeployment)context.getGfacContext().getApp();
 
         SSHClient ssh = new SSHClient();
         try {
             ssh.loadKnownHosts();
-            ssh.connect(model.getHost());
+            ssh.connect(host.getName());
 
             // TODO how to authenticate with system
             ssh.authPublickey(System.getProperty("user.name"));
@@ -73,16 +74,16 @@ public class SSHProvider extends AbstractProvider {
             try {
                 StringBuilder command = new StringBuilder();
                 command.append("mkdir -p ");
-                command.append(model.getTmpDir());
+                command.append(app.getTmpDir());
                 command.append(" | ");
                 command.append("mkdir -p ");
-                command.append(model.getWorkingDir());
+                command.append(app.getWorkingDir());
                 command.append(" | ");
                 command.append("mkdir -p ");
-                command.append(model.getInputDataDir());
+                command.append(app.getInputDir());
                 command.append(" | ");
                 command.append("mkdir -p ");
-                command.append(model.getOutputDataDir());
+                command.append(app.getOutputDir());
                 Command cmd = session.exec(command.toString());
                 cmd.join(5, TimeUnit.SECONDS);
             } catch (Exception e) {
@@ -103,10 +104,17 @@ public class SSHProvider extends AbstractProvider {
         }
     }
     
-    public void execute(InvocationContext invocationContext) throws GfacException {
-        ExecutionContext context = invocationContext.getExecutionContext();
-        ExecutionModel model = context.getExecutionModel();
+    public void execute(InvocationContext context) throws GfacException {
+        HostDescription host = context.getGfacContext().getHost();
+        ShellApplicationDeployment app = (ShellApplicationDeployment)context.getGfacContext().getApp();
 
+        // input parameter
+        ArrayList<String> tmp = new ArrayList<String>();
+        for (Iterator<String> iterator = context.getMessageContext("input").getParameterNames(); iterator.hasNext();) {
+            String key = iterator.next();
+            tmp.add(context.getMessageContext("input").getStringParameterValue(key));
+        }
+        
         List<String> cmdList = new ArrayList<String>();
 
         SSHClient ssh = new SSHClient();
@@ -115,27 +123,27 @@ public class SSHProvider extends AbstractProvider {
             /*
              * Notifier
              */
-            NotificationService notifier = context.getNotificationService();
+            NotificationService notifier = context.getExecutionContext().getNotificationService();
 
             /*
              * Builder Command
              */
-            cmdList.add(context.getExecutionModel().getExecutable());
-            cmdList.addAll(context.getExecutionModel().getInputParameters());
+            cmdList.add(app.getExecutable());
+            cmdList.addAll(tmp);
 
             // create process builder from command
             String command = buildCommand(cmdList);
 
             // redirect StdOut and StdErr
-            command += SPACE + "1>" + SPACE + model.getStdOut();
-            command += SPACE + "2>" + SPACE + model.getStderr();
+            command += SPACE + "1>" + SPACE + app.getStdOut();
+            command += SPACE + "2>" + SPACE + app.getStdErr();
 
             // get the env of the host and the application
-            Map<String, String> nv = context.getExecutionModel().getEnv();
+            Map<String, String> nv = app.getEnv();
 
             // extra env's
-            nv.put(GFacConstants.INPUT_DATA_DIR, context.getExecutionModel().getInputDataDir());
-            nv.put(GFacConstants.OUTPUT_DATA_DIR, context.getExecutionModel().getOutputDataDir());
+            nv.put(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());
+            nv.put(GFacConstants.OUTPUT_DATA_DIR_VAR_NAME, app.getOutputDir());
 
             // log info
             log.info("Command = " + buildCommand(cmdList));
@@ -150,7 +158,7 @@ public class SSHProvider extends AbstractProvider {
              * Create ssh connection
              */
             ssh.loadKnownHosts();
-            ssh.connect(model.getHost());
+            ssh.connect(host.getName());
 
             // TODO how to authenticate with system
             ssh.authPublickey(System.getProperty("user.name"));
@@ -160,9 +168,9 @@ public class SSHProvider extends AbstractProvider {
                 /*
                  * Build working Directory
                  */
-                log.info("WorkingDir = " + model.getWorkingDir());
-                session.exec("mkdir -p " + model.getWorkingDir());
-                session.exec("cd " + model.getWorkingDir());
+                log.info("WorkingDir = " + app.getWorkingDir());
+                session.exec("mkdir -p " + app.getWorkingDir());
+                session.exec("cd " + app.getWorkingDir());
 
                 /*
                  * Set environment
@@ -197,21 +205,20 @@ public class SSHProvider extends AbstractProvider {
                 }
 
                 // Get the Stdouts and StdErrs
-                QName x = QName.valueOf(invocationContext.getServiceName());
+                QName x = QName.valueOf(context.getServiceName());
                 String timeStampedServiceName = GfacUtils.createServiceDirName(x);
                 File localStdOutFile = new File(logDir, timeStampedServiceName + ".stdout");
                 File localStdErrFile = new File(logDir, timeStampedServiceName + ".stderr");
 
                 SCPFileTransfer fileTransfer = ssh.newSCPFileTransfer();
-                fileTransfer.download(model.getStdOut(), localStdOutFile.getAbsolutePath());
-                fileTransfer.download(model.getStderr(), localStdErrFile.getAbsolutePath());
+                fileTransfer.download(app.getStdOut(), localStdOutFile.getAbsolutePath());
+                fileTransfer.download(app.getStdErr(), localStdErrFile.getAbsolutePath());
 
-                context.getExecutionModel().setStdoutStr(GfacUtils.readFile(localStdOutFile.getAbsolutePath()));
-                context.getExecutionModel().setStderrStr(GfacUtils.readFile(localStdErrFile.getAbsolutePath()));
+                String stdOutStr = GfacUtils.readFile(localStdOutFile.getAbsolutePath());
+                String stdErrStr = GfacUtils.readFile(localStdErrFile.getAbsolutePath());
 
                 // set to context
-                OutputUtils.fillOutputFromStdout(invocationContext.getMessageContext("output"), context
-                        .getExecutionModel().getStdoutStr(), context.getExecutionModel().getStderrStr());
+                OutputUtils.fillOutputFromStdout(context.getMessageContext("output"), stdOutStr, stdErrStr);
 
             } catch (Exception e) {
                 throw e;
