@@ -38,7 +38,7 @@ import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.Value;
 
-import org.apache.airavata.core.gfac.api.Registry;
+import org.apache.airavata.core.gfac.api.Axis2Registry;
 import org.apache.airavata.core.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.core.gfac.type.HostDescription;
 import org.apache.airavata.core.gfac.type.ServiceDescription;
@@ -46,12 +46,13 @@ import org.apache.airavata.core.gfac.type.util.SchemaUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class JCRRegistry implements Registry {
+public class JCRRegistry implements Axis2Registry {
 
 	private static final String SERVICE_NODE_NAME = "SERVICE_HOST";
 	private static final String DEPLOY_NODE_NAME = "APP_HOST";
 	private static final String HOST_NODE_NAME = "GFAC_HOST";
 	private static final String XML_PROPERTY_NAME = "XML";
+	private static final String WSDL_PROPERTY_NAME = "WSDL";
 	private static final String LINK_NAME = "LINK";
 
 	private Repository repository;
@@ -351,4 +352,53 @@ public class JCRRegistry implements Registry {
 		// TODO implementation
 		return null;
 	}
+
+    public String saveWSDL(String name, String WSDL) {
+        Session session = null;
+        String result = null;
+        try {
+            session = getSession();
+            Node serviceNode = getServiceNode(session);
+            Node node = getOrAddNode(serviceNode, name);
+            node.setProperty(WSDL_PROPERTY_NAME, WSDL);
+            session.save();
+
+            result = node.getIdentifier();
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            // TODO propagate
+        } finally {
+            if (session != null && session.isLive()) {
+                session.logout();
+            }
+        }
+        return result;        
+    }
+
+    public String saveWSDL(String serviceName, ServiceDescription service) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public String getWSDL(String serviceName) {
+        Session session = null;
+        String result = null;
+        try {
+            session = getSession();
+            Node serviceNode = getServiceNode(session);
+            Node node = serviceNode.getNode(serviceName);
+            Property prop = node.getProperty(WSDL_PROPERTY_NAME);
+            result = prop.getString();
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            // TODO propagate
+        } finally {
+            if (session != null && session.isLive()) {
+                session.logout();
+            }
+        }
+        return result;
+    }
 }
