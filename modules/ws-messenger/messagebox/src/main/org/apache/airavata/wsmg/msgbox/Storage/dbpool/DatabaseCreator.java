@@ -291,7 +291,7 @@ public class DatabaseCreator {
         BufferedReader reader = null;
 
         try {
-            InputStream is = new FileInputStream(dbscriptName);
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream(dbscriptName);
             reader = new BufferedReader(new InputStreamReader(is));
             String line;
             while ((line = reader.readLine()) != null) {
@@ -363,7 +363,7 @@ public class DatabaseCreator {
         BufferedReader reader = null;
 
         try {
-            InputStream is = new FileInputStream(dbscriptName);
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream(dbscriptName);
             reader = new BufferedReader(new InputStreamReader(is));
             String line;
             while ((line = reader.readLine()) != null) {
