@@ -55,7 +55,7 @@ public class XBayaConstants {
     /**
      * DEFAULT_GFAC_URL
      */
-    public static final URI DEFAULT_GFAC_URL = URI.create("https://ogceportal.iu.teragrid.org:19442/");
+    public static final URI DEFAULT_GFAC_URL = URI.create("https://localhost:8080/axis2/services/GFacService");
 
     /**
      * DEFAULT_XREGISTRY_URL
@@ -70,12 +70,12 @@ public class XBayaConstants {
     /**
      * Default notification broker URL.
      */
-    public static final URI DEFAULT_BROKER_URL = URI.create("http://ogceportal.iu.teragrid.org:12346/");
+    public static final URI DEFAULT_BROKER_URL = URI.create("http://localhost:8080/axis2/services/EventingService");
 
     /**
      * Default message box URL.
      */
-    public static final URI DEFAULT_MESSAGE_BOX_URL = URI.create("http://ogceportal.iu.teragrid.org:13333/MsgBox");
+    public static final URI DEFAULT_MESSAGE_BOX_URL = URI.create("http://localhost:8080/axis2/services/MsgBoxService");
 
     /**
      * DEFAULT_DSC_URL
