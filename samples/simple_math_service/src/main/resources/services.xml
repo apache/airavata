@@ -1,4 +1,4 @@
-<service name="SimpleService" >
+<service name="SimpleMathService" >
 	<Description>
 		Provide Simple Service for Testing Purpose including addition, subtraction, multiplication, array-generator
 	</Description>
