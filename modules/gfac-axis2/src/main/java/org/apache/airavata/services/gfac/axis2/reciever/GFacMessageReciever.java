@@ -84,7 +84,8 @@ public class GFacMessageReciever implements MessageReceiver {
         String serviceName = getOriginalServiceName(messageContext);
         try {        
         ConfigurationContext context = messageContext.getConfigurationContext();
-        OMElement input = messageContext.getEnvelope().getBody().getFirstChildWithName(new QName("input"));
+        OMElement invoke = messageContext.getEnvelope().getBody().getFirstChildWithName(new QName("invoke"));
+        OMElement input = invoke.getFirstChildWithName(new QName("input"));
         OMElement output = invokeApplication(serviceName, input,context);
         SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
         SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
