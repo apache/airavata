@@ -85,9 +85,6 @@ public class WsmgClient implements ConsumerNotificationHandler, NotificationHand
      * @throws MonitorException
      */
     public synchronized void subscribe() throws MonitorException {
-        if (this.subscriptionID != null) {
-            throw new IllegalStateException();
-        }
         try {
             if (this.pullMode) {
                 org.apache.axis2.addressing.EndpointReference messageBoxEPR = this.wseClient.createPullMsgBox(this.messageBoxURL.toString());
