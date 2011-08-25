@@ -1,0 +1,74 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>airavata</groupId>
+	<artifactId>simple-math-service</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>Simple Math Service</name>
+	<description>Sample web services to construct as workflows to test XBaya. </description>
+
+	<url>http://incubator.apache.org/airavata/index.html</url>
+
+	<repositories>
+		<repository>
+			<name>ogce.m2.all</name>
+			<id>ogce.m2.all</id>
+			<url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all
+			</url>
+			<snapshots>
+				<updatePolicy>daily</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<properties>
+		<axis2.version>1.5.4</axis2.version>
+	</properties>
+
+	<dependencies>	
+	</dependencies>
+	<build>
+		<defaultGoal>install</defaultGoal>
+		<sourceDirectory>src</sourceDirectory>
+		<testSourceDirectory>test</testSourceDirectory>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-aar-maven-plugin</artifactId>
+				<version>${axis2.version}</version>
+				<configuration>
+					<servicesXmlFile>src/main/resources/services.xml</servicesXmlFile>
+				</configuration>
+				<executions>
+					<execution>
+						<id>createAAR</id>
+						<phase>package</phase>
+						<goals>
+							<goal>aar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<resources>
+			<resource>
+				<directory>resources</directory>
+				<targetPath>META-INF</targetPath>
+				<includes>
+					<include>**/*.wsdl</include>
+					<include>**/*.xml</include>
+				</includes>
+			</resource>
+		</resources>
+	</build>
+</project>
