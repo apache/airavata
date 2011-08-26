@@ -22,6 +22,7 @@
 package org.apache.airavata.core.gfac.provider;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -33,9 +34,11 @@ import javax.xml.namespace.QName;
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Session.Command;
+import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
 import org.apache.airavata.core.gfac.context.InvocationContext;
+import org.apache.airavata.core.gfac.context.impl.SSHSecurityContextImpl;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.apache.airavata.core.gfac.type.HostDescription;
@@ -49,6 +52,7 @@ import edu.indiana.extreme.lead.workflow_tracking.common.DurationObj;
 public class SSHProvider extends AbstractProvider {
 
     private static final String SPACE = " ";
+    private static final String SSH_SECURITY_CONTEXT = "ssh";
 
     private String buildCommand(List<String> cmdList) {
         StringBuffer buff = new StringBuffer();
@@ -58,18 +62,34 @@ public class SSHProvider extends AbstractProvider {
         }
         return buff.toString();
     }
+    
+    private void initSSHSecurity(InvocationContext context, SSHClient ssh) throws GfacException, IOException{
+        try {
+            SSHSecurityContextImpl sshContext = ((SSHSecurityContextImpl) context.getSecurityContext(SSH_SECURITY_CONTEXT));
+
+            KeyProvider pkey = ssh.loadKeys(sshContext.getPrivateKeyLoc(), sshContext.getKeyPass());
+
+            ssh.loadKnownHosts();            
+            ssh.authPublickey(sshContext.getUsername(), pkey);
+
+        } catch (NullPointerException ne) {
+            throw new GfacException("Cannot load security context for SSH", ne);
+        } catch (IOException e){
+            throw e;
+        }
+        
+    }
 
     public void initialize(InvocationContext context) throws GfacException {
         HostDescription host = context.getGfacContext().getHost();
-        ShellApplicationDeployment app = (ShellApplicationDeployment)context.getGfacContext().getApp();
+        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getGfacContext().getApp();
 
         SSHClient ssh = new SSHClient();
         try {
-            ssh.loadKnownHosts();
+
+            initSSHSecurity(context, ssh);            
             ssh.connect(host.getName());
 
-            // TODO how to authenticate with system
-            ssh.authPublickey(System.getProperty("user.name"));
             final Session session = ssh.startSession();
             try {
                 StringBuilder command = new StringBuilder();
@@ -103,10 +123,10 @@ public class SSHProvider extends AbstractProvider {
             }
         }
     }
-    
+
     public void execute(InvocationContext context) throws GfacException {
         HostDescription host = context.getGfacContext().getHost();
-        ShellApplicationDeployment app = (ShellApplicationDeployment)context.getGfacContext().getApp();
+        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getGfacContext().getApp();
 
         // input parameter
         ArrayList<String> tmp = new ArrayList<String>();
@@ -114,7 +134,7 @@ public class SSHProvider extends AbstractProvider {
             String key = iterator.next();
             tmp.add(context.getMessageContext("input").getStringParameterValue(key));
         }
-        
+
         List<String> cmdList = new ArrayList<String>();
 
         SSHClient ssh = new SSHClient();
@@ -154,15 +174,8 @@ public class SSHProvider extends AbstractProvider {
             // notify start
             DurationObj compObj = notifier.computationStarted();
 
-            /*
-             * Create ssh connection
-             */
-            ssh.loadKnownHosts();
+            initSSHSecurity(context, ssh);
             ssh.connect(host.getName());
-
-            // TODO how to authenticate with system
-            ssh.authPublickey(System.getProperty("user.name"));
-
             final Session session = ssh.startSession();
             try {
                 /*
@@ -190,8 +203,9 @@ public class SSHProvider extends AbstractProvider {
                 notifier.computationFinished(compObj);
 
                 /*
-                 * check return value. usually not very helpful to draw conclusions based on return values so don't
-                 * bother. just provide warning in the log messages
+                 * check return value. usually not very helpful to draw
+                 * conclusions based on return values so don't bother. just
+                 * provide warning in the log messages
                  */
                 if (cmd.getExitStatus() != 0) {
                     log.error("Process finished with non zero return value. Process may have failed");
