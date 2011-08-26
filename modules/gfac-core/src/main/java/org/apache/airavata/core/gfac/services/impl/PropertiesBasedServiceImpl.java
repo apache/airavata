@@ -31,6 +31,8 @@ import java.util.Properties;
 import org.apache.airavata.core.gfac.api.Registry;
 import org.apache.airavata.core.gfac.api.impl.JCRRegistry;
 import org.apache.airavata.core.gfac.context.InvocationContext;
+import org.apache.airavata.core.gfac.context.impl.GSISecurityContext;
+import org.apache.airavata.core.gfac.context.impl.SSHSecurityContextImpl;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
 import org.apache.airavata.core.gfac.extension.DataServiceChain;
@@ -58,6 +60,12 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     private static final String FILENAME = "service.properties";
 
     /*
+     * context name
+     */
+    public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";
+    public static final String SSH_SECURITY_CONTEXT = "ssh";
+
+    /*
      * Scheduler and chains
      */
     public static final String SCHEDULER_CLASS = "scheduler.class";
@@ -71,6 +79,21 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     public static final String JCR_CLASS = "jcr.class";
     public static final String JCR_USER = "jcr.user";
     public static final String JCR_PASS = "jcr.pass";
+
+    /*
+     * SSH properties
+     */
+    public static final String SSH_PRIVATE_KEY = "ssh.key";
+    public static final String SSH_PRIVATE_KEY_PASS = "ssh.keypass";
+    public static final String SSH_USER_NAME = "ssh.username";
+
+    /*
+     * My proxy properties
+     */
+    public static final String MYPROXY_SERVER = "myproxy.server";
+    public static final String MYPROXY_USER = "myproxy.user";
+    public static final String MYPROXY_PASS = "myproxy.pass";
+    public static final String MYPROXY_LIFE = "myproxy.life";
 
     private Properties properties;
     private Scheduler scheduler;
@@ -138,11 +161,50 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     @Override
     public void preProcess(InvocationContext context) throws GfacException {
+        /*
+         * Check Gram header
+         */
+        if (context.getSecurityContext(MYPROXY_SECURITY_CONTEXT) == null) {
+            String proxyServer = loadFromProperty(MYPROXY_SERVER, false);
+            String proxyUser = loadFromProperty(MYPROXY_USER, false);
+            String proxyPass = loadFromProperty(MYPROXY_PASS, false);
+            String proxyTime = loadFromProperty(MYPROXY_LIFE, false);
+            if (proxyServer != null && proxyUser != null && proxyPass != null) {
+                GSISecurityContext gsi = new GSISecurityContext();
+                gsi.setMyproxyServer(proxyServer);
+                gsi.setMyproxyUserName(proxyUser);
+                gsi.setMyproxyPasswd(proxyPass);
+                if (proxyTime != null) {
+                    gsi.setMyproxyLifetime(Integer.parseInt(proxyTime));
+                }
+                context.addSecurityContext(MYPROXY_SECURITY_CONTEXT, gsi);
+            }
+        }
+
+        /*
+         * Check SSH properties
+         */
+        if (context.getSecurityContext(SSH_SECURITY_CONTEXT) == null) {
+            String key = loadFromProperty(SSH_PRIVATE_KEY, false);
+            String pass = loadFromProperty(SSH_PRIVATE_KEY_PASS, false);
+            String user = loadFromProperty(SSH_USER_NAME, false);
+            if (key != null && user != null) {
+                SSHSecurityContextImpl ssh = new SSHSecurityContextImpl();
+                ssh.setKeyPass(pass);
+                ssh.setPrivateKeyLoc(key);
+                ssh.setUsername(user);
+                context.addSecurityContext(SSH_SECURITY_CONTEXT, ssh);
+            }
+        }
+
+        /*
+         * Check registry
+         */
         if (context.getExecutionContext() == null || context.getExecutionContext().getRegistryService() == null) {
 
             if (this.registryService == null) {
                 log.info("try to create default registry service (JCR Implementation)");
-                                
+
                 // JCR
                 String jcrClass = loadFromProperty(JCR_CLASS, true);
                 String userName = loadFromProperty(JCR_USER, false);
@@ -153,22 +215,33 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                  */
                 Map<String, String> map = new HashMap<String, String>((Map) this.properties);
                 map.remove(JCR_CLASS);
+                map.remove(JCR_USER);
+                map.remove(JCR_PASS);
+
                 map.remove(SCHEDULER_CLASS);
                 map.remove(DATA_CHAIN_CLASS);
                 map.remove(PRE_CHAIN_CLASS);
                 map.remove(POST_CHAIN_CLASS);
-                map.remove(JCR_USER);
-                map.remove(JCR_PASS);
+
+                map.remove(MYPROXY_SERVER);
+                map.remove(MYPROXY_USER);
+                map.remove(MYPROXY_PASS);
+                map.remove(MYPROXY_LIFE);
+
+                map.remove(SSH_USER_NAME);
+                map.remove(SSH_PRIVATE_KEY);
+                map.remove(SSH_PRIVATE_KEY_PASS);
+
                 if (map.size() == 0)
                     map = null;
 
                 this.registryService = new JCRRegistry(jcrClass, userName, password, map);
-                
+
                 log.info("Default registry service is created");
             }
 
             /*
-             * If there is no specific registry service, use the default one. 
+             * If there is no specific registry service, use the default one.
              */
             context.getExecutionContext().setRegistryService(this.registryService);
         }
@@ -189,7 +262,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
         String className = null;
         if (this.scheduler == null) {
             log.info("try to create scheduler");
-            
+
             /*
              * get class names
              */
