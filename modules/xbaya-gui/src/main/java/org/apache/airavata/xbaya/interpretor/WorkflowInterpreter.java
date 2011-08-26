@@ -459,7 +459,7 @@ public class WorkflowInterpreter {
             Object inputVal = findInputFromPort(node.getInputPort(0));
             String instanceId = inputVal.toString();
 
-            this.notifier.resourceMapping(instanceId, "Terminating EC2 Instance:" + instanceId);
+//            this.notifier.resourceMapping(instanceId, "Terminating EC2 Instance:" + instanceId);
 
             /*
              * Terminate instance
@@ -645,7 +645,7 @@ public class WorkflowInterpreter {
         // find inputs
         List<DataPort> inputPorts = node.getInputPorts();
         ODEClient odeClient = new ODEClient();
-        List<WSComponentPort> inputComponents = odeClient.getInputs(this.workflow);
+            List<WSComponentPort> inputComponents = odeClient.getInputs(this.workflow);
         for (DataPort port : inputPorts) {
             Object inputVal = findInputFromPort(port);
 

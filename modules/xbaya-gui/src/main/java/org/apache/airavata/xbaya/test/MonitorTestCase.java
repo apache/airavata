@@ -23,15 +23,16 @@ package org.apache.airavata.xbaya.test;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Properties;
 
+import org.apache.airavata.workflow.tracking.Notifier;
+import org.apache.airavata.workflow.tracking.NotifierFactory;
+import org.apache.airavata.workflow.tracking.common.InvocationEntity;
+import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
+import org.apache.airavata.workflow.tracking.impl.state.DataObjImpl;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axis2.addressing.EndpointReference;
-import edu.indiana.extreme.lead.workflow_tracking.Notifier;
-import edu.indiana.extreme.lead.workflow_tracking.NotifierFactory;
-import edu.indiana.extreme.lead.workflow_tracking.common.ConstructorConsts;
-import edu.indiana.extreme.lead.workflow_tracking.common.ConstructorProps;
-import edu.indiana.extreme.lead.workflow_tracking.common.InvocationEntity;
-import edu.indiana.extreme.lead.workflow_tracking.impl.state.DataObjImpl;
+
 
 public class MonitorTestCase extends XBayaTestCase {
 
@@ -44,18 +45,16 @@ public class MonitorTestCase extends XBayaTestCase {
         EndpointReference brokerEPR = WseMsgBrokerClient.createEndpointReference(this.configuration.getBrokerURL()
                 .toString(), this.configuration.getTopic());
 
-        ConstructorProps props = ConstructorProps.newProps();
-        props.set(ConstructorConsts.BROKER_EPR, brokerEPR);
-        Notifier notifier = NotifierFactory.createNotifier(props);
+        Notifier notifier = NotifierFactory.createNotifier();
 
-        InvocationEntity entity = notifier.createEntity(URI.create("workflowID"), URI.create("serviceID"),
-                "workflowNodeID", new Integer(1) /* step */);
-        notifier.publishURL(entity, "title", "http://www.google.com", "descriptionAndAnnotation");
+        WorkflowTrackingContext context = notifier.createTrackingContext(new Properties(), brokerEPR,
+                URI.create("workflowID"), URI.create("serviceID"), "workflowNodeID", new Integer(1));
+        notifier.publishURL(context, "title", "http://www.google.com", "descriptionAndAnnotation");
 
-        notifier.workflowInitialized(WORKFLOW_INSTANCE_ID);
+        notifier.workflowInitialized(context,WORKFLOW_INSTANCE_ID);
 
         DataObjImpl dataObj = new DataObjImpl(URI.create("test"), new ArrayList<URI>());
-        notifier.dataConsumed(entity, dataObj, "description");
+        notifier.dataConsumed(context, dataObj, "description");
     }
 
     /**

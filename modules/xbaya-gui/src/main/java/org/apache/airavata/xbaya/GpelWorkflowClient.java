@@ -32,6 +32,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.workflow.tracking.client.Callback;
+import org.apache.airavata.workflow.tracking.client.LeadNotificationManager;
+import org.apache.airavata.workflow.tracking.client.NotificationType;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
@@ -58,9 +61,7 @@ import xsul.invoker.gsi.GsiInvoker;
 import xsul.lead.LeadContextHeader;
 import xsul.ws_addressing.WsaEndpointReference;
 import xsul5.wsdl.WsdlDefinitions;
-import edu.indiana.extreme.lead.workflow_tracking.client.Callback;
-import edu.indiana.extreme.lead.workflow_tracking.client.LeadNotificationManager;
-import edu.indiana.extreme.lead.workflow_tracking.client.NotificationType;
+
 
 public class GpelWorkflowClient implements Callback {
 
@@ -106,7 +107,7 @@ public class GpelWorkflowClient implements Callback {
         invoke(userName, password, topic, workflow, inputs);
 
         LeadNotificationManager.createMessageBoxSubscription("http://127.0.0.1:13333/MsgBox", "127.0.0.1:12346",
-                "topic123", "", new GpelWorkflowClient(), "");
+                "topic123", "", new GpelWorkflowClient(), false);
 
     }
 

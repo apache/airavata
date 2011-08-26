@@ -269,16 +269,6 @@
 			<version>0.9b4-1</version>
 		</dependency>
 		<dependency>
-			<groupId>workflow-tracking</groupId>
-			<artifactId>workflow_tracking</artifactId>
-			<version>2.7.1</version>
-		</dependency>
-		<dependency>
-			<groupId>workflow-tracking</groupId>
-			<artifactId>workflow_tracking_types</artifactId>
-			<version>2.6</version>
-		</dependency>
-		<dependency>
 			<groupId>xutil</groupId>
 			<artifactId>xutil</artifactId>
 			<version>0.2</version>

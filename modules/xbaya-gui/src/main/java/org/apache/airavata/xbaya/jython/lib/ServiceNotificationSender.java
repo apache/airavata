@@ -24,8 +24,14 @@ package org.apache.airavata.xbaya.jython.lib;
 import java.net.URI;
 import java.util.Iterator;
 
+import org.apache.airavata.workflow.tracking.WorkflowNotifier;
+import org.apache.airavata.workflow.tracking.common.InvocationContext;
+import org.apache.airavata.workflow.tracking.common.InvocationEntity;
+import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
+import org.apache.airavata.workflow.tracking.impl.state.InvocationContextImpl;
 import org.apache.airavata.xbaya.util.StringUtil;
 import org.apache.airavata.xbaya.util.XMLUtil;
+import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.xmlpull.infoset.XmlElement;
@@ -33,16 +39,12 @@ import org.xmlpull.infoset.XmlElement;
 import xsul.ws_addressing.WsaEndpointReference;
 import xsul.wsif.WSIFMessage;
 import xsul5.MLogger;
-import edu.indiana.extreme.lead.workflow_tracking.Notifier;
-import edu.indiana.extreme.lead.workflow_tracking.common.InvocationContext;
-import edu.indiana.extreme.lead.workflow_tracking.common.InvocationEntity;
-import edu.indiana.extreme.lead.workflow_tracking.impl.state.InvocationContextImpl;
 
 public class ServiceNotificationSender {
 
     private static final MLogger logger = MLogger.getLogger();
 
-    private Notifier notifier;
+    private WorkflowNotifier notifier;
 
     private URI workflowID;
 
@@ -56,7 +58,9 @@ public class ServiceNotificationSender {
 
     private InvocationContext invocationContext;
 
-    private WsaEndpointReference eventSink;
+    private WorkflowTrackingContext context;
+
+    private EndpointReference eventSink;
 
     /**
      * Constructs a ServiceNotificationSender.
@@ -67,13 +71,14 @@ public class ServiceNotificationSender {
      * @param workflowID
      * @param nodeID
      */
-    protected ServiceNotificationSender(Notifier notifier, WsaEndpointReference eventSink, InvocationEntity initiator,
-            URI workflowID, String nodeID) {
+    protected ServiceNotificationSender(WorkflowNotifier notifier, EndpointReference eventSink, InvocationEntity initiator,
+            URI workflowID, String nodeID,WorkflowTrackingContext context) {
         this.notifier = notifier;
         this.eventSink = eventSink;
         this.initiator = initiator;
         this.workflowID = workflowID;
         this.nodeID = nodeID;
+        this.context = context;
         // In case of creating a service on the fly, there is no serviceID at
         // the beginning.
         this.serviceID = "";
@@ -104,7 +109,7 @@ public class ServiceNotificationSender {
     /**
      * @return The event sink.
      */
-    public WsaEndpointReference getEventSink() {
+    public EndpointReference getEventSink() {
         return this.eventSink;
     }
 
@@ -140,7 +145,7 @@ public class ServiceNotificationSender {
             logger.warning("Failed to parse " + inputs.toString(), e);
             body = null; // Send notification anyway.
         }
-        this.invocationContext = this.notifier.invokingService(this.initiator, this.receiver, header, body, message);
+        this.invocationContext = this.notifier.invokingService(this.context,this.initiator, header, body, message);
     }
 
     /**
@@ -168,7 +173,7 @@ public class ServiceNotificationSender {
             logger.warning("Failed to parse " + outputs.toString(), e);
             body = null; // Send notification anyway.
         }
-        this.notifier.receivedResult(this.invocationContext, header, body, message);
+        this.notifier.receivedResult(this.context,this.invocationContext,header, body, message);
     }
 
     /**
@@ -204,9 +209,9 @@ public class ServiceNotificationSender {
             XmlElement stackTraceElement = XMLUtil.BUILDER.newFragment("stackTrace");
             stackTraceElement.addChild(stackTrace);
             String annotation = XMLUtil.xmlElementToString(stackTraceElement);
-            this.notifier.invokingServiceFailed(this.invocationContext, e, message, annotation);
+            this.notifier.invokingServiceFailed(this.context,this.invocationContext, e, message, annotation);
         } else {
-            this.notifier.invokingServiceFailed(this.invocationContext, message);
+            this.notifier.invokingServiceFailed(this.context,this.invocationContext, message);
         }
     }
 
@@ -227,7 +232,7 @@ public class ServiceNotificationSender {
         if (message == null || "".equals(message)) {
             message = "Error";
         }
-        this.notifier.receivedFault(this.invocationContext, message);
+        this.notifier.receivedFault(this.context,this.invocationContext, message);
     }
 
     /**
@@ -251,6 +256,6 @@ public class ServiceNotificationSender {
             logger.warning("Failed to parse " + fault.toString(), e);
             body = null; // Send notification anyway.
         }
-        this.notifier.receivedFault(this.invocationContext, header, body, message);
+        this.notifier.receivedFault(this.context,this.invocationContext, header, body, message);
     }
 }

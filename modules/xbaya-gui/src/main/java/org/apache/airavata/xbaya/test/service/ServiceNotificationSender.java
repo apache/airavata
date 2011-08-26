@@ -22,8 +22,15 @@
 package org.apache.airavata.xbaya.test.service;
 
 import java.net.URI;
+import java.util.Properties;
 
+import org.apache.airavata.workflow.tracking.Notifier;
+import org.apache.airavata.workflow.tracking.NotifierFactory;
+import org.apache.airavata.workflow.tracking.common.InvocationContext;
+import org.apache.airavata.workflow.tracking.common.InvocationEntity;
+import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 import org.apache.airavata.xbaya.util.XMLUtil;
+import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlObject;
 import org.xmlpull.v1.builder.XmlDocument;
 import org.xmlpull.v1.builder.XmlElement;
@@ -35,12 +42,8 @@ import xsul.soap11_util.Soap11Util;
 import xsul.soap12_util.Soap12Util;
 import xsul.xbeans_util.XBeansUtil;
 import xsul5.MLogger;
-import edu.indiana.extreme.lead.workflow_tracking.Notifier;
-import edu.indiana.extreme.lead.workflow_tracking.NotifierFactory;
-import edu.indiana.extreme.lead.workflow_tracking.common.ConstructorProps;
-import edu.indiana.extreme.lead.workflow_tracking.common.InvocationContext;
-import edu.indiana.extreme.lead.workflow_tracking.common.InvocationEntity;
-import edu.indiana.extreme.lead.workflow_tracking.util.MessageUtil;
+
+
 
 public class ServiceNotificationSender {
 
@@ -57,6 +60,8 @@ public class ServiceNotificationSender {
     private InvocationEntity receiver;
 
     private InvocationContext invocationContext;
+
+    private WorkflowTrackingContext context;
 
     private SoapUtil soapFragrance;
 
@@ -96,9 +101,7 @@ public class ServiceNotificationSender {
      */
     private ServiceNotificationSender(SoapUtil soapFragrance, LeadContextHeader leadContext) {
         this.soapFragrance = soapFragrance;
-
-        ConstructorProps props = MessageUtil.createConstructorPropsFromLeadContext(leadContext);
-        this.notifier = NotifierFactory.createNotifier(props);
+        this.notifier = NotifierFactory.createNotifier();
 
         URI workflowID = leadContext.getWorkflowId();
         String serviceIDString = leadContext.getServiceId();
@@ -118,6 +121,8 @@ public class ServiceNotificationSender {
         }
         this.initiator = this.notifier.createEntity(workflowID, serviceID, nodeID, timeStep);
         this.receiver = this.notifier.createEntity(workflowID, serviceID, nodeID, timeStep);
+        EndpointReference epr = new EndpointReference(leadContext.getEventSink().getAddress().toString());
+        this.context = this.notifier.createTrackingContext(new Properties(),epr,workflowID,serviceID,nodeID,timeStep);
     }
 
     /**
@@ -129,7 +134,7 @@ public class ServiceNotificationSender {
         XmlElement soapHeader = soapEnvelope.element(null, XmlConstants.S_HEADER);
         XmlObject headerObject = XBeansUtil.xmlElementToXmlObject(soapHeader);
         XmlObject bodyObject = XBeansUtil.xmlElementToXmlObject(soapBody);
-        this.invocationContext = this.notifier.serviceInvoked(this.receiver, this.initiator, headerObject, bodyObject,
+        this.invocationContext = this.notifier.serviceInvoked(this.context,this.initiator, headerObject, bodyObject,
                 INVOKED_MESSAGE);
     }
 
@@ -147,7 +152,7 @@ public class ServiceNotificationSender {
                 headerObject = XBeansUtil.xmlElementToXmlObject(soapHeader);
             }
             XmlObject bodyObject = XBeansUtil.xmlElementToXmlObject(soapBody);
-            this.notifier.sendingResult(this.invocationContext, headerObject, bodyObject, SENDING_RESULT_MESSAGE);
+            this.notifier.sendingResult(this.context,this.invocationContext, headerObject, bodyObject, SENDING_RESULT_MESSAGE);
         } catch (RuntimeException e) {
             logger.caught(e);
         }
