@@ -48,6 +48,7 @@ import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.invoker.gsi.GsiInvoker;
 import xsul.lead.LeadContextHeader;
+import xsul.ws_addressing.WsaEndpointReference;
 import xsul.wsdl.WsdlDefinitions;
 import xsul.wsdl.WsdlException;
 import xsul.wsdl.WsdlResolver;
@@ -248,12 +249,16 @@ public class GenericInvoker implements WorkflowInvoker {
         // Set LEAD context header.
         LeadContextHeaderHelper leadContextHelper = new LeadContextHeaderHelper();
         LeadContextHeader leadContext = leadContextHelper.getLeadContextHeader();
-        leadContext.setEventSink(this.notifier.getEventSink());
+        try {
+            leadContext.setEventSink(new WsaEndpointReference(new URI(this.notifier.getEventSink().getAddress())));
+            leadContext.setServiceId(this.nodeID);
+            leadContext.setNodeId(this.nodeID);
+            leadContext.setWorkflowId(this.notifier.getWorkflowID());
+            leadContext.setTimeStep("1");
+        } catch (URISyntaxException e) {
+
+        }
         StickySoapHeaderHandler handler = new StickySoapHeaderHandler("use-lead-header", leadContext);
-        leadContext.setServiceId(this.nodeID);
-        leadContext.setNodeId(this.nodeID);
-        leadContext.setWorkflowId(this.notifier.getWorkflowID());
-        leadContext.setTimeStep("1");
         // if(this.configuration != null){
         // leadContext.setMyleadAgentUrl(configuration.getMyLeadAgentURL());
         // leadContext.setXRegistryUrl(configuration.getXRegistryURL());
@@ -348,7 +353,7 @@ public class GenericInvoker implements WorkflowInvoker {
         logger.entering();
 
         try {
-            WSIFMessage inputMessage = this.invoker.getInputs();
+                WSIFMessage inputMessage = this.invoker.getInputs();
             logger.finest("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) inputMessage));
             this.notifier.invokingService(inputMessage);
 

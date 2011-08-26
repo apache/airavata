@@ -27,7 +27,16 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
+import org.apache.airavata.workflow.tracking.client.Callback;
+import org.apache.airavata.workflow.tracking.client.NotificationType;
+import org.apache.airavata.workflow.tracking.common.InvocationContext;
+import org.apache.airavata.workflow.tracking.common.InvocationEntity;
+import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
+import org.apache.airavata.workflow.tracking.impl.NotifierImpl;
+import org.apache.airavata.workflow.tracking.impl.publish.LoopbackPublisher;
+import org.apache.airavata.workflow.tracking.impl.publish.NotificationPublisher;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.Component;
@@ -57,6 +66,7 @@ import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
+import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlObject;
 import org.xmlpull.infoset.view.XmlValidationException;
 import org.xmlpull.v1.builder.XmlElement;
@@ -73,13 +83,8 @@ import xsul.xwsif_runtime.WSIFRuntime;
 import xsul5.MLogger;
 import xsul5.wsdl.WsdlDefinitions;
 import xsul5.wsdl.WsdlResolver;
-import edu.indiana.extreme.lead.workflow_tracking.client.Callback;
-import edu.indiana.extreme.lead.workflow_tracking.client.NotificationType;
-import edu.indiana.extreme.lead.workflow_tracking.common.InvocationContext;
-import edu.indiana.extreme.lead.workflow_tracking.common.InvocationEntity;
-import edu.indiana.extreme.lead.workflow_tracking.impl.NotifierImpl;
-import edu.indiana.extreme.lead.workflow_tracking.impl.publish.LoopbackPublisher;
-import edu.indiana.extreme.lead.workflow_tracking.impl.publish.NotificationPublisher;
+
+
 
 public class WorkflowModificationTestCase extends XBayaTestCase {
 
@@ -289,11 +294,13 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
         Integer serviceTimestep = null;
         InvocationEntity serviceEntity = notifier.createEntity(serviceWorkflowID, serviceServiceID, serviceNodeID,
                 serviceTimestep);
+        EndpointReference epr = new EndpointReference(this.configuration.getBrokerURL().toASCIIString());
+        WorkflowTrackingContext workflowContext = notifier.createTrackingContext(new Properties(),epr,myWorkflowID,myServiceID,myNodeID,myTimestep);
 
         XmlElement inputBody = (XmlElement) ((XmlElement) inputMessage).getParent();
         XmlObject inputBodyObject = XBeansUtil.xmlElementToXmlObject(inputBody);
 
-        InvocationContext context = notifier.invokingService(myEntity, serviceEntity, null, inputBodyObject);
+        InvocationContext context = notifier.invokingService(workflowContext, serviceEntity, null, inputBodyObject);
 
         if (outputMap != null) {
             WSIFMessage outputMessage = operation.createOutputMessage();
@@ -305,7 +312,7 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
             XmlElement outputBody = (XmlElement) ((XmlElement) outputMessage).getParent();
             XmlObject outputBodyObject = XBeansUtil.xmlElementToXmlObject(outputBody);
 
-            notifier.receivedResult(context, null, outputBodyObject);
+            notifier.receivedResult(workflowContext,context, null, outputBodyObject);
         }
     }
 
@@ -328,7 +335,7 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
          * @param publisher
          */
         public MonitorNotifier(NotificationPublisher publisher) {
-            super(publisher, false);
+            super();
         }
     }
 

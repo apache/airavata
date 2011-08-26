@@ -22,29 +22,25 @@
 package org.apache.airavata.xbaya.jython.lib;
 
 import java.net.URI;
+import java.util.Properties;
 
-import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
+import org.apache.airavata.workflow.tracking.NotifierFactory;
+import org.apache.airavata.workflow.tracking.WorkflowNotifier;
+import org.apache.airavata.workflow.tracking.common.*;
 import org.apache.airavata.xbaya.util.StringUtil;
 import org.apache.airavata.xbaya.util.XMLUtil;
+import org.apache.axis2.addressing.EndpointReference;
 import org.python.core.PyObject;
 import org.xmlpull.infoset.XmlElement;
 
-import xsul.XmlConstants;
 import xsul.ws_addressing.WsaEndpointReference;
 import xsul5.MLogger;
-import edu.indiana.extreme.lead.workflow_tracking.Notifier;
-import edu.indiana.extreme.lead.workflow_tracking.NotifierFactory;
-import edu.indiana.extreme.lead.workflow_tracking.common.AnnotationProps;
-import edu.indiana.extreme.lead.workflow_tracking.common.ConstructorConsts;
-import edu.indiana.extreme.lead.workflow_tracking.common.ConstructorProps;
-import edu.indiana.extreme.lead.workflow_tracking.common.InvocationContext;
-import edu.indiana.extreme.lead.workflow_tracking.common.InvocationEntity;
 
 public class NotificationSender {
 
     protected static final MLogger logger = MLogger.getLogger();
 
-    protected Notifier notifier;
+    protected WorkflowNotifier notifier;
 
     protected String brokerURL;
 
@@ -58,7 +54,9 @@ public class NotificationSender {
 
     protected InvocationContext invocationContext;
 
-    protected WsaEndpointReference eventSink;
+    protected EndpointReference eventSink;
+
+    protected WorkflowTrackingContext context;
 
     /**
      * Constructs a NotificationSender.
@@ -84,19 +82,16 @@ public class NotificationSender {
         this.brokerURL = brokerURL;
         this.workflowID = URI.create(StringUtil.convertToJavaIdentifier(this.topic));
         //todo have to remove the xsul dependency completely
-        URI temporaryURI = URI.create(WseMsgBrokerClient.createEndpointReference(this.brokerURL, this.topic).getAddress());
-        this.eventSink = new WsaEndpointReference(temporaryURI);
-        ConstructorProps props = ConstructorProps.newProps();
-        props.set(ConstructorConsts.BROKER_EPR, XmlConstants.BUILDER.serializeToString(this.eventSink));
-        AnnotationProps annotationProps = AnnotationProps.newProps();
-        props.set(ConstructorConsts.ANNOTATIONS, annotationProps);
+        this.eventSink = new EndpointReference(this.brokerURL);
+        Properties props = new Properties();
 
-        this.notifier = NotifierFactory.createNotifier(props);
-
+        this.notifier = NotifierFactory.createNotifier();
         URI initiatorWorkflowID = null;
         URI initiatorServiceID = URI.create("XBaya");
         String initiatorWorkflowNodeID = null;
         Integer initiatorWorkflowTimeStep = null;
+        context = this.notifier.createTrackingContext(props,eventSink,initiatorWorkflowID,
+                initiatorServiceID,initiatorWorkflowNodeID,initiatorWorkflowTimeStep);
         this.initiator = this.notifier.createEntity(initiatorWorkflowID, initiatorServiceID, initiatorWorkflowNodeID,
                 initiatorWorkflowTimeStep);
 
@@ -111,7 +106,7 @@ public class NotificationSender {
     /**
      * @return The event sink EPR.
      */
-    public WsaEndpointReference getEventSink() {
+    public EndpointReference getEventSink() {
         return this.eventSink;
     }
 
@@ -128,7 +123,7 @@ public class NotificationSender {
             }
             message += keywords[i] + "=" + args[i];
         }
-        this.invocationContext = this.notifier.workflowInvoked(this.receiver, this.initiator, message);
+        this.invocationContext = this.notifier.workflowInvoked(this.context,this.initiator, message);
     }
 
     public void workflowStarted(Object[] args, String[] keywords) {
@@ -140,7 +135,7 @@ public class NotificationSender {
             }
             message += keywords[i] + "=" + args[i];
         }
-        this.invocationContext = this.notifier.workflowInvoked(this.receiver, this.initiator, message);
+        this.invocationContext = this.notifier.workflowInvoked(this.context,this.initiator, message);
     }
 
     /**
@@ -156,8 +151,8 @@ public class NotificationSender {
             }
             message += keywords[i] + "=" + args[i];
         }
-        this.notifier.sendingResult(this.invocationContext, message);
-        this.notifier.workflowTerminated(this.workflowID, "Workflow finished successfully.");
+        this.notifier.sendingResult(context,this.invocationContext, message);
+        this.notifier.workflowTerminated(context,this.workflowID, "Workflow finished successfully.");
     }
 
     public void sendingPartialResults(Object[] args, String[] keywords) {
@@ -169,7 +164,7 @@ public class NotificationSender {
             }
             message += keywords[i] + "=" + args[i];
         }
-        this.notifier.sendingResult(this.invocationContext, message);
+        this.notifier.sendingResult(context,this.invocationContext, message);
     }
 
     /**
@@ -185,12 +180,12 @@ public class NotificationSender {
             }
             message += keywords[i] + "=" + args[i];
         }
-        this.notifier.sendingResult(this.invocationContext, message);
-        this.notifier.workflowTerminated(this.workflowID, "Workflow finished successfully.");
+        this.notifier.sendingResult(context,this.invocationContext, message);
+        this.notifier.workflowTerminated(context,this.workflowID, "Workflow finished successfully.");
     }
 
     public void workflowTerminated() {
-        this.notifier.workflowTerminated(this.workflowID, "Workflow finished successfully.");
+        this.notifier.workflowTerminated(context,this.workflowID, "Workflow finished successfully.");
     }
 
     /**
@@ -232,18 +227,14 @@ public class NotificationSender {
             String stackTrace = StringUtil.getStackTraceInString(e);
             XmlElement stackTraceElement = XMLUtil.BUILDER.newFragment("stackTrace");
             stackTraceElement.addChild(stackTrace);
-            this.notifier.sendingFault(this.invocationContext, message, XMLUtil.xmlElementToString(stackTraceElement));
+            this.notifier.sendingFault(context,this.invocationContext, message, XMLUtil.xmlElementToString(stackTraceElement));
         } else {
-            this.notifier.sendingFault(this.invocationContext, message);
+            this.notifier.sendingFault(context,this.invocationContext, message);
         }
     }
 
     public void info(String message) {
-        this.notifier.info(this.invocationContext, message);
-    }
-
-    public void resourceMapping(String host, String... message) {
-        this.notifier.resourceMapping(this.invocationContext, host, 1, message);
+        this.notifier.info(context,message);
     }
 
     /**
@@ -251,6 +242,7 @@ public class NotificationSender {
      * @return The ServiceNoficationSender created.
      */
     public ServiceNotificationSender createServiceNotificationSender(String nodeID) {
-        return new ServiceNotificationSender(this.notifier, this.eventSink, this.initiator, this.workflowID, nodeID);
+        return new ServiceNotificationSender(this.notifier, this.eventSink, this.initiator, this.workflowID, nodeID,
+                this.context);
     }
 }
