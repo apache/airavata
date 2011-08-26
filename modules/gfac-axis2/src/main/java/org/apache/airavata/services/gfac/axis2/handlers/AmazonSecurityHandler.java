@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
 package org.apache.airavata.services.gfac.axis2.handlers;
 
@@ -38,39 +38,42 @@ import org.apache.axis2.handlers.AbstractHandler;
 
 public class AmazonSecurityHandler extends AbstractHandler {
 
-	private static final String SECURITY_CONTEXT = "security-context";
-	private static final String AMAZON = "amazon-webservices";
-	private static final String ACCESS_KEY_ID = "access-key-id";
-	private static final String SECRET_ACCESS_KEY = "secret-access-key";
+    private static final String SECURITY_CONTEXT = "security-context";
+    private static final String AMAZON = "amazon-webservices";
+    private static final String ACCESS_KEY_ID = "access-key-id";
+    private static final String SECRET_ACCESS_KEY = "secret-access-key";
 
-	public InvocationResponse invoke(MessageContext msgContext) throws AxisFault {
-		SOAPEnvelope envelope = msgContext.getEnvelope();
-		SOAPHeader header = envelope.getHeader();
-		Iterator it = header.examineAllHeaderBlocks();
-		while (it.hasNext()) {
-			SOAPHeaderBlock x = (SOAPHeaderBlock) it.next();
-			String elementName = x.getLocalName();
+    public InvocationResponse invoke(MessageContext msgContext) throws AxisFault {
+        SOAPEnvelope envelope = msgContext.getEnvelope();
+        SOAPHeader header = envelope.getHeader();
+        if (header != null) {
+            Iterator it = header.examineAllHeaderBlocks();
+            while (it.hasNext()) {
+                SOAPHeaderBlock x = (SOAPHeaderBlock) it.next();
+                String elementName = x.getLocalName();
 
-			if (elementName.equals(SECURITY_CONTEXT)) {
+                if (elementName.equals(SECURITY_CONTEXT)) {
 
-				OMElement amazon = x.getFirstChildWithName(new QName(null, AMAZON));
+                    OMElement amazon = x.getFirstChildWithName(new QName(null, AMAZON));
 
-				if (amazon != null) {
+                    if (amazon != null) {
 
-					AmazonSecurityContext amazonSecurityContext = new AmazonSecurityContext();
+                        AmazonSecurityContext amazonSecurityContext = new AmazonSecurityContext();
 
-					OMElement accessKey = amazon.getFirstChildWithName(new QName(null, ACCESS_KEY_ID));
-					OMElement secretKey = amazon.getFirstChildWithName(new QName(null, SECRET_ACCESS_KEY));
+                        OMElement accessKey = amazon.getFirstChildWithName(new QName(null, ACCESS_KEY_ID));
+                        OMElement secretKey = amazon.getFirstChildWithName(new QName(null, SECRET_ACCESS_KEY));
 
-					amazonSecurityContext.setAccessKey(accessKey.getText());
-					amazonSecurityContext.setSecretKey(secretKey.getText());
+                        amazonSecurityContext.setAccessKey(accessKey.getText());
+                        amazonSecurityContext.setSecretKey(secretKey.getText());
 
-					// set to context
-					MessageContextUtil.addContextToProperty(msgContext, GFacService.SECURITY_CONTEXT, "amazon",amazonSecurityContext);
-				}
-			}
-		}
-		return InvocationResponse.CONTINUE;
-	}
+                        // set to context
+                        MessageContextUtil.addContextToProperty(msgContext, GFacService.SECURITY_CONTEXT, "amazon",
+                                amazonSecurityContext);
+                    }
+                }
+            }
+        }
+        return InvocationResponse.CONTINUE;
+    }
 
 }

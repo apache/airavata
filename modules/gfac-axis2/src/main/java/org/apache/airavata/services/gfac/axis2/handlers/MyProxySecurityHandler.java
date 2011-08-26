@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
 package org.apache.airavata.services.gfac.axis2.handlers;
 
@@ -38,44 +38,47 @@ import org.apache.axis2.handlers.AbstractHandler;
 
 public class MyProxySecurityHandler extends AbstractHandler {
 
-	private static final String SECURITY_CONTEXT = "security-context";
-	private static final String MYPROXY = "grid-myproxy";
-	private static final String MYPROXY_SERVER = "myproxy-server";
-	private static final String MYPROXY_USERNAME = "username";
-	private static final String MYPROXY_PASSWORD = "password";
-	private static final String MYPROXY_LIFE = "life-time-inhours";
+    private static final String SECURITY_CONTEXT = "security-context";
+    private static final String MYPROXY = "grid-myproxy";
+    private static final String MYPROXY_SERVER = "myproxy-server";
+    private static final String MYPROXY_USERNAME = "username";
+    private static final String MYPROXY_PASSWORD = "password";
+    private static final String MYPROXY_LIFE = "life-time-inhours";
 
-	public InvocationResponse invoke(MessageContext msgContext) throws AxisFault {
-		SOAPEnvelope envelope = msgContext.getEnvelope();
-		SOAPHeader header = envelope.getHeader();
-		Iterator it = header.examineAllHeaderBlocks();
-		while (it.hasNext()) {
-			SOAPHeaderBlock x = (SOAPHeaderBlock) it.next();
-			String elementName = x.getLocalName();
+    public InvocationResponse invoke(MessageContext msgContext) throws AxisFault {
+        SOAPEnvelope envelope = msgContext.getEnvelope();
+        SOAPHeader header = envelope.getHeader();
+        if (header != null) {
+            Iterator it = header.examineAllHeaderBlocks();
+            while (it.hasNext()) {
+                SOAPHeaderBlock x = (SOAPHeaderBlock) it.next();
+                String elementName = x.getLocalName();
 
-			if (elementName.equals(SECURITY_CONTEXT)) {
+                if (elementName.equals(SECURITY_CONTEXT)) {
 
-				OMElement myproxy = x.getFirstChildWithName(new QName(null, MYPROXY));
+                    OMElement myproxy = x.getFirstChildWithName(new QName(null, MYPROXY));
 
-				if (myproxy != null) {
-					GSISecurityContext gsiSecurityContext = new GSISecurityContext();
+                    if (myproxy != null) {
+                        GSISecurityContext gsiSecurityContext = new GSISecurityContext();
 
-					OMElement server = myproxy.getFirstChildWithName(new QName(null, MYPROXY_SERVER));
-					OMElement username = myproxy.getFirstChildWithName(new QName(null, MYPROXY_USERNAME));
-					OMElement password = myproxy.getFirstChildWithName(new QName(null, MYPROXY_PASSWORD));
-					OMElement life = myproxy.getFirstChildWithName(new QName(null, MYPROXY_LIFE));
+                        OMElement server = myproxy.getFirstChildWithName(new QName(null, MYPROXY_SERVER));
+                        OMElement username = myproxy.getFirstChildWithName(new QName(null, MYPROXY_USERNAME));
+                        OMElement password = myproxy.getFirstChildWithName(new QName(null, MYPROXY_PASSWORD));
+                        OMElement life = myproxy.getFirstChildWithName(new QName(null, MYPROXY_LIFE));
 
-					gsiSecurityContext.setMyproxyServer(server.getText());
-					gsiSecurityContext.setMyproxyUserName(username.getText());
-					gsiSecurityContext.setMyproxyPasswd(password.getText());
-					gsiSecurityContext.setMyproxyLifetime(Integer.parseInt(life.getText()));
+                        gsiSecurityContext.setMyproxyServer(server.getText());
+                        gsiSecurityContext.setMyproxyUserName(username.getText());
+                        gsiSecurityContext.setMyproxyPasswd(password.getText());
+                        gsiSecurityContext.setMyproxyLifetime(Integer.parseInt(life.getText()));
 
-					// set to context
-					MessageContextUtil.addContextToProperty(msgContext, GFacService.SECURITY_CONTEXT, "myproxy", gsiSecurityContext);
-				}
-			}
-		}
-		return InvocationResponse.CONTINUE;
-	}
+                        // set to context
+                        MessageContextUtil.addContextToProperty(msgContext, GFacService.SECURITY_CONTEXT, "myproxy",
+                                gsiSecurityContext);
+                    }
+                }
+            }
+        }
+        return InvocationResponse.CONTINUE;
+    }
 
 }
