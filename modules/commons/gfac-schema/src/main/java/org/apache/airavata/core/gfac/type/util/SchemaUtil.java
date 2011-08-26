@@ -26,7 +26,15 @@ import java.beans.XMLEncoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import org.apache.airavata.core.gfac.type.DataType;
 import org.apache.airavata.core.gfac.type.Type;
+import org.apache.airavata.core.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.core.gfac.type.parameter.BooleanParameter;
+import org.apache.airavata.core.gfac.type.parameter.DoubleParameter;
+import org.apache.airavata.core.gfac.type.parameter.FileParameter;
+import org.apache.airavata.core.gfac.type.parameter.FloatParameter;
+import org.apache.airavata.core.gfac.type.parameter.IntegerParameter;
+import org.apache.airavata.core.gfac.type.parameter.StringParameter;
 
 public class SchemaUtil {
 	public static Type parseFromXML(String xml) {
@@ -43,5 +51,23 @@ public class SchemaUtil {
 		e.writeObject(type);
 		e.close();
 		return x.toString();
+	}
+	
+	public static AbstractParameter mapFromType(DataType type){
+	    switch(type){
+	    case String:
+	        return new StringParameter();
+	    case Double:
+	        return new DoubleParameter();
+	    case Integer:
+	        return new IntegerParameter();
+	    case Float:
+	        return new FloatParameter();
+	    case Boolean:
+	        return new BooleanParameter();
+	    case File:
+	        return new FileParameter();
+	    }
+	    return null;
 	}
 }
