@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.xbaya.jython.lib.invoker;
+package org.apache.airavata.xbaya.invoker;
 
 import org.apache.airavata.xbaya.XBayaException;
 
@@ -56,11 +56,11 @@ public class AsynchronousInvoker extends SimpleInvoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.jython.lib.invoker.SimpleInvoker#setup()
+     * @see org.apache.airavata.xbaya.invoker.SimpleInvoker#setup()
      */
     @Override
-    public WsdlDefinitions setup() throws XBayaException {
-        WsdlDefinitions definitions = super.setup();
+    public void setup() throws XBayaException {
+        super.setup();
 
         // TODO put header to invoke asynchronously
         WSIFAsyncResponsesCorrelator correlator;
@@ -73,7 +73,5 @@ public class AsynchronousInvoker extends SimpleInvoker {
             logger.finest("using message box at " + this.messageBoxURL);
         }
         this.client.useAsyncMessaging(correlator);
-
-        return definitions;
     }
 }

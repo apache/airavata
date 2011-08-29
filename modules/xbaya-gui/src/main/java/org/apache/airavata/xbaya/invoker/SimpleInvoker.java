@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.xbaya.jython.lib.invoker;
+package org.apache.airavata.xbaya.invoker;
 
 import java.util.Iterator;
 
@@ -64,14 +64,13 @@ public class SimpleInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.jython.lib.invoker.Invoker#setup()
+     * @see org.apache.airavata.xbaya.invoker.Invoker#setup()
      */
-    public WsdlDefinitions setup() throws XBayaException {
+    public void setup() throws XBayaException {
         try {
             WSIFService service = WSIFServiceFactory.newInstance().getService(this.definitions);
             WSIFPort port = service.getPort();
-            this.client = WSIFRuntime.getDefault().newClientFor(port);
-            return this.definitions;
+            this.client = WSIFRuntime.getDefault().newClientFor(port);            
         } catch (RuntimeException e) {
             String message = "The WSDL is in the wrong format";
             throw new XBayaException(message, e);
@@ -79,14 +78,14 @@ public class SimpleInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.jython.lib.invoker.Invoker#getClient()
+     * @see org.apache.airavata.xbaya.invoker.Invoker#getClient()
      */
     public WSIFClient getClient() {
         return this.client;
     }
 
     /**
-     * @see org.apache.airavata.xbaya.jython.lib.invoker.Invoker#setOperation(java.lang.String)
+     * @see org.apache.airavata.xbaya.invoker.Invoker#setOperation(java.lang.String)
      */
     public void setOperation(String operationName) throws XBayaException {
         try {
@@ -102,7 +101,7 @@ public class SimpleInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.jython.lib.invoker.Invoker#setInput(java.lang.String, java.lang.Object)
+     * @see org.apache.airavata.xbaya.invoker.Invoker#setInput(java.lang.String, java.lang.Object)
      */
     public void setInput(String name, Object value) throws XBayaException {
         try {
@@ -125,14 +124,14 @@ public class SimpleInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.jython.lib.invoker.Invoker#getInputs()
+     * @see org.apache.airavata.xbaya.invoker.Invoker#getInputs()
      */
     public WSIFMessage getInputs() {
         return this.inputMessage;
     }
 
     /**
-     * @see org.apache.airavata.xbaya.jython.lib.invoker.Invoker#invoke()
+     * @see org.apache.airavata.xbaya.invoker.Invoker#invoke()
      */
     public boolean invoke() throws XBayaException {
         try {
@@ -146,14 +145,14 @@ public class SimpleInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.jython.lib.invoker.Invoker#getOutputs()
+     * @see org.apache.airavata.xbaya.invoker.Invoker#getOutputs()
      */
     public WSIFMessage getOutputs() {
         return this.outputMessage;
     }
 
     /**
-     * @see org.apache.airavata.xbaya.jython.lib.invoker.Invoker#getOutput(java.lang.String)
+     * @see org.apache.airavata.xbaya.invoker.Invoker#getOutput(java.lang.String)
      */
     public Object getOutput(String name) throws XBayaException {
         try {
@@ -187,7 +186,7 @@ public class SimpleInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.jython.lib.invoker.Invoker#getFault()
+     * @see org.apache.airavata.xbaya.invoker.Invoker#getFault()
      */
     public WSIFMessage getFault() {
         return this.faultMessage;

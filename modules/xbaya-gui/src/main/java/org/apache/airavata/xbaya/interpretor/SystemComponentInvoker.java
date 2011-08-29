@@ -24,11 +24,13 @@ package org.apache.airavata.xbaya.interpretor;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.airavata.xbaya.workflow.WorkflowInvoker;
+import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.xbaya.invoker.Invoker;
 
 import xsul.wsif.WSIFMessage;
+import xsul.xwsif_runtime.WSIFClient;
 
-public class SystemComponentInvoker implements WorkflowInvoker {
+public class SystemComponentInvoker implements Invoker {
 
     private Map<String, Object> outputs = new Hashtable<String, Object>();
 
@@ -42,7 +44,7 @@ public class SystemComponentInvoker implements WorkflowInvoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#getOutput(java.lang.String)
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutput(java.lang.String)
      */
     @Override
     public Object getOutput(String name) {
@@ -59,7 +61,7 @@ public class SystemComponentInvoker implements WorkflowInvoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#getOutputs()
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutputs()
      */
     @Override
     public WSIFMessage getOutputs() {
@@ -67,21 +69,18 @@ public class SystemComponentInvoker implements WorkflowInvoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#invoke()
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#invoke()
      */
     @Override
-    public void invoke() {
-        // TODO Auto-generated method stub
-
+    public boolean invoke() {
+        return true;
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#setInput(java.lang.String, java.lang.Object)
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setInput(java.lang.String, java.lang.Object)
      */
     @Override
     public void setInput(String name, Object value) {
-        // TODO Auto-generated method stub
-
     }
 
     /**
@@ -89,16 +88,27 @@ public class SystemComponentInvoker implements WorkflowInvoker {
      */
     @Override
     public void setOperation(String operationName) {
-        // TODO Auto-generated method stub
-
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#setup()
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setup()
      */
     @Override
     public void setup() {
-        // TODO Auto-generated method stub
+    }
 
+    @Override
+    public WSIFClient getClient() {
+        return null;
+    }
+
+    @Override
+    public WSIFMessage getInputs() throws XBayaException {
+        return null;
+    }
+
+    @Override
+    public WSIFMessage getFault() throws XBayaException {
+        return null;
     }
 }

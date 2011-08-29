@@ -442,15 +442,15 @@ public class DynamicWorkflowRunnerWindow {
                     WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(
                             DynamicWorkflowRunnerWindow.this.engine, topicString);
                     try {
-                        MonitorConfiguration notifConfig = DynamicWorkflowRunnerWindow.this.engine.getMonitor()
-                                .getConfiguration();
-                        notifConfig.setTopic(topicString);
-                        DynamicWorkflowRunnerWindow.this.engine.getMonitor().start();
+                        //MonitorConfiguration notifConfig = DynamicWorkflowRunnerWindow.this.engine.getMonitor()
+                        //        .getConfiguration();
+                        //notifConfig.setTopic(topicString);
+                        //DynamicWorkflowRunnerWindow.this.engine.getMonitor().start();
 
-                        DynamicWorkflowRunnerWindow.this.engine.getGUI().addDynamicExecutionToolsToToolbar();
+                        //DynamicWorkflowRunnerWindow.this.engine.getGUI().addDynamicExecutionToolsToToolbar();
 
-                        if (resourceMapping != null)
-                            workflowInterpreter.setResourceMapping(resourceMapping);
+                        //if (resourceMapping != null)
+                        //    workflowInterpreter.setResourceMapping(resourceMapping);
 
                         workflowInterpreter.scheduleDynamically();
                     } catch (XBayaException e) {

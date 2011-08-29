@@ -47,7 +47,7 @@ import org.apache.airavata.xbaya.graph.system.MemoNode;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
-import org.apache.airavata.xbaya.jython.lib.GenericInvoker;
+import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 import org.apache.airavata.xbaya.util.StringUtil;
 import org.apache.airavata.xbaya.wf.Workflow;

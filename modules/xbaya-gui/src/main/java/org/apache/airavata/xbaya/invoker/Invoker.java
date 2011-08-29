@@ -19,20 +19,26 @@
  *
  */
 
-package org.apache.airavata.xbaya.workflow;
+package org.apache.airavata.xbaya.invoker;
 
 import org.apache.airavata.xbaya.XBayaException;
 
 import xsul.wsif.WSIFMessage;
+import xsul.xwsif_runtime.WSIFClient;
 
-public interface WorkflowInvoker {
+public interface Invoker {
 
     /**
-     * Sets up the invoker.
+     * Sets up the service.
      * 
      * @throws XBayaException
      */
-    public abstract void setup() throws XBayaException;
+    public void setup() throws XBayaException;
+
+    /**
+     * @return The WSIFClient.
+     */
+    public WSIFClient getClient();
 
     /**
      * Sets the operation name to invoke.
@@ -41,7 +47,7 @@ public interface WorkflowInvoker {
      *            The name of the operation
      * @throws XBayaException
      */
-    public abstract void setOperation(String operationName) throws XBayaException;
+    public void setOperation(String operationName) throws XBayaException;
 
     /**
      * Sets an input parameter
@@ -52,25 +58,48 @@ public interface WorkflowInvoker {
      *            The value of the input parameter
      * @throws XBayaException
      */
-    public abstract void setInput(String name, Object value) throws XBayaException;
+    public void setInput(String name, Object value) throws XBayaException;
 
     /**
-     * Invokes the service. This is a non-blocking call.
+     * Returns the all input parameters
      * 
+     * @return The input parameters
      * @throws XBayaException
      */
-    public abstract void invoke() throws XBayaException;
+    public WSIFMessage getInputs() throws XBayaException;
 
     /**
-     * Returns the output of a specified name. This method blocks until the execution finishes.
+     * Invokes the service.
+     * 
+     * @return true if the invocation succeeds; fase otherwise
+     * @throws XBayaException
+     */
+    public boolean invoke() throws XBayaException;
+
+    /**
+     * Returns the all output parameters
+     * 
+     * @return The output parameters
+     * @throws XBayaException
+     */
+    public WSIFMessage getOutputs() throws XBayaException;
+
+    /**
+     * Returns the output of a specified name.
      * 
      * @param name
      *            The name of the output parameter
      * @return The value of the output
      * @throws XBayaException
      */
-    public abstract Object getOutput(String name) throws XBayaException;
+    public Object getOutput(String name) throws XBayaException;
 
-    public WSIFMessage getOutputs() throws XBayaException;
+    /**
+     * Returns the fault message.
+     * 
+     * @return The fault message
+     * @throws XBayaException
+     */
+    public WSIFMessage getFault() throws XBayaException;
 
 }

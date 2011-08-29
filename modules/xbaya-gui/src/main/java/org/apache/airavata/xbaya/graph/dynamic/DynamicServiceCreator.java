@@ -27,8 +27,8 @@ import java.net.URI;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.jython.lib.invoker.Invoker;
-import org.apache.airavata.xbaya.jython.lib.invoker.InvokerFactory;
+import org.apache.airavata.xbaya.invoker.Invoker;
+import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
 
 import xsul.wsdl.WsdlDefinitions;
 import xsul.wsdl.WsdlResolver;
