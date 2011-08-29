@@ -26,11 +26,12 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.workflow.WorkflowInvoker;
+import org.apache.airavata.xbaya.invoker.Invoker;
 
 import xsul.wsif.WSIFMessage;
+import xsul.xwsif_runtime.WSIFClient;
 
-public class DynamicInvoker implements WorkflowInvoker {
+public class DynamicInvoker implements Invoker {
 
     private URL jarUrl;
 
@@ -57,7 +58,7 @@ public class DynamicInvoker implements WorkflowInvoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#getOutput(java.lang.String)
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutput(java.lang.String)
      */
     public Object getOutput(String name) throws XBayaException {
         waitToFinish();
@@ -65,9 +66,9 @@ public class DynamicInvoker implements WorkflowInvoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#invoke()
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#invoke()
      */
-    public void invoke() throws XBayaException {
+    public boolean invoke() throws XBayaException {
         try {
             Class<?> targetClass = Class.forName(this.className);
             Object obj = targetClass.newInstance();
@@ -90,10 +91,11 @@ public class DynamicInvoker implements WorkflowInvoker {
         } catch (Exception e) {
             throw new XBayaException(e);
         }
+        return true;
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#setInput(java.lang.String, java.lang.Object)
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setInput(java.lang.String, java.lang.Object)
      */
     public void setInput(String name, Object value) throws XBayaException {
         // TODO Auto-generated method stub
@@ -101,14 +103,14 @@ public class DynamicInvoker implements WorkflowInvoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#setOperation(java.lang.String)
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setOperation(java.lang.String)
      */
     public void setOperation(String operationName) throws XBayaException {
         this.operationName = operationName;
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#setup()
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setup()
      */
     public void setup() throws XBayaException {
         Class[] parameters = new Class[] { URL.class };
@@ -126,7 +128,7 @@ public class DynamicInvoker implements WorkflowInvoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#waitToFinish()
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#waitToFinish()
      */
     public void waitToFinish() throws XBayaException {
         while (this.result == null) {
@@ -141,12 +143,27 @@ public class DynamicInvoker implements WorkflowInvoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#getOutputs()
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutputs()
      */
     public WSIFMessage getOutputs() throws XBayaException {
         waitToFinish();
         return (WSIFMessage) this.result;
 
+    }
+
+    @Override
+    public WSIFClient getClient() {
+        return null;
+    }
+
+    @Override
+    public WSIFMessage getInputs() throws XBayaException {
+        return null;
+    }
+
+    @Override
+    public WSIFMessage getFault() throws XBayaException {
+        return null;
     }
 
 }

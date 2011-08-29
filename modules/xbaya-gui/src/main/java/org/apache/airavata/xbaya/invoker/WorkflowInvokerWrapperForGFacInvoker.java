@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.xbaya.jython.lib.invoker;
+package org.apache.airavata.xbaya.invoker;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -35,18 +35,16 @@ import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotificationSender;
 import org.apache.airavata.xbaya.util.XMLUtil;
-import org.apache.airavata.xbaya.workflow.WorkflowInvoker;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsif.WSIFMessage;
 import xsul5.MLogger;
 
-public class WorkflowInvokerWrapperForGFacInvoker implements WorkflowInvoker {
+public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
 
     private static final MLogger logger = MLogger.getLogger();
 
-    private GFacInvoker invoker;
     private ServiceNotificationSender notifier;
 
     private String serviceInformation;
@@ -57,41 +55,18 @@ public class WorkflowInvokerWrapperForGFacInvoker implements WorkflowInvoker {
 
     public WorkflowInvokerWrapperForGFacInvoker(QName portTypeQName, String gfacURL, String messageBoxURL,
             LeadContextHeader leadcontext, ServiceNotificationSender serviceNotificationSender) {
-        this.invoker = new GFacInvoker(portTypeQName, gfacURL, messageBoxURL, leadcontext, true);
+        super(portTypeQName, gfacURL, messageBoxURL, leadcontext);
         this.notifier = serviceNotificationSender;
         this.serviceInformation = portTypeQName.toString();
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#setup()
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#invoke()
      */
-    public void setup() throws XBayaException {
-
-        this.invoker.setup();
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#setOperation(java.lang.String)
-     */
-    public void setOperation(String operationName) throws XBayaException {
-        this.invoker.setOperation(operationName);
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#setInput(java.lang.String, java.lang.Object)
-     */
-    public void setInput(String name, Object value) throws XBayaException {
-
-        this.invoker.setInput(name, value);
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#invoke()
-     */
-    public synchronized void invoke() throws XBayaException {
+    public synchronized boolean invoke() throws XBayaException {
 
         try {
-            WSIFMessage inputMessage = this.invoker.getInputs();
+            WSIFMessage inputMessage = super.getInputs();
             logger.finest("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) inputMessage));
             this.notifier.invokingService(inputMessage);
 
@@ -100,17 +75,17 @@ public class WorkflowInvokerWrapperForGFacInvoker implements WorkflowInvoker {
                 @SuppressWarnings("boxing")
                 public Boolean call() {
                     try {
-                        boolean success = WorkflowInvokerWrapperForGFacInvoker.this.invoker.invoke();
+                        boolean success = WorkflowInvokerWrapperForGFacInvoker.super.invoke();
                         if (success) {
                             // Send notification
-                            WSIFMessage outputMessage = WorkflowInvokerWrapperForGFacInvoker.this.invoker.getOutputs();
+                            WSIFMessage outputMessage = WorkflowInvokerWrapperForGFacInvoker.super.getOutputs();
                             // An implementation of WSIFMessage,
                             // WSIFMessageElement, implements toString(), which
                             // serialize the message XML.
                             logger.finest("outputMessage: " + outputMessage);
                             WorkflowInvokerWrapperForGFacInvoker.this.notifier.serviceFinished(outputMessage);
                         } else {
-                            WSIFMessage faultMessage = WorkflowInvokerWrapperForGFacInvoker.this.invoker.getFault();
+                            WSIFMessage faultMessage = WorkflowInvokerWrapperForGFacInvoker.super.getFault();
                             // An implementation of WSIFMessage,
                             // WSIFMessageElement, implements toString(), which
                             // serialize the message XML.
@@ -151,7 +126,7 @@ public class WorkflowInvokerWrapperForGFacInvoker implements WorkflowInvoker {
             } catch (TimeoutException e) {
                 // The job is probably running fine.
                 // The normal case.
-                return;
+                return true;
             } catch (ExecutionException e) {
                 // The service-failed notification should have been sent
                 // already.
@@ -173,17 +148,18 @@ public class WorkflowInvokerWrapperForGFacInvoker implements WorkflowInvoker {
             throw new XBayaException(message, e);
         }
 
-        boolean success = this.invoker.invoke();
+        boolean success = super.invoke();
         if (!success) {
             try {
                 throw new Exception("Failed invoking GFac");
             } catch (Exception e) {
-                notifier.invocationFailed(this.invoker.getFault().toString(), e);
+                notifier.invocationFailed(super.getFault().toString(), e);
             }
 
         } else {
-            notifier.serviceFinished(this.invoker.getOutputs());
-        }
+            notifier.serviceFinished(super.getOutputs());
+        }        
+        return success;
     }
 
     public synchronized void waitToFinish() throws XBayaException {
@@ -200,7 +176,7 @@ public class WorkflowInvokerWrapperForGFacInvoker implements WorkflowInvoker {
             // Wait for the job to finish.
             Boolean success = this.result.get();
             if (success == false) {
-                WSIFMessage faultMessage = this.invoker.getFault();
+                WSIFMessage faultMessage = super.getFault();
                 String message = "Error in a service: ";
                 // An implementation of WSIFMessage,
                 // WSIFMessageElement, implements toString(), which
@@ -233,7 +209,7 @@ public class WorkflowInvokerWrapperForGFacInvoker implements WorkflowInvoker {
         logger.entering(new Object[] { name });
         try {
             waitToFinish();
-            Object output = this.invoker.getOutput(name);
+            Object output = super.getOutput(name);
             if (output instanceof XmlElement) {
                 logger.finest("output: " + XMLUtil.xmlElementToString((XmlElement) output));
             }
@@ -257,47 +233,6 @@ public class WorkflowInvokerWrapperForGFacInvoker implements WorkflowInvoker {
             this.notifier.invocationFailed(message, e);
             throw new XBayaException(message, e);
         }
-    }
-
-    // /**
-    // * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#getOutput(java.lang.String)
-    // */
-    // public Object getOutput(String name) throws XBayaException {
-    // try {
-    // // This code doesn't work when the output is a complex type.
-    // // Object output = this.outputMessage.getObjectPart(name);
-    // // return output;
-    //
-    // XmlElement outputElement = (XmlElement) this.getOutputs();
-    // XmlElement valueElement = outputElement.element(null, name);
-    // Iterator childIt = valueElement.children();
-    // int numberOfChildren = 0;
-    // while (childIt.hasNext()) {
-    // childIt.next();
-    // numberOfChildren++;
-    // }
-    // if (numberOfChildren == 1) {
-    // Object child = valueElement.children().next();
-    // if (child instanceof String) {
-    // // Value is a simple type. Return the string.
-    // String value = (String) child;
-    // return value;
-    // }
-    // }
-    // // Value is a complex type. Return the whole XmlElement so that we
-    // // can set it to the next service as it is.
-    // return valueElement;
-    // } catch (RuntimeException e) {
-    // String message = "Error in getting output. name: " + name;
-    // throw new XBayaException(message, e);
-    // }
-    // }
-
-    /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#getOutputs()
-     */
-    public WSIFMessage getOutputs() throws XBayaException {
-        return this.invoker.getOutputs();
     }
 
 }

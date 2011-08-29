@@ -25,11 +25,11 @@ import junit.framework.TestCase;
 
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.jython.lib.GenericInvoker;
+import org.apache.airavata.xbaya.invoker.GenericInvoker;
+import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 import org.apache.airavata.xbaya.test.service.adder.AdderService;
 import org.apache.airavata.xbaya.test.service.multiplier.MultiplierService;
-import org.apache.airavata.xbaya.workflow.WorkflowInvoker;
 
 import xsul5.MLogger;
 
@@ -49,7 +49,7 @@ public class JythonLibraryTest extends TestCase {
 
         NotificationSender notifier = new NotificationSender(XBayaConstants.DEFAULT_BROKER_URL.toString(), "test-topic");
 
-        WorkflowInvoker invoker = new GenericInvoker(null, adderWSDLLoc, "adder", null, null, notifier);
+        Invoker invoker = new GenericInvoker(null, adderWSDLLoc, "adder", null, null, notifier);
         invoker.setup();
         invoker.setOperation("add");
         invoker.setInput("x", 2);
@@ -78,7 +78,7 @@ public class JythonLibraryTest extends TestCase {
 
         NotificationSender notifier = new NotificationSender(XBayaConstants.DEFAULT_BROKER_URL.toString(), "test-topic");
 
-        WorkflowInvoker adderInvoker1 = new GenericInvoker(null, adderWSDLLoc, "adder", null, null, notifier);
+        Invoker adderInvoker1 = new GenericInvoker(null, adderWSDLLoc, "adder", null, null, notifier);
         adderInvoker1.setup();
         adderInvoker1.setOperation("add");
         adderInvoker1.setInput("x", 2);
@@ -88,7 +88,7 @@ public class JythonLibraryTest extends TestCase {
         Object output1 = adderInvoker1.getOutput("z");
         logger.info("output1 = " + output1);
 
-        WorkflowInvoker adderInvoker2 = new GenericInvoker(null, adderWSDLLoc, "adder", null, null, notifier);
+        Invoker adderInvoker2 = new GenericInvoker(null, adderWSDLLoc, "adder", null, null, notifier);
         adderInvoker2.setup();
         adderInvoker2.setOperation("add");
         adderInvoker2.setInput("x", 4);
@@ -98,7 +98,7 @@ public class JythonLibraryTest extends TestCase {
         Object output2 = adderInvoker2.getOutput("z");
         logger.info("output2 = " + output2);
 
-        WorkflowInvoker multiplierInvoker = new GenericInvoker(null, multiplierWSDLLoc, "multiplier", null, null,
+        Invoker multiplierInvoker = new GenericInvoker(null, multiplierWSDLLoc, "multiplier", null, null,
                 notifier);
         multiplierInvoker.setup();
         multiplierInvoker.setOperation("multiply");

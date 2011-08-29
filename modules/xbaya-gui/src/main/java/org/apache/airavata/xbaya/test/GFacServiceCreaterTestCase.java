@@ -33,8 +33,9 @@ import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.graph.GraphException;
+import org.apache.airavata.xbaya.invoker.GenericInvoker;
+import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.jython.lib.GFacServiceCreator;
-import org.apache.airavata.xbaya.jython.lib.GenericInvoker;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
@@ -42,7 +43,6 @@ import org.apache.airavata.xbaya.util.IOUtil;
 import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.airavata.xbaya.workflow.WorkflowInvoker;
 
 import xsul5.MLogger;
 
@@ -71,7 +71,7 @@ public class GFacServiceCreaterTestCase extends XBayaTestCase {
      */
     public void testService() throws XBayaException {
         NotificationSender notifier = new NotificationSender(this.configuration.getBrokerURL(), "test-topic2");
-        WorkflowInvoker invoker = new GenericInvoker(QName.valueOf(TEST_SERVICE_QNAME), TEST_AWSDL, "test-node", null,
+        Invoker invoker = new GenericInvoker(QName.valueOf(TEST_SERVICE_QNAME), TEST_AWSDL, "test-node", null,
                 this.configuration.getGFacURL().toString(), notifier);
         invoker.setup();
         invoker.setOperation("Run");

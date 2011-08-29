@@ -19,19 +19,21 @@
  *
  */
 
-package org.apache.airavata.xbaya.jython.lib.invoker;
+package org.apache.airavata.xbaya.invoker.factory;
 
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.xbaya.invoker.AsynchronousInvoker;
+import org.apache.airavata.xbaya.invoker.GFacInvoker;
+import org.apache.airavata.xbaya.invoker.Invoker;
+import org.apache.airavata.xbaya.invoker.SimpleInvoker;
 import org.apache.airavata.xbaya.util.WSDLUtil;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsdl.WsdlDefinitions;
 
 public class InvokerFactory {
-
-    // private final static MLogger logger = MLogger.getLogger();
 
     /**
      * @param portTypeQName
@@ -46,9 +48,6 @@ public class InvokerFactory {
         Invoker invoker = null;
 
         if (definitions != null && definitions.getServices().iterator().hasNext()) {
-            // The WSDL has a service information. Assume that the service is
-            // running.
-
             // check if this web service supports asynchronous invocation
             if (WSDLUtil.isAsynchronousSupported(WSDLUtil.wsdlDefinitions3ToWsdlDefintions5(definitions))) {
                 invoker = new AsynchronousInvoker(definitions, messageBoxURL);
@@ -56,18 +55,7 @@ public class InvokerFactory {
                 invoker = new SimpleInvoker(definitions);
             }
         } else if (gfacURL != null && gfacURL.length() != 0) {
-            // Use the gfacURL set by user first because currently AWSDLs
-            // created by GFac has wrong GFac URL.
             invoker = new GFacInvoker(portTypeQName, gfacURL, messageBoxURL, leadContext);
-            // } else if (definitions != null) {
-            // // TODO Remove this case because AWSDL created by GFac won't
-            // include
-            // // the URL of GFac anymore.
-            // XmlElement factoryServicesElement = definitions.element(null,
-            // "factoryServices");
-            // if (factoryServicesElement != null) {
-            // invoker = new GFacInvoker(definitions, messageBoxURL);
-            // }
         }
 
         if (invoker == null) {

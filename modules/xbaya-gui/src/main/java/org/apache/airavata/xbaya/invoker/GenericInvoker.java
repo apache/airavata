@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.xbaya.jython.lib;
+package org.apache.airavata.xbaya.invoker;
 
 import java.io.File;
 import java.net.URI;
@@ -36,14 +36,13 @@ import java.util.concurrent.TimeoutException;
 
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.jython.lib.invoker.Invoker;
-import org.apache.airavata.xbaya.jython.lib.invoker.InvokerFactory;
+import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
+import org.apache.airavata.xbaya.jython.lib.NotificationSender;
+import org.apache.airavata.xbaya.jython.lib.ServiceNotificationSender;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.util.XMLUtil;
-import org.apache.airavata.xbaya.workflow.WorkflowInvoker;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.invoker.gsi.GsiInvoker;
@@ -57,7 +56,7 @@ import xsul.xhandler_soap_sticky_header.StickySoapHeaderHandler;
 import xsul.xwsif_runtime.WSIFClient;
 import xsul5.MLogger;
 
-public class GenericInvoker implements WorkflowInvoker {
+public class GenericInvoker implements Invoker {
 
     private static final MLogger logger = MLogger.getLogger();
 
@@ -92,8 +91,6 @@ public class GenericInvoker implements WorkflowInvoker {
     boolean failerSent;
 
     private WsdlDefinitions wsdlDefinitionObject;
-
-    private XBayaConfiguration configuration;
 
     private GsiInvoker secureInvokerFroRetrivingWSDL;
 
@@ -190,32 +187,23 @@ public class GenericInvoker implements WorkflowInvoker {
         this.failerSent = false;
     }
 
-    public GenericInvoker(QName portTypeQName, WsdlDefinitions wsdl, String nodeID, String messageBoxURL,
-            String gfacURL, NotificationSender notifier, XBayaConfiguration configuration, GsiInvoker secureInvoker) {
-        this(portTypeQName, wsdl, nodeID, messageBoxURL, gfacURL, notifier);
-        this.configuration = configuration;
-        this.secureInvokerFroRetrivingWSDL = secureInvoker;
-    }
-
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#setup()
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setup()
      */
     public void setup() throws XBayaException {
         try {
             WsdlDefinitions definitions = null;
             if (this.wsdlLocation != null && !this.wsdlLocation.equals("")) {
                 WsdlResolver resolver = WsdlResolver.getInstance();
-                if (-1 != this.wsdlLocation.indexOf("https") && null != secureInvokerFroRetrivingWSDL) {
-                    resolver.setSecureInvoker(this.secureInvokerFroRetrivingWSDL);
-                }
                 definitions = resolver.loadWsdl(new File(".").toURI(), new URI(this.wsdlLocation));
             } else {
                 definitions = this.wsdlDefinitionObject;
             }
 
-            setup(definitions);
-
+            setup(definitions);            
+            
             logger.exiting();
+            
         } catch (XBayaException e) {
             logger.caught(e);
             // An appropriate message has been set in the exception.
@@ -259,10 +247,6 @@ public class GenericInvoker implements WorkflowInvoker {
 
         }
         StickySoapHeaderHandler handler = new StickySoapHeaderHandler("use-lead-header", leadContext);
-        // if(this.configuration != null){
-        // leadContext.setMyleadAgentUrl(configuration.getMyLeadAgentURL());
-        // leadContext.setXRegistryUrl(configuration.getXRegistryURL());
-        // }
 
         // Create Invoker
         this.invoker = InvokerFactory.createInvoker(this.portTypeQName, definitions, this.gfacURL, this.messageBoxURL,
@@ -272,10 +256,6 @@ public class GenericInvoker implements WorkflowInvoker {
         client.addHandler(handler);
 
         WsdlResolver resolver = WsdlResolver.getInstance();
-        if (-1 != this.gfacURL.toString().indexOf("https") && null != secureInvokerFroRetrivingWSDL) {
-            resolver.setSecureInvoker(this.secureInvokerFroRetrivingWSDL);
-        }
-
         // Get the concrete WSDL from invoker.setup() and set it to the
         // notifier.
         if (this.wsdlLocation != null) {
@@ -287,7 +267,7 @@ public class GenericInvoker implements WorkflowInvoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#setOperation(java.lang.String)
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setOperation(java.lang.String)
      */
     public void setOperation(String operationName) throws XBayaException {
 
@@ -315,7 +295,7 @@ public class GenericInvoker implements WorkflowInvoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#setInput(java.lang.String, java.lang.Object)
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setInput(java.lang.String, java.lang.Object)
      */
     public void setInput(String name, Object value) throws XBayaException {
         logger.entering(new Object[] { name, value });
@@ -346,16 +326,16 @@ public class GenericInvoker implements WorkflowInvoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#invoke()
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#invoke()
      */
-    public synchronized void invoke() throws XBayaException {
+    public synchronized boolean invoke() throws XBayaException {
 
         logger.entering();
 
         try {
                 WSIFMessage inputMessage = this.invoker.getInputs();
             logger.finest("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) inputMessage));
-            this.notifier.invokingService(inputMessage);
+            //this.notifier.invokingService(inputMessage);
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
             this.result = executor.submit(new Callable<Boolean>() {
@@ -412,7 +392,7 @@ public class GenericInvoker implements WorkflowInvoker {
             } catch (TimeoutException e) {
                 // The job is probably running fine.
                 // The normal case.
-                return;
+                return true;
             } catch (ExecutionException e) {
                 // The service-failed notification should have been sent
                 // already.
@@ -433,10 +413,11 @@ public class GenericInvoker implements WorkflowInvoker {
             this.notifier.invocationFailed(message, e);
             throw new XBayaException(message, e);
         }
+        return true;
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#waitToFinish()
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#waitToFinish()
      */
     @SuppressWarnings("boxing")
     public synchronized void waitToFinish() throws XBayaException {
@@ -483,7 +464,7 @@ public class GenericInvoker implements WorkflowInvoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#getOutput(java.lang.String)
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutput(java.lang.String)
      */
     public Object getOutput(String name) throws XBayaException {
         logger.entering(new Object[] { name });
@@ -516,10 +497,25 @@ public class GenericInvoker implements WorkflowInvoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.workflow.WorkflowInvoker#getOutputs()
+     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutputs()
      */
     public WSIFMessage getOutputs() throws XBayaException {
         return this.invoker.getOutputs();
+    }
+
+    @Override
+    public WSIFClient getClient() {
+        return null;
+    }
+
+    @Override
+    public WSIFMessage getInputs() throws XBayaException {
+        return null;
+    }
+
+    @Override
+    public WSIFMessage getFault() throws XBayaException {
+        return null;
     }
 
 }
