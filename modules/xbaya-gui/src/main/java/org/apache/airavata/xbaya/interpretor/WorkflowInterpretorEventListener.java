@@ -101,14 +101,12 @@ public class WorkflowInterpretorEventListener implements NotificationHandler,Con
         try {
             if (this.pullMode) {
                 EndpointReference messageBoxEPR = this.wseClient.createPullMsgBox(this.messageBoxURL.toString());
-                this.subscriptionID = this.wseClient.subscribe(this.brokerURL.toString(), messageBoxEPR.getAddress(),
-                        this.topic);
+                this.subscriptionID = this.wseClient.subscribe(messageBoxEPR.getAddress(),
+                        this.topic,null);
                 this.messagePuller = this.wseClient.startPullingEventsFromMsgBox(messageBoxEPR, this, 1000L,20000L);
             } else {
                 String[] endpoints = this.wseClient.startConsumerService(2222,this);
-                URL consumerUrl = new URL(endpoints[0]);
-                this.subscriptionID = this.wseClient.subscribe(this.brokerURL.toString(), consumerUrl.getHost() + ":"
-                        + consumerUrl.getPort(), this.topic);
+                this.subscriptionID = this.wseClient.subscribe(endpoints[0], this.topic,null);
             }
         } catch (IOException e) {
             throw new MonitorException("Failed to subscribe.", e);

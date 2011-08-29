@@ -81,7 +81,6 @@ public class NotificationSender {
         this.topic = topic;
         this.brokerURL = brokerURL;
         this.workflowID = URI.create(StringUtil.convertToJavaIdentifier(this.topic));
-        //todo have to remove the xsul dependency completely
         this.eventSink = new EndpointReference(this.brokerURL);
         Properties props = new Properties();
 
@@ -90,7 +89,7 @@ public class NotificationSender {
         URI initiatorServiceID = URI.create("XBaya");
         String initiatorWorkflowNodeID = null;
         Integer initiatorWorkflowTimeStep = null;
-        context = this.notifier.createTrackingContext(props,eventSink,initiatorWorkflowID,
+        this.context = this.notifier.createTrackingContext(props,eventSink,initiatorWorkflowID,
                 initiatorServiceID,initiatorWorkflowNodeID,initiatorWorkflowTimeStep);
         this.initiator = this.notifier.createEntity(initiatorWorkflowID, initiatorServiceID, initiatorWorkflowNodeID,
                 initiatorWorkflowTimeStep);
