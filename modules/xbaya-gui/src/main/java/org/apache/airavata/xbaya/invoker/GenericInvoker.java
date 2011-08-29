@@ -45,7 +45,6 @@ import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.v1.builder.XmlElement;
 
-import xsul.invoker.gsi.GsiInvoker;
 import xsul.lead.LeadContextHeader;
 import xsul.ws_addressing.WsaEndpointReference;
 import xsul.wsdl.WsdlDefinitions;
@@ -91,8 +90,6 @@ public class GenericInvoker implements Invoker {
     boolean failerSent;
 
     private WsdlDefinitions wsdlDefinitionObject;
-
-    private GsiInvoker secureInvokerFroRetrivingWSDL;
 
     /**
      * Creates an InvokerWithNotification.
@@ -335,7 +332,7 @@ public class GenericInvoker implements Invoker {
         try {
                 WSIFMessage inputMessage = this.invoker.getInputs();
             logger.finest("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) inputMessage));
-            //this.notifier.invokingService(inputMessage);
+            this.notifier.invokingService(inputMessage);
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
             this.result = executor.submit(new Callable<Boolean>() {
