@@ -31,8 +31,10 @@ import org.apache.airavata.wsmg.client.MsgBrokerClientException;
 import org.apache.airavata.wsmg.client.NotificationHandler;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.wsmg.client.msgbox.MessagePuller;
+import org.apache.airavata.wsmg.msgbox.client.MsgBoxClient;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axis2.addressing.EndpointReference;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul5.MLogger;
@@ -87,15 +89,13 @@ public class WsmgClient implements ConsumerNotificationHandler, NotificationHand
     public synchronized void subscribe() throws MonitorException {
         try {
             if (this.pullMode) {
-                org.apache.axis2.addressing.EndpointReference messageBoxEPR = this.wseClient.createPullMsgBox(this.messageBoxURL.toString());
-                this.subscriptionID = this.wseClient.subscribe(this.brokerURL.toString(), messageBoxEPR.toString(),
-                        this.topic);
+                EndpointReference messageBoxEPR = this.wseClient.createPullMsgBox(this.messageBoxURL.toString());
+                this.subscriptionID = this.wseClient.subscribe(messageBoxEPR.getAddress(),
+                        this.topic,null);
                 this.messagePuller = this.wseClient.startPullingEventsFromMsgBox(messageBoxEPR, this, 1000L,20000L);
             } else {
                 String[] endpoints = this.wseClient.startConsumerService(2222,this);
-                URL consumerUrl = new URL(endpoints[0]);
-                this.subscriptionID = this.wseClient.subscribe(this.brokerURL.toString(), consumerUrl.getHost() + ":"
-                        + consumerUrl.getPort(), this.topic);
+                this.subscriptionID = this.wseClient.subscribe(endpoints[0], this.topic,null);
             }
         } catch (IOException e) {
             throw new MonitorException("Failed to subscribe.", e);
