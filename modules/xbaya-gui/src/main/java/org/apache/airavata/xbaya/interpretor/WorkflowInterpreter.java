@@ -242,7 +242,7 @@ public class WorkflowInterpreter {
                 keywords[i] = ((InputNode) node).getConfiguredName();
                 values[i] = ((InputNode) node).getDefaultValue();
             }
-            //this.notifier.workflowStarted(values, keywords);
+            this.notifier.workflowStarted(values, keywords);
             while (this.workflow.getExecutionState() != XBayaExecutionState.STOPPED) {
                 if (getRemainNodesDynamically() == 0) {
                     if (this.mode == GUI_MODE) {

@@ -54,10 +54,7 @@ import org.apache.airavata.xbaya.gui.XBayaComboBox;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
-import org.apache.airavata.xbaya.interpretor.HeaderConstants;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
-import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorStub;
-import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorStub.NameValue;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
@@ -369,100 +366,29 @@ public class DynamicWorkflowRunnerWindow {
             @Override
             public void run() {
 
-                boolean remote = false;
+                WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(
+                        DynamicWorkflowRunnerWindow.this.engine, topicString);
+                try {
+                    MonitorConfiguration notifConfig = DynamicWorkflowRunnerWindow.this.engine.getMonitor()
+                            .getConfiguration();
+                    notifConfig.setTopic(topicString);
+                    DynamicWorkflowRunnerWindow.this.engine.getMonitor().start();
 
-                if (remote) {
+                    DynamicWorkflowRunnerWindow.this.engine.getGUI().addDynamicExecutionToolsToToolbar();
 
+                    if (resourceMapping != null)
+                        workflowInterpreter.setResourceMapping(resourceMapping);
+
+                    workflowInterpreter.scheduleDynamically();
+                } catch (XBayaException e) {
                     try {
-                        DynamicWorkflowRunnerWindow.this.engine.getMonitor().getConfiguration().setTopic(topicString);
-
-                        DynamicWorkflowRunnerWindow.this.engine.getMonitor().start();
+                        workflowInterpreter.cleanup();
                     } catch (MonitorException e1) {
                         DynamicWorkflowRunnerWindow.this.engine.getErrorWindow().error(e1);
                     }
-                    try {
-
-                        WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
-                                "http://silktree.cs.indiana.edu:18080/axis2/services/WorkflowInterpretor?wsdl");
-                        NameValue[] configurations = new NameValue[6];
-                        configurations[0] = new NameValue();
-                        configurations[0].setName(HeaderConstants.HEADER_ELEMENT_GFAC);
-                        configurations[0].setValue(engine.getConfiguration().getGFacURL().toString());
-                        configurations[1] = new NameValue();
-                        configurations[1].setName(HeaderConstants.HEADER_ELEMENT_XREGISTRY);
-                        if (null == engine.getConfiguration().getXRegistryURL()) {
-                            configurations[1].setValue(XBayaConstants.DEFAULT_XREGISTRY_URL.toString());
-                        } else {
-                            configurations[1].setValue(engine.getConfiguration().getXRegistryURL().toString());
-                        }
-                        configurations[2] = new NameValue();
-                        configurations[2].setName(HeaderConstants.HEADER_ELEMENT_PROXYSERVER);
-                        configurations[2].setValue(engine.getConfiguration().getMyProxyServer());
-
-                        configurations[3] = new NameValue();
-                        configurations[3].setName(HeaderConstants.HEADER_ELEMENT_BROKER);
-                        configurations[3].setValue(engine.getConfiguration().getBrokerURL().toString());
-
-                        configurations[4] = new NameValue();
-                        configurations[4].setName(HeaderConstants.HEADER_ELEMENT_MSGBOX);
-                        configurations[4].setValue(engine.getConfiguration().getMessageBoxURL().toString());
-
-                        configurations[5] = new NameValue();
-                        configurations[5].setName(HeaderConstants.HEADER_ELEMENT_DSC);
-                        configurations[5].setValue(engine.getConfiguration().getDSCURL().toString());
-
-                        NameValue[] inputNameVals = new NameValue[inputNodes.size()];
-                        for (int i = 0; i < inputNodes.size(); i++) {
-                            inputNameVals[i] = new NameValue();
-                            InputNode inputNode = inputNodes.get(i);
-                            String id = inputNode.getID();
-                            String value = inputNode.getDefaultValue().toString();
-                            inputNameVals[i].setName(id);
-                            inputNameVals[i].setValue(value);
-                        }
-
-                        // WorkflowInterpretorSkeleton skel = new
-                        // WorkflowInterpretorSkeleton();
-                        //
-                        // skel.launchWorkflow(workflow.toXMLText(),
-                        // topicString,
-                        // "changeme", "chathura", inputNameVals,
-                        // configurations);
-
-                        String myProxyUsername = engine.getMyProxyClient().getUsername();
-                        String myProxyPass = engine.getMyProxyClient().getPassphrase();
-
-                        stub.launchWorkflow(workflow.toXMLText(), topicString, myProxyPass, myProxyUsername,
-                                inputNameVals, configurations);
-                    } catch (Exception e) {
-                        DynamicWorkflowRunnerWindow.this.engine.getErrorWindow().error(e);
-                    }
-                } else {
-
-                    WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(
-                            DynamicWorkflowRunnerWindow.this.engine, topicString);
-                    try {
-                        //MonitorConfiguration notifConfig = DynamicWorkflowRunnerWindow.this.engine.getMonitor()
-                        //        .getConfiguration();
-                        //notifConfig.setTopic(topicString);
-                        //DynamicWorkflowRunnerWindow.this.engine.getMonitor().start();
-
-                        //DynamicWorkflowRunnerWindow.this.engine.getGUI().addDynamicExecutionToolsToToolbar();
-
-                        //if (resourceMapping != null)
-                        //    workflowInterpreter.setResourceMapping(resourceMapping);
-
-                        workflowInterpreter.scheduleDynamically();
-                    } catch (XBayaException e) {
-                        try {
-                            workflowInterpreter.cleanup();
-                        } catch (MonitorException e1) {
-                            DynamicWorkflowRunnerWindow.this.engine.getErrorWindow().error(e1);
-                        }
-                        DynamicWorkflowRunnerWindow.this.engine.getErrorWindow().error(e);
-                    }
-
+                    DynamicWorkflowRunnerWindow.this.engine.getErrorWindow().error(e);
                 }
+
             }
         }.start();
 
