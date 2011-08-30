@@ -146,7 +146,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler,Con
         try {
             String soapBody = WorkFlowUtils.getSoapBodyContent(message);
             XmlElement event = XMLUtil.stringToXmlElement(soapBody);
-            handleEvent(new MonitorEvent(event), true, this.workflow.getGraph());
+                handleEvent(new MonitorEvent(event), true, this.workflow.getGraph());
 
         } catch (XMLStreamException e) {
             // Just log them because they can be unrelated messages sent to

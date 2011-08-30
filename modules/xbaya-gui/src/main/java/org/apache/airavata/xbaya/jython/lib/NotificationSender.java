@@ -86,11 +86,12 @@ public class NotificationSender {
 
         this.notifier = NotifierFactory.createNotifier();
         URI initiatorWorkflowID = null;
-        URI initiatorServiceID = URI.create("XBaya");
+        URI initiatorServiceID = URI.create(StringUtil.convertToJavaIdentifier(topic));
         String initiatorWorkflowNodeID = null;
         Integer initiatorWorkflowTimeStep = null;
         this.context = this.notifier.createTrackingContext(props,eventSink,initiatorWorkflowID,
                 initiatorServiceID,initiatorWorkflowNodeID,initiatorWorkflowTimeStep);
+        this.context.setTopic(topic);
         this.initiator = this.notifier.createEntity(initiatorWorkflowID, initiatorServiceID, initiatorWorkflowNodeID,
                 initiatorWorkflowTimeStep);
 

@@ -55,7 +55,7 @@ public class XBayaConstants {
     /**
      * DEFAULT_GFAC_URL
      */
-    public static final URI DEFAULT_GFAC_URL = URI.create("https://localhost:8080/axis2/services/GFacService");
+    public static final URI DEFAULT_GFAC_URL = URI.create("http://localhost:8080/axis2/services/GFacService");
 
     /**
      * DEFAULT_XREGISTRY_URL

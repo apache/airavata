@@ -44,7 +44,7 @@ public class MonitorUtil {
      * Workflow tracking namespace
      */
     public static final XmlNamespace WOR_NS = XMLUtil.BUILDER.newNamespace("wor",
-            "http://lead.extreme.indiana.edu/namespaces/2006/06/workflow_tracking");
+            "http://airavata.apache.org/schemas/workflow_tracking_types");
 
     /**
      * XBaya events namespace
@@ -55,7 +55,7 @@ public class MonitorUtil {
     /**
      * gotResult
      */
-    public static final String GOT_RESULT_EVENT_TAG = "gotResult";
+    public static final String GOT_RESULT_EVENT_TAG = "receivedResult";
 
     /**
      * description
@@ -323,6 +323,9 @@ public class MonitorUtil {
                 return EventType.UNKNOWN;
             }
         } else if (WOR_NS.equals(ns)) {
+            if (GOT_RESULT_EVENT_TAG.equals(name)) {
+                return EventType.WORKFLOW_TERMINATED;
+            }
             for (EventType type : EventType.values()) {
                 if (type.name.equals(name)) {
                     return type;
