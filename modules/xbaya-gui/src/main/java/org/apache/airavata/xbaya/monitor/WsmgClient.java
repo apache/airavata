@@ -142,15 +142,12 @@ public class WsmgClient implements ConsumerNotificationHandler, NotificationHand
      */
     public void handleNotification(String message) {
         try {
-            String soapBody = WorkFlowUtils.getSoapBodyContent(message);
-            XmlElement event = XMLUtil.stringToXmlElement(soapBody);
+            XmlElement event = XMLUtil.stringToXmlElement(message);
             this.monitor.handleNotification(event);
-        } catch (XMLStreamException e) {
+        } catch (Exception e) {
             // Just log them because they can be unrelated messages sent to
             // this topic by accident.
             logger.warning("Could not parse received notification: " + message, e);
-        } catch (RuntimeException e) {
-            logger.warning("Failed to process notification: " + message, e);
         }
     }
 

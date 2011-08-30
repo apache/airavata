@@ -210,7 +210,7 @@ public class WorkflowInterpreter {
         this.workflow = workflow;
         this.isSubWorkflow = subWorkflow;
         this.mode = GUI_MODE;
-        this.notifier = new NotificationSender(this.configuration.getBrokerURL(), topic);
+        this.notifier = new NotificationSender(this.engine.getMonitor().getConfiguration().getBrokerURL(), topic);
         this.topic = topic;
 
     }
@@ -621,7 +621,7 @@ public class WorkflowInterpreter {
 
                 } else {
                     invoker = new GenericInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
-                            .getComponent().getWSDL()), node.getID(), this.configuration.getMessageBoxURL().toString(),
+                            .getComponent().getWSDL()), node.getID(), this.engine.getMonitor().getConfiguration().getMessageBoxURL().toString(),
                             gfacURLString, this.notifier);
                 }
 
