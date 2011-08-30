@@ -64,7 +64,7 @@ public class MessageBoxDB {
 
     public static String SQL_DELETE_ALL_STATEMENT = "DELETE FROM %s WHERE msgboxid='%s'";
 
-    public static String SQL_SELECT_STATEMENT1 = "SELECT * FROM %s WHERE msgboxid='%s' ORDER BY '%s' DESC";
+    public static String SQL_SELECT_STATEMENT1 = "SELECT * FROM %s WHERE msgboxid='%s' ORDER BY time ";
 
     public static String SQL_DELETE_ANCIENT_STATEMENT = "DELETE FROM %s WHERE time <'%s'";
 
@@ -128,7 +128,7 @@ public class MessageBoxDB {
             Connection connection = db.connect();
 
             PreparedStatement stmt = connection.prepareStatement(String.format(SQL_SELECT_STATEMENT1, "msgbox",
-                    msgBoxId, String.format("%s.%s", "msgbox", "id")));
+                    msgBoxId));
             ResultSet resultSet = stmt.executeQuery();
 //            resultSet.beforeFirst();
 
