@@ -31,6 +31,7 @@ public class WorkflowTrackingContext {
     private InvocationEntity myself;
     private String publisherImpl;
     private boolean enableAsyncPublishing;
+    private String topic;
 
     public void setGlobalAnnotations(Properties globalAnnotations) {
         StringBuffer buf = new StringBuffer();
@@ -62,7 +63,13 @@ public class WorkflowTrackingContext {
     public void setBrokerEpr(EndpointReference brokerEpr) {
         this.brokerEpr = brokerEpr;
     }
+    public String getTopic() {
+        return topic;
+    }
 
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
     public String getPublisherImpl() {
         return publisherImpl;
     }
@@ -78,5 +85,6 @@ public class WorkflowTrackingContext {
     public void setEnableAsyncPublishing(boolean enableAsyncPublishing) {
         this.enableAsyncPublishing = enableAsyncPublishing;
     }
+
 
 }

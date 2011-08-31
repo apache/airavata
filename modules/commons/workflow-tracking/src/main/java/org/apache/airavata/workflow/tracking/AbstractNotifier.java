@@ -21,6 +21,7 @@
 
 package org.apache.airavata.workflow.tracking;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Calendar;
 import java.util.Date;
@@ -129,17 +130,17 @@ public abstract class AbstractNotifier {
             String[] descriptionAndAnnotation, String defaultDesc) {
         BaseNotificationType xmlMessage = XmlBeanUtils.extractBaseNotificationType(xmldata);
         NotificationPublisher publisher = publishermap.get(context.getBrokerEpr());
+        try {
         if (publisher == null) {
             // if a publisher class name has been defined to override the default WSM publisher, use it
             if (context.getPublisherImpl() != null) {
                 publisher = PublisherFactory.createSomePublisher(context.getPublisherImpl(), context);
             } else {
-                publisher = new WSMPublisher(100, context.isEnableAsyncPublishing(), context.getBrokerEpr());
+                publisher = new WSMPublisher(100, context.isEnableAsyncPublishing(), context.getBrokerEpr().getAddress(),context.getTopic());
             }
             publishermap.put(context.getBrokerEpr(), publisher);
         }
 
-        try {
             setIDAndTimestamp(context, xmlMessage, context.getMyself(), activityTimestamp != null ? activityTimestamp
                     : new Date());
             setDescAndAnno(context, xmlMessage, descriptionAndAnnotation, defaultDesc);
@@ -149,6 +150,8 @@ public abstract class AbstractNotifier {
             }
             publisher.publish(xmldata);
         } catch (RuntimeException e) {
+            throw new WorkflowTrackingException(e);
+        } catch (IOException e){
             throw new WorkflowTrackingException(e);
         }
     }
