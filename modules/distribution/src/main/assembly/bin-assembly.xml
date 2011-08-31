@@ -1,0 +1,298 @@
+<!DOCTYPE assembly [
+        <!ELEMENT assembly (id|includeBaseDirectory|baseDirectory|formats|fileSets|dependencySets)*>
+        <!ELEMENT id (#PCDATA)>
+        <!ELEMENT includeBaseDirectory (#PCDATA)>
+        <!ELEMENT baseDirectory (#PCDATA)>
+        <!ELEMENT formats (format)*>
+        <!ELEMENT format (#PCDATA)>
+        <!ELEMENT fileSets (fileSet)*>
+        <!ELEMENT fileSet (directory|outputDirectory|includes)*>
+        <!ELEMENT directory (#PCDATA)>
+        <!ELEMENT outputDirectory (#PCDATA)>
+        <!ELEMENT includes (include)*>
+        <!ELEMENT include (#PCDATA)>
+        <!ELEMENT dependencySets (dependencySet)*>
+        <!ELEMENT dependencySet (outputDirectory|includes)*>
+        ]>
+<assembly>
+	<id>bin</id>
+	<includeBaseDirectory>true</includeBaseDirectory>
+	<baseDirectory>${archieve.name}-${version}</baseDirectory>
+	<formats>
+		<!--<format>tar.gz</format>  //uncomment,if tar.gz archive needed-->
+		<format>zip</format>
+	</formats>
+
+
+	<fileSets>
+		<!--
+			********************** copy axis2 distribution from messenger folder **********************
+		-->
+
+		<fileSet>
+			<directory>../ws-messenger/messenger/axis2-${used.axis2.release}/WEB-INF/lib</directory>
+			<outputDirectory>standalone-server/lib</outputDirectory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
+
+        <fileSet>
+			<directory>../ws-messenger/messenger/axis2-${used.axis2.release}/WEB-INF/</directory>
+			<outputDirectory>standalone-server/repository</outputDirectory>
+			<includes>
+                <include>services/*</include>
+                <include>modules/*</include>
+			</includes>
+		</fileSet>
+
+        <fileSet>
+			<directory>../ws-messenger/messenger/axis2-${used.axis2.release}/WEB-INF/classes</directory>
+			<outputDirectory>standalone-server/conf</outputDirectory>
+			<includes>
+                <include>log4j.properties</include>
+                <include>commons-logging.properties</include>
+			</includes>
+		</fileSet>
+
+        <fileSet>
+			<directory>../ws-messenger/messenger/axis2-${used.axis2.release}/WEB-INF/conf</directory>
+			<outputDirectory>standalone-server/conf</outputDirectory>
+			<includes>
+                <include>axis2.xml</include>
+			</includes>
+		</fileSet>
+
+
+		<!--
+			********************** copymessagebrokeraar **********************
+		-->
+
+		<fileSet>
+			<directory>../ws-messenger/messagebroker/target</directory>
+			<outputDirectory>standalone-server/repository/services
+			</outputDirectory>
+			<includes>
+				<include>airavata-messagebroker*.aar</include>
+			</includes>
+		</fileSet>
+
+		<!--
+			********************** copy messagebox aar **********************
+		-->
+
+		<fileSet>
+			<directory>../ws-messenger/messagebox/target</directory>
+			<outputDirectory>standalone-server/repository/services
+			</outputDirectory>
+			<includes>
+				<include>airavata-messagebox*.aar</include>
+			</includes>
+		</fileSet>
+
+
+		<!--
+			********************** copy wsmg.broker and messagebox property files
+			**********************
+		-->
+
+		<fileSet>
+			<directory>../ws-messenger/distribution/resources</directory>
+			<outputDirectory>standalone-server/conf</outputDirectory>
+			<includes>
+				<include>*properties*</include>
+			</includes>
+		</fileSet>
+
+
+
+
+        	<!--
+			********************** replace bin directory
+			**********************
+		-->
+
+		<fileSet>
+			<directory>../ws-messenger/distribution/resources/bin</directory>
+			<outputDirectory>standalone-server/bin</outputDirectory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
+
+		<!--
+			********************** copymessagebrokerjar **********************
+		-->
+
+		<fileSet>
+			<directory>../ws-messenger/messagebroker/target</directory>
+			<outputDirectory>client-api/lib</outputDirectory>
+			<includes>
+				<include>airavata-messagebroker*.jar</include>
+			</includes>
+		</fileSet>
+
+		<!--
+			********************** copy messagebox jar **********************
+		-->
+
+		<fileSet>
+			<directory>../ws-messenger/messagebox/target</directory>
+			<outputDirectory>client-api/lib</outputDirectory>
+			<includes>
+				<include>airavata-messagebox*.jar</include>
+			</includes>
+		</fileSet>
+
+		<!--
+			********************** copy messagebroker+ messagebox samples **********************
+		-->
+
+		<fileSet>
+			<directory>../ws-messenger/samples</directory>
+			<outputDirectory>client-api/samples</outputDirectory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
+
+
+
+
+		<!--
+			********************** copy gui start up script **********************
+		-->
+
+		<fileSet>
+			<directory>../ws-messenger/distribution/resources</directory>
+			<outputDirectory>gui</outputDirectory>
+			<includes>
+				<include>*sh</include>
+			</includes>
+		</fileSet>
+
+
+
+		<!--
+			********************** copy messenger servlet **********************
+		-->
+
+		<fileSet>
+			<directory>../ws-messenger/messenger/target</directory>
+			<outputDirectory>messenger</outputDirectory>
+			<includes>
+				<include>airavata-messenger*.war</include>
+			</includes>
+		</fileSet>
+
+
+		<!--
+			********************** copy licenses **********************
+		-->
+
+		<fileSet>
+			<directory>../../</directory>
+			<outputDirectory>.</outputDirectory>
+			<includes>
+				<include>LICENSE*</include>
+				<include>NOTICE*</include>
+			</includes>
+		</fileSet>
+
+
+
+		<!--
+			********************** copy database scripts **********************
+		-->
+
+		<fileSet>
+			<directory>../ws-messenger/messagebroker/src/main/resources/database_scripts</directory>
+			<outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
+			<includes>
+				<include>*sql*</include>
+			</includes>
+		</fileSet>
+
+		<fileSet>
+			<directory>../ws-messenger/messagebox/src/main/resources/database_scripts</directory>
+			<outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
+			<includes>
+				<include>*sql*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../xbaya-gui/target</directory>
+			<outputDirectory>lib</outputDirectory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+		</fileSet>
+
+		<fileSet>
+			<directory>../commons/workflow-tracking/target</directory>
+			<outputDirectory>lib</outputDirectory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>resources/bin</directory>
+			<outputDirectory>bin</outputDirectory>
+			<includes>
+				<include>*.sh</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../gfac-axis2/target</directory>
+			<outputDirectory>standalone-server/repository/services</outputDirectory>
+			<includes>
+				<include>*.aar</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../gfac-axis2-artifacts/target</directory>
+			<outputDirectory>standalone-server/lib</outputDirectory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../commons/gfac-schema/target</directory>
+			<outputDirectory>standalone-server/lib</outputDirectory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../gfac-axis2/src/main/resources/</directory>
+			<outputDirectory>standalone-server/conf</outputDirectory>
+			<includes>
+				<include>repository.properties</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../gfac-core/src/main/resources</directory>
+			<outputDirectory>standalone-server/conf</outputDirectory>
+			<includes>
+				<include>service.properties</include>
+			</includes>
+		</fileSet>
+
+
+
+
+	</fileSets>
+
+    <dependencySets>
+
+            <dependencySet>
+                <outputDirectory>standalone-server/lib</outputDirectory>
+                <includes>
+                    <include>org.apache.derby:derby:jar</include>
+                    <include>org.apache.derby:derbytools:jar</include>
+                    <include>mysql:mysql-connector-java</include>
+                </includes>
+                    </dependencySet>
+        </dependencySets>
+
+</assembly>
