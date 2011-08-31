@@ -35,6 +35,7 @@ import java.util.Map;
 import org.apache.airavata.core.gfac.context.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
+import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.apache.airavata.core.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.core.gfac.type.HostDescription;
 import org.apache.airavata.core.gfac.type.ServiceDescription;
@@ -109,6 +110,9 @@ public class LocalProvider extends AbstractProvider {
                 log.info("Env[" + key + "] = " + builder.environment().get(key));
             }
 
+            NotificationService notifier = context.getExecutionContext().getNotificationService();
+            notifier.startExecution(this, context);
+            
             // running cmd
             Process process = builder.start();
 
@@ -190,6 +194,8 @@ public class LocalProvider extends AbstractProvider {
 
             // wait for the process (application) to finish executing
             int returnValue = process.waitFor();
+            
+            notifier.finishExecution(this, context);
 
             // make sure other two threads are done
             t1.join();

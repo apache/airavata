@@ -31,7 +31,7 @@ import org.apache.airavata.core.gfac.api.impl.JCRRegistry;
 import org.apache.airavata.core.gfac.context.InvocationContext;
 import org.apache.airavata.core.gfac.context.impl.ExecutionContextImpl;
 import org.apache.airavata.core.gfac.context.impl.ParameterContextImpl;
-import org.apache.airavata.core.gfac.notification.DummyNotification;
+import org.apache.airavata.core.gfac.notification.impl.DummyNotification;
 import org.apache.airavata.core.gfac.type.DataType;
 import org.apache.airavata.core.gfac.type.HostDescription;
 import org.apache.airavata.core.gfac.type.Parameter;

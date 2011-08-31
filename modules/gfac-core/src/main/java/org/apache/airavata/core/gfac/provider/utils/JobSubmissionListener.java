@@ -86,7 +86,7 @@ public class JobSubmissionListener implements GramJobListener {
         String jobStatusMessage = GfacUtils.formatJobStatus(jobId, statusString);
         log.info(jobStatusMessage);
         status = jobStatus;
-        context.getExecutionContext().getNotificationService().info(jobStatusMessage);
+        context.getExecutionContext().getNotificationService().statusChanged(this, this.context, jobStatusMessage);
         if (jobStatus == GramJob.STATUS_DONE) {
             finished = true;
         } else if (jobStatus == GramJob.STATUS_FAILED) {

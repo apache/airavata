@@ -138,12 +138,7 @@ public class SSHProvider extends AbstractProvider {
         List<String> cmdList = new ArrayList<String>();
 
         SSHClient ssh = new SSHClient();
-        try {
-
-            /*
-             * Notifier
-             */
-            NotificationService notifier = context.getExecutionContext().getNotificationService();
+        try {            
 
             /*
              * Builder Command
@@ -172,7 +167,8 @@ public class SSHProvider extends AbstractProvider {
             }
 
             // notify start
-            DurationObj compObj = notifier.computationStarted();
+            NotificationService notifier = context.getExecutionContext().getNotificationService();
+            notifier.startExecution(this, context);
 
             initSSHSecurity(context, ssh);
             ssh.connect(host.getName());
@@ -200,7 +196,7 @@ public class SSHProvider extends AbstractProvider {
                 cmd.join(5, TimeUnit.SECONDS);
 
                 // notify end
-                notifier.computationFinished(compObj);
+                notifier.finishExecution(this, context);
 
                 /*
                  * check return value. usually not very helpful to draw
