@@ -21,56 +21,37 @@
 
 package org.apache.airavata.core.gfac.notification;
 
-import java.net.URI;
-
-import org.apache.airavata.core.gfac.context.MessageContext;
-import org.apache.airavata.core.gfac.exception.GfacException;
-
-import edu.indiana.extreme.lead.workflow_tracking.common.DataDurationObj;
-import edu.indiana.extreme.lead.workflow_tracking.common.DataObj;
-import edu.indiana.extreme.lead.workflow_tracking.common.DurationObj;
+import org.apache.airavata.core.gfac.context.InvocationContext;
+import org.apache.airavata.core.gfac.provider.Provider;
+import org.apache.airavata.core.gfac.scheduler.Scheduler;
 
 public interface NotificationService {
+    /*
+     * 
+     */
+    void startSchedule(Object notifer, InvocationContext context, Scheduler scheduler);
+    void finishSchedule(Object notifer, InvocationContext context, Scheduler scheduler, Provider provider);
+    
+    /*
+     * 
+     */
+    void input(Object notifier, InvocationContext context, String... data);
+    void output(Object notifier, InvocationContext context, String... data);
+    
+    /*
+     * 
+     */
+    void startExecution(Object notifer, InvocationContext context);
+    void applicationInfo(Object notifier, InvocationContext context, String... data);
+    void finishExecution(Object notifer, InvocationContext context);
+    void statusChanged(Object notifer, InvocationContext context, String... data);
+    void executionFail(Object notifer, InvocationContext context, Exception e, String... data);    
 
-    DataDurationObj dataReceiveFinished(DataDurationObj dataObj, String... descriptionAndAnnotation);
-
-    DataDurationObj dataReceiveStarted(URI dataID, URI remoteLocation, URI localLocation);
-
-    DataDurationObj dataSendFinished(DataDurationObj dataObj, String... descriptionAndAnnotation);
-
-    DataDurationObj dataSendStarted(DataObj dataObj, URI remoteLocation);
-
-    void dataConsumed(URI dataID, URI replica, String type, String soapElementName);
-
-    void dataProduced(URI dataID, URI replica, String type, String soapElementName);
-
-    DurationObj computationDuration(long durationMillis);
-
-    DurationObj computationFinished(DurationObj compObj);
-
-    DurationObj computationStarted();
-
-    void exception(String... descriptionAndAnnotation);
-
-    void flush();
-
-    void info(String... descriptionAndAnnotation);
-
-    void sendingResponseFailed(Throwable trace, String... descriptionAndAnnotation);
-
-    void sendingResponseSucceeded(String... descriptionAndAnnotation);
-
-    void sendingResult(MessageContext messageContext) throws GfacException;
-
-    void warning(String... descriptionAndAnnotation);
-
-    void sendingFault(String... descriptionAndAnnotation);
-
-    void publishURL(String title, String url, String... descriptionAndAnnotation);
-
-    void appAudit(String name, URI jobHandle, String host, String queueName, String jobId, String dName,
-            String projectId, String rsl, String... descriptionAndAnnotation);
-
-    void sendResourceMappingNotifications(String hostName, String... descriptionAndAnnotation);
-
+    /*
+     * Interface for developer to use
+     */
+    void debug(Object notifer, InvocationContext context, String... data);
+    void info(Object notifer, InvocationContext context, String... data);
+    void warning(Object notifer, InvocationContext context, String... data);
+    void exception(Object notifer, InvocationContext context, String... data);        
 }

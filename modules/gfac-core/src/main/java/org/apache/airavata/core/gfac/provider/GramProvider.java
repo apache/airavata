@@ -23,7 +23,6 @@ package org.apache.airavata.core.gfac.provider;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.xml.namespace.QName;
 
@@ -48,8 +47,6 @@ import org.globus.gram.GramException;
 import org.globus.gram.GramJob;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
-
-import edu.indiana.extreme.lead.workflow_tracking.common.DurationObj;
 
 public class GramProvider extends AbstractProvider {
 
@@ -120,7 +117,7 @@ public class GramProvider extends AbstractProvider {
             log.info("RSL = " + rsl);
 
             NotificationService notifier = invocationContext.getExecutionContext().getNotificationService();
-            DurationObj compObj = notifier.computationStarted();
+            notifier.startExecution(this, invocationContext);
             StringBuffer buf = new StringBuffer();
 
             JobSubmissionListener listener = new JobSubmissionListener(job, invocationContext);
@@ -146,12 +143,12 @@ public class GramProvider extends AbstractProvider {
                     .append(app.getTmpDir())
                     .append(" Globus GateKeeper cantact = ")
                     .append(gatekeeper);
-            invocationContext.getExecutionContext().getNotificationService().info(buf.toString());
+            notifier.info(this, invocationContext, buf.toString());
             String gramJobid = job.getIDAsString();
-            invocationContext.getExecutionContext().getNotificationService().info("JobID=" + gramJobid);
+            notifier.info(this, invocationContext, "JobID=" + gramJobid);
             log.info(buf.toString());
-            // Send Audit Notifications
-            notifier.appAudit(invocationContext.getServiceName(), new URI(job.getIDAsString()), gatekeeper, null, null,
+            
+            notifier.applicationInfo(this, invocationContext, gramJobid, gatekeeper, null, null,
                     gssCred.getName().toString(), null, job.getRSL());
 
             listener.waitFor();
@@ -169,7 +166,7 @@ public class GramProvider extends AbstractProvider {
                 }
                 throw error;
             }
-            notifier.computationFinished(compObj);
+            notifier.finishExecution(this, invocationContext);
 
             /*
              * Stdout and Stderror
@@ -215,9 +212,7 @@ public class GramProvider extends AbstractProvider {
             }
             throw error;
         } catch (GSSException e) {
-            throw new JobSubmissionFault(e, "GFAC HOST", gatekeeper, rsl, this);
-        } catch (URISyntaxException e) {
-            throw new GfacException(e, FaultCode.ErrorAtDependentService);
+            throw new JobSubmissionFault(e, "GFAC HOST", gatekeeper, rsl, this);        
         } catch (InterruptedException e) {
             throw new GfacException(e, FaultCode.ErrorAtDependentService);
         } finally {

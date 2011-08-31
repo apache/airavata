@@ -45,7 +45,6 @@ import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Session.Command;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
-import org.apache.airavata.core.gfac.context.ExecutionContext;
 import org.apache.airavata.core.gfac.context.InvocationContext;
 import org.apache.airavata.core.gfac.context.impl.AmazonSecurityContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
@@ -75,8 +74,6 @@ import com.amazonaws.services.ec2.model.InstanceStateName;
 import com.amazonaws.services.ec2.model.IpPermission;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
-
-import edu.indiana.extreme.lead.workflow_tracking.common.DurationObj;
 
 public class EC2Provider extends AbstractProvider {
 
@@ -156,7 +153,7 @@ public class EC2Provider extends AbstractProvider {
             context
                     .getExecutionContext()
                     .getNotificationService()
-                    .sendResourceMappingNotifications(
+                    .info(this, null, 
                             this.instance.getPublicDnsName(),
                             "EC2 Instance " + this.instance.getInstanceId() + " is running with public name "
                                     + this.instance.getPublicDnsName(), this.instance.getInstanceId());
@@ -284,7 +281,7 @@ public class EC2Provider extends AbstractProvider {
             }
 
             // notify start
-            DurationObj compObj = notifier.computationStarted();
+            notifier.startExecution(this, context);
 
             /*
              * Create ssh connection
@@ -317,7 +314,7 @@ public class EC2Provider extends AbstractProvider {
                 cmd.join(5, TimeUnit.SECONDS);
 
                 // notify end
-                notifier.computationFinished(compObj);
+                notifier.finishExecution(this, context);
 
                 /*
                  * check return value. usually not very helpful to draw conclusions based on return values so don't
@@ -398,7 +395,7 @@ public class EC2Provider extends AbstractProvider {
 
             // notify the status
             for (Instance ins : instances) {
-                notifier.info("EC2 Instance " + ins.getInstanceId() + " is " + ins.getState().getName().toString());
+                notifier.info(this, null, "EC2 Instance " + ins.getInstanceId() + " is " + ins.getState().getName().toString());
             }
 
             try {

@@ -62,8 +62,11 @@ public abstract class AbstractSimpleService implements GenericService {
 
         /*
          * Determine provider
-         */
-        Provider provider = getScheduler(context).schedule(context);
+         */        
+        Scheduler scheduler = getScheduler(context); 
+        context.getExecutionContext().getNotificationService().startSchedule(this, context, scheduler);
+        Provider provider = scheduler.schedule(context);
+        context.getExecutionContext().getNotificationService().finishSchedule(this, context, scheduler, provider);
         
         log.debug("After scheduling, try to run data chain");
 
