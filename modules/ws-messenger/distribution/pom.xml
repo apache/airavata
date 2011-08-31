@@ -7,7 +7,7 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>Airavata</groupId>
-	<artifactId>distribution</artifactId>
+	<artifactId>ws-messenger-distribution</artifactId>
 	<name>distribution</name>
 	<url>http://incubator.apache.org/airavata</url>
 	<build>
