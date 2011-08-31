@@ -24,6 +24,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <airavata.version>0.0.1-SNAPSHOT</airavata.version>
+	<axis2.version>1.5.1</axis2.version>
+        <derby.version>10.7.1.1</derby.version>
     </properties>
     <repositories>
         <repository>
@@ -149,6 +151,7 @@
                 <module>modules/ws-messenger</module>
                 <module>modules/xbaya-gui</module>
                 <module>modules/commons</module>
+                <module>modules/distribution</module>
             </modules>
         </profile>
     </profiles>
