@@ -89,7 +89,7 @@ public class NotificationHandler extends BaseHandler {
         Integer myTimestep = null;
         EndpointReference epr = new EndpointReference(leadContext.getEventSink().getAddress().toString());
         this.invocationEntity = this.notifier.createEntity(myWorkflowID, myServiceID, myNodeID, myTimestep);
-        this.context = this.notifier.createTrackingContext(new Properties(),epr,myWorkflowID,
+        this.context = this.notifier.createTrackingContext(new Properties(),epr.toString(),myWorkflowID,
                 myServiceID,myNodeID,myTimestep);
     }
 

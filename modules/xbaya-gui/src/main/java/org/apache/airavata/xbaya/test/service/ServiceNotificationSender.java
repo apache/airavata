@@ -122,7 +122,7 @@ public class ServiceNotificationSender {
         this.initiator = this.notifier.createEntity(workflowID, serviceID, nodeID, timeStep);
         this.receiver = this.notifier.createEntity(workflowID, serviceID, nodeID, timeStep);
         EndpointReference epr = new EndpointReference(leadContext.getEventSink().getAddress().toString());
-        this.context = this.notifier.createTrackingContext(new Properties(),epr,workflowID,serviceID,nodeID,timeStep);
+        this.context = this.notifier.createTrackingContext(new Properties(),epr.toString(),workflowID,serviceID,nodeID,timeStep);
     }
 
     /**

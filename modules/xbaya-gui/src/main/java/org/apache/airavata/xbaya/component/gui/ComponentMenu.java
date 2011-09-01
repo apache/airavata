@@ -68,6 +68,8 @@ public class ComponentMenu {
     private JMenuItem streamSourceItem;
 
     private JMenuItem workflowItem;
+    
+    private JMenuItem jcrRegistryItem;
 
     /**
      * Constructs a ComponentMenu.
@@ -89,6 +91,7 @@ public class ComponentMenu {
 
     private void createComponentMenu() {
         this.fileRegistryItem = createFileRegistryMenuItem();
+        this.jcrRegistryItem = createJCRRegistryItem();
         this.xregistryItem = createXRegistryItem();
         this.webItem = createWebRegistryItem();
         this.urlItem = createURLRegistryItem();
@@ -102,6 +105,7 @@ public class ComponentMenu {
         this.componentMenu.setMnemonic(KeyEvent.VK_C);
         this.componentMenu.add(this.fileRegistryItem);
         this.componentMenu.add(this.xregistryItem);
+        this.componentMenu.add(this.jcrRegistryItem);
         this.componentMenu.add(this.webItem);
         this.componentMenu.add(this.urlItem);
         this.componentMenu.add(this.workflowItem);
@@ -278,6 +282,22 @@ public class ComponentMenu {
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
                     this.window = new XRegistryWindow(ComponentMenu.this.engine);
+                }
+                this.window.show();
+            }
+        });
+        return item;
+    }
+    
+    private JMenuItem createJCRRegistryItem() {
+        JMenuItem item = new JMenuItem("Add JCR Registry");
+        item.setMnemonic(KeyEvent.VK_J);
+        item.addActionListener(new AbstractAction() {
+            private JCRRegistryWindow window;
+
+            public void actionPerformed(ActionEvent e) {
+                if (this.window == null) {
+                    this.window = new JCRRegistryWindow(ComponentMenu.this.engine);
                 }
                 this.window.show();
             }
