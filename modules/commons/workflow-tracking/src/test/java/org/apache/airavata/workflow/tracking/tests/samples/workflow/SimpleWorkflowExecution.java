@@ -61,8 +61,6 @@ public class SimpleWorkflowExecution extends TestCase {
     Properties configs = new Properties();
     String BROKER_URL = "http://127.0.0.1:8080/axis2/services/EventingService/topic/Foo";
 
-    private EndpointReference epr = new EndpointReference(BROKER_URL);
-
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
 
@@ -134,7 +132,7 @@ public class SimpleWorkflowExecution extends TestCase {
         assert WORKFLOW_1.equals(myServiceID);
 
         WorkflowNotifier notifier = NotifierFactory.createWorkflowNotifier();
-        WorkflowTrackingContext context = notifier.createTrackingContext(new Properties(), epr, myWorkflowID,
+        WorkflowTrackingContext context = notifier.createTrackingContext(new Properties(), BROKER_URL, myWorkflowID,
                 myServiceID, myNodeID, myTimestep);
 
         InvocationContext myInvocation = notifier.workflowInvoked(context, myInvoker,
@@ -240,7 +238,7 @@ public class SimpleWorkflowExecution extends TestCase {
         // if we were not publishing data products, a serviceNotifier would have
         // sufficed
         ProvenanceNotifier notifier = NotifierFactory.createProvenanceNotifier();
-        WorkflowTrackingContext context = notifier.createTrackingContext(null, epr, myWorkflowID, myServiceID,
+        WorkflowTrackingContext context = notifier.createTrackingContext(null, BROKER_URL, myWorkflowID, myServiceID,
                 myNodeID, myTimestep);
         InvocationContext invocationContext = notifier.serviceInvoked(context, myInvoker,
                 "I (service1) was invoked by my invoker",
@@ -322,7 +320,7 @@ public class SimpleWorkflowExecution extends TestCase {
         ProvenanceNotifier notifier = NotifierFactory.createProvenanceNotifier();
 
         // received request
-        WorkflowTrackingContext context = notifier.createTrackingContext(null, epr, myWorkflowID, myServiceID,
+        WorkflowTrackingContext context = notifier.createTrackingContext(null, BROKER_URL, myWorkflowID, myServiceID,
                 myNodeID, myTimestep);
         InvocationContext invocationContext = notifier.serviceInvoked(context, myInvoker,
                 "I (service2) was invoked by my invoker");
@@ -390,7 +388,7 @@ public class SimpleWorkflowExecution extends TestCase {
 
     public void runSample() throws Exception {
         notifier = NotifierFactory.createNotifier();
-        WorkflowTrackingContext context = notifier.createTrackingContext(null, epr, WORKFLOW_1, SERVICE_0, null, null);
+        WorkflowTrackingContext context = notifier.createTrackingContext(null, BROKER_URL, WORKFLOW_1, SERVICE_0, null, null);
         // create workflow and service instances
         {
 

@@ -54,7 +54,7 @@ public interface GenericNotifier {
      * @param epr
      * @return
      */
-    public WorkflowTrackingContext createTrackingContext(Properties golbalProperties, EndpointReference epr,
+    public WorkflowTrackingContext createTrackingContext(Properties golbalProperties, String epr,
             URI workflowID, URI serviceID, String workflowNodeID, Integer workflowTimestep);
 
     /**

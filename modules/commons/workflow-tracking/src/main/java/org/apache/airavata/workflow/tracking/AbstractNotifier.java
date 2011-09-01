@@ -54,11 +54,11 @@ public abstract class AbstractNotifier {
 
     }
 
-    public WorkflowTrackingContext createTrackingContext(Properties golbalProperties, EndpointReference epr,
+    public WorkflowTrackingContext createTrackingContext(Properties golbalProperties, String epr,
             URI workflowID, URI serviceID, String workflowNodeID, Integer workflowTimestep) {
         WorkflowTrackingContext workflowTrackingContext = new WorkflowTrackingContext();
         workflowTrackingContext.setGlobalAnnotations(golbalProperties);
-        workflowTrackingContext.setBrokerEpr(epr);
+        workflowTrackingContext.setBrokerEpr(new EndpointReference(epr));
         workflowTrackingContext.setMyself(createEntity(workflowID, serviceID, workflowNodeID, workflowTimestep));
         return workflowTrackingContext;
     }
