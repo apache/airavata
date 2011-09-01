@@ -242,6 +242,14 @@
 			</includes>
 		</fileSet>
 		<fileSet>
+			<directory>../xbaya-gui/target</directory>
+			<outputDirectory>standalone-server/repository/services</outputDirectory>
+			<includes>
+				<include>*.aar</include>
+			</includes>
+		</fileSet>
+
+		<fileSet>
 			<directory>../gfac-axis2-artifacts/target</directory>
 			<outputDirectory>standalone-server/lib</outputDirectory>
 			<includes>
