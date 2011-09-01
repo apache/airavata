@@ -24,8 +24,12 @@ import org.apache.airavata.core.gfac.context.InvocationContext;
 import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.apache.airavata.core.gfac.provider.Provider;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class StandardOutNotification implements NotificationService {
+public class LoggingNotification implements NotificationService {
+    
+    protected final Logger log = LoggerFactory.getLogger(LoggingNotification.class);
 
     public void startSchedule(Object notifier, InvocationContext context, Scheduler scheduler) {
         printOut(notifier, context, null);
@@ -79,14 +83,13 @@ public class StandardOutNotification implements NotificationService {
     }
 
     private void printOut(Object notifier, InvocationContext context, String... data) {
-        System.out.println("Notifier: " + notifier.getClass().toString());
+        log.info("Notifier: " + notifier.getClass().toString());
         if (data != null) {
-            System.out.println("-----DATA-----");
+            log.info("-----DATA-----");
             for (int i = 0; i < data.length; i++) {
-                System.out.println(data[i]);
+                log.info(data[i]);
             }
-            System.out.println("-----END DATA-----");
+            log.info("-----END DATA-----");
         }
     }
-
 }

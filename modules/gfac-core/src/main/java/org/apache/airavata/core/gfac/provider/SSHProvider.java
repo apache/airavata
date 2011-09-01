@@ -47,8 +47,6 @@ import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 
-import edu.indiana.extreme.lead.workflow_tracking.common.DurationObj;
-
 public class SSHProvider extends AbstractProvider {
 
     private static final String SPACE = " ";

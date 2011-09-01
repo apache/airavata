@@ -23,13 +23,8 @@ package org.apache.airavata.core.gfac.context;
 
 import org.apache.airavata.core.gfac.api.Registry;
 import org.apache.airavata.core.gfac.notification.NotificationService;
-import org.ogce.namespaces.x2010.x08.x30.workflowContextHeader.WorkflowContextHeaderDocument.WorkflowContextHeader;
 
 public interface ExecutionContext {
-
-    WorkflowContextHeader getWorkflowHeader();
-
-    void setWorkflowHeader(WorkflowContextHeader header);
 
     NotificationService getNotificationService();
 

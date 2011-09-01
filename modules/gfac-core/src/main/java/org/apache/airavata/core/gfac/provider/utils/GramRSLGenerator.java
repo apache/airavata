@@ -33,8 +33,6 @@ import org.apache.airavata.core.gfac.type.app.GramApplicationDeployment;
 import org.apache.airavata.core.gfac.type.host.GlobusHost;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.globus.gram.GramAttributes;
-import org.ogce.namespaces.x2010.x08.x30.workflowContextHeader.WorkflowContextHeaderDocument.WorkflowContextHeader;
-import org.ogce.namespaces.x2010.x08.x30.workflowResourceMapping.ResourceMappingDocument.ResourceMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,11 +44,10 @@ public class GramRSLGenerator {
     };
 
     public static GramAttributes configureRemoteJob(InvocationContext context) throws GfacException {
-    	GlobusHost host = (GlobusHost)context.getGfacContext().getHost();
-    	GramApplicationDeployment app = (GramApplicationDeployment)context.getGfacContext().getApp();
+        GlobusHost host = (GlobusHost) context.getGfacContext().getHost();
+        GramApplicationDeployment app = (GramApplicationDeployment) context.getGfacContext().getApp();
         ServiceDescription service = context.getGfacContext().getService();
-    	
-    	
+
         GramAttributes jobAttr = new GramAttributes();
         jobAttr.setExecutable(app.getExecutable());
         jobAttr.setDirectory(app.getWorkingDir());
@@ -58,27 +55,19 @@ public class GramRSLGenerator {
         jobAttr.setStderr(app.getStdErr());
 
         /*
-         * The env here contains the env of the host and the application. i.e the env specified in the host description and application description documents
+         * The env here contains the env of the host and the application. i.e
+         * the env specified in the host description and application description
+         * documents
          */
         Map<String, String> nv = app.getEnv();
         for (String key : nv.keySet()) {
             jobAttr.addEnvVariable(key, nv.get(key));
         }
 
-        jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());        
+        jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());
         jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getOutputDir());
-        
-        WorkflowContextHeader contextHeader = context.getExecutionContext().getWorkflowHeader();
-        ResourceMapping resourceMapping = null;
-        if (contextHeader != null) {
-            resourceMapping = contextHeader.getResourceMappings().getResourceMappingArray(0);
-        }
-        
-        if (resourceMapping != null && resourceMapping.getMaxWallTime() > 0) {
-            log.info("Header Setting Max Wall Time" + resourceMapping.getMaxWallTime());
-            jobAttr.setMaxWallTime(resourceMapping.getMaxWallTime());
 
-        } else if (app.getWallTime() > 0) {
+        if (app.getWallTime() > 0) {
             log.info("Setting max wall clock time to " + app.getWallTime());
 
             if (app.getWallTime() > 30 && app.getQueueName() != null && app.getQueueName().equals("debug")) {
@@ -94,47 +83,35 @@ public class GramRSLGenerator {
         if (app.getStdIn() != null) {
             jobAttr.setStdin(app.getStdIn());
         } else {
-        	// input parameter
+            // input parameter
             ArrayList<String> tmp = new ArrayList<String>();
             for (Iterator<String> iterator = context.getMessageContext("input").getParameterNames(); iterator.hasNext();) {
                 String key = iterator.next();
                 jobAttr.addArgument(context.getMessageContext("input").getStringParameterValue(key));
-            }        	
+            }
         }
 
-        if (resourceMapping != null && resourceMapping.getNodeCount() > 0) {
-            log.info("Setting number of procs to " + resourceMapping.getNodeCount());
-            jobAttr.set("hostCount", String.valueOf(resourceMapping.getNodeCount()));
-        } else if (app.getNodeCount() > 1) {
+        if (app.getNodeCount() > 1) {
             jobAttr.set("hostCount", String.valueOf(app.getNodeCount()));
         }
-        if (resourceMapping != null && resourceMapping.getCpuCount() > 0) {
-            log.info("Setting host count to " + resourceMapping.getCpuCount());
-            jobAttr.setNumProcs(resourceMapping.getCpuCount());
-
-        } else if (app.getCpuCount() > 1) {
+        if (app.getCpuCount() > 1) {
             log.info("Setting number of procs to " + app.getCpuCount());
             jobAttr.setNumProcs(app.getCpuCount());
         }
-
-        if (app.getProjectName() != null){
+        if (app.getProjectName() != null) {
             log.info("Setting project to " + app.getProjectName());
             jobAttr.setProject(app.getProjectName());
         }
-
-        if (resourceMapping != null && resourceMapping.getQueueName() != null) {
-            jobAttr.setQueue(resourceMapping.getQueueName());
-        } else if (app.getQueueName() != null) {
+        if (app.getQueueName() != null) {
             log.info("Setting job queue to " + app.getQueueName());
             jobAttr.setQueue(app.getQueueName());
         }
-        
-        
+
         String jobType = JobType.SINGLE.toString();
         if (app.getJobType() != null) {
             jobType = app.getJobType().toString();
         }
-        
+
         if (jobType.equalsIgnoreCase(JobType.SINGLE.toString())) {
             log.info("Setting job type to single");
             jobAttr.setJobType(GramAttributes.JOBTYPE_SINGLE);
@@ -146,9 +123,9 @@ public class GramRSLGenerator {
             jobAttr.setJobType(GramAttributes.JOBTYPE_MULTIPLE);
         } else if (jobType.equalsIgnoreCase(JobType.CONDOR.toString())) {
             jobAttr.setJobType(GramAttributes.JOBTYPE_CONDOR);
-        }       
+        }
 
-        //TODO rsl parameter & urgency/SPRUCE
+        // TODO rsl parameter & urgency/SPRUCE
 
         return jobAttr;
     }

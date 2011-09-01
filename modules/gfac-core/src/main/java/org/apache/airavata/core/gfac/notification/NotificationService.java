@@ -29,8 +29,8 @@ public interface NotificationService {
     /*
      * 
      */
-    void startSchedule(Object notifer, InvocationContext context, Scheduler scheduler);
-    void finishSchedule(Object notifer, InvocationContext context, Scheduler scheduler, Provider provider);
+    void startSchedule(Object notifier, InvocationContext context, Scheduler scheduler);
+    void finishSchedule(Object notifier, InvocationContext context, Scheduler scheduler, Provider provider);
     
     /*
      * 
@@ -41,17 +41,17 @@ public interface NotificationService {
     /*
      * 
      */
-    void startExecution(Object notifer, InvocationContext context);
+    void startExecution(Object notifier, InvocationContext context);
     void applicationInfo(Object notifier, InvocationContext context, String... data);
-    void finishExecution(Object notifer, InvocationContext context);
-    void statusChanged(Object notifer, InvocationContext context, String... data);
-    void executionFail(Object notifer, InvocationContext context, Exception e, String... data);    
+    void finishExecution(Object notifier, InvocationContext context);
+    void statusChanged(Object notifier, InvocationContext context, String... data);
+    void executionFail(Object notifier, InvocationContext context, Exception e, String... data);    
 
     /*
      * Interface for developer to use
      */
-    void debug(Object notifer, InvocationContext context, String... data);
-    void info(Object notifer, InvocationContext context, String... data);
-    void warning(Object notifer, InvocationContext context, String... data);
-    void exception(Object notifer, InvocationContext context, String... data);        
+    void debug(Object notifier, InvocationContext context, String... data);
+    void info(Object notifier, InvocationContext context, String... data);
+    void warning(Object notifier, InvocationContext context, String... data);
+    void exception(Object notifier, InvocationContext context, String... data);        
 }
