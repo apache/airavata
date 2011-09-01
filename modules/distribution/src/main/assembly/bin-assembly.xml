@@ -55,15 +55,7 @@
 			</includes>
 		</fileSet>
 
-        <fileSet>
-			<directory>../ws-messenger/messenger/axis2-${used.axis2.release}/WEB-INF/conf</directory>
-			<outputDirectory>standalone-server/conf</outputDirectory>
-			<includes>
-                <include>axis2.xml</include>
-			</includes>
-		</fileSet>
-
-
+              
 		<!--
 			********************** copymessagebrokeraar **********************
 		-->
@@ -126,7 +118,7 @@
 
 		<fileSet>
 			<directory>../ws-messenger/messagebroker/target</directory>
-			<outputDirectory>client-api/lib</outputDirectory>
+			<outputDirectory>lib</outputDirectory>
 			<includes>
 				<include>airavata-messagebroker*.jar</include>
 			</includes>
@@ -138,7 +130,7 @@
 
 		<fileSet>
 			<directory>../ws-messenger/messagebox/target</directory>
-			<outputDirectory>client-api/lib</outputDirectory>
+			<outputDirectory>lib</outputDirectory>
 			<includes>
 				<include>airavata-messagebox*.jar</include>
 			</includes>
@@ -150,7 +142,7 @@
 
 		<fileSet>
 			<directory>../ws-messenger/samples</directory>
-			<outputDirectory>client-api/samples</outputDirectory>
+			<outputDirectory>samples</outputDirectory>
 			<includes>
 				<include>**/*</include>
 			</includes>
@@ -277,6 +269,21 @@
 				<include>service.properties</include>
 			</includes>
 		</fileSet>
+		<fileSet>
+			<directory>../../samples</directory>
+			<outputDirectory>samples</outputDirectory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
+		 <fileSet>
+			<directory>resources/conf</directory>
+			<outputDirectory>standalone-server/conf</outputDirectory>
+			<includes>
+                		<include>axis2.xml</include>
+			</includes>
+		</fileSet>
+
 
 
 
@@ -290,7 +297,27 @@
                 <includes>
                     <include>org.apache.derby:derby:jar</include>
                     <include>org.apache.derby:derbytools:jar</include>
-                    <include>mysql:mysql-connector-java</include>
+		    <include>org.apache.jackrabbit:jackrabbit-api:jar</include>
+		    <include>org.apache.jackrabbit:jackrabbit-core:jar</include>
+		    <include>org.apache.jackrabbit:jackrabbit-jcr-commons:jar</include>
+		    <include>org.apache.jackrabbit:jackrabbit-jcr-rmi:jar</include>
+		    <include>org.apache.jackrabbit:jackrabbit-jcr-server:jar</include>
+		    <include>org.apache.jackrabbit:jackrabbit-jcr-servlet:jar</include>
+		    <include>org.apache.jackrabbit:jackrabbit-spi:jar</include>
+		    <include>org.apache.jackrabbit:jackrabbit-spi-commons:jar</include>
+		    <include>org.apache.jackrabbit:jackrabbit-webdav:jar</include>
+		    <include>org.slf4j:log4j-over-slf4j:jar</include>
+		    <include>org.slf4j:slf4j-api:jar</include>
+		    <include>ch.qos.logback:logback-classic:jar</include>
+		    <include>ch.qos.logback:logback-core:jar</include>
+		    <include>javax.jcr:jcr:jar</include>
+                </includes>
+                    </dependencySet>
+
+            <dependencySet>
+                <outputDirectory>lib</outputDirectory>
+                <includes>
+                    <include>org.apache.jackrabbit:jackrabbit-standalone:jar</include>
                 </includes>
                     </dependencySet>
         </dependencySets>

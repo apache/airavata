@@ -26,6 +26,10 @@
         <airavata.version>0.0.1-SNAPSHOT</airavata.version>
 	<axis2.version>1.5.1</axis2.version>
         <derby.version>10.7.1.1</derby.version>
+	<jackrabbit.version>2.2.7</jackrabbit.version>
+	<jackrabbitstandalone.version>1.6.4</jackrabbitstandalone.version>
+	<slf4j.version>1.5.11</slf4j.version>
+	<logback.version>0.9.20</logback.version>
     </properties>
     <repositories>
         <repository>
