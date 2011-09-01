@@ -343,8 +343,27 @@ public class JCRRegistry implements Axis2Registry {
 	}
 
 	public List<ServiceDescription> searchServiceDescription(String name) {
-		// TODO implementation
-		return null;
+	    Session session = null;
+        ArrayList<ServiceDescription> result = new ArrayList<ServiceDescription>();
+        try {
+            session = getSession();
+            Node node = getServiceNode(session);
+            NodeIterator nodes = node.getNodes();
+            for (; nodes.hasNext();) {
+                Node service = nodes.nextNode();
+                Property prop = service.getProperty(XML_PROPERTY_NAME);
+                result.add((ServiceDescription) SchemaUtil.parseFromXML(prop.getString()));
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            // TODO propagate
+        } finally {
+            if (session != null && session.isLive()) {
+                session.logout();
+            }
+        }	   
+		return result;
 	}
 
 	public List<ApplicationDeploymentDescription> searchDeploymentDescription(
