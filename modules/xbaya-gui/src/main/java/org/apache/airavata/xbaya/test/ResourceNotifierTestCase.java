@@ -46,14 +46,14 @@ public class ResourceNotifierTestCase extends XBayaTestCase {
         URI initiatorServiceID = URI.create("Adder_add");
         String initiatorWorkflowNodeID1 = "Adder_add";
         Integer workflowTimeStep = new Integer(0);
-        WorkflowTrackingContext context = notifier.createTrackingContext(new Properties(),brokerEPR,
+        WorkflowTrackingContext context = notifier.createTrackingContext(new Properties(),brokerEPR.toString(),
                 initiatorWorkflowID,initiatorServiceID,initiatorWorkflowNodeID1,workflowTimeStep);
         notifier.resourceMapping(context, "resource1.example.com", 1,null);
         notifier.resourceMapping(context, "resource2.example.com", 2);
         notifier.resourceMapping(context, "resource3.example.com", 3);
 
         String initiatorWorkflowNodeID2 = "Adder_add_2";
-        context = notifier.createTrackingContext(new Properties(),brokerEPR,
+        context = notifier.createTrackingContext(new Properties(),brokerEPR.toString(),
                 initiatorWorkflowID,initiatorServiceID,initiatorWorkflowNodeID2,workflowTimeStep);
         notifier.resourceMapping(context, "resource.example.com", 0);
     }

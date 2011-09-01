@@ -47,7 +47,7 @@ public class MonitorTestCase extends XBayaTestCase {
 
         Notifier notifier = NotifierFactory.createNotifier();
 
-        WorkflowTrackingContext context = notifier.createTrackingContext(new Properties(), brokerEPR,
+        WorkflowTrackingContext context = notifier.createTrackingContext(new Properties(), brokerEPR.toString(),
                 URI.create("workflowID"), URI.create("serviceID"), "workflowNodeID", new Integer(1));
         notifier.publishURL(context, "title", "http://www.google.com", "descriptionAndAnnotation");
 
