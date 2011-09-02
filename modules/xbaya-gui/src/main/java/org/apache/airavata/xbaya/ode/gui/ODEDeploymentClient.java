@@ -83,7 +83,7 @@ public class ODEDeploymentClient {
      * @param makePublic
      */
     public void deploy(WorkflowProxyClient wfClient, Workflow workflow, GSSCredential gssCredential,
-            boolean makePublic, long start) {
+            boolean makePublic) {
         try {
 
             org.xmlpull.infoset.XmlElement workflowXml = workflow.toXML();
@@ -125,7 +125,7 @@ public class ODEDeploymentClient {
                 engine.getWorkflow().setName("Control_" + oldWorkflowName);
                 engine.getWorkflow().getGraph().setID("Control_" + oldWorkflowName);
 
-                deploy(wfClient, engine.getWorkflow(), gssCredential, makePublic, System.currentTimeMillis());
+                deploy(wfClient, engine.getWorkflow(), gssCredential, makePublic);
 
 
             }

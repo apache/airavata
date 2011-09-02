@@ -255,9 +255,8 @@ public class ODEDeploymentWindow implements Cancelable {
         this.invokeThread = new Thread() {
             @Override
             public void run() {
-                long start = System.currentTimeMillis();
                 new ODEDeploymentClient(ODEDeploymentWindow.this.engine, ODEDeploymentWindow.this.invokingDialog)
-                        .deploy(client, workflow, gssCredential, makePublic, start);
+                        .deploy(client, workflow, gssCredential, makePublic);
             }
 
         };
