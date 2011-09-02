@@ -337,7 +337,6 @@ public class DynamicWorkflowRunnerWindow {
         LeadResourceMapping mapping = null;
         String host = this.resourceSelectionComboBox.getText();
         if (host != null && !host.isEmpty()) {
-            System.out.println("YEAHHH");
             XRegistryAccesser xregistryAccesser = new XRegistryAccesser(this.engine);
 
             HostDescriptionRegistrationWindow hostWindow = HostDescriptionRegistrationWindow.getInstance();
