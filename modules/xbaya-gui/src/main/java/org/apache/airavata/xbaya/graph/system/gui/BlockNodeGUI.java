@@ -34,8 +34,6 @@ public class BlockNodeGUI extends NodeGUI {
 
     private static final int HEIGHT = 100;
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private BlockNode node;
 
     /**

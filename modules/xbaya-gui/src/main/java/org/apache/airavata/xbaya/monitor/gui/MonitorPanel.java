@@ -56,8 +56,6 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
      */
     public static final String TITLE = "Monitoring";
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private XBayaEngine engine;
 
     private MonitorEventData tableSliderModel;

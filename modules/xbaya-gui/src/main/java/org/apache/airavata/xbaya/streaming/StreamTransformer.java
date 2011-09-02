@@ -151,9 +151,6 @@ public class StreamTransformer {
         int end = assignString.indexOf("\"", start);
         String oldVar = assignString.substring(start, end);
         assignString = assignString.replace(oldVar, "newReceiveVar");
-        // TODO generalize
-        // TODO
-        // FIXME
         assignString = assignString.replace("parameters", "input");
         assignString = assignString.replaceAll("return", "input");
         assign = BUILDER.parseFragmentFromString(assignString);

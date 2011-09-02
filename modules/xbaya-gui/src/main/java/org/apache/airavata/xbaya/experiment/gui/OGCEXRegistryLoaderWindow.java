@@ -49,8 +49,6 @@ import xregistry.generated.OGCEResourceData;
 
 public class OGCEXRegistryLoaderWindow {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private XBayaEngine engine;
 
     private XBayaDialog dialog;

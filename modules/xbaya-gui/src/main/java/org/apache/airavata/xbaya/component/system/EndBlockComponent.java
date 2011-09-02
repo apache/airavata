@@ -34,7 +34,6 @@ public class EndBlockComponent extends SystemComponent {
      */
     public static final String NAME = "EndBlock";
 
-    // TODO
     private static final String DESCRIPTION = "TODO";
 
     private static final String INPUT_PORT_NAME = "Input";
@@ -43,7 +42,6 @@ public class EndBlockComponent extends SystemComponent {
 
     private static final String OUTPUT_PORT_NAME = "Output";
 
-    // TODO
     private static final String OUTPUT_PORT_DESCRIPTION = "";
 
     private SystemComponentDataPort inputPort;

@@ -95,15 +95,8 @@ public class CepNode extends NodeImpl implements PortAddable {
     @Override
     protected void edgeWasAdded(Edge edge) throws GraphException {
         GraphUtil.validateConnection(edge);
-        // Node node = edge.getFromPort().getNode();
-        // if (node instanceof StreamSourceNode){
-        // ((StreamSourceNode)node).getSample
-        // }
     }
 
-    // protected void edgeWasRemoved(Edge edge){
-    // super.edgeWasRemoved(edge);
-    // }
 
     public void setName(String name) {
         super.setName(name);

@@ -33,8 +33,6 @@ import org.apache.airavata.xbaya.graph.system.EndForEachNode;
 
 public class EndForEachNodeGUI extends ConfigurableNodeGUI {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private EndForEachNode node;
 
     private Polygon polygon;

@@ -145,10 +145,6 @@ public class ODEWSDLTransformer {
     public void trasnformToODEWsdls(String workflowName, URI dscUrl, WsdlDefinitions workflowWsdl,
             Map<String, WsdlDefinitions> wsdls) {
 
-        // WSDLUtil.replaceAttributeValue(workflowWsdl.getTypes(),
-        // "schemaLocation",
-        // "http://www.extreme.indiana.edu/gfac/gfac-simple-types.xsd",
-        // "gfac-simple-types.xsd");
         addCrosscutImportsIfNecessary(workflowWsdl);
         makeWorkflowWSDLConcrete(workflowWsdl, workflowName, dscUrl);
         changePartnerLinkNS(workflowWsdl);

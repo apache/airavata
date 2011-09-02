@@ -71,7 +71,6 @@ public class GPELWorkflowClient implements WorkflowClient {
             UserX509Credential credential = new UserX509Credential(context.getCredentials(),
                     XBayaSecurity.getTrustedCertificates());
 
-            // new ODEClient().getInputs(workflow);
             BPELScript bpel = new BPELScript(workflow);
             bpel.create(BPELScriptType.GPEL);
             workflow.getGpelProcess();

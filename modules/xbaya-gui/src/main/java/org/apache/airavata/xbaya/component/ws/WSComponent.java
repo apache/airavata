@@ -88,10 +88,6 @@ public class WSComponent extends Component {
 
     }
 
-    // TODO not used now, but parse them from WSDL
-    // private XmlElement inputAppinfo;
-
-    // private XmlElement outputAppinfo;
 
     /**
      * Constructs a WSComponent.

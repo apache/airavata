@@ -62,59 +62,6 @@ public class StreamSourceNodeGUI extends ConfigurableNodeGUI {
         this.configurationWindow.show();
     }
 
-    // protected void paint(Graphics2D g) {
-    //
-    // Point position = this.node.getPosition();
-    //
-    // // Draws the body.
-    // if (this.dragged) {
-    // g.setColor(DRAGGED_BODY_COLOR);
-    // } else {
-    // g.setColor(this.bodyColor);
-    // }
-    // g.fillRect(position.x, position.y, this.dimension.width,
-    // this.dimension.height);
-    //
-    // // Draws the head.
-    // g.setColor(this.headColor);
-    // g.fillRect(position.x, position.y, this.dimension.width,
-    // this.headHeight);
-    // //Draw a small circle to indicate the break
-    // if(node.isBreak() ){
-    // g.setColor(BREAK_POINT_COLOR);
-    // int r = this.headHeight/4;
-    // g.fillOval( position.x+this.dimension.width - 3*r, position.y +r, 2*r, 2*r);
-    // g.setColor(BREAK_POINT_BORDER_COLOR);
-    // g.drawOval( position.x+this.dimension.width - 3*r, position.y +r, 2*r, 2*r);
-    // }
-    //
-    // // Text
-    // g.setColor(TEXT_COLOR);
-    //
-    // // XXX it's debatable if we should show the ID or the name.
-    // // String name = this.node.getName();
-    // String name = this.node.getID();
-    // g.drawString(name, position.x + TEXT_GAP_X, position.y
-    // + this.headHeight - TEXT_GAP_Y);
-    //
-    // // Edge
-    // g.setColor(EDGE_COLOR);
-    // g.drawRect(position.x, position.y, this.dimension.width,
-    // this.dimension.height);
-    //
-    // // Paint all ports
-    // for (Port port : this.node.getAllPorts()) {
-    // port.getGUI().paint(g);
-    // }
-    //
-    // // Paint extras
-    // for (Paintable paintable : this.paintables) {
-    // paintable.paint(g, this.node.getPosition());
-    // }
-    //
-    //
-    //
-    // }
 
     protected void setSelectedFlag(boolean flag) {
         this.selected = flag;
@@ -125,13 +72,5 @@ public class StreamSourceNodeGUI extends ConfigurableNodeGUI {
         }
     }
 
-    // protected void calculatePositions(Graphics g) {
-    // FontMetrics fm = g.getFontMetrics();
-    // this.headHeight = fm.getHeight() + TEXT_GAP_Y * 2;
-    //
-    // this.dimension.height = MINIMUM_HEIGHT*3;
-    // this.dimension.width = MINIMUM_WIDTH*2;
-    //
-    // }
 
 }

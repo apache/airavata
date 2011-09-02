@@ -40,8 +40,6 @@ import org.apache.airavata.xbaya.gui.XBayaTextField;
 
 public class URLRegistryWindow {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private XBayaEngine engine;
 
     private ComponentRegistryLoader loader;

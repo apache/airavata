@@ -38,8 +38,6 @@ import xsul5.wsdl.WsdlPortTypeOperation;
 
 public class WSComponentFactory {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     /**
      * @param wsdlString
      * @return The list of components in the specified WSDL.

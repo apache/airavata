@@ -45,8 +45,6 @@ import org.ietf.jgss.GSSCredential;
 
 public class GPELRegistry extends ComponentRegistry {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private WorkflowClient workflowClient;
 
     private WorkflowType type;

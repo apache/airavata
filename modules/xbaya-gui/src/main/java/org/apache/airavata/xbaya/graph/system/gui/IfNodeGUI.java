@@ -36,8 +36,6 @@ import org.apache.airavata.xbaya.graph.system.IfNode;
 
 public class IfNodeGUI extends ConfigurableNodeGUI {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private static final String CONFIG_AREA_STRING = "Config";
 
     private IfNode node;

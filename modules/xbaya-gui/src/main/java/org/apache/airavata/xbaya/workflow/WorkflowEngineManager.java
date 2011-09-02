@@ -32,11 +32,6 @@ public class WorkflowEngineManager {
     public static final String WORKFLOW_CLIENT_PROXY = "WorkflowProxy";
     public static final String WORKFLOW_CLIENT_GPEL = "GPELClient";
 
-    // private static WorkflowEngineManager ourInstance = new WorkflowEngineManager();
-    //
-    // public static WorkflowEngineManager getInstance() {
-    // return ourInstance;
-    // }
 
     private WorkflowEngineManager() {
     }

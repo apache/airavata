@@ -68,24 +68,12 @@ public class OGCEXRegistryWorkflowPublisherWindow {
     }
 
     private void ok() {
-        // if(Pattern.matches("[\\s | \\w]+", this.messageField.getText())){
-        // this.okButton.setEnabled(false);
-        // this.hide();
-        // }else{
-        // this.engine.getErrorWindow().warning("Invalid name");
-        // }
         String name = this.nameTextField.getText();
-        // if (name != null && name.equals(StringUtil.convertToJavaIdentifier(name))) {
         String description = this.descriptionTextArea.getText();
 
         GraphCanvas graphCanvas = this.engine.getGUI().getGraphCanvas();
         graphCanvas.setNameAndDescription(name, description);
         hide();
-        // }else{
-        // this.nameTextField.setText(StringUtil.convertToJavaIdentifier(name));
-        // JOptionPane.showMessageDialog(this.engine.getGUI().getFrame(),
-        // "Invalid Name. Please consider the Name suggsted", "Invalid Name", JOptionPane.OK_OPTION);
-        // }
     }
 
     /**

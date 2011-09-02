@@ -96,7 +96,6 @@ public class GFacInvoker implements Invoker {
             
             WsdlDefinitions definitions = WsdlResolver.getInstance().loadWsdl(uri);
 
-            // FIXME: Should pass the last argument of leadcontextheader
             this.invoker = InvokerFactory
                     .createInvoker(this.portTypeQName, definitions, null, this.messageBoxURL, null);
             this.invoker.setup();

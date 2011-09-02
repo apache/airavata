@@ -229,7 +229,6 @@ public class XBayaDialog {
         Container contentPane = this.dialog.getContentPane();
         int numRow = 0;
         if (this.description != null && this.description.length() > 0) {
-            // TODO not working!!
             JLabel descriptionLabel = new JLabel("<html>" + this.description + "</html>");
 
             contentPane.add(descriptionLabel);

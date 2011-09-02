@@ -35,8 +35,6 @@ import org.apache.airavata.xbaya.graph.system.EndBlockNode;
 
 public class EndBlockNodeGUI extends ConfigurableNodeGUI {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private EndBlockConfigurationDialog configurationWindow;
 
     private EndBlockNode node;

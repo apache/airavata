@@ -107,8 +107,6 @@ public class WorkflowWSDL {
 
     private static final String TYPE_SUFFIX = "Type";
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private Workflow workflow;
 
     private WSGraph graph;

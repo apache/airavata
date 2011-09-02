@@ -32,8 +32,6 @@ import org.apache.airavata.xbaya.XBayaEngine;
 
 public class MyProxyMenu {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private XBayaEngine engine;
 
     private JMenu myProxyMenu;

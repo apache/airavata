@@ -75,7 +75,6 @@ public class SubWorkflowUpdater {
             }
             for (WorkflowNode node : updatingNodes) {
                 Point position = node.getPosition();
-                // TODO remember connections too
                 graph.removeNode(node);
 
                 WorkflowNode newNode = newComponent.createNode(graph);

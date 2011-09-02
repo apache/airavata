@@ -60,7 +60,6 @@ public class EPRPort extends DataPort {
      */
     @Override
     public QName getType() {
-        // TODO Auto-generated method stub
         return WSConstants.XSD_ANY_TYPE;
     }
 

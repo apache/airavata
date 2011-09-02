@@ -35,8 +35,6 @@ import xsul5.XmlConstants;
 
 public class WSComponentPort extends ComponentDataPort {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     /**
      * default
      */

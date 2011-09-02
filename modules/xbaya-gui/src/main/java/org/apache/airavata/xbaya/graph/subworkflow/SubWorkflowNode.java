@@ -73,26 +73,6 @@ public class SubWorkflowNode extends NodeImpl {
         GraphUtil.validateConnection(edge);
     }
 
-    // /**
-    // * @return the node xml
-    // */
-    // @Override
-    // protected XmlElement toXML() {
-    // return null;
-    // }
-    //
-    // /**
-    // * @see org.apache.airavata.xbaya.graph.impl.NodeImpl#parse(org.xmlpull.infoset.XmlElement)
-    // */
-    // @Override
-    // protected void parse(XmlElement nodeElement) throws GraphException {
-    //
-    // }
-    //
-    // @Deprecated
-    // protected void parseComponent(XmlElement componentElement){
-    //
-    // }
 
     /**
      * @param workflow

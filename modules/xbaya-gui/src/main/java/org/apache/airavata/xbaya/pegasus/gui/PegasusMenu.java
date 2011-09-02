@@ -57,7 +57,6 @@ public class PegasusMenu {
      */
     public PegasusMenu(XBayaEngine engine) {
         this.engine = engine;
-        // this.odeDeploymentDescription = new ODEDeploymentDescriptor();
         this.xregistry = new XRegistryAccesser(engine);
 
         createExperimentMenu();

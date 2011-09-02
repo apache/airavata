@@ -131,11 +131,9 @@ public class JythonClassLoader extends SecureClassLoader {
         Class klass = null;
         try {
             klass = findClass(name);
-            // logger.finest("found from jython, klass: " + klass);
         } catch (ClassNotFoundException e) {
             try {
                 klass = super.loadClass(name, false);
-                // logger.finest("found from super, klass: " + klass);
             } catch (ClassNotFoundException e2) {
                 klass = this.parent.loadClass(name);
                 logger.finest("found from parent, klass: " + klass);

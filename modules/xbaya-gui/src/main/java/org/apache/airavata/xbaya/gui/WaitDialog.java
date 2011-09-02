@@ -76,9 +76,6 @@ public class WaitDialog {
         synchronized (this) {
             // We cannot check if this.done is false because show() might be
             // called more than once at the same time.
-            // if (this.done == false) {
-            // throw new IllegalStateException();
-            // }
             this.done = false;
             // We cannot make the whole method synchronized because
             // this.dialog.show() blocks.

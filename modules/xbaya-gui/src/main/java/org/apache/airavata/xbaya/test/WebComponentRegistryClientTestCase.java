@@ -54,8 +54,6 @@ public class WebComponentRegistryClientTestCase extends XBayaTestCase {
      */
     private static final String MATH_MULTIPLIER_WSDL = "multiplier-wsdl.xml";
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private Component inputComponent;
 
     private Component outputComponent;

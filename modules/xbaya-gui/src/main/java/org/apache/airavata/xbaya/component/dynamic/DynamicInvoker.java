@@ -98,7 +98,6 @@ public class DynamicInvoker implements Invoker {
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setInput(java.lang.String, java.lang.Object)
      */
     public void setInput(String name, Object value) throws XBayaException {
-        // TODO Auto-generated method stub
 
     }
 

@@ -31,8 +31,6 @@ import org.xmlpull.infoset.XmlElement;
 
 public class BlockNode extends SystemNode {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private BlockNodeGUI gui;
 
     /**

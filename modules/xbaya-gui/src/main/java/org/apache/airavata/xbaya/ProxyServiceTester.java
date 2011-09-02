@@ -55,8 +55,6 @@ import edu.indiana.extreme.weps.XMLFile;
 
 public class ProxyServiceTester {
 
-    // private final static MLogger logger = MLogger.getLogger();
-    // private String wsdlLocation = "http://bleu.extreme.indiana.edu:54321/axis2/services/WEPSService?wsdl";
     private String wsdlLoc = "http://localhost:8081/axis2/services/WEPSService?wsdl";
 
     private void runClient() {

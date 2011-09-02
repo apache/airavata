@@ -44,12 +44,6 @@ public class CepComponent extends Component {
      */
     protected List<CepComponentPort> outputs;
 
-    // protected URL implJarLocation;
-
-    // protected String operationName;
-
-    // protected String className;
-
     public CepComponent() {
         super();
         setName(NAME);

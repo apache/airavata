@@ -47,8 +47,6 @@ public class ComponentViewer implements GraphCanvasListener, ComponentSelectorLi
     private static final String DEFAULT_HTML_MESSAGE = "<html> Select a component from the " + ComponentSelector.TITLE
             + ".</html>";
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private Component currentComponent;
 
     private JEditorPane editorPane;

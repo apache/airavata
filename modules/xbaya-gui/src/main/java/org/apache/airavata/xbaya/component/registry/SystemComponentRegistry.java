@@ -46,8 +46,6 @@ import org.apache.airavata.xbaya.component.system.S3InputComponent;
 
 public class SystemComponentRegistry extends ComponentRegistry {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private static final String NAME = "System Components";
 
     private Map<String, Component> componentMap;
