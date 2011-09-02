@@ -581,7 +581,6 @@ public class WSDLUtil {
     }
 
     public static boolean attributeExist(XmlElement element, String name, String value) {
-        System.out.println(xsul5.XmlConstants.BUILDER.serializeToStringPretty(element));
         XmlAttribute attribute = element.attribute(name);
         if (null != attribute && value.equals(attribute.getValue())) {
             return true;

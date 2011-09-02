@@ -30,6 +30,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
@@ -206,15 +207,11 @@ public class AmazonEC2InvokerWindow {
         public void receiveResultjobSubmitOperation(JobSubmissionReceipt result) {
             JOptionPane.showMessageDialog(null, "Job Submitted, ID: " + result.getJobFlowID(), "",
                     JOptionPane.INFORMATION_MESSAGE);
-            // System.out.println("In call back, response is: "
-            // + result.getJobFlowID());
         }
 
         @Override
         public void receiveErrorjobSubmitOperation(java.lang.Exception e) {
             JOptionPane.showMessageDialog(null, "Job Sumit Failed!", "", JOptionPane.ERROR_MESSAGE);
-            // System.out.println("In call back, exception thrown!");
-            // e.printStackTrace();
         }
 
         @Override
@@ -224,8 +221,7 @@ public class AmazonEC2InvokerWindow {
 
         @Override
         public void receiveErrorjobStatus(java.lang.Exception e) {
-            System.out.println("In call back, exception thrown!");
-            e.printStackTrace();
+        	throw new XBayaRuntimeException(e);
         }
 
     }

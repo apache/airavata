@@ -54,8 +54,6 @@ public class TestWorkflowInterpreter {
         Workflow workflow = new Workflow(workflowAsString);
         WsdlDefinitions wsdl = workflow.getTridentWorkflowWSDL(XBayaConstants.DEFAULT_DSC_URL,
                 XBayaConstants.DEFAULT_ODE_URL.toString());
-        System.out.println("llllllllllllllllllllllllll");
-        System.out.println(wsdl.xmlStringPretty());
 
         ODEClient client = new ODEClient();
         Pair<String, String>[] in = new Pair[3];
@@ -109,99 +107,6 @@ public class TestWorkflowInterpreter {
 
         invoker(userName, password, workflowAsString, in, workflow);
 
-        //
-        // workflowAsString = getWorkflow();
-        //
-        //
-        // workflow = new Workflow(workflowAsString);
-        // wsdl =
-        // workflow.getTridentWorkflowWSDL(XBayaConstants.DEFAULT_DSC_URL,
-        // XBayaConstants.DEFAULT_ODE_URL.toString());
-        // System.out.println("llllllllllllllllllllllllll");
-        // System.out.println(wsdl.xmlStringPretty());
-
-        // List<InputNode> inputs = new ODEClient().getInputNodes(workflow);
-        // for (Iterator iterator = inputs.iterator(); iterator.hasNext();) {
-        // InputNode inputNode = (InputNode) iterator.next();
-        // if ("input".equals(inputNode.getName())) {
-        // inputNode.setDefaultValue("MyechoString");
-        // } // other else ifs for other inputs
-        //
-        // }
-        //
-        // XBayaConfiguration configuration = getConfiguration();
-        //
-        //
-        // WorkflowInterpreter interpreter = new WorkflowInterpreter(
-        // configuration, "mytopic", workflow, "username", "password");
-        // interpreter.scheduleDynamically();
-
-        // String userName = "chathura";
-        // String password = "changeme";
-        // ODEClient client = new ODEClient();
-        // GSSCredential credential = client.getGSSCredential(userName,
-        // password,
-        // XBayaConstants.DEFAULT_MYPROXY_SERVER);
-        //
-        // Workflow workflow1 = client.getWorkflowFromOGCE(new URI(
-        // "https://ogceportal.iu.teragrid.org:19443/xregistry"),
-        // credential, new
-        // QName("Public_NAM_Initialized_WRF_Forecastc55d6223-7f79-4c07-824c-804c6b12782d"));
-        //
-        // try {
-        // BufferedWriter out = new BufferedWriter(new
-        // FileWriter("/nfs/mneme/home/users/cherath/projects/test/extremeWorkspace/xbaya-gui/workflows/t-new.xwf"));
-        // out.write(workflow1.toXMLText());
-        // out.close();
-        // } catch (IOException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        //
-        //
-        // List<InputNode> inputNodes = client.getInputNodes(workflow1);
-        // for (InputNode port : inputNodes) {
-        // if (port.getName().equals("CrossCuttingConfigurations")) {
-        // // Object val = client.parseValue(port,
-        //
-        // String val1 =
-        // "<CrossCuttingConfigurations n2:leadType='LeadCrosscutParameters' xmlns:n2='http://www.extreme.indiana.edu/namespaces/2004/01/gFac'>"
-        // +"<lcp:nx xmlns:lcp='http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/'>203</lcp:nx>"
-        // +"<lcp:ny xmlns:lcp='http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/'>203</lcp:ny>"
-        // +"<lcp:dx xmlns:lcp='http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/'>5000</lcp:dx>"
-        // +"<lcp:dy xmlns:lcp='http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/'>5000</lcp:dy>"
-        // +"<lcp:ctrlat xmlns:lcp='http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/'>44.85</lcp:ctrlat>"
-        // +"<lcp:ctrlon xmlns:lcp='http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/'>-86.25</lcp:ctrlon>"
-        // +"<lcp:fcst_time xmlns:lcp='http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/'>36</lcp:fcst_time>"
-        // +"<lcp:start_date xmlns:lcp='http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/'>7/30/2010</lcp:start_date>"
-        // +"<lcp:start_hour xmlns:lcp='http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/'>9</lcp:start_hour>"
-        // +"<lcp:westbc xmlns:lcp='http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/'>-90.74158</lcp:westbc>"
-        // +"<lcp:eastbc xmlns:lcp='http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/'>-81.75842</lcp:eastbc>"
-        // +"<lcp:northbc xmlns:lcp='http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/'>47.95601</lcp:northbc>"
-        // +"<lcp:southbc xmlns:lcp='http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/'>41.56573</lcp:southbc>"
-        // +"</CrossCuttingConfigurations>";
-        //
-        // port.setDefaultValue(val1);
-        // // port.setValue(val);
-        //
-        //
-        //
-        //
-        // } else if (port.getName().equals("NAMInitialData")) {
-        // // Object val = client.parseValue(port,
-        // port.setDefaultValue("gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010073006/nam40grb2.2010073006f03");
-        // // port.setValue(val);
-        // } else if (port.getName().equals("NAMLateralBoundaryData")) {
-        // // Object val = client.parseValue(port,
-        // port.setDefaultValue("gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010073006/nam40grb2.2010073006f06 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010073006/nam40grb2.2010073006f09 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010073006/nam40grb2.2010073006f12 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010073006/nam40grb2.2010073006f15 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010073006/nam40grb2.2010073006f18 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010073006/nam40grb2.2010073006f21 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010073006/nam40grb2.2010073006f24 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010073006/nam40grb2.2010073006f27 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010073006/nam40grb2.2010073006f30 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010073006/nam40grb2.2010073006f33 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010073006/nam40grb2.2010073006f36 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010073006/nam40grb2.2010073006f39");
-        // // port.setValue(val);
-        // }
-        //
-        // }
-        //
-        // WorkflowInterpreter interpreter = new WorkflowInterpreter(
-        // getConfiguration(), "mytopic333", workflow, "chathura", "changeme");
-        // interpreter.scheduleDynamically();
 
     }
 
@@ -257,7 +162,6 @@ public class TestWorkflowInterpreter {
         wfClient = new GPELWorkflowClient(context, workflow);
         wfClient.init();
         try {
-            System.out.println(workflow.getGPELTemplateID());
             context.prepare(wfClient, workflow);
         } catch (GSSException e) {
             throw new RuntimeException(e);

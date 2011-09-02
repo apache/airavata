@@ -398,7 +398,6 @@ public class HostDescriptionRegistrationWindow {
             hostBean.setSshEnabled(this.sshEnabledCheckBox.isSelected());
             hostBean.setGateKeeperJobManager(this.jobManagerComboBox.getText());
             hostBean.setGateKeeperendPointReference(this.gateKeeprEndpointComboBox.getText());
-            System.out.println(this.gateKeeprEndpointComboBox.getText());
             hostBean.setWsGram(this.wsGramPresentCheckBox.isSelected());
             hostBean.setGridFtpendPointReference(this.gridFTPEndPointComboBox.getText());
 

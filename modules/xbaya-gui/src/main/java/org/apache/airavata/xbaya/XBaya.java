@@ -37,10 +37,6 @@ public class XBaya {
 
     private XBayaEngine engine;
 
-    public static Vector<String> time = new Vector<String>();
-    //
-    // public static Vector<String> all = new Vector<String>();
-
     public static int preservice = 0;
 
     /**
@@ -52,107 +48,6 @@ public class XBaya {
         parseArguments(args);
         try {
             this.engine = new XBayaEngine(this.config);
-            //
-            // new MyProxyDialog(this.engine).show();
-            // try {
-            // URLComponentRegistry serviceRegistry = new URLComponentRegistry(
-            // new URI(
-            // "https://pagodatree.cs.indiana.edu:17443/axis2/services/Echo?wsdl"));
-            //
-            // new ComponentRegistryLoader(engine).load(serviceRegistry);
-            // ComponentTreeNode com = (ComponentTreeNode) serviceRegistry
-            // .getComponentTree().getChildAt(0);
-            // GraphCanvas graphCanvas = this.engine.getGUI().getGraphCanvas();
-            // boolean stream = true;
-            // for (int g = 29; g < 31; ++g) {
-            // int nodes = g;
-            // for (int z = 0; z < 20; ++z) {
-            // for (int i = nodes; i < nodes + 1; i++) {
-            // this.engine.getGUI().closeGraphCanvas();
-            // this.engine.getGUI().closeGraphCanvas();
-            // DataPort inputPort;
-            //
-            // InputNode in = (InputNode) graphCanvas.addNode(
-            // new InputComponent(), new Point(10, 10));
-            // if (stream) {
-            // StreamSourceComponent streamSourceComponent = new StreamSourceComponent();
-            // StreamSourceNode strsrc = (StreamSourceNode) graphCanvas
-            // .addNode(streamSourceComponent,
-            // new Point(5, 5));
-            // strsrc.addInputNode(in);
-            // }
-            // Port outputPort = in.getOutputPort(0);
-            // for (int j = 0; j < i; j++) {
-            //
-            // Node node = graphCanvas.addNode(
-            // com.getComponentReference()
-            // .getComponent(), new Point(
-            // 50 + 50 * j, 50 + 50 * j));
-            // graphCanvas.getGraph().addEdge(outputPort,
-            // node.getInputPort(0));
-            // // inputPort = node.getInputPort(0);
-            // outputPort = node.getOutputPort(0);
-            // }
-            //
-            // Node outnode = graphCanvas.addNode(
-            // new OutputComponent(), new Point(10, 300));
-            // graphCanvas.getGraph().addEdge(outputPort,
-            // outnode.getInputPort(0));
-            //
-            // graphCanvas.setNameAndDescription(StringUtil
-            // .convertToJavaIdentifier("WttTest" + i),
-            // "WFTest" + i);
-            // ((GraphImpl) graphCanvas.getGraph())
-            // .setID("WttTest" + i);
-            // new ODEDeploymentWindow(this.engine).deploy();
-            //
-            // Thread.sleep(10000);
-            // }
-            //
-            // }
-            //
-            //
-            //
-            // int c = 29;
-            // FileWriter out = new FileWriter(g+"out"+c+".txt");
-            // for (int i = 0; i < time.size(); ++i) {
-            // if(i%20 == 0 && 1 != 0){
-            // System.out.println("----------------------------"+c);
-            // ++c;
-            // out.close();
-            // out = new FileWriter(g+"out"+c+".txt");
-            // }
-            // System.out.println(time.get(i));
-            // out.write(time.get(i)+"\n");
-            //
-            // }
-            //
-            // }
-            // // for (int i = 0; i < time.size(); ++i) {
-            // // if (i % 2 == 0) {
-            // // String type = time.get(i);
-            // // System.out.println(type);
-            // //
-            // // }
-            // //
-            // // }
-            // // System.out.println();
-            // // System.out.println();
-            // // System.out.println()  ;
-            // // for (int i = 0; i < time.size(); ++i) {
-            // // if (i % 2 != 0) {
-            // // String type = time.get(i);
-            // // System.out.println(type);
-            // //
-            // // }
-            // //
-            // // }
-            // //
-            //
-            // } catch (Exception e) {
-            // // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // }
 
         } catch (RuntimeException e) {
             logger.caught(e);

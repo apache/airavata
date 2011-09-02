@@ -148,7 +148,6 @@ public class PegasusInvokerWindow {
             // request.setInputStrings(contents);
             request.setInputStrings(new String[] { "lol", "lol2" });
             SubmitRefResponse response = stub.submitById(request);
-            System.out.println(response.getSubmitRefResponse());
         } catch (AxisFault e) {
             e.printStackTrace();
         } catch (RemoteException e) {

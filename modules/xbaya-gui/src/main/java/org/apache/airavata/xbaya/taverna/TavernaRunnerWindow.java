@@ -272,48 +272,6 @@ public class TavernaRunnerWindow {
             }
         }.start();
 
-        // new Thread() {
-        // @Override
-        // public synchronized void run() {
-        //
-        // MonitorStarter monitorStarter = new MonitorStarter(
-        // TavernaRunnerWindow.this.engine);
-        // monitorStarter.start(true);
-        //
-        // WsaEndpointReference eventSourceReference = null;
-        // try {
-        // eventSourceReference = new WsaEndpointReference(new
-        // URI("http://localhost:9999"));
-        // } catch (URISyntaxException e) {
-        // TavernaRunnerWindow.this.engine.getErrorWindow().error(e);
-        // }
-        // try {
-        // WsaInvoker invoker = new WsaInvoker();
-        // invoker.setTargetEPR(eventSourceReference);
-        // invoker.setSoapFragrance(Soap11Util.getInstance());
-        // invoker.setIndent("  ");
-        // // to improve interop do not use KA
-        // invoker.setUseHttpKeepAlive(false);
-        // XmlNamespace ns = builder.newNamespace("taverna",
-        // "http://taverna.sourceforge.net/");
-        // org.xmlpull.v1.builder.XmlElement message = builder.newFragment(ns,
-        // "run");
-        // message.addChild(builder.parseFragmentFromReader(new
-        // StringReader(scriptString)));
-        // // System.out.println(builder.serializeToString(inputs));
-        // message.addChild(inputs);
-        // invoker.setDefaultAction(URI.create("http://taverna.sourceforge.net/run"));
-        // org.xmlpull.v1.builder.XmlElement responseMessage =
-        // invoker.invokeMessage(message);
-        // JOptionPane.showConfirmDialog(TavernaRunnerWindow.this.engine.getGUI().getFrame(),
-        // builder.serializeToString(responseMessage), "Outputs",
-        // JOptionPane.OK_OPTION);
-        // } catch (RuntimeException e) {
-        // TavernaRunnerWindow.this.engine.getErrorWindow().error(e);
-        // }
-        //
-        // }
-        // }.start();
 
         hide();
     }

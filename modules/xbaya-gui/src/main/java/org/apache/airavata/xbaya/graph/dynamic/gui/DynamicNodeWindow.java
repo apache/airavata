@@ -336,7 +336,6 @@ public class DynamicNodeWindow {
                 if (null != fromPort && fromPort instanceof DataPort) {
                     DataPort fromDataPort = (DataPort) fromPort;
                     WsdlDefinitions wsdl = engine.getWorkflow().getWSDLs().get(fromWsNode.getWSDLID());
-                    System.out.println(xsul5.XmlConstants.BUILDER.serializeToString(wsdl.xml()));
                     Iterator<XmlNamespace> itr = wsdl.xml().namespaces().iterator();
                     try {
                         XmlElement schema = wsdl.getTypes().element("schema").clone();
@@ -360,7 +359,6 @@ public class DynamicNodeWindow {
                             e.printStackTrace();
                         }
 
-                        System.out.println(fromDataPort.getType());
 
                         typesPath = rootDir.getCanonicalPath() + File.separatorChar + "mytype.jar";
                         String[] args = new String[] { "-d", classesDir.getCanonicalPath(), "-src",

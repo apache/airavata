@@ -222,7 +222,6 @@ public class StreamTransformer {
         assignString = assignString.replace("parameters", "input");
         assignString = assignString.replaceAll("return", "input");
 
-        System.out.println(assignString);
     }
 
     /**

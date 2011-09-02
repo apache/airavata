@@ -83,7 +83,6 @@ public class GPELWorkflowClient implements WorkflowClient {
             client.deploy(workflow, false);
             this.instance = client.instantiate(workflow, XBayaConstants.DEFAULT_DSC_URL, context.getTopic());
             this.wsdl = client.start(instance);
-            // System.out.println(workflow.getGPELTemplateID());
         } catch (WorkflowEngineException e) {
             throw new RuntimeException(e);
         } catch (ComponentException e) {

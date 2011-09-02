@@ -203,7 +203,6 @@ public class WorkflowProxyClient extends WorkflowClient {
                     .getConfiguration().getDSCURL()));
             WSIFMessage inputMessage = new WSIFMessageElement(inputMessageElement);
 
-            System.out.println("Sending a message:\n" + XMLUtil.xmlElementToString((XmlElement) inputMessage));
             boolean success = operation.executeRequestResponseOperation(inputMessage, outputMessage, faultMessage);
 
             if (success) {
@@ -391,7 +390,6 @@ public class WorkflowProxyClient extends WorkflowClient {
 
             WSIFMessage inputMessage = new WSIFMessageElement(inputMessageElement);
 
-            System.out.println("Sending a message:\n" + XMLUtil.xmlElementToString((XmlElement) inputMessage));
             boolean success = operation.executeRequestResponseOperation(inputMessage, outputMessage, faultMessage);
 
             XmlElement result;
@@ -400,7 +398,6 @@ public class WorkflowProxyClient extends WorkflowClient {
             } else {
                 result = (XmlElement) faultMessage;
             }
-            System.out.println("Received message:\n" + XMLUtil.xmlElementToString(result));
 
             wsdlDefinitions = new WsdlDefinitions(XMLUtil.xmlElementToString(result));
 
@@ -477,7 +474,6 @@ public class WorkflowProxyClient extends WorkflowClient {
         XRegistryAccesser xregistryAccesser = new XRegistryAccesser(this.xbayaEngine);
         String templateAsString = xregistryAccesser.getWorkflow(workflowQName).toString();
 
-        System.out.println("templateAsString = " + templateAsString);
 
         workflow = new Workflow(XMLUtil.stringToXmlElement(templateAsString));
 
@@ -633,51 +629,5 @@ public class WorkflowProxyClient extends WorkflowClient {
         }
     }
 
-    private String getProcessStr1(org.xmlpull.infoset.XmlElement process) {
-
-        try {
-            process = XmlConstants.BUILDER.parseFragmentFromInputStream(new FileInputStream(
-                    "/nfs/mneme/home/users/cherath/projects/test/extremeWorkspace/xbaya-workigncopy/t.bpel"));
-
-            System.out.println("--------------------------------------------");
-            System.out.println(XmlConstants.BUILDER.serializeToStringPretty(process));
-            // org.xmlpull.infoset.XmlElement sequence = process
-            // .element("sequence");
-            // process.removeChild(sequence);
-            // final org.xmlpull.infoset.XmlElement firstReceive =
-            // sequence.element("receive");
-            // final org.xmlpull.infoset.XmlElement newReceive =
-            // firstReceive.clone();
-            //
-            // final XmlAttribute createInsAttr =
-            // firstReceive.attribute("createInstance");
-            // firstReceive.removeAttribute(createInsAttr);
-            // firstReceive.setAttributeValue("createInstance", "no");
-            //
-            // final org.xmlpull.infoset.XmlElement topSeq =
-            // process.addElement(process.getNamespace(), "sequence");
-            // // final org.xmlpull.infoset.XmlElement receiveSeq =
-            // topSeq.addElement(topSeq.getNamespace(), "sequence");
-            // topSeq.addChild(newReceive);
-            //
-            // topSeq.addChild(sequence);
-            // // org.xmlpull.infoset.XmlElement whileElemt = topSeq.addElement(
-            // // sequence.getNamespace(), "while");
-            // // org.xmlpull.infoset.XmlElement condition =
-            // whileElemt.addElement(
-            // // whileElemt.getNamespace(), "condition");
-            // // condition.setText("(true())");
-            // // whileElemt.addChild(sequence);
-            // System.out.println("--------------------------------------------")
-            // ;
-            // System.out.println(XmlConstants.BUILDER
-            // .serializeToStringPretty(process));
-            //
-        } catch (Exception e) {
-            throw new XBayaRuntimeException(e);
-        }
-        // TODO Auto-generated method stub
-        return XmlConstants.BUILDER.serializeToStringPretty(process);
-    }
-
+    
 }
