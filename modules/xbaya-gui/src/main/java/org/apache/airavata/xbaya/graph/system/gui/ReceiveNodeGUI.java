@@ -33,8 +33,6 @@ import org.apache.airavata.xbaya.graph.system.ReceiveNode;
 
 public class ReceiveNodeGUI extends ConfigurableNodeGUI {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private ReceiveNode node;
 
     private Polygon polygon;

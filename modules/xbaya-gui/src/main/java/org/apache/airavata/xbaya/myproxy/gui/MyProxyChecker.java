@@ -26,8 +26,6 @@ import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 
 public class MyProxyChecker {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private XBayaEngine engine;
 
     private MyProxyDialog dialog;

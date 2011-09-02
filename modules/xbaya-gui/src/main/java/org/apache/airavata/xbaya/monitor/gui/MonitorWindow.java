@@ -79,7 +79,6 @@ public class MonitorWindow {
         }
         this.idTextField.setText(MonitorUtil.getNodeID(event));
         this.statusTextField.setText(MonitorUtil.getStatus(event));
-        // this.messageEditorPane.setText(MonitorUtil.getMessage(event));
         // Show the raw XML for now.
         this.messageTextArea.setText(XMLUtil.BUILDER.serializeToStringPretty(event));
 

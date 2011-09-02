@@ -40,8 +40,6 @@ import org.xmlpull.infoset.XmlElement;
 
 public abstract class SystemNode extends NodeImpl {
 
-    // private final static MLogger logger = MLogger.getLogger();
-
     /**
      * Constructs a SystemNode.
      * 

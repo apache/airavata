@@ -63,8 +63,6 @@ public class WorkflowMenu {
 
     private JMenuItem runJythonWorkflowItem;
 
-    // private JMenuItem launchInTavernaItem;
-
     private JMenuItem exitItem;
 
     private JMenuItem launchDynamicWorkflowItem;

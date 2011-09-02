@@ -70,11 +70,9 @@ public class WorkflowInterpretorSkeleton {
             System.err.println("Workflow Object created");
 
         } catch (GraphException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+           throw new XBayaRuntimeException(e1);
         } catch (ComponentException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        	throw new XBayaRuntimeException(e1);
         }
         System.err.println("Setting Input values");
         List<InputNode> inputNodes = new ODEClient().getInputNodes(workflow);

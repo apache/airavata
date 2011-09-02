@@ -51,8 +51,6 @@ import org.gpel.client.GcSearchResult;
 
 public class GPELLoadWindow {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private XBayaEngine engine;
 
     private GPELLoader loader;

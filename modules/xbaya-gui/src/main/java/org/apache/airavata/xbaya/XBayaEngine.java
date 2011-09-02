@@ -322,30 +322,6 @@ public class XBayaEngine {
                         XBayaEngine.this.setXRegistryURL(XBayaEngine.this.configuration.getXRegistryURL());
                         ComponentTreeNode componentTree = client.getComponentTree();
                         componentTreeViewer.addComponentTree(componentTree);
-                        // TreeNode[] path = componentTree.getPath();
-                        // JTree swingComponent = componentTreeViewer.getSwingComponent();
-                        // swingComponent.expandPath(
-                        // new TreePath(path));
-                        // for (int i = 0; i < path.length; i++) {
-                        // Enumeration children = path[i].children();
-                        // while (children.hasMoreElements()) {
-                        // Object elemt = children.nextElement();
-                        // if (elemt instanceof ComponentTreeNode) {
-                        // ComponentTreeNode treeNode = (ComponentTreeNode) elemt;
-                        // TreeNode[] newPath = treeNode.getPath();
-                        // swingComponent.expandPath(
-                        // new TreePath(newPath));
-                        // swingComponent.repaint();
-                        //
-                        // }
-                        // }
-                        // }
-                        // gui.getComponentSelector().refresh();
-                        // int count = gui.getComponentSelector().getSwingComponent().getComponentCount();
-                        // for (int i = 0; i < count; i++) {
-                        //
-                        // gui.getComponentSelector().getSwingComponent().getComponent(i).repaint();
-                        // }
 
                     } catch (ComponentRegistryException e) {
                         getErrorWindow().error(ErrorMessages.COMPONENT_LIST_LOAD_ERROR, e);

@@ -91,7 +91,6 @@ public class ODEInvokerWindow {
     private XBayaTextField topicTextField;
     private XBayaTextField xRegistryTextField;
     private XBayaTextField gfacTextField;
-    // private JButton deployNewAndInvokeButton;
     private JButton invokeButton;
     private XBayaDialog dialog;
     private Workflow workflow;

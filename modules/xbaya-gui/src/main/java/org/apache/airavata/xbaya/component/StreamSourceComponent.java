@@ -54,10 +54,6 @@ public class StreamSourceComponent extends SystemComponent {
         setName(NAME);
         setDescription(DESCRIPTION);
 
-        // SystemComponentDataPort port = new
-        // SystemComponentDataPort(PORT_NAME);
-        // port.setDescription(PORT_DESCRIPTION);
-        // this.outputs.add(port);
     }
 
     /**

@@ -44,8 +44,6 @@ import org.xmlpull.infoset.XmlElement;
 
 public class ForEachNode extends SystemNode {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private ForEachNodeGUI gui;
 
     /**

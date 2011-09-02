@@ -29,8 +29,6 @@ public class StreamReceiveNodeGUI extends WSNodeGUI {
 
     public static Color HEAD_COLOR = new Color(51, 255, 204);
 
-    // public static Color SELECTED_HEAD_COLOR = new Color(100, 255, 255);
-
     public StreamReceiveNodeGUI(StreamReceiveNode node) {
         super(node);
 

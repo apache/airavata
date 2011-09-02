@@ -88,7 +88,6 @@ public class SearchAndEditWindow {
     }
 
     private SearchAndEditWindow() {
-        // initGUI();
     }
 
     /**

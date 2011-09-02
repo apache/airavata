@@ -40,7 +40,6 @@ import org.xmlpull.infoset.XmlElement;
 
 public class EndBlockNode extends SystemNode {
 
-    // private static final MLogger logger = MLogger.getLogger();
 
     private EndBlockNodeGUI gui;
 

@@ -65,7 +65,6 @@ public class RegisterThroughFileWindow {
     }
 
     private RegisterThroughFileWindow() {
-        // initGUI();
     }
 
     /**

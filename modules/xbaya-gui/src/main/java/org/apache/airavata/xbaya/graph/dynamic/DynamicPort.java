@@ -40,7 +40,6 @@ public class DynamicPort extends DataPort {
      */
     public DynamicPort() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -48,7 +47,6 @@ public class DynamicPort extends DataPort {
      */
     @Override
     public void copyType(DataPort port) throws GraphException {
-        // TODO Auto-generated method stub
 
     }
 

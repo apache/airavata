@@ -40,8 +40,6 @@ import org.xmlpull.infoset.XmlElement;
 
 public class EndifNode extends SystemNode {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private EndifNodeGUI gui;
 
     /**

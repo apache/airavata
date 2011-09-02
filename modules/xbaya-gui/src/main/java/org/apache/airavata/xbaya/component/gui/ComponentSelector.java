@@ -83,8 +83,6 @@ public class ComponentSelector implements XBayaComponent {
 
     private JTree tree;
 
-    // private ComponentTreeNode rootNode;
-
     private ComponentTreeModel treeModel;
 
     private ComponentReference selectedComponentReference;

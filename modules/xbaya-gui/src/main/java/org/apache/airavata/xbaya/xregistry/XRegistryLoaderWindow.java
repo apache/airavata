@@ -45,8 +45,6 @@ import org.apache.airavata.xbaya.wf.Workflow;
 
 public class XRegistryLoaderWindow {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private XBayaEngine engine;
 
     private XBayaDialog dialog;

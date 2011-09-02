@@ -53,7 +53,6 @@ public abstract class DataPort extends PortImpl {
     @SuppressWarnings("unchecked")
     @Override
     public List<DataEdge> getEdges() {
-        // TODO Auto-generated method stub
         return (List<DataEdge>) super.getEdges();
     }
 

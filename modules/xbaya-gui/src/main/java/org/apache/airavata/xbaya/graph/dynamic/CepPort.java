@@ -39,7 +39,6 @@ public class CepPort extends DataPort {
 
     private CepComponentPort componentPort;
 
-    // private String uuid;
 
     public CepPort(XmlElement portElement) {
         super(portElement);
@@ -52,7 +51,6 @@ public class CepPort extends DataPort {
     public CepPort() {
         super();
         this.id = UUID.randomUUID().toString();
-        // TODO Auto-generated constructor stub
     }
 
     /**

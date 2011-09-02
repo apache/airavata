@@ -147,7 +147,6 @@ public class LeadCrosscutXSD {
      * @return
      */
     public static String getXml() {
-        // TODO Auto-generated method stub
         return XSD;
     }
 

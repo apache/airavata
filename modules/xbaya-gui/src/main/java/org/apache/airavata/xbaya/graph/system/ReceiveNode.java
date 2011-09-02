@@ -36,8 +36,6 @@ import org.xmlpull.infoset.XmlElement;
 
 public class ReceiveNode extends SystemNode {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private ReceiveNodeGUI gui;
 
     /**

@@ -176,7 +176,6 @@ public class LEADWorkflowInvoker {
                 if (LEADTypes.isArrayType(type)) {
                     // split string into items using " " as separator
                     Pattern pattern = Pattern.compile("[,\\s]+");
-                    // String[] result = p.split("one,two, three four , five");
                     String[] result = pattern.split((String) value);
                     XmlElement arrayEl = XmlConstants.BUILDER.newFragment(name);
                     for (int i = 0; i < result.length; i++) {

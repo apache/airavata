@@ -35,8 +35,6 @@ import xsul.wsdl.WsdlResolver;
 
 public class URLComponentRegistry extends ComponentRegistry {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private ComponentTreeNode tree;
 
     private URI url;

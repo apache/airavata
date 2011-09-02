@@ -62,7 +62,6 @@ public class AsynchronousInvoker extends SimpleInvoker {
     public void setup() throws XBayaException {
         super.setup();
 
-        // TODO put header to invoke asynchronously
         WSIFAsyncResponsesCorrelator correlator;
         if (this.messageBoxURL == null || this.messageBoxURL.length() == 0) {
             correlator = new XsulSoapHttpWsaResponsesCorrelator();

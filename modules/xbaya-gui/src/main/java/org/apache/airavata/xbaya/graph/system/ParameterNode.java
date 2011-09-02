@@ -46,8 +46,6 @@ abstract public class ParameterNode extends SystemNode {
 
     private static final String METADATA_TAG = "metadata";
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private boolean configured;
 
     /**

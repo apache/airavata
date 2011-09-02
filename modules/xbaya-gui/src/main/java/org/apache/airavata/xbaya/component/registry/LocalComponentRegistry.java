@@ -35,8 +35,6 @@ import org.apache.airavata.xbaya.util.IOUtil;
 
 public class LocalComponentRegistry extends ComponentRegistry {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private File directory;
 
     /**

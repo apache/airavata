@@ -26,6 +26,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.globus.ftp.DataSink;
 import org.globus.ftp.DataSinkStream;
 import org.globus.ftp.DataSource;
@@ -49,14 +50,11 @@ public class GridFtpClient implements MarkerListener {
             }
             gridFTPClient.extendedPut(remoteFile, source, this);
         } catch (ServerException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new XBayaRuntimeException(e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        	throw new XBayaRuntimeException(e);
         } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        	throw new XBayaRuntimeException(e);
         }
     }
 

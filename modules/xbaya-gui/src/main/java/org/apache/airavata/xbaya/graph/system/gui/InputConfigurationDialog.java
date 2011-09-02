@@ -99,10 +99,6 @@ public class InputConfigurationDialog {
             this.gridPanel.layout(new double[] { 0, 1.0 / 3, 1.0 / 3, 1.0 / 3 }, new double[] { 0, 1 });
         }
 
-        // String name = this.node.getConfiguredName();
-        // if (name == null) {
-        // name = this.node.getName();
-        // }
         String name = this.node.getID(); // Show ID.
         this.nameTextField.setText(name);
 

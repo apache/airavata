@@ -80,8 +80,6 @@ public class ExperimentMenu {
         createLoadWorkflowfromXRegistryItem();
         createSaveWorkflowtoXRegistryItem();
         createDeleteWorkflowtoXRegistryItem();
-        // createDeployWorkflowtoODEItem();
-        // createLaunchODEWorkflowItem();
         createLaunchXBayaInterpreterItem();
         createLaunchGridChemWorkflowItem();
 
@@ -97,10 +95,6 @@ public class ExperimentMenu {
         this.experimentMenu.add(this.launchXBayaInterpreterItem);
         this.experimentMenu.addSeparator();
         this.experimentMenu.add(this.launchGridChemWorkflowItem);
-        // TODO: ODE build has to be improved before it is supported by default.
-        // this.experimentMenu.addSeparator();
-        // this.experimentMenu.add(this.deployWorkflowtoODEItem);
-        // this.experimentMenu.add(this.launchODEWorkflowItem);
     }
 
     /**
@@ -159,47 +153,6 @@ public class ExperimentMenu {
         });
     }
 
-    // private void createDeployWorkflowtoODEItem() {
-    // this.deployWorkflowtoODEItem = new JMenuItem("Deploy Workflow to ODE Engine");
-    // deployWorkflowtoODEItem.addActionListener(new AbstractAction() {
-    // private OGCEODEDeploymentWindow window;
-    //
-    // public void actionPerformed(ActionEvent e) {
-    //
-    // if (this.window == null) {
-    // this.window = new OGCEODEDeploymentWindow(
-    // ExperimentMenu.this.engine);
-    // }
-    // try {
-    // this.window.show();
-    // } catch (Exception e1) {
-    // ExperimentMenu.this.engine.getErrorWindow().error(e1);
-    // }
-    //
-    // }
-    // });
-    // }
-    //
-    // private void createLaunchODEWorkflowItem() {
-    // this.launchODEWorkflowItem = new JMenuItem("Launch Workflow to ODE Engine");
-    // launchODEWorkflowItem.addActionListener(new AbstractAction() {
-    // private ODEInvokerWindow window;
-    //
-    // public void actionPerformed(ActionEvent e) {
-    // if (this.window == null) {
-    // this.window = new ODEInvokerWindow(
-    // ExperimentMenu.this.engine);
-    // }
-    // try {
-    // this.window.show();
-    // } catch (Exception e1) {
-    // ExperimentMenu.this.engine.getErrorWindow().error(e1);
-    // }
-    //
-    // }
-    // });
-    //
-    // }
 
     private void createLaunchXBayaInterpreterItem() {
         this.launchXBayaInterpreterItem = new JMenuItem("Launch Workflow to XBaya Interpreter Server");

@@ -85,8 +85,6 @@ public class LEADWorkflowInvokerTestCase extends XBayaTestCase {
         WSIFService service = factory.getService(WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(definitions));
 
         WSIFClient client = WSIFRuntime.getDefault().newClientFor(service, null);
-        // WSIFClient client =
-        // WSIFRuntime.newClient("http://129.79.240.86:7007/AdderService?wsdl");
 
         // null selects the first port in the first service.
 

@@ -62,8 +62,6 @@ public class FileMenu {
 
     private JMenuItem importWorkflowItem;
 
-    // private JMenuItem exportScuflItem;
-
     private JMenuItem exportODEScriptsItem;
 
     private XBayaEngine engine;

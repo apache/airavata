@@ -79,7 +79,7 @@ public class InstanceDataPort extends DataPort {
      */
     @Override
     public void copyType(DataPort port) throws GraphException {
-        // TODO Auto-generated method stub
+        // left blank
 
     }
 }

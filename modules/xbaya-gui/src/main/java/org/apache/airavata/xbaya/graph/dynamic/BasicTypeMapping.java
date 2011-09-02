@@ -55,8 +55,6 @@ public class BasicTypeMapping {
      */
     private static final int NUM = 2;
 
-    // public static Map<QName, String> TYPE_MAPPER = new HashMap<QName, String>();
-
     private static QName[] TYPES = new QName[NUM];
 
     private static String[] NAMES = new String[NUM * 2];

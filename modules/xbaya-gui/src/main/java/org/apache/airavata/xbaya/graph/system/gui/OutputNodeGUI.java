@@ -32,8 +32,6 @@ import org.apache.airavata.xbaya.util.BrowserLauncher;
 
 public class OutputNodeGUI extends ConfigurableNodeGUI {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private static final String CONFIG_AREA_STRING = "View";
 
     private static final Color HEAD_COLOR = new Color(35, 107, 142);

@@ -65,53 +65,7 @@ import xsul5.wsdl.WsdlDefinitions;
 
 public class GpelWorkflowClient implements Callback {
 
-    public static void main(String[] args) throws Exception {
-
-        // new GPELClient()
-        String userName = "chathura";
-        String password = "changeme";
-        String topic = "chathura_client";
-        String workflowFile = "/nfs/mneme/home/users/cherath/projects/test/extremeWorkspace/xbaya/workflows/Vortex_Chathura_Dbg2.xwf";
-        Workflow workflow = getWorkflow(workflowFile);
-
-        List<WSComponentPort> inputs = workflow.getInputs();
-
-        for (Iterator iterator = inputs.iterator(); iterator.hasNext();) {
-            WSComponentPort componentPort = (WSComponentPort) iterator.next();
-            if ("CrossCuttingConfigurations".equals(componentPort.getName())) {
-                componentPort
-                        .setDefaultValue("<CrossCuttingConfigurations  xmlns:lcp=\"http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/\">"
-                                + "<lcp:nx>803</lcp:nx>"
-                                + "<lcp:ny>803</lcp:ny>"
-                                + "<lcp:dx>1000</lcp:dx>"
-                                + "<lcp:dy>1000</lcp:dy>"
-                                + "<lcp:ctrlat>35.746513</lcp:ctrlat>"
-                                + "<lcp:ctrlon>-89.64844</lcp:ctrlon>"
-                                + "<lcp:fcst_time>18.0</lcp:fcst_time>"
-                                + "<lcp:start_date>2010/04/08</lcp:start_date>"
-                                + "<lcp:start_hour>3</lcp:start_hour>"
-                                + "<lcp:westbc>-93.2417</lcp:westbc>"
-                                + "<lcp:eastbc>-86.055176</lcp:eastbc>"
-                                + "<lcp:northbc>38.620865</lcp:northbc>"
-                                + "<lcp:southbc>32.763515</lcp:southbc>"
-                                + "</CrossCuttingConfigurations>");
-            } else if ("AssimilatedADASData".equals(componentPort.getName())) {
-                componentPort
-                        .setDefaultValue("gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/other/lead/ADAS/10kmnet000000/ad2010040803.net000000 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/other/lead/ADAS/10kmnetgrdbas/ad2010040803.netgrdbas");
-            } else if ("NAMInitialData".equals(componentPort.getName())) {
-                componentPort
-                        .setDefaultValue("gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010040800/nam40grb2.2010040800f06 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010040800/nam40grb2.2010040800f09 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010040800/nam40grb2.2010040800f12 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010040800/nam40grb2.2010040800f15 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010040800/nam40grb2.2010040800f18 gsiftp://gridftp.bigred.iu.teragrid.org:2812//N/dc/projects/lead/ldm/pub/native/grid/NCEP/LEADNAM/2010040800/nam40grb2.2010040800f21");
-            }
-        }
-
-        invoke(userName, password, topic, workflow, inputs);
-
-        LeadNotificationManager.createMessageBoxSubscription("http://127.0.0.1:13333/MsgBox", "127.0.0.1:12346",
-                "topic123", "", new GpelWorkflowClient(), false);
-
-    }
-
-    /**
+   /**
      * 
      * @param workflowFileName
      * @return

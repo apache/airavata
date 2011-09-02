@@ -144,8 +144,6 @@ public class PegasusInvokerWindow {
             request.setTopic(this.topicTextField.getText());
             request.setGFacLocation(this.gfacTextField.getText());
             request.setXRegistryLocation(this.xRegistryTextField.getText());
-            // String [] contents = fileToStrings(this.intpuFilePath.getText());
-            // request.setInputStrings(contents);
             request.setInputStrings(new String[] { "lol", "lol2" });
             SubmitRefResponse response = stub.submitById(request);
         } catch (AxisFault e) {

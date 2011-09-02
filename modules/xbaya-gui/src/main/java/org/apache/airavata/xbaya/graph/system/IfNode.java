@@ -37,8 +37,6 @@ public class IfNode extends SystemNode {
 
     private static final String XPATH_TAG_NAME = "xpath";
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private IfNodeGUI gui;
 
     private String xpath;
@@ -134,7 +132,6 @@ public class IfNode extends SystemNode {
         super.parseConfiguration(configElement);
         XmlElement element = configElement.element(null, XPATH_TAG_NAME);
         if (element != null) {
-            // TODO
             this.xpath = element.requiredText();
         }
     }

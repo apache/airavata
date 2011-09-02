@@ -42,7 +42,6 @@ public class EndifComponent extends SystemComponent {
 
     private static final String OUTPUT_PORT_NAME = "Output";
 
-    // TODO
     private static final String OUTPUT_PORT_DESCRIPTION = "";
 
     private SystemComponentDataPort inputPort;

@@ -97,15 +97,6 @@ public class MetadataTestCase extends TestCase {
 
         // Get the metadata for input.
         XmlElement inputAppinfo = workflow.getInputMetadata();
-        if (inputAppinfo != null) {
-            // Parse the simple case.
-            // for (XmlElement element : inputAppinfo.requiredElementContent())
-            // {
-            // String tag = element.getName();
-            // String value = element.requiredText();
-            // logger.info(tag + " = " + value);
-            // }
-        }
 
         // Get the input information
         List<WSComponentPort> inputs = workflow.getInputs();

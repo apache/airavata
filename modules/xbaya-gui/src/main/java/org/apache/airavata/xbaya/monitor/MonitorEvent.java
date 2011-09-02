@@ -148,7 +148,6 @@ public class MonitorEvent {
         this.message = MonitorUtil.getMessage(this.event);
         if (this.type == MonitorUtil.EventType.PUBLISH_URL) {
             String location = MonitorUtil.getLocation(this.event);
-            // TODO: Pre-SC Fix comenting IDV url by suresh but going forward some eligant way of dealing with url's
             // should be looked into
             // String url = PREFIX + location + SUFFIX;
             String url = location;

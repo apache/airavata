@@ -27,8 +27,6 @@ import org.apache.airavata.xbaya.gui.ErrorMessages;
 
 public class ConstantNodeGUI extends ConfigurableNodeGUI {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private static final String CONFIG_AREA_STRING = "Value";
 
     private ConstantNode node;

@@ -29,8 +29,6 @@ import org.apache.airavata.xbaya.gui.ErrorMessages;
 
 public class InputNodeGUI extends ConfigurableNodeGUI {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private static final String CONFIG_AREA_STRING = "Config";
 
     private static final Color HEAD_COLOR = new Color(153, 204, 255);

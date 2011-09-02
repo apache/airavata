@@ -34,8 +34,6 @@ import org.apache.airavata.xbaya.graph.system.ForEachNode;
 
 public class ForEachNodeGUI extends ConfigurableNodeGUI {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private static final String CONFIG_AREA_STRING = "Config";
 
     private ForEachNode node;

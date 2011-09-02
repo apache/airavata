@@ -35,8 +35,6 @@ import org.apache.airavata.xbaya.graph.system.EndifNode;
 
 public class EndifNodeGUI extends ConfigurableNodeGUI {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private EndifConfigurationDialog configurationWindow;
 
     private EndifNode node;

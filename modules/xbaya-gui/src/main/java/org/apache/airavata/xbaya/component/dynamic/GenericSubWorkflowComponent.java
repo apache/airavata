@@ -62,7 +62,6 @@ public class GenericSubWorkflowComponent extends CepComponent {
      */
     @Override
     public List<CepComponentPort> getInputPorts() {
-        // TODO Auto-generated method stub
         return this.inputs;
     }
 
@@ -71,7 +70,6 @@ public class GenericSubWorkflowComponent extends CepComponent {
      */
     @Override
     public List<CepComponentPort> getOutputPorts() {
-        // TODO Auto-generated method stub
         return this.outputs;
     }
 

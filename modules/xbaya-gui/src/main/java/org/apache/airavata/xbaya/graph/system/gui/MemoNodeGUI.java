@@ -37,8 +37,6 @@ import org.apache.airavata.xbaya.graph.system.MemoNode;
 
 public class MemoNodeGUI extends NodeGUI {
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private static final int BORDER_SIZE = 5;
 
     private MemoNode node;

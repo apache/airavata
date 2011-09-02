@@ -42,7 +42,6 @@ import org.xmlpull.infoset.XmlElement;
  */
 public abstract class PortImpl implements Port {
 
-    // private static final MLogger logger = MLogger.getLogger();
 
     /**
      * The graph this edge belogs to

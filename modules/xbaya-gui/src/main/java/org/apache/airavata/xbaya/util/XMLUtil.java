@@ -162,11 +162,9 @@ public class XMLUtil {
 
         for (org.xmlpull.infoset.XmlNamespace namespace : xppElement.namespaces()) {
             logger.finest("namespace: " + namespace);
-            // TODO
         }
 
         for (org.xmlpull.infoset.XmlAttribute attribute : xppElement.attributes()) {
-            // TODO namespace
             domElement.setAttribute(attribute.getName(), attribute.getValue());
         }
 

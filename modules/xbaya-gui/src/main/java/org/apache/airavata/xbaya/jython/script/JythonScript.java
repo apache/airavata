@@ -115,8 +115,6 @@ public class JythonScript {
      */
     private static final String WSDL_SUFFIX = "_wsdl";
 
-    // private static final MLogger logger = MLogger.getLogger();
-
     private XBayaConfiguration configuration;
 
     private Workflow workflow;
