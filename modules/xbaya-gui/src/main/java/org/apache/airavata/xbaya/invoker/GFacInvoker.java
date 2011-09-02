@@ -29,7 +29,6 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
 import org.apache.airavata.xbaya.lead.NotificationHandler;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsdl.WsdlDefinitions;
@@ -88,7 +87,7 @@ public class GFacInvoker implements Invoker {
             URI uri = new URI(this.gfacURL);
             String path = uri.getPath();
             if (path != null && path.contains("/")) {
-                path = path.substring(path.lastIndexOf('/') + 1) + portTypeQName.getLocalPart() + "/getWSDL";
+                path = path.substring(0, path.lastIndexOf('/') + 1) + portTypeQName.getLocalPart() + "/getWSDL";
             }
             uri = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), path, uri.getQuery(),
                     uri.getFragment());
