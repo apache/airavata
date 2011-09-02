@@ -127,9 +127,6 @@ public class ODEDeploymentClient {
 
                 deploy(wfClient, engine.getWorkflow(), gssCredential, makePublic, System.currentTimeMillis());
 
-                long end = System.currentTimeMillis();
-                XBaya.time.add("" + (end - start));
-                System.out.println("Time:" + (end - start));
 
             }
 

@@ -83,7 +83,8 @@ import xsul5.wsdl.WsdlResolver;
 
 public class ODEInvokerWindow {
 
-    private XBayaEngine engine;
+    private static final String REGISTER_QUERY = "registerQuery";
+	private XBayaEngine engine;
     private ODEInvoker invoker;
     private MyProxyChecker myProxyChecker;
     private GridPanel parameterPanel;
@@ -196,7 +197,6 @@ public class ODEInvokerWindow {
         });
 
         JPanel buttonPanel = new JPanel();
-        // buttonPanel.add(this.deployNewAndInvokeButton);
         buttonPanel.add(this.invokeButton);
         buttonPanel.add(cancelButton);
 
@@ -310,162 +310,13 @@ public class ODEInvokerWindow {
         hide();
 
         String workflowName = this.engine.getWorkflow().getName();
-        // this is the control workflow
-        if (-1 != (workflowName.indexOf("Control_"))) {
-
-            String oldWorkflowName = workflowName.substring("Control_".length());
-            String oldWorkflowID = null;
-            List<GraphCanvas> graphCanvases = this.engine.getGUI().getGraphCanvases();
-            for (GraphCanvas graphCanvas : graphCanvases) {
-                if (oldWorkflowName.equals(graphCanvas.getWorkflow().getName())) {
-                    this.engine.getGUI().setFocus(graphCanvas);
-                    Workflow workflow2 = this.engine.getWorkflow();
-                    oldWorkflowID = workflow2.getGraph().getID();
-                    break;
-                }
-            }
-
-            try {
-                registerQuery(inputs, oldWorkflowID);
-            } catch (URISyntaxException e1) {
-                this.engine.getErrorWindow().error("Invalid service location", e1);
-                hide();
-                return;
-            }
-
-            try {
-                this.engine.getWorkflow().setGPELInstanceID(new URI(this.topicTextField.getText()));
-            } catch (URISyntaxException e) {
-                this.engine.getErrorWindow().error("Invalid Topic", e);
-                hide();
-                return;
-            }
-
-        }
+        
 
     }
 
-    public static void main(String[] args) throws WsdlException, URISyntaxException {
-        WsdlDefinitions streamEngine = WsdlResolver.getInstance().loadWsdl(
-                new URI("http://pagodatree.cs.indiana.edu:9999/axis2/services/StreamEngine?wsdl"));
-        WSDLCleaner.cleanWSDL(streamEngine);
+  
 
-        WSIFService service = WSIFServiceFactory.newInstance().getService(
-                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(streamEngine));
-        WSIFPort port = service.getPort();
-        WSIFRuntime.getDefault().newClientFor(port);
-
-        String operationName = "registerQuery";
-        WSIFOperation operation = port.createOperation(operationName);
-        WSIFMessage inputMessage = operation.createInputMessage();
-        WSIFMessage outputMessage = operation.createOutputMessage();
-        WSIFMessage faultMessage = operation.createFaultMessage();
-
-        inputMessage.setObjectPart("endpoint", "http://pagodatree.cs.indiana.edu:17080/ode/processes/velocityhh?wsdl");
-        inputMessage.setObjectPart("startTime", "D");
-        inputMessage.setObjectPart("endTime", "d");
-        inputMessage.setObjectPart("epl", "select * from java.lang.String.win:length_batch(2)");
-        inputMessage.setObjectPart("topic", "skkkk");
-
-        boolean res = operation.executeRequestResponseOperation(inputMessage, outputMessage, faultMessage);
-        if (res) {
-            System.out.println(outputMessage.getObjectPart("return"));
-        } else {
-            System.out.println(faultMessage.toString());
-        }
-
-    }
-
-    /**
-     * @param inputs
-     * @param workflowname
-     * @throws URISyntaxException
-     */
-    // private void registerQuery(List<WSComponentPort> inputs, String
-    // workflowname)
-    // throws URISyntaxException {
-    // WsdlDefinitions streamEngine = WsdlResolver
-    // .getInstance()
-    // .loadWsdl(
-    // new URI(
-    // "http://pagodatree.cs.indiana.edu:9999/axis2/services/StreamEngine?wsdl"
-    // ));
-    // WSDLCleaner.cleanWSDL(streamEngine);
-    //
-    // WSIFServiceFactory factory = WSIFServiceFactory.newInstance();
-    //
-    // WSIFService service = factory.getService(WSDLUtil
-    // .wsdlDefinitions5ToWsdlDefintions3(streamEngine));
-    // WSIFClient client = WSIFRuntime.getDefault()
-    // .newClientFor(service, null);
-    // WSIFPort port = client.getPort();
-    // String operationName = "registerQuery";
-    // WSIFOperation operation = port.createOperation(operationName);
-    // WSIFMessage inputMessage = operation.createInputMessage();
-    // WSIFMessage outputMessage = operation.createOutputMessage();
-    // WSIFMessage faultMessage = operation.createFaultMessage();
-    // for (WSComponentPort input : inputs) {
-    //
-    // // Somethign special for the control workflow
-    // if ("epr".equals(input.getName())) {
-    // String endpoint =
-    // "http://pagodatree.cs.indiana.edu:17080/ode/processes/Control_"
-    // + workflowname + "?wsdl";
-    // System.out.println(endpoint);
-    // inputMessage.setObjectPart("endpoint",
-    // endpoint);
-    // } else if ("startTime".equals(input.getName())) {
-    // inputMessage.setObjectPart("startTime", input.getValue());
-    // } else if ("endTime".equals(input.getName())) {
-    // inputMessage.setObjectPart("endTime", input.getValue());
-    // } else if ("eql".equals(input.getName())) {
-    // inputMessage.setObjectPart("epl", input.getValue());
-    // }
-    // }
-    // System.out.println(this.topicTextField.getText());
-    // inputMessage.setObjectPart("topic", this.topicTextField.getText());
-    // boolean res = operation.executeRequestResponseOperation(inputMessage,
-    // outputMessage, faultMessage);
-    // if (res) {
-    // System.out.println(outputMessage.getObjectPart("return"));
-    // }else{
-    // System.out.println("Didnt receive the responce from CEPService yet");
-    // }
-    // }
-    private void registerQuery(List<WSComponentPort> inputs, String workflowname) throws URISyntaxException {
-        WsdlDefinitions streamEngine = WsdlResolver.getInstance().loadWsdl(
-                new URI("http://pagodatree.cs.indiana.edu:9999/axis2/services/StreamEngine?wsdl"));
-        WSDLCleaner.cleanWSDL(streamEngine);
-
-        WSIFServiceFactory factory = WSIFServiceFactory.newInstance();
-
-        WSIFService service = factory.getService(WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(streamEngine));
-        WSIFClient client = WSIFRuntime.getDefault().newClientFor(service, null);
-        WSIFPort port = client.getPort();
-        String operationName = "registerQuery";
-        WSIFOperation operation = port.createOperation(operationName);
-        WSIFMessage inputMessage = operation.createInputMessage();
-        WSIFMessage outputMessage = operation.createOutputMessage();
-        WSIFMessage faultMessage = operation.createFaultMessage();
-
-        // Somethign special for the control workflow
-        String endpoint = "http://pagodatree.cs.indiana.edu:17080/ode/processes/Control_" + workflowname + "?wsdl";
-        System.out.println(endpoint);
-        String t = "5";
-        inputMessage.setObjectPart("endpoint", endpoint);
-        inputMessage.setObjectPart("startTime", t);
-        inputMessage.setObjectPart("endTime", t);
-        inputMessage.setObjectPart("epl", "select * from java.lang.String.win:length_batch(1)");
-        // inputMessage.setObjectPart("secs", t);
-        inputMessage.setObjectPart("topic", this.topicTextField.getText());
-        boolean res = operation.executeRequestResponseOperation(inputMessage, outputMessage, faultMessage);
-        if (res) {
-            System.out.println(outputMessage.getObjectPart("return"));
-        } else {
-            System.out.println("Didnt receive the responce from CEPService yet");
-        }
-    }
-
+   
     public void hide() {
         this.dialog.hide();
     }

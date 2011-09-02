@@ -159,7 +159,6 @@ public class AmazonS3UtilsWindow {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(AmazonCredential.getInstance().getAwsAccessKeyId());
                 if (AmazonCredential.getInstance().getAwsAccessKeyId().isEmpty()
                         || AmazonCredential.getInstance().getAwsSecretAccessKey().isEmpty()) {
                     JOptionPane.showMessageDialog(AmazonS3UtilsWindow.this.dialog.getDialog(),

@@ -188,11 +188,7 @@ public class GpelWorkflowClient implements Callback {
         GPELClient client = new GPELClient(XBayaConstants.DEFAULT_GPEL_ENGINE_URL, credential);
         client.deploy(workflow, false);
         GcInstance instance = client.instantiate(workflow, XBayaConstants.DEFAULT_DSC_URL, topic);
-        System.out.println("===============================================");
-        System.out.println(instance.getId());
-        System.out.println(instance.getInstanceId());
         WsdlDefinitions wsdl = client.start(instance);
-        System.out.println(workflow.getGPELTemplateID());
 
         LEADWorkflowInvoker invoker = null;
         try {
@@ -213,7 +209,6 @@ public class GpelWorkflowClient implements Callback {
         invoker.setInputs(inputs);
 
         final LEADWorkflowInvoker workflowInvoker = invoker;
-        System.out.println("Invoking .....");
 
         new Thread() {
             @Override
@@ -231,7 +226,6 @@ public class GpelWorkflowClient implements Callback {
             }
         }.start();
 
-        System.out.println("Done Invoking.");
     }
 
     /**

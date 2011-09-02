@@ -260,10 +260,8 @@ public class XRegistryAccesser {
         if (this.xregistryClient == null) {
             connectToXRegistry();
         }
-        System.out.println(workflowTemplateId);
         String workflowString = this.xregistryClient.getOGCEResource(workflowTemplateId,
                 XRegClientConstants.ResourceType.WorkflowTemplate.toString(), null);
-        System.out.println(workflowString);
 
         XmlElement xwf = XMLUtil.stringToXmlElement(workflowString);
         Workflow workflow = new Workflow(xwf);
@@ -420,8 +418,6 @@ public class XRegistryAccesser {
             }
             String resource = this.xregistryClient.getResource(qname);
             XmlElement xwf = XMLUtil.stringToXmlElement(resource);
-            // System.out.println(XmlConstants.BUILDER.serializeToStringPretty(xwf
-            // ));
             Workflow workflow = new Workflow(xwf);
             return workflow;
         } catch (Exception e) {
@@ -515,7 +511,6 @@ public class XRegistryAccesser {
             String toFormatXML = HostUtils.simpleHostXMLRequest(hostBean);
             String formattedXML = XmlFormatter.format(toFormatXML);
 
-            System.out.println(formattedXML);
 
             this.xregistryClient.registerHostDesc(formattedXML);
 
@@ -542,7 +537,6 @@ public class XRegistryAccesser {
             String toFormatXML = ApplicationUtils.simpleAppXMLRequest(appBean);
             String formattedXML = XmlFormatter.format(toFormatXML);
 
-            // System.out.println(formattedXML);
 
             this.xregistryClient.registerAppDesc(formattedXML);
 
@@ -566,7 +560,6 @@ public class XRegistryAccesser {
             String formattedXML = XmlFormatter.format(toFormatXML);
             String serviceWsdl = ServiceUtils.createAwsdl4ServiceMap(formattedXML);
 
-            // System.out.println(formattedXML);
 
             this.xregistryClient.registerServiceDesc(formattedXML, serviceWsdl);
 

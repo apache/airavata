@@ -81,7 +81,6 @@ public class S3Uploader implements Cancelable {
                     index = filePath.lastIndexOf('\\');
                 }
                 fileName = filePath.substring(index + 1, filePath.length());
-                System.out.println(filePath);
                 try {
                     S3Object s3Object = new S3Object(new File(filePath));
                     s3.putObject(bucket, s3Object);

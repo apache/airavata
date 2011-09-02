@@ -62,7 +62,6 @@ public class ProxyServiceTester {
     private void runClient() {
         // logger.info("Invoking operation deploy using WSDL from " + wsdlLoc);
         try {
-            System.out.println("Invoking operation deploy using WSDL from " + wsdlLoc);
             WSIFAsyncResponsesCorrelator correlator;
             correlator = null;
 

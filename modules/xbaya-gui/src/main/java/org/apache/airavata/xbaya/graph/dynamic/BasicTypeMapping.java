@@ -164,7 +164,6 @@ public class BasicTypeMapping {
     }
 
     public static Object getObjectOfType(QName qName, Object obj) {
-        System.out.println(qName + "     " + obj.getClass() + "  " + obj);
         return getObjectOfType(getSimpleTypeIndex(qName), obj);
     }
 

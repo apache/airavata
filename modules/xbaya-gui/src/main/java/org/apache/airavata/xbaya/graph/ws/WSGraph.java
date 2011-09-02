@@ -529,8 +529,6 @@ public class WSGraph extends GraphImpl {
                 throw new XBayaRuntimeException(
                         "Some edges were not labeled after labeling algorithm. Possibly partitioned graph");
             }
-            System.out.println(edge.getLabel());
-            System.out.println(edge);
         }
 
     }

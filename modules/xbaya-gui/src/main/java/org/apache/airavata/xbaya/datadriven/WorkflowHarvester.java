@@ -135,20 +135,6 @@ public class WorkflowHarvester {
      * @param clone
      */
     private void removeUnnecessaryNodes(Node node, Port candidatePort, Workflow workflow) {
-        // System.out.println("===============================================");
-        // System.out.println(node.getID());
-        // System.out.println(candidatePort.getID());
-        // System.out.println(candidatePort.getFromPort().getEdges().size());
-        // System.out.println(candidatePort.getFromPort().getToPorts().size());
-        //
-        // if (/*
-        // * node.getID().equals("NAM_Lateral_Boundary_V5_2_9_Pub_Interpolater"
-        // * ) &&
-        // */
-        // candidatePort.getFromNode().getID()
-        // .equals("CrossCuttingConfigurations")) {
-        // System.out.println("Crosscuting");
-        // }
         if (candidatePort.getFromPort().getEdges().size() == 1) {
             Node fromNode = candidatePort.getFromNode();
             try {
