@@ -86,6 +86,7 @@ public class GFacMessageReciever implements MessageReceiver {
                 throw new AxisFault("Error retrieving the WSDL");
             }
             log.info("getWSDL operation invoked !!");
+            break;
         case INVOKE:
             try {
                 processInvokeOperation(axisRequestMsgCtx);
@@ -93,6 +94,7 @@ public class GFacMessageReciever implements MessageReceiver {
             } catch (Exception e) {
                 throw new AxisFault("Error Invoking the service");
             }
+            break;
         case GETWSDL:
             try {
                 processgetWSDLOperation(axisRequestMsgCtx);
@@ -100,6 +102,7 @@ public class GFacMessageReciever implements MessageReceiver {
                 throw new AxisFault("Error retrieving the WSDL");
             }
             log.info("getWSDL operation invoked !!");
+            break;
         }
     }
 
@@ -222,6 +225,7 @@ public class GFacMessageReciever implements MessageReceiver {
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(wsdlElement.toString().getBytes());
             InputSource source = new InputSource(byteArrayInputStream);
             Definition wsdlDefinition = wsdlReader.readWSDL(null, source);
+
             //TODO based on the abstact wsdl content fill up the required information using wsdl4j api
             SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
             SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
