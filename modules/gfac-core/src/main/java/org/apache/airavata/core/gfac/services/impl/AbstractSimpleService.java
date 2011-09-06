@@ -30,12 +30,12 @@ import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.provider.Provider;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.services.GenericService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractSimpleService implements GenericService {
     
-    private static Log log = LogFactory.getLog(AbstractSimpleService.class);
+    private static Logger log = LoggerFactory.getLogger(AbstractSimpleService.class);
 
     public abstract void preProcess(InvocationContext context) throws GfacException;
 
