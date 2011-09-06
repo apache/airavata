@@ -22,9 +22,10 @@
 package org.apache.airavata.core.gfac.factory;
 
 import org.apache.airavata.core.gfac.context.InvocationContext;
-import org.apache.airavata.core.gfac.context.MessageContext;
+import org.apache.airavata.core.gfac.context.impl.ExecutionContextImpl;
 import org.apache.airavata.core.gfac.context.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.exception.GfacException;
+import org.apache.airavata.core.gfac.notification.impl.StandardOutNotification;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.core.gfac.type.parameter.StringParameter;
 import org.junit.Assert;
@@ -52,7 +53,11 @@ public class EchoLocalFactoryTest {
 		output.addParameter("echo_output", b);
 
 		ct.addMessageContext("input", input);
-		ct.addMessageContext("output", output);
+		ct.addMessageContext("output", output);	
+		
+		ct.setExecutionContext(new ExecutionContextImpl());
+		ct.getExecutionContext().setNotificationService(new StandardOutNotification());
+		
 
 		try {
 			GenericService service = new EchoLocalServiceFactory()
