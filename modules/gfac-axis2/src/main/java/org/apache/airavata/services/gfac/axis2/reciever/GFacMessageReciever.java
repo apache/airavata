@@ -21,12 +21,20 @@ package org.apache.airavata.services.gfac.axis2.reciever;
  *
  */
 
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
+import java.text.BreakIterator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.jcr.Credentials;
 import javax.jcr.Repository;
+import javax.wsdl.Definition;
+import javax.wsdl.PortType;
+import javax.wsdl.factory.WSDLFactory;
+import javax.wsdl.xml.WSDLReader;
+import javax.wsdl.xml.WSDLWriter;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -59,6 +67,7 @@ import org.apache.axis2.util.MessageContextBuilder;
 import org.apache.axis2.util.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.xml.sax.InputSource;
 
 public class GFacMessageReciever implements MessageReceiver {
 
@@ -70,6 +79,13 @@ public class GFacMessageReciever implements MessageReceiver {
         GFacServiceOperations operation = GFacServiceOperations.valueFrom(axisRequestMsgCtx.getOperationContext()
                 .getOperationName());
         switch (operation) {
+        case GETABSTRACTWSDL:
+            try {
+                processgetAbstractWSDLOperation(axisRequestMsgCtx);
+            } catch (Exception e) {
+                throw new AxisFault("Error retrieving the WSDL");
+            }
+            log.info("getWSDL operation invoked !!");
         case INVOKE:
             try {
                 processInvokeOperation(axisRequestMsgCtx);
@@ -77,7 +93,6 @@ public class GFacMessageReciever implements MessageReceiver {
             } catch (Exception e) {
                 throw new AxisFault("Error Invoking the service");
             }
-            break;
         case GETWSDL:
             try {
                 processgetWSDLOperation(axisRequestMsgCtx);
@@ -188,6 +203,41 @@ public class GFacMessageReciever implements MessageReceiver {
     }
 
     public void processgetWSDLOperation(MessageContext messageContext) throws Exception {
+        MessageContext response = null;
+        String serviceName = getOriginalServiceName(messageContext);
+        ConfigurationContext context = messageContext.getConfigurationContext();
+        // todo this logic has to change based on the logic we are storing data
+        // into repository
+        try {
+            Credentials credentials = (Credentials) context.getProperty("credentials");
+            Repository repo = (Repository) context.getProperty("repository");
+
+            JCRRegistry jcr = new JCRRegistry(repo, credentials);
+
+            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(
+                    new StringReader(jcr.getWSDL(serviceName)));
+            StAXOMBuilder builder = new StAXOMBuilder(reader);
+            OMElement wsdlElement = builder.getDocumentElement();
+            WSDLReader wsdlReader = WSDLFactory.newInstance().newWSDLReader();
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(wsdlElement.toString().getBytes());
+            InputSource source = new InputSource(byteArrayInputStream);
+            Definition wsdlDefinition = wsdlReader.readWSDL(null, source);
+            //TODO based on the abstact wsdl content fill up the required information using wsdl4j api
+            SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
+            SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
+            sf.createSOAPBody(responseEnv);
+            responseEnv.getBody().addChild(wsdlElement);
+            response = MessageContextBuilder.createOutMessageContext(messageContext);
+            response.setEnvelope(responseEnv);
+            response.getOperationContext().addMessageContext(response);
+            AxisEngine.send(response);
+        } catch (Exception fault) {
+            log.error("Error creating response");
+            throw fault;
+        }
+    }
+
+     public void processgetAbstractWSDLOperation(MessageContext messageContext) throws Exception {
         MessageContext response = null;
         String serviceName = getOriginalServiceName(messageContext);
         ConfigurationContext context = messageContext.getConfigurationContext();
