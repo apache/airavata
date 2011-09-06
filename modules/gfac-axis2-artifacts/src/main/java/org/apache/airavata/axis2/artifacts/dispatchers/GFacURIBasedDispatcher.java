@@ -77,6 +77,10 @@ public class GFacURIBasedDispatcher extends AbstractServiceDispatcher {
                             //todo get the wsdl from registry and add the endpoints to messagecontext
                             messageContext.setAxisOperation(
                                     service.getOperation(new QName(GFacAxis2ArtifactsConstants.OPERATIONGETWSDL)));
+                        }else if (GFacAxis2ArtifactsConstants.OPERATIONGETABSTRACTWSDL.equals(values[1])) {
+                            //todo get the wsdl from registry and add the endpoints to messagecontext
+                            messageContext.setAxisOperation(
+                                    service.getOperation(new QName(GFacAxis2ArtifactsConstants.OPERATIONGETABSTRACTWSDL)));
                         } else {
                             log.error("Wrong Service Name :" + values[0]);
                         }
