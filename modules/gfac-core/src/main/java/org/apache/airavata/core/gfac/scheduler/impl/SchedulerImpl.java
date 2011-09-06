@@ -37,8 +37,12 @@ import org.apache.airavata.core.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.core.gfac.type.HostDescription;
 import org.apache.airavata.core.gfac.type.ServiceDescription;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SchedulerImpl implements Scheduler {
+    
+    private static Logger log = LoggerFactory.getLogger(SchedulerImpl.class);
 
 	public Provider schedule(InvocationContext context) throws GfacException {
 
@@ -108,8 +112,7 @@ public class SchedulerImpl implements Scheduler {
 	private HostDescription scheduleToHost(Registry regService,
 			String serviceName) {
 
-		System.out
-				.println("Searching registry for some deployed application hosts\n");
+	    log.info("Searching registry for some deployed application hosts");
 		List<HostDescription> hosts = regService
 				.getServiceLocation(serviceName);
 		if (hosts != null && hosts.size() > 0) {
@@ -117,11 +120,11 @@ public class SchedulerImpl implements Scheduler {
 			for (Iterator iterator = hosts.iterator(); iterator.hasNext();) {
 				result = (HostDescription) iterator.next();
 
-				System.out.println("Found service on: " + result.getName());
+				log.info("Found service on: " + result.getName());
 			}
 			return result;
 		} else {
-			System.out.println("Applcation  " + serviceName
+		    log.warn("Applcation  " + serviceName
 					+ " not found in registry");
 			return null;
 		}
