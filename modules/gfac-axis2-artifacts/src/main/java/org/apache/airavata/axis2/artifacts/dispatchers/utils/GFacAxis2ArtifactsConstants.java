@@ -23,4 +23,5 @@ package org.apache.airavata.axis2.artifacts.dispatchers.utils;
 public class GFacAxis2ArtifactsConstants {
     public static final String OPERATIONINVOKE="invoke";
     public static final String OPERATIONGETWSDL="getWSDL";
+    public static final String OPERATIONGETABSTRACTWSDL="getAbstractWSDL";
 }
