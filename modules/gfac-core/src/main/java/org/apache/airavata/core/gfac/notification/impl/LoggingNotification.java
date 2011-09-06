@@ -32,11 +32,11 @@ public class LoggingNotification implements NotificationService {
     protected final Logger log = LoggerFactory.getLogger(LoggingNotification.class);
 
     public void startSchedule(Object notifier, InvocationContext context, Scheduler scheduler) {
-        printOut(notifier, context, null);
+        printOut(notifier, context, "Start scheduling");
     }
 
     public void finishSchedule(Object notifier, InvocationContext context, Scheduler scheduler, Provider provider) {
-        printOut(notifier, context, null);
+        printOut(notifier, context, "Finish scheduling");
     }
 
     public void input(Object notifier, InvocationContext context, String... data) {
@@ -47,7 +47,7 @@ public class LoggingNotification implements NotificationService {
     }
 
     public void startExecution(Object notifier, InvocationContext context) {
-        printOut(notifier, context, null);
+        printOut(notifier, context, "Start execution");
     }
 
     public void applicationInfo(Object notifier, InvocationContext context, String... data) {
@@ -55,7 +55,7 @@ public class LoggingNotification implements NotificationService {
     }
 
     public void finishExecution(Object notifier, InvocationContext context) {
-        printOut(notifier, context, null);
+        printOut(notifier, context, "Finish execution");
     }
 
     public void statusChanged(Object notifier, InvocationContext context, String... data) {
