@@ -72,6 +72,10 @@ public interface InvocationContext {
      * @param name
      * @return MessageContext
      */
+	 
+	 //TODO: It may be a good idea to have specific message contexts for input, output, etc.
+	 //Currently this relies on magic names ("output", "input").  Alternatively, these can be
+	 //set to static constants, like MessageContext.INPUT.
     public <T> MessageContext<T> getMessageContext(String name);
 
     /**

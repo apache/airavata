@@ -79,6 +79,8 @@ public class SSHProvider extends AbstractProvider {
         
     }
 
+	 //TODO: This method has a try/catch embedded in 'finally' method.  Is there a way
+	 //TODO: to force cleanup on failed connections?
     public void initialize(InvocationContext context) throws GfacException {
         HostDescription host = context.getExecutionDescription().getHost();
         ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
@@ -92,6 +94,7 @@ public class SSHProvider extends AbstractProvider {
             final Session session = ssh.startSession();
             try {
                 StringBuilder command = new StringBuilder();
+					 //TODO: Is "|" what you want here?
                 command.append("mkdir -p ");
                 command.append(app.getTmpDir());
                 command.append(" | ");
@@ -111,6 +114,8 @@ public class SSHProvider extends AbstractProvider {
                 try {
                     session.close();
                 } catch (Exception e) {
+						  //TODO: Need to at least report this exception.  This failed "finally" could
+						  //TODO: lead to hard-to-debug crashes.
                 }
             }
         } catch (Exception e) {
@@ -119,10 +124,14 @@ public class SSHProvider extends AbstractProvider {
             try {
                 ssh.disconnect();
             } catch (Exception e) {
+					 //TODO: Need to at least report this exception.  This failed "finally" could
+					 //TODO: lead to hard-to-debug crashes.
             }
         }
     }
 
+	 //TODO: This method has a try/catch embedded in 'finally' method.  Is there a way
+	 //TODO: to force cleanup on failed connections?
     public void execute(InvocationContext context) throws GfacException {
         HostDescription host = context.getExecutionDescription().getHost();
         ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
@@ -149,6 +158,8 @@ public class SSHProvider extends AbstractProvider {
             String command = buildCommand(cmdList);
 
             // redirect StdOut and StdErr
+				//TODO: Make 1> and 2> into static constants.
+				//TODO: This only works for the BASH shell.  CSH and TCSH will be different.  
             command += SPACE + "1>" + SPACE + app.getStdOut();
             command += SPACE + "2>" + SPACE + app.getStdErr();
 
@@ -168,7 +179,8 @@ public class SSHProvider extends AbstractProvider {
             // notify start
             NotificationService notifier = context.getExecutionContext().getNotificationService();
             notifier.startExecution(this, context);
-
+				
+				//TODO: initSSHSecurity can throw an IOException but you are treating everything as a GFAC exception.
             initSSHSecurity(context, ssh);
             ssh.connect(host.getName());
             final Session session = ssh.startSession();
@@ -208,6 +220,9 @@ public class SSHProvider extends AbstractProvider {
                     log.info("Process finished with return value of zero.");
                 }
 
+					 //TODO: The location of the logDir should be a configurable parameter.  
+					 //TODO: This location is easy to lose.  Also, why not use standard logging
+					 //TODO: tools for this?  Or are these really temporary directories rather than logs?
                 File logDir = new File("./service_logs");
                 if (!logDir.exists()) {
                     logDir.mkdir();
@@ -227,6 +242,9 @@ public class SSHProvider extends AbstractProvider {
                 String stdErrStr = GfacUtils.readFile(localStdErrFile.getAbsolutePath());
 
                 // set to context
+
+					 //TODO: "output" should be replaced by a static string or else a specialized
+					 //TODO: message.  See TODO comments from MessageContext.java
                 OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getMessageContext("output"), stdOutStr, stdErrStr);
 
             } catch (Exception e) {
@@ -235,6 +253,8 @@ public class SSHProvider extends AbstractProvider {
                 try {
                     session.close();
                 } catch (Exception e) {
+						  //TODO: Need to at least report this exception.  This failed "finally" could
+						  //TODO: lead to hard-to-debug crashes.
                 }
             }
         } catch (Exception e) {
@@ -243,13 +263,14 @@ public class SSHProvider extends AbstractProvider {
             try {
                 ssh.disconnect();
             } catch (Exception e) {
+					 //TODO: Need to at least report this exception.  This failed "finally" could
+					 //TODO: lead to hard-to-debug crashes.
             }
         }
     }
 
     public void dispose(InvocationContext invocationContext) throws GfacException {
         // TODO Auto-generated method stub
-
     }
 
     public void abort(InvocationContext invocationContext) throws GfacException {
