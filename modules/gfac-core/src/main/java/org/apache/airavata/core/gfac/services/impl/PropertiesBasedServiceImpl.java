@@ -137,7 +137,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
              */
             if (this.properties == null) {
                 log.info("try to load default properties: " + FILENAME);
-                URL url = ClassLoader.getSystemResource(FILENAME);
+                URL url = this.getClass().getClassLoader().getResource(FILENAME);
 
                 this.properties = new Properties();
                 this.properties.load(url.openStream());
