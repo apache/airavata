@@ -28,11 +28,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.airavata.core.gfac.api.Registry;
-import org.apache.airavata.core.gfac.api.impl.JCRRegistry;
-import org.apache.airavata.core.gfac.context.InvocationContext;
-import org.apache.airavata.core.gfac.context.impl.GSISecurityContext;
-import org.apache.airavata.core.gfac.context.impl.SSHSecurityContextImpl;
+import org.apache.airavata.commons.gfac.api.Registry;
+import org.apache.airavata.commons.gfac.api.impl.JCRRegistry;
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
+import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
+import org.apache.airavata.core.gfac.context.security.impl.SSHSecurityContextImpl;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
 import org.apache.airavata.core.gfac.extension.DataServiceChain;
@@ -243,7 +244,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
             /*
              * If there is no specific registry service, use the default one.
              */
-            context.getExecutionContext().setRegistryService(this.registryService);
+            ((DefaultExecutionContext)context.getExecutionContext()).setRegistryService(this.registryService);
         }
     }
 

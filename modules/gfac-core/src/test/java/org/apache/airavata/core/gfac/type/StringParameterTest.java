@@ -21,7 +21,7 @@
 
 package org.apache.airavata.core.gfac.type;
 
-import org.apache.airavata.core.gfac.type.parameter.StringParameter;
+import org.apache.airavata.commons.gfac.type.parameter.StringParameter;
 import org.junit.Test;
 
 public class StringParameterTest {

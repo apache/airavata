@@ -25,22 +25,22 @@ import java.io.File;
 import java.util.Date;
 import java.util.UUID;
 
-import org.apache.airavata.core.gfac.context.InvocationContext;
+import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
 import org.apache.airavata.core.gfac.extension.DataServiceChain;
-import org.apache.airavata.core.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.core.gfac.type.HostDescription;
-import org.apache.airavata.core.gfac.type.ServiceDescription;
-import org.apache.airavata.core.gfac.type.app.ShellApplicationDeployment;
 
 public class RegistryDataService extends DataServiceChain {
 
 	public boolean execute(InvocationContext context) throws GfacException {
 
-		ServiceDescription serviceDesc = context.getGfacContext().getService();
-		HostDescription hostDesc = context.getGfacContext().getHost();
-		ApplicationDeploymentDescription appDesc = context.getGfacContext()
+		ServiceDescription serviceDesc = context.getExecutionDescription().getService();
+		HostDescription hostDesc = context.getExecutionDescription().getHost();
+		ApplicationDeploymentDescription appDesc = context.getExecutionDescription()
 				.getApp();
 		if (serviceDesc != null && hostDesc != null && appDesc != null) {
 			/*

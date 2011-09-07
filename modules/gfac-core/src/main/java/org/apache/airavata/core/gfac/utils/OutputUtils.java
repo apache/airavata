@@ -25,22 +25,22 @@ import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.airavata.core.gfac.context.MessageContext;
-import org.apache.airavata.core.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.core.gfac.context.message.MessageContext;
 
 public class OutputUtils {
 
     public static void fillOutputFromStdout(MessageContext<AbstractParameter> outMessage, String stdout, String stderr) {
 
-        for (Iterator<String> iterator = outMessage.getParameterNames(); iterator.hasNext();) {
+        for (Iterator<String> iterator = outMessage.getNames(); iterator.hasNext();) {
             String parameterName = iterator.next();
 
             // if parameter value is not already set, we let it go
-            if (outMessage.getParameterValue(parameterName) == null) {
+            if (outMessage.getValue(parameterName) == null) {
                 continue;
             }
 
-            AbstractParameter x = outMessage.getParameterValue(parameterName);
+            AbstractParameter x = outMessage.getValue(parameterName);
             x.parseStringVal(parseStdout(stdout, parameterName));
         }
     }

@@ -1,0 +1,87 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
+package org.apache.airavata.core.gfac.context.invocation.impl;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.airavata.core.gfac.context.invocation.ExecutionContext;
+import org.apache.airavata.core.gfac.context.invocation.ExecutionDescription;
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.message.MessageContext;
+import org.apache.airavata.core.gfac.context.security.SecurityContext;
+
+/**
+ * Main context that is used throughout the service
+ * 
+ * 
+ */
+public class DefaultInvocationContext implements InvocationContext{
+
+    private String serviceName;
+    private ExecutionContext executionContext;
+    private ExecutionDescription gfacContext;
+   	private Map<String, MessageContext<?>> messageContextMap = new HashMap<String, MessageContext<?>>();
+    private Map<String, SecurityContext> securityContextMap = new HashMap<String, SecurityContext>();
+        
+    
+    public void setServiceName(String name){
+        this.serviceName = name;
+    }
+    
+    public String getServiceName() {
+        return this.serviceName;
+    }
+    
+    public ExecutionDescription getExecutionDescription() {
+        return this.gfacContext;
+    }
+    
+    public <T extends ExecutionDescription> void setExecutionDescription(T value) {
+        this.gfacContext = value;
+    }
+    
+    public ExecutionContext getExecutionContext() {
+        return this.executionContext;
+    }
+    
+    public <T extends ExecutionContext> void setExecutionContext(T value) {
+        this.executionContext = value;        
+    }
+    
+    public <T> MessageContext<T> getMessageContext(String name) {
+        return (MessageContext<T>) this.messageContextMap.get(name);
+    }
+    
+    public SecurityContext getSecurityContext(String name) {
+        return this.securityContextMap.get(name);
+    }
+    
+    public <T extends MessageContext<?>> void addMessageContext(String name, T value) {
+        this.messageContextMap.put(name, value);
+    }
+
+    @Override
+    public <T extends SecurityContext> void addSecurityContext(String name, T value) {
+        this.securityContextMap.put(name, value);        
+    };    
+}

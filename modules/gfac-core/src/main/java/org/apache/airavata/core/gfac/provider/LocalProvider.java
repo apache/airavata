@@ -32,14 +32,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.airavata.core.gfac.context.InvocationContext;
+import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
+import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
 import org.apache.airavata.core.gfac.notification.NotificationService;
-import org.apache.airavata.core.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.core.gfac.type.HostDescription;
-import org.apache.airavata.core.gfac.type.ServiceDescription;
-import org.apache.airavata.core.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
@@ -58,7 +59,7 @@ public class LocalProvider extends AbstractProvider {
     }
 
     public void initialize(InvocationContext invocationContext) throws GfacException {
-        ApplicationDeploymentDescription app = invocationContext.getGfacContext().getApp();
+        ApplicationDeploymentDescription app = invocationContext.getExecutionDescription().getApp();
 
         log.info("working diectroy = " + app.getWorkingDir());
         log.info("temp directory = " + app.getTmpDir());
@@ -69,15 +70,15 @@ public class LocalProvider extends AbstractProvider {
     }
 
     public void execute(InvocationContext context) throws GfacException {
-        HostDescription host = context.getGfacContext().getHost();
-        ShellApplicationDeployment app = (ShellApplicationDeployment)context.getGfacContext().getApp();
-        ServiceDescription service = context.getGfacContext().getService();
+        HostDescription host = context.getExecutionDescription().getHost();
+        ShellApplicationDeployment app = (ShellApplicationDeployment)context.getExecutionDescription().getApp();
+        ServiceDescription service = context.getExecutionDescription().getService();
         
         // input parameter
         ArrayList<String> tmp = new ArrayList<String>();
-        for (Iterator<String> iterator = context.getMessageContext("input").getParameterNames(); iterator.hasNext();) {
+        for (Iterator<String> iterator = context.getMessageContext("input").getNames(); iterator.hasNext();) {
             String key = iterator.next();
-            tmp.add(context.getMessageContext("input").getStringParameterValue(key));
+            tmp.add(context.getMessageContext("input").getStringValue(key));
         }
         
         List<String> cmdList = new ArrayList<String>();
@@ -227,7 +228,7 @@ public class LocalProvider extends AbstractProvider {
             String stdErrStr = GfacUtils.readFile(app.getStdErr());
 
             // set to context
-            OutputUtils.fillOutputFromStdout(context.getMessageContext("output"), stdOutStr, stdErrStr);
+            OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getMessageContext("output"), stdOutStr, stdErrStr);
 
         } catch (IOException e) {
         	log.error("error", e);

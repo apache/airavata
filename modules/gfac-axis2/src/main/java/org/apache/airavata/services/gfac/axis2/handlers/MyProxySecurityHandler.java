@@ -25,7 +25,7 @@ import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.core.gfac.context.impl.GSISecurityContext;
+import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.services.gfac.axis2.GFacService;
 import org.apache.airavata.services.gfac.axis2.utils.MessageContextUtil;
 import org.apache.axiom.om.OMElement;

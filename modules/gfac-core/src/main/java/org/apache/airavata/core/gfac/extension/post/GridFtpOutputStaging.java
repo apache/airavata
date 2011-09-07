@@ -25,20 +25,20 @@ import java.io.File;
 import java.net.URI;
 import java.util.Iterator;
 
-import org.apache.airavata.core.gfac.context.InvocationContext;
-import org.apache.airavata.core.gfac.context.MessageContext;
-import org.apache.airavata.core.gfac.context.impl.GSISecurityContext;
+import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.DataType;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
+import org.apache.airavata.commons.gfac.type.host.GlobusHost;
+import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.commons.gfac.type.parameter.FileParameter;
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.message.MessageContext;
+import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
 import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.external.GridFtp;
-import org.apache.airavata.core.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.core.gfac.type.DataType;
-import org.apache.airavata.core.gfac.type.HostDescription;
-import org.apache.airavata.core.gfac.type.app.ShellApplicationDeployment;
-import org.apache.airavata.core.gfac.type.host.GlobusHost;
-import org.apache.airavata.core.gfac.type.parameter.AbstractParameter;
-import org.apache.airavata.core.gfac.type.parameter.FileParameter;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.ietf.jgss.GSSCredential;
 
@@ -50,17 +50,17 @@ public class GridFtpOutputStaging extends PostExecuteChain {
         try {
             MessageContext<AbstractParameter> x = context.getMessageContext("output");
 
-            for (Iterator<String> iterator = x.getParameterNames(); iterator.hasNext();) {
+            for (Iterator<String> iterator = x.getNames(); iterator.hasNext();) {
                 String key = iterator.next();
-                if (x.getParameterValue(key).getType() == DataType.File) {
-                    FileParameter fileParameter = (FileParameter) x.getParameterValue(key);
+                if (x.getValue(key).getType() == DataType.File) {
+                    FileParameter fileParameter = (FileParameter) x.getValue(key);
 
                     /*
                      * Determine scheme
                      */
                     URI uri = URI.create(fileParameter.toStringVal());
                     if (uri.getScheme().equalsIgnoreCase(GridFtp.GSIFTP_SCHEME)) {
-                        HostDescription hostDescription = context.getGfacContext().getHost();
+                        HostDescription hostDescription = context.getExecutionDescription().getHost();
 
                         /*
                          * src complete URI
@@ -68,7 +68,7 @@ public class GridFtpOutputStaging extends PostExecuteChain {
                         File file = new File(uri.getPath());
                         String srcFilePath = file.getName();
 
-                        ApplicationDeploymentDescription app = context.getGfacContext().getApp();
+                        ApplicationDeploymentDescription app = context.getExecutionDescription().getApp();
                         if (app instanceof ShellApplicationDeployment) {
                             srcFilePath = app.getOutputDir() + File.separator + srcFilePath;
                         }
@@ -92,7 +92,7 @@ public class GridFtpOutputStaging extends PostExecuteChain {
         GridFtp ftp = new GridFtp();
         GSSCredential gssCred = ((GSISecurityContext) context.getSecurityContext(MYPROXY_SECURITY_CONTEXT))
                 .getGssCredentails();
-        GlobusHost host = (GlobusHost) context.getGfacContext().getHost();
+        GlobusHost host = (GlobusHost) context.getExecutionDescription().getHost();
         URI srcURI = GfacUtils.createGsiftpURI(host.getGridFTPEndPoint(), remoteSrcFile);
         ftp.transfer(srcURI, dest, gssCred, true);
     }

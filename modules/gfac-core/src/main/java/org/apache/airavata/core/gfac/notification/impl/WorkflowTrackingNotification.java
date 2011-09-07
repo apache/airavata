@@ -24,7 +24,7 @@ package org.apache.airavata.core.gfac.notification.impl;
 import java.net.URI;
 import java.util.Properties;
 
-import org.apache.airavata.core.gfac.context.InvocationContext;
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.apache.airavata.core.gfac.provider.Provider;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;

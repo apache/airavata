@@ -23,33 +23,30 @@ package org.apache.airavata.services.gfac.axis2.reciever;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
-import java.text.BreakIterator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.jcr.Credentials;
 import javax.jcr.Repository;
 import javax.wsdl.Definition;
-import javax.wsdl.PortType;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
-import javax.wsdl.xml.WSDLWriter;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.airavata.core.gfac.api.Registry;
-import org.apache.airavata.core.gfac.api.impl.JCRRegistry;
-import org.apache.airavata.core.gfac.context.InvocationContext;
-import org.apache.airavata.core.gfac.context.impl.ExecutionContextImpl;
-import org.apache.airavata.core.gfac.context.impl.ParameterContextImpl;
+import org.apache.airavata.commons.gfac.api.Registry;
+import org.apache.airavata.commons.gfac.api.impl.JCRRegistry;
+import org.apache.airavata.commons.gfac.type.Parameter;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.commons.gfac.type.util.SchemaUtil;
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
+import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
+import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.factory.PropertyServiceFactory;
 import org.apache.airavata.core.gfac.services.GenericService;
-import org.apache.airavata.core.gfac.type.Parameter;
-import org.apache.airavata.core.gfac.type.ServiceDescription;
-import org.apache.airavata.core.gfac.type.parameter.AbstractParameter;
-import org.apache.airavata.core.gfac.type.util.SchemaUtil;
 import org.apache.airavata.services.gfac.axis2.utils.GFacServiceOperations;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -136,8 +133,8 @@ public class GFacMessageReciever implements MessageReceiver {
 
             Registry regis = new JCRRegistry(repository, credentials);
 
-            InvocationContext ct = new InvocationContext();
-            ct.setExecutionContext(new ExecutionContextImpl());
+            DefaultInvocationContext ct = new DefaultInvocationContext();
+            ct.setExecutionContext(new DefaultExecutionContext());
             ct.setServiceName(serviceName);
             ct.getExecutionContext().setRegistryService(regis);
 
@@ -160,7 +157,7 @@ public class GFacMessageReciever implements MessageReceiver {
 
                 AbstractParameter param = SchemaUtil.mapFromType(parameter.getType());
                 param.parseStringVal(element.getText());
-                inputParam.addParameter(parameter.getName(), param);
+                inputParam.add(parameter.getName(), param);
             }
 
             /*
@@ -169,7 +166,7 @@ public class GFacMessageReciever implements MessageReceiver {
             ParameterContextImpl outputParam = new ParameterContextImpl();
             List<Parameter> outputs = serviceDescription.getOutputParameters();
             for (Parameter parameter : outputs) {
-                inputParam.addParameter(parameter.getName(), SchemaUtil.mapFromType(parameter.getType()));
+                inputParam.add(parameter.getName(), SchemaUtil.mapFromType(parameter.getType()));
             }
 
             ct.addMessageContext("input", inputParam);
@@ -189,12 +186,12 @@ public class GFacMessageReciever implements MessageReceiver {
             OMNamespace omNs = fac.createOMNamespace("http://ws.apache.org/axis2/xsd", "ns1");
             outputElement = fac.createOMElement("output", omNs);
 
-            ParameterContextImpl paramContext = (ParameterContextImpl) ct.getMessageContext("output");
-            for (Iterator<String> iterator = paramContext.getParameterNames(); iterator.hasNext();) {
+            ParameterContextImpl paramContext = (ParameterContextImpl)ct.<AbstractParameter>getMessageContext("output");
+            for (Iterator<String> iterator = paramContext.getNames(); iterator.hasNext();) {
                 String name = iterator.next();
                 OMElement ele = fac.createOMElement(name, omNs);
-                ele.addAttribute("type", paramContext.getParameterValue(name).getType().toString(), omNs);
-                ele.setText(paramContext.getParameterValue(name).toStringVal());
+                ele.addAttribute("type", paramContext.getValue(name).getType().toString(), omNs);
+                ele.setText(paramContext.getValue(name).toStringVal());
                 outputElement.addChild(ele);
             }
 

@@ -21,7 +21,7 @@
 
 package org.apache.airavata.core.gfac.services.impl;
 
-import org.apache.airavata.core.gfac.context.InvocationContext;
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.extension.DataServiceChain;
 import org.apache.airavata.core.gfac.extension.ExitableChain;
