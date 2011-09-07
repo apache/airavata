@@ -1,0 +1,7 @@
+I suggest renaming this directory and all the associated packages to be 
+
+org/apache/airavata/commons/gfac 
+
+or something like this.  It is currently a little confusing to call this "core".  For example, ParameterContextImpl.java in gfac-core uses AbstractParameter in commons.  The naming convention implies AbstractParameter should be in gfac-core's module.
+
+ 
