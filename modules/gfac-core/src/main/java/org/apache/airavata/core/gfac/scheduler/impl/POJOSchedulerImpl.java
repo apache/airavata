@@ -21,19 +21,19 @@
 
 package org.apache.airavata.core.gfac.scheduler.impl;
 
-import org.apache.airavata.core.gfac.context.InvocationContext;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.provider.GramProvider;
 import org.apache.airavata.core.gfac.provider.LocalProvider;
 import org.apache.airavata.core.gfac.provider.Provider;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
-import org.apache.airavata.core.gfac.type.HostDescription;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 
 public class POJOSchedulerImpl implements Scheduler {
 
     public Provider schedule(InvocationContext context) throws GfacException {
-        HostDescription host = context.getGfacContext().getHost();
+        HostDescription host = context.getExecutionDescription().getHost();
         if(GfacUtils.isLocalHost(host.getName())){
             return new LocalProvider();
         }

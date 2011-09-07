@@ -21,13 +21,14 @@
 
 package org.apache.airavata.core.gfac.factory;
 
-import org.apache.airavata.core.gfac.context.InvocationContext;
-import org.apache.airavata.core.gfac.context.impl.ExecutionContextImpl;
-import org.apache.airavata.core.gfac.context.impl.ParameterContextImpl;
+import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.commons.gfac.type.parameter.StringParameter;
+import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
+import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
+import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.notification.impl.StandardOutNotification;
 import org.apache.airavata.core.gfac.services.GenericService;
-import org.apache.airavata.core.gfac.type.parameter.StringParameter;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,7 +36,7 @@ public class EchoLocalFactoryTest {
 
 	@Test
 	public void testEchoLocal() {
-		InvocationContext ct = new InvocationContext();
+		DefaultInvocationContext ct = new DefaultInvocationContext();
 
 		/*
 		 * Input
@@ -43,20 +44,21 @@ public class EchoLocalFactoryTest {
 		ParameterContextImpl input = new ParameterContextImpl();
 		StringParameter z = new StringParameter();
 		z.parseStringVal("echo_output=hello");
-		input.addParameter("echo_input", z);
+		input.add("echo_input", z);
 
 		/*
 		 * Output
 		 */
 		ParameterContextImpl output = new ParameterContextImpl();
 		StringParameter b = new StringParameter();
-		output.addParameter("echo_output", b);
+		output.add("echo_output", b);
 
 		ct.addMessageContext("input", input);
 		ct.addMessageContext("output", output);	
 		
-		ct.setExecutionContext(new ExecutionContextImpl());
-		ct.getExecutionContext().setNotificationService(new StandardOutNotification());
+		DefaultExecutionContext x  = new DefaultExecutionContext();
+		x.setNotificationService(new StandardOutNotification());
+		ct.setExecutionContext(x);
 		
 
 		try {
@@ -69,10 +71,9 @@ public class EchoLocalFactoryTest {
 		}
 
 		Assert.assertNotNull(ct.getMessageContext("output"));
-		Assert.assertNotNull(ct.getMessageContext("output").getParameterValue(
+		Assert.assertNotNull(ct.getMessageContext("output").getValue(
 				"echo_output"));
-		Assert.assertEquals("hello", ((ParameterContextImpl) ct
-				.getMessageContext("output")).getParameterValue("echo_output")
+		Assert.assertEquals("hello", (ct.<AbstractParameter>getMessageContext("output")).getValue("echo_output")
 				.toStringVal());
 	}
 

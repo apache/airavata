@@ -26,8 +26,13 @@ import java.net.URI;
 
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.core.gfac.context.InvocationContext;
-import org.apache.airavata.core.gfac.context.impl.GSISecurityContext;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.commons.gfac.type.app.GramApplicationDeployment;
+import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
+import org.apache.airavata.commons.gfac.type.host.GlobusHost;
+import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
 import org.apache.airavata.core.gfac.exception.JobSubmissionFault;
@@ -35,10 +40,6 @@ import org.apache.airavata.core.gfac.external.GridFtp;
 import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.apache.airavata.core.gfac.provider.utils.GramRSLGenerator;
 import org.apache.airavata.core.gfac.provider.utils.JobSubmissionListener;
-import org.apache.airavata.core.gfac.type.ServiceDescription;
-import org.apache.airavata.core.gfac.type.app.GramApplicationDeployment;
-import org.apache.airavata.core.gfac.type.app.ShellApplicationDeployment;
-import org.apache.airavata.core.gfac.type.host.GlobusHost;
 import org.apache.airavata.core.gfac.utils.ErrorCodes;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
@@ -53,8 +54,8 @@ public class GramProvider extends AbstractProvider {
     public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";
 
     public void initialize(InvocationContext invocationContext) throws GfacException {
-        GlobusHost host = (GlobusHost)invocationContext.getGfacContext().getHost();
-        ShellApplicationDeployment app = (ShellApplicationDeployment)invocationContext.getGfacContext().getApp();
+        GlobusHost host = (GlobusHost)invocationContext.getExecutionDescription().getHost();
+        ShellApplicationDeployment app = (ShellApplicationDeployment)invocationContext.getExecutionDescription().getApp();
     	
         GridFtp ftp = new GridFtp();
 
@@ -89,9 +90,9 @@ public class GramProvider extends AbstractProvider {
     }
 
     public void execute(InvocationContext invocationContext) throws GfacException {
-    	GlobusHost host = (GlobusHost)invocationContext.getGfacContext().getHost();
-    	GramApplicationDeployment app = (GramApplicationDeployment)invocationContext.getGfacContext().getApp();
-        ServiceDescription service = invocationContext.getGfacContext().getService();
+    	GlobusHost host = (GlobusHost)invocationContext.getExecutionDescription().getHost();
+    	GramApplicationDeployment app = (GramApplicationDeployment)invocationContext.getExecutionDescription().getApp();
+        ServiceDescription service = invocationContext.getExecutionDescription().getService();
 
         log.info("Searching for Gate Keeper");
         String gatekeeper = host.getGlobusGateKeeperEndPoint();
@@ -199,7 +200,7 @@ public class GramProvider extends AbstractProvider {
             String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
 
             // set to context
-            OutputUtils.fillOutputFromStdout(invocationContext.getMessageContext("output"), stdout, stderr);
+            OutputUtils.fillOutputFromStdout(invocationContext.<AbstractParameter>getMessageContext("output"), stdout, stderr);
 
             jobSucsseful = true;
         } catch (GramException e) {

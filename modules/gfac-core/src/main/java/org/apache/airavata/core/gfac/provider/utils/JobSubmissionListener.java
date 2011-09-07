@@ -21,12 +21,9 @@
 
 package org.apache.airavata.core.gfac.provider.utils;
 
-import org.apache.airavata.core.gfac.context.ExecutionContext;
-import org.apache.airavata.core.gfac.context.GFACContext;
-import org.apache.airavata.core.gfac.context.InvocationContext;
-import org.apache.airavata.core.gfac.context.impl.GSISecurityContext;
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.globus.gram.GramException;
 import org.globus.gram.GramJob;
 import org.globus.gram.GramJobListener;
@@ -78,12 +75,12 @@ public class JobSubmissionListener implements GramJobListener {
             }
         }
     }
-
+    
     public synchronized void statusChanged(GramJob job) {
         int jobStatus = job.getStatus();
         String jobId = job.getIDAsString();
         String statusString = job.getStatusAsString();
-        String jobStatusMessage = GfacUtils.formatJobStatus(jobId, statusString);
+        String jobStatusMessage = formatJobStatus(jobId, statusString);
         log.info(jobStatusMessage);
         status = jobStatus;
         context.getExecutionContext().getNotificationService().statusChanged(this, this.context, jobStatusMessage);
@@ -106,6 +103,10 @@ public class JobSubmissionListener implements GramJobListener {
 
     public int getStatus() {
         return status;
+    }
+    
+    private String formatJobStatus(String jobid, String jobstatus) {
+        return "Status of job " + jobid + "is " + jobstatus;
     }
 
     public void wakeup() {

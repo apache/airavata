@@ -21,24 +21,25 @@
 
 package org.apache.airavata.core.gfac.services.impl;
 
-import org.apache.airavata.core.gfac.context.GFACContext;
-import org.apache.airavata.core.gfac.context.InvocationContext;
+import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.core.gfac.context.invocation.ExecutionDescription;
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionDescription;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.extension.DataServiceChain;
 import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.scheduler.impl.POJOSchedulerImpl;
-import org.apache.airavata.core.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.core.gfac.type.HostDescription;
-import org.apache.airavata.core.gfac.type.ServiceDescription;
 
 public class POJOServiceImpl extends AbstractSimpleService {
     
-    private GFACContext context; 
+    private ExecutionDescription context; 
 
     public POJOServiceImpl(HostDescription host, ApplicationDeploymentDescription app, ServiceDescription service){
-        this.context = new GFACContext();
+        this.context = new DefaultExecutionDescription();
         context.setHost(host);
         context.setApp(app);
         context.setService(service);
@@ -51,7 +52,7 @@ public class POJOServiceImpl extends AbstractSimpleService {
     }
 
     public void preProcess(InvocationContext context) throws GfacException {
-        context.setGfacContext(this.context);
+        context.setExecutionDescription(this.context);
     }
 
     public void postProcess(InvocationContext context) throws GfacException {

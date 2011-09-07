@@ -25,13 +25,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.airavata.commons.gfac.type.DataType;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.Parameter;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.core.gfac.services.impl.POJOServiceImpl;
-import org.apache.airavata.core.gfac.type.DataType;
-import org.apache.airavata.core.gfac.type.HostDescription;
-import org.apache.airavata.core.gfac.type.Parameter;
-import org.apache.airavata.core.gfac.type.ServiceDescription;
-import org.apache.airavata.core.gfac.type.app.ShellApplicationDeployment;
 
 public class EchoLocalServiceFactory extends AbstractServiceFactory {
 

@@ -27,18 +27,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.airavata.core.gfac.api.impl.JCRRegistry;
-import org.apache.airavata.core.gfac.context.InvocationContext;
-import org.apache.airavata.core.gfac.context.impl.ExecutionContextImpl;
-import org.apache.airavata.core.gfac.context.impl.ParameterContextImpl;
+import org.apache.airavata.commons.gfac.api.impl.JCRRegistry;
+import org.apache.airavata.commons.gfac.type.DataType;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.Parameter;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
+import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.commons.gfac.type.parameter.StringParameter;
+import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
+import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
+import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
-import org.apache.airavata.core.gfac.type.DataType;
-import org.apache.airavata.core.gfac.type.HostDescription;
-import org.apache.airavata.core.gfac.type.Parameter;
-import org.apache.airavata.core.gfac.type.ServiceDescription;
-import org.apache.airavata.core.gfac.type.app.ShellApplicationDeployment;
-import org.apache.airavata.core.gfac.type.parameter.AbstractParameter;
-import org.apache.airavata.core.gfac.type.parameter.StringParameter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -108,11 +108,10 @@ public class PropertiesBasedServiceImplTest {
 	public void testExecute() {
 		try {
 
-			InvocationContext ct = new InvocationContext();
-			ct.setExecutionContext(new ExecutionContextImpl());
-
-			ct.getExecutionContext().setNotificationService(
-					new LoggingNotification());
+		    DefaultInvocationContext ct = new DefaultInvocationContext();
+			DefaultExecutionContext ec = new DefaultExecutionContext();
+			ec.setNotificationService(new LoggingNotification());
+			ct.setExecutionContext(ec);
 
 			ct.setServiceName("SimpleEcho");
 
@@ -122,14 +121,14 @@ public class PropertiesBasedServiceImplTest {
 			ParameterContextImpl input = new ParameterContextImpl();
 			StringParameter echo_input = new StringParameter();
 			echo_input.parseStringVal("echo_output=hello");
-			input.addParameter("echo_input", echo_input);
+			input.add("echo_input", echo_input);
 
 			/*
 			 * Output
 			 */
 			ParameterContextImpl output = new ParameterContextImpl();
 			StringParameter echo_output = new StringParameter();
-			output.addParameter("echo_output", echo_output);
+			output.add("echo_output", echo_output);
 
 			// parameter
 			ct.addMessageContext("input", input);
@@ -141,10 +140,10 @@ public class PropertiesBasedServiceImplTest {
 
 			Assert.assertNotNull(ct.getMessageContext("output"));
 			Assert.assertNotNull(ct.getMessageContext("output")
-					.getParameterValue("echo_output"));
+					.getValue("echo_output"));
 			Assert.assertEquals("hello",
 					((AbstractParameter) ct.getMessageContext("output")
-							.getParameterValue("echo_output")).toStringVal());
+							.getValue("echo_output")).toStringVal());
 
 		} catch (Exception e) {
 			e.printStackTrace();

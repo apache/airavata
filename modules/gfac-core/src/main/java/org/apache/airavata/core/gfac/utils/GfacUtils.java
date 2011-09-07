@@ -21,26 +21,17 @@
 
 package org.apache.airavata.core.gfac.utils;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Properties;
-import java.util.Random;
 import java.util.UUID;
-import java.util.Vector;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.namespace.QName;
 
@@ -50,43 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GfacUtils {
-    protected final static Logger log = LoggerFactory.getLogger(GfacUtils.class);
-    private static AtomicInteger tempFileCount = new AtomicInteger();
-    private static Random random = new Random();
-
-    public static void writeToFile(InputStream is, File file) throws IOException {
-        FileWriter fw = new FileWriter(file);
-
-        // get the standard out of the application and write to file
-
-        Reader reader = new InputStreamReader(is);
-        char[] cbuf = new char[1024];
-        while ((reader.read(cbuf, 0, 1024)) != -1) {
-            fw.write(cbuf);
-        }
-        fw.close();
-        reader.close();
-        is.close();
-    }
-
-    public static void writeToFile(String data, File file) throws IOException {
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter(file);
-            // get the standard out of the application and write to file
-            fw.write(data);
-        } catch (IOException io) {
-            throw io;
-        } finally {
-            if (fw != null) {
-                try {
-                    fw.close();
-                } catch (IOException e) {
-                    throw e;
-                }
-            }
-        }
-    }
+    protected final static Logger log = LoggerFactory.getLogger(GfacUtils.class); 
 
     public static String readFromStream(InputStream in) throws IOException {
         StringBuffer wsdlStr = new StringBuffer();
@@ -145,12 +100,6 @@ public class GfacUtils {
         return serviceName.getLocalPart() + "_" + date + "_" + UUID.randomUUID();
     }
 
-    public static String createErrorMessage(Exception e) {
-        StringWriter errStrW = new StringWriter();
-        e.printStackTrace(new PrintWriter(errStrW));
-        return errStrW.getBuffer().toString();
-    }
-
     public static URI createGsiftpURI(ContactInfo host, String localPath) throws GfacException {
         try {
             StringBuffer buf = new StringBuffer();
@@ -181,29 +130,6 @@ public class GfacUtils {
             throw new GfacException(e, FaultCode.InvaliedLocalArgumnet);
         }
     }
-
-    public static Vector<URI> listLocalDir(String dirName, String localhost) throws GfacException {
-        try {
-            Vector<URI> files = new Vector<URI>();
-            File dir = new File(dirName);
-
-            if (dir.exists()) {
-                File[] fileList = dir.listFiles();
-                for (File file : fileList) {
-                    if (!file.getName().equals(".") && !file.getName().equals("..")) {
-                        URI uri = new URI("gsiftp://" + localhost + "/" + file.getAbsolutePath());
-                        files.add(uri);
-                    }
-                }
-            } else {
-                throw new GfacException("can not find the output data directory to list files",
-                        FaultCode.InvaliedLocalArgumnet);
-            }
-            return files;
-        } catch (URISyntaxException e) {
-            throw new GfacException(e, FaultCode.InvaliedLocalArgumnet);
-        }
-    }
     
     public static URI createWorkflowQName(QName name) throws GfacException {
         try {
@@ -219,34 +145,5 @@ public class GfacUtils {
             return defaultVal;
         }
         return value.trim();
-    }
-
-    public static boolean findBooleanProperty(Properties config, String name, boolean defaultVal) {
-        String value = config.getProperty(name);
-        if (value == null) {
-            return defaultVal;
-        }
-        return Boolean.valueOf(value.trim());
-    }
-
-    public static String formatJobStatus(String jobid, String jobstatus) {
-        return "Status of job " + jobid + "is " + jobstatus;
-    }
-
-    public static String createRandomName(String name) {
-        return name + System.currentTimeMillis() + "_" + tempFileCount.incrementAndGet();
-    }
-
-    public static Random getRandom() {
-        return random;
-    }
-
-    public static boolean isArray(String typeName) {
-        if (typeName.endsWith("Array")) {
-            // TODO make it more tigter
-            return true;
-        } else {
-            return false;
-        }
     }
 }

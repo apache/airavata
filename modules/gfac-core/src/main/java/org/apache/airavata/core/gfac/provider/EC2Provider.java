@@ -45,13 +45,14 @@ import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Session.Command;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
-import org.apache.airavata.core.gfac.context.InvocationContext;
-import org.apache.airavata.core.gfac.context.impl.AmazonSecurityContext;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
+import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.security.impl.AmazonSecurityContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
 import org.apache.airavata.core.gfac.notification.NotificationService;
-import org.apache.airavata.core.gfac.type.HostDescription;
-import org.apache.airavata.core.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
@@ -101,8 +102,8 @@ public class EC2Provider extends AbstractProvider {
     }
 
     public void initialize(InvocationContext context) throws GfacException {
-        HostDescription host = context.getGfacContext().getHost();
-        ShellApplicationDeployment app = (ShellApplicationDeployment)context.getGfacContext().getApp();
+        HostDescription host = context.getExecutionDescription().getHost();
+        ShellApplicationDeployment app = (ShellApplicationDeployment)context.getExecutionDescription().getApp();
 
         AmazonSecurityContext amazonSecurityContext = ((AmazonSecurityContext) context
                 .getSecurityContext(AMAZON_SECURITY_CONTEXT));
@@ -234,14 +235,14 @@ public class EC2Provider extends AbstractProvider {
     }
 
     public void execute(InvocationContext context) throws GfacException {
-        HostDescription host = context.getGfacContext().getHost();
-        ShellApplicationDeployment app = (ShellApplicationDeployment)context.getGfacContext().getApp();
+        HostDescription host = context.getExecutionDescription().getHost();
+        ShellApplicationDeployment app = (ShellApplicationDeployment)context.getExecutionDescription().getApp();
 
      // input parameter
         ArrayList<String> tmp = new ArrayList<String>();
-        for (Iterator<String> iterator = context.getMessageContext("input").getParameterNames(); iterator.hasNext();) {
+        for (Iterator<String> iterator = context.getMessageContext(GFacConstants.MESSAGE_CONTEXT_INPUT_NAME).getNames(); iterator.hasNext();) {
             String key = iterator.next();
-            tmp.add(context.getMessageContext("input").getStringParameterValue(key));
+            tmp.add(context.getMessageContext(GFacConstants.MESSAGE_CONTEXT_INPUT_NAME).getStringValue(key));
         }
         
         List<String> cmdList = new ArrayList<String>();
@@ -345,7 +346,7 @@ public class EC2Provider extends AbstractProvider {
                 String stdErrStr = GfacUtils.readFile(localStdErrFile.getAbsolutePath());
 
                 // set to context
-                OutputUtils.fillOutputFromStdout(context.getMessageContext("output"), stdOutStr, stdErrStr);
+                OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getMessageContext("output"), stdOutStr, stdErrStr);
 
             } catch (Exception e) {
                 throw e;

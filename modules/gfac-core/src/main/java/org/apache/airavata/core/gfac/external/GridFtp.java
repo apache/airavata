@@ -29,11 +29,8 @@ import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.type.host.GlobusHost;
 import org.apache.airavata.core.gfac.utils.ContactInfo;
-import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.globus.ftp.DataChannelAuthentication;
-import org.globus.ftp.DataSource;
 import org.globus.ftp.DataSourceStream;
 import org.globus.ftp.GridFTPClient;
 import org.globus.ftp.HostPort;
