@@ -73,7 +73,7 @@ public class EchoLocalFactoryTest {
 		Assert.assertNotNull(ct.getMessageContext("output"));
 		Assert.assertNotNull(ct.getMessageContext("output").getValue(
 				"echo_output"));
-		Assert.assertEquals("hello", (ct.<AbstractParameter>getMessageContext("output")).getValue("echo_output")
+		Assert.assertEquals("hello", ct.<AbstractParameter>getMessageContext("output").getValue("echo_output")
 				.toStringVal());
 	}
 
