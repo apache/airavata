@@ -1,0 +1,16 @@
+I think this directory structure could use some revision since it mixes classes and interfaces.  I suggest making some directories to group these:
+
+org/apache/airavata/core/gfac/context/security/
+org/apache/airavata/core/gfac/context/messaging/
+org/apache/airavata/core/gfac/context/execution/
+org/apache/airavata/core/gfac/context/invocation/
+
+
+Each of these should have an "impl" sub-directory and a "utils" sub-sub-directory.  For example, AmazonSecurityContext.java belongs in org/apache/airavata/core/gfac/context/security/impl in this scheme.  
+
+Also, even though they are simple, I recommend converting InvocationContext and GFACContext classes to abstract and then putting implementations (DefaultInvocationContext and DefaultGFACContext) in the appropriate impl directory.
+
+
+
+
+
