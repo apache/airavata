@@ -56,6 +56,7 @@ public class GfacUtils {
         return wsdlStr.toString();
     }
 
+	 //TODO: this is really "readFileToString()".
     public static String readFile(String file) throws GfacException {
         FileInputStream in = null;
         try {
@@ -93,6 +94,7 @@ public class GfacUtils {
         }
     }
 
+	 //TODO: why do you need the date?  UUID will give you a unique ID.
     public static String createServiceDirName(QName serviceName) {
         String date = new Date().toString();
         date = date.replaceAll(" ", "_");

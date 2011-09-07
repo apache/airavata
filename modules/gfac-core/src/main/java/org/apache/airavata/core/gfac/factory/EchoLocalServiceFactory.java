@@ -37,6 +37,8 @@ public class EchoLocalServiceFactory extends AbstractServiceFactory {
 
 	private GenericService service;
 
+	 //TODO: This code is pretty dodgy.  Should either be moved to
+	 //TODO: a samples directory or a test directory.
 	public GenericService getGenericService() {
 		if (service == null) {
 			/*
@@ -47,6 +49,8 @@ public class EchoLocalServiceFactory extends AbstractServiceFactory {
 
 			/*
 			 * App
+			 *
+			 * TODO: remove hard coded paths below. 
 			 */
 			ShellApplicationDeployment app = new ShellApplicationDeployment();
 			app.setName("EchoLocal");
