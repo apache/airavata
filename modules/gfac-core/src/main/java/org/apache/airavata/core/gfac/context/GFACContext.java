@@ -25,6 +25,11 @@ import org.apache.airavata.core.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.core.gfac.type.HostDescription;
 import org.apache.airavata.core.gfac.type.ServiceDescription;
 
+
+/**
+ * This class provides access to the Host, Application Deployment, and Service descriptions, which
+ * are XML<->JavaBean serializations. 
+ */ 
 public class GFACContext{
     private HostDescription host;
     private ApplicationDeploymentDescription app;
