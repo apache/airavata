@@ -21,11 +21,18 @@
 
 package org.apache.airavata.services.gfac.axis2;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.jcr.Credentials;
+import javax.jcr.Repository;
+import javax.jcr.RepositoryFactory;
+import javax.jcr.SimpleCredentials;
 
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.services.gfac.axis2.handlers.AmazonSecurityHandler;
@@ -34,8 +41,6 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.Phase;
-
-import javax.jcr.*;
 
 public class GFacService implements org.apache.axis2.engine.ServiceLifeCycle {
 
@@ -63,7 +68,7 @@ public class GFacService implements org.apache.axis2.engine.ServiceLifeCycle {
     private void initializeRepository(ConfigurationContext context) {
       Properties properties = new Properties();
         try {
-            URL url = ClassLoader.getSystemResource(REPOSITORY_PROPERTIES);
+            URL url = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
             properties.load(url.openStream());
             Map<String, String> map = new HashMap<String, String>((Map) properties);
             Class registryRepositoryFactory = Class.forName(map.get("repository.factory"));

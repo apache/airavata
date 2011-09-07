@@ -46,6 +46,7 @@ import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionCon
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.factory.PropertyServiceFactory;
+import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.services.gfac.axis2.utils.GFacServiceOperations;
 import org.apache.axiom.om.OMAbstractFactory;
@@ -53,6 +54,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axis2.AxisFault;
@@ -80,23 +82,23 @@ public class GFacMessageReciever implements MessageReceiver {
             try {
                 processgetAbstractWSDLOperation(axisRequestMsgCtx);
             } catch (Exception e) {
-                throw new AxisFault("Error retrieving the WSDL");
+                throw new AxisFault("Error retrieving the WSDL", e);
             }
-            log.info("getWSDL operation invoked !!");
+            log.info("getAbstractWSDL operation invoked !!");
             break;
         case INVOKE:
             try {
                 processInvokeOperation(axisRequestMsgCtx);
                 log.info("Invoke operation invoked !!");
             } catch (Exception e) {
-                throw new AxisFault("Error Invoking the service");
+                throw new AxisFault("Error Invoking the service", e);
             }
             break;
         case GETWSDL:
             try {
                 processgetWSDLOperation(axisRequestMsgCtx);
             } catch (Exception e) {
-                throw new AxisFault("Error retrieving the WSDL");
+                throw new AxisFault("Error retrieving the WSDL", e);
             }
             log.info("getWSDL operation invoked !!");
             break;
@@ -108,9 +110,27 @@ public class GFacMessageReciever implements MessageReceiver {
         String serviceName = getOriginalServiceName(messageContext);
         try {
             ConfigurationContext context = messageContext.getConfigurationContext();
-            OMElement invoke = messageContext.getEnvelope().getBody().getFirstChildWithName(new QName("invoke"));
-            OMElement input = invoke.getFirstChildWithName(new QName("input"));
-            OMElement output = invokeApplication(serviceName, input, context);
+            
+            /*
+             * We assume that input likes
+             * <invoke>
+             *  <input_param_name1>value</input_param_name1>
+             *  <input_param_name2>value</input_param_name2>
+             *  <input_param_name3>value</input_param_name3>
+             * </invoke>
+             */
+            OMElement invoke = messageContext.getEnvelope().getBody().getFirstElement();
+            
+            /*
+             * We assume that output likes
+             * <invokeResponse>
+             *  <output_param_name1>value</output_param_name1>
+             *  <output_param_name2>value</output_param_name2>
+             *  <output_param_name3>value</output_param_name3>
+             * </invokeResponse>
+             */            
+            OMElement output = invokeApplication(serviceName, invoke, context);
+
             SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
             SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
             sf.createSOAPBody(responseEnv);
@@ -132,11 +152,14 @@ public class GFacMessageReciever implements MessageReceiver {
             Credentials credentials = (Credentials) context.getProperty("credentials");
 
             Registry regis = new JCRRegistry(repository, credentials);
+            LoggingNotification notification = new LoggingNotification();
 
             DefaultInvocationContext ct = new DefaultInvocationContext();
             ct.setExecutionContext(new DefaultExecutionContext());
             ct.setServiceName(serviceName);
             ct.getExecutionContext().setRegistryService(regis);
+            ct.getExecutionContext().setNotificationService(notification);
+            
 
             /*
              * read from registry and set the correct parameters
@@ -150,7 +173,7 @@ public class GFacMessageReciever implements MessageReceiver {
             List<Parameter> inputs = serviceDescription.getInputParameters();
             for (Parameter parameter : inputs) {
                 OMElement element = input.getFirstChildWithName(new QName(parameter.getName()));
-                
+
                 if (element == null) {
                     throw new Exception("Parameter is not found in the message");
                 }
@@ -166,7 +189,7 @@ public class GFacMessageReciever implements MessageReceiver {
             ParameterContextImpl outputParam = new ParameterContextImpl();
             List<Parameter> outputs = serviceDescription.getOutputParameters();
             for (Parameter parameter : outputs) {
-                inputParam.add(parameter.getName(), SchemaUtil.mapFromType(parameter.getType()));
+                outputParam.add(parameter.getName(), SchemaUtil.mapFromType(parameter.getType()));
             }
 
             ct.addMessageContext("input", inputParam);
@@ -184,9 +207,9 @@ public class GFacMessageReciever implements MessageReceiver {
              */
             OMFactory fac = OMAbstractFactory.getOMFactory();
             OMNamespace omNs = fac.createOMNamespace("http://ws.apache.org/axis2/xsd", "ns1");
-            outputElement = fac.createOMElement("output", omNs);
+            outputElement = fac.createOMElement("invokeResponse", omNs);
 
-            ParameterContextImpl paramContext = (ParameterContextImpl)ct.<AbstractParameter>getMessageContext("output");
+            ParameterContextImpl paramContext = (ParameterContextImpl) ct.<AbstractParameter> getMessageContext("output");                      
             for (Iterator<String> iterator = paramContext.getNames(); iterator.hasNext();) {
                 String name = iterator.next();
                 OMElement ele = fac.createOMElement(name, omNs);
@@ -223,7 +246,8 @@ public class GFacMessageReciever implements MessageReceiver {
             InputSource source = new InputSource(byteArrayInputStream);
             Definition wsdlDefinition = wsdlReader.readWSDL(null, source);
 
-            //TODO based on the abstact wsdl content fill up the required information using wsdl4j api
+            // TODO based on the abstact wsdl content fill up the required
+            // information using wsdl4j api
             SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
             SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
             sf.createSOAPBody(responseEnv);
@@ -238,7 +262,7 @@ public class GFacMessageReciever implements MessageReceiver {
         }
     }
 
-     public void processgetAbstractWSDLOperation(MessageContext messageContext) throws Exception {
+    public void processgetAbstractWSDLOperation(MessageContext messageContext) throws Exception {
         MessageContext response = null;
         String serviceName = getOriginalServiceName(messageContext);
         ConfigurationContext context = messageContext.getConfigurationContext();
