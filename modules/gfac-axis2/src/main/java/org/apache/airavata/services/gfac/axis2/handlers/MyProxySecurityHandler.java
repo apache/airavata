@@ -27,7 +27,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.services.gfac.axis2.GFacService;
-import org.apache.airavata.services.gfac.axis2.utils.MessageContextUtil;
+import org.apache.airavata.services.gfac.axis2.util.MessageContextUtil;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPHeader;
