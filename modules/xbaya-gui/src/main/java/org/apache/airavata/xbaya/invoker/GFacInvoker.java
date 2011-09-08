@@ -29,7 +29,6 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
 import org.apache.airavata.xbaya.lead.NotificationHandler;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsdl.WsdlDefinitions;
@@ -96,19 +95,13 @@ public class GFacInvoker implements Invoker {
             }
             URI getWsdlURI = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), gfacPath + "/getWSDL", uri.getQuery(),
                     uri.getFragment());
-            URI invokeURI = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), gfacPath + "/invoke", uri.getQuery(),
-                    uri.getFragment());
 
             logger.info("getWSDL service:" + getWsdlURI.toString());
             
-            WsdlDefinitions abstractWSDL = WsdlResolver.getInstance().loadWsdl(getWsdlURI);
-            
-            logger.info("Invoke service:" + invokeURI.toString());
-             
-            WsdlDefinitions concreateWSDL = WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(WSDLUtil.convertToCWSDL(WSDLUtil.wsdlDefinitions3ToWsdlDefintions5(abstractWSDL), invokeURI));
+            WsdlDefinitions concreteWSDL = WsdlResolver.getInstance().loadWsdl(getWsdlURI);                        
             
             this.invoker = InvokerFactory
-                    .createInvoker(this.portTypeQName, concreateWSDL, null, this.messageBoxURL, null);
+                    .createInvoker(this.portTypeQName, concreteWSDL, null, this.messageBoxURL, null);
             this.invoker.setup();
         } catch (XBayaException xe) {
             throw xe;
