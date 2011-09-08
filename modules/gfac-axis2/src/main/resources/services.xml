@@ -22,6 +22,13 @@
             <outputActionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/RenewResponse
             </outputActionMapping>
         </operation>
+        <operation name="getAbstractWSDL">
+            <messageReceiver class="org.apache.airavata.services.gfac.axis2.reciever.GFacMessageReciever"/>
+            <actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/Renew
+            </actionMapping>
+            <outputActionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/RenewResponse
+            </outputActionMapping>
+        </operation>
         <operation name="invoke">
             <messageReceiver class="org.apache.airavata.services.gfac.axis2.reciever.GFacMessageReciever"/>
             <actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/Renew</actionMapping>
