@@ -38,7 +38,7 @@ import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.util.StringUtil;
-import org.apache.airavata.xbaya.util.WSDLUtil;
+import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 
 import xsul.XmlConstants;
@@ -114,7 +114,7 @@ public class ODEInvoker implements Cancelable {
 
             WsdlDefinitions wsdl = workflow.getOdeInvokableWSDL(configuration.getDSCURL(), configuration.getODEURL());
 
-            LeadContextHeader leadContext = WSDLUtil.buildLeadContextHeader(this.engine, monitorConfiguration,
+            LeadContextHeader leadContext = XBayaUtil.buildLeadContextHeader(this.engine, monitorConfiguration,
                     StringUtil.convertToJavaIdentifier(engine.getWorkflow().getName()), resourceMapping);
             // /////////////////////////////////////
             leadContext.setExperimentId(monitorConfiguration.getTopic());

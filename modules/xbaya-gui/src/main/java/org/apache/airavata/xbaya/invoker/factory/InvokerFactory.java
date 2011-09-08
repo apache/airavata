@@ -23,12 +23,12 @@ package org.apache.airavata.xbaya.invoker.factory;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.invoker.AsynchronousInvoker;
 import org.apache.airavata.xbaya.invoker.GFacInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.SimpleInvoker;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsdl.WsdlDefinitions;

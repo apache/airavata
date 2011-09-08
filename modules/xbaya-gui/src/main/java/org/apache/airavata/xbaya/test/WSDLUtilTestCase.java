@@ -23,12 +23,12 @@ package org.apache.airavata.xbaya.test;
 
 import java.net.URI;
 
-import org.apache.airavata.xbaya.util.WSDLUtil;
+import org.apache.airavata.common.utils.WSDLUtil;
 
 public class WSDLUtilTestCase extends XBayaTestCase {
 
     /**
-     * Test method for {@link org.apache.airavata.xbaya.util.WSDLUtil#appendWSDLQuary(java.net.URI)}.
+     *
      */
     public void testAppendWSDLQuary() {
         URI uri0 = URI.create("http://localhost:8080");

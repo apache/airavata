@@ -26,12 +26,12 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBaya;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.gpel.model.GpelProcess;
 import org.gpel.model.GpelVariable;

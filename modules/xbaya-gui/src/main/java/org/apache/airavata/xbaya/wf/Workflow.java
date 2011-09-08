@@ -39,6 +39,7 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaExecutionState;
@@ -70,7 +71,6 @@ import org.apache.airavata.xbaya.ode.WSDLCleaner;
 import org.apache.airavata.xbaya.streaming.StreamReceiveNode;
 import org.apache.airavata.xbaya.streaming.StreamTransformer;
 import org.apache.airavata.xbaya.util.StringUtil;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.gpel.GpelConstants;
@@ -78,6 +78,8 @@ import org.gpel.model.GpelProcess;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlInfosetBuilder;
 import org.xmlpull.infoset.XmlNamespace;
+import org.apache.airavata.common.utils.WSDLUtil;
+
 
 import xsul5.MLogger;
 import xsul5.XmlConstants;
@@ -223,9 +225,8 @@ public class Workflow {
 
     /**
      * Constructs a Workflow.
-     * 
-     * @param workflowString
-     *            Workflow XML in String.
+     *
+     * @param workflowString Workflow XML in String.
      * @throws GraphException
      * @throws ComponentException
      */
@@ -242,7 +243,7 @@ public class Workflow {
 
     /**
      * Constructs a Workflow.
-     * 
+     *
      * @param workflowElement
      * @throws GraphException
      * @throws ComponentException
@@ -260,7 +261,7 @@ public class Workflow {
 
     /**
      * This is used for ODE
-     * 
+     *
      * @return The Template ID like id
      */
     public URI getUniqueWorkflowName() {
@@ -282,7 +283,7 @@ public class Workflow {
 
     /**
      * Returns the gpelInstanceID.
-     * 
+     *
      * @return The gpelInstanceID
      */
     public URI getGPELInstanceID() {
@@ -291,9 +292,8 @@ public class Workflow {
 
     /**
      * Sets gpelInstanceID.
-     * 
-     * @param gpelInstanceID
-     *            The gpelInstanceID to set.
+     *
+     * @param gpelInstanceID The gpelInstanceID to set.
      */
     public void setGPELInstanceID(URI gpelInstanceID) {
         this.gpelInstanceID = gpelInstanceID;
@@ -301,7 +301,7 @@ public class Workflow {
 
     /**
      * Returns the name.
-     * 
+     *
      * @return The name
      */
     public String getName() {
@@ -310,9 +310,8 @@ public class Workflow {
 
     /**
      * Sets name.
-     * 
-     * @param name
-     *            The name to set.
+     *
+     * @param name The name to set.
      */
     public void setName(String name) {
         this.graph.setName(name);
@@ -320,7 +319,7 @@ public class Workflow {
 
     /**
      * Returns the description.
-     * 
+     *
      * @return The description
      */
     public String getDescription() {
@@ -329,9 +328,8 @@ public class Workflow {
 
     /**
      * Sets description.
-     * 
-     * @param description
-     *            The description to set.
+     *
+     * @param description The description to set.
      */
     public void setDescription(String description) {
         this.graph.setDescription(description);
@@ -367,7 +365,7 @@ public class Workflow {
 
     /**
      * Returns the graph.
-     * 
+     *
      * @return The graph
      */
     public WSGraph getGraph() {
@@ -376,9 +374,8 @@ public class Workflow {
 
     /**
      * Sets graph.
-     * 
-     * @param graph
-     *            The graph to set.
+     *
+     * @param graph The graph to set.
      */
     public void setGraph(WSGraph graph) {
         this.graph = graph;
@@ -386,7 +383,7 @@ public class Workflow {
 
     /**
      * Returns the image.
-     * 
+     *
      * @return The image
      */
     public BufferedImage getImage() {
@@ -395,9 +392,8 @@ public class Workflow {
 
     /**
      * Sets image.
-     * 
-     * @param image
-     *            The image to set.
+     *
+     * @param image The image to set.
      */
     public void setImage(BufferedImage image) {
         this.image = image;
@@ -405,7 +401,7 @@ public class Workflow {
 
     /**
      * Returns the gpelProcess.
-     * 
+     *
      * @return The gpelProcess
      */
     public GpelProcess getGpelProcess() {
@@ -414,9 +410,8 @@ public class Workflow {
 
     /**
      * Sets gpelProcess.
-     * 
-     * @param gpelProcess
-     *            The gpelProcess to set.
+     *
+     * @param gpelProcess The gpelProcess to set.
      */
     public void setGpelProcess(GpelProcess gpelProcess) {
         this.gpelProcess = gpelProcess;
@@ -424,7 +419,7 @@ public class Workflow {
 
     /**
      * Returns the workflowWSDL.
-     * 
+     *
      * @return The workflowWSDL
      */
     public WsdlDefinitions getWorkflowWSDL() {
@@ -433,9 +428,8 @@ public class Workflow {
 
     /**
      * Sets workflowWSDL.
-     * 
-     * @param workflowWSDL
-     *            The workflowWSDL to set.
+     *
+     * @param workflowWSDL The workflowWSDL to set.
      */
     public void setWorkflowWSDL(WsdlDefinitions workflowWSDL) {
         this.workflowWSDL = workflowWSDL;
@@ -473,7 +467,7 @@ public class Workflow {
 
     /**
      * This method is called by GPELClient during loading a workflow.
-     * 
+     *
      * @param id
      * @param wsdl
      */
@@ -484,9 +478,8 @@ public class Workflow {
 
     /**
      * Creates a node from a specified component and adds it to the graph.
-     * 
-     * @param component
-     *            The specified component
+     *
+     * @param component The specified component
      * @return The node added
      */
     public Node addNode(Component component) {
@@ -496,9 +489,8 @@ public class Workflow {
 
     /**
      * Removes a specified node from the graph.
-     * 
-     * @param node
-     *            The specified node
+     *
+     * @param node The specified node
      * @throws GraphException
      */
     public void removeNode(Node node) throws GraphException {
@@ -507,9 +499,8 @@ public class Workflow {
 
     /**
      * Imports a specified workflow to the current workflow.
-     * 
-     * @param workflow
-     *            The specified workflow to import
+     *
+     * @param workflow The specified workflow to import
      * @throws GraphException
      */
     public void importWorkflow(Workflow workflow) throws GraphException {
@@ -518,7 +509,7 @@ public class Workflow {
 
     /**
      * Returns the inputs of the workflow.
-     * 
+     *
      * @return The inputs of the workflow.
      * @throws ComponentException
      */
@@ -532,7 +523,7 @@ public class Workflow {
 
     /**
      * Returns the outputs of the workflow.
-     * 
+     *
      * @return The outputs of the workflow.
      * @throws ComponentException
      */
@@ -546,7 +537,7 @@ public class Workflow {
 
     /**
      * Returns the XML Text of the workflow.
-     * 
+     *
      * @return The XML Text of the workflow
      */
     @Deprecated
@@ -556,7 +547,7 @@ public class Workflow {
 
     /**
      * Returns the XmlElement of the workflow.
-     * 
+     *
      * @return The XmlElement of the workflow
      */
     public XmlElement toXML() {
@@ -619,7 +610,7 @@ public class Workflow {
 
     /**
      * Binds WSNodes to components
-     * 
+     *
      * @throws ComponentException
      * @throws GraphException
      */
@@ -648,7 +639,7 @@ public class Workflow {
             if (wsdl == null) {
                 continue;
             }
-
+            try{
             QName portType = node.getPortTypeQName();
             if (portType == null) {
                 // XXX This happens while parsing xwf created by the version
@@ -671,6 +662,9 @@ public class Workflow {
                 components.put(key, component);
             }
             node.setComponent(component);
+            }catch (UtilsException e){
+                logger.throwing(e);
+            }
         }
 
         this.graph.fixParameterNodes();
@@ -718,11 +712,15 @@ public class Workflow {
         // Graph
         XmlElement graphElement = workflowElement.element(GraphSchema.GRAPH_TAG);
         this.graph = WSGraphFactory.createGraph(graphElement);
-
+        WsdlDefinitions wsdl = null;
         XmlElement wsdlsElement = workflowElement.element(WSDLS_TAG);
         for (XmlElement wsdlElement : wsdlsElement.elements(null, WSDL_TAG)) {
             String wsdlText = wsdlElement.requiredText();
-            WsdlDefinitions wsdl = WSDLUtil.stringToWSDL(wsdlText);
+            try {
+                wsdl = WSDLUtil.stringToWSDL(wsdlText);
+            } catch (UtilsException e) {
+                logger.throwing(e);
+            }
             String id = wsdlElement.attributeValue(NS_XWF, ID_ATTRIBUTE);
             if (id == null || id.length() == 0) {
                 // xwf up to 2.2.6_2 doesn't have ID.
@@ -785,7 +783,7 @@ public class Workflow {
 
     /**
      * Returns the odeWorkflowWSDL.
-     * 
+     *
      * @return The odeWorkflowWSDL
      * @throws GraphException
      * @throws ComponentException
@@ -800,7 +798,7 @@ public class Workflow {
 
     /**
      * Returns the odeProcess.
-     * 
+     *
      * @return The odeProcess
      * @throws ComponentException
      * @throws GraphException
@@ -814,7 +812,7 @@ public class Workflow {
 
     /**
      * Returns the odeWsdlMap.
-     * 
+     *
      * @return The odeWsdlMap
      * @throws ComponentException
      * @throws GraphException
@@ -830,7 +828,7 @@ public class Workflow {
 
     /**
      * Returns the odeWorkflowWSDL.
-     * 
+     *
      * @return The odeWorkflowWSDL
      * @throws ComponentException
      * @throws GraphException
@@ -886,29 +884,32 @@ public class Workflow {
 
         WsdlDefinitions abstractWorkflowWsdl = script.getWorkflowWSDL().getWsdlDefinitions();
         this.odeWorkflowWSDL = abstractWorkflowWsdl;
-        this.odeInvokableWSDL = WSDLUtil.stringToWSDL(abstractWorkflowWsdl.xmlString());
-        wsdlTransformer.makeWorkflowWSDLConcrete(this.odeInvokableWSDL, this.getName(), dscUrl);
-        wsdlTransformer.setOdeLocation(odeEprEndingWithPort, this.getName(), this.odeInvokableWSDL);
+        try {
+            this.odeInvokableWSDL = WSDLUtil.stringToWSDL(abstractWorkflowWsdl.xmlString());
+            wsdlTransformer.makeWorkflowWSDLConcrete(this.odeInvokableWSDL, this.getName(), dscUrl);
+            wsdlTransformer.setOdeLocation(odeEprEndingWithPort, this.getName(), this.odeInvokableWSDL);
 
-        this.odeWsdlMap = new HashMap<String, WsdlDefinitions>();
-        Collection<XmlElement> itr = script.getWSDLs();
-        for (XmlElement xmlElement : itr) {
-            WsdlDefinitions wsdl = WSDLUtil.stringToWSDL(XmlConstants.BUILDER.serializeToString(xmlElement));
-            String id = xmlElement.attributeValue(NS_XWF, ID_ATTRIBUTE);
-            if (id == null || id.length() == 0) {
-                // xwf up to 2.2.6_2 doesn't have ID.
-                id = WSDLUtil.getWSDLQName(wsdl).toString();
-                if (null == id || "".equals(id) || (id.startsWith("{") && id.endsWith("}"))) {
-                    QName wsdlQname = new QName(NS_XWF.getName(), WSDLUtil.getFirstOperationName(wsdl,
-                            WSDLUtil.getFirstPortTypeQName(wsdl)));
-                    id = wsdlQname.toString();
-                    wsdl.xml().setAttributeValue("name", wsdlQname.getLocalPart());
+            this.odeWsdlMap = new HashMap<String, WsdlDefinitions>();
+            Collection<XmlElement> itr = script.getWSDLs();
+            for (XmlElement xmlElement : itr) {
+                WsdlDefinitions wsdl = WSDLUtil.stringToWSDL(XmlConstants.BUILDER.serializeToString(xmlElement));
+                String id = xmlElement.attributeValue(NS_XWF, ID_ATTRIBUTE);
+                if (id == null || id.length() == 0) {
+                    // xwf up to 2.2.6_2 doesn't have ID.
+                    id = WSDLUtil.getWSDLQName(wsdl).toString();
+                    if (null == id || "".equals(id) || (id.startsWith("{") && id.endsWith("}"))) {
+                        QName wsdlQname = new QName(NS_XWF.getName(), WSDLUtil.getFirstOperationName(wsdl,
+                                WSDLUtil.getFirstPortTypeQName(wsdl)));
+                        id = wsdlQname.toString();
+                        wsdl.xml().setAttributeValue("name", wsdlQname.getLocalPart());
+                    }
                 }
+                WSDLCleaner.cleanWSDL(wsdl);
+                this.odeWsdlMap.put(id, wsdl);
             }
-            WSDLCleaner.cleanWSDL(wsdl);
-            this.odeWsdlMap.put(id, wsdl);
+        } catch (Exception e) {
+            logger.throwing(e);
         }
-
         new ODEBPELTransformer()
                 .generateODEBPEL(this.odeProcess, this.getName(), this.odeWorkflowWSDL, this.odeWsdlMap);
 
@@ -963,7 +964,6 @@ public class Workflow {
     }
 
     /**
-     * 
      * @return
      */
     public URI getGPELTemplateID() {
@@ -982,7 +982,7 @@ public class Workflow {
     }
 
     /**
-     * @param running
+     * @param state
      */
     public synchronized void setExecutionState(XBayaExecutionState state) {
         this.executionState = state;

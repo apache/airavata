@@ -27,6 +27,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.component.Component;
 import org.apache.airavata.xbaya.component.ComponentControlPort;
 import org.apache.airavata.xbaya.component.ComponentException;
@@ -35,7 +37,6 @@ import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.util.WSConstants;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.infoset.XmlCharacters;
 import org.xmlpull.infoset.XmlElement;
@@ -114,20 +115,24 @@ public class WSComponent extends Component {
         this.inputs = new ArrayList<WSComponentPort>();
         this.outputs = new ArrayList<WSComponentPort>();
 
-        this.wsdl = wsdl;
-        if (portTypeQName == null) {
-            portTypeQName = WSDLUtil.getFirstPortTypeQName(wsdl);
-        }
-        this.portTypeQName = portTypeQName;
-        if (operationName == null) {
-            operationName = WSDLUtil.getFirstOperationName(wsdl, this.portTypeQName);
-        }
-        this.operationName = operationName;
-        this.description = ""; // To prevent to show null
+        try {
+            this.wsdl = wsdl;
+            if (portTypeQName == null) {
+                portTypeQName = WSDLUtil.getFirstPortTypeQName(wsdl);
+            }
+            this.portTypeQName = portTypeQName;
+            if (operationName == null) {
+                operationName = WSDLUtil.getFirstOperationName(wsdl, this.portTypeQName);
+            }
+            this.operationName = operationName;
+            this.description = ""; // To prevent to show null
 
-        setName(this.portTypeQName.getLocalPart() + ":" + this.operationName);
+            setName(this.portTypeQName.getLocalPart() + ":" + this.operationName);
 
-        parse();
+            parse();
+        } catch (UtilsException e) {
+            e.printStackTrace();
+        }
 
         this.controlInPort = new ComponentControlPort();
         this.controlOutPorts.add(new ComponentControlPort());
@@ -449,7 +454,12 @@ public class WSComponent extends Component {
                 // Check if the type is defined in types
                 QName paramType = componentPort.getType();
                 if (!(WSConstants.XSD_NS_URI.equalsIgnoreCase(paramType.getNamespaceURI()))) {
-                    XmlElement typeDefinition = WSDLUtil.getTypeDefinition(this.wsdl, paramType);
+                    XmlElement typeDefinition = null;
+                    try {
+                        typeDefinition = WSDLUtil.getTypeDefinition(this.wsdl, paramType);
+                    } catch (UtilsException e) {
+                        e.printStackTrace();
+                    }
                     if (typeDefinition == null) {
                         throw new ComponentException("could not find definition for type " + paramType + " in "
                                 + this.wsdlQName);

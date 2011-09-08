@@ -79,25 +79,9 @@
 		</profile>
 	</profiles>
 	
-	<properties>
-		<axis2.version>1.5.1</axis2.version>
-        	<airavata.version>0.0.1-SNAPSHOT</airavata.version>
-	</properties>
 
-	<!--
-		The rest of the documents is for developers and are not user
-		configurations.
-	-->
-	<repositories>
-		<repository>
-			<name>ogce.m2.all</name>
-			<id>ogce.m2.all</id>
-			<url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
-			<snapshots>
-				<updatePolicy>daily</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
+
+
 	<build>
 		<plugins>
 			<plugin>
@@ -308,7 +292,6 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.7</version>
 		</dependency>
 		<dependency>
 			<groupId>xsul</groupId>
@@ -405,6 +388,11 @@
         <dependency>
             <groupId>airavata</groupId>
             <artifactId>airavata-workflowtracking</artifactId>
+            <version>${airavata.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>airavata</groupId>
+            <artifactId>airavata-common-utils</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         

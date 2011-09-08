@@ -34,6 +34,7 @@ import java.util.Map;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.graph.ControlPort;
@@ -55,7 +56,6 @@ import org.apache.airavata.xbaya.monitor.MonitorEvent;
 import org.apache.airavata.xbaya.monitor.MonitorEventData;
 import org.apache.airavata.xbaya.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.monitor.MonitorUtil.EventType;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.WorkflowClient.WorkflowType;

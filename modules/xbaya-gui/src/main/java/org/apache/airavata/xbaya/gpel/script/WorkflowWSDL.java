@@ -27,6 +27,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.XBayaVersion;
@@ -42,7 +44,6 @@ import org.apache.airavata.xbaya.graph.system.SystemDataPort;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.graph.ws.WSGraph;
 import org.apache.airavata.xbaya.util.WSConstants;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.xmlpull.infoset.XmlComment;
@@ -462,7 +463,9 @@ public class WorkflowWSDL {
         }
 
         // check if this type already exists in the workflow WSDL.
-        XmlElement typeDefinition = WSDLUtil.getTypeDefinition(this.definitions, paramType);
+        XmlElement typeDefinition = null;
+        try {
+            typeDefinition = WSDLUtil.getTypeDefinition(this.definitions, paramType);
 
         if (typeDefinition == null) {
 
@@ -496,6 +499,10 @@ public class WorkflowWSDL {
             XmlNamespace namespace = this.definitions.xml().lookupNamespaceByName(paramType.getNamespaceURI());
             return new QName(paramType.getNamespaceURI(), paramType.getLocalPart(), namespace.getPrefix());
         }
+        } catch (UtilsException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private void addImportIfNecessary(XmlElement importEle) {

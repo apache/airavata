@@ -99,7 +99,8 @@ import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.security.SecurityUtil;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.util.AmazonUtil;
-import org.apache.airavata.xbaya.util.WSDLUtil;
+import org.apache.airavata.common.utils.WSDLUtil;
+import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.ietf.jgss.GSSCredential;
 import org.xmlpull.infoset.XmlElement;
@@ -555,11 +556,11 @@ public class WorkflowInterpreter {
                     LeadContextHeader leadCtxHeader = null;
                     try {
                         if (this.mode == GUI_MODE) {
-                            leadCtxHeader = WSDLUtil.buildLeadContextHeader(this.workflow, this.configuration,
+                            leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.workflow, this.configuration,
                                     new MonitorConfiguration(this.configuration.getBrokerURL(), this.topic, true,
                                             this.configuration.getMessageBoxURL()), wsNode.getID(), null);
                         } else {
-                            leadCtxHeader = WSDLUtil.buildLeadContextHeader(this.workflow, this.configuration,
+                            leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.workflow, this.configuration,
                                     new MonitorConfiguration(this.configuration.getBrokerURL(), this.topic, true,
                                             this.configuration.getMessageBoxURL()), wsNode.getID(), null);
                         }
@@ -931,11 +932,11 @@ public class WorkflowInterpreter {
                     LeadContextHeader leadCtxHeader = null;
                     try {
                         if (this.mode == GUI_MODE) {
-                            leadCtxHeader = WSDLUtil.buildLeadContextHeader(this.workflow, this.configuration,
+                            leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.workflow, this.configuration,
                                     new MonitorConfiguration(this.configuration.getBrokerURL(), this.topic, true,
                                             this.configuration.getMessageBoxURL()), foreachWSNode.getID(), null);
                         } else {
-                            leadCtxHeader = WSDLUtil.buildLeadContextHeader(this.workflow, this.configuration,
+                            leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.workflow, this.configuration,
                                     new MonitorConfiguration(this.configuration.getBrokerURL(), this.topic, true,
                                             this.configuration.getMessageBoxURL()), foreachWSNode.getID(), null);
                         }

@@ -45,7 +45,6 @@ import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.gpel.script.BPELScript;
 import org.apache.airavata.xbaya.gpel.script.BPELScriptType;
 import org.apache.airavata.xbaya.graph.GraphException;
-import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
@@ -60,7 +59,6 @@ import org.apache.airavata.xbaya.myproxy.gui.MyProxyChecker;
 import org.apache.airavata.xbaya.security.UserX509Credential;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.util.StringUtil;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
@@ -69,17 +67,7 @@ import org.ietf.jgss.GSSCredential;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul.lead.LeadResourceMapping;
-import xsul.wsif.WSIFMessage;
-import xsul.wsif.WSIFOperation;
-import xsul.wsif.WSIFPort;
-import xsul.wsif.WSIFService;
-import xsul.wsif.WSIFServiceFactory;
 import xsul.wsif.spi.WSIFProviderManager;
-import xsul.xwsif_runtime.WSIFClient;
-import xsul.xwsif_runtime.WSIFRuntime;
-import xsul5.wsdl.WsdlDefinitions;
-import xsul5.wsdl.WsdlException;
-import xsul5.wsdl.WsdlResolver;
 
 public class ODEInvokerWindow {
 

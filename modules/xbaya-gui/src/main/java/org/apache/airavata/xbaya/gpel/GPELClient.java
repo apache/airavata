@@ -33,6 +33,8 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
@@ -49,7 +51,6 @@ import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.security.UserX509Credential;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
@@ -514,7 +515,7 @@ public class GPELClient extends WorkflowClient {
                 instance.store();
             }
             return instance;
-        } catch (RuntimeException e) {
+        } catch (UtilsException e) {
             String message = "Error while creating a workflow instance. template ID: " + templateID + ", instanceID: "
                     + instanceID;
             throw new WorkflowEngineException(message, e);

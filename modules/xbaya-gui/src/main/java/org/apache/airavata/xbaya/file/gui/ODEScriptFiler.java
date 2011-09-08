@@ -31,6 +31,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.ComponentException;
@@ -38,7 +39,6 @@ import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.ode.gui.ODEDeploymentWindow;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.gpel.model.GpelProcess;
 import org.xmlpull.infoset.XmlElement;

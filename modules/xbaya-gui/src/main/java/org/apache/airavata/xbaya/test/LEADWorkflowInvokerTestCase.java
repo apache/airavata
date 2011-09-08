@@ -30,6 +30,7 @@ import java.util.List;
 
 import junit.framework.TestSuite;
 
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
@@ -39,7 +40,6 @@ import org.apache.airavata.xbaya.lead.LEADWorkflowInvoker;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.test.service.adder.Adder;
 import org.apache.airavata.xbaya.test.service.adder.AdderService;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.globus.gsi.CertUtil;
 import org.ietf.jgss.GSSCredential;
