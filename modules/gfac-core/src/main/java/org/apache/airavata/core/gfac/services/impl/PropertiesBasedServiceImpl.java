@@ -21,10 +21,9 @@
 
 package org.apache.airavata.core.gfac.services.impl;
 
-import java.io.IOException;
 import java.lang.reflect.Array;
-import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -42,6 +41,9 @@ import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.utils.LogUtils;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +60,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     /*
      * default properties file location
      */
-    private static final String FILENAME = "service.properties";
+    private static final String DEFAULT_FILENAME = "service.properties";
 
     /*
      * context name
@@ -96,13 +98,15 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     public static final String MYPROXY_PASS = "myproxy.pass";
     public static final String MYPROXY_LIFE = "myproxy.life";
 
-    private Properties properties;
+    
     private Scheduler scheduler;
     private PreExecuteChain[] preChain;
     private PostExecuteChain[] postChain;
     private DataServiceChain[] dataChain;
-
     private Registry registryService;
+    
+    private String fileName = DEFAULT_FILENAME;
+    private Configuration config;
 
     /**
      * Default constructor
@@ -112,14 +116,13 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     }
 
     /**
-     * Constructor with passing properties
+     * Constructor with passing file
      * 
      * @param prop
      */
-    public PropertiesBasedServiceImpl(Properties prop) {
-        this.properties = prop;
-        log.debug("Create PropertiesBasedServiceImpl with Properties");
-        LogUtils.displayProperties(log, prop);
+    public PropertiesBasedServiceImpl(String fileName) {
+        this.fileName = fileName;
+        log.debug("Create PropertiesBasedServiceImpl with Filename");
     }
 
     /*
@@ -135,17 +138,13 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
             /*
              * Load properties only it is not loaded
              */
-            if (this.properties == null) {
-                log.info("try to load default properties: " + FILENAME);
-                URL url = this.getClass().getClassLoader().getResource(FILENAME);
-
-                this.properties = new Properties();
-                this.properties.load(url.openStream());
+            if (this.config == null || this.config.isEmpty()) {
+                this.config = new PropertiesConfiguration(this.fileName);
 
                 log.info("Properties loaded");
-                LogUtils.displayProperties(log, properties);
+                LogUtils.displayProperties(log, getProperties());
             }
-        } catch (IOException e) {
+        } catch (ConfigurationException e) {
             throw new GfacException("Error initialize the PropertiesBasedServiceImpl", e);
         }
     }
@@ -214,7 +213,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                 /*
                  * Remove unnecessary key
                  */
-                Map<String, String> map = new HashMap<String, String>((Map) this.properties);
+                Map<String, String> map = new HashMap<String, String>((Map)getProperties());
                 map.remove(JCR_CLASS);
                 map.remove(JCR_USER);
                 map.remove(JCR_PASS);
@@ -334,6 +333,16 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
         return dataChain;
     }
 
+    private Properties getProperties(){
+        Properties prop = new Properties();
+        for (Iterator iterator = this.config.getKeys(); iterator.hasNext();) {
+            String key = (String) iterator.next();
+            prop.put(key, this.config.getString(key));            
+        }
+        return prop;
+    }
+    
+    
     /**
      * 
      * @param propertyName
@@ -342,7 +351,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
      * @throws GfacException
      */
     private String loadFromProperty(String propertyName, boolean required) throws ServiceException {
-        String propValue = this.properties.getProperty(propertyName);
+        String propValue = this.config.getString(propertyName);
         if (propValue == null) {
             if (required)
                 throw new ServiceException("Property \"" + propertyName + "\" is not found");
@@ -367,7 +376,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
         /*
          * get class names
          */
-        String classNames[] = this.properties.getProperty(propertyName).split(",");
+        String classNames[] = this.config.getStringArray(propertyName);
 
         /*
          * init instance of that class

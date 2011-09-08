@@ -21,29 +21,27 @@
 
 package org.apache.airavata.core.gfac.factory;
 
-import java.util.Properties;
-
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.core.gfac.services.impl.PropertiesBasedServiceImpl;
 
 public class PropertyServiceFactory extends AbstractServiceFactory {
 
     private GenericService service;
-    private Properties properties;
+    private String fileName;
 
     public PropertyServiceFactory(){        
     }
     
-    public PropertyServiceFactory(Properties prop){
-        this.properties = prop;
+    public PropertyServiceFactory(String fileName){
+        this.fileName = fileName;
     }
     
     public GenericService getGenericService() {
         if (service == null) {
-            if(this.properties == null){
+            if(this.fileName == null){
                 service = new PropertiesBasedServiceImpl();
             }else{
-                service = new PropertiesBasedServiceImpl(this.properties);
+                service = new PropertiesBasedServiceImpl(this.fileName);
             }
         }
         return service;
