@@ -33,7 +33,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.jython.lib.ServiceNotificationSender;
+import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.v1.builder.XmlElement;
 
@@ -45,7 +45,7 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
 
     private static final MLogger logger = MLogger.getLogger();
 
-    private ServiceNotificationSender notifier;
+    private ServiceNotifiable notifier;
 
     private String serviceInformation;
 
@@ -54,7 +54,7 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
     protected boolean failerSent = false;
 
     public WorkflowInvokerWrapperForGFacInvoker(QName portTypeQName, String gfacURL, String messageBoxURL,
-            LeadContextHeader leadcontext, ServiceNotificationSender serviceNotificationSender) {
+            LeadContextHeader leadcontext, ServiceNotifiable serviceNotificationSender) {
         super(portTypeQName, gfacURL, messageBoxURL, leadcontext);
         this.notifier = serviceNotificationSender;
         this.serviceInformation = portTypeQName.toString();

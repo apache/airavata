@@ -28,6 +28,7 @@ import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
+import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.airavata.xbaya.test.service.adder.AdderService;
 import org.apache.airavata.xbaya.test.service.multiplier.MultiplierService;
 
@@ -47,7 +48,7 @@ public class JythonLibraryTest extends TestCase {
         service.run();
         String adderWSDLLoc = service.getServiceWsdlLocation();
 
-        NotificationSender notifier = new NotificationSender(XBayaConstants.DEFAULT_BROKER_URL.toString(), "test-topic");
+        WorkflowNotifiable notifier = new NotificationSender(XBayaConstants.DEFAULT_BROKER_URL.toString(), "test-topic");
 
         Invoker invoker = new GenericInvoker(null, adderWSDLLoc, "adder", null, null, notifier);
         invoker.setup();
@@ -76,7 +77,7 @@ public class JythonLibraryTest extends TestCase {
         multiplier.run();
         String multiplierWSDLLoc = multiplier.getServiceWsdlLocation();
 
-        NotificationSender notifier = new NotificationSender(XBayaConstants.DEFAULT_BROKER_URL.toString(), "test-topic");
+        WorkflowNotifiable notifier = new NotificationSender(XBayaConstants.DEFAULT_BROKER_URL.toString(), "test-topic");
 
         Invoker adderInvoker1 = new GenericInvoker(null, adderWSDLLoc, "adder", null, null, notifier);
         adderInvoker1.setup();

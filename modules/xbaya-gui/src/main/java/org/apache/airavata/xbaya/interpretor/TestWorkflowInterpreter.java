@@ -101,8 +101,8 @@ public class TestWorkflowInterpreter {
 
         }
 
-        String userName = "chathura";
-        String password = "changeme";
+        String userName = "??";
+        String password = "??";
         SecurityUtil.getGSSCredential(userName, password, XBayaConstants.DEFAULT_MYPROXY_SERVER);
 
         invoker(userName, password, workflowAsString, in, workflow);

@@ -29,6 +29,7 @@ import org.apache.airavata.workflow.tracking.WorkflowNotifier;
 import org.apache.airavata.workflow.tracking.common.*;
 import org.apache.airavata.xbaya.util.StringUtil;
 import org.apache.airavata.xbaya.util.XMLUtil;
+import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axis2.addressing.EndpointReference;
 import org.python.core.PyObject;
 import org.xmlpull.infoset.XmlElement;
@@ -36,7 +37,7 @@ import org.xmlpull.infoset.XmlElement;
 import xsul.ws_addressing.WsaEndpointReference;
 import xsul5.MLogger;
 
-public class NotificationSender {
+public class NotificationSender implements WorkflowNotifiable {
 
     protected static final MLogger logger = MLogger.getLogger();
 
@@ -57,6 +58,7 @@ public class NotificationSender {
     protected EndpointReference eventSink;
 
     protected WorkflowTrackingContext context;
+
 
     /**
      * Constructs a NotificationSender.
@@ -103,18 +105,19 @@ public class NotificationSender {
                 receiverWorkflowTimeStep);
     }
 
-    /**
-     * @return The event sink EPR.
-     */
-    public EndpointReference getEventSink() {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable#getEventSink()
+	 */
+    @Override
+	public EndpointReference getEventSink() {
         return this.eventSink;
     }
 
-    /**
-     * @param args
-     * @param keywords
-     */
-    public void workflowStarted(PyObject[] args, String[] keywords) {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable#workflowStarted(org.python.core.PyObject[], java.lang.String[])
+	 */
+    @Override
+	public void workflowStarted(PyObject[] args, String[] keywords) {
         logger.entering(new Object[] { args, keywords });
         String message = "";
         for (int i = 0; i < args.length; i++) {
@@ -126,7 +129,11 @@ public class NotificationSender {
         this.invocationContext = this.notifier.workflowInvoked(this.context,this.initiator, message);
     }
 
-    public void workflowStarted(Object[] args, String[] keywords) {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable#workflowStarted(java.lang.Object[], java.lang.String[])
+	 */
+    @Override
+	public void workflowStarted(Object[] args, String[] keywords) {
         logger.entering(new Object[] { args, keywords });
         String message = "";
         for (int i = 0; i < args.length; i++) {
@@ -138,11 +145,11 @@ public class NotificationSender {
         this.invocationContext = this.notifier.workflowInvoked(this.context,this.initiator, message);
     }
 
-    /**
-     * @param args
-     * @param keywords
-     */
-    public void workflowFinished(Object[] args, String[] keywords) {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable#workflowFinished(java.lang.Object[], java.lang.String[])
+	 */
+    @Override
+	public void workflowFinished(Object[] args, String[] keywords) {
         logger.entering(new Object[] { args, keywords });
         String message = "";
         for (int i = 0; i < args.length; i++) {
@@ -155,7 +162,11 @@ public class NotificationSender {
         this.notifier.workflowTerminated(context,this.workflowID, "Workflow finished successfully.");
     }
 
-    public void sendingPartialResults(Object[] args, String[] keywords) {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable#sendingPartialResults(java.lang.Object[], java.lang.String[])
+	 */
+    @Override
+	public void sendingPartialResults(Object[] args, String[] keywords) {
         logger.entering(new Object[] { args, keywords });
         String message = "";
         for (int i = 0; i < args.length; i++) {
@@ -167,11 +178,11 @@ public class NotificationSender {
         this.notifier.sendingResult(context,this.invocationContext, message);
     }
 
-    /**
-     * @param args
-     * @param keywords
-     */
-    public void workflowFinished(PyObject[] args, String[] keywords) {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable#workflowFinished(org.python.core.PyObject[], java.lang.String[])
+	 */
+    @Override
+	public void workflowFinished(PyObject[] args, String[] keywords) {
         logger.entering(new Object[] { args, keywords });
         String message = "";
         for (int i = 0; i < args.length; i++) {
@@ -184,37 +195,35 @@ public class NotificationSender {
         this.notifier.workflowTerminated(context,this.workflowID, "Workflow finished successfully.");
     }
 
-    public void workflowTerminated() {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable#workflowTerminated()
+	 */
+    @Override
+	public void workflowTerminated() {
         this.notifier.workflowTerminated(context,this.workflowID, "Workflow finished successfully.");
     }
 
-    /**
-     * Sends a START_INCOMPLETED notification message.
-     * 
-     * @param message
-     *            The message to send
-     */
-    public void workflowFailed(String message) {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable#workflowFailed(java.lang.String)
+	 */
+    @Override
+	public void workflowFailed(String message) {
         workflowFailed(message, null);
     }
 
-    /**
-     * Sends a START_INCOMPLETED notification message.
-     * 
-     * @param e
-     */
-    public void workflowFailed(Throwable e) {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable#workflowFailed(java.lang.Throwable)
+	 */
+    @Override
+	public void workflowFailed(Throwable e) {
         workflowFailed(null, e);
     }
 
-    /**
-     * Sends a START_INCOMPLETED notification message.
-     * 
-     * @param message
-     *            The message to send
-     * @param e
-     */
-    public void workflowFailed(String message, Throwable e) {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable#workflowFailed(java.lang.String, java.lang.Throwable)
+	 */
+    @Override
+	public void workflowFailed(String message, Throwable e) {
         logger.entering(new Object[] { message, e });
         logger.caught(e);
         if (message == null || "".equals(message)) {
@@ -237,12 +246,12 @@ public class NotificationSender {
         this.notifier.info(context,message);
     }
 
-    /**
-     * @param nodeID
-     * @return The ServiceNoficationSender created.
-     */
-    public ServiceNotificationSender createServiceNotificationSender(String nodeID) {
-        return new ServiceNotificationSender(this.notifier, this.eventSink, this.initiator, this.workflowID, nodeID,
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable#createServiceNotificationSender(java.lang.String)
+	 */
+    @Override
+	public ServiceNotifiable createServiceNotificationSender(String nodeID) {
+    	return new ServiceNotificationSender(this.notifier, this.eventSink, this.initiator, this.workflowID, nodeID,
                 this.context);
     }
 }

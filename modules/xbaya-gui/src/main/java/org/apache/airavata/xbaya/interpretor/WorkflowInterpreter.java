@@ -40,6 +40,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
@@ -90,6 +91,7 @@ import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
+import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
@@ -99,7 +101,6 @@ import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.security.SecurityUtil;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.util.AmazonUtil;
-import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.ietf.jgss.GSSCredential;
@@ -126,7 +127,7 @@ public class WorkflowInterpreter {
 
     private Map<Node, Invoker> invokerMap = new HashMap<Node, Invoker>();
 
-    private NotificationSender notifier;
+    private WorkflowNotifiable notifier;
 
     private boolean retryFailed = true;
 
@@ -148,73 +149,95 @@ public class WorkflowInterpreter {
 
     private LeadResourceMapping resourceMapping;
 
-    /**
-     * 
-     * Constructs a WorkflowInterpreter.
-     * 
-     * @param configuration
-     * @param topic
-     * @param workflow
-     * @param username
-     * @param password
-     */
-    public WorkflowInterpreter(XBayaConfiguration configuration, String topic, Workflow workflow, String username,
-            String password) {
-        this.configuration = configuration;
+private boolean isoffline = false;
+	
+	
+	public WorkflowInterpreter(XBayaConfiguration configuration, String topic,
+			Workflow workflow, String username, String password) {
+		this(configuration, topic, workflow, username, password, false);
+	}
 
-        this.username = username;
-        this.password = password;
-        this.topic = topic;
-        this.workflow = workflow;
-        this.notifier = new NotificationSender(this.configuration.getBrokerURL(), topic);
-        this.mode = SERVER_MODE;
-        this.retryFailed = false;
+	/**
+	 * 
+	 * Constructs a WorkflowInterpreter.
+	 * 
+	 * @param configuration
+	 * @param topic
+	 * @param workflow
+	 * @param username
+	 * @param password
+	 */
+	public WorkflowInterpreter(XBayaConfiguration configuration, String topic,
+			Workflow workflow, String username, String password, boolean offline) {
+		this.isoffline = offline;
+		this.configuration = configuration;
 
-    }
+		this.username = username;
+		this.password = password;
+		this.topic = topic;
+		this.workflow = workflow;
+		if (this.isoffline) {
+			this.notifier = new StandaloneNotificationSender(topic, this.workflow);
+		} else {
+			this.notifier = new NotificationSender(this.engine.getMonitor()
+					.getConfiguration().getBrokerURL(), topic);
+		}
+		this.mode = SERVER_MODE;
+		this.retryFailed = false;
 
-    /**
-     * 
-     * Constructs a WorkflowInterpreter.
-     * 
-     * @param engine
-     * @param topic
-     */
-    public WorkflowInterpreter(XBayaEngine engine, String topic) {
-        this(engine, topic, engine.getWorkflow());
-    }
+	}
 
-    /**
-     * 
-     * Constructs a WorkflowInterpreter.
-     * 
-     * @param engine
-     * @param topic
-     * @param workflow
-     */
-    public WorkflowInterpreter(XBayaEngine engine, String topic, Workflow workflow) {
-        this(engine, topic, workflow, false);
-    }
+	/**
+	 * 
+	 * Constructs a WorkflowInterpreter.
+	 * 
+	 * @param engine
+	 * @param topic
+	 */
+	public WorkflowInterpreter(XBayaEngine engine, String topic) {
+		this(engine, topic, engine.getWorkflow());
+	}
 
-    /**
-     * 
-     * Constructs a WorkflowInterpreter.
-     * 
-     * @param engine
-     * @param topic
-     * @param workflow
-     * @param subWorkflow
-     */
-    public WorkflowInterpreter(XBayaEngine engine, String topic, Workflow workflow, boolean subWorkflow) {
-        this.engine = engine;
-        this.configuration = engine.getConfiguration();
-        this.myProxyChecker = new MyProxyChecker(this.engine);
-        this.workflow = workflow;
-        this.isSubWorkflow = subWorkflow;
-        this.mode = GUI_MODE;
-        this.notifier = new NotificationSender(this.engine.getMonitor().getConfiguration().getBrokerURL(), topic);
-        this.topic = topic;
+	/**
+	 * 
+	 * Constructs a WorkflowInterpreter.
+	 * 
+	 * @param engine
+	 * @param topic
+	 * @param workflow
+	 */
+	public WorkflowInterpreter(XBayaEngine engine, String topic,
+			Workflow workflow) {
+		this(engine, topic, workflow, false);
+	}
 
-    }
+	/**
+	 * 
+	 * Constructs a WorkflowInterpreter.
+	 * 
+	 * @param engine
+	 * @param topic
+	 * @param workflow
+	 * @param subWorkflow
+	 */
+	public WorkflowInterpreter(XBayaEngine engine, String topic,
+			Workflow workflow, boolean subWorkflow) {
+		this.engine = engine;
+		this.configuration = engine.getConfiguration();
+		this.myProxyChecker = new MyProxyChecker(this.engine);
+		this.workflow = workflow;
+		this.isSubWorkflow = subWorkflow;
+		this.mode = GUI_MODE;
+		if (this.isoffline) {
+			this.notifier = new StandaloneNotificationSender(topic, this.workflow);
+		} else {
+			this.notifier = new NotificationSender(this.engine.getMonitor()
+					.getConfiguration().getBrokerURL(), topic);
+		}
+		this.topic = topic;
+
+	}
+
 
     public void setResourceMapping(LeadResourceMapping resourceMapping) {
         this.resourceMapping = resourceMapping;
