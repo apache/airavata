@@ -123,7 +123,7 @@ public class WorkflowInterpretorSkeleton {
         return topic;
     }
 
-    private XBayaConfiguration getConfiguration(NameValue[] vals) throws URISyntaxException {
+    public static XBayaConfiguration getConfiguration(NameValue[] vals) throws URISyntaxException {
         XBayaConfiguration configuration = new XBayaConfiguration();
         configuration.setBrokerURL(new URI(findValue(vals, BROKER, XBayaConstants.DEFAULT_BROKER_URL.toString())));
         configuration.setDSCURL(new URI(findValue(vals, DSC, XBayaConstants.DEFAULT_DSC_URL.toString())));
@@ -138,7 +138,7 @@ public class WorkflowInterpretorSkeleton {
         return configuration;
     }
 
-    public String findValue(NameValue[] vals, String key, String defaultVal) {
+    public static String findValue(NameValue[] vals, String key, String defaultVal) {
         for (int i = 0; i < vals.length; i++) {
             if (key.equals(vals[i].getName()) && !"".equals(vals[i].getValue())) {
                 return vals[i].getValue();

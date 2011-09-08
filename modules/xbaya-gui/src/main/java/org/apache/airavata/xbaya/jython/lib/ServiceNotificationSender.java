@@ -40,7 +40,7 @@ import xsul.ws_addressing.WsaEndpointReference;
 import xsul.wsif.WSIFMessage;
 import xsul5.MLogger;
 
-public class ServiceNotificationSender {
+public class ServiceNotificationSender implements ServiceNotifiable {
 
     private static final MLogger logger = MLogger.getLogger();
 
@@ -91,10 +91,11 @@ public class ServiceNotificationSender {
                 workflowTimeStep);
     }
 
-    /**
-     * @param serviceID
-     */
-    public void setServiceID(String serviceID) {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#setServiceID(java.lang.String)
+	 */
+    @Override
+	public void setServiceID(String serviceID) {
         logger.entering(new Object[] { serviceID });
         this.serviceID = serviceID;
 
@@ -106,24 +107,27 @@ public class ServiceNotificationSender {
                 workflowTimeStep);
     }
 
-    /**
-     * @return The event sink.
-     */
-    public EndpointReference getEventSink() {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#getEventSink()
+	 */
+    @Override
+	public EndpointReference getEventSink() {
         return this.eventSink;
     }
 
-    /**
-     * @return The workflow ID.
-     */
-    public URI getWorkflowID() {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#getWorkflowID()
+	 */
+    @Override
+	public URI getWorkflowID() {
         return this.workflowID;
     }
 
-    /**
-     * @param inputs
-     */
-    public void invokingService(WSIFMessage inputs) {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#invokingService(xsul.wsif.WSIFMessage)
+	 */
+    @Override
+	public void invokingService(WSIFMessage inputs) {
         String message = "";
         Iterator partIt = inputs.partNames().iterator();
         boolean first = true;
@@ -148,10 +152,11 @@ public class ServiceNotificationSender {
         this.invocationContext = this.notifier.invokingService(this.context,this.initiator, header, body, message);
     }
 
-    /**
-     * @param outputs
-     */
-    public void serviceFinished(WSIFMessage outputs) {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#serviceFinished(xsul.wsif.WSIFMessage)
+	 */
+    @Override
+	public void serviceFinished(WSIFMessage outputs) {
         String message = "";
         Iterator partIt = outputs.partNames().iterator();
         boolean first = true;
@@ -176,14 +181,11 @@ public class ServiceNotificationSender {
         this.notifier.receivedResult(this.context,this.invocationContext,header, body, message);
     }
 
-    /**
-     * Sends an InvokeServiceFinishedFailed notification message.
-     * 
-     * @param message
-     *            The message to send
-     * @param e
-     */
-    public void invocationFailed(String message, Throwable e) {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#invocationFailed(java.lang.String, java.lang.Throwable)
+	 */
+    @Override
+	public void invocationFailed(String message, Throwable e) {
 
         // TODO there are two types of error messages.
         // The first one is while creating a service. (No API)
@@ -215,13 +217,11 @@ public class ServiceNotificationSender {
         }
     }
 
-    /**
-     * Sends a receivedFault notification message.
-     * 
-     * @param message
-     *            The message to send
-     */
-    @Deprecated
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#receivedFault(java.lang.String)
+	 */
+    @Override
+	@Deprecated
     public void receivedFault(String message) {
         // XXX If error occurs before invoking a service, create a fake
         // invocation context.
@@ -235,12 +235,11 @@ public class ServiceNotificationSender {
         this.notifier.receivedFault(this.context,this.invocationContext, message);
     }
 
-    /**
-     * Sends a receivedFault notification message.
-     * 
-     * @param fault
-     */
-    public void receivedFault(WSIFMessage fault) {
+    /* (non-Javadoc)
+	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#receivedFault(xsul.wsif.WSIFMessage)
+	 */
+    @Override
+	public void receivedFault(WSIFMessage fault) {
         // XXX If error occurs before invoking a service, create a fake
         // invocation context.
         if (this.invocationContext == null) {

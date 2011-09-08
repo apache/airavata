@@ -39,8 +39,9 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
-import org.apache.airavata.xbaya.jython.lib.NotificationSender;
+import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotificationSender;
+import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.v1.builder.XmlElement;
@@ -75,7 +76,7 @@ public class GenericInvoker implements Invoker {
 
     private Future<Boolean> result;
 
-    private ServiceNotificationSender notifier;
+    private ServiceNotifiable notifier;
 
     /**
      * used for notification
@@ -105,7 +106,7 @@ public class GenericInvoker implements Invoker {
      * @param notifier
      *            The notification sender
      */
-    public GenericInvoker(QName portTypeQName, String wsdlLocation, String nodeID, NotificationSender notifier) {
+    public GenericInvoker(QName portTypeQName, String wsdlLocation, String nodeID, WorkflowNotifiable notifier) {
         this(portTypeQName, wsdlLocation, nodeID, null, notifier);
     }
 
@@ -124,7 +125,7 @@ public class GenericInvoker implements Invoker {
      *            The notification sender
      */
     public GenericInvoker(QName portTypeQName, String wsdlLocation, String nodeID, String gfacURL,
-            NotificationSender notifier) {
+            WorkflowNotifiable notifier) {
         this(portTypeQName, wsdlLocation, nodeID, null, gfacURL, notifier);
     }
 
@@ -144,7 +145,7 @@ public class GenericInvoker implements Invoker {
      *            The notification sender
      */
     public GenericInvoker(QName portTypeQName, String wsdlLocation, String nodeID, String messageBoxURL,
-            String gfacURL, NotificationSender notifier) {
+            String gfacURL, WorkflowNotifiable notifier) {
         logger.entering(new Object[] { portTypeQName, wsdlLocation, nodeID, notifier });
         this.nodeID = nodeID;
         this.portTypeQName = portTypeQName;
@@ -170,7 +171,7 @@ public class GenericInvoker implements Invoker {
      * @param notifier2
      */
     public GenericInvoker(QName portTypeQName, WsdlDefinitions wsdl, String nodeID, String messageBoxURL,
-            String gfacURL, NotificationSender notifier) {
+            String gfacURL, WorkflowNotifiable notifier) {
         final String wsdlStr = xsul.XmlConstants.BUILDER.serializeToString(wsdl);
         logger.entering(new Object[] { portTypeQName, wsdlStr, nodeID, notifier });
         this.nodeID = nodeID;
@@ -255,12 +256,14 @@ public class GenericInvoker implements Invoker {
         WsdlResolver resolver = WsdlResolver.getInstance();
         // Get the concrete WSDL from invoker.setup() and set it to the
         // notifier.
-        if (this.wsdlLocation != null) {
-            this.notifier.setServiceID(this.wsdlLocation);
-        } else {
-            String name = this.portTypeQName.getLocalPart();
-            this.notifier.setServiceID(name);
-        }
+        
+        this.notifier.setServiceID(this.nodeID);
+//        if (this.wsdlLocation != null) {
+//            this.notifier.setServiceID(this.nodeID);
+//        } else {
+//            String name = this.portTypeQName.getLocalPart();
+//            this.notifier.setServiceID(name);
+//        }
     }
 
     /**
