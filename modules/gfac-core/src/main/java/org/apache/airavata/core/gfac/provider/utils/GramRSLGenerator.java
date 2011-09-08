@@ -21,14 +21,12 @@
 
 package org.apache.airavata.core.gfac.provider.utils;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.app.GramApplicationDeployment;
-import org.apache.airavata.commons.gfac.type.host.GlobusHost;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
@@ -44,9 +42,7 @@ public class GramRSLGenerator {
     };
 
     public static GramAttributes configureRemoteJob(InvocationContext context) throws GfacException {
-        GlobusHost host = (GlobusHost) context.getExecutionDescription().getHost();
         GramApplicationDeployment app = (GramApplicationDeployment) context.getExecutionDescription().getApp();
-        ServiceDescription service = context.getExecutionDescription().getService();
 
         GramAttributes jobAttr = new GramAttributes();
         jobAttr.setExecutable(app.getExecutable());
@@ -84,10 +80,9 @@ public class GramRSLGenerator {
             jobAttr.setStdin(app.getStdIn());
         } else {
             // input parameter
-            ArrayList<String> tmp = new ArrayList<String>();
-            for (Iterator<String> iterator = context.getMessageContext(GFacConstants.MESSAGE_CONTEXT_INPUT_NAME).getNames(); iterator.hasNext();) {
+            for (Iterator<String> iterator = context.getMessageContext(MessageContext.INPUT_KEY).getNames(); iterator.hasNext();) {
                 String key = iterator.next();
-                jobAttr.addArgument(context.getMessageContext(GFacConstants.MESSAGE_CONTEXT_INPUT_NAME).getStringValue(key));
+                jobAttr.addArgument(context.getMessageContext(MessageContext.INPUT_KEY).getStringValue(key));
             }
         }
 

@@ -33,11 +33,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
 import org.apache.airavata.core.gfac.notification.NotificationService;
@@ -70,15 +69,13 @@ public class LocalProvider extends AbstractProvider {
     }
 
     public void execute(InvocationContext context) throws GfacException {
-        HostDescription host = context.getExecutionDescription().getHost();
         ShellApplicationDeployment app = (ShellApplicationDeployment)context.getExecutionDescription().getApp();
-        ServiceDescription service = context.getExecutionDescription().getService();
         
         // input parameter
         ArrayList<String> tmp = new ArrayList<String>();
-        for (Iterator<String> iterator = context.getMessageContext("input").getNames(); iterator.hasNext();) {
+        for (Iterator<String> iterator = context.getMessageContext(MessageContext.INPUT_KEY).getNames(); iterator.hasNext();) {
             String key = iterator.next();
-            tmp.add(context.getMessageContext("input").getStringValue(key));
+            tmp.add(context.getMessageContext(MessageContext.INPUT_KEY).getStringValue(key));
         }
         
         List<String> cmdList = new ArrayList<String>();
@@ -228,7 +225,7 @@ public class LocalProvider extends AbstractProvider {
             String stdErrStr = GfacUtils.readFile(app.getStdErr());
 
             // set to context
-            OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getMessageContext("output"), stdOutStr, stdErrStr);
+            OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getMessageContext(MessageContext.OUTPUT_KEY), stdOutStr, stdErrStr);
 
         } catch (IOException e) {
         	log.error("error", e);

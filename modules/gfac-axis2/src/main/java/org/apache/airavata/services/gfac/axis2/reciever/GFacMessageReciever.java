@@ -41,7 +41,6 @@ import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.commons.gfac.type.util.SchemaUtil;
-import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
@@ -54,7 +53,6 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
-import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axis2.AxisFault;
@@ -192,8 +190,8 @@ public class GFacMessageReciever implements MessageReceiver {
                 outputParam.add(parameter.getName(), SchemaUtil.mapFromType(parameter.getType()));
             }
 
-            ct.addMessageContext("input", inputParam);
-            ct.addMessageContext("output", outputParam);
+            ct.addMessageContext(ParameterContextImpl.INPUT_KEY, inputParam);
+            ct.addMessageContext(ParameterContextImpl.OUTPUT_KEY, outputParam);
 
             if (service == null) {
                 service = new PropertyServiceFactory().createService();

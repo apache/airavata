@@ -44,7 +44,6 @@ import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
 import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.external.GridFtp;
-import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.ietf.jgss.GSSCredential;
 
@@ -54,7 +53,7 @@ public class HttpInputStaging extends PreExecuteChain {
 
     public boolean execute(InvocationContext context) throws GfacException {
         try {
-            MessageContext<AbstractParameter> x = context.getMessageContext(GFacConstants.MESSAGE_CONTEXT_INPUT_NAME);
+            MessageContext<AbstractParameter> x = context.getMessageContext(MessageContext.INPUT_KEY);
 
             for (Iterator<String> iterator = x.getNames(); iterator.hasNext();) {
                 String key = iterator.next();
