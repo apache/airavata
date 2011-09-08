@@ -19,7 +19,7 @@
  *
 */
 
-package org.apache.airavata.services.gfac.axis2.utils;
+package org.apache.airavata.services.gfac.axis2.util;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -29,9 +29,6 @@ import java.util.List;
 
 import javax.jcr.Credentials;
 import javax.jcr.Repository;
-import javax.wsdl.Definition;
-import javax.wsdl.factory.WSDLFactory;
-import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -48,8 +45,8 @@ import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.factory.PropertyServiceFactory;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.services.GenericService;
+import org.apache.airavata.services.gfac.axis2.util.GFacServiceOperations;
 import org.apache.airavata.services.gfac.axis2.util.WSDLUtil;
-import org.apache.airavata.services.gfac.axis2.utils.GFacServiceOperations;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -67,13 +64,10 @@ import org.apache.axis2.util.MessageContextBuilder;
 import org.apache.axis2.util.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.xml.sax.InputSource;
 
 import org.xmlpull.v1.builder.XmlDocument;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
-import org.xmlpull.v1.builder.impl.XmlInfosetBuilderImpl;
 import xsul.wsdl.WsdlDefinitions;
-import xsul5.XmlConstants;
 
 public class GFacMessageReciever implements MessageReceiver {
 
