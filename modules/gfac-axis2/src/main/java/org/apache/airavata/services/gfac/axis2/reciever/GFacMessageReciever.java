@@ -190,8 +190,8 @@ public class GFacMessageReciever implements MessageReceiver {
                 outputParam.add(parameter.getName(), SchemaUtil.mapFromType(parameter.getType()));
             }
 
-            ct.addMessageContext(ParameterContextImpl.INPUT_KEY, inputParam);
-            ct.addMessageContext(ParameterContextImpl.OUTPUT_KEY, outputParam);
+            ct.setInput(inputParam);
+            ct.setOutput(outputParam);
 
             if (service == null) {
                 service = new PropertyServiceFactory().createService();

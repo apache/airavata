@@ -49,7 +49,7 @@ public class GridFtpInputStaging extends PreExecuteChain {
     public boolean execute(InvocationContext context) throws GfacException {
         try {
 
-            MessageContext<AbstractParameter> x = context.getMessageContext(MessageContext.INPUT_KEY);
+            MessageContext<AbstractParameter> x = context.getInput();
 
             for (Iterator<String> iterator = x.getNames(); iterator.hasNext();) {
                 String key = iterator.next();

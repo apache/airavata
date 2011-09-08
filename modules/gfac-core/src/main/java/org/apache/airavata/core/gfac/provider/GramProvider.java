@@ -201,7 +201,7 @@ public class GramProvider extends AbstractProvider {
             String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
 
             // set to context
-            OutputUtils.fillOutputFromStdout(invocationContext.<AbstractParameter>getMessageContext(MessageContext.OUTPUT_KEY), stdout, stderr);
+            OutputUtils.fillOutputFromStdout(invocationContext.<AbstractParameter>getOutput(), stdout, stderr);
 
             jobSucsseful = true;
         } catch (GramException e) {

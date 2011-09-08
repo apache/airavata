@@ -241,9 +241,9 @@ public class EC2Provider extends AbstractProvider {
 
      // input parameter
         ArrayList<String> tmp = new ArrayList<String>();
-        for (Iterator<String> iterator = context.getMessageContext(MessageContext.INPUT_KEY).getNames(); iterator.hasNext();) {
+        for (Iterator<String> iterator = context.getInput().getNames(); iterator.hasNext();) {
             String key = iterator.next();
-            tmp.add(context.getMessageContext(MessageContext.INPUT_KEY).getStringValue(key));
+            tmp.add(context.getInput().getStringValue(key));
         }
         
         List<String> cmdList = new ArrayList<String>();
@@ -347,7 +347,7 @@ public class EC2Provider extends AbstractProvider {
                 String stdErrStr = GfacUtils.readFile(localStdErrFile.getAbsolutePath());
 
                 // set to context
-                OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getMessageContext(MessageContext.OUTPUT_KEY), stdOutStr, stdErrStr);
+                OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getOutput(), stdOutStr, stdErrStr);
 
             } catch (Exception e) {
                 throw e;
