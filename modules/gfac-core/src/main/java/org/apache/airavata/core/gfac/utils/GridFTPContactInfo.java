@@ -24,14 +24,14 @@ package org.apache.airavata.core.gfac.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ContactInfo {
-    protected final static Logger log = LoggerFactory.getLogger(GfacUtils.class);
+public class GridFTPContactInfo {
+    protected final static Logger log = LoggerFactory.getLogger(GridFTPContactInfo.class);
     public String hostName;
     public int port;
 
-    public ContactInfo(String hostName, int port) {
+    public GridFTPContactInfo(String hostName, int port) {
         if (port <= 0 || port == 80) {
-            log.info(hostName + "port recived " + port + " setting it to " + GFacConstants.DEFAULT_GSI_FTP_PORT);
+            log.debug(hostName + "port recived " + port + " setting it to " + GFacConstants.DEFAULT_GSI_FTP_PORT);
             port = GFacConstants.DEFAULT_GSI_FTP_PORT;
         }
         this.hostName = hostName;
@@ -40,8 +40,8 @@ public class ContactInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof ContactInfo) {
-            return hostName.equals(((ContactInfo) obj).hostName) && port == ((ContactInfo) obj).port;
+        if (obj instanceof GridFTPContactInfo) {
+            return hostName.equals(((GridFTPContactInfo) obj).hostName) && port == ((GridFTPContactInfo) obj).port;
         } else {
             return false;
         }

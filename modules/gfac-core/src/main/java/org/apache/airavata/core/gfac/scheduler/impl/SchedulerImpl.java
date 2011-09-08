@@ -21,6 +21,7 @@
 
 package org.apache.airavata.core.gfac.scheduler.impl;
 
+import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -30,8 +31,7 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionDescription;
-import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
+import org.apache.airavata.core.gfac.exception.SchedulerException;
 import org.apache.airavata.core.gfac.provider.GramProvider;
 import org.apache.airavata.core.gfac.provider.LocalProvider;
 import org.apache.airavata.core.gfac.provider.Provider;
@@ -44,7 +44,7 @@ public class SchedulerImpl implements Scheduler {
 
     private static Logger log = LoggerFactory.getLogger(SchedulerImpl.class);
 
-    public Provider schedule(InvocationContext context) throws GfacException {
+    public Provider schedule(InvocationContext context) throws SchedulerException {
 
         Registry registryService = context.getExecutionContext().getRegistryService();
 
@@ -54,8 +54,8 @@ public class SchedulerImpl implements Scheduler {
         ServiceDescription serviceDesc = registryService.getServiceDescription(context.getServiceName());
 
         if (serviceDesc == null)
-            throw new GfacException("Service Desciption for " + context.getServiceName()
-                    + " does not found on resource Catalog " + registryService, FaultCode.InvalidRequest);
+            throw new SchedulerException("Service Desciption for " + context.getServiceName()
+                    + " does not found on resource Catalog " + registryService);
 
         /*
          * Load host
@@ -63,8 +63,8 @@ public class SchedulerImpl implements Scheduler {
         HostDescription host = scheduleToHost(registryService, context.getServiceName());
 
         if (host == null)
-            throw new GfacException("Host Desciption for " + context.getServiceName()
-                    + " does not found on resource Catalog " + registryService, FaultCode.InvalidRequest);
+            throw new SchedulerException("Host Desciption for " + context.getServiceName()
+                    + " does not found on resource Catalog " + registryService);
 
         /*
          * Load app
@@ -73,8 +73,8 @@ public class SchedulerImpl implements Scheduler {
                 host.getName());
 
         if (app == null)
-            throw new GfacException("App Desciption for " + context.getServiceName()
-                    + " does not found on resource Catalog " + registryService, FaultCode.InvalidRequest);
+            throw new SchedulerException("App Desciption for " + context.getServiceName()
+                    + " does not found on resource Catalog " + registryService);
 
         /*
          * Check class and binding
@@ -91,10 +91,14 @@ public class SchedulerImpl implements Scheduler {
          * Determine provider
          */
         String hostName = host.getName();
-        if (GfacUtils.isLocalHost(hostName)) {
-            return new LocalProvider();
-        } else {
-            return new GramProvider();
+        try {
+            if (GfacUtils.isLocalHost(hostName)) {
+                return new LocalProvider();
+            } else {
+                return new GramProvider();
+            }
+        } catch (UnknownHostException e) {
+            throw new SchedulerException("Cannot get IP for current host", e);
         }
 
     }
@@ -105,8 +109,8 @@ public class SchedulerImpl implements Scheduler {
         List<HostDescription> hosts = regService.getServiceLocation(serviceName);
         if (hosts != null && hosts.size() > 0) {
             HostDescription result = null;
-            for (Iterator iterator = hosts.iterator(); iterator.hasNext();) {
-                result = (HostDescription) iterator.next();
+            for (Iterator<HostDescription> iterator = hosts.iterator(); iterator.hasNext();) {
+                result = iterator.next();
 
                 log.info("Found service on: " + result.getName());
             }

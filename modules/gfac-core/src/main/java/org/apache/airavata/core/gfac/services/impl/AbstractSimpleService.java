@@ -22,7 +22,9 @@
 package org.apache.airavata.core.gfac.services.impl;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.exception.ExtensionException;
 import org.apache.airavata.core.gfac.exception.GfacException;
+import org.apache.airavata.core.gfac.exception.ServiceException;
 import org.apache.airavata.core.gfac.extension.DataServiceChain;
 import org.apache.airavata.core.gfac.extension.ExitableChain;
 import org.apache.airavata.core.gfac.extension.PostExecuteChain;
@@ -34,40 +36,40 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractSimpleService implements GenericService {
-    
+
     private static Logger log = LoggerFactory.getLogger(AbstractSimpleService.class);
 
-    public abstract void preProcess(InvocationContext context) throws GfacException;
+    public abstract void preProcess(InvocationContext context) throws ServiceException;
 
-    public abstract void postProcess(InvocationContext context) throws GfacException;
+    public abstract void postProcess(InvocationContext context) throws ServiceException;
 
-    public abstract Scheduler getScheduler(InvocationContext context) throws GfacException;
+    public abstract Scheduler getScheduler(InvocationContext context) throws ServiceException;
 
-    public abstract PreExecuteChain[] getPreExecutionSteps(InvocationContext context) throws GfacException;
+    public abstract PreExecuteChain[] getPreExecutionSteps(InvocationContext context) throws ServiceException;
 
-    public abstract PostExecuteChain[] getPostExecuteSteps(InvocationContext context) throws GfacException;
+    public abstract PostExecuteChain[] getPostExecuteSteps(InvocationContext context) throws ServiceException;
 
-    public abstract DataServiceChain[] getDataChains(InvocationContext context) throws GfacException;
+    public abstract DataServiceChain[] getDataChains(InvocationContext context) throws ServiceException;
 
     public final void execute(InvocationContext context) throws GfacException {
 
         log.debug("Before preprocess");
-        
+
         /*
          * Pre-Process
          */
         preProcess(context);
-        
+
         log.debug("After preprocess, try to get Scheduler and schedule");
 
         /*
          * Determine provider
-         */        
-        Scheduler scheduler = getScheduler(context); 
+         */
+        Scheduler scheduler = getScheduler(context);
         context.getExecutionContext().getNotificationService().startSchedule(this, context, scheduler);
         Provider provider = scheduler.schedule(context);
         context.getExecutionContext().getNotificationService().finishSchedule(this, context, scheduler, provider);
-        
+
         log.debug("After scheduling, try to run data chain");
 
         /*
@@ -76,12 +78,12 @@ public abstract class AbstractSimpleService implements GenericService {
         buildChains(getDataChains(context)).start(context);
 
         log.debug("After data chain, try to init provider");
-        
+
         /*
          * Init
          */
         provider.initialize(context);
-        
+
         log.debug("After provider initialization, try to run pre-execution chain");
 
         /*
@@ -90,12 +92,12 @@ public abstract class AbstractSimpleService implements GenericService {
         buildChains(getPreExecutionSteps(context)).start(context);
 
         log.debug("After pre-execution chain, try to execute provider");
-        
+
         /*
          * Execute
          */
         provider.execute(context);
-        
+
         log.debug("After provider execution, try to run post-execution chain");
 
         /*
@@ -104,19 +106,19 @@ public abstract class AbstractSimpleService implements GenericService {
         buildChains(getPostExecuteSteps(context)).start(context);
 
         log.debug("After pre-execution chain, try to dispose provider");
-        
+
         /*
          * Destroy
          */
         provider.dispose(context);
-        
+
         log.debug("After provider disposal, try to run postprocess");
 
         /*
          * Pre-Process
          */
         postProcess(context);
-        
+
         log.debug("After postprocess");
     }
 
@@ -126,12 +128,7 @@ public abstract class AbstractSimpleService implements GenericService {
          * Validation check and return doing-nothing chain object
          */
         if (list == null || list.length == 0) {
-            return new ExitableChain() {
-                @Override
-                protected boolean execute(InvocationContext context) {
-                    return true;
-                }
-            };
+            return new NullChain();               
         }
 
         ExitableChain currentPoint = list[0];
@@ -140,4 +137,15 @@ public abstract class AbstractSimpleService implements GenericService {
         }
         return currentPoint;
     }
+
+    /**
+     * Inner class for no chain
+     */
+    private static class NullChain extends ExitableChain {
+        @Override
+        protected boolean execute(InvocationContext context) throws ExtensionException {
+            return true;
+        }
+    }
+
 }

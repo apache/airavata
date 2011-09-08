@@ -23,6 +23,8 @@ package org.apache.airavata.core.gfac.extension.post;
 
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.Iterator;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
@@ -35,60 +37,76 @@ import org.apache.airavata.commons.gfac.type.parameter.FileParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
-import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
+import org.apache.airavata.core.gfac.exception.ExtensionException;
+import org.apache.airavata.core.gfac.exception.SecurityException;
+import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.external.GridFtp;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.ietf.jgss.GSSCredential;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GridFtpOutputStaging extends PostExecuteChain {
+    
+    public static final Logger log = LoggerFactory.getLogger(GridFtpOutputStaging.class);
 
-    public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";
+    public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";        
 
-    public boolean execute(InvocationContext context) throws GfacException {
+    public boolean execute(InvocationContext context) throws ExtensionException {
         try {
-            MessageContext<AbstractParameter> x = context.getOutput();
+            MessageContext<AbstractParameter> outputContext = context.getOutput();
 
-            for (Iterator<String> iterator = x.getNames(); iterator.hasNext();) {
-                String key = iterator.next();
-                if (x.getValue(key).getType() == DataType.File) {
-                    FileParameter fileParameter = (FileParameter) x.getValue(key);
+            if (outputContext != null) {
 
-                    /*
-                     * Determine scheme
-                     */
-                    URI uri = URI.create(fileParameter.toStringVal());
-                    if (uri.getScheme().equalsIgnoreCase(GridFtp.GSIFTP_SCHEME)) {
-                        HostDescription hostDescription = context.getExecutionDescription().getHost();
+                for (Iterator<String> iterator = outputContext.getNames(); iterator.hasNext();) {
+                    String key = iterator.next();
+                    if (outputContext.getValue(key).getType() == DataType.File) {
+                        FileParameter fileParameter = (FileParameter) outputContext.getValue(key);
 
                         /*
-                         * src complete URI
+                         * Determine scheme
                          */
-                        File file = new File(uri.getPath());
-                        String srcFilePath = file.getName();
+                        URI uri = URI.create(fileParameter.toStringVal());
+                        if (uri.getScheme().equalsIgnoreCase(GridFtp.GSIFTP_SCHEME)) {
+                            HostDescription hostDescription = context.getExecutionDescription().getHost();
 
-                        ApplicationDeploymentDescription app = context.getExecutionDescription().getApp();
-                        if (app instanceof ShellApplicationDeployment) {
-                            srcFilePath = app.getOutputDir() + File.separator + srcFilePath;
-                        }
+                            /*
+                             * src complete URI
+                             */
+                            File file = new File(uri.getPath());
+                            String srcFilePath = file.getName();
 
-                        if (hostDescription instanceof GlobusHost) {
-                            gridFTPTransfer(context, uri, srcFilePath);
-                        } else if (GfacUtils.isLocalHost(hostDescription.getName())) {
-                            updateFile(context, uri, srcFilePath);
+                            ApplicationDeploymentDescription app = context.getExecutionDescription().getApp();
+                            if (app instanceof ShellApplicationDeployment) {
+                                srcFilePath = app.getOutputDir() + File.separator + srcFilePath;
+                            }
+
+                            if (hostDescription instanceof GlobusHost) {
+                                gridFTPTransfer(context, uri, srcFilePath);
+                            } else if (GfacUtils.isLocalHost(hostDescription.getName())) {
+                                updateFile(context, uri, srcFilePath);
+                            }
                         }
                     }
                 }
+            }else{
+                log.debug("Output Context is null");
             }
-
-        } catch (Exception e) {
-            throw new GfacException(e, FaultCode.Unknown);
+        } catch (UnknownHostException e) {
+            throw new ExtensionException("Cannot find IP Address for current host", e);
+        } catch (URISyntaxException e) {
+            throw new ExtensionException("URI is in the wrong format:" + e.getMessage(), e);
+        } catch (ToolsException e) {
+            throw new ExtensionException(e.getMessage(), e);
+        } catch (SecurityException e) {
+            throw new ExtensionException(e.getMessage(), e);
         }
         return false;
     }
 
-    private void gridFTPTransfer(InvocationContext context, URI dest, String remoteSrcFile) throws Exception {
+    private void gridFTPTransfer(InvocationContext context, URI dest, String remoteSrcFile) throws SecurityException,
+            ToolsException, URISyntaxException {
         GridFtp ftp = new GridFtp();
         GSSCredential gssCred = ((GSISecurityContext) context.getSecurityContext(MYPROXY_SECURITY_CONTEXT))
                 .getGssCredentails();
@@ -97,7 +115,8 @@ public class GridFtpOutputStaging extends PostExecuteChain {
         ftp.transfer(srcURI, dest, gssCred, true);
     }
 
-    private void updateFile(InvocationContext context, URI dest, String localFile) throws Exception {
+    private void updateFile(InvocationContext context, URI dest, String localFile) throws SecurityException,
+            ToolsException {
         GridFtp ftp = new GridFtp();
         GSSCredential gssCred = ((GSISecurityContext) context.getSecurityContext(MYPROXY_SECURITY_CONTEXT))
                 .getGssCredentails();

@@ -19,19 +19,15 @@
  *
  */
 
-package org.apache.airavata.core.gfac.provider;
+package org.apache.airavata.core.gfac.exception;
 
-import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.exception.ProviderException;
-
-public interface Provider {
-
-    void initialize(InvocationContext invocationContext) throws ProviderException;
-
-    void execute(InvocationContext invocationContext) throws ProviderException;
-
-    void dispose(InvocationContext invocationContext) throws GfacException;
-
-    void abort(InvocationContext invocationContext) throws GfacException;
+public class ProviderException extends GfacException {
+    
+    public ProviderException(String message){
+        super(message);
+    }
+    
+    public ProviderException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

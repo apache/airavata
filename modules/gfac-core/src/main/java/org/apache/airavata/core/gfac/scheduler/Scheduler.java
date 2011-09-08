@@ -22,9 +22,9 @@
 package org.apache.airavata.core.gfac.scheduler;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.exception.GfacException;
+import org.apache.airavata.core.gfac.exception.SchedulerException;
 import org.apache.airavata.core.gfac.provider.Provider;
 
 public interface Scheduler {
-    public Provider schedule(InvocationContext context) throws GfacException;
+    public Provider schedule(InvocationContext context) throws SchedulerException;
 }

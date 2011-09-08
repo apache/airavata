@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import javax.xml.namespace.QName;
 
 import net.schmizz.sshj.SSHClient;
+import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Session.Command;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
@@ -41,9 +42,9 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.security.impl.SSHSecurityContextImpl;
 import org.apache.airavata.core.gfac.exception.GfacException;
+import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
@@ -62,40 +63,39 @@ public class SSHProvider extends AbstractProvider {
         }
         return buff.toString();
     }
-    
-    private void initSSHSecurity(InvocationContext context, SSHClient ssh) throws GfacException, IOException{
+
+    private void initSSHSecurity(InvocationContext context, SSHClient ssh) throws SecurityException, IOException {
         try {
-            SSHSecurityContextImpl sshContext = ((SSHSecurityContextImpl) context.getSecurityContext(SSH_SECURITY_CONTEXT));
+            SSHSecurityContextImpl sshContext = ((SSHSecurityContextImpl) context
+                    .getSecurityContext(SSH_SECURITY_CONTEXT));
 
             KeyProvider pkey = ssh.loadKeys(sshContext.getPrivateKeyLoc(), sshContext.getKeyPass());
 
-            ssh.loadKnownHosts();            
+            ssh.loadKnownHosts();
             ssh.authPublickey(sshContext.getUsername(), pkey);
 
         } catch (NullPointerException ne) {
-            throw new GfacException("Cannot load security context for SSH", ne);
-        } catch (IOException e){
-            throw e;
+            throw new SecurityException("Cannot load security context for SSH", ne);
         }
-        
+
     }
 
-	 //TODO: This method has a try/catch embedded in 'finally' method.  Is there a way
-	 //TODO: to force cleanup on failed connections?
-    public void initialize(InvocationContext context) throws GfacException {
+    // TODO: This method has a try/catch embedded in 'finally' method. Is there a way
+    // TODO: to force cleanup on failed connections?
+    public void initialize(InvocationContext context) throws ProviderException {
         HostDescription host = context.getExecutionDescription().getHost();
         ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
 
         SSHClient ssh = new SSHClient();
         try {
 
-            initSSHSecurity(context, ssh);            
+            initSSHSecurity(context, ssh);
             ssh.connect(host.getName());
 
             final Session session = ssh.startSession();
             try {
                 StringBuilder command = new StringBuilder();
-					 //TODO: Is "|" what you want here?
+                // TODO: Is "|" what you want here?
                 command.append("mkdir -p ");
                 command.append(app.getTmpDir());
                 command.append(" | ");
@@ -109,31 +109,29 @@ public class SSHProvider extends AbstractProvider {
                 command.append(app.getOutputDir());
                 Command cmd = session.exec(command.toString());
                 cmd.join(5, TimeUnit.SECONDS);
-            } catch (Exception e) {
+            } catch (ConnectionException e) {
                 throw e;
             } finally {
                 try {
                     session.close();
                 } catch (Exception e) {
-						  //TODO: Need to at least report this exception.  This failed "finally" could
-						  //TODO: lead to hard-to-debug crashes.
+                    log.warn("Cannot Close SSH Session");
                 }
             }
-        } catch (Exception e) {
-            throw new GfacException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new ProviderException(e.getMessage(), e);
         } finally {
             try {
                 ssh.disconnect();
             } catch (Exception e) {
-					 //TODO: Need to at least report this exception.  This failed "finally" could
-					 //TODO: lead to hard-to-debug crashes.
+                log.warn("Cannot Close SSH Connection");
             }
         }
     }
 
-	 //TODO: This method has a try/catch embedded in 'finally' method.  Is there a way
-	 //TODO: to force cleanup on failed connections?
-    public void execute(InvocationContext context) throws GfacException {
+    // TODO: This method has a try/catch embedded in 'finally' method. Is there a way
+    // TODO: to force cleanup on failed connections?
+    public void execute(InvocationContext context) throws ProviderException {
         HostDescription host = context.getExecutionDescription().getHost();
         ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
 
@@ -147,7 +145,7 @@ public class SSHProvider extends AbstractProvider {
         List<String> cmdList = new ArrayList<String>();
 
         SSHClient ssh = new SSHClient();
-        try {            
+        try {
 
             /*
              * Builder Command
@@ -159,8 +157,8 @@ public class SSHProvider extends AbstractProvider {
             String command = buildCommand(cmdList);
 
             // redirect StdOut and StdErr
-				//TODO: Make 1> and 2> into static constants.
-				//TODO: This only works for the BASH shell.  CSH and TCSH will be different.  
+            // TODO: Make 1> and 2> into static constants.
+            // TODO: This only works for the BASH shell. CSH and TCSH will be different.
             command += SPACE + "1>" + SPACE + app.getStdOut();
             command += SPACE + "2>" + SPACE + app.getStdErr();
 
@@ -180,8 +178,9 @@ public class SSHProvider extends AbstractProvider {
             // notify start
             NotificationService notifier = context.getExecutionContext().getNotificationService();
             notifier.startExecution(this, context);
-				
-				//TODO: initSSHSecurity can throw an IOException but you are treating everything as a GFAC exception.
+
+            // TODO: initSSHSecurity can throw an IOException but you are
+            // treating everything as a GFAC exception.
             initSSHSecurity(context, ssh);
             ssh.connect(host.getName());
             final Session session = ssh.startSession();
@@ -221,9 +220,9 @@ public class SSHProvider extends AbstractProvider {
                     log.info("Process finished with return value of zero.");
                 }
 
-					 //TODO: The location of the logDir should be a configurable parameter.  
-					 //TODO: This location is easy to lose.  Also, why not use standard logging
-					 //TODO: tools for this?  Or are these really temporary directories rather than logs?
+                // TODO: The location of the logDir should be a configurable parameter.
+                // TODO: This location is easy to lose. Also, why not use standard logging
+                // TODO: tools for this? Or are these really temporary directories rather than logs?
                 File logDir = new File("./service_logs");
                 if (!logDir.exists()) {
                     logDir.mkdir();
@@ -239,30 +238,28 @@ public class SSHProvider extends AbstractProvider {
                 fileTransfer.download(app.getStdOut(), localStdOutFile.getAbsolutePath());
                 fileTransfer.download(app.getStdErr(), localStdErrFile.getAbsolutePath());
 
-                String stdOutStr = GfacUtils.readFile(localStdOutFile.getAbsolutePath());
-                String stdErrStr = GfacUtils.readFile(localStdErrFile.getAbsolutePath());
+                String stdOutStr = GfacUtils.readFileToString(localStdOutFile.getAbsolutePath());
+                String stdErrStr = GfacUtils.readFileToString(localStdErrFile.getAbsolutePath());
 
                 // set to context
-                OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getOutput(), stdOutStr, stdErrStr);
+                OutputUtils.fillOutputFromStdout(context.<AbstractParameter> getOutput(), stdOutStr, stdErrStr);
 
-            } catch (Exception e) {
+            } catch (IOException e) {
                 throw e;
             } finally {
                 try {
                     session.close();
                 } catch (Exception e) {
-						  //TODO: Need to at least report this exception.  This failed "finally" could
-						  //TODO: lead to hard-to-debug crashes.
+                    log.warn("Cannot Close SSH Session");
                 }
             }
-        } catch (Exception e) {
-            throw new GfacException(e.getMessage(), e);
+        } catch (IOException e) {
+            throw new ProviderException(e.getMessage(), e);
         } finally {
             try {
                 ssh.disconnect();
             } catch (Exception e) {
-					 //TODO: Need to at least report this exception.  This failed "finally" could
-					 //TODO: lead to hard-to-debug crashes.
+                log.warn("Cannot Close SSH Connection");
             }
         }
     }

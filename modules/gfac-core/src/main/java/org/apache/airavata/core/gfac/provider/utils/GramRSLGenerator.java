@@ -26,9 +26,7 @@ import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.app.GramApplicationDeployment;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.context.message.MessageContext;
-import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
+import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.globus.gram.GramAttributes;
 import org.slf4j.Logger;
@@ -41,7 +39,7 @@ public class GramRSLGenerator {
         SINGLE, MPI, MULTIPLE, CONDOR
     };
 
-    public static GramAttributes configureRemoteJob(InvocationContext context) throws GfacException {
+    public static GramAttributes configureRemoteJob(InvocationContext context) throws ToolsException {
         GramApplicationDeployment app = (GramApplicationDeployment) context.getExecutionDescription().getApp();
 
         GramAttributes jobAttr = new GramAttributes();
@@ -67,7 +65,7 @@ public class GramRSLGenerator {
             log.info("Setting max wall clock time to " + app.getWallTime());
 
             if (app.getWallTime() > 30 && app.getQueueName() != null && app.getQueueName().equals("debug")) {
-                throw new GfacException("NCSA debug Queue only support jobs < 30 minutes", FaultCode.InvalidConfig);
+                throw new ToolsException("NCSA debug Queue only support jobs < 30 minutes");
             }
 
             jobAttr.setMaxWallTime(app.getWallTime());

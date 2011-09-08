@@ -28,6 +28,7 @@ import org.apache.airavata.core.gfac.context.invocation.ExecutionDescription;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionDescription;
 import org.apache.airavata.core.gfac.exception.GfacException;
+import org.apache.airavata.core.gfac.exception.ServiceException;
 import org.apache.airavata.core.gfac.extension.DataServiceChain;
 import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.extension.PreExecuteChain;
@@ -51,26 +52,26 @@ public class POJOServiceImpl extends AbstractSimpleService {
     public void dispose() throws GfacException {
     }
 
-    public void preProcess(InvocationContext context) throws GfacException {
+    public void preProcess(InvocationContext context) throws ServiceException {
         context.setExecutionDescription(this.context);
     }
 
-    public void postProcess(InvocationContext context) throws GfacException {
+    public void postProcess(InvocationContext context) throws ServiceException {
     }
 
-    public Scheduler getScheduler(InvocationContext context) throws GfacException {
+    public Scheduler getScheduler(InvocationContext context) throws ServiceException {
         return new POJOSchedulerImpl();
     }
 
-    public PreExecuteChain[] getPreExecutionSteps(InvocationContext context) throws GfacException {
+    public PreExecuteChain[] getPreExecutionSteps(InvocationContext context) throws ServiceException {
         return null;
     }
 
-    public PostExecuteChain[] getPostExecuteSteps(InvocationContext context) throws GfacException {
+    public PostExecuteChain[] getPostExecuteSteps(InvocationContext context) throws ServiceException {
         return null;
     }
 
-    public DataServiceChain[] getDataChains(InvocationContext context) throws GfacException {
+    public DataServiceChain[] getDataChains(InvocationContext context) throws ServiceException {
         return null;
     }   
 }

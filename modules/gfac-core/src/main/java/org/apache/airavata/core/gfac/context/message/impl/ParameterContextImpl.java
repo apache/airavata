@@ -28,6 +28,9 @@ import java.util.Map;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
 
+/**
+ * This class contains actual parameters in service invocation.
+ */
 public class ParameterContextImpl implements MessageContext<AbstractParameter> {
 
     private Map<String, AbstractParameter> value;

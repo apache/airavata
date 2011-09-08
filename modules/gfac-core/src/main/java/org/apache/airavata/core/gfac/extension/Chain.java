@@ -22,20 +22,25 @@
 package org.apache.airavata.core.gfac.extension;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.exception.GfacException;
+import org.apache.airavata.core.gfac.exception.ExtensionException;
 
 public abstract class Chain<T> {
-    protected T next;
+    private T next;
 
     public T setNext(T nextChain) {
         this.next = nextChain;
         return this.next;
+    }
+    
+    protected T getNext(){
+        return next;
     }
 
     /**
      * Start the chain
      * 
      * @param context
+     * @throws ExtensionException
      */
-    public abstract void start(InvocationContext context) throws GfacException;
+    public abstract void start(InvocationContext context) throws ExtensionException;
 }

@@ -21,45 +21,17 @@
 
 package org.apache.airavata.core.gfac.exception;
 
-
 public class GfacException extends Exception {
-
-    public static enum FaultCode {
-        ServiceNotReachable, InvalidRequest, InternalServiceError, ErrorAtDependentService, ErrorAtClientBeforeWsCall, ErrorAtClientWhileWsCall, ErrorAtClientAfterWsCall, InitalizationError, UnsupportedMessage, InvaliedLocalArgumnet, LocalError, CmdAppError, ErrorAtCreatedService, InvalidConfig, Unknown, InvaliedResponse, JobSubmissionFailed
-    };
 
     private static final long serialVersionUID = 1L;
 
     protected String faultCode;
 
+    public GfacException(String message) {
+        super(message);
+    }
+    
     public GfacException(String message, Throwable cause) {
         super(message, cause);
     }
-
-    public GfacException(String message, Throwable cause, FaultCode faultCode) {
-        super(message, cause);
-        this.faultCode = faultCode.toString();
-    }
-
-    public GfacException(String message, FaultCode faultCode) {
-        super(message);
-        this.faultCode = faultCode.toString();
-    }
-
-    public GfacException(Throwable cause, FaultCode faultCode) {
-        super(cause);
-        if (cause instanceof GfacException) {
-            GfacException gfacExeption = (GfacException) cause;
-            setFaultCode(gfacExeption.getFaultCode());
-        }
-        this.faultCode = faultCode.toString();
-    }
-
-    public String getFaultCode() {
-        return faultCode != null ? faultCode : getMessage();
-    }
-
-    public void setFaultCode(String faultCode) {
-        this.faultCode = faultCode;
-    }   
 }

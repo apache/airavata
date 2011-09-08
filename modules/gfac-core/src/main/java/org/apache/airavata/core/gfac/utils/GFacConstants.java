@@ -23,6 +23,8 @@ package org.apache.airavata.core.gfac.utils;
 
 public class GFacConstants {
     
+    public static final String NEWLINE = System.getProperty("line.separator");
+    
     public static final String INPUT_DATA_DIR_VAR_NAME = "inputData";
 
     public static final String OUTPUT_DATA_DIR_VAR_NAME = "outputData";

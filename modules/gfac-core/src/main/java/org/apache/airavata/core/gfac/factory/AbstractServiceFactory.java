@@ -23,13 +23,33 @@ package org.apache.airavata.core.gfac.factory;
 
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.services.GenericService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractServiceFactory {
 
+    protected final Logger log = LoggerFactory.getLogger(AbstractServiceFactory.class);
+        
+    /**
+     * Create and initialize a generic service
+     * 
+     * @return the generic service
+     * @throws GfacException
+     */
     public final GenericService createService() throws GfacException {
-        getGenericService().init();
+        log.debug("Try to get GenericService");
+        GenericService service = getGenericService();
+        log.debug("Done get, Try to init GenericService");
+        service.init();
+        log.debug("Done init GenericService");
         return getGenericService();
     }
 
+    /**
+     * Get a service of specific type
+     * 
+     * @return
+     * @throws GfacException
+     */
     protected abstract GenericService getGenericService() throws GfacException;
 }

@@ -22,13 +22,13 @@
 package org.apache.airavata.core.gfac.extension;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.exception.GfacException;
+import org.apache.airavata.core.gfac.exception.ExtensionException;
 
 public abstract class ExitableChain extends Chain<ExitableChain> {
-    public final void start(InvocationContext context) throws GfacException {
+    public final void start(InvocationContext context) throws ExtensionException {
         boolean breakTheChain = this.execute(context);
-        if (next != null && !breakTheChain) {
-            this.next.start(context);
+        if (getNext() != null && !breakTheChain) {
+            this.getNext().start(context);
         }
     }
 
@@ -36,6 +36,7 @@ public abstract class ExitableChain extends Chain<ExitableChain> {
      * 
      * @param context
      * @return true if no need for further processing
+     * @throws ExtensionException TODO
      */
-    protected abstract boolean execute(InvocationContext context) throws GfacException;
+    protected abstract boolean execute(InvocationContext context) throws ExtensionException;
 }

@@ -36,9 +36,8 @@ import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
+import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
@@ -57,7 +56,7 @@ public class LocalProvider extends AbstractProvider {
         return buff.toString();
     }
 
-    public void initialize(InvocationContext invocationContext) throws GfacException {
+    public void initialize(InvocationContext invocationContext) throws ProviderException {
         ApplicationDeploymentDescription app = invocationContext.getExecutionDescription().getApp();
 
         log.info("working diectroy = " + app.getWorkingDir());
@@ -68,7 +67,7 @@ public class LocalProvider extends AbstractProvider {
         new File(app.getOutputDir()).mkdir();
     }
 
-    public void execute(InvocationContext context) throws GfacException {
+    public void execute(InvocationContext context) throws ProviderException {
         ShellApplicationDeployment app = (ShellApplicationDeployment)context.getExecutionDescription().getApp();
         
         // input parameter
@@ -221,21 +220,21 @@ public class LocalProvider extends AbstractProvider {
 
             log.info(buf.toString());
 
-            String stdOutStr = GfacUtils.readFile(app.getStdOut());
-            String stdErrStr = GfacUtils.readFile(app.getStdErr());
+            String stdOutStr = GfacUtils.readFileToString(app.getStdOut());
+            String stdErrStr = GfacUtils.readFileToString(app.getStdErr());
 
             // set to context
             OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getOutput(), stdOutStr, stdErrStr);
 
         } catch (IOException e) {
         	log.error("error", e);
-            throw new GfacException(e, FaultCode.LocalError);
+            throw new ProviderException(e.getMessage(), e);
         } catch (InterruptedException e) {
         	log.error("error", e);
-            throw new GfacException(e, FaultCode.LocalError);
+        	throw new ProviderException(e.getMessage(), e);
         } catch (Exception e){
         	log.error("error", e);
-            throw new GfacException(e, FaultCode.LocalError);
+        	throw new ProviderException(e.getMessage(), e);
         }
 
     }
