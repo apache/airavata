@@ -12,19 +12,19 @@
     language governing permissions and limitations under the License. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-		<artifactId>airavata</artifactId>
-		<groupId>airavata</groupId>
-		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../../pom.xml</relativePath>
-	</parent>
+        <artifactId>airavata</artifactId>
+        <groupId>airavata</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>airavata</groupId>
     <artifactId>gfac-core</artifactId>
     <name>GFac-Core</name>
-    <description>The core GFAC functionality independent from any webservice implementation. </description>
+    <description>The core GFAC functionality independent from any webservice implementation.</description>
 
 
     <dependencies>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-	    <version>1.5.11</version>
+            <version>1.5.11</version>
         </dependency>
 
         <!-- GFAC schemas -->
@@ -113,7 +113,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-	    <version>1.5.11</version>
+            <version>1.5.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -133,7 +133,25 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                  <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+                    <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.4.1</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>.</directory>
+                            <includes>
+                                <include>*.log</include>
+                            </includes>
+                        </fileset>
+		<fileset>
+                            <directory>jackrabbit</directory>
+                        </fileset>
+
+                    </filesets>
                 </configuration>
             </plugin>
         </plugins>

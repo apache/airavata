@@ -30,7 +30,7 @@
 		-->
 
 		<fileSet>
-			<directory>../messenger/axis2-${used.axis2.release}/WEB-INF/lib</directory>
+			<directory>axis2-${used.axis2.release}/WEB-INF/lib</directory>
 			<outputDirectory>standalone-server/lib</outputDirectory>
 			<includes>
 				<include>**/*</include>
@@ -38,7 +38,7 @@
 		</fileSet>
 
         <fileSet>
-			<directory>../messenger/axis2-${used.axis2.release}/WEB-INF/</directory>
+			<directory>axis2-${used.axis2.release}/WEB-INF/</directory>
 			<outputDirectory>standalone-server/repository</outputDirectory>
 			<includes>
                 <include>services/*</include>
@@ -47,7 +47,7 @@
 		</fileSet>
 
         <fileSet>
-			<directory>../messenger/axis2-${used.axis2.release}/WEB-INF/classes</directory>
+			<directory>axis2-${used.axis2.release}/WEB-INF/classes</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
 			<includes>
                 <include>log4j.properties</include>
@@ -56,7 +56,7 @@
 		</fileSet>
 
         <fileSet>
-			<directory>../messenger/axis2-${used.axis2.release}/WEB-INF/conf</directory>
+			<directory>axis2-${used.axis2.release}/WEB-INF/conf</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
 			<includes>
                 <include>axis2.xml</include>
@@ -177,13 +177,13 @@
 			********************** copy messenger servlet **********************
 		-->
 
-		<fileSet>
+		<!--fileSet>
 			<directory>../messenger/target</directory>
 			<outputDirectory>messenger</outputDirectory>
 			<includes>
 				<include>airavata-messenger*.war</include>
 			</includes>
-		</fileSet>
+		</fileSet-->
 
 
 		<!--

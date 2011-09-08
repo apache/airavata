@@ -141,7 +141,7 @@
                                     <version>${axis2.version}</version>
                                     <type>war</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>messenger/axis2-${axis2.version}</outputDirectory>
+                                    <outputDirectory>distribution/axis2-${axis2.version}</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -214,7 +214,6 @@
                 <!--module>wsmg-commons</module-->
                 <module>messagebox</module>
                 <module>messagebroker</module>
-                <module>messenger</module>
             	<module>distribution</module>
 	    </modules>
         </profile>
