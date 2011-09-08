@@ -12,7 +12,7 @@
     language governing permissions and limitations under the License. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>airavata</artifactId>
         <groupId>airavata</groupId>
@@ -59,7 +59,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.5.11</version>
         </dependency>
 
         <!-- GFAC schemas -->
@@ -109,11 +108,10 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--using different slf4j version because plugin required 1.5.11-->
+        <!--using different slf4j version because plugin required 1.5.11 -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.5.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -134,24 +132,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
-                <version>2.4.1</version>
-                <configuration>
-                    <filesets>
-                        <fileset>
-                            <directory>.</directory>
-                            <includes>
-                                <include>*.log</include>
-                            </includes>
-                        </fileset>
-		<fileset>
-                            <directory>jackrabbit</directory>
-                        </fileset>
-
-                    </filesets>
                 </configuration>
             </plugin>
         </plugins>
