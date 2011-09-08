@@ -30,7 +30,7 @@
 		-->
 
 		<fileSet>
-			<directory>axis2-${used.axis2.release}/WEB-INF/lib</directory>
+			<directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
 			<outputDirectory>standalone-server/lib</outputDirectory>
 			<includes>
 				<include>**/*</include>
@@ -38,7 +38,7 @@
 		</fileSet>
 
         <fileSet>
-			<directory>axis2-${used.axis2.release}/WEB-INF/</directory>
+			<directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
 			<outputDirectory>standalone-server/repository</outputDirectory>
 			<includes>
                 <include>services/*</include>
@@ -47,7 +47,7 @@
 		</fileSet>
 
         <fileSet>
-			<directory>axis2-${used.axis2.release}/WEB-INF/classes</directory>
+			<directory>target/axis2-${used.axis2.release}/WEB-INF/classes</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
 			<includes>
                 <include>log4j.properties</include>
@@ -297,14 +297,9 @@
 			<directory>resources/conf</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
 			<includes>
-                		<include>axis2.xml</include>
+                <include>axis2.xml</include>
 			</includes>
 		</fileSet>
-
-
-
-
-
 	</fileSets>
 
     <dependencySets>
