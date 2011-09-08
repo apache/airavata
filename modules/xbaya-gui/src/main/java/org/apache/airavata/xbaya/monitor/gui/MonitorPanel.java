@@ -40,12 +40,12 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import org.apache.airavata.common.utils.BrowserLauncher;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.gui.XBayaComponent;
 import org.apache.airavata.xbaya.monitor.MonitorEventData;
 import org.apache.airavata.xbaya.monitor.MonitorUtil;
-import org.apache.airavata.xbaya.util.BrowserLauncher;
 import org.apache.airavata.xbaya.util.SwingUtil;
 import org.xmlpull.infoset.XmlElement;
 
@@ -196,7 +196,7 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
                                 String url = MonitorUtil.getLocation(message);
                                 try {
                                     BrowserLauncher.openURL(url);
-                                } catch (XBayaException e) {
+                                } catch (Exception e) {
                                     MonitorPanel.this.engine.getErrorWindow().error(e.getMessage(), e);
                                 }
                             }

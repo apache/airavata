@@ -25,10 +25,11 @@ import java.awt.Color;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.BrowserLauncher;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
-import org.apache.airavata.xbaya.util.BrowserLauncher;
 
 public class OutputNodeGUI extends ConfigurableNodeGUI {
 
@@ -68,10 +69,7 @@ public class OutputNodeGUI extends ConfigurableNodeGUI {
                     URL url = new URL(description);
                     // no exception -> valid url lets try to open it
                     BrowserLauncher.openURL(url);
-                } catch (MalformedURLException e) {
-                    // do nothing since this is not a url we just ignor it
-
-                } catch (XBayaException e) {
+                }  catch (Exception e) {
                     // do nothing since this is an optional attempt
                 }
 

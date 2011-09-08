@@ -23,8 +23,8 @@ package org.apache.airavata.xbaya.test;
 
 import junit.framework.TestCase;
 
+import org.apache.airavata.common.utils.BrowserLauncher;
 import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.util.BrowserLauncher;
 
 public class BrowserTestCase extends TestCase {
 
@@ -32,7 +32,7 @@ public class BrowserTestCase extends TestCase {
      * @throws XBayaException
      * 
      */
-    public void testBrowserLauncher() throws XBayaException {
+    public void testBrowserLauncher() throws Exception {
         BrowserLauncher.openURL("http://www.google.com");
     }
 }
