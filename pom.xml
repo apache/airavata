@@ -12,7 +12,7 @@
     language governing permissions and limitations under the License. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>airavata</artifactId>
     <groupId>airavata</groupId>
@@ -24,21 +24,97 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <airavata.version>0.0.1-SNAPSHOT</airavata.version>
-	<axis2.version>1.5.1</axis2.version>
+        <axis2.version>1.5.1</axis2.version>
         <derby.version>10.7.1.1</derby.version>
-	<jackrabbit.version>2.2.7</jackrabbit.version>
-	<slf4j.version>1.5.11</slf4j.version>
-	<logback.version>0.9.20</logback.version>
+        <jackrabbit.version>2.2.7</jackrabbit.version>
+        <slf4j.version>1.5.11</slf4j.version>
+        <logback.version>0.9.20</logback.version>
+        <org.slf4j.version>1.6.1</org.slf4j.version>
+        <log4j.version>1.2.16</log4j.version>
+        <axiom.version>1.2.8</axiom.version>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${org.slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2</artifactId>
+                <version>${axis2.version}</version>
+            </dependency>
+           		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+		    </dependency>
+            <dependency>
+                <groupId>javax.jcr</groupId>
+                <artifactId>jcr</artifactId>
+                <version>2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>xmlbeans</groupId>
+                <artifactId>xbean</artifactId>
+                <version>2.5.0</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.7</version>
+            </dependency>
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>2.9.1</version>
+            </dependency>
+            <dependency>
+                <groupId>xpp3</groupId>
+                <artifactId>xpp3</artifactId>
+                <version>1.1.3_7</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.5.11</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>xsul</groupId>
+                <artifactId>xsul</artifactId>
+                <version>2.10.5_b</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jackrabbit</groupId>
+                <artifactId>jackrabbit-core</artifactId>
+                <version>${jackrabbit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jackrabbit</groupId>
+                <artifactId>jackrabbit-jcr-rmi</artifactId>
+                <version>${jackrabbit.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <repositories>
         <repository>
-                        <name>ogce.m2.all</name>
-                        <id>ogce.m2.all</id>
-                        <url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
-                        <snapshots>
-                                <updatePolicy>daily</updatePolicy>
-                        </snapshots>
-                </repository>
+            <name>ogce.m2.all</name>
+            <id>ogce.m2.all</id>
+            <url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
+            <snapshots>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+        </repository>
         <repository>
             <id>m2-snapshot-repository</id>
             <url>http://people.apache.org/repo/m2-snapshot-repository</url>
@@ -66,7 +142,7 @@
             <name>Apache Yfilter repo</name>
             <url>http://people.apache.org/~lahiru/maven-repo</url>
         </repository>
-	<repository>
+        <repository>
             <id>OW2</id>
             <name>OW2 Repository</name>
             <url>http://maven.ow2.org/maven2</url>

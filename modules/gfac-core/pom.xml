@@ -25,10 +25,6 @@
     <artifactId>gfac-core</artifactId>
     <name>GFac-Core</name>
     <description>The core GFAC functionality independent from any webservice implementation. </description>
-    <properties>
-        <org.slf4j.version>1.6.1</org.slf4j.version>
-        <log4j.version>1.2.16</log4j.version>
-    </properties>
 
 
     <dependencies>
@@ -63,21 +59,21 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${org.slf4j.version}</version>
+	    <version>1.5.11</version>
         </dependency>
 
         <!-- GFAC schemas -->
         <dependency>
             <groupId>airavata</groupId>
             <artifactId>airavata-gfac-schema-utils</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${airavata.version}</version>
         </dependency>
 
         <!-- Workflow Tracking -->
         <dependency>
             <groupId>airavata</groupId>
             <artifactId>airavata-workflowtracking</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${airavata.version}</version>
         </dependency>
 
         <!-- Xregistry jars -->
@@ -111,26 +107,22 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.7</version>
             <scope>test</scope>
         </dependency>
+        <!--using different slf4j version because plugin required 1.5.11-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>${org.slf4j.version}</version>
+	    <version>1.5.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-core</artifactId>
-            <version>2.2.8</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-rmi</artifactId>
-            <version>2.2.8</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

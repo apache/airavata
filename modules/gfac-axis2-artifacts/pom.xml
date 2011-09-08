@@ -25,16 +25,11 @@
 	<artifactId>airavata-axis2-artifacts</artifactId>
 	<name>GFac-Axis2-Artifacts</name>
 	<description>Axis2 Artifacts for Gfac funcationality</description>
-	<properties>
-		<log4j.version>1.2.16</log4j.version>
-		<axis2.version>1.5.1</axis2.version>
-		<axiom.version>1.2.8</axiom.version>
-	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.axis2</groupId>
 			<artifactId>axis2</artifactId>
-			<version>${axis2.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.ws.commons.axiom</groupId>
