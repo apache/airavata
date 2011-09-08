@@ -131,18 +131,18 @@ public class PropertiesBasedServiceImplTest {
 			output.add("echo_output", echo_output);
 
 			// parameter
-			ct.addMessageContext("input", input);
-			ct.addMessageContext("output", output);
+			ct.addMessageContext(ParameterContextImpl.INPUT_KEY, input);
+			ct.addMessageContext(ParameterContextImpl.OUTPUT_KEY, output);
 
 			PropertiesBasedServiceImpl service = new PropertiesBasedServiceImpl();
 			service.init();
 			service.execute(ct);
 
-			Assert.assertNotNull(ct.getMessageContext("output"));
-			Assert.assertNotNull(ct.getMessageContext("output")
+			Assert.assertNotNull(ct.getMessageContext(ParameterContextImpl.OUTPUT_KEY));
+			Assert.assertNotNull(ct.getMessageContext(ParameterContextImpl.OUTPUT_KEY)
 					.getValue("echo_output"));
 			Assert.assertEquals("hello",
-					((AbstractParameter) ct.getMessageContext("output")
+					((AbstractParameter) ct.getMessageContext(ParameterContextImpl.OUTPUT_KEY)
 							.getValue("echo_output")).toStringVal());
 
 		} catch (Exception e) {
