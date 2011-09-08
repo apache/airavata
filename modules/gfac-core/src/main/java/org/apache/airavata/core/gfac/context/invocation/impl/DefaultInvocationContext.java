@@ -37,6 +37,9 @@ import org.apache.airavata.core.gfac.context.security.SecurityContext;
  */
 public class DefaultInvocationContext implements InvocationContext{
 
+    protected final String MESSAGE_CONTEXT_INPUT = "input";
+    protected final String MESSAGE_CONTEXT_OUTPUT = "output";
+    
     private String serviceName;
     private ExecutionContext executionContext;
     private ExecutionDescription gfacContext;
@@ -82,5 +85,22 @@ public class DefaultInvocationContext implements InvocationContext{
 
     public <T extends SecurityContext> void addSecurityContext(String name, T value) {
         this.securityContextMap.put(name, value);        
+    }
+
+    public <T> MessageContext<T> getInput() {
+        return getMessageContext(MESSAGE_CONTEXT_INPUT);
+    }
+    
+    public <T extends MessageContext<?>> void setInput(T value) {        
+        this.messageContextMap.put(MESSAGE_CONTEXT_INPUT, value);
+    }
+    
+    public <T> MessageContext<T> getOutput() {
+        return getMessageContext(MESSAGE_CONTEXT_OUTPUT);
+    }
+
+    public <T extends MessageContext<?>> void setOutput(T value) {
+        this.messageContextMap.put(MESSAGE_CONTEXT_OUTPUT, value);
+        
     };    
 }

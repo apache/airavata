@@ -73,9 +73,9 @@ public class LocalProvider extends AbstractProvider {
         
         // input parameter
         ArrayList<String> tmp = new ArrayList<String>();
-        for (Iterator<String> iterator = context.getMessageContext(MessageContext.INPUT_KEY).getNames(); iterator.hasNext();) {
+        for (Iterator<String> iterator = context.getInput().getNames(); iterator.hasNext();) {
             String key = iterator.next();
-            tmp.add(context.getMessageContext(MessageContext.INPUT_KEY).getStringValue(key));
+            tmp.add(context.getInput().getStringValue(key));
         }
         
         List<String> cmdList = new ArrayList<String>();
@@ -225,7 +225,7 @@ public class LocalProvider extends AbstractProvider {
             String stdErrStr = GfacUtils.readFile(app.getStdErr());
 
             // set to context
-            OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getMessageContext(MessageContext.OUTPUT_KEY), stdOutStr, stdErrStr);
+            OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getOutput(), stdOutStr, stdErrStr);
 
         } catch (IOException e) {
         	log.error("error", e);

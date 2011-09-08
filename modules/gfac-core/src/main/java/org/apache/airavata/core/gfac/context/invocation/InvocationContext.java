@@ -37,13 +37,42 @@ public interface InvocationContext {
      * @return
      */
     public String getServiceName();
+    
+    /**
+     * Get input. Use to handle specific MessageContext for input
+     * 
+     * @return MessageContext contains input
+     */
+    public <T> MessageContext<T> getInput();
 
+    /**
+     * Set MessageContext as input
+     * 
+     * @param value
+     */
+    public <T extends MessageContext<?>> void setInput(T value);
+
+    /**
+     * Get output. Use to handle specific MessageContext for output
+     * 
+     * @return MessageContext contains output
+     */
+    public <T> MessageContext<T> getOutput();
+
+    /**
+     * Set MessageContext as output
+     * 
+     * @param value
+     */    
+    public <T extends MessageContext<?>> void setOutput(T value);
+    
     /**
      * Get ExecutionDescription
      * 
      * @return ExecutionDescription
      */
     public ExecutionDescription getExecutionDescription();
+        
 
     /**
      * Set ExecutionDescription

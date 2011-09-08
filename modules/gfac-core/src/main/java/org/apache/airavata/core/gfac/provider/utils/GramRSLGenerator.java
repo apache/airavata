@@ -80,9 +80,9 @@ public class GramRSLGenerator {
             jobAttr.setStdin(app.getStdIn());
         } else {
             // input parameter
-            for (Iterator<String> iterator = context.getMessageContext(MessageContext.INPUT_KEY).getNames(); iterator.hasNext();) {
+            for (Iterator<String> iterator = context.getInput().getNames(); iterator.hasNext();) {
                 String key = iterator.next();
-                jobAttr.addArgument(context.getMessageContext(MessageContext.INPUT_KEY).getStringValue(key));
+                jobAttr.addArgument(context.getInput().getStringValue(key));
             }
         }
 

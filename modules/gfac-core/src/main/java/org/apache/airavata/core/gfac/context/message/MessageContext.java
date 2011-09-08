@@ -33,18 +33,7 @@ import java.util.Iterator;
  * @param <T>
  *            class that associate with this message
  */
-public interface MessageContext<T> {
-
-    
-    /**
-     * Constant for input message key
-     */
-    public static final String INPUT_KEY = "input";
-    
-    /**
-     * Constant for output message key
-     */
-    public static final String OUTPUT_KEY = "output";  
+public interface MessageContext<T> {     
     
     /**
      * Get list of names in the context
