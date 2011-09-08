@@ -32,11 +32,11 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkEvent.EventType;
 import javax.swing.event.HyperlinkListener;
 
+import org.apache.airavata.common.utils.BrowserLauncher;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaVersion;
-import org.apache.airavata.xbaya.util.BrowserLauncher;
 
 import xsul5.MLogger;
 import xsul5.XmlConstants;
@@ -94,7 +94,7 @@ public class AboutWindow {
                     URL url = event.getURL();
                     try {
                         BrowserLauncher.openURL(url.toString());
-                    } catch (XBayaException e) {
+                    } catch (Exception e) {
                         AboutWindow.this.engine.getErrorWindow().error(AboutWindow.this.dialog.getDialog(),
                                 e.getMessage(), e);
                     }
