@@ -23,9 +23,6 @@ package org.apache.airavata.core.gfac.utils;
 
 public class GFacConstants {
     
-    public static final String MESSAGE_CONTEXT_INPUT_NAME = "input";
-    public static final String MESSAGE_CONTEXT_OUTPUT_NAME = "output";
-
     public static final String INPUT_DATA_DIR_VAR_NAME = "inputData";
 
     public static final String OUTPUT_DATA_DIR_VAR_NAME = "outputData";

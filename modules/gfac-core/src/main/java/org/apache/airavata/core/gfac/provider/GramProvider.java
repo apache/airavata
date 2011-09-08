@@ -32,6 +32,7 @@ import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.host.GlobusHost;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
@@ -200,12 +201,11 @@ public class GramProvider extends AbstractProvider {
             String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
 
             // set to context
-            OutputUtils.fillOutputFromStdout(invocationContext.<AbstractParameter>getMessageContext("output"), stdout, stderr);
+            OutputUtils.fillOutputFromStdout(invocationContext.<AbstractParameter>getMessageContext(MessageContext.OUTPUT_KEY), stdout, stderr);
 
             jobSucsseful = true;
         } catch (GramException e) {
-            String localHost = "xxxx";
-            GfacException error = new JobSubmissionFault(e, localHost, gatekeeper, rsl, this);
+            GfacException error = new JobSubmissionFault(e, host.getName(), gatekeeper, rsl, this);
             if (errCode == 8) {
                 error.setFaultCode(ErrorCodes.JOB_CANCELED);
             } else {

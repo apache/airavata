@@ -35,6 +35,17 @@ import java.util.Iterator;
  */
 public interface MessageContext<T> {
 
+    
+    /**
+     * Constant for input message key
+     */
+    public static final String INPUT_KEY = "input";
+    
+    /**
+     * Constant for output message key
+     */
+    public static final String OUTPUT_KEY = "output";  
+    
     /**
      * Get list of names in the context
      * 

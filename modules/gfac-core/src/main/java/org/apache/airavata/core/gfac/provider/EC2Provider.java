@@ -49,6 +49,7 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.security.impl.AmazonSecurityContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
@@ -240,9 +241,9 @@ public class EC2Provider extends AbstractProvider {
 
      // input parameter
         ArrayList<String> tmp = new ArrayList<String>();
-        for (Iterator<String> iterator = context.getMessageContext(GFacConstants.MESSAGE_CONTEXT_INPUT_NAME).getNames(); iterator.hasNext();) {
+        for (Iterator<String> iterator = context.getMessageContext(MessageContext.INPUT_KEY).getNames(); iterator.hasNext();) {
             String key = iterator.next();
-            tmp.add(context.getMessageContext(GFacConstants.MESSAGE_CONTEXT_INPUT_NAME).getStringValue(key));
+            tmp.add(context.getMessageContext(MessageContext.INPUT_KEY).getStringValue(key));
         }
         
         List<String> cmdList = new ArrayList<String>();
@@ -346,7 +347,7 @@ public class EC2Provider extends AbstractProvider {
                 String stdErrStr = GfacUtils.readFile(localStdErrFile.getAbsolutePath());
 
                 // set to context
-                OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getMessageContext("output"), stdOutStr, stdErrStr);
+                OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getMessageContext(MessageContext.OUTPUT_KEY), stdOutStr, stdErrStr);
 
             } catch (Exception e) {
                 throw e;

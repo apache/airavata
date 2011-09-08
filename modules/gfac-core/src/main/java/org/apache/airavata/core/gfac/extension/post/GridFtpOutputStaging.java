@@ -48,7 +48,7 @@ public class GridFtpOutputStaging extends PostExecuteChain {
 
     public boolean execute(InvocationContext context) throws GfacException {
         try {
-            MessageContext<AbstractParameter> x = context.getMessageContext("output");
+            MessageContext<AbstractParameter> x = context.getMessageContext(MessageContext.OUTPUT_KEY);
 
             for (Iterator<String> iterator = x.getNames(); iterator.hasNext();) {
                 String key = iterator.next();

@@ -80,7 +80,6 @@ public class DefaultInvocationContext implements InvocationContext{
         this.messageContextMap.put(name, value);
     }
 
-    @Override
     public <T extends SecurityContext> void addSecurityContext(String name, T value) {
         this.securityContextMap.put(name, value);        
     };    

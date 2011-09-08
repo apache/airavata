@@ -41,6 +41,7 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.security.impl.SSHSecurityContextImpl;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.notification.NotificationService;
@@ -138,9 +139,9 @@ public class SSHProvider extends AbstractProvider {
 
         // input parameter
         ArrayList<String> tmp = new ArrayList<String>();
-        for (Iterator<String> iterator = context.getMessageContext("input").getNames(); iterator.hasNext();) {
+        for (Iterator<String> iterator = context.getMessageContext(MessageContext.INPUT_KEY).getNames(); iterator.hasNext();) {
             String key = iterator.next();
-            tmp.add(context.getMessageContext("input").getStringValue(key));
+            tmp.add(context.getMessageContext(MessageContext.INPUT_KEY).getStringValue(key));
         }
 
         List<String> cmdList = new ArrayList<String>();
@@ -242,10 +243,7 @@ public class SSHProvider extends AbstractProvider {
                 String stdErrStr = GfacUtils.readFile(localStdErrFile.getAbsolutePath());
 
                 // set to context
-
-					 //TODO: "output" should be replaced by a static string or else a specialized
-					 //TODO: message.  See TODO comments from MessageContext.java
-                OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getMessageContext("output"), stdOutStr, stdErrStr);
+                OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getMessageContext(MessageContext.OUTPUT_KEY), stdOutStr, stdErrStr);
 
             } catch (Exception e) {
                 throw e;
