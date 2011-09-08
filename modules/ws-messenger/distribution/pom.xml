@@ -14,27 +14,31 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <webResources>
-                        <resource>
-                            <directory>axis2-${axis2.version}/WEB-INF/lib</directory>
-                            <targetPath>WEB-INF/lib</targetPath>
-                            <includes>
-                                <include>*.jar</include>
-                            </includes>
-                        </resource>
-                        <resource>
-                            <directory>${basedir}/src/main/resources</directory>
-                            <targetPath>WEB-INF/classes</targetPath>
-                            <includes>
-                                <include>database_scripts*</include>
-                            </includes>
-                        </resource>
-                    </webResources>
-                </configuration>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.0-alpha-4</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>unpack-axis2</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.axis2</groupId>
+                                    <artifactId>axis2-webapp</artifactId>
+                                    <version>${axis2.version}</version>
+                                    <type>war</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>target/axis2-${axis2.version}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>

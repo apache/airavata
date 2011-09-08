@@ -34,7 +34,7 @@
                                     <version>${axis2.version}</version>
                                     <type>war</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>axis2-${axis2.version}</outputDirectory>
+                                    <outputDirectory>target/axis2-${axis2.version}</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -61,6 +61,17 @@
 					</execution>
 				</executions>
 			</plugin>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.4.1</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>axis2-${axis2.version}</directory>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -99,6 +110,15 @@
 			<artifactId>jackrabbit-jcr-server</artifactId>
 			<version>${jackrabbit.version}</version>
 		</dependency>
+		<dependency>
+               		 <groupId>xsul</groupId>
+                	<artifactId>xsul</artifactId>
+            	</dependency>
+		<dependency>
+                	<groupId>xsul5-ogce</groupId>
+                	<artifactId>xsul5-2007-02-27</artifactId>
+                	<version>1</version>
+            	</dependency>
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>jackrabbit-jcr-servlet</artifactId>

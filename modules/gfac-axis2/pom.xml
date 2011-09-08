@@ -12,80 +12,84 @@
 	language governing permissions and limitations under the License. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-		<artifactId>airavata</artifactId>
-		<groupId>airavata</groupId>
-		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../../pom.xml</relativePath>
-	</parent>
+        <artifactId>airavata</artifactId>
+        <groupId>airavata</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>airavata</groupId>
-	<artifactId>airavata-gfac-axis2-interface</artifactId>
-	<name>GFac-Axis2-Interface</name>
-	<description>Axis2 Interface to the GFac-Core</description>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>airavata</groupId>
+    <artifactId>airavata-gfac-axis2-interface</artifactId>
+    <name>GFac-Axis2-Interface</name>
+    <description>Axis2 Interface to the GFac-Core</description>
 
 
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.ws.commons.axiom</groupId>
-			<artifactId>axiom-api</artifactId>
-			<version>${axiom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.ws.commons.axiom</groupId>
-			<artifactId>axiom-impl</artifactId>
-			<version>${axiom.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>airavata</groupId>
-			<artifactId>gfac-core</artifactId>
-			<version>${airavata.version}</version>
-		</dependency>
+    <dependencies>
         <dependency>
-			<groupId>javax.jcr</groupId>
-			<artifactId>jcr</artifactId>
-		</dependency>
-	        <dependency>
-			<groupId>wsdl4j</groupId>
-			<artifactId>wsdl4j</artifactId>
-			<version>1.6.2</version>
-		</dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2</artifactId>
+        </dependency>
         <dependency>
-			<groupId>xsul5-ogce</groupId>
-			<artifactId>xsul5-2007-02-27</artifactId>
-			<version>1</version>
-		</dependency>
-       		 <dependency>
-			<groupId>xpp5</groupId>
-  			<artifactId>xpp5</artifactId>
-  			<version>1.2.6</version>
-		</dependency>
-	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.axis2</groupId>
-				<artifactId>axis2-aar-maven-plugin</artifactId>
-				<version>${axis2.version}</version>
-				<configuration>
-					<servicesXmlFile>src/main/resources/services.xml</servicesXmlFile>
-				</configuration>
-				<executions>
-					<execution>
-						<id>createAAR</id>
-						<phase>package</phase>
-						<goals>
-							<goal>aar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-api</artifactId>
+            <version>${axiom.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-impl</artifactId>
+            <version>${axiom.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>airavata</groupId>
+            <artifactId>gfac-core</artifactId>
+            <version>${airavata.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.jcr</groupId>
+            <artifactId>jcr</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>xsul5-ogce</groupId>
+            <artifactId>xsul5-2007-02-27</artifactId>
+            <version>1</version>
+        </dependency>
+        <dependency>
+            <groupId>xpp5</groupId>
+            <artifactId>xpp5</artifactId>
+            <version>1.2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-aar-maven-plugin</artifactId>
+                <version>${axis2.version}</version>
+                <configuration>
+                    <servicesXmlFile>src/main/resources/services.xml</servicesXmlFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>createAAR</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>aar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
