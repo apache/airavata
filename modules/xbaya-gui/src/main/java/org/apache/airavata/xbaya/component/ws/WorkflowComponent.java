@@ -26,11 +26,12 @@ import java.net.URISyntaxException;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.ws.WorkflowNode;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
@@ -165,6 +166,8 @@ public class WorkflowComponent extends WSComponent {
                 return templateID;
             }
         } catch (URISyntaxException e) {
+            throw new ComponentException(e);
+        } catch (UtilsException e) {
             throw new ComponentException(e);
         }
     }

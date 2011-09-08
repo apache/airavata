@@ -25,7 +25,7 @@ import java.net.URI;
 
 import junit.framework.TestSuite;
 
-import org.apache.airavata.xbaya.util.WSDLUtil;
+import org.apache.airavata.common.utils.WSDLUtil;
 
 import xsul.wsdl.WsdlResolver;
 import xsul5.MLogger;

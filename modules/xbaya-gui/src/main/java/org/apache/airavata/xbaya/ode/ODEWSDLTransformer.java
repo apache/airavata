@@ -30,11 +30,11 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.gpel.DSCUtil;
 import org.apache.airavata.xbaya.util.StringUtil;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.xmlpull.infoset.XmlBuilderException;
 import org.xmlpull.infoset.XmlInfosetBuilder;
 import org.xmlpull.infoset.XmlNamespace;
@@ -338,8 +338,8 @@ public class ODEWSDLTransformer {
     }
 
     /**
-     * @param types
-     * @param schemaNs
+     *
+     * @param wsdl
      */
     private void addCrosscutImportsIfNecessary(WsdlDefinitions wsdl) {
         org.xmlpull.infoset.XmlElement types = wsdl.getTypes();
@@ -354,7 +354,7 @@ public class ODEWSDLTransformer {
                 for (org.xmlpull.infoset.XmlElement importElement : imports) {
                     found = found
                             || WSDLUtil.attributeExist(importElement, "namespace",
-                                    "http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/");
+                            "http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/");
                 }
                 if (!found) {
                     org.xmlpull.infoset.XmlElement crosscutImport = BUILDER.newFragment(schemaNs, "import");
@@ -372,7 +372,7 @@ public class ODEWSDLTransformer {
                 for (org.xmlpull.infoset.XmlElement importElement : imports) {
                     found = found
                             || WSDLUtil.attributeExist(importElement, "namespace",
-                                    "http://www.extreme.indiana.edu/lead/xsd");
+                            "http://www.extreme.indiana.edu/lead/xsd");
                 }
                 if (!found) {
                     org.xmlpull.infoset.XmlElement crosscutImport = BUILDER.newFragment(schemaNs, "import");

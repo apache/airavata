@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.tracking.client.Callback;
 import org.apache.airavata.workflow.tracking.client.NotificationType;
 import org.apache.airavata.workflow.tracking.common.InvocationContext;
@@ -62,7 +64,6 @@ import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.test.service.adder.Adder;
 import org.apache.airavata.xbaya.test.service.multiplier.Multiplier;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
@@ -184,8 +185,13 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
         inputMap.put("b", "3");
         inputMap.put("c", "4");
         inputMap.put("d", "5");
-        sendNotification(workflowWSDL, null, WSDLUtil.getFirstOperation(workflowWSDL).getName(), inputMap, null,
-                notifier);
+
+        try {
+            sendNotification(workflowWSDL, null, WSDLUtil.getFirstOperation(workflowWSDL).getName(), inputMap, null,
+                    notifier);
+        } catch (UtilsException e) {
+            e.printStackTrace();
+        }
 
         WsdlDefinitions adderWSDL = WsdlResolver.getInstance().loadWsdl(
                 new File(XBayaPathConstants.WSDL_DIRECTORY + File.separator + Adder.WSDL_PATH).toURI());
@@ -353,8 +359,12 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
         }
 
         /**
-         * @see edu.indiana.extreme.lead.workflow_tracking.client.Callback#deliverMessage(java.lang.String,
-         *      edu.indiana.extreme.lead.workflow_tracking.client.NotificationType, org.apache.xmlbeans.XmlObject)
+         *
+         * @param topic
+         *            the topic to which this message was sent. This can also be retrieved from the messageObj XMlObject
+         *            directly after typecasting.
+         * @param type
+         * @param message
          */
         public void deliverMessage(String topic, NotificationType type, XmlObject message) {
 

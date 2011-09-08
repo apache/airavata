@@ -32,12 +32,13 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.gpel.script.BPELScript;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 
 import xsul5.wsdl.WsdlDefinitions;
@@ -82,7 +83,11 @@ public class DSCUtil {
             String partnerLinkName = BPELScript.createPartnerLinkName(node.getID());
             WsdlDefinitions wsdl = node.getComponent().getWSDL();
             if (WSDLUtil.isAWSDL(wsdl)) {
-                wsdl = convertToCWSDL(WSDLUtil.deepClone(wsdl), dscURL);
+                try {
+                    wsdl = convertToCWSDL(WSDLUtil.deepClone(wsdl), dscURL);
+                } catch (UtilsException e) {
+                    e.printStackTrace();
+                }
             }
             WSDLMap.put(partnerLinkName, wsdl);
         }

@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.system.InputComponent;
@@ -48,7 +50,6 @@ import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.monitor.MonitorUtil.EventType;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.xmlpull.infoset.XmlElement;
 
@@ -212,7 +213,7 @@ public class WorkflowModifier {
             WsdlPortTypeOperation wsdlPortTypeOperation;
             try {
                 wsdlPortTypeOperation = WSDLUtil.getFirstOperation(this.modifiedWorkflow.getWorkflowWSDL());
-            } catch (ComponentException e) {
+            } catch (UtilsException e) {
                 throw new MonitorException(e);
             }
             XmlElement part = soapBody.element(wsdlPortTypeOperation.getName());

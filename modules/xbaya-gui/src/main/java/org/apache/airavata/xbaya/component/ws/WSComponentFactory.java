@@ -26,9 +26,10 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
-import org.apache.airavata.xbaya.util.WSDLUtil;
 import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.infoset.XmlElement;
 
@@ -72,6 +73,7 @@ public class WSComponentFactory {
      * @throws ComponentException
      */
     public static List<WSComponent> createComponents(WsdlDefinitions wsdl) throws ComponentException {
+        try{
         QName portTypeQName = WSDLUtil.getFirstPortTypeQName(wsdl);
         WsdlPortType portType = wsdl.getPortType(portTypeQName.getLocalPart());
         List<WSComponent> components = new ArrayList<WSComponent>();
@@ -79,8 +81,12 @@ public class WSComponentFactory {
             String operationName = operation.getOperationName();
             WSComponent component = createComponent(wsdl, portTypeQName, operationName);
             components.add(component);
+            return components;
         }
-        return components;
+        }catch (Exception e){
+            throw new ComponentException(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
+        }
+        return null;
     }
 
     /**
@@ -134,6 +140,8 @@ public class WSComponentFactory {
             }
             return component;
         } catch (RuntimeException e) {
+            throw new ComponentException(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
+        } catch (UtilsException e) {
             throw new ComponentException(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
         }
     }
