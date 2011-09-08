@@ -92,7 +92,7 @@
         <dependency>
             <groupId>net.schmizz</groupId>
             <artifactId>sshj</artifactId>
-            <version>0.3.1</version>
+            <version>0.5.0</version>
         </dependency>
 
         <!-- Amazon -->
@@ -108,7 +108,6 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--using different slf4j version because plugin required 1.5.11 -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
