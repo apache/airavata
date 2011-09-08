@@ -264,12 +264,21 @@
 			</includes>
 		</fileSet>
 		<fileSet>
+			<directory>../commons/gfac-schema/target</directory>
+			<outputDirectory>lib</outputDirectory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+		</fileSet>
+
+		<fileSet>
 			<directory>../gfac-axis2/src/main/resources/</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
 			<includes>
 				<include>repository.properties</include>
 			</includes>
 		</fileSet>
+
 		<fileSet>
 			<directory>../gfac-core/src/main/resources</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
@@ -326,6 +335,8 @@
                 <outputDirectory>lib</outputDirectory>
                 <includes>
                     <include>org.apache.jackrabbit:jackrabbit-standalone:jar</include>
+		    <include>xsul:xsul:jar</include>
+		    <include>xsul5-ogce:xsul5-2007-02-27:jar</include>
                 </includes>
                     </dependencySet>
         </dependencySets>
