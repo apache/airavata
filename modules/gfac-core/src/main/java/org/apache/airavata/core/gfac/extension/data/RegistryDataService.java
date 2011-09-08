@@ -30,13 +30,12 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
+import org.apache.airavata.core.gfac.exception.ExtensionException;
 import org.apache.airavata.core.gfac.extension.DataServiceChain;
 
 public class RegistryDataService extends DataServiceChain {
 
-	public boolean execute(InvocationContext context) throws GfacException {
+	public boolean execute(InvocationContext context) throws ExtensionException {
 
 		ServiceDescription serviceDesc = context.getExecutionDescription().getService();
 		HostDescription hostDesc = context.getExecutionDescription().getHost();
@@ -66,7 +65,7 @@ public class RegistryDataService extends DataServiceChain {
 			}
 
 			/*
-			 * Input and Output Dir
+			 * Input and Output Directory
 			 */
 			if (appDesc.getInputDir() == null) {
 				appDesc.setInputDir(appDesc.getWorkingDir() + File.separator
@@ -93,11 +92,10 @@ public class RegistryDataService extends DataServiceChain {
 			}
 
 		} else {
-			throw new GfacException("Service Map for "
+			throw new ExtensionException("Service Map for "
 					+ context.getServiceName()
 					+ " does not found on resource Catalog "
-					+ context.getExecutionContext().getRegistryService(),
-					FaultCode.InvalidRequest);
+					+ context.getExecutionContext().getRegistryService());
 		}
 
 		return false;

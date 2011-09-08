@@ -22,18 +22,13 @@
 package org.apache.airavata.core.gfac.context.security.impl.utils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.UUID;
 
-import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
 import org.globus.gsi.GlobusCredential;
 import org.globus.gsi.TrustedCertificates;
 import org.globus.gsi.gssapi.GlobusGSSCredentialImpl;
 import org.globus.myproxy.MyProxy;
-import org.globus.myproxy.MyProxyException;
 import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,51 +70,43 @@ public class MyProxyManager {
         }
     }
 
-    public GSSCredential renewProxy() throws GfacException {
+    public GSSCredential renewProxy() throws Exception {
 
-        try {
-            init();
-            String proxyloc = null;
-            MyProxy myproxy = new MyProxy(hostname, port);
-            GSSCredential proxy = myproxy.get(username, password, lifetime);
-            GlobusCredential globusCred = null;
-            if (proxy instanceof GlobusGSSCredentialImpl) {
-                globusCred = ((GlobusGSSCredentialImpl) proxy).getGlobusCredential();
-                log.info("got proxy from myproxy for " + username + " with " + lifetime + " lifetime.");
-                String uid = username;
-                if (proxyloc == null) {
-                    // uid = XpolaUtil.getSysUserid();
-                    log.info("uid: " + uid);
-                    proxyloc = "/tmp/x509up_u" + uid + UUID.randomUUID().toString();
-                }
-                log.info("proxy location: " + proxyloc);
-                File proxyfile = new File(proxyloc);
-                if (proxyfile.exists() == false) {
-                    String dirpath = proxyloc.substring(0, proxyloc.lastIndexOf('/'));
-                    File dir = new File(dirpath);
-                    if (dir.exists() == false) {
-                        dir.mkdirs();
-                        log.info("new directory " + dirpath + " is created.");
-                    }
-                    proxyfile.createNewFile();
-                    log.info("new proxy file " + proxyloc + " is created.");
-                }
-                FileOutputStream fout = new FileOutputStream(proxyfile);
-                globusCred.save(fout);
-                fout.close();
-                Runtime.getRuntime().exec("/bin/chmod 600 " + proxyloc);
-                log.info("Proxy file renewed to " + proxyloc + " for the user " + username + " with " + lifetime
-                        + " lifetime.");
-
+        init();
+        String proxyloc = null;
+        MyProxy myproxy = new MyProxy(hostname, port);
+        GSSCredential proxy = myproxy.get(username, password, lifetime);
+        GlobusCredential globusCred = null;
+        if (proxy instanceof GlobusGSSCredentialImpl) {
+            globusCred = ((GlobusGSSCredentialImpl) proxy).getGlobusCredential();
+            log.info("got proxy from myproxy for " + username + " with " + lifetime + " lifetime.");
+            String uid = username;
+            if (proxyloc == null) {
+                // uid = XpolaUtil.getSysUserid();
+                log.info("uid: " + uid);
+                proxyloc = "/tmp/x509up_u" + uid + UUID.randomUUID().toString();
             }
-            return proxy;
-        } catch (MyProxyException e) {
-            throw new GfacException(e, FaultCode.ErrorAtDependentService);
-        } catch (FileNotFoundException e) {
-            throw new GfacException(e, FaultCode.LocalError);
-        } catch (IOException e) {
-            throw new GfacException(e, FaultCode.LocalError);
+            log.info("proxy location: " + proxyloc);
+            File proxyfile = new File(proxyloc);
+            if (proxyfile.exists() == false) {
+                String dirpath = proxyloc.substring(0, proxyloc.lastIndexOf('/'));
+                File dir = new File(dirpath);
+                if (dir.exists() == false) {
+                    dir.mkdirs();
+                    log.info("new directory " + dirpath + " is created.");
+                }
+                proxyfile.createNewFile();
+                log.info("new proxy file " + proxyloc + " is created.");
+            }
+            FileOutputStream fout = new FileOutputStream(proxyfile);
+            globusCred.save(fout);
+            fout.close();
+            Runtime.getRuntime().exec("/bin/chmod 600 " + proxyloc);
+            log.info("Proxy file renewed to " + proxyloc + " for the user " + username + " with " + lifetime
+                    + " lifetime.");
+
         }
+        return proxy;
     }
 
 }

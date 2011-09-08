@@ -23,7 +23,7 @@ package org.apache.airavata.core.gfac.provider.utils;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
-import org.apache.airavata.core.gfac.exception.GfacException;
+import org.apache.airavata.core.gfac.exception.SecurityException;
 import org.globus.gram.GramException;
 import org.globus.gram.GramJob;
 import org.globus.gram.GramJobListener;
@@ -49,7 +49,7 @@ public class JobSubmissionListener implements GramJobListener {
     }
 
     // waits for DONE or FAILED status
-    public void waitFor() throws InterruptedException, GSSException, GfacException, GramException {
+    public void waitFor() throws InterruptedException, GSSException, GramException, SecurityException {
         while (!finished) {
             int proxyExpTime = job.getCredentials().getRemainingLifetime();
             if (proxyExpTime < 900) {

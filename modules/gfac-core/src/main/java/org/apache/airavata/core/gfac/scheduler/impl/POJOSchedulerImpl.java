@@ -21,9 +21,11 @@
 
 package org.apache.airavata.core.gfac.scheduler.impl;
 
+import java.net.UnknownHostException;
+
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.exception.GfacException;
+import org.apache.airavata.core.gfac.exception.SchedulerException;
 import org.apache.airavata.core.gfac.provider.GramProvider;
 import org.apache.airavata.core.gfac.provider.LocalProvider;
 import org.apache.airavata.core.gfac.provider.Provider;
@@ -32,11 +34,15 @@ import org.apache.airavata.core.gfac.utils.GfacUtils;
 
 public class POJOSchedulerImpl implements Scheduler {
 
-    public Provider schedule(InvocationContext context) throws GfacException {
-        HostDescription host = context.getExecutionDescription().getHost();
-        if(GfacUtils.isLocalHost(host.getName())){
-            return new LocalProvider();
+    public Provider schedule(InvocationContext context) throws SchedulerException {
+        try {
+            HostDescription host = context.getExecutionDescription().getHost();
+            if (GfacUtils.isLocalHost(host.getName())) {
+                return new LocalProvider();
+            }
+            return new GramProvider();
+        } catch (UnknownHostException e) {
+            throw new SchedulerException("Cannot get IP for current host", e);
         }
-        return new GramProvider();
     }
 }

@@ -49,10 +49,9 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.security.impl.AmazonSecurityContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
+import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
@@ -102,7 +101,7 @@ public class EC2Provider extends AbstractProvider {
         return buff.toString();
     }
 
-    public void initialize(InvocationContext context) throws GfacException {
+    public void initialize(InvocationContext context) throws ProviderException {
         HostDescription host = context.getExecutionDescription().getHost();
         ShellApplicationDeployment app = (ShellApplicationDeployment)context.getExecutionDescription().getApp();
 
@@ -140,15 +139,14 @@ public class EC2Provider extends AbstractProvider {
 
                 if (describeInstancesResult.getReservations().size() == 0
                         || describeInstancesResult.getReservations().get(0).getInstances().size() == 0) {
-                    throw new GfacException("Instance not found:" + ins_id, FaultCode.InvalidRequest);
+                    throw new ProviderException("Instance not found:" + ins_id);
                 }
 
                 this.instance = describeInstancesResult.getReservations().get(0).getInstances().get(0);
 
                 // check instance keypair
                 if (this.instance.getKeyName() == null || !this.instance.getKeyName().equals(KEY_PAIR_NAME))
-                    throw new GfacException("Keypair for instance:" + ins_id + " is not valid",
-                            FaultCode.InvalidRequest);
+                    throw new ProviderException("Keypair for instance:" + ins_id + " is not valid");
             }
 
             // send out instance id
@@ -183,10 +181,8 @@ public class EC2Provider extends AbstractProvider {
             }
 
         } catch (Exception e) {
-            // TODO throw out
-            e.printStackTrace();
             log.error(e.getMessage(), e);
-            throw new GfacException(e, FaultCode.InvalidRequest);
+            throw new ProviderException(e.getMessage(), e);
         }
 
         // set Host location
@@ -226,7 +222,7 @@ public class EC2Provider extends AbstractProvider {
                 }
             }
         } catch (Exception e) {
-            throw new GfacException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e);
         } finally {
             try {
                 ssh.disconnect();
@@ -235,7 +231,7 @@ public class EC2Provider extends AbstractProvider {
         }
     }
 
-    public void execute(InvocationContext context) throws GfacException {
+    public void execute(InvocationContext context) throws ProviderException {
         HostDescription host = context.getExecutionDescription().getHost();
         ShellApplicationDeployment app = (ShellApplicationDeployment)context.getExecutionDescription().getApp();
 
@@ -343,8 +339,8 @@ public class EC2Provider extends AbstractProvider {
                 fileTransfer.download(app.getStdOut(), localStdOutFile.getAbsolutePath());
                 fileTransfer.download(app.getStdErr(), localStdErrFile.getAbsolutePath());
 
-                String stdOutStr = GfacUtils.readFile(localStdOutFile.getAbsolutePath());
-                String stdErrStr = GfacUtils.readFile(localStdErrFile.getAbsolutePath());
+                String stdOutStr = GfacUtils.readFileToString(localStdOutFile.getAbsolutePath());
+                String stdErrStr = GfacUtils.readFileToString(localStdErrFile.getAbsolutePath());
 
                 // set to context
                 OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getOutput(), stdOutStr, stdErrStr);
@@ -358,7 +354,7 @@ public class EC2Provider extends AbstractProvider {
                 }
             }
         } catch (Exception e) {
-            throw new GfacException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e);
         } finally {
             try {
                 ssh.disconnect();

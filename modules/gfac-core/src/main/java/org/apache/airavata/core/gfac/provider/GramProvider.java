@@ -23,6 +23,7 @@ package org.apache.airavata.core.gfac.provider;
 
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.xml.namespace.QName;
 
@@ -32,11 +33,13 @@ import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.host.GlobusHost;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
+import org.apache.airavata.core.gfac.exception.ExtensionException;
 import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
 import org.apache.airavata.core.gfac.exception.JobSubmissionFault;
+import org.apache.airavata.core.gfac.exception.ProviderException;
+import org.apache.airavata.core.gfac.exception.SecurityException;
+import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.external.GridFtp;
 import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.apache.airavata.core.gfac.provider.utils.GramRSLGenerator;
@@ -54,7 +57,7 @@ public class GramProvider extends AbstractProvider {
 
     public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";
 
-    public void initialize(InvocationContext invocationContext) throws GfacException {
+    public void initialize(InvocationContext invocationContext) throws ProviderException {
         GlobusHost host = (GlobusHost)invocationContext.getExecutionDescription().getHost();
         ShellApplicationDeployment app = (ShellApplicationDeployment)invocationContext.getExecutionDescription().getApp();
     	
@@ -90,7 +93,7 @@ public class GramProvider extends AbstractProvider {
         }
     }
 
-    public void execute(InvocationContext invocationContext) throws GfacException {
+    public void execute(InvocationContext invocationContext) throws ProviderException {
     	GlobusHost host = (GlobusHost)invocationContext.getExecutionDescription().getHost();
     	GramApplicationDeployment app = (GramApplicationDeployment)invocationContext.getExecutionDescription().getApp();
         ServiceDescription service = invocationContext.getExecutionDescription().getService();
@@ -160,11 +163,11 @@ public class GramProvider extends AbstractProvider {
             if (jobStatus == GramJob.STATUS_FAILED) {
                 errCode = listener.getError();                
                 String errorMsg = "Job " + job.getID() + " on host " + host.getName() + " Error Code = " + errCode;                
-                GfacException error = new JobSubmissionFault(new Exception(errorMsg), "GFAC HOST", gatekeeper, rsl, this);
+                JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST", gatekeeper, rsl);
                 if (errCode == 8) {
-                	error.setFaultCode(ErrorCodes.JOB_CANCELED);
+                	error.setReason(JobSubmissionFault.JOB_CANCEL);
                 } else {
-                	error.setFaultCode(ErrorCodes.JOB_FAILED);
+                    error.setReason(JobSubmissionFault.JOB_FAILED);
                 }
                 throw error;
             }
@@ -205,17 +208,23 @@ public class GramProvider extends AbstractProvider {
 
             jobSucsseful = true;
         } catch (GramException e) {
-            GfacException error = new JobSubmissionFault(e, host.getName(), gatekeeper, rsl, this);
+            JobSubmissionFault error = new JobSubmissionFault(this, e, host.getName(), gatekeeper, rsl);
             if (errCode == 8) {
-                error.setFaultCode(ErrorCodes.JOB_CANCELED);
+                error.setReason(JobSubmissionFault.JOB_CANCEL);
             } else {
-                error.setFaultCode(ErrorCodes.JOB_FAILED);
+                error.setReason(JobSubmissionFault.JOB_FAILED);
             }
             throw error;
         } catch (GSSException e) {
-            throw new JobSubmissionFault(e, "GFAC HOST", gatekeeper, rsl, this);        
+            throw new ProviderException("GFAC HOST", e);        
         } catch (InterruptedException e) {
-            throw new GfacException(e, FaultCode.ErrorAtDependentService);
+            throw new ProviderException("Thread", e);
+        } catch (SecurityException e) {
+            throw new ProviderException(e.getMessage(), e);            
+        } catch (ToolsException e) {
+            throw new ProviderException(e.getMessage(), e);
+        } catch (URISyntaxException e) {
+            throw new ProviderException("URI is in the wrong format:" + e.getMessage(), e);
         } finally {
             if (job != null && !jobSucsseful) {
                 try {

@@ -23,11 +23,9 @@ package org.apache.airavata.core.gfac.context.security.impl;
 
 import org.apache.airavata.core.gfac.context.security.SecurityContext;
 import org.apache.airavata.core.gfac.context.security.impl.utils.MyProxyManager;
-import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
+import org.apache.airavata.core.gfac.exception.SecurityException;
 import org.globus.tools.MyProxy;
 import org.ietf.jgss.GSSCredential;
-import org.ietf.jgss.GSSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +51,7 @@ public class GSISecurityContext implements SecurityContext {
 
     }
 
-    public GSSCredential getGssCredentails() throws GfacException, GSSException {
+    public GSSCredential getGssCredentails() throws SecurityException {
         try {
             System.out.println(gssCredentails);
             if (gssCredentails == null || gssCredentails.getRemainingLifetime() < 10 * 90) {
@@ -68,7 +66,7 @@ public class GSISecurityContext implements SecurityContext {
             }
             return gssCredentails;
         } catch (Exception e) {
-            throw new GfacException(e, FaultCode.ErrorAtDependentService);
+            throw new SecurityException(e.getMessage(), e);
         }
     }
 

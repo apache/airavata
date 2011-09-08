@@ -35,7 +35,7 @@ import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionCon
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.context.security.impl.SSHSecurityContextImpl;
 import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.exception.GfacException.FaultCode;
+import org.apache.airavata.core.gfac.exception.ServiceException;
 import org.apache.airavata.core.gfac.extension.DataServiceChain;
 import org.apache.airavata.core.gfac.extension.ExitableChain;
 import org.apache.airavata.core.gfac.extension.PostExecuteChain;
@@ -161,7 +161,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     }
 
     @Override
-    public void preProcess(InvocationContext context) throws GfacException {
+    public void preProcess(InvocationContext context) throws ServiceException {
         /*
          * Check Gram header
          */
@@ -249,7 +249,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     }
 
     @Override
-    public void postProcess(InvocationContext context) throws GfacException {
+    public void postProcess(InvocationContext context) throws ServiceException {
     }
 
     /*
@@ -259,7 +259,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
      * org.apache.airavata.core.gfac.services.GenericService#getScheduler(org
      * .apache.airavata.core.gfac.context .InvocationContext)
      */
-    public Scheduler getScheduler(InvocationContext context) throws GfacException {
+    public Scheduler getScheduler(InvocationContext context) throws ServiceException {
         String className = null;
         if (this.scheduler == null) {
             log.info("try to create scheduler");
@@ -281,9 +281,9 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                 log.info("Scheduler:" + className + " is loaded");
 
             } catch (ClassNotFoundException ex) {
-                throw new GfacException("Scheduler " + className + " not found", ex);
+                throw new ServiceException("Scheduler " + className + " not found", ex);
             } catch (Exception ex) {
-                throw new GfacException("Scheduler " + className + " could not be instantiated: " + ex, ex);
+                throw new ServiceException("Scheduler " + className + " could not be instantiated: " + ex, ex);
             }
         }
         return this.scheduler;
@@ -296,7 +296,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
      * org.apache.airavata.core.gfac.services.GenericService#getPreExecutionSteps
      * (org.ogce.gfac .context.InvocationContext)
      */
-    public PreExecuteChain[] getPreExecutionSteps(InvocationContext context) throws GfacException {
+    public PreExecuteChain[] getPreExecutionSteps(InvocationContext context) throws ServiceException {
         if (this.preChain == null) {
             log.info("try to load pre-execution chain");
             this.preChain = loadClassFromProperties(PRE_CHAIN_CLASS, PreExecuteChain.class);
@@ -311,7 +311,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
      * org.apache.airavata.core.gfac.services.GenericService#getPostExecuteSteps
      * (org.ogce.gfac .context.InvocationContext)
      */
-    public PostExecuteChain[] getPostExecuteSteps(InvocationContext context) throws GfacException {
+    public PostExecuteChain[] getPostExecuteSteps(InvocationContext context) throws ServiceException {
         if (this.postChain == null) {
             log.info("try to load post-execution chain");
             this.postChain = loadClassFromProperties(POST_CHAIN_CLASS, PostExecuteChain.class);
@@ -326,7 +326,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
      * org.apache.airavata.core.gfac.services.impl.OGCEGenericService#getDataChains
      * (org.apache.airavata.core.gfac.context .InvocationContext)
      */
-    public DataServiceChain[] getDataChains(InvocationContext context) throws GfacException {
+    public DataServiceChain[] getDataChains(InvocationContext context) throws ServiceException {
         if (this.dataChain == null) {
             log.info("try to load data chain");
             this.dataChain = loadClassFromProperties(DATA_CHAIN_CLASS, DataServiceChain.class);
@@ -341,11 +341,11 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
      * @return
      * @throws GfacException
      */
-    private String loadFromProperty(String propertyName, boolean required) throws GfacException {
+    private String loadFromProperty(String propertyName, boolean required) throws ServiceException {
         String propValue = this.properties.getProperty(propertyName);
         if (propValue == null) {
             if (required)
-                throw new GfacException("Property \"" + propertyName + "\" is not found", FaultCode.InvalidConfig);
+                throw new ServiceException("Property \"" + propertyName + "\" is not found");
             return null;
         }
         return propValue;
@@ -356,7 +356,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 	 */
     @SuppressWarnings("unchecked")
     private <T> T[] loadClassFromProperties(String propertyName, Class<? extends ExitableChain> type)
-            throws GfacException {
+            throws ServiceException {
 
         // property is not set
         String propValue = loadFromProperty(propertyName, false);
@@ -385,11 +385,11 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                 log.info(type.getName() + " : " + className + " is loaded");
 
             } catch (ClassNotFoundException ex) {
-                throw new GfacException("Cannot find the class: " + className, ex);
+                throw new ServiceException("Cannot find the class: " + className, ex);
             } catch (IllegalAccessException ex) {
-                throw new GfacException("Cannot access the class: " + className, ex);
+                throw new ServiceException("Cannot access the class: " + className, ex);
             } catch (InstantiationException ex) {
-                throw new GfacException("Cannot init the class: " + className, ex);
+                throw new ServiceException("Cannot init the class: " + className, ex);
             }
         }
         return chain;
