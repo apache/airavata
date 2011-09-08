@@ -18,25 +18,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+   <parent>
+		<artifactId>airavata</artifactId>
+		<groupId>airavata</groupId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../../pom.xml</relativePath>
+	</parent>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>xregistry</groupId>
 	<artifactId>xregistry</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>Service Registry</name>
-	<repositories>
-		<repository>
-			<name>ogce.m2.all</name>
-			<id>ogce.m2.all</id>
-			<url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
-		</repository>
-		 <repository>
-            <id>ibiblio</id>
-            <name>ibiblio Repository</name>
-            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2
-            </url>
-        </repository>
-	</repositories>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

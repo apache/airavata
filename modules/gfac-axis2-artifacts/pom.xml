@@ -13,10 +13,16 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <parent>
+		<artifactId>airavata</artifactId>
+		<groupId>airavata</groupId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../../pom.xml</relativePath>
+	</parent>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>airavata</groupId>
 	<artifactId>airavata-axis2-artifacts</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>GFac-Axis2-Artifacts</name>
 	<description>Axis2 Artifacts for Gfac funcationality</description>
 	<properties>
@@ -40,6 +46,7 @@
 			<artifactId>axiom-impl</artifactId>
 			<version>${axiom.version}</version>
 		</dependency>
+
 	</dependencies>
 <build>
 		<plugins>
