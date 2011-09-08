@@ -83,6 +83,7 @@
             <modules>
                 <module>workflow-tracking</module>
             	<module>gfac-schema</module>
+		<module>utils</module>
 	    </modules>
         </profile>
     </profiles>
