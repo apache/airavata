@@ -43,9 +43,7 @@ public enum GFacServiceOperations {
             if (status.toString().equalsIgnoreCase(s)) {
                 return status;
             }
-
         }
-
         throw new RuntimeException("invalid WsEventingOperation:- " + s);
     }
 }

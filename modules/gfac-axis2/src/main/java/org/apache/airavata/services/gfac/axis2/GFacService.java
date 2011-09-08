@@ -34,6 +34,7 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryFactory;
 import javax.jcr.SimpleCredentials;
 
+import org.apache.airavata.commons.gfac.api.impl.JCRRegistry;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.services.gfac.axis2.handlers.AmazonSecurityHandler;
 import org.apache.airavata.services.gfac.axis2.handlers.MyProxySecurityHandler;
@@ -41,9 +42,12 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.Phase;
+import org.apache.axis2.engine.ServiceLifeCycle;
 
-public class GFacService implements org.apache.axis2.engine.ServiceLifeCycle {
-
+public class GFacService implements ServiceLifeCycle {
+    
+    public static final String CONFIGURATION_CONTEXT_REGISTRY = "registry";
+    
 	public static final String SECURITY_CONTEXT = "security_context";
     public static final String REPOSITORY_PROPERTIES = "repository.properties";
 	public static GenericService service;
@@ -71,13 +75,12 @@ public class GFacService implements org.apache.axis2.engine.ServiceLifeCycle {
             URL url = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
             properties.load(url.openStream());
             Map<String, String> map = new HashMap<String, String>((Map) properties);
-            Class registryRepositoryFactory = Class.forName(map.get("repository.factory"));
+            Class registryRepositoryFactory = Class.forName(map.get("jcr.class"));
             Constructor c = registryRepositoryFactory.getConstructor();
             RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
             Repository repository = repositoryFactory.getRepository(map);
             Credentials credentials = new SimpleCredentials(map.get("userName"), (map.get("password")).toCharArray());
-            context.setProperty("repository",repository);
-            context.setProperty("credentials",credentials);
+            context.setProperty(CONFIGURATION_CONTEXT_REGISTRY, new JCRRegistry(repository, credentials));
     } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
