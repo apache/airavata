@@ -19,4 +19,4 @@
 
 . `dirname $0`/setenv.sh
 cd $AIRAVATA_HOME/standalone-server/bin
-./axis2server.sh
+./axis2server.sh $*
