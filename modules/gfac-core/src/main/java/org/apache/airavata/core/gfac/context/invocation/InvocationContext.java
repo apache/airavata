@@ -36,64 +36,63 @@ public interface InvocationContext {
      * 
      * @return
      */
-    public String getServiceName();
+    String getServiceName();
     
     /**
      * Get input. Use to handle specific MessageContext for input
      * 
      * @return MessageContext contains input
      */
-    public <T> MessageContext<T> getInput();
+    <T> MessageContext<T> getInput();
 
     /**
      * Set MessageContext as input
      * 
      * @param value
      */
-    public void setInput(MessageContext<?> value);
+    void setInput(MessageContext<?> value);
 
     /**
      * Get output. Use to handle specific MessageContext for output
      * 
      * @return MessageContext contains output
      */
-    public <T> MessageContext<T> getOutput();
+    <T> MessageContext<T> getOutput();
 
     /**
      * Set MessageContext as output
      * 
      * @param value
      */    
-    public void setOutput(MessageContext<?> value);
+    void setOutput(MessageContext<?> value);
     
     /**
      * Get ExecutionDescription
      * 
      * @return ExecutionDescription
      */
-    public ExecutionDescription getExecutionDescription();
-        
+    ExecutionDescription getExecutionDescription();  
 
     /**
      * Set ExecutionDescription
      * 
      * @param value
      */
-    public void setExecutionDescription(ExecutionDescription value);
+    void setExecutionDescription(ExecutionDescription value);
 
     /**
      * Get ExecutionContext
      * 
      * @return ExecutionContext
      */
-    public ExecutionContext getExecutionContext();
+    ExecutionContext getExecutionContext();
 
     /**
      * Set ExecutionContext
      * 
      * @param value
      */
-    public void setExecutionContext(ExecutionContext value);
+    void setExecutionContext(ExecutionContext value);
 
     /**
      * Get MessageContext
@@ -101,7 +100,7 @@ public interface InvocationContext {
      * @param name
      * @return MessageContext
      */
-    public <T> MessageContext<T> getMessageContext(String name);
+    <T> MessageContext<T> getMessageContext(String name);
 
     /**
      * Add MessageContext to the invocation with specific name.
@@ -109,7 +108,7 @@ public interface InvocationContext {
      * @param name
      * @param value
      */
-    public void addMessageContext(String name, MessageContext<?> value);
+    void addMessageContext(String name, MessageContext<?> value);
 
     /**
      * Get SecurityContext
@@ -117,7 +116,7 @@ public interface InvocationContext {
      * @param name
      * @return
      */
-    public SecurityContext getSecurityContext(String name);
+    SecurityContext getSecurityContext(String name);
     
     /**
      * Add SecurityContext to the invocation with specific name.
@@ -125,6 +124,6 @@ public interface InvocationContext {
      * @param name
      * @param value
      */
-    public void addSecurityContext(String name, SecurityContext value);
+    void addSecurityContext(String name, SecurityContext value);
 
 }

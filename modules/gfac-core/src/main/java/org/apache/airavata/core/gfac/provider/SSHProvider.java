@@ -46,7 +46,6 @@ import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.security.impl.SSHSecurityContextImpl;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.ProviderException;
-import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
@@ -55,6 +54,7 @@ public class SSHProvider extends AbstractProvider {
 
     private static final String SPACE = " ";
     private static final String SSH_SECURITY_CONTEXT = "ssh";
+    private String command;
 
     private String buildCommand(List<String> cmdList) {
         StringBuffer buff = new StringBuffer();
@@ -81,9 +81,22 @@ public class SSHProvider extends AbstractProvider {
 
     }
 
-    // TODO: This method has a try/catch embedded in 'finally' method. Is there a way
-    // TODO: to force cleanup on failed connections?
     public void initialize(InvocationContext context) throws ProviderException {
+    }
+
+    public void execute(InvocationContext context) throws ProviderException {
+    }
+
+    public void dispose(InvocationContext invocationContext) throws GfacException {
+    }
+
+    public void abort(InvocationContext invocationContext) throws GfacException {
+    }
+
+    // TODO: This method has a try/catch embedded in 'finally' method. Is there
+    // a way
+    // TODO: to force cleanup on failed connections?
+    public void makeDirectory(InvocationContext context) throws ProviderException {
         HostDescription host = context.getExecutionDescription().getHost();
         ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
 
@@ -130,9 +143,7 @@ public class SSHProvider extends AbstractProvider {
         }
     }
 
-    // TODO: This method has a try/catch embedded in 'finally' method. Is there a way
-    // TODO: to force cleanup on failed connections?
-    public void execute(InvocationContext context) throws ProviderException {
+    public void setupEnvironment(InvocationContext context) throws ProviderException {
         HostDescription host = context.getExecutionDescription().getHost();
         ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
 
@@ -145,60 +156,58 @@ public class SSHProvider extends AbstractProvider {
 
         List<String> cmdList = new ArrayList<String>();
 
+        /*
+         * Builder Command
+         */
+        cmdList.add(app.getExecutable());
+        cmdList.addAll(tmp);
+
+        // create process builder from command
+        command = buildCommand(cmdList);
+
+        // redirect StdOut and StdErr
+        // TODO: Make 1> and 2> into static constants.
+        // TODO: This only works for the BASH shell. CSH and TCSH will be
+        // different.
+        command += SPACE + "1>" + SPACE + app.getStdOut();
+        command += SPACE + "2>" + SPACE + app.getStdErr();       
+    }
+
+    public void executeApplication(InvocationContext context) throws ProviderException {
+        // TODO: initSSHSecurity can throw an IOException but you are
+        // treating everything as a GFAC exception.
+
+        HostDescription host = context.getExecutionDescription().getHost();
+        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
+
         SSHClient ssh = new SSHClient();
         try {
 
-            /*
-             * Builder Command
-             */
-            cmdList.add(app.getExecutable());
-            cmdList.addAll(tmp);
-
-            // create process builder from command
-            String command = buildCommand(cmdList);
-
-            // redirect StdOut and StdErr
-            // TODO: Make 1> and 2> into static constants.
-            // TODO: This only works for the BASH shell. CSH and TCSH will be different.
-            command += SPACE + "1>" + SPACE + app.getStdOut();
-            command += SPACE + "2>" + SPACE + app.getStdErr();
-
-            // get the env of the host and the application
-            Map<String, String> nv = app.getEnv();
-
-            // extra env's
-            nv.put(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());
-            nv.put(GFacConstants.OUTPUT_DATA_DIR_VAR_NAME, app.getOutputDir());
-
-            // log info
-            log.info("Command = " + buildCommand(cmdList));
-            for (Entry<String, String> entry : nv.entrySet()) {
-                log.info("Env[" + entry.getKey() + "] = " + entry.getValue());
-            }
-
-            // notify start
-            NotificationService notifier = context.getExecutionContext().getNotificationService();
-            notifier.startExecution(this, context);
-
-            // TODO: initSSHSecurity can throw an IOException but you are
-            // treating everything as a GFAC exception.
             initSSHSecurity(context, ssh);
             ssh.connect(host.getName());
+
             final Session session = ssh.startSession();
             try {
                 /*
-                 * Build working Directory
+                 * Going to working Directory
                  */
-                log.info("WorkingDir = " + app.getWorkingDir());
-                session.exec("mkdir -p " + app.getWorkingDir());
                 session.exec("cd " + app.getWorkingDir());
+
+                // get the env of the host and the application
+                Map<String, String> nv = app.getEnv();
+
+                // extra env's
+                nv.put(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());
+                nv.put(GFacConstants.OUTPUT_DATA_DIR_VAR_NAME, app.getOutputDir());
 
                 /*
                  * Set environment
                  */
+                log.info("Command = " + command);
                 for (Entry<String, String> entry : nv.entrySet()) {
+                    log.info("Env[" + entry.getKey() + "] = " + entry.getValue());
                     session.setEnvVar(entry.getKey(), entry.getValue());
-                }
+                }                              
 
                 /*
                  * Execute
@@ -206,9 +215,6 @@ public class SSHProvider extends AbstractProvider {
                 Command cmd = session.exec(command);
                 log.info("stdout=" + GfacUtils.readFromStream(session.getInputStream()));
                 cmd.join(5, TimeUnit.SECONDS);
-
-                // notify end
-                notifier.finishExecution(this, context);
 
                 /*
                  * check return value. usually not very helpful to draw
@@ -221,31 +227,7 @@ public class SSHProvider extends AbstractProvider {
                     log.info("Process finished with return value of zero.");
                 }
 
-                // TODO: The location of the logDir should be a configurable parameter.
-                // TODO: This location is easy to lose. Also, why not use standard logging
-                // TODO: tools for this? Or are these really temporary directories rather than logs?
-                File logDir = new File("./service_logs");
-                if (!logDir.exists()) {
-                    logDir.mkdir();
-                }
-
-                // Get the Stdouts and StdErrs
-                QName x = QName.valueOf(context.getServiceName());
-                String timeStampedServiceName = GfacUtils.createServiceDirName(x);
-                File localStdOutFile = new File(logDir, timeStampedServiceName + ".stdout");
-                File localStdErrFile = new File(logDir, timeStampedServiceName + ".stderr");
-
-                SCPFileTransfer fileTransfer = ssh.newSCPFileTransfer();
-                fileTransfer.download(app.getStdOut(), localStdOutFile.getAbsolutePath());
-                fileTransfer.download(app.getStdErr(), localStdErrFile.getAbsolutePath());
-
-                String stdOutStr = GfacUtils.readFileToString(localStdOutFile.getAbsolutePath());
-                String stdErrStr = GfacUtils.readFileToString(localStdErrFile.getAbsolutePath());
-
-                // set to context
-                OutputUtils.fillOutputFromStdout(context.<AbstractParameter> getOutput(), stdOutStr, stdErrStr);
-
-            } catch (IOException e) {
+            } catch (ConnectionException e) {
                 throw e;
             } finally {
                 try {
@@ -265,13 +247,60 @@ public class SSHProvider extends AbstractProvider {
         }
     }
 
-    public void dispose(InvocationContext invocationContext) throws GfacException {
-        // TODO Auto-generated method stub
+    public void retrieveOutput(InvocationContext context) throws ProviderException {
+        HostDescription host = context.getExecutionDescription().getHost();
+        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
+        SSHClient ssh = new SSHClient();
+        try {
+
+            initSSHSecurity(context, ssh);
+            ssh.connect(host.getName());
+
+            final Session session = ssh.startSession();
+            try {
+                // TODO: The location of the logDir should be a configurable
+                // parameter.
+                // TODO: This location is easy to lose. Also, why not use
+                // standard logging
+                // TODO: tools for this? Or are these really temporary
+                // directories rather than logs?
+                File logDir = new File("./service_logs");
+                if (!logDir.exists()) {
+                    logDir.mkdir();
+                }
+                // Get the Stdouts and StdErrs
+                QName x = QName.valueOf(context.getServiceName());
+                String timeStampedServiceName = GfacUtils.createServiceDirName(x);
+                File localStdOutFile = new File(logDir, timeStampedServiceName + ".stdout");
+                File localStdErrFile = new File(logDir, timeStampedServiceName + ".stderr");
+
+                SCPFileTransfer fileTransfer = ssh.newSCPFileTransfer();
+                fileTransfer.download(app.getStdOut(), localStdOutFile.getAbsolutePath());
+                fileTransfer.download(app.getStdErr(), localStdErrFile.getAbsolutePath());
+
+                String stdOutStr = GfacUtils.readFileToString(localStdOutFile.getAbsolutePath());
+                String stdErrStr = GfacUtils.readFileToString(localStdErrFile.getAbsolutePath());
+
+                // set to context
+                OutputUtils.fillOutputFromStdout(context.<AbstractParameter> getOutput(), stdOutStr, stdErrStr);
+
+            } catch (ConnectionException e) {
+                throw e;
+            } finally {
+                try {
+                    session.close();
+                } catch (Exception e) {
+                    log.warn("Cannot Close SSH Session");
+                }
+            }
+        } catch (IOException e) {
+            throw new ProviderException(e.getMessage(), e);
+        } finally {
+            try {
+                ssh.disconnect();
+            } catch (Exception e) {
+                log.warn("Cannot Close SSH Connection");
+            }
+        }
     }
-
-    public void abort(InvocationContext invocationContext) throws GfacException {
-        // TODO Auto-generated method stub
-
-    }
-
 }

@@ -21,18 +21,16 @@
 package org.apache.airavata.core.gfac.notification.impl;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.notification.NotificationService;
-import org.apache.airavata.core.gfac.provider.Provider;
-import org.apache.airavata.core.gfac.scheduler.Scheduler;
+import org.apache.airavata.core.gfac.notification.Notifiable;
 
-public class StandardOutNotification implements NotificationService {
+public class StandardOutNotification implements Notifiable {
 
-    public void startSchedule(Object notifier, InvocationContext context, Scheduler scheduler) {
-        printOut(notifier, context, null);
+    public void startSchedule(Object notifier, InvocationContext context) {
+        printOut(notifier, context);
     }
 
-    public void finishSchedule(Object notifier, InvocationContext context, Scheduler scheduler, Provider provider) {
-        printOut(notifier, context, null);
+    public void finishSchedule(Object notifier, InvocationContext context) {
+        printOut(notifier, context);
     }
 
     public void input(Object notifier, InvocationContext context, String... data) {
@@ -43,7 +41,7 @@ public class StandardOutNotification implements NotificationService {
     }
 
     public void startExecution(Object notifier, InvocationContext context) {
-        printOut(notifier, context, null);
+        printOut(notifier, context);
     }
 
     public void applicationInfo(Object notifier, InvocationContext context, String... data) {
@@ -51,7 +49,7 @@ public class StandardOutNotification implements NotificationService {
     }
 
     public void finishExecution(Object notifier, InvocationContext context) {
-        printOut(notifier, context, null);
+        printOut(notifier, context);
     }
 
     public void statusChanged(Object notifier, InvocationContext context, String... data) {

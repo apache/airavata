@@ -22,7 +22,8 @@
 package org.apache.airavata.core.gfac.context.invocation;
 
 import org.apache.airavata.commons.gfac.api.Registry;
-import org.apache.airavata.core.gfac.notification.NotificationService;
+import org.apache.airavata.core.gfac.notification.Notifiable;
+import org.apache.airavata.core.gfac.notification.Notifier;
 
 /**
  * The Execution Context is used for passing information around the whole
@@ -33,19 +34,19 @@ import org.apache.airavata.core.gfac.notification.NotificationService;
 public interface ExecutionContext {
 
     /**
-     * Get NotificationService object to used for notification.
+     * Get Notifier object to used for notification.
      * 
      * @return NotificationService to be used.
      */
-    public NotificationService getNotificationService();
+    Notifier getNotifier();
 
     /**
-     * Set NotificationService object.
+     * add Notifiable object.
      * 
-     * @param NotificationService
+     * @param Notifiable
      *            object to used
      */
-    public <T extends NotificationService> void setNotificationService(T value);
+    void addNotifiable(Notifiable value);
 
     /**
      * Get Registry object. It is used to retrieve important information about
@@ -53,7 +54,7 @@ public interface ExecutionContext {
      * 
      * @return Registry object
      */
-    public Registry getRegistryService();
+    Registry getRegistryService();
 
     /**
      * Set Registry object.
@@ -61,5 +62,5 @@ public interface ExecutionContext {
      * @param Registry
      *            object to used.
      */
-    public <T extends Registry> void setRegistryService(T value);
+    void setRegistryService(Registry value);
 }
