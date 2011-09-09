@@ -32,8 +32,6 @@ import org.apache.airavata.core.gfac.context.security.SecurityContext;
 
 /**
  * Main context that is used throughout the service
- * 
- * 
  */
 public class DefaultInvocationContext implements InvocationContext{
 

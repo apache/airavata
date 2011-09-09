@@ -21,6 +21,10 @@
 
 package org.apache.airavata.core.gfac.exception;
 
+/**
+ * The main exception for the GFac Service
+ *
+ */
 public class GfacException extends Exception {
 
     private static final long serialVersionUID = 1L;

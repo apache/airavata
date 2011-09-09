@@ -29,7 +29,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * AbstractProvider wraps up steps of execution for Provider.
- * 
+ * The steps in execution are 
+ * - makeDirectory
+ * - setupEnvironment
+ * - executeApplication
+ * - retrieveOutput
  */
 public abstract class AbstractProvider implements Provider {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());   

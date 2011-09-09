@@ -47,6 +47,9 @@ import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * GridFTP tools
+ */
 public class GridFtp {
 
     public static final Logger log = LoggerFactory.getLogger(GridFtp.class);

@@ -21,6 +21,9 @@
 
 package org.apache.airavata.core.gfac.exception;
 
+/**
+ * ExtensionException is risen from Extension e.g. file transfer, etc. 
+ */
 public class ExtensionException extends GfacException {
 
     public ExtensionException(String message) {

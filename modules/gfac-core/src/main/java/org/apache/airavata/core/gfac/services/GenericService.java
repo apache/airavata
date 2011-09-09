@@ -24,6 +24,9 @@ package org.apache.airavata.core.gfac.services;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 
+/**
+ * The description for generic service in GFAC.
+ */
 public interface GenericService {
 
     void init() throws GfacException;

@@ -26,6 +26,10 @@ import org.apache.airavata.core.gfac.services.GenericService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Abstract Factory to create a generic service
+ *
+ */
 public abstract class AbstractServiceFactory {
 
     protected final Logger log = LoggerFactory.getLogger(AbstractServiceFactory.class);

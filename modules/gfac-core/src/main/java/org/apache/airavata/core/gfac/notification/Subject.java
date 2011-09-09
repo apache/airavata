@@ -23,33 +23,48 @@ package org.apache.airavata.core.gfac.notification;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 
+/**
+ * This class represents a topic or subject that can be notified from
+ * {@link Notifier} to {@link Notifiable}.
+ * 
+ * TODO: Think about a better way
+ */
 public interface Subject {
     /*
      * 
      */
     void startSchedule(Object notifier, InvocationContext context);
+
     void finishSchedule(Object notifier, InvocationContext context);
-    
+
     /*
      * 
      */
     void input(Object notifier, InvocationContext context, String... data);
+
     void output(Object notifier, InvocationContext context, String... data);
-    
+
     /*
      * 
      */
     void startExecution(Object notifier, InvocationContext context);
+
     void applicationInfo(Object notifier, InvocationContext context, String... data);
+
     void finishExecution(Object notifier, InvocationContext context);
+
     void statusChanged(Object notifier, InvocationContext context, String... data);
-    void executionFail(Object notifier, InvocationContext context, Exception e, String... data);    
+
+    void executionFail(Object notifier, InvocationContext context, Exception e, String... data);
 
     /*
      * Interface for developer to use
      */
     void debug(Object notifier, InvocationContext context, String... data);
+
     void info(Object notifier, InvocationContext context, String... data);
+
     void warning(Object notifier, InvocationContext context, String... data);
-    void exception(Object notifier, InvocationContext context, String... data);        
+
+    void exception(Object notifier, InvocationContext context, String... data);
 }

@@ -32,6 +32,10 @@ import org.ietf.jgss.GSSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Gram job listener to check for status changed in job submission
+ *
+ */
 public class JobSubmissionListener implements GramJobListener {
 
     public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";

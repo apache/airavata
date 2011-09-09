@@ -40,6 +40,9 @@ import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class selects {@link Provider} based on information in {@link Registry}
+ */
 public class SchedulerImpl implements Scheduler {
 
     private static Logger log = LoggerFactory.getLogger(SchedulerImpl.class);

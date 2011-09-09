@@ -27,97 +27,157 @@ import java.util.List;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.notification.Notifiable;
 import org.apache.airavata.core.gfac.notification.Notifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-
+/**
+ * The default notifier which uses {@link ArrayList} to store {@link Notifiable}
+ * objects. Notification method is done by a single thread. It ignore all errors
+ * from {@link Notifiable} object.
+ */
 public class DefaultNotifier implements Notifier {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(DefaultNotifier.class);
+
     private List<Notifiable> notifiableObjects = new ArrayList<Notifiable>();
-    
-    public void addNotifiable(Notifiable notif){
+
+    public void addNotifiable(Notifiable notif) {
         notifiableObjects.add(notif);
     }
-    
-    public Notifiable[] getNotifiable(){
+
+    public Notifiable[] getNotifiable() {
         return (Notifiable[]) notifiableObjects.toArray();
     }
 
     public void startSchedule(Object notifier, InvocationContext context) {
         for (Notifiable notif : notifiableObjects) {
-            notif.startSchedule(notifier, context);
-        }        
+            try {
+                notif.startSchedule(notifier, context);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
     }
 
     public void finishSchedule(Object notifier, InvocationContext context) {
         for (Notifiable notif : notifiableObjects) {
-            notif.finishSchedule(notifier, context);
-        }        
+            try {
+                notif.finishSchedule(notifier, context);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
     }
 
     public void input(Object notifier, InvocationContext context, String... data) {
         for (Notifiable notif : notifiableObjects) {
-            notif.info(notifier, context, data);
-        }        
+            try {
+                notif.info(notifier, context, data);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
     }
 
     public void output(Object notifier, InvocationContext context, String... data) {
         for (Notifiable notif : notifiableObjects) {
-            notif.output(notifier, context, data);
+            try {
+                notif.output(notifier, context, data);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 
     public void startExecution(Object notifier, InvocationContext context) {
         for (Notifiable notif : notifiableObjects) {
-            notif.startExecution(notifier, context);
+            try {
+                notif.startExecution(notifier, context);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 
     public void applicationInfo(Object notifier, InvocationContext context, String... data) {
         for (Notifiable notif : notifiableObjects) {
-            notif.applicationInfo(notifier, context, data);
+            try {
+                notif.applicationInfo(notifier, context, data);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 
     public void finishExecution(Object notifier, InvocationContext context) {
         for (Notifiable notif : notifiableObjects) {
-            notif.finishExecution(notifier, context);
-        }        
+            try {
+                notif.finishExecution(notifier, context);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
     }
 
     public void statusChanged(Object notifier, InvocationContext context, String... data) {
         for (Notifiable notif : notifiableObjects) {
-            notif.statusChanged(notifier, context, data);
-        }        
+            try {
+                notif.statusChanged(notifier, context, data);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
     }
 
     public void executionFail(Object notifier, InvocationContext context, Exception e, String... data) {
         for (Notifiable notif : notifiableObjects) {
-            notif.executionFail(notifier, context, e, data);
+            try {
+                notif.executionFail(notifier, context, e, data);
+            } catch (Exception ex) {
+                logger.error(ex.getMessage(), ex);
+            }
         }
     }
 
     public void debug(Object notifier, InvocationContext context, String... data) {
         for (Notifiable notif : notifiableObjects) {
-            notif.debug(notifier, context, data);
+            try {
+                notif.debug(notifier, context, data);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 
     public void info(Object notifier, InvocationContext context, String... data) {
         for (Notifiable notif : notifiableObjects) {
-            notif.info(notifier, context, data);
+            try {
+                notif.info(notifier, context, data);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
         }
-        
+
     }
 
     public void warning(Object notifier, InvocationContext context, String... data) {
         for (Notifiable notif : notifiableObjects) {
-            notif.warning(notifier, context, data);
+            try {
+                notif.warning(notifier, context, data);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
         }
-        
+
     }
 
     public void exception(Object notifier, InvocationContext context, String... data) {
         for (Notifiable notif : notifiableObjects) {
-            notif.exception(notifier, context, data);
-        }        
-    }        
+            try {
+                notif.exception(notifier, context, data);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+    }
 }

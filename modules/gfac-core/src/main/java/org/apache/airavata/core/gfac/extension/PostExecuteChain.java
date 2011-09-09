@@ -21,6 +21,12 @@
 
 package org.apache.airavata.core.gfac.extension;
 
+import org.apache.airavata.core.gfac.provider.Provider;
+
+/**
+ * The data service chain is a plugin which will be executed after
+ * {@link Provider} execution
+ */
 public abstract class PostExecuteChain extends ExitableChain {
 
 }

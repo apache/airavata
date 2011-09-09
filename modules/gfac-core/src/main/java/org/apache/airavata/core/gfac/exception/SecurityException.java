@@ -21,6 +21,10 @@
 
 package org.apache.airavata.core.gfac.exception;
 
+/**
+ * Exception for all Security related issue.
+ * 
+ */
 public class SecurityException extends GfacException {
 
     public SecurityException(String message) {

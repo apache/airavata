@@ -50,6 +50,9 @@ import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 
+/**
+ * Execute application using remote SSH
+ */
 public class SSHProvider extends AbstractProvider {
 
     private static final String SPACE = " ";

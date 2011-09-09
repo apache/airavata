@@ -24,14 +24,24 @@ package org.apache.airavata.core.gfac.factory;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.core.gfac.services.impl.PropertiesBasedServiceImpl;
 
+/**
+ * Factory for {@link PropertiesBasedServiceImpl}
+ *
+ */
 public class PropertyServiceFactory extends AbstractServiceFactory {
 
     private GenericService service;
     private String fileName;
 
+    /**
+     * Default constructor with used file "service.properties"
+     */
     public PropertyServiceFactory(){        
     }
     
+    /**
+     * Construct the {@link PropertiesBasedServiceImpl} with a given property file
+     */
     public PropertyServiceFactory(String fileName){
         this.fileName = fileName;
     }

@@ -21,6 +21,11 @@
 
 package org.apache.airavata.core.gfac.extension;
 
-public abstract class DataServiceChain extends ExitableChain {
+import org.apache.airavata.core.gfac.provider.Provider;
 
+/**
+ * The data service chain is a plugin which will be executed before
+ * {@link Provider} initialization
+ */
+public abstract class DataServiceChain extends ExitableChain {
 }

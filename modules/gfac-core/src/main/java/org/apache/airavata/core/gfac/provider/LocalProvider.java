@@ -42,6 +42,10 @@ import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 
+/**
+ * {@link LocalProvider} will execute jobs (application) on local machine.
+ *
+ */
 public class LocalProvider extends AbstractProvider {
 
     private static final String SPACE = " ";
