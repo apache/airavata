@@ -59,7 +59,7 @@ public class DefaultInvocationContext implements InvocationContext{
         return this.gfacContext;
     }
     
-    public <T extends ExecutionDescription> void setExecutionDescription(T value) {
+    public void setExecutionDescription(ExecutionDescription value) {
         this.gfacContext = value;
     }
     
@@ -67,7 +67,7 @@ public class DefaultInvocationContext implements InvocationContext{
         return this.executionContext;
     }
     
-    public <T extends ExecutionContext> void setExecutionContext(T value) {
+    public void setExecutionContext(ExecutionContext value) {
         this.executionContext = value;        
     }
     
@@ -79,11 +79,11 @@ public class DefaultInvocationContext implements InvocationContext{
         return this.securityContextMap.get(name);
     }
     
-    public <T extends MessageContext<?>> void addMessageContext(String name, T value) {
+    public void addMessageContext(String name, MessageContext<?> value) {
         this.messageContextMap.put(name, value);
     }
 
-    public <T extends SecurityContext> void addSecurityContext(String name, T value) {
+    public void addSecurityContext(String name, SecurityContext value) {
         this.securityContextMap.put(name, value);        
     }
 
@@ -91,7 +91,7 @@ public class DefaultInvocationContext implements InvocationContext{
         return getMessageContext(MESSAGE_CONTEXT_INPUT);
     }
     
-    public <T extends MessageContext<?>> void setInput(T value) {        
+    public void setInput(MessageContext<?> value) {        
         this.messageContextMap.put(MESSAGE_CONTEXT_INPUT, value);
     }
     
@@ -99,7 +99,7 @@ public class DefaultInvocationContext implements InvocationContext{
         return getMessageContext(MESSAGE_CONTEXT_OUTPUT);
     }
 
-    public <T extends MessageContext<?>> void setOutput(T value) {
+    public void setOutput(MessageContext<?> value) {
         this.messageContextMap.put(MESSAGE_CONTEXT_OUTPUT, value);
         
     };    

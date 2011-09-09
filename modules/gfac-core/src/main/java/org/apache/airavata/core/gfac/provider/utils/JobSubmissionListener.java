@@ -34,8 +34,8 @@ import org.slf4j.LoggerFactory;
 
 public class JobSubmissionListener implements GramJobListener {
 
-	public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";
-	
+    public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";
+
     private boolean finished;
     private int error;
     private int status;
@@ -48,72 +48,89 @@ public class JobSubmissionListener implements GramJobListener {
         this.context = context;
     }
 
-    // waits for DONE or FAILED status
+    /**
+     * This method is used to block the process until the status of the job is
+     * DONE or FAILED
+     * 
+     * @throws InterruptedException
+     * @throws GSSException
+     * @throws GramException
+     * @throws SecurityException
+     */
     public void waitFor() throws InterruptedException, GSSException, GramException, SecurityException {
-        while (!finished) {
+        while (!isFinished()) {
             int proxyExpTime = job.getCredentials().getRemainingLifetime();
             if (proxyExpTime < 900) {
                 log.info("Job proxy expired. Trying to renew proxy");
-                GSSCredential gssCred = ((GSISecurityContext) context
-                        .getSecurityContext(MYPROXY_SECURITY_CONTEXT)).getGssCredentails();
+                GSSCredential gssCred = ((GSISecurityContext) context.getSecurityContext(MYPROXY_SECURITY_CONTEXT))
+                        .getGssCredentails();
                 job.renew(gssCred);
-            }
-            // job status is changed but method isn't invoked
-            if (status != 0) {
-                if (job.getStatus() != status) {
-                    log.info("invoke method manually");
-                    statusChanged(job);
-                } else {
-                    log.info("job " + job.getIDAsString() + " have same status: " + GramJob.getStatusAsString(status));
-                }
-            } else {
-                log.info("Status is zero");
+                log.info("Myproxy renewed");
             }
 
             synchronized (this) {
+
+                /*
+                 * job status is changed but method isn't invoked
+                 */
+                if (status != 0) {
+                    if (job.getStatus() != status) {
+                        log.info("Change job status manually");
+                        if (setStatus(job.getStatus(), job.getError()))
+                            break;
+                    } else {
+                        log.info("job " + job.getIDAsString() + " have same status: "
+                                + GramJob.getStatusAsString(status));
+                    }
+                } else {
+                    log.info("Status is zero");
+                }
+
                 wait(60 * 1000l);
             }
         }
     }
-    
-    public synchronized void statusChanged(GramJob job) {
-        int jobStatus = job.getStatus();
-        String jobId = job.getIDAsString();
-        String statusString = job.getStatusAsString();
-        String jobStatusMessage = formatJobStatus(jobId, statusString);
-        log.info(jobStatusMessage);
-        status = jobStatus;
-        context.getExecutionContext().getNotificationService().statusChanged(this, this.context, jobStatusMessage);
-        if (jobStatus == GramJob.STATUS_DONE) {
-            finished = true;
-        } else if (jobStatus == GramJob.STATUS_FAILED) {
-            finished = true;
-            error = job.getError();
+
+    private synchronized boolean isFinished() {
+        return this.finished;
+    }
+
+    private synchronized boolean setStatus(int status, int error) {
+        this.status = status;
+        this.error = error;
+
+        switch (this.status) {
+        case GramJob.STATUS_FAILED:
             log.info("Job Error Code: " + error);
+        case GramJob.STATUS_DONE:
+            this.finished = true;
         }
 
-        if (finished) {
-            notify();
+        return this.finished;
+    }
+
+    public void statusChanged(GramJob job) {
+        String jobStatusMessage = "Status of job " + job.getIDAsString() + "is " + job.getStatusAsString();
+        log.info(jobStatusMessage);
+
+        /*
+         * Notify status change
+         */
+        this.context.getExecutionContext().getNotificationService().statusChanged(this, this.context, jobStatusMessage);
+
+        /*
+         * Set new status if it is finished, notify all wait object
+         */
+        if (setStatus(job.getStatus(), job.getError())) {
+            notifyAll();
         }
     }
 
-    public int getError() {
+    public synchronized int getError() {
         return error;
     }
 
-    public int getStatus() {
+    public synchronized int getStatus() {
         return status;
-    }
-    
-    private String formatJobStatus(String jobid, String jobstatus) {
-        return "Status of job " + jobid + "is " + jobstatus;
-    }
-
-    public void wakeup() {
-        try {
-            notify();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

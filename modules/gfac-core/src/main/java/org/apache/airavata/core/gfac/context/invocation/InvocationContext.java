@@ -50,7 +50,7 @@ public interface InvocationContext {
      * 
      * @param value
      */
-    public <T extends MessageContext<?>> void setInput(T value);
+    public void setInput(MessageContext<?> value);
 
     /**
      * Get output. Use to handle specific MessageContext for output
@@ -64,7 +64,7 @@ public interface InvocationContext {
      * 
      * @param value
      */    
-    public <T extends MessageContext<?>> void setOutput(T value);
+    public void setOutput(MessageContext<?> value);
     
     /**
      * Get ExecutionDescription
@@ -79,7 +79,7 @@ public interface InvocationContext {
      * 
      * @param value
      */
-    public <T extends ExecutionDescription> void setExecutionDescription(T value);
+    public void setExecutionDescription(ExecutionDescription value);
 
     /**
      * Get ExecutionContext
@@ -93,7 +93,7 @@ public interface InvocationContext {
      * 
      * @param value
      */
-    public <T extends ExecutionContext> void setExecutionContext(T value);
+    public void setExecutionContext(ExecutionContext value);
 
     /**
      * Get MessageContext
@@ -109,7 +109,7 @@ public interface InvocationContext {
      * @param name
      * @param value
      */
-    public <T extends MessageContext<?>> void addMessageContext(String name, T value);
+    public void addMessageContext(String name, MessageContext<?> value);
 
     /**
      * Get SecurityContext
@@ -125,6 +125,6 @@ public interface InvocationContext {
      * @param name
      * @param value
      */
-    public <T extends SecurityContext> void addSecurityContext(String name, T value);
+    public void addSecurityContext(String name, SecurityContext value);
 
 }
