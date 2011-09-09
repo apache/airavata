@@ -160,7 +160,6 @@ public class HttpInputStaging extends PreExecuteChain {
             out.flush();
 
         } finally {
-
             if (in != null) {
                 try {
                     in.close();

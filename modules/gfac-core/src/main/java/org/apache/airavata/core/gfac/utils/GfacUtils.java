@@ -22,7 +22,6 @@
 package org.apache.airavata.core.gfac.utils;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -97,13 +96,8 @@ public class GfacUtils {
 
     public static boolean isLocalHost(String appHost) throws UnknownHostException {
         String localHost = InetAddress.getLocalHost().getCanonicalHostName();
-
-        if (localHost.equals(appHost) || GFacConstants.LOCALHOST.equals(appHost)
-                || GFacConstants._127_0_0_1.equals(appHost)) {
-            return true;
-        } else {
-            return false;
-        }
+        return (localHost.equals(appHost) || GFacConstants.LOCALHOST.equals(appHost)
+                || GFacConstants._127_0_0_1.equals(appHost));
     }
 
     // TODO: why do you need the date? UUID will give you a unique ID.

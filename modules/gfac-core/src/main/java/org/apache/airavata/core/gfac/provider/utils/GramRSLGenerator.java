@@ -102,7 +102,7 @@ public class GramRSLGenerator {
 
         String jobType = JobType.SINGLE.toString();
         if (app.getJobType() != null) {
-            jobType = app.getJobType().toString();
+            jobType = app.getJobType();
         }
 
         if (jobType.equalsIgnoreCase(JobType.SINGLE.toString())) {

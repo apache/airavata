@@ -26,9 +26,9 @@ import org.apache.airavata.core.gfac.exception.GfacException;
 
 public interface GenericService {
 
-    public void init() throws GfacException;
+    void init() throws GfacException;
 
-    public void execute(InvocationContext context) throws GfacException;
+    void execute(InvocationContext context) throws GfacException;
 
-    public void dispose() throws GfacException;
+    void dispose() throws GfacException;
 }

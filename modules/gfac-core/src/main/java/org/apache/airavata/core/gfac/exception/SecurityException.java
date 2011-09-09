@@ -23,6 +23,10 @@ package org.apache.airavata.core.gfac.exception;
 
 public class SecurityException extends GfacException {
 
+    public SecurityException(String message) {
+        super(message);
+    }
+    
     public SecurityException(String message, Throwable cause) {
         super(message, cause);
     }
