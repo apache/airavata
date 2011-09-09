@@ -33,7 +33,7 @@ public class StringParameter extends AbstractParameter {
 	}
 	
 	public String toStringVal(){
-		return this.value.toString();
+	    return (value == null)?null:this.value.toString();
 	}
 
 	public DataType getType() {
