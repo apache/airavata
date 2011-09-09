@@ -23,10 +23,10 @@ package org.apache.airavata.xbaya.graph.amazon;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
-import org.apache.airavata.xbaya.util.WSConstants;
 import org.xmlpull.infoset.XmlElement;
 
 public class InstanceDataPort extends DataPort {

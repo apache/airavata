@@ -35,7 +35,7 @@ import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
-import org.apache.airavata.xbaya.util.WSConstants;
+import org.apache.airavata.common.utils.WSConstants;
 import org.xmlpull.infoset.XmlElement;
 
 public abstract class SystemNode extends NodeImpl {

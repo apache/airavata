@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentDataPort;
 import org.apache.airavata.xbaya.component.system.ForEachComponent;
@@ -39,7 +40,6 @@ import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.Port.Kind;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.system.gui.ForEachNodeGUI;
-import org.apache.airavata.xbaya.util.WSConstants;
 import org.xmlpull.infoset.XmlElement;
 
 public class ForEachNode extends SystemNode {

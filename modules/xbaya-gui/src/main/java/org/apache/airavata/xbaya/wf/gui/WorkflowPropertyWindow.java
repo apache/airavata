@@ -38,7 +38,7 @@ import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextArea;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
 import org.apache.airavata.xbaya.util.StringUtil;
-import org.apache.airavata.xbaya.util.WSConstants;
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.xmlpull.infoset.XmlElement;
 

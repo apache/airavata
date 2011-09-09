@@ -26,7 +26,7 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.xbaya.component.ComponentDataPort;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.dynamic.DynamicPort;
-import org.apache.airavata.xbaya.util.WSConstants;
+import org.apache.airavata.common.utils.WSConstants;
 
 public class DynamicComponentPort extends ComponentDataPort {
 

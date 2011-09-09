@@ -60,7 +60,7 @@ import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.util.Pair;
-import org.apache.airavata.xbaya.util.WSConstants;
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.wf.Workflow;
 
 public class GraphUtil {

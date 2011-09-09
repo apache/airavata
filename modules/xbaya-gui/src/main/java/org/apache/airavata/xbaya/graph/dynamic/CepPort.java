@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentPort;
 import org.apache.airavata.xbaya.component.dynamic.CepComponentPort;
@@ -32,7 +33,6 @@ import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
-import org.apache.airavata.xbaya.util.WSConstants;
 import org.xmlpull.infoset.XmlElement;
 
 public class CepPort extends DataPort {

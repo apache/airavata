@@ -37,7 +37,7 @@ import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.system.gui.ConstantNodeGUI;
-import org.apache.airavata.xbaya.util.WSConstants;
+import org.apache.airavata.common.utils.WSConstants;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul5.MLogger;
