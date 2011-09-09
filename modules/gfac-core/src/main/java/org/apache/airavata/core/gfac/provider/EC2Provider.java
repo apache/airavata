@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import javax.xml.namespace.QName;
@@ -274,8 +275,8 @@ public class EC2Provider extends AbstractProvider {
             
             // log info
             log.info("Command = " + buildCommand(cmdList));
-            for (String key : nv.keySet()) {
-                log.info("Env[" + key + "] = " + nv.get(key));
+            for (Entry<String, String> entry : nv.entrySet()) {
+                log.info("Env[" + entry.getKey() + "] = " + entry.getValue());
             }
 
             // notify start
@@ -300,8 +301,8 @@ public class EC2Provider extends AbstractProvider {
                 /*
                  * Set environment
                  */
-                for (String key : nv.keySet()) {
-                    session.setEnvVar(key, nv.get(key));
+                for (Entry<String, String> entry : nv.entrySet()) {
+                    session.setEnvVar(entry.getKey(), entry.getValue());
                 }
 
                 /*
@@ -393,7 +394,7 @@ public class EC2Provider extends AbstractProvider {
 
             // notify the status
             for (Instance ins : instances) {
-                notifier.info(this, null, "EC2 Instance " + ins.getInstanceId() + " is " + ins.getState().getName().toString());
+                notifier.info(this, null, "EC2 Instance " + ins.getInstanceId() + " is " + ins.getState().getName());
             }
 
             try {

@@ -27,14 +27,12 @@ import java.net.URISyntaxException;
 
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.app.GramApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.host.GlobusHost;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
-import org.apache.airavata.core.gfac.exception.ExtensionException;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.JobSubmissionFault;
 import org.apache.airavata.core.gfac.exception.ProviderException;
@@ -44,7 +42,6 @@ import org.apache.airavata.core.gfac.external.GridFtp;
 import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.apache.airavata.core.gfac.provider.utils.GramRSLGenerator;
 import org.apache.airavata.core.gfac.provider.utils.JobSubmissionListener;
-import org.apache.airavata.core.gfac.utils.ErrorCodes;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 import org.globus.gram.GramAttributes;
@@ -96,7 +93,6 @@ public class GramProvider extends AbstractProvider {
     public void execute(InvocationContext invocationContext) throws ProviderException {
     	GlobusHost host = (GlobusHost)invocationContext.getExecutionDescription().getHost();
     	GramApplicationDeployment app = (GramApplicationDeployment)invocationContext.getExecutionDescription().getApp();
-        ServiceDescription service = invocationContext.getExecutionDescription().getService();
 
         log.info("Searching for Gate Keeper");
         String gatekeeper = host.getGlobusGateKeeperEndPoint();

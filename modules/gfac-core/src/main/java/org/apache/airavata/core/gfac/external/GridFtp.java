@@ -21,16 +21,13 @@
 
 package org.apache.airavata.core.gfac.external;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.nio.CharBuffer;
 
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.ToolsException;
@@ -357,7 +354,7 @@ public class GridFtp {
             if (srcClient.getSize(srchost.getPath()) == destClient.getSize(desthost.getPath())) {
                 log.debug("CHECK SUM OK");
             } else {
-                log.debug("CHECK SUM OK");
+                log.debug("****CHECK SUM FAILED****");
             }
 
         } catch (ServerException e) {
