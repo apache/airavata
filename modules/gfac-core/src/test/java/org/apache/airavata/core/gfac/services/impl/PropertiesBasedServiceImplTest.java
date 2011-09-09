@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.airavata.commons.gfac.api.impl.JCRRegistry;
+import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.commons.gfac.type.DataType;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.Parameter;

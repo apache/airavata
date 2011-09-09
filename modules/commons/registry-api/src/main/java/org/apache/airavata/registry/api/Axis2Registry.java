@@ -20,7 +20,7 @@
  */
 
 
-package org.apache.airavata.commons.gfac.api;
+package org.apache.airavata.registry.api;
 
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 

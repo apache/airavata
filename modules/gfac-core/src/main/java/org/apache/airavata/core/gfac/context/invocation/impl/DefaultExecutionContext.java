@@ -21,7 +21,7 @@
 
 package org.apache.airavata.core.gfac.context.invocation.impl;
 
-import org.apache.airavata.commons.gfac.api.Registry;
+import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.core.gfac.context.invocation.ExecutionContext;
 import org.apache.airavata.core.gfac.notification.Notifiable;
 import org.apache.airavata.core.gfac.notification.Notifier;

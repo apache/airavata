@@ -84,6 +84,7 @@
                 <module>workflow-tracking</module>
             	<module>gfac-schema</module>
 		<module>utils</module>
+		<module>registry-api</module>
 	    </modules>
         </profile>
     </profiles>

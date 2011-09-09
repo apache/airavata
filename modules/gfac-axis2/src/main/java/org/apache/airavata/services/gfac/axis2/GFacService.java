@@ -34,7 +34,7 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryFactory;
 import javax.jcr.SimpleCredentials;
 
-import org.apache.airavata.commons.gfac.api.impl.JCRRegistry;
+import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.services.gfac.axis2.handlers.AmazonSecurityHandler;
 import org.apache.airavata.services.gfac.axis2.handlers.MyProxySecurityHandler;
