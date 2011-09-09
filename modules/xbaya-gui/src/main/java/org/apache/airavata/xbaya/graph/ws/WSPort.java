@@ -23,6 +23,7 @@ package org.apache.airavata.xbaya.graph.ws;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.component.ComponentPort;
 import org.apache.airavata.xbaya.component.system.SystemComponentDataPort;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
@@ -32,7 +33,6 @@ import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.system.EndForEachNode;
 import org.apache.airavata.xbaya.graph.system.ForEachNode;
-import org.apache.airavata.xbaya.util.WSConstants;
 import org.xmlpull.infoset.XmlElement;
 
 public class WSPort extends DataPort {

@@ -28,6 +28,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.component.Component;
@@ -37,7 +38,6 @@ import org.apache.airavata.xbaya.gpel.DSCUtil;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
-import org.apache.airavata.xbaya.util.WSConstants;
 import org.xmlpull.infoset.XmlCharacters;
 import org.xmlpull.infoset.XmlElement;
 

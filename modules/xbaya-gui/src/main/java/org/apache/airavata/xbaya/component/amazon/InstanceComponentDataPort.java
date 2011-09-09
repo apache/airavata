@@ -23,10 +23,10 @@ package org.apache.airavata.xbaya.component.amazon;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.component.ComponentDataPort;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.amazon.InstanceDataPort;
-import org.apache.airavata.xbaya.util.WSConstants;
 
 public class InstanceComponentDataPort extends ComponentDataPort {
 

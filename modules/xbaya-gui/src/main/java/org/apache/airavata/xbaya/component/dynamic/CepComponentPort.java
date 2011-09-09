@@ -23,10 +23,10 @@ package org.apache.airavata.xbaya.component.dynamic;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.component.ComponentDataPort;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.dynamic.CepPort;
-import org.apache.airavata.xbaya.util.WSConstants;
 
 public class CepComponentPort extends ComponentDataPort {
 
