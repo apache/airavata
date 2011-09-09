@@ -38,7 +38,6 @@ import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.ProviderException;
-import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
@@ -46,6 +45,8 @@ import org.apache.airavata.core.gfac.utils.OutputUtils;
 public class LocalProvider extends AbstractProvider {
 
     private static final String SPACE = " ";
+    private ProcessBuilder builder;
+    private List<String> cmdList;
 
     private String buildCommand(List<String> cmdList) {
         StringBuffer buff = new StringBuffer();
@@ -57,66 +58,71 @@ public class LocalProvider extends AbstractProvider {
     }
 
     public void initialize(InvocationContext invocationContext) throws ProviderException {
+    }
+
+    public void dispose(InvocationContext invocationContext) throws GfacException {
+    }
+
+    public void abort(InvocationContext invocationContext) throws GfacException {
+
+    }
+
+    public void makeDirectory(InvocationContext invocationContext) throws ProviderException {
         ApplicationDeploymentDescription app = invocationContext.getExecutionDescription().getApp();
 
         log.info("working diectroy = " + app.getWorkingDir());
         log.info("temp directory = " + app.getTmpDir());
 
-		  //TODO: These should be abstracted out as methods like makeWorkingDirOnTarget(app), 
-		  //TODO: since any provider developer will need to implement. 
         new File(app.getWorkingDir()).mkdir();
         new File(app.getTmpDir()).mkdir();
         new File(app.getInputDir()).mkdir();
         new File(app.getOutputDir()).mkdir();
     }
 
-	 //TODO: This method is too complex and thus fragile.  It should be broken up into smaller private methods.
-    public void execute(InvocationContext context) throws ProviderException {
-        ShellApplicationDeployment app = (ShellApplicationDeployment)context.getExecutionDescription().getApp();
-        
+    public void setupEnvironment(InvocationContext context) throws ProviderException {
+        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
+
         // input parameter
         ArrayList<String> tmp = new ArrayList<String>();
         for (Iterator<String> iterator = context.getInput().getNames(); iterator.hasNext();) {
             String key = iterator.next();
             tmp.add(context.getInput().getStringValue(key));
         }
-        
-        List<String> cmdList = new ArrayList<String>();
+
+        cmdList = new ArrayList<String>();
+
+        /*
+         * Builder Command
+         */
+        cmdList.add(app.getExecutable());
+        cmdList.addAll(tmp);
+
+        // create process builder from command
+        this.builder = new ProcessBuilder(cmdList);
+
+        // get the env of the host and the application
+        Map<String, String> nv = app.getEnv();
+        builder.environment().putAll(nv);
+
+        // extra env's
+        builder.environment().put(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());
+        builder.environment().put(GFacConstants.OUTPUT_DATA_DIR_VAR_NAME, app.getOutputDir());
+
+        // working directory
+        builder.directory(new File(app.getWorkingDir()));
+
+        // log info
+        log.info("Command = " + buildCommand(cmdList));
+        log.info("Working dir = " + builder.directory());
+        for (String key : builder.environment().keySet()) {
+            log.info("Env[" + key + "] = " + builder.environment().get(key));
+        }
+    }
+
+    public void executeApplication(InvocationContext context) throws ProviderException {
+        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
 
         try {
-            /*
-             * Builder Command
-             */
-            cmdList.add(app.getExecutable());
-            cmdList.addAll(tmp);
-
-            // create process builder from command
-            ProcessBuilder builder = new ProcessBuilder(cmdList);
-
-            // get the env of the host and the application
-            Map<String, String> nv = app.getEnv();
-            builder.environment().putAll(nv);
-
-            // extra env's
-            builder.environment().put(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());
-            builder.environment().put(GFacConstants.OUTPUT_DATA_DIR_VAR_NAME, app.getOutputDir());
-
-            // working directory
-            builder.directory(new File(app.getWorkingDir()));
-
-            // log info
-            log.info("Command = " + buildCommand(cmdList));
-            log.info("Working dir = " + builder.directory());
-            for (String key : builder.environment().keySet()) {
-                log.info("Env[" + key + "] = " + builder.environment().get(key));
-            }
-
-				//TODO: Since all execute() methods need to implement notification, this should
-				//TODO: be made foolproof in some way (maybe as "listener" pattern, off the
-				//TODO: top of my head) so that other provider developers implement it correctly.
-            NotificationService notifier = context.getExecutionContext().getNotificationService();
-            notifier.startExecution(this, context);
-            
             // running cmd
             Process process = builder.start();
 
@@ -198,16 +204,15 @@ public class LocalProvider extends AbstractProvider {
 
             // wait for the process (application) to finish executing
             int returnValue = process.waitFor();
-            
-            notifier.finishExecution(this, context);
 
             // make sure other two threads are done
             t1.join();
             t2.join();
 
             /*
-             * check return value. usually not very helpful to draw conclusions based on return values so don't bother.
-             * just provide warning in the log messages
+             * check return value. usually not very helpful to draw conclusions
+             * based on return values so don't bother. just provide warning in
+             * the log messages
              */
             if (returnValue != 0) {
                 log.error("Process finished with non zero return value. Process may have failed");
@@ -216,42 +221,30 @@ public class LocalProvider extends AbstractProvider {
             }
 
             StringBuffer buf = new StringBuffer();
-            buf.append("Executed ")
-            		.append(buildCommand(cmdList))
-            		.append(" on the localHost, working directory = ")
-                    .append(app.getWorkingDir())
-                    .append(" tempDirectory = ")
-                    .append(app.getTmpDir())
-                    .append(" With the status ")
-                    .append(String.valueOf(returnValue));
+            buf.append("Executed ").append(buildCommand(cmdList)).append(" on the localHost, working directory = ")
+                    .append(app.getWorkingDir()).append(" tempDirectory = ").append(app.getTmpDir())
+                    .append(" With the status ").append(String.valueOf(returnValue));
 
             log.info(buf.toString());
 
+        } catch (IOException io) {
+
+        } catch (InterruptedException e) {
+        }
+    }
+
+    public void retrieveOutput(InvocationContext context) throws ProviderException {
+
+        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
+
+        try {
             String stdOutStr = GfacUtils.readFileToString(app.getStdOut());
             String stdErrStr = GfacUtils.readFileToString(app.getStdErr());
 
             // set to context
-            OutputUtils.fillOutputFromStdout(context.<AbstractParameter>getOutput(), stdOutStr, stdErrStr);
+            OutputUtils.fillOutputFromStdout(context.<AbstractParameter> getOutput(), stdOutStr, stdErrStr);
+        } catch (IOException io) {
 
-        } catch (IOException e) {
-        	log.error("error", e);
-            throw new ProviderException(e.getMessage(), e);
-        } catch (InterruptedException e) {
-        	log.error("error", e);
-        	throw new ProviderException(e.getMessage(), e);
-        } catch (Exception e){
-        	log.error("error", e);
-        	throw new ProviderException(e.getMessage(), e);
         }
-
     }
-
-    public void dispose(InvocationContext invocationContext) throws GfacException {
-
-    }
-
-    public void abort(InvocationContext invocationContext) throws GfacException {
-
-    }
-
 }

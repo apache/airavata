@@ -22,15 +22,13 @@
 package org.apache.airavata.core.gfac.notification;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.provider.Provider;
-import org.apache.airavata.core.gfac.scheduler.Scheduler;
 
-public interface NotificationService {
+public interface Subject {
     /*
      * 
      */
-    void startSchedule(Object notifier, InvocationContext context, Scheduler scheduler);
-    void finishSchedule(Object notifier, InvocationContext context, Scheduler scheduler, Provider provider);
+    void startSchedule(Object notifier, InvocationContext context);
+    void finishSchedule(Object notifier, InvocationContext context);
     
     /*
      * 

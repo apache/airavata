@@ -154,7 +154,7 @@ public class GFacMessageReciever implements MessageReceiver {
             ct.setExecutionContext(new DefaultExecutionContext());
             ct.setServiceName(serviceName);
             ct.getExecutionContext().setRegistryService(getRegistry(context));
-            ct.getExecutionContext().setNotificationService(notification);
+            ct.getExecutionContext().addNotifiable(notification);
 
             /*
              * read from registry and set the correct parameters

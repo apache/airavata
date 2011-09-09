@@ -25,16 +25,14 @@ import java.net.URI;
 import java.util.Properties;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.notification.NotificationService;
-import org.apache.airavata.core.gfac.provider.Provider;
-import org.apache.airavata.core.gfac.scheduler.Scheduler;
+import org.apache.airavata.core.gfac.notification.Notifiable;
 import org.apache.airavata.workflow.tracking.Notifier;
 import org.apache.airavata.workflow.tracking.NotifierFactory;
 import org.apache.airavata.workflow.tracking.common.DurationObj;
 import org.apache.airavata.workflow.tracking.common.InvocationEntity;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 
-public class WorkflowTrackingNotification implements NotificationService {
+public class WorkflowTrackingNotification implements Notifiable {
     
     private Notifier notifier;
 
@@ -76,13 +74,13 @@ public class WorkflowTrackingNotification implements NotificationService {
                 receiverWorkflowTimeStep);
                 
         //send start workflow
-        this.invocationContext = this.notifier.workflowInvoked(this.context, this.initiator, null);
+        this.invocationContext = this.notifier.workflowInvoked(this.context, this.initiator);
     }
 
-    public void startSchedule(Object notifier, InvocationContext context, Scheduler scheduler) {
+    public void startSchedule(Object notifier, InvocationContext context) {
     }
 
-    public void finishSchedule(Object notifier, InvocationContext context, Scheduler scheduler, Provider provider) {
+    public void finishSchedule(Object notifier, InvocationContext context) {
     }
 
     public void input(Object notifier, InvocationContext context, String... data) {

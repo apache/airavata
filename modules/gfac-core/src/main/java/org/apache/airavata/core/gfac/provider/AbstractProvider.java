@@ -21,10 +21,54 @@
 
 package org.apache.airavata.core.gfac.provider;
 
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.exception.ProviderException;
+import org.apache.airavata.core.gfac.notification.Notifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * AbstractProvider wraps up steps of execution for Provider.
+ * 
+ */
 public abstract class AbstractProvider implements Provider {
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
-
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());   
+    
+    public void execute(InvocationContext invocationContext) throws ProviderException{
+        
+        Notifier notifier = invocationContext.getExecutionContext().getNotifier();
+        
+        /*
+         * Make a directory on the host
+         */
+        makeDirectory(invocationContext);
+        
+        /*
+         * Setup necessary environment
+         */
+        setupEnvironment(invocationContext);
+                        
+        notifier.startExecution(this, invocationContext);
+        
+        /*
+         * Execution application
+         */
+        executeApplication(invocationContext);
+        
+        notifier.finishExecution(this, invocationContext);
+        
+        
+        /*
+         * Process output information
+         */
+        retrieveOutput(invocationContext);
+    }
+    
+    public abstract void makeDirectory(InvocationContext invocationContext) throws ProviderException;
+    
+    public abstract void setupEnvironment(InvocationContext invocationContext) throws ProviderException;
+    
+    public abstract void executeApplication(InvocationContext invocationContext) throws ProviderException;
+    
+    public abstract void retrieveOutput(InvocationContext invocationContext) throws ProviderException;
 }

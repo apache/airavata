@@ -23,6 +23,7 @@ package org.apache.airavata.core.gfac.provider.utils;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.airavata.commons.gfac.type.app.GramApplicationDeployment;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
@@ -33,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GramRSLGenerator {
-    protected final static Logger log = LoggerFactory.getLogger(GramRSLGenerator.class);
+    protected static final Logger log = LoggerFactory.getLogger(GramRSLGenerator.class);
 
     private enum JobType {
         SINGLE, MPI, MULTIPLE, CONDOR
@@ -54,8 +55,8 @@ public class GramRSLGenerator {
          * documents
          */
         Map<String, String> nv = app.getEnv();
-        for (String key : nv.keySet()) {
-            jobAttr.addEnvVariable(key, nv.get(key));
+        for (Entry<String, String> entry : nv.entrySet()) {
+            jobAttr.addEnvVariable(entry.getKey(), entry.getValue());
         }
 
         jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());

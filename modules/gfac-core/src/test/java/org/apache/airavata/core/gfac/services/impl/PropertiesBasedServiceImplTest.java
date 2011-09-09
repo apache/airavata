@@ -110,7 +110,7 @@ public class PropertiesBasedServiceImplTest {
 
 		    DefaultInvocationContext ct = new DefaultInvocationContext();
 			DefaultExecutionContext ec = new DefaultExecutionContext();
-			ec.setNotificationService(new LoggingNotification());
+			ec.addNotifiable(new LoggingNotification());
 			ct.setExecutionContext(ec);
 
 			ct.setServiceName("SimpleEcho");

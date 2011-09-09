@@ -38,40 +38,40 @@ public interface ExecutionDescription {
      * 
      * @return HostDescription
      */
-    public HostDescription getHost();
+    HostDescription getHost();
 
     /**
      * Set HostDescription
      * 
      * @param host
      */
-    public <T extends HostDescription> void setHost(T host);
+    <T extends HostDescription> void setHost(T host);
 
     /**
      * Get ApplicationDeploymentDescription
      * 
      * @return ApplicationDeploymentDescription
      */
-    public ApplicationDeploymentDescription getApp();
+    ApplicationDeploymentDescription getApp();
 
     /**
      * Set ApplicationDeploymentDescription
      * 
      * @param app
      */
-    public <T extends ApplicationDeploymentDescription> void setApp(T app);
+    <T extends ApplicationDeploymentDescription> void setApp(T app);
 
     /**
      * Get ServiceDescription
      * 
      * @return service
      */
-    public ServiceDescription getService();
+    ServiceDescription getService();
 
     /**
      * Set ServiceDescription
      * 
      * @param service
      */
-    public <T extends ServiceDescription> void setService(T service);
+    <T extends ServiceDescription> void setService(T service);
 }

@@ -48,7 +48,7 @@ public interface MessageContext<T> {
      * @param name
      * @return value
      */
-    public T getValue(String name);
+    T getValue(String name);
 
     /**
      * Return value associated with the key as a String object
@@ -56,7 +56,7 @@ public interface MessageContext<T> {
      * @param name
      * @return string represents value
      */
-    public String getStringValue(String name);
+    String getStringValue(String name);
 
     /**
      * Add new object associated with the key
@@ -64,7 +64,7 @@ public interface MessageContext<T> {
      * @param name
      * @param value
      */
-    public void add(String name, T value);
+    void add(String name, T value);
 
     /**
      * Update the current value associated with the key
@@ -72,5 +72,5 @@ public interface MessageContext<T> {
      * @param name
      * @param value
      */
-    public void setValue(String name, T value);
+    void setValue(String name, T value);
 }

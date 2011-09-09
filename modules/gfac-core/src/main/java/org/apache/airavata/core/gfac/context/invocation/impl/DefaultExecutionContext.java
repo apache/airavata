@@ -23,19 +23,21 @@ package org.apache.airavata.core.gfac.context.invocation.impl;
 
 import org.apache.airavata.commons.gfac.api.Registry;
 import org.apache.airavata.core.gfac.context.invocation.ExecutionContext;
-import org.apache.airavata.core.gfac.notification.NotificationService;
+import org.apache.airavata.core.gfac.notification.Notifiable;
+import org.apache.airavata.core.gfac.notification.Notifier;
+import org.apache.airavata.core.gfac.notification.impl.DefaultNotifier;
 
 public class DefaultExecutionContext implements ExecutionContext {
 
-    private NotificationService notificationService;
-    private Registry registryService;
-
-    public NotificationService getNotificationService() {
+    private Notifier notificationService = new DefaultNotifier();
+    private Registry registryService;    
+    
+    public Notifier getNotifier() {
         return this.notificationService;
     }
 
-    public void setNotificationService(NotificationService service) {
-        this.notificationService = service;
+    public void addNotifiable(Notifiable service) {
+        this.notificationService.addNotifiable(service);
     }
 
     public Registry getRegistryService() {
@@ -45,5 +47,4 @@ public class DefaultExecutionContext implements ExecutionContext {
     public void setRegistryService(Registry registryService) {
         this.registryService = registryService;
     }
-
 }

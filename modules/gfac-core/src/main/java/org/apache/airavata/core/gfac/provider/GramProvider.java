@@ -27,7 +27,6 @@ import java.net.URISyntaxException;
 
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.commons.gfac.type.app.GramApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.host.GlobusHost;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
@@ -39,7 +38,6 @@ import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.exception.SecurityException;
 import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.external.GridFtp;
-import org.apache.airavata.core.gfac.notification.NotificationService;
 import org.apache.airavata.core.gfac.provider.utils.GramRSLGenerator;
 import org.apache.airavata.core.gfac.provider.utils.JobSubmissionListener;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
@@ -53,11 +51,24 @@ import org.ietf.jgss.GSSException;
 public class GramProvider extends AbstractProvider {
 
     public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";
+    private GramJob job;
+    private String gateKeeper;
+    private JobSubmissionListener listener;
 
     public void initialize(InvocationContext invocationContext) throws ProviderException {
-        GlobusHost host = (GlobusHost)invocationContext.getExecutionDescription().getHost();
-        ShellApplicationDeployment app = (ShellApplicationDeployment)invocationContext.getExecutionDescription().getApp();
-    	
+    }
+
+    public void dispose(InvocationContext invocationContext) throws GfacException {
+    }
+
+    public void abort(InvocationContext invocationContext) throws GfacException {
+    }
+
+    public void makeDirectory(InvocationContext invocationContext) throws ProviderException {
+        GlobusHost host = (GlobusHost) invocationContext.getExecutionDescription().getHost();
+        ShellApplicationDeployment app = (ShellApplicationDeployment) invocationContext.getExecutionDescription()
+                .getApp();
+
         GridFtp ftp = new GridFtp();
 
         try {
@@ -65,7 +76,7 @@ public class GramProvider extends AbstractProvider {
                     .getSecurityContext(MYPROXY_SECURITY_CONTEXT)).getGssCredentails();
 
             String hostgridFTP = host.getGridFTPEndPoint();
-            if (host.getGridFTPEndPoint() == null){
+            if (host.getGridFTPEndPoint() == null) {
                 hostgridFTP = host.getName();
             }
 
@@ -83,107 +94,158 @@ public class GramProvider extends AbstractProvider {
             ftp.makeDir(tmpdirURI, gssCred);
             ftp.makeDir(workingDirURI, gssCred);
             ftp.makeDir(inputURI, gssCred);
-            ftp.makeDir(outputURI, gssCred);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (URISyntaxException e) {
+            throw new ProviderException("URI is malformatted:" + e.getMessage(), e);
+        } catch (SecurityException e) {
+            throw new ProviderException(e.getMessage(), e);
+        } catch (ToolsException e) {
+            throw new ProviderException(e.getMessage(), e);
         }
     }
 
-    public void execute(InvocationContext invocationContext) throws ProviderException {
-    	GlobusHost host = (GlobusHost)invocationContext.getExecutionDescription().getHost();
-    	GramApplicationDeployment app = (GramApplicationDeployment)invocationContext.getExecutionDescription().getApp();
+    public void setupEnvironment(InvocationContext invocationContext) throws ProviderException {
+        GlobusHost host = (GlobusHost) invocationContext.getExecutionDescription().getHost();
 
         log.info("Searching for Gate Keeper");
-        String gatekeeper = host.getGlobusGateKeeperEndPoint();
-        if (gatekeeper == null) {
-        	gatekeeper = host.getName();
+        gateKeeper = host.getGlobusGateKeeperEndPoint();
+        if (gateKeeper == null) {
+            gateKeeper = host.getName();
         }
-        log.info("Using Globus GateKeeper " + gatekeeper);
-        GramJob job = null;
-        boolean jobSucsseful = false;
+        log.info("Using Globus GateKeeper " + gateKeeper);
 
         String rsl = "";
-        int errCode = 0;
 
         try {
-            GSSCredential gssCred = ((GSISecurityContext) invocationContext
-                    .getSecurityContext(MYPROXY_SECURITY_CONTEXT)).getGssCredentails();
-
             GramAttributes jobAttr = GramRSLGenerator.configureRemoteJob(invocationContext);
             rsl = jobAttr.toRSL();
-            job = new GramJob(rsl);
-            job.setCredentials(gssCred);
 
             log.info("RSL = " + rsl);
 
-            NotificationService notifier = invocationContext.getExecutionContext().getNotificationService();
-            notifier.startExecution(this, invocationContext);
-            StringBuffer buf = new StringBuffer();
-
-            JobSubmissionListener listener = new JobSubmissionListener(job, invocationContext);
+            job = new GramJob(rsl);
+            listener = new JobSubmissionListener(job, invocationContext);
             job.addListener(listener);
-            log.info("Request to contact:" + gatekeeper);
+
+        } catch (ToolsException te) {
+            throw new ProviderException(te.getMessage(), te);
+        }
+
+    }
+
+    public void executeApplication(InvocationContext invocationContext) throws ProviderException {
+        GlobusHost host = (GlobusHost) invocationContext.getExecutionDescription().getHost();
+        ShellApplicationDeployment app = (ShellApplicationDeployment) invocationContext.getExecutionDescription()
+                .getApp();
+        StringBuffer buf = new StringBuffer();
+        try {
+
             /*
-             * The first boolean is to specify the job is a batch job - use true for interactive and false for batch.
-             * The second boolean is to specify to use the full proxy and not delegate a limited proxy.
+             * Set Security
              */
-            job.request(gatekeeper, false, false);
+            GSSCredential gssCred = ((GSISecurityContext) invocationContext
+                    .getSecurityContext(MYPROXY_SECURITY_CONTEXT)).getGssCredentails();
+            job.setCredentials(gssCred);
 
-            log.info("JobID = " + job.getIDAsString());
+            log.info("Request to contact:" + gateKeeper);
 
-            // Gram.request(contact, job, false, false);
+            buf.append("Finished launching job, Host = ").append(host.getName()).append(" RSL = ").append(job.getRSL())
+                    .append(" working directory = ").append(app.getWorkingDir()).append(" tempDirectory = ")
+                    .append(app.getTmpDir()).append(" Globus GateKeeper cantact = ").append(gateKeeper);
+            invocationContext.getExecutionContext().getNotifier().info(this, invocationContext, buf.toString());
 
-            buf.append("Finished launching job, Host = ")
-            		.append(host.getName())
-                    .append(" RSL = ")
-                    .append(job.getRSL())
-                    .append(" working directory = ")
-                    .append(app.getWorkingDir())
-                    .append(" tempDirectory = ")
-                    .append(app.getTmpDir())
-                    .append(" Globus GateKeeper cantact = ")
-                    .append(gatekeeper);
-            notifier.info(this, invocationContext, buf.toString());
+            /*
+             * The first boolean is to specify the job is a batch job - use true
+             * for interactive and false for batch. The second boolean is to
+             * specify to use the full proxy and not delegate a limited proxy.
+             */
+            job.request(gateKeeper, false, false);
             String gramJobid = job.getIDAsString();
-            notifier.info(this, invocationContext, "JobID=" + gramJobid);
-            log.info(buf.toString());
-            
-            notifier.applicationInfo(this, invocationContext, gramJobid, gatekeeper, null, null,
-                    gssCred.getName().toString(), null, job.getRSL());
+            log.info("JobID = " + gramJobid);
+            invocationContext.getExecutionContext().getNotifier().info(this, invocationContext, "JobID=" + gramJobid);
 
+            log.info(buf.toString());
+
+            invocationContext
+                    .getExecutionContext()
+                    .getNotifier()
+                    .applicationInfo(this, invocationContext, gramJobid, gateKeeper, null, null,
+                            gssCred.getName().toString(), null, job.getRSL());
+
+            /*
+             * Block untill job is done
+             */
             listener.waitFor();
+
+            /*
+             * Remove listener
+             */
             job.removeListener(listener);
 
+            /*
+             * Fail job
+             */
             int jobStatus = listener.getStatus();
             if (jobStatus == GramJob.STATUS_FAILED) {
-                errCode = listener.getError();                
-                String errorMsg = "Job " + job.getID() + " on host " + host.getName() + " Error Code = " + errCode;                
-                JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST", gatekeeper, rsl);
+                int errCode = listener.getError();
+                String errorMsg = "Job " + job.getID() + " on host " + host.getName() + " Error Code = " + errCode;
+                JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
+                        gateKeeper, job.getRSL());
                 if (errCode == 8) {
-                	error.setReason(JobSubmissionFault.JOB_CANCEL);
+                    error.setReason(JobSubmissionFault.JOB_CANCEL);
                 } else {
                     error.setReason(JobSubmissionFault.JOB_FAILED);
                 }
                 throw error;
             }
-            notifier.finishExecution(this, invocationContext);
+
+        } catch (GramException e) {
+            JobSubmissionFault error = new JobSubmissionFault(this, e, host.getName(), gateKeeper, job.getRSL());
+            if (listener.getError() == 8) {
+                error.setReason(JobSubmissionFault.JOB_CANCEL);
+            } else {
+                error.setReason(JobSubmissionFault.JOB_FAILED);
+            }
+            throw error;
+        } catch (GSSException e) {
+            throw new ProviderException(e.getMessage(), e);
+        } catch (InterruptedException e) {
+            throw new ProviderException("Thread", e);
+        } catch (SecurityException e) {
+            throw new ProviderException(e.getMessage(), e);
+        } finally {
+            if (job != null) {
+                try {
+                    job.cancel();
+                } catch (Exception e) {
+                }
+            }
+        }
+
+    }
+
+    public void retrieveOutput(InvocationContext invocationContext) throws ProviderException {
+        GlobusHost host = (GlobusHost) invocationContext.getExecutionDescription().getHost();
+        ShellApplicationDeployment app = (ShellApplicationDeployment) invocationContext.getExecutionDescription()
+                .getApp();
+        GridFtp ftp = new GridFtp();
+
+        try {
+            GSSCredential gssCred = ((GSISecurityContext) invocationContext
+                    .getSecurityContext(MYPROXY_SECURITY_CONTEXT)).getGssCredentails();
 
             /*
              * Stdout and Stderror
              */
-            GridFtp ftp = new GridFtp();
 
             String hostgridFTP = host.getGridFTPEndPoint();
-            if (host.getGridFTPEndPoint() == null){
+            if (host.getGridFTPEndPoint() == null) {
                 hostgridFTP = host.getName();
             }
 
             URI stdoutURI = GfacUtils.createGsiftpURI(hostgridFTP, app.getStdOut());
             URI stderrURI = GfacUtils.createGsiftpURI(hostgridFTP, app.getStdErr());
 
-            System.out.println(stdoutURI);
-            System.out.println(stderrURI);
+            log.info("STDOUT:" + stdoutURI.toString());
+            log.info("STDERR:" + stderrURI.toString());
 
             File logDir = new File("./service_logs");
             if (!logDir.exists()) {
@@ -200,43 +262,15 @@ public class GramProvider extends AbstractProvider {
             String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
 
             // set to context
-            OutputUtils.fillOutputFromStdout(invocationContext.<AbstractParameter>getOutput(), stdout, stderr);
-
-            jobSucsseful = true;
-        } catch (GramException e) {
-            JobSubmissionFault error = new JobSubmissionFault(this, e, host.getName(), gatekeeper, rsl);
-            if (errCode == 8) {
-                error.setReason(JobSubmissionFault.JOB_CANCEL);
-            } else {
-                error.setReason(JobSubmissionFault.JOB_FAILED);
-            }
-            throw error;
-        } catch (GSSException e) {
-            throw new ProviderException("GFAC HOST", e);        
-        } catch (InterruptedException e) {
-            throw new ProviderException("Thread", e);
+            OutputUtils.fillOutputFromStdout(invocationContext.<AbstractParameter> getOutput(), stdout, stderr);
+            
+        } catch (URISyntaxException e) {
+            throw new ProviderException("URI is malformatted:" + e.getMessage(), e);
         } catch (SecurityException e) {
-            throw new ProviderException(e.getMessage(), e);            
+            throw new ProviderException(e.getMessage(), e);
         } catch (ToolsException e) {
             throw new ProviderException(e.getMessage(), e);
-        } catch (URISyntaxException e) {
-            throw new ProviderException("URI is in the wrong format:" + e.getMessage(), e);
-        } finally {
-            if (job != null && !jobSucsseful) {
-                try {
-                    job.cancel();
-                } catch (Exception e) {
-                }
-            }
         }
-
-    }
-
-    public void dispose(InvocationContext invocationContext) throws GfacException {
-
-    }
-
-    public void abort(InvocationContext invocationContext) throws GfacException {       
     }
 
 }
