@@ -32,8 +32,12 @@ import org.apache.airavata.workflow.tracking.common.DurationObj;
 import org.apache.airavata.workflow.tracking.common.InvocationEntity;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 
+/**
+ * Workflow Tracking notification 
+ * TODO:: implement properly
+ */
 public class WorkflowTrackingNotification implements Notifiable {
-    
+
     private Notifier notifier;
 
     private String topic;
@@ -41,15 +45,15 @@ public class WorkflowTrackingNotification implements Notifiable {
     private URI workflowID;
 
     private WorkflowTrackingContext context;
-    
+
     private InvocationEntity initiator;
 
     private InvocationEntity receiver;
-    
+
     private DurationObj duration;
 
     private org.apache.airavata.workflow.tracking.common.InvocationContext invocationContext;
-                
+
     public WorkflowTrackingNotification(String brokerURL, String topic) {
         this.topic = topic;
         this.workflowID = URI.create(this.topic);
@@ -60,8 +64,8 @@ public class WorkflowTrackingNotification implements Notifiable {
         URI initiatorServiceID = URI.create(topic);
         String initiatorWorkflowNodeID = null;
         Integer initiatorWorkflowTimeStep = null;
-        this.context = this.notifier.createTrackingContext(props, brokerURL, initiatorWorkflowID,
-                initiatorServiceID, initiatorWorkflowNodeID, initiatorWorkflowTimeStep);
+        this.context = this.notifier.createTrackingContext(props, brokerURL, initiatorWorkflowID, initiatorServiceID,
+                initiatorWorkflowNodeID, initiatorWorkflowTimeStep);
         this.context.setTopic(topic);
         this.initiator = this.notifier.createEntity(initiatorWorkflowID, initiatorServiceID, initiatorWorkflowNodeID,
                 initiatorWorkflowTimeStep);
@@ -72,8 +76,8 @@ public class WorkflowTrackingNotification implements Notifiable {
         Integer receiverWorkflowTimeStep = null;
         this.receiver = this.notifier.createEntity(receiverWorkflowID, receiverServiceID, receiverWorkflowNodeID,
                 receiverWorkflowTimeStep);
-                
-        //send start workflow
+
+        // send start workflow
         this.invocationContext = this.notifier.workflowInvoked(this.context, this.initiator);
     }
 

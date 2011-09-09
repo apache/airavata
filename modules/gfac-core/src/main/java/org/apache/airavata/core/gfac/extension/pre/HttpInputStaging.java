@@ -51,6 +51,9 @@ import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Input plugin to transfer file from Http location to target GridFTP host
+ */
 public class HttpInputStaging extends PreExecuteChain {
 
     public static final Logger log = LoggerFactory.getLogger(HttpInputStaging.class);

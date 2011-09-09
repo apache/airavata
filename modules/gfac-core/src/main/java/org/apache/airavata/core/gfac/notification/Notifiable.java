@@ -21,5 +21,8 @@
 
 package org.apache.airavata.core.gfac.notification;
 
+/**
+ * Object that will be notified
+ */
 public interface Notifiable extends Subject {    
 }

@@ -33,6 +33,9 @@ import org.globus.gram.GramAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Utilities for generating GRAM RSL
+ */
 public class GramRSLGenerator {
     protected static final Logger log = LoggerFactory.getLogger(GramRSLGenerator.class);
 

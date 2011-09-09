@@ -24,14 +24,28 @@ package org.apache.airavata.core.gfac.extension;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ExtensionException;
 
+/**
+ * Class implements the Chain of Responsibility Pattern
+ */
 public abstract class Chain<T> {
     private T next;
 
+    /**
+     * Set the next item in the chain
+     * 
+     * @param nextChain
+     * @return the next item
+     */
     public T setNext(T nextChain) {
         this.next = nextChain;
         return this.next;
     }
     
+    /**
+     * Get the next item in the Chain
+     * 
+     * @return next items
+     */
     protected T getNext(){
         return next;
     }

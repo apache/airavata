@@ -49,8 +49,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This generic service implementation will load Registry service and Data
- * Catalog from property file. It selects provider and execute it base on
- * execution context.
+ * Catalog from property file using (Apache Commons-Configuration). It selects
+ * provider and execute it base on execution context.
  * 
  */
 public class PropertiesBasedServiceImpl extends AbstractSimpleService {
@@ -98,13 +98,12 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     public static final String MYPROXY_PASS = "myproxy.pass";
     public static final String MYPROXY_LIFE = "myproxy.life";
 
-    
     private Scheduler scheduler;
     private PreExecuteChain[] preChain;
     private PostExecuteChain[] postChain;
     private DataServiceChain[] dataChain;
     private Registry registryService;
-    
+
     private String fileName = DEFAULT_FILENAME;
     private Configuration config;
 
@@ -213,7 +212,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                 /*
                  * Remove unnecessary key
                  */
-                Map<String, String> map = new HashMap<String, String>((Map)getProperties());
+                Map<String, String> map = new HashMap<String, String>((Map) getProperties());
                 map.remove(JCR_CLASS);
                 map.remove(JCR_USER);
                 map.remove(JCR_PASS);
@@ -243,7 +242,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
             /*
              * If there is no specific registry service, use the default one.
              */
-            ((DefaultExecutionContext)context.getExecutionContext()).setRegistryService(this.registryService);
+            ((DefaultExecutionContext) context.getExecutionContext()).setRegistryService(this.registryService);
         }
     }
 
@@ -333,16 +332,15 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
         return dataChain;
     }
 
-    private Properties getProperties(){
+    private Properties getProperties() {
         Properties prop = new Properties();
         for (Iterator iterator = this.config.getKeys(); iterator.hasNext();) {
             String key = (String) iterator.next();
-            prop.put(key, this.config.getString(key));            
+            prop.put(key, this.config.getString(key));
         }
         return prop;
     }
-    
-    
+
     /**
      * 
      * @param propertyName

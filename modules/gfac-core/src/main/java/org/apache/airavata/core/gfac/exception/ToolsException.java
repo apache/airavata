@@ -21,6 +21,9 @@
 
 package org.apache.airavata.core.gfac.exception;
 
+/**
+ * Exception for all utilities
+ */
 public class ToolsException extends GfacException {
 
     public ToolsException(String message) {

@@ -35,6 +35,20 @@ import org.apache.airavata.core.gfac.services.GenericService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The abstract service wraps up steps of execution for {@link GenericService}.
+ * Also, it adds input/output plug-ins before/after {@link Provider} execution.
+ * The steps in execution are 
+ * - preProcess
+ * - Determine Provider (Scheduling)
+ * - {@link DataServiceChain} Plugins
+ * - {@link Provider} initialization
+ * - {@link PreExecuteChain} Plugins
+ * - {@link Provider} execution
+ * - {@link PostExecuteChain} Plugins
+ * - {@link Provider} disposal
+ * - postProcess
+ */
 public abstract class AbstractSimpleService implements GenericService {
 
     private static Logger log = LoggerFactory.getLogger(AbstractSimpleService.class);

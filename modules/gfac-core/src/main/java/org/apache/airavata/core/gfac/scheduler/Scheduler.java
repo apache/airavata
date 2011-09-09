@@ -25,6 +25,10 @@ import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.SchedulerException;
 import org.apache.airavata.core.gfac.provider.Provider;
 
+/**
+ * Scheduler selects a {@link Provider} according to the information.
+ * 
+ */
 public interface Scheduler {
     Provider schedule(InvocationContext context) throws SchedulerException;
 }

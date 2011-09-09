@@ -33,71 +33,69 @@ import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ExtensionException;
 import org.apache.airavata.core.gfac.extension.DataServiceChain;
 
+/**
+ * This plugin fills out all information that is missing in
+ * {@link ApplicationDeploymentDescription} based on Unix system. For instance,
+ * it will use "/tmp" as default temporary directory.
+ * 
+ */
 public class RegistryDataService extends DataServiceChain {
 
-	public boolean execute(InvocationContext context) throws ExtensionException {
+    public boolean execute(InvocationContext context) throws ExtensionException {
 
-		ServiceDescription serviceDesc = context.getExecutionDescription().getService();
-		HostDescription hostDesc = context.getExecutionDescription().getHost();
-		ApplicationDeploymentDescription appDesc = context.getExecutionDescription()
-				.getApp();
-		if (serviceDesc != null && hostDesc != null && appDesc != null) {
-			/*
-			 * if there is no setting in deployment description, use from host
-			 */
-			if (appDesc.getTmpDir() == null) {
-				appDesc.setTmpDir("/tmp");
-			}
+        ServiceDescription serviceDesc = context.getExecutionDescription().getService();
+        HostDescription hostDesc = context.getExecutionDescription().getHost();
+        ApplicationDeploymentDescription appDesc = context.getExecutionDescription().getApp();
+        if (serviceDesc != null && hostDesc != null && appDesc != null) {
+            /*
+             * if there is no setting in deployment description, use from host
+             */
+            if (appDesc.getTmpDir() == null) {
+                appDesc.setTmpDir("/tmp");
+            }
 
-			/*
-			 * Working dir
-			 */
-			if (appDesc.getWorkingDir() == null) {
-				String date = new Date().toString();
-				date = date.replaceAll(" ", "_");
-				date = date.replaceAll(":", "_");
+            /*
+             * Working dir
+             */
+            if (appDesc.getWorkingDir() == null) {
+                String date = new Date().toString();
+                date = date.replaceAll(" ", "_");
+                date = date.replaceAll(":", "_");
 
-				String tmpDir = appDesc.getTmpDir() + File.separator
-						+ appDesc.getName() + "_" + date + "_"
-						+ UUID.randomUUID();
+                String tmpDir = appDesc.getTmpDir() + File.separator + appDesc.getName() + "_" + date + "_"
+                        + UUID.randomUUID();
 
-				appDesc.setWorkingDir(tmpDir);
-			}
+                appDesc.setWorkingDir(tmpDir);
+            }
 
-			/*
-			 * Input and Output Directory
-			 */
-			if (appDesc.getInputDir() == null) {
-				appDesc.setInputDir(appDesc.getWorkingDir() + File.separator
-						+ "inputData");
-			}
-			if (appDesc.getOutputDir() == null) {
-				appDesc.setInputDir(appDesc.getWorkingDir() + File.separator
-						+ "outputData");
-			}
-			
-			/*
-			 * Stdout and Stderr for Shell
-			 */
-			if(appDesc.getClass().isAssignableFrom(ShellApplicationDeployment.class)){
-				ShellApplicationDeployment shell = (ShellApplicationDeployment)appDesc;
-				if(shell.getStdOut() == null){
-					shell.setStdOut(appDesc.getWorkingDir() + File.separator
-							+ appDesc.getName() + ".stdout");	
-				}
-				if(shell.getStdErr() == null){
-					shell.setStdOut(appDesc.getWorkingDir() + File.separator
-							+ appDesc.getName() + ".stderr");
-				}
-			}
+            /*
+             * Input and Output Directory
+             */
+            if (appDesc.getInputDir() == null) {
+                appDesc.setInputDir(appDesc.getWorkingDir() + File.separator + "inputData");
+            }
+            if (appDesc.getOutputDir() == null) {
+                appDesc.setInputDir(appDesc.getWorkingDir() + File.separator + "outputData");
+            }
 
-		} else {
-			throw new ExtensionException("Service Map for "
-					+ context.getServiceName()
-					+ " does not found on resource Catalog "
-					+ context.getExecutionContext().getRegistryService());
-		}
+            /*
+             * Stdout and Stderr for Shell
+             */
+            if (appDesc.getClass().isAssignableFrom(ShellApplicationDeployment.class)) {
+                ShellApplicationDeployment shell = (ShellApplicationDeployment) appDesc;
+                if (shell.getStdOut() == null) {
+                    shell.setStdOut(appDesc.getWorkingDir() + File.separator + appDesc.getName() + ".stdout");
+                }
+                if (shell.getStdErr() == null) {
+                    shell.setStdOut(appDesc.getWorkingDir() + File.separator + appDesc.getName() + ".stderr");
+                }
+            }
 
-		return false;
-	}
+        } else {
+            throw new ExtensionException("Service Map for " + context.getServiceName()
+                    + " does not found on resource Catalog " + context.getExecutionContext().getRegistryService());
+        }
+
+        return false;
+    }
 }

@@ -47,6 +47,9 @@ import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Output plugin to transfer file from GridFTP host to location given in output parameter
+ */
 public class GridFtpOutputStaging extends PostExecuteChain {
     
     public static final Logger log = LoggerFactory.getLogger(GridFtpOutputStaging.class);

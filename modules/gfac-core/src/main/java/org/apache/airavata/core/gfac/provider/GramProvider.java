@@ -48,6 +48,9 @@ import org.globus.gram.GramJob;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 
+/**
+ * Provider uses Gram for job submission
+ */
 public class GramProvider extends AbstractProvider {
 
     public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";
