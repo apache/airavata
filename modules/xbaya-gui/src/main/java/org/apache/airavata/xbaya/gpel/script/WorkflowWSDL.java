@@ -29,6 +29,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.WSDLUtil;
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.XBayaVersion;
@@ -44,7 +45,6 @@ import org.apache.airavata.xbaya.graph.system.SystemDataPort;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.graph.ws.WSGraph;
 import org.apache.airavata.xbaya.util.WSConstants;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.xmlpull.infoset.XmlComment;
 import org.xmlpull.infoset.XmlElement;
@@ -330,7 +330,11 @@ public class WorkflowWSDL {
         // add metadata
         if (appinfo != null) {
             XmlElement annotation = element.addElement(WSConstants.ANNOTATION_TAG);
-            annotation.addElement(XMLUtil.deepClone(appinfo));
+            try {
+                annotation.addElement(XMLUtil.deepClone(appinfo));
+            } catch (UtilsException e) {
+                e.printStackTrace();
+            }
         }
 
         XmlElement complex = schema.addElement(WSConstants.COMPLEX_TYPE_TAG);
@@ -369,7 +373,11 @@ public class WorkflowWSDL {
         // appinfo
         if (appinfo != null) {
             XmlElement annotation = element.element(null, WSConstants.ANNOTATION_TAG, true);
-            annotation.addElement(XMLUtil.deepClone(appinfo));
+            try {
+                annotation.addElement(XMLUtil.deepClone(appinfo));
+            } catch (UtilsException e) {
+                e.printStackTrace();
+            }
         }
 
         //
@@ -383,7 +391,12 @@ public class WorkflowWSDL {
             } else if (value instanceof XmlElement) {
                 // Add the default value in <annotation><default> because there
                 // is no standard way.
-                XmlElement valueElement = XMLUtil.deepClone((XmlElement) value);
+                XmlElement valueElement = null;
+                try {
+                    valueElement = XMLUtil.deepClone((XmlElement) value);
+                } catch (UtilsException e) {
+                    e.printStackTrace();
+                }
                 XmlElement annotation = element.element(null, WSConstants.ANNOTATION_TAG, true);
                 XmlElement defaultElement = annotation.addElement(WSComponentPort.DEFAULT);
                 defaultElement.addElement(valueElement);
@@ -423,7 +436,12 @@ public class WorkflowWSDL {
                 setTypeAttribute(element, type);
             } else {
                 // Copy the embedded type defition.
-                XmlElement clonedElementElement = XMLUtil.deepClone(elementElement);
+                XmlElement clonedElementElement = null;
+                try {
+                    clonedElementElement = XMLUtil.deepClone(elementElement);
+                } catch (UtilsException e) {
+                    e.printStackTrace();
+                }
                 String typeString = clonedElementElement.attributeValue(WSConstants.TYPE_ATTRIBUTE);
                 if (typeString == null) {
                     for (Object child : clonedElementElement.children()) {

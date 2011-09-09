@@ -30,6 +30,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.XBayaVersion;
@@ -61,7 +62,6 @@ import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.util.StringUtil;
 import org.apache.airavata.xbaya.util.WSConstants;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.gpel.GpelConstants;
 import org.gpel.model.GpelAssign;

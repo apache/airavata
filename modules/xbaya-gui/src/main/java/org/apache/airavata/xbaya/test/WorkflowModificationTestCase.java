@@ -31,6 +31,7 @@ import java.util.Properties;
 
 import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.WSDLUtil;
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.tracking.client.Callback;
 import org.apache.airavata.workflow.tracking.client.NotificationType;
 import org.apache.airavata.workflow.tracking.common.InvocationContext;
@@ -64,7 +65,6 @@ import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.test.service.adder.Adder;
 import org.apache.airavata.xbaya.test.service.multiplier.Multiplier;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.axis2.addressing.EndpointReference;

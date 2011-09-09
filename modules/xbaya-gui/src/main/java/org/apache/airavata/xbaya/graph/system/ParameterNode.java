@@ -26,13 +26,14 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.graph.DataEdge;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlNamespace;
 
@@ -155,7 +156,11 @@ abstract public class ParameterNode extends SystemNode {
         }
 
         // clone and detach from the parent
-        this.metadata = XMLUtil.deepClone(metadata);
+        try {
+            this.metadata = XMLUtil.deepClone(metadata);
+        } catch (UtilsException e) {
+            e.printStackTrace();
+        }
 
         // Reformat
         List<String> emptyTexts = new ArrayList<String>();
@@ -285,7 +290,11 @@ abstract public class ParameterNode extends SystemNode {
             XmlElement metadataElement = configElement.addElement(GraphSchema.NS, METADATA_TAG);
             // Clone the metadata to avoid parent problem because this can be
             // called multiple times.
-            metadataElement.addChild(XMLUtil.deepClone(this.metadata));
+            try {
+                metadataElement.addChild(XMLUtil.deepClone(this.metadata));
+            } catch (UtilsException e) {
+                e.printStackTrace();
+            }
         }
 
         return configElement;

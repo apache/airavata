@@ -33,13 +33,13 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.graph.system.ParameterNode;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaComponent;
 import org.apache.airavata.xbaya.gui.XBayaList;
 import org.apache.airavata.xbaya.gui.XBayaTextArea;
 import org.apache.airavata.xbaya.util.WSConstants;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.infoset.XmlElement;
 
 public class ParameterPropertyPanel implements XBayaComponent {

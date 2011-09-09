@@ -32,8 +32,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.tracking.client.Callback;
-import org.apache.airavata.workflow.tracking.client.LeadNotificationManager;
 import org.apache.airavata.workflow.tracking.client.NotificationType;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.xbaya.component.ComponentException;
@@ -47,7 +47,6 @@ import org.apache.airavata.xbaya.lead.LEADWorkflowInvoker;
 import org.apache.airavata.xbaya.security.SecurityUtil;
 import org.apache.airavata.xbaya.security.UserX509Credential;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
 import org.apache.axis2.addressing.EndpointReference;

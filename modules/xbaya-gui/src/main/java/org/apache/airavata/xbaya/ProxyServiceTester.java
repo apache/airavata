@@ -27,11 +27,11 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
 import org.apache.airavata.xbaya.workflow.proxy.WorkflowProxyClient;

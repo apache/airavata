@@ -24,17 +24,16 @@ package org.apache.airavata.xbaya.jython.lib;
 import java.net.URI;
 import java.util.Properties;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.tracking.NotifierFactory;
 import org.apache.airavata.workflow.tracking.WorkflowNotifier;
 import org.apache.airavata.workflow.tracking.common.*;
 import org.apache.airavata.xbaya.util.StringUtil;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axis2.addressing.EndpointReference;
 import org.python.core.PyObject;
 import org.xmlpull.infoset.XmlElement;
 
-import xsul.ws_addressing.WsaEndpointReference;
 import xsul5.MLogger;
 
 public class NotificationSender implements WorkflowNotifiable {

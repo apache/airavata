@@ -28,6 +28,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.system.ConstantNode;
 import org.apache.airavata.xbaya.gui.GridPanel;
@@ -37,7 +38,6 @@ import org.apache.airavata.xbaya.gui.XBayaTextArea;
 import org.apache.airavata.xbaya.gui.XBayaTextComponent;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
 import org.apache.airavata.xbaya.lead.LEADTypes;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.infoset.XmlElement;
 
 public class ConstantConfigurationDialog {

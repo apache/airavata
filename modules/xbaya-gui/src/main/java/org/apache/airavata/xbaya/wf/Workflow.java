@@ -40,6 +40,7 @@ import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaExecutionState;
@@ -71,7 +72,6 @@ import org.apache.airavata.xbaya.ode.WSDLCleaner;
 import org.apache.airavata.xbaya.streaming.StreamReceiveNode;
 import org.apache.airavata.xbaya.streaming.StreamTransformer;
 import org.apache.airavata.xbaya.util.StringUtil;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.gpel.GpelConstants;
 import org.gpel.model.GpelProcess;
@@ -677,14 +677,17 @@ public class Workflow {
     @Override
     public Workflow clone() {
         XmlElement originalXML = toXML();
-        XmlElement newXML = XMLUtil.deepClone(originalXML);
         try {
+            XmlElement newXML = XMLUtil.deepClone(originalXML);
             Workflow newWorkflow = new Workflow(newXML);
             return newWorkflow;
         } catch (GraphException e) {
             // This should not happen.
             throw new XBayaRuntimeException(e);
-        } catch (ComponentException e) {
+        } catch (XBayaException e) {
+            // This should not happen.
+            throw new XBayaRuntimeException(e);
+        } catch (UtilsException e) {
             // This should not happen.
             throw new XBayaRuntimeException(e);
         }

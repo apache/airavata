@@ -28,6 +28,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.apache.airavata.common.utils.WSDLUtil;
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.gui.GridPanel;
@@ -35,8 +36,6 @@ import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextArea;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
-import org.apache.airavata.xbaya.util.XBayaUtil;
-import org.apache.airavata.xbaya.util.XMLUtil;
 
 import xsul5.wsdl.WsdlDefinitions;
 

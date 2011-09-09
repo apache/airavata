@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentPort;
 import org.apache.airavata.xbaya.graph.Edge;
@@ -33,7 +34,6 @@ import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.gui.PortGUI;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.infoset.XmlElement;
 
 /**

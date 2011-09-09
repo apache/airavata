@@ -27,6 +27,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
 import org.apache.airavata.xbaya.gui.GridPanel;
@@ -35,7 +36,6 @@ import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextArea;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
 import org.apache.airavata.xbaya.util.WSConstants;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.infoset.XmlElement;
 
 public class OutputConfigurationDialog {

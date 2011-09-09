@@ -21,11 +21,11 @@
 
 package org.apache.airavata.xbaya.graph.impl;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.graph.Edge;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.gui.EdgeGUI;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.infoset.XmlElement;
 
 /**

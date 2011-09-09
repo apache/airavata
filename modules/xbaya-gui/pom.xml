@@ -385,6 +385,11 @@
             <artifactId>airavata-messagebroker</artifactId>
             <version>${airavata.version}</version>
         </dependency>
+	<dependency>
+            <groupId>airavata</groupId>
+            <artifactId>airavata-common-utils</artifactId>
+            <version>${airavata.version}</version>
+        </dependency>
         <dependency>
             <groupId>airavata</groupId>
             <artifactId>airavata-workflowtracking</artifactId>

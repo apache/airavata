@@ -31,6 +31,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.common.utils.XmlFormatter;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -43,8 +45,6 @@ import org.apache.airavata.xbaya.myproxy.gui.MyProxyDialog;
 import org.apache.airavata.xbaya.security.SecurityUtil;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.util.StringUtil;
-import org.apache.airavata.xbaya.util.XMLUtil;
-import org.apache.airavata.xbaya.util.XmlFormatter;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.xmlbeans.XmlException;
 import org.ietf.jgss.GSSCredential;

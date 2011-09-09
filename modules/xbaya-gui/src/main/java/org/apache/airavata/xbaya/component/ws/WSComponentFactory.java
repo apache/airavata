@@ -28,9 +28,9 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.WSDLUtil;
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul5.wsdl.WsdlDefinitions;

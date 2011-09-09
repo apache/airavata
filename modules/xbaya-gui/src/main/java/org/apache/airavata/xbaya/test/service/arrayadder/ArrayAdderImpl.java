@@ -24,8 +24,8 @@ package org.apache.airavata.xbaya.test.service.arrayadder;
 import java.util.Iterator;
 import java.util.Random;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.test.service.ServiceNotificationSender;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.v1.builder.XmlElement;
 import org.xmlpull.v1.builder.XmlNamespace;
 

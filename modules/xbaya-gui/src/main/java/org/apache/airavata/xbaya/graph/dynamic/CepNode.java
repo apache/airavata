@@ -24,6 +24,7 @@ package org.apache.airavata.xbaya.graph.dynamic;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.component.dynamic.CepComponent;
 import org.apache.airavata.xbaya.component.dynamic.CepComponentPort;
 import org.apache.airavata.xbaya.graph.ControlPort;
@@ -38,7 +39,6 @@ import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.impl.PortImpl;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.infoset.XmlElement;
 
 public class CepNode extends NodeImpl implements PortAddable {

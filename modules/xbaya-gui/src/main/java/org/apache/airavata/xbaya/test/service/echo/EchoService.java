@@ -23,8 +23,8 @@ package org.apache.airavata.xbaya.test.service.echo;
 
 import java.io.File;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.test.service.Service;
-import org.apache.airavata.xbaya.util.XMLUtil;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsdl.WsdlDefinitions;
