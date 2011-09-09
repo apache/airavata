@@ -61,12 +61,16 @@ public class LocalProvider extends AbstractProvider {
 
         log.info("working diectroy = " + app.getWorkingDir());
         log.info("temp directory = " + app.getTmpDir());
+
+		  //TODO: These should be abstracted out as methods like makeWorkingDirOnTarget(app), 
+		  //TODO: since any provider developer will need to implement. 
         new File(app.getWorkingDir()).mkdir();
         new File(app.getTmpDir()).mkdir();
         new File(app.getInputDir()).mkdir();
         new File(app.getOutputDir()).mkdir();
     }
 
+	 //TODO: This method is too complex and thus fragile.  It should be broken up into smaller private methods.
     public void execute(InvocationContext context) throws ProviderException {
         ShellApplicationDeployment app = (ShellApplicationDeployment)context.getExecutionDescription().getApp();
         
@@ -107,6 +111,9 @@ public class LocalProvider extends AbstractProvider {
                 log.info("Env[" + key + "] = " + builder.environment().get(key));
             }
 
+				//TODO: Since all execute() methods need to implement notification, this should
+				//TODO: be made foolproof in some way (maybe as "listener" pattern, off the
+				//TODO: top of my head) so that other provider developers implement it correctly.
             NotificationService notifier = context.getExecutionContext().getNotificationService();
             notifier.startExecution(this, context);
             
