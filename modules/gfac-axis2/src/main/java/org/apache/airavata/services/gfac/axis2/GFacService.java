@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
 package org.apache.airavata.services.gfac.axis2;
 
@@ -34,8 +34,8 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryFactory;
 import javax.jcr.SimpleCredentials;
 
-import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.core.gfac.services.GenericService;
+import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.services.gfac.axis2.handlers.AmazonSecurityHandler;
 import org.apache.airavata.services.gfac.axis2.handlers.MyProxySecurityHandler;
 import org.apache.axis2.context.ConfigurationContext;
@@ -43,50 +43,62 @@ import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.engine.ServiceLifeCycle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GFacService implements ServiceLifeCycle {
     
-    public static final String CONFIGURATION_CONTEXT_REGISTRY = "registry";
-    
-	public static final String SECURITY_CONTEXT = "security_context";
-    public static final String REPOSITORY_PROPERTIES = "repository.properties";
-	public static GenericService service;
+    private static final Logger log = LoggerFactory.getLogger(GFacService.class);
 
-	public void startUp(ConfigurationContext configctx, AxisService service) {
-		AxisConfiguration config = null;
-		List<Phase> phases = null;
-		config = service.getAxisConfiguration();
-		phases = config.getInFlowPhases();
+    public static final String CONFIGURATION_CONTEXT_REGISTRY = "registry";
+
+    public static final String SECURITY_CONTEXT = "security_context";
+    public static final String REPOSITORY_PROPERTIES = "repository.properties";
+
+    /*
+     * Properties for JCR
+     */
+    public static final String JCR_CLASS = "jcr.class";
+    public static final String JCR_USER = "jcr.user";
+    public static final String JCR_PASS = "jcr.pass";
+
+    public static GenericService service;
+
+    public void startUp(ConfigurationContext configctx, AxisService service){
+        AxisConfiguration config = null;
+        List<Phase> phases = null;
+        config = service.getAxisConfiguration();
+        phases = config.getInFlowPhases();
 
         initializeRepository(configctx);
 
-		for (Iterator iterator = phases.iterator(); iterator.hasNext();) {
-			Phase phase = (Phase) iterator.next();
-			if ("Security".equals(phase.getPhaseName())) {
-				phase.addHandler(new MyProxySecurityHandler());
-				phase.addHandler(new AmazonSecurityHandler());
-				return;
-			}
-		}
-	}
+        for (Iterator<Phase> iterator = phases.iterator(); iterator.hasNext();) {
+            Phase phase = (Phase) iterator.next();
+            if ("Security".equals(phase.getPhaseName())) {
+                phase.addHandler(new MyProxySecurityHandler());
+                phase.addHandler(new AmazonSecurityHandler());
+                return;
+            }
+        }
+    }
+
     private void initializeRepository(ConfigurationContext context) {
-      Properties properties = new Properties();
+        Properties properties = new Properties();
         try {
             URL url = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
             properties.load(url.openStream());
             Map<String, String> map = new HashMap<String, String>((Map) properties);
-            Class registryRepositoryFactory = Class.forName(map.get("jcr.class"));
+            Class registryRepositoryFactory = Class.forName(map.get(JCR_CLASS));
             Constructor c = registryRepositoryFactory.getConstructor();
             RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
             Repository repository = repositoryFactory.getRepository(map);
-            Credentials credentials = new SimpleCredentials(map.get("userName"), (map.get("password")).toCharArray());
+            Credentials credentials = new SimpleCredentials(map.get(JCR_USER), map.get(JCR_PASS).toCharArray());
             context.setProperty(CONFIGURATION_CONTEXT_REGISTRY, new JCRRegistry(repository, credentials));
-    } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
         }
     }
-	public void shutDown(ConfigurationContext configctx, AxisService service) {
-		// TODO Auto-generated method stub
 
-	}
+    public void shutDown(ConfigurationContext configctx, AxisService service) {
+    }
 }
