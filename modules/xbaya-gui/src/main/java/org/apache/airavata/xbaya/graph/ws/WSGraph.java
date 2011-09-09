@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
@@ -48,7 +50,6 @@ import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.xmlpull.infoset.XmlElement;
 
@@ -133,27 +134,31 @@ public class WSGraph extends GraphImpl {
     protected void toXML(XmlElement graphElement) {
         super.toXML(graphElement);
 
-        graphElement.setAttributeValue(GraphSchema.NS, GraphSchema.GRAPH_TYPE_ATTRIBUTE, GraphSchema.GRAPH_TYPE_WS);
+        try {
+            graphElement.setAttributeValue(GraphSchema.NS, GraphSchema.GRAPH_TYPE_ATTRIBUTE, GraphSchema.GRAPH_TYPE_WS);
 
-        if (this.metadata != null) {
-            XmlElement metadataElement = graphElement.addElement(GraphSchema.NS, GraphSchema.GRAPH_METADATA_TAG);
-            // Clone the metadata to avoid parent problem because this can be
-            // called multiple times.
-            metadataElement.addChild(XMLUtil.deepClone(this.metadata));
-        }
+            if (this.metadata != null) {
+                XmlElement metadataElement = graphElement.addElement(GraphSchema.NS, GraphSchema.GRAPH_METADATA_TAG);
+                // Clone the metadata to avoid parent problem because this can be
+                // called multiple times.
+                metadataElement.addChild(XMLUtil.deepClone(this.metadata));
+            }
 
-        if (this.inputMetadata != null) {
-            XmlElement metadataElement = graphElement.addElement(GraphSchema.NS, GraphSchema.GRAPH_INPUT_METADATA_TAG);
-            // Clone the metadata to avoid parent problem because this can be
-            // called multiple times.
-            metadataElement.addChild(XMLUtil.deepClone(this.inputMetadata));
-        }
+            if (this.inputMetadata != null) {
+                XmlElement metadataElement = graphElement.addElement(GraphSchema.NS, GraphSchema.GRAPH_INPUT_METADATA_TAG);
+                // Clone the metadata to avoid parent problem because this can be
+                // called multiple times.
+                metadataElement.addChild(XMLUtil.deepClone(this.inputMetadata));
+            }
 
-        if (this.outputMetadata != null) {
-            XmlElement metadataElement = graphElement.addElement(GraphSchema.NS, GraphSchema.GRAPH_OUTPUT_METADATA_TAG);
-            // Clone the metadata to avoid parent problem because this can be
-            // called multiple times.
-            metadataElement.addChild(XMLUtil.deepClone(this.outputMetadata));
+            if (this.outputMetadata != null) {
+                XmlElement metadataElement = graphElement.addElement(GraphSchema.NS, GraphSchema.GRAPH_OUTPUT_METADATA_TAG);
+                // Clone the metadata to avoid parent problem because this can be
+                // called multiple times.
+                metadataElement.addChild(XMLUtil.deepClone(this.outputMetadata));
+            }
+        } catch (UtilsException e) {
+            e.printStackTrace();
         }
     }
 

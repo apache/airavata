@@ -24,6 +24,7 @@ package org.apache.airavata.xbaya.test.service;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.test.service.adder.Adder;
 import org.apache.airavata.xbaya.test.service.adder.AdderImpl;
@@ -37,7 +38,6 @@ import org.apache.airavata.xbaya.test.service.echo.Echo;
 import org.apache.airavata.xbaya.test.service.echo.EchoImpl;
 import org.apache.airavata.xbaya.test.service.multiplier.Multiplier;
 import org.apache.airavata.xbaya.test.service.multiplier.MultiplierImpl;
-import org.apache.airavata.xbaya.util.XMLUtil;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsdl.WsdlDefinitions;

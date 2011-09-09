@@ -26,8 +26,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.SubWorkflowComponent;
 import org.apache.airavata.xbaya.component.gui.ComponentSelector;
@@ -49,7 +48,6 @@ import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.myproxy.gui.MyProxyDialog;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.streaming.StreamTableModel;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.wf.gui.WorkflowPropertyWindow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;

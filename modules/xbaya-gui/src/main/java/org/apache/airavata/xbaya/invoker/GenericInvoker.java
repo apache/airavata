@@ -36,6 +36,7 @@ import java.util.concurrent.TimeoutException;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
@@ -43,7 +44,6 @@ import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotificationSender;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.lead.LeadContextHeader;

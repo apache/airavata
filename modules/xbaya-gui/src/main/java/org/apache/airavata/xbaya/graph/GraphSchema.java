@@ -21,8 +21,8 @@
 
 package org.apache.airavata.xbaya.graph;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.infoset.XmlNamespace;
 
 public class GraphSchema {

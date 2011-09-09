@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.airavata.xbaya.XBaya;
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.ComponentException;
@@ -54,7 +54,6 @@ import org.apache.airavata.xbaya.security.UserX509Credential;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.streaming.StreamReceiveComponent;
 import org.apache.airavata.xbaya.streaming.StreamReceiveNode;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.proxy.WorkflowProxyClient;
 import org.ietf.jgss.GSSCredential;

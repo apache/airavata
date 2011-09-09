@@ -31,6 +31,7 @@ import javax.xml.namespace.QName;
 
 import junit.framework.TestSuite;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.component.ComponentException;
@@ -41,7 +42,6 @@ import org.apache.airavata.xbaya.lead.LEADWorkflowInvoker;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.security.UserX509Credential;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.WorkflowClient.WorkflowType;

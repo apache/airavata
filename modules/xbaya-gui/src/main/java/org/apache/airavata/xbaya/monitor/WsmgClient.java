@@ -23,23 +23,18 @@ package org.apache.airavata.xbaya.monitor;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 
-import org.apache.airavata.commons.WorkFlowUtils;
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
 import org.apache.airavata.wsmg.client.MsgBrokerClientException;
 import org.apache.airavata.wsmg.client.NotificationHandler;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.wsmg.client.msgbox.MessagePuller;
-import org.apache.airavata.wsmg.msgbox.client.MsgBoxClient;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.addressing.EndpointReference;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul5.MLogger;
-
-import javax.xml.stream.XMLStreamException;
 
 public class WsmgClient implements ConsumerNotificationHandler, NotificationHandler{
 

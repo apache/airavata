@@ -24,6 +24,7 @@ package org.apache.airavata.xbaya.graph.ws;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.graph.ControlEdge;
 import org.apache.airavata.xbaya.graph.ControlPort;
@@ -57,7 +58,6 @@ import org.apache.airavata.xbaya.graph.system.SystemDataPort;
 import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.util.IOUtil;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.infoset.XmlElement;
 
 /**

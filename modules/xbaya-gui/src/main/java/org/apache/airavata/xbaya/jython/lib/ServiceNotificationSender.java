@@ -24,19 +24,18 @@ package org.apache.airavata.xbaya.jython.lib;
 import java.net.URI;
 import java.util.Iterator;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.tracking.WorkflowNotifier;
 import org.apache.airavata.workflow.tracking.common.InvocationContext;
 import org.apache.airavata.workflow.tracking.common.InvocationEntity;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 import org.apache.airavata.workflow.tracking.impl.state.InvocationContextImpl;
 import org.apache.airavata.xbaya.util.StringUtil;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.xmlpull.infoset.XmlElement;
 
-import xsul.ws_addressing.WsaEndpointReference;
 import xsul.wsif.WSIFMessage;
 import xsul5.MLogger;
 

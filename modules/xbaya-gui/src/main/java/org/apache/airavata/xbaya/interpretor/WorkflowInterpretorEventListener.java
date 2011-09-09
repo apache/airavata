@@ -23,17 +23,16 @@ package org.apache.airavata.xbaya.interpretor;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.commons.WorkFlowUtils;
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
 import org.apache.airavata.wsmg.client.MsgBrokerClientException;
 import org.apache.airavata.wsmg.client.NotificationHandler;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.wsmg.client.msgbox.MessagePuller;
-import org.apache.airavata.wsmg.msgbox.client.MsgBoxClient;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.graph.EPRPort;
 import org.apache.airavata.xbaya.graph.Edge;
@@ -50,9 +49,7 @@ import org.apache.airavata.xbaya.monitor.MonitorEvent;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.monitor.MonitorUtil.EventType;
-import org.apache.airavata.xbaya.monitor.WsmgClient;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.addressing.EndpointReference;

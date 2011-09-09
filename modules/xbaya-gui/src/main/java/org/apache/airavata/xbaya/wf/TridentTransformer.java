@@ -23,7 +23,7 @@ package org.apache.airavata.xbaya.wf;
 
 import java.util.LinkedList;
 
-import org.apache.airavata.xbaya.util.XMLUtil;
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.xsd.GFacSimpleTypesXSD;
 import org.apache.airavata.xbaya.xsd.LeadContextHeaderXSD;
 import org.apache.airavata.xbaya.xsd.LeadCrosscutXSD;

@@ -24,12 +24,12 @@ package org.apache.airavata.xbaya.test.service;
 import java.net.URI;
 import java.util.Properties;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.tracking.Notifier;
 import org.apache.airavata.workflow.tracking.NotifierFactory;
 import org.apache.airavata.workflow.tracking.common.InvocationContext;
 import org.apache.airavata.workflow.tracking.common.InvocationEntity;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlObject;
 import org.xmlpull.v1.builder.XmlDocument;

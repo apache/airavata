@@ -26,8 +26,8 @@ import java.net.URISyntaxException;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.wsdl.WsdlDefinitions;

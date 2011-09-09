@@ -26,10 +26,10 @@ import java.net.URI;
 
 import junit.framework.TestSuite;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.gpel.DSCUtil;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
-import org.apache.airavata.xbaya.util.XMLUtil;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.lead.LeadContextHeader;
