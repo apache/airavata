@@ -41,7 +41,7 @@ import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponentFactory;
-import org.apache.airavata.xbaya.util.IOUtil;
+import org.apache.airavata.common.utils.IOUtil;
 
 import xsul5.MLogger;
 

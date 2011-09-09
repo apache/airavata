@@ -31,7 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 
-import org.apache.airavata.xbaya.util.SwingUtil;
+import org.apache.airavata.common.utils.SwingUtil;
 
 public class ScrollPanel implements XBayaComponent {
 

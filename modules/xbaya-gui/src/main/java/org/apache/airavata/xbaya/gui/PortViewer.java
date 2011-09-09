@@ -33,13 +33,13 @@ import javax.swing.JScrollPane;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
+import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvasEvent;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvasEvent.GraphCanvasEventType;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvasListener;
-import org.apache.airavata.xbaya.util.SwingUtil;
 
 import xsul5.XmlConstants;
 

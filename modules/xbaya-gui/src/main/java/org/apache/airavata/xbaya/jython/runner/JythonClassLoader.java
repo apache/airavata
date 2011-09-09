@@ -42,10 +42,10 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.XBayaVersion;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
-import org.apache.airavata.xbaya.util.IOUtil;
 import org.python.util.PythonInterpreter;
 
 import xsul5.MLogger;

@@ -31,14 +31,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.NameValidator;
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaComboBox;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
-import org.apache.airavata.xbaya.util.NameValidator;
-import org.apache.airavata.xbaya.util.StringUtil;
 import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
 import org.ogce.schemas.gfac.beans.ApplicationBean;
 

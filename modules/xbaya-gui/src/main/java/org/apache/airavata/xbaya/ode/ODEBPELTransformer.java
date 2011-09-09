@@ -28,7 +28,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.util.StringUtil;
+import org.apache.airavata.common.utils.StringUtil;
 import org.gpel.model.GpelActivity;
 import org.gpel.model.GpelAssign;
 import org.gpel.model.GpelAssignCopy;

@@ -27,7 +27,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.apache.airavata.xbaya.util.SwingUtil;
+import org.apache.airavata.common.utils.SwingUtil;
 
 public class GridPanel implements XBayaComponent {
 

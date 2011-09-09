@@ -36,7 +36,7 @@ import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.security.SecurityUtil;
-import org.apache.airavata.xbaya.util.Pair;
+import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.proxy.GPELWorkflowClient;
 import org.apache.airavata.xbaya.workflow.proxy.GPELWorkflowContext;

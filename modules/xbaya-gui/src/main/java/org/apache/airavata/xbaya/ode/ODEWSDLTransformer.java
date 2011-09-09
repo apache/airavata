@@ -30,11 +30,11 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.gpel.DSCUtil;
-import org.apache.airavata.xbaya.util.StringUtil;
 import org.xmlpull.infoset.XmlBuilderException;
 import org.xmlpull.infoset.XmlInfosetBuilder;
 import org.xmlpull.infoset.XmlNamespace;

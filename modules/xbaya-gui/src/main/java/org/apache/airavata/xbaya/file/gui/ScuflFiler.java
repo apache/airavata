@@ -34,7 +34,7 @@ import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.scufl.script.ScuflScript;
-import org.apache.airavata.xbaya.util.IOUtil;
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 
 import xsul5.MLogger;

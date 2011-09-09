@@ -21,7 +21,7 @@
 
 package org.apache.airavata.xbaya.workflow.proxy;
 
-import org.apache.airavata.xbaya.util.Pair;
+import org.apache.airavata.common.utils.Pair;
 import org.ietf.jgss.GSSException;
 
 public interface WorkflowClient {

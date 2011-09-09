@@ -25,6 +25,7 @@ import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.component.Component;
@@ -38,7 +39,6 @@ import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
-import org.apache.airavata.xbaya.util.IOUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.xmlpull.infoset.XmlElement;
 

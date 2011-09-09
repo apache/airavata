@@ -27,6 +27,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.system.InputComponent;
 import org.apache.airavata.xbaya.graph.DataPort;
@@ -36,7 +37,6 @@ import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
-import org.apache.airavata.xbaya.util.Pair;
 import org.apache.airavata.xbaya.wf.Workflow;
 
 public class WorkflowHarvester {
