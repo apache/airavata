@@ -73,6 +73,11 @@
             <artifactId>airavata-gfac-schema-utils</artifactId>
             <version>${airavata.version}</version>
         </dependency>
+	<dependency>
+            <groupId>airavata</groupId>
+            <artifactId>airavata-registry-api</artifactId>
+            <version>${airavata.version}</version>
+        </dependency>
 
         <!-- Workflow Tracking -->
         <dependency>

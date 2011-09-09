@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.commons.gfac.api.impl;
+package org.apache.airavata.registry.api.impl;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.Value;
 
-import org.apache.airavata.commons.gfac.api.Axis2Registry;
+import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;

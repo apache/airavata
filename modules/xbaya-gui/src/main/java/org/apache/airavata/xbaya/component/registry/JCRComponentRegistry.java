@@ -25,7 +25,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.airavata.commons.gfac.api.impl.JCRRegistry;
+import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 

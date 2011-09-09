@@ -27,8 +27,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.airavata.commons.gfac.api.Registry;
-import org.apache.airavata.commons.gfac.api.impl.JCRRegistry;
+import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;

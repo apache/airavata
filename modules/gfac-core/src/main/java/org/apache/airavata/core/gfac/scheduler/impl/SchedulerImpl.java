@@ -25,7 +25,7 @@ import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.airavata.commons.gfac.api.Registry;
+import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;

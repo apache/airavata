@@ -21,10 +21,9 @@
 
 package org.apache.airavata.core.gfac.context.invocation;
 
-import org.apache.airavata.commons.gfac.api.Registry;
 import org.apache.airavata.core.gfac.notification.Notifiable;
 import org.apache.airavata.core.gfac.notification.Notifier;
-
+import org.apache.airavata.registry.api.Registry;
 /**
  * The Execution Context is used for passing information around the whole
  * service. It keeps information about general execution step. For example,

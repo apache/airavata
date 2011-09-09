@@ -83,7 +83,6 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${org.slf4j.version}</version>
-                <scope>test</scope>
             </dependency>
 
             <dependency>
