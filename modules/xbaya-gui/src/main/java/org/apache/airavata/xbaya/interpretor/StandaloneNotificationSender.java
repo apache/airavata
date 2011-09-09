@@ -3,6 +3,7 @@ package org.apache.airavata.xbaya.interpretor;
 import java.net.URI;
 import java.util.List;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
@@ -11,7 +12,6 @@ import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.jython.lib.StandaloneServiceNotificationSender;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
-import org.apache.airavata.xbaya.util.StringUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axis2.addressing.EndpointReference;
 import org.python.core.PyObject;

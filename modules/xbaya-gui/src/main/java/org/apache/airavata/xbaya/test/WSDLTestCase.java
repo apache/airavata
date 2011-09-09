@@ -30,7 +30,7 @@ import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
-import org.apache.airavata.xbaya.util.IOUtil;
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 
 public class WSDLTestCase extends XBayaTestCase {

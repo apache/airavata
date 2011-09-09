@@ -33,6 +33,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -49,7 +50,6 @@ import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.myproxy.gui.MyProxyChecker;
 import org.apache.airavata.xbaya.security.UserX509Credential;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
-import org.apache.airavata.xbaya.util.StringUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.wf.gui.WorkflowPropertyWindow;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineException;

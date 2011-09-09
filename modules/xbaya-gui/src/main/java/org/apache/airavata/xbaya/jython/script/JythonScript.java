@@ -31,6 +31,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaVersion;
@@ -49,7 +50,6 @@ import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
-import org.apache.airavata.xbaya.util.StringUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 
 public class JythonScript {

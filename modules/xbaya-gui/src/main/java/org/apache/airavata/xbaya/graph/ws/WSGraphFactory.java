@@ -57,7 +57,7 @@ import org.apache.airavata.xbaya.graph.system.ReceiveNode;
 import org.apache.airavata.xbaya.graph.system.SystemDataPort;
 import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
-import org.apache.airavata.xbaya.util.IOUtil;
+import org.apache.airavata.common.utils.IOUtil;
 import org.xmlpull.infoset.XmlElement;
 
 /**

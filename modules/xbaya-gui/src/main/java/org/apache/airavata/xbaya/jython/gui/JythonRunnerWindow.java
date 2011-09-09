@@ -55,7 +55,7 @@ import org.apache.airavata.xbaya.jython.runner.JythonRunner;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.gui.MonitorStarter;
-import org.apache.airavata.xbaya.util.StringUtil;
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.xmlpull.infoset.XmlElement;
 

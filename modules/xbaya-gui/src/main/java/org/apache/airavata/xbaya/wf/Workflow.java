@@ -40,6 +40,7 @@ import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
@@ -71,7 +72,6 @@ import org.apache.airavata.xbaya.ode.ODEWSDLTransformer;
 import org.apache.airavata.xbaya.ode.WSDLCleaner;
 import org.apache.airavata.xbaya.streaming.StreamReceiveNode;
 import org.apache.airavata.xbaya.streaming.StreamTransformer;
-import org.apache.airavata.xbaya.util.StringUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.gpel.GpelConstants;
 import org.gpel.model.GpelProcess;

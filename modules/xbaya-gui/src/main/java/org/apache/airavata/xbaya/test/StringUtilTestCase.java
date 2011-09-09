@@ -23,7 +23,7 @@ package org.apache.airavata.xbaya.test;
 
 import junit.framework.TestCase;
 
-import org.apache.airavata.xbaya.util.StringUtil;
+import org.apache.airavata.common.utils.StringUtil;
 
 public class StringUtilTestCase extends TestCase {
 

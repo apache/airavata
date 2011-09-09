@@ -25,7 +25,7 @@ import java.net.URI;
 
 import javax.swing.JTextField;
 
-import org.apache.airavata.xbaya.util.StringUtil;
+import org.apache.airavata.common.utils.StringUtil;
 
 public class XBayaTextField implements XBayaTextComponent {
 

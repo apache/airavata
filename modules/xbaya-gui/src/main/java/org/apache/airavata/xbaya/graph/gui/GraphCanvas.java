@@ -60,6 +60,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
+import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaExecutionState;
@@ -83,7 +84,6 @@ import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
-import org.apache.airavata.xbaya.util.SwingUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 
 import xsul5.MLogger;

@@ -24,6 +24,7 @@ package org.apache.airavata.xbaya.test;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.component.ComponentException;
@@ -33,7 +34,6 @@ import org.apache.airavata.xbaya.gpel.script.BPELScriptType;
 import org.apache.airavata.xbaya.gpel.script.WorkflowWSDL;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
-import org.apache.airavata.xbaya.util.IOUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.gpel.model.GpelProcess;
 import org.xmlpull.infoset.XmlElement;

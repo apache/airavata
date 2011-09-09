@@ -23,6 +23,7 @@ package org.apache.airavata.xbaya.test.jython;
 
 import java.io.IOException;
 
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.jython.runner.JythonRunner;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
@@ -32,7 +33,6 @@ import org.apache.airavata.xbaya.test.service.arrayadder.ArrayAdderService;
 import org.apache.airavata.xbaya.test.service.arraygen.ArrayGeneratorService;
 import org.apache.airavata.xbaya.test.service.multiplier.MultiplierService;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
-import org.apache.airavata.xbaya.util.IOUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 
 public class JythonScriptTestCase extends XBayaTestCase {

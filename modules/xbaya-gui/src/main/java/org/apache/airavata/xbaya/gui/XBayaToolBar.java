@@ -31,10 +31,10 @@ import javax.swing.JComponent;
 import javax.swing.JToolBar;
 import javax.swing.border.Border;
 
+import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaExecutionState;
 import org.apache.airavata.xbaya.graph.GraphException;
-import org.apache.airavata.xbaya.util.SwingUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 
 public class XBayaToolBar implements XBayaComponent {

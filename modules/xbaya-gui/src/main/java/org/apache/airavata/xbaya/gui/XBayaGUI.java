@@ -50,6 +50,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -72,7 +73,6 @@ import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.gui.MonitorPanel;
 import org.apache.airavata.xbaya.streaming.StreamTableModel;
-import org.apache.airavata.xbaya.util.SwingUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.ogce.xregistry.utils.XRegistryClientException;
 

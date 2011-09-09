@@ -25,13 +25,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponentFactory;
-import org.apache.airavata.xbaya.util.IOUtil;
 
 public class LocalComponentRegistry extends ComponentRegistry {
 

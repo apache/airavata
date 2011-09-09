@@ -27,7 +27,7 @@ import java.util.List;
 import org.apache.airavata.xbaya.event.Event;
 import org.apache.airavata.xbaya.event.Event.Type;
 import org.apache.airavata.xbaya.event.EventProducer;
-import org.apache.airavata.xbaya.util.StringUtil;
+import org.apache.airavata.common.utils.StringUtil;
 
 public class MonitorConfiguration extends EventProducer {
 

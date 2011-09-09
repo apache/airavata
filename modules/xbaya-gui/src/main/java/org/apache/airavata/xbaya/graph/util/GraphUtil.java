@@ -36,6 +36,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.dynamic.GenericSubWorkflowComponent;
@@ -59,7 +60,6 @@ import org.apache.airavata.xbaya.graph.ws.WSGraph;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
-import org.apache.airavata.xbaya.util.Pair;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.wf.Workflow;
 

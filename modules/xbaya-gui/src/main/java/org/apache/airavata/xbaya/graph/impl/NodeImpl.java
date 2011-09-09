@@ -40,7 +40,7 @@ import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.Port.Kind;
 import org.apache.airavata.xbaya.streaming.StreamTableModel;
-import org.apache.airavata.xbaya.util.StringUtil;
+import org.apache.airavata.common.utils.StringUtil;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul5.MLogger;

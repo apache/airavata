@@ -32,8 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
+import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.util.SwingUtil;
 
 import xsul5.MLogger;
 
