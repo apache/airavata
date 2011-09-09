@@ -3,6 +3,7 @@ package org.apache.airavata.xbaya.interpreter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -20,6 +21,14 @@ import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorSkeleton;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorStub.NameValue;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.context.ConfigurationContextFactory;
+import org.apache.axis2.deployment.AxisConfigBuilder;
+import org.apache.axis2.description.AxisService;
+import org.apache.axis2.engine.AxisConfiguration;
+import org.apache.axis2.engine.ListenerManager;
+import org.apache.axis2.util.Loader;
 import org.junit.Test;
 import org.python.antlr.PythonParser.classdef_return;
 
@@ -29,6 +38,7 @@ public class WorkflowTest implements HeaderConstants {
 	public void testScheduleDynamically() throws IOException, URISyntaxException, XBayaException {
 		
 		Workflow workflow = new Workflow(readWorkflow());
+        axis2ServiceStarter();
 		((InputNode)workflow.getGraph().getNode("before")).setDefaultValue("1");
 		WorkflowInterpreter interpretor = new WorkflowInterpreter(getConfiguration(), UUID.randomUUID().toString(), workflow, "NA", "NA", true);
 		interpretor.scheduleDynamically();
@@ -79,5 +89,20 @@ public class WorkflowTest implements HeaderConstants {
 		  }
 
 	}
+
+    private void axis2ServiceStarter() throws AxisFault {
+        try {
+            ConfigurationContext configContext = ConfigurationContextFactory.createBasicConfigurationContext
+                    ("axis2_default.xml");
+            AxisService service = AxisService.createService(EchoService.class.getName(), configContext.getAxisConfiguration());
+            configContext.deployService(service);
+            ListenerManager manager = new ListenerManager();
+            manager.init(configContext);
+            manager.start();
+            Thread.sleep(10000);
+        } catch (Exception e) {
+            throw AxisFault.makeFault(e);
+        }
+    }
 
 }
