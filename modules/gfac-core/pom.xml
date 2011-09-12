@@ -87,7 +87,7 @@
         </dependency>
 
         <!-- Xregistry jars -->
-        <dependency>
+        <!--dependency>
             <groupId>xregistry</groupId>
             <artifactId>xregistry-client</artifactId>
             <version>1.2.2</version>
@@ -97,7 +97,7 @@
             <artifactId>xregistry_generated</artifactId>
             <version>0.8.3</version>
             <type>jar</type>
-        </dependency>
+        </dependency-->
 
         <!-- SSH -->
         <dependency>

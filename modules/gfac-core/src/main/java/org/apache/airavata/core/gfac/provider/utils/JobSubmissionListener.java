@@ -39,13 +39,15 @@ import org.slf4j.LoggerFactory;
 public class JobSubmissionListener implements GramJobListener {
 
     public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";
+    private static final int JOB_PROXY_REMAINING_TIME_LIMIT = 900;
+    private static final long JOB_FINISH_WAIT_TIME = 60 * 1000l;
 
     private boolean finished;
     private int error;
     private int status;
     private InvocationContext context;
     private GramJob job;
-    protected final Logger log = LoggerFactory.getLogger(JobSubmissionListener.class);
+    private final Logger log = LoggerFactory.getLogger(JobSubmissionListener.class);
 
     public JobSubmissionListener(GramJob job, InvocationContext context) {
         this.job = job;
@@ -64,7 +66,7 @@ public class JobSubmissionListener implements GramJobListener {
     public void waitFor() throws InterruptedException, GSSException, GramException, SecurityException {
         while (!isFinished()) {
             int proxyExpTime = job.getCredentials().getRemainingLifetime();
-            if (proxyExpTime < 900) {
+			if (proxyExpTime < JOB_PROXY_REMAINING_TIME_LIMIT) {
                 log.info("Job proxy expired. Trying to renew proxy");
                 GSSCredential gssCred = ((GSISecurityContext) context.getSecurityContext(MYPROXY_SECURITY_CONTEXT))
                         .getGssCredentails();
@@ -80,8 +82,9 @@ public class JobSubmissionListener implements GramJobListener {
                 if (status != 0) {
                     if (job.getStatus() != status) {
                         log.info("Change job status manually");
-                        if (setStatus(job.getStatus(), job.getError()))
+                        if (setStatus(job.getStatus(), job.getError())){
                             break;
+                        }
                     } else {
                         log.info("job " + job.getIDAsString() + " have same status: "
                                 + GramJob.getStatusAsString(status));
@@ -90,7 +93,7 @@ public class JobSubmissionListener implements GramJobListener {
                     log.info("Status is zero");
                 }
 
-                wait(60 * 1000l);
+				wait(JOB_FINISH_WAIT_TIME);
             }
         }
     }
