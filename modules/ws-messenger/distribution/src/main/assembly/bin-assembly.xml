@@ -126,7 +126,7 @@
 
 		<fileSet>
 			<directory>../messagebroker/target</directory>
-			<outputDirectory>client-api/lib</outputDirectory>
+			<outputDirectory>lib</outputDirectory>
 			<includes>
 				<include>airavata-messagebroker*.jar</include>
 			</includes>
@@ -138,7 +138,7 @@
 
 		<fileSet>
 			<directory>../messagebox/target</directory>
-			<outputDirectory>client-api/lib</outputDirectory>
+			<outputDirectory>lib</outputDirectory>
 			<includes>
 				<include>airavata-messagebox*.jar</include>
 			</includes>
@@ -150,7 +150,7 @@
 
 		<fileSet>
 			<directory>../samples</directory>
-			<outputDirectory>client-api/samples</outputDirectory>
+			<outputDirectory>samples</outputDirectory>
 			<includes>
 				<include>**/*</include>
 			</includes>
