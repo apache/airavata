@@ -74,8 +74,8 @@ public class WorkflowTrackingNotification implements Notifiable {
         URI receiverServiceID = this.workflowID;
         String receiverWorkflowNodeID = null;
         Integer receiverWorkflowTimeStep = null;
-        this.receiver = this.notifier.createEntity(receiverWorkflowID, receiverServiceID, receiverWorkflowNodeID,
-                receiverWorkflowTimeStep);
+        setReceiver(this.notifier.createEntity(receiverWorkflowID, receiverServiceID, receiverWorkflowNodeID,
+                receiverWorkflowTimeStep));
 
         // send start workflow
         this.invocationContext = this.notifier.workflowInvoked(this.context, this.initiator);
@@ -124,5 +124,13 @@ public class WorkflowTrackingNotification implements Notifiable {
 
     public void exception(Object notifier, InvocationContext context, String... data) {
     }
+
+	public InvocationEntity getReceiver() {
+		return receiver;
+	}
+
+	public void setReceiver(InvocationEntity receiver) {
+		this.receiver = receiver;
+	}
 
 }

@@ -57,6 +57,8 @@ public class SSHProvider extends AbstractProvider {
 
     private static final String SPACE = " ";
     private static final String SSH_SECURITY_CONTEXT = "ssh";
+    private static final int COMMAND_EXECUTION_TIMEOUT = 5;
+
     private String command;
 
     private String buildCommand(List<String> cmdList) {
@@ -68,7 +70,7 @@ public class SSHProvider extends AbstractProvider {
         return buff.toString();
     }
 
-    private void initSSHSecurity(InvocationContext context, SSHClient ssh) throws SecurityException, IOException {
+    private void initSSHSecurity(InvocationContext context, SSHClient ssh) throws IOException {
         try {
             SSHSecurityContextImpl sshContext = ((SSHSecurityContextImpl) context
                     .getSecurityContext(SSH_SECURITY_CONTEXT));
@@ -111,21 +113,21 @@ public class SSHProvider extends AbstractProvider {
 
             final Session session = ssh.startSession();
             try {
-                StringBuilder command = new StringBuilder();
+                StringBuilder commandString = new StringBuilder();
                 // TODO: Is "|" what you want here?
-                command.append("mkdir -p ");
-                command.append(app.getTmpDir());
-                command.append(" | ");
-                command.append("mkdir -p ");
-                command.append(app.getWorkingDir());
-                command.append(" | ");
-                command.append("mkdir -p ");
-                command.append(app.getInputDir());
-                command.append(" | ");
-                command.append("mkdir -p ");
-                command.append(app.getOutputDir());
-                Command cmd = session.exec(command.toString());
-                cmd.join(5, TimeUnit.SECONDS);
+                commandString.append("mkdir -p ");
+                commandString.append(app.getTmpDir());
+                commandString.append(" | ");
+                commandString.append("mkdir -p ");
+                commandString.append(app.getWorkingDir());
+                commandString.append(" | ");
+                commandString.append("mkdir -p ");
+                commandString.append(app.getInputDir());
+                commandString.append(" | ");
+                commandString.append("mkdir -p ");
+                commandString.append(app.getOutputDir());
+                Command cmd = session.exec(commandString.toString());
+                cmd.join(COMMAND_EXECUTION_TIMEOUT, TimeUnit.SECONDS);
             } catch (ConnectionException e) {
                 throw e;
             } finally {
@@ -147,7 +149,6 @@ public class SSHProvider extends AbstractProvider {
     }
 
     public void setupEnvironment(InvocationContext context) throws ProviderException {
-        HostDescription host = context.getExecutionDescription().getHost();
         ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
 
         // input parameter
@@ -217,7 +218,7 @@ public class SSHProvider extends AbstractProvider {
                  */
                 Command cmd = session.exec(command);
                 log.info("stdout=" + GfacUtils.readFromStream(session.getInputStream()));
-                cmd.join(5, TimeUnit.SECONDS);
+				cmd.join(COMMAND_EXECUTION_TIMEOUT, TimeUnit.SECONDS);
 
                 /*
                  * check return value. usually not very helpful to draw
@@ -269,7 +270,9 @@ public class SSHProvider extends AbstractProvider {
                 // directories rather than logs?
                 File logDir = new File("./service_logs");
                 if (!logDir.exists()) {
-                    logDir.mkdir();
+                    if (!logDir.mkdir()){
+                    	log.error("error in creating directory "+logDir.toString());
+                    }
                 }
                 // Get the Stdouts and StdErrs
                 QName x = QName.valueOf(context.getServiceName());
