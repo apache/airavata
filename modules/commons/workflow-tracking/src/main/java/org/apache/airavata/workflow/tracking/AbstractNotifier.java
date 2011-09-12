@@ -136,7 +136,11 @@ public abstract class AbstractNotifier {
             if (context.getPublisherImpl() != null) {
                 publisher = PublisherFactory.createSomePublisher(context.getPublisherImpl(), context);
             } else {
-                publisher = new WSMPublisher(100, context.isEnableAsyncPublishing(), context.getBrokerEpr().getAddress(),context.getTopic());
+                if(context.getTopic() == null){
+                    publisher = new WSMPublisher(100,context.isEnableAsyncPublishing(),context.getBrokerEpr().getAddress(),false);
+                }else{
+                    publisher = new WSMPublisher(100, context.isEnableAsyncPublishing(), context.getBrokerEpr().getAddress(),context.getTopic());
+                }
             }
             publishermap.put(context.getBrokerEpr(), publisher);
         }
