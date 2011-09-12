@@ -232,7 +232,6 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>modules/xregistry</module>
                 <module>modules/gfac-core</module>
                 <module>modules/gfac-axis2</module>
                 <module>modules/gfac-axis2-artifacts</module>
