@@ -46,7 +46,7 @@ public class DefaultNotifier implements Notifier {
     }
 
     public Notifiable[] getNotifiable() {
-        return (Notifiable[]) notifiableObjects.toArray();
+        return notifiableObjects.toArray(new Notifiable[]{});
     }
 
     public void startSchedule(Object notifier, InvocationContext context) {
