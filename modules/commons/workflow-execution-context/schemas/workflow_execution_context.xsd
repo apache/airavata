@@ -204,12 +204,9 @@
                         </sequence>
                     </complexType>
                 </element>
-                
-                <any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
             </sequence>
         </complexType>
     </element>
-
 
     <element name="scheduling-context">
         <complexType>
@@ -310,54 +307,27 @@
         </annotation>
     </element>
 
-    <element name="dsc-url" type="anyURI">
+    <element name="resource-scheduler-url" type="string">
         <annotation>
-            <documentation xml:lang="en"> Location of DSC service to use. (optional)
-            </documentation>
+            <documentation xml:lang="en"> Resource Scheduler to use</documentation>
         </annotation>
     </element>
 
-    <element name="resource-scheduler" type="string">
+    <element name="data-registry-url" type="anyURI">
         <annotation>
-            <documentation xml:lang="en"> Resource Scheduler to use among LEAD, VGRADS and SPRUCE.
-                (optional) </documentation>
+            <documentation xml:lang="en"> (Optional) If a seperate Data Registry is used for catlogging data, the associated location of the Data registry </documentation>
         </annotation>
     </element>
 
-    <element name="data-agent-url" type="anyURI">
+    <element name="user-name" type="string">
         <annotation>
-            <documentation xml:lang="en"> Location of the Data Agent </documentation>
+            <documentation xml:lang="en"> User that the workflow is executed on behalf of.</documentation>
         </annotation>
     </element>
 
-    <element name="metadata-catalog-url" type="anyURI">
+    <element name="output-data-directory" type="anyURI">
         <annotation>
-            <documentation xml:lang="en"> Location of the Metadata Catalog </documentation>
-        </annotation>
-    </element>
-
-    <element name="user-dn" type="string">
-        <annotation>
-            <documentation xml:lang="en"> String that identifies user running this experiment.
-                (REQUIRED in context </documentation>
-        </annotation>
-    </element>
-
-    <element name="URGENCY" type="string">
-        <annotation>
-            <documentation xml:lang="en"> Spruce urgency parameter </documentation>
-        </annotation>
-    </element>
-
-    <element name="ForceFileStagingToWorkDir" type="string">
-        <annotation>
-            <documentation xml:lang="en"> ForceFileStagingToWorkDir (optinal) </documentation>
-        </annotation>
-    </element>
-
-    <element name="OUTPUT_DATA_DIRECTORY" type="anyURI">
-        <annotation>
-            <documentation xml:lang="en"> GFac output data staging directory. (optional)
+            <documentation xml:lang="en">(Optional) If the workflow outputs are to be staged to a pre-specified location, then the output data staging directory should be provided.
             </documentation>
         </annotation>
     </element>
