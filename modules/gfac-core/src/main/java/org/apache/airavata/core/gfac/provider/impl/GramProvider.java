@@ -19,14 +19,13 @@
  *
  */
 
-package org.apache.airavata.core.gfac.provider;
+package org.apache.airavata.core.gfac.provider.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
-
-import javax.xml.namespace.QName;
 
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.host.GlobusHost;
@@ -38,6 +37,7 @@ import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.exception.SecurityException;
 import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.external.GridFtp;
+import org.apache.airavata.core.gfac.provider.AbstractProvider;
 import org.apache.airavata.core.gfac.provider.utils.GramRSLGenerator;
 import org.apache.airavata.core.gfac.provider.utils.JobSubmissionListener;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
@@ -109,11 +109,9 @@ public class GramProvider extends AbstractProvider {
         }
         log.info("Using Globus GateKeeper " + gateKeeper);
 
-        String rsl = "";
-
         try {
             GramAttributes jobAttr = GramRSLGenerator.configureRemoteJob(invocationContext);
-            rsl = jobAttr.toRSL();
+            String rsl = jobAttr.toRSL();
 
             log.info("RSL = " + rsl);
 
@@ -250,10 +248,9 @@ public class GramProvider extends AbstractProvider {
             }
 
             // Get the Stdouts and StdErrs
-            QName x = QName.valueOf(context.getServiceName());
-            String timeStampedServiceName = GfacUtils.createServiceDirName(x);
-            File localStdOutFile = new File(logDir, timeStampedServiceName + ".stdout");
-            File localStdErrFile = new File(logDir, timeStampedServiceName + ".stderr");
+            String timeStampedServiceName = GfacUtils.createUniqueNameForService(context.getServiceName());
+            File localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
+            File localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
 
             String stdout = ftp.readRemoteFile(stdoutURI, gssCred, localStdOutFile);
             String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
@@ -262,6 +259,8 @@ public class GramProvider extends AbstractProvider {
 
         } catch (URISyntaxException e) {
             throw new ProviderException("URI is malformatted:" + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new ProviderException(e.getMessage(), e);            
         } catch (SecurityException e) {
             throw new ProviderException(e.getMessage(), e);
         } catch (ToolsException e) {
