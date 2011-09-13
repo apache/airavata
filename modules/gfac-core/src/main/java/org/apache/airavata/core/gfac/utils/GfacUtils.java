@@ -33,8 +33,6 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.xml.namespace.QName;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,12 +98,11 @@ public class GfacUtils {
                 || GFacConstants._127_0_0_1.equals(appHost));
     }
 
-    // TODO: why do you need the date? UUID will give you a unique ID.
-    public static String createServiceDirName(QName serviceName) {
+    public static String createUniqueNameForService(String serviceName) {
         String date = new Date().toString();
         date = date.replaceAll(" ", "_");
         date = date.replaceAll(":", "_");
-        return serviceName.getLocalPart() + "_" + date + "_" + UUID.randomUUID();
+        return serviceName + "_" + date + "_" + UUID.randomUUID();
     }
 
     public static URI createGsiftpURI(GridFTPContactInfo host, String localPath) throws URISyntaxException {
