@@ -21,6 +21,8 @@
 
 package org.apache.airavata.core.gfac.provider;
 
+import java.util.Map;
+
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
@@ -32,11 +34,28 @@ import org.apache.airavata.core.gfac.exception.ProviderException;
  */
 public interface Provider {
 
+    /**
+     * The method is used for initialization step.
+     * 
+     * @param invocationContext
+     * @throws ProviderException
+     */
     void initialize(InvocationContext invocationContext) throws ProviderException;
 
-    void execute(InvocationContext invocationContext) throws ProviderException;
+    /**
+     * Execution step
+     * 
+     * @param invocationContext
+     * @return result of execution in Map as key and value pair
+     * @throws ProviderException
+     */
+    Map<String, ?> execute(InvocationContext invocationContext) throws ProviderException;
 
+    /**
+     * Dispose is always called whether there is an exception or not.
+     * 
+     * @param invocationContext
+     * @throws GfacException
+     */
     void dispose(InvocationContext invocationContext) throws GfacException;
-
-    void abort(InvocationContext invocationContext) throws GfacException;
 }

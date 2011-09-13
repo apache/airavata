@@ -24,6 +24,7 @@ package org.apache.airavata.core.gfac.provider;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -32,7 +33,6 @@ import org.apache.airavata.commons.gfac.type.host.GlobusHost;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
-import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.JobSubmissionFault;
 import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.exception.SecurityException;
@@ -54,18 +54,10 @@ import org.ietf.jgss.GSSException;
 public class GramProvider extends AbstractProvider {
 
     public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";
+    private GSISecurityContext gssContext;
     private GramJob job;
     private String gateKeeper;
     private JobSubmissionListener listener;
-
-    public void initialize(InvocationContext invocationContext) throws ProviderException {
-    }
-
-    public void dispose(InvocationContext invocationContext) throws GfacException {
-    }
-
-    public void abort(InvocationContext invocationContext) throws GfacException {
-    }
 
     public void makeDirectory(InvocationContext invocationContext) throws ProviderException {
         GlobusHost host = (GlobusHost) invocationContext.getExecutionDescription().getHost();
@@ -75,8 +67,9 @@ public class GramProvider extends AbstractProvider {
         GridFtp ftp = new GridFtp();
 
         try {
-            GSSCredential gssCred = ((GSISecurityContext) invocationContext
-                    .getSecurityContext(MYPROXY_SECURITY_CONTEXT)).getGssCredentails();
+            gssContext = (GSISecurityContext) invocationContext
+                    .getSecurityContext(MYPROXY_SECURITY_CONTEXT);
+            GSSCredential gssCred = gssContext.getGssCredentails();
 
             String hostgridFTP = host.getGridFTPEndPoint();
             if (host.getGridFTPEndPoint() == null) {
@@ -144,15 +137,19 @@ public class GramProvider extends AbstractProvider {
             /*
              * Set Security
              */
-            GSSCredential gssCred = ((GSISecurityContext) invocationContext
-                    .getSecurityContext(MYPROXY_SECURITY_CONTEXT)).getGssCredentails();
+            GSSCredential gssCred = gssContext.getGssCredentails();
             job.setCredentials(gssCred);
 
             log.info("Request to contact:" + gateKeeper);
 
-            buf.append("Finished launching job, Host = ").append(host.getName()).append(" RSL = ").append(job.getRSL())
-                    .append(" working directory = ").append(app.getWorkingDir()).append(" tempDirectory = ")
-                    .append(app.getTmpDir()).append(" Globus GateKeeper cantact = ").append(gateKeeper);
+            buf.append("Finished launching job, Host = ")
+                    .append(host.getName()).append(" RSL = ")
+                    .append(job.getRSL())
+                    .append(" working directory = ")
+                    .append(app.getWorkingDir()).append(" tempDirectory = ")
+                    .append(app.getTmpDir())
+                    .append(" Globus GateKeeper cantact = ")
+                    .append(gateKeeper);
             invocationContext.getExecutionContext().getNotifier().info(this, invocationContext, buf.toString());
 
             /*
@@ -225,15 +222,12 @@ public class GramProvider extends AbstractProvider {
 
     }
 
-    public void retrieveOutput(InvocationContext invocationContext) throws ProviderException {
-        GlobusHost host = (GlobusHost) invocationContext.getExecutionDescription().getHost();
-        ShellApplicationDeployment app = (ShellApplicationDeployment) invocationContext.getExecutionDescription()
-                .getApp();
+    public Map<String, ?> processOutput(InvocationContext context) throws ProviderException {
+        GlobusHost host = (GlobusHost) context.getExecutionDescription().getHost();
+        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
         GridFtp ftp = new GridFtp();
-
         try {
-            GSSCredential gssCred = ((GSISecurityContext) invocationContext
-                    .getSecurityContext(MYPROXY_SECURITY_CONTEXT)).getGssCredentails();
+            GSSCredential gssCred = gssContext.getGssCredentails();
 
             /*
              * Stdout and Stderror
@@ -256,7 +250,7 @@ public class GramProvider extends AbstractProvider {
             }
 
             // Get the Stdouts and StdErrs
-            QName x = QName.valueOf(invocationContext.getServiceName());
+            QName x = QName.valueOf(context.getServiceName());
             String timeStampedServiceName = GfacUtils.createServiceDirName(x);
             File localStdOutFile = new File(logDir, timeStampedServiceName + ".stdout");
             File localStdErrFile = new File(logDir, timeStampedServiceName + ".stderr");
@@ -264,9 +258,8 @@ public class GramProvider extends AbstractProvider {
             String stdout = ftp.readRemoteFile(stdoutURI, gssCred, localStdOutFile);
             String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
 
-            // set to context
-            OutputUtils.fillOutputFromStdout(invocationContext.<AbstractParameter> getOutput(), stdout, stderr);
-            
+            return OutputUtils.fillOutputFromStdout(context.<AbstractParameter> getOutput(), stdout);
+
         } catch (URISyntaxException e) {
             throw new ProviderException("URI is malformatted:" + e.getMessage(), e);
         } catch (SecurityException e) {
@@ -275,5 +268,4 @@ public class GramProvider extends AbstractProvider {
             throw new ProviderException(e.getMessage(), e);
         }
     }
-
 }

@@ -26,6 +26,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -36,39 +37,66 @@ import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
+import org.apache.airavata.core.gfac.utils.InputUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 
 /**
  * {@link LocalProvider} will execute jobs (application) on local machine.
- *
+ * 
  */
 public class LocalProvider extends AbstractProvider {
 
-    private static final String SPACE = " ";
     private ProcessBuilder builder;
     private List<String> cmdList;
 
-    private String buildCommand(List<String> cmdList) {
-        StringBuffer buff = new StringBuffer();
-        for (String string : cmdList) {
-            buff.append(string);
-            buff.append(SPACE);
+    private class ReadStreamWriteFile extends Thread {
+        private BufferedReader in;
+        private BufferedWriter out;
+
+        public ReadStreamWriteFile(InputStream in, String out) throws IOException {
+            this.in = new BufferedReader(new InputStreamReader(in));
+            this.out = new BufferedWriter(new FileWriter(out));
         }
-        return buff.toString();
+
+        public void run() {
+            try {
+                String line = null;
+                while ((line = in.readLine()) != null) {
+                    log.debug(line);
+                    out.write(line);
+                    out.newLine();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
     }
 
-    public void initialize(InvocationContext invocationContext) throws ProviderException {
-    }
-
-    public void dispose(InvocationContext invocationContext) throws GfacException {
-    }
-
-    public void abort(InvocationContext invocationContext) throws GfacException {
-
+    private void makeFileSystemDir(String dir) throws ProviderException {
+        File f = new File(dir);
+        if (f.isDirectory() && f.exists()) {
+            return;
+        } else if (!new File(dir).mkdir()) {
+            throw new ProviderException("Cannot make directory");
+        }
     }
 
     public void makeDirectory(InvocationContext invocationContext) throws ProviderException {
@@ -77,10 +105,10 @@ public class LocalProvider extends AbstractProvider {
         log.info("working diectroy = " + app.getWorkingDir());
         log.info("temp directory = " + app.getTmpDir());
 
-        new File(app.getWorkingDir()).mkdir();
-        new File(app.getTmpDir()).mkdir();
-        new File(app.getInputDir()).mkdir();
-        new File(app.getOutputDir()).mkdir();
+        makeFileSystemDir(app.getWorkingDir());
+        makeFileSystemDir(app.getTmpDir());
+        makeFileSystemDir(app.getInputDir());
+        makeFileSystemDir(app.getOutputDir());
     }
 
     public void setupEnvironment(InvocationContext context) throws ProviderException {
@@ -116,7 +144,7 @@ public class LocalProvider extends AbstractProvider {
         builder.directory(new File(app.getWorkingDir()));
 
         // log info
-        log.info("Command = " + buildCommand(cmdList));
+        log.info("Command = " + InputUtils.buildCommand(cmdList));
         log.info("Working dir = " + builder.directory());
         for (String key : builder.environment().keySet()) {
             log.info("Env[" + key + "] = " + builder.environment().get(key));
@@ -130,75 +158,8 @@ public class LocalProvider extends AbstractProvider {
             // running cmd
             Process process = builder.start();
 
-            final BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            final BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            final BufferedWriter stdoutWtiter = new BufferedWriter(new FileWriter(app.getStdOut()));
-            final BufferedWriter stdErrWtiter = new BufferedWriter(new FileWriter(app.getStdErr()));
-
-            Thread t1 = new Thread(new Runnable() {
-
-                public void run() {
-                    try {
-                        String line = null;
-                        while ((line = in.readLine()) != null) {
-                            log.debug(line);
-                            stdoutWtiter.write(line);
-                            stdoutWtiter.newLine();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (in != null) {
-                            try {
-                                in.close();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        if (stdoutWtiter != null) {
-                            try {
-                                stdoutWtiter.close();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-
-            });
-
-            Thread t2 = new Thread(new Runnable() {
-
-                public void run() {
-                    try {
-                        String line = null;
-                        while ((line = err.readLine()) != null) {
-                            log.debug(line);
-                            stdErrWtiter.write(line);
-                            stdErrWtiter.newLine();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
-                        if (err != null) {
-                            try {
-                                err.close();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        if (stdErrWtiter != null) {
-                            try {
-                                stdErrWtiter.close();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                }
-
-            });
+            Thread t1 = new ReadStreamWriteFile(process.getInputStream(), app.getStdOut());
+            Thread t2 = new ReadStreamWriteFile(process.getErrorStream(), app.getStdErr());
 
             // start output threads
             t1.setDaemon(true);
@@ -225,30 +186,31 @@ public class LocalProvider extends AbstractProvider {
             }
 
             StringBuffer buf = new StringBuffer();
-            buf.append("Executed ").append(buildCommand(cmdList)).append(" on the localHost, working directory = ")
-                    .append(app.getWorkingDir()).append(" tempDirectory = ").append(app.getTmpDir())
-                    .append(" With the status ").append(String.valueOf(returnValue));
+            buf.append("Executed ").append(InputUtils.buildCommand(cmdList))
+                    .append(" on the localHost, working directory = ").append(app.getWorkingDir())
+                    .append(" tempDirectory = ").append(app.getTmpDir()).append(" With the status ")
+                    .append(String.valueOf(returnValue));
 
             log.info(buf.toString());
 
         } catch (IOException io) {
-
+            throw new ProviderException(io.getMessage(), io);
         } catch (InterruptedException e) {
+            throw new ProviderException(e.getMessage(), e);
         }
     }
 
-    public void retrieveOutput(InvocationContext context) throws ProviderException {
+    public Map<String, ?> processOutput(InvocationContext context) throws ProviderException {
 
         ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
 
         try {
             String stdOutStr = GfacUtils.readFileToString(app.getStdOut());
-            String stdErrStr = GfacUtils.readFileToString(app.getStdErr());
 
             // set to context
-            OutputUtils.fillOutputFromStdout(context.<AbstractParameter> getOutput(), stdOutStr, stdErrStr);
+            return OutputUtils.fillOutputFromStdout(context.<AbstractParameter> getOutput(), stdOutStr);
         } catch (IOException io) {
-
+            throw new ProviderException(io.getMessage(), io);
         }
     }
 }

@@ -21,36 +21,44 @@
 
 package org.apache.airavata.core.gfac.provider;
 
+import java.util.Map;
+
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.notification.Notifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * AbstractProvider wraps up steps of execution for Provider.
- * The steps in execution are 
- * - makeDirectory
- * - setupEnvironment
- * - executeApplication
- * - retrieveOutput
+ * AbstractProvider wraps up steps of execution for Provider. <br/>
+ * The steps in execution are <br/> 
+ * - makeDirectory <br/>
+ * - setupEnvironment <br/>
+ * - executeApplication <br/>
+ * - retrieveOutput <br/>
  */
 public abstract class AbstractProvider implements Provider {
     protected final Logger log = LoggerFactory.getLogger(this.getClass());   
     
-    public void execute(InvocationContext invocationContext) throws ProviderException{
-        
-        Notifier notifier = invocationContext.getExecutionContext().getNotifier();
-        
+    public void initialize(InvocationContext invocationContext) throws ProviderException {
         /*
          * Make a directory on the host
          */
-        makeDirectory(invocationContext);
+        makeDirectory(invocationContext);        
+    }
+
+    public void dispose(InvocationContext invocationContext) throws GfacException {        
+    }
+    
+    public Map<String, ?> execute(InvocationContext invocationContext) throws ProviderException{
         
         /*
          * Setup necessary environment
          */
         setupEnvironment(invocationContext);
+        
+        Notifier notifier = invocationContext.getExecutionContext().getNotifier();       
                         
         notifier.startExecution(this, invocationContext);
         
@@ -65,14 +73,14 @@ public abstract class AbstractProvider implements Provider {
         /*
          * Process output information
          */
-        retrieveOutput(invocationContext);
+        return processOutput(invocationContext);
     }
+           
+    protected abstract void makeDirectory(InvocationContext invocationContext) throws ProviderException;
     
-    public abstract void makeDirectory(InvocationContext invocationContext) throws ProviderException;
+    protected abstract void setupEnvironment(InvocationContext invocationContext) throws ProviderException;
     
-    public abstract void setupEnvironment(InvocationContext invocationContext) throws ProviderException;
+    protected abstract void executeApplication(InvocationContext invocationContext) throws ProviderException;
     
-    public abstract void executeApplication(InvocationContext invocationContext) throws ProviderException;
-    
-    public abstract void retrieveOutput(InvocationContext invocationContext) throws ProviderException;
+    protected abstract Map<String, ?> processOutput(InvocationContext invocationContext) throws ProviderException;
 }

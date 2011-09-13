@@ -21,17 +21,21 @@
 
 package org.apache.airavata.core.gfac.utils;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
 
-public class OutputUtils {
+public class OutputUtils {   
+    
+    public static Map<String, ?> fillOutputFromStdout(MessageContext<AbstractParameter> outMessage, String stdout) {
 
-    public static void fillOutputFromStdout(MessageContext<AbstractParameter> outMessage, String stdout, String stderr) {
-
+        Map<String, AbstractParameter> result = new HashMap<String, AbstractParameter>();
+        
         for (Iterator<String> iterator = outMessage.getNames(); iterator.hasNext();) {
             String parameterName = iterator.next();
 
@@ -42,7 +46,9 @@ public class OutputUtils {
 
             AbstractParameter x = outMessage.getValue(parameterName);
             x.parseStringVal(parseStdout(stdout, parameterName));
+            result.put(parameterName, x);
         }
+        return result;
     }
 
     private static String parseStdout(String stdout, String outParam) {

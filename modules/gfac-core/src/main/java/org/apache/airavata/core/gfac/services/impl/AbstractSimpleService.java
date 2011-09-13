@@ -21,6 +21,9 @@
 
 package org.apache.airavata.core.gfac.services.impl;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ExtensionException;
 import org.apache.airavata.core.gfac.exception.GfacException;
@@ -37,17 +40,17 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The abstract service wraps up steps of execution for {@link GenericService}.
- * Also, it adds input/output plug-ins before/after {@link Provider} execution.
- * The steps in execution are 
- * - preProcess
- * - Determine Provider (Scheduling)
- * - {@link DataServiceChain} Plugins
- * - {@link Provider} initialization
- * - {@link PreExecuteChain} Plugins
- * - {@link Provider} execution
- * - {@link PostExecuteChain} Plugins
- * - {@link Provider} disposal
- * - postProcess
+ * Also, it adds input/output plug-ins before/after {@link Provider} execution. <br/>
+ * The steps in execution are <br/>
+ * - preProcess <br/>
+ * - Determine Provider (Scheduling) <br/> 
+ * - {@link DataServiceChain} Plugins <br/>
+ * - {@link Provider} initialization <br/>
+ * - {@link PreExecuteChain} Plugins <br/>
+ * - {@link Provider} execution <br/>
+ * - {@link PostExecuteChain} Plugins <br/> 
+ * - {@link Provider} disposal <br/>
+ * - postProcess <br/>
  */
 public abstract class AbstractSimpleService implements GenericService {
 
@@ -107,26 +110,36 @@ public abstract class AbstractSimpleService implements GenericService {
 
         log.debug("After pre-execution chain, try to execute provider");
 
-        /*
-         * Execute
-         */
-        provider.execute(context);
+        try {
+            /*
+             * Execute
+             */
+            Map<String, ?>  result = provider.execute(context);
 
-        log.debug("After provider execution, try to run post-execution chain");
+            log.debug("After provider execution, try to run post-execution chain");
+            
+            /*
+             * Fill MessageContext with the output from Provider
+             */
+            for (Entry<String, ?> entry : result.entrySet()) {
+                context.getOutput().setValue(entry.getKey(), entry.getValue());
+            }   
 
-        /*
-         * Post-Execution
-         */
-        buildChains(getPostExecuteSteps(context)).start(context);
+            /*
+             * Post-Execution
+             */
+            buildChains(getPostExecuteSteps(context)).start(context);
 
-        log.debug("After pre-execution chain, try to dispose provider");
+            log.debug("After pre-execution chain, try to dispose provider");
+            
+        } finally {
+            /*
+             * Destroy
+             */
+            provider.dispose(context);
 
-        /*
-         * Destroy
-         */
-        provider.dispose(context);
-
-        log.debug("After provider disposal, try to run postprocess");
+            log.debug("After provider disposal, try to run postprocess");
+        }
 
         /*
          * Pre-Process
@@ -142,7 +155,7 @@ public abstract class AbstractSimpleService implements GenericService {
          * Validation check and return doing-nothing chain object
          */
         if (list == null || list.length == 0) {
-            return new NullChain();               
+            return new NullChain();
         }
 
         ExitableChain currentPoint = list[0];
