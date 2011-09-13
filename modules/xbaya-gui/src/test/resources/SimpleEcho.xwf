@@ -1,0 +1,440 @@
+<?xml version="1.0"?><xwf:workflow xwf:version="3.8.8" xmlns:xwf="http://www.extreme.indiana.edu/xbaya/xwf">
+  <xgr:graph xgr:version="3.8.8" xgr:type="ws"
+      xmlns:xgr="http://www.extreme.indiana.edu/xbaya/graph">
+    <xgr:id>Workflow</xgr:id>
+    <xgr:name>Workflow</xgr:name>
+    <xgr:description></xgr:description>
+    <xgr:metadata>
+      <appinfo xmlns="http://www.w3.org/2001/XMLSchema">
+
+</appinfo>
+    </xgr:metadata>
+    <xgr:node xgr:type="input">
+      <xgr:id>input</xgr:id>
+      <xgr:name>input</xgr:name>
+      <xgr:outputPort>input_out_0</xgr:outputPort>
+      <xgr:x>207</xgr:x>
+      <xgr:y>259</xgr:y>
+      <xgr:config>
+        <xgr:description></xgr:description>
+        <xgr:dataType>{http://www.w3.org/2001/XMLSchema}string</xgr:dataType>
+      </xgr:config>
+    </xgr:node>
+    <xgr:node xgr:type="output">
+      <xgr:id>return</xgr:id>
+      <xgr:name>return</xgr:name>
+      <xgr:inputPort>return_in_0</xgr:inputPort>
+      <xgr:x>1648</xgr:x>
+      <xgr:y>187</xgr:y>
+      <xgr:config>
+        <xgr:description></xgr:description>
+        <xgr:dataType>{http://www.w3.org/2001/XMLSchema}string</xgr:dataType>
+      </xgr:config>
+    </xgr:node>
+    <xgr:node xgr:type="ws">
+      <xgr:id>EchoServicePortType_echo</xgr:id>
+      <xgr:name>EchoServicePortType:echo</xgr:name>
+      <xgr:outputPort>EchoServicePortType_echo_out_0</xgr:outputPort>
+      <xgr:inputPort>EchoServicePortType_echo_in_0</xgr:inputPort>
+      <xgr:controlInPort>EchoServicePortType_echo_ctrl_in_0</xgr:controlInPort>
+      <xgr:controlOutPort>EchoServicePortType_echo_ctrl_out_0</xgr:controlOutPort>
+      <xgr:x>440</xgr:x>
+      <xgr:y>511</xgr:y>
+      <xgr:wsdl>_</xgr:wsdl>
+      <xgr:portType>{http://interpreter.xbaya.airavata.apache.org}EchoServicePortType</xgr:portType>
+      <xgr:operation>echo</xgr:operation>
+    </xgr:node>
+    <xgr:port xgr:type="systemData">
+      <xgr:id>input_out_0</xgr:id>
+      <xgr:name>Parameter</xgr:name>
+      <xgr:node>input</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="systemData">
+      <xgr:id>return_in_0</xgr:id>
+      <xgr:name>Parameter</xgr:name>
+      <xgr:node>return</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="ws">
+      <xgr:id>EchoServicePortType_echo_in_0</xgr:id>
+      <xgr:name>input</xgr:name>
+      <xgr:node>EchoServicePortType_echo</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="ws">
+      <xgr:id>EchoServicePortType_echo_out_0</xgr:id>
+      <xgr:name>return</xgr:name>
+      <xgr:node>EchoServicePortType_echo</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="control">
+      <xgr:id>EchoServicePortType_echo_ctrl_in_0</xgr:id>
+      <xgr:name>control</xgr:name>
+      <xgr:node>EchoServicePortType_echo</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="control">
+      <xgr:id>EchoServicePortType_echo_ctrl_out_0</xgr:id>
+      <xgr:name>control</xgr:name>
+      <xgr:node>EchoServicePortType_echo</xgr:node>
+    </xgr:port>
+    <xgr:edge xgr:type="data">
+      <xgr:fromPort>input_out_0</xgr:fromPort>
+      <xgr:toPort>EchoServicePortType_echo_in_0</xgr:toPort>
+    </xgr:edge>
+    <xgr:edge xgr:type="data">
+      <xgr:fromPort>EchoServicePortType_echo_out_0</xgr:fromPort>
+      <xgr:toPort>return_in_0</xgr:toPort>
+    </xgr:edge>
+  </xgr:graph>
+  <xwf:wsdls>
+    <xwf:wsdl xwf:id="_">&lt;wsdl:definitions targetNamespace="http://interpreter.xbaya.airavata.apache.org" xmlns:ns1="http://org.apache.axis2/xsd"
+    xmlns:ns="http://interpreter.xbaya.airavata.apache.org"
+    xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    &lt;wsdl:types>
+        &lt;xs:schema attributeFormDefault="qualified" elementFormDefault="unqualified" targetNamespace="http://interpreter.xbaya.airavata.apache.org">
+            &lt;xs:element name="echo">
+                &lt;xs:complexType>
+                    &lt;xs:sequence>
+                        &lt;xs:element minOccurs="0" name="input" nillable="true" type="xs:string" />
+                    &lt;/xs:sequence>
+                &lt;/xs:complexType>
+            &lt;/xs:element>
+            &lt;xs:element name="echoResponse">
+                &lt;xs:complexType>
+                    &lt;xs:sequence>
+                        &lt;xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
+                    &lt;/xs:sequence>
+                &lt;/xs:complexType>
+            &lt;/xs:element>
+        &lt;/xs:schema>
+    &lt;/wsdl:types>
+    &lt;wsdl:message name="echoRequest">
+        &lt;wsdl:part name="parameters" element="ns:echo" />
+    &lt;/wsdl:message>
+    &lt;wsdl:message name="echoResponse">
+        &lt;wsdl:part name="parameters" element="ns:echoResponse" />
+    &lt;/wsdl:message>
+    &lt;wsdl:portType name="EchoServicePortType">
+        &lt;wsdl:operation name="echo">
+            &lt;wsdl:input wsaw:Action="urn:echo" message="ns:echoRequest" />
+            &lt;wsdl:output wsaw:Action="urn:echoResponse" message="ns:echoResponse" />
+        &lt;/wsdl:operation>
+    &lt;/wsdl:portType>
+    &lt;wsdl:binding name="EchoServiceSoap11Binding" type="ns:EchoServicePortType">
+        &lt;soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        &lt;wsdl:operation name="echo">
+            &lt;soap:operation soapAction="urn:echo" style="document" />
+            &lt;wsdl:input>
+                &lt;soap:body use="literal" />
+            &lt;/wsdl:input>
+            &lt;wsdl:output>
+                &lt;soap:body use="literal" />
+            &lt;/wsdl:output>
+        &lt;/wsdl:operation>
+    &lt;/wsdl:binding>
+    &lt;wsdl:binding name="EchoServiceSoap12Binding" type="ns:EchoServicePortType">
+        &lt;soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        &lt;wsdl:operation name="echo">
+            &lt;soap12:operation soapAction="urn:echo" style="document" />
+            &lt;wsdl:input>
+                &lt;soap12:body use="literal" />
+            &lt;/wsdl:input>
+            &lt;wsdl:output>
+                &lt;soap12:body use="literal" />
+            &lt;/wsdl:output>
+        &lt;/wsdl:operation>
+    &lt;/wsdl:binding>
+    &lt;wsdl:binding name="EchoServiceHttpBinding" type="ns:EchoServicePortType">
+        &lt;http:binding verb="POST" />
+        &lt;wsdl:operation name="echo">
+            &lt;http:operation location="EchoService/echo" />
+            &lt;wsdl:input>
+                &lt;mime:content type="text/xml" part="echo" />
+            &lt;/wsdl:input>
+            &lt;wsdl:output>
+                &lt;mime:content type="text/xml" part="echo" />
+            &lt;/wsdl:output>
+        &lt;/wsdl:operation>
+    &lt;/wsdl:binding>
+    &lt;wsdl:service name="EchoService">
+        &lt;wsdl:port name="EchoServiceHttpSoap11Endpoint" binding="ns:EchoServiceSoap11Binding">
+            &lt;soap:address location="http://localhost:6060/axis2/services/EchoService" />
+        &lt;/wsdl:port>
+        &lt;wsdl:port name="EchoServiceHttpSoap12Endpoint" binding="ns:EchoServiceSoap12Binding">
+            &lt;soap12:address location="http://localhost:6060/axis2/services/EchoService" />
+        &lt;/wsdl:port>
+        &lt;wsdl:port name="EchoServiceHttpEndpoint" binding="ns:EchoServiceHttpBinding">
+            &lt;http:address location="http://localhost:6060/axis2/services/EchoService" />
+        &lt;/wsdl:port>
+    &lt;/wsdl:service>
+&lt;/wsdl:definitions></xwf:wsdl>
+  </xwf:wsdls>
+  <xwf:image>iVBORw0KGgoAAAANSUhEUgAABt4AAAI0CAYAAACakl05AAAqc0lEQVR42uzde3CV9ZnAcW4CASME
+CYRblFCgWIzgjYhakCJ4AYmsIpTlIqtCRbFQiltREahIO4K2q4uF7Zp1qbI7yyi7DIwrijqKgqAi
+jjcYx6mz/uE67sxu/9hZ132279tymkC4mITDOSefOJ9pzvuenBN/icl78u3zvi1++9uPAwAAAAAA
+AGicFhYBAAAAAAAAhDcAAAAAAAAQ3gAAAAAAAEB4AwAAAAAAAIQ3AAAAAAAAEN4AAAAAAABAeAMA
+AAAAAADhDQAAAAAAABDeAAAAAAAAQHgDAAAAAAAA4Q0AAAAAAACENwAAAAAAAEB4AwAAAAAAAOEN
+AAAAAAAAhDcAAAAAAAAQ3gAAAAAAAADhDQAAAAAAAIQ3AAAAAAAAEN4AAAAAAABAeAMAAAAAAACE
+NwAAAAAAABDeAAAAAAAAQHgDAAAAAAAA4Q0AAAAAAAAQ3gAAAAAAAEB4AwAAAAAAAOENAAAAAAAA
+EN4AAAAAAABAeAMAAAAAAADhDQAAAAAAAIQ3AAAAAAAAQHgDAAAAAAAA4Q0AAAAAAACENwAAAAAA
+ABDeAAAAAAAAAOENAAAAAAAAhDcAAAAAAAAQ3gAAAAAAAEB4AwAAAAAAAIQ3AAAAAAAAEN4AAAAA
+AABAeAMAAAAAAADhDQAAAAAAABDeAAAAAAAAQHgDAAAAAAAA4Q0AAAAAAACENwAAAAAAAEB4AwAA
+AAAAAOENAAAAAAAAhDcAAAAAAAAQ3gAAAAAAAADhDQAAAAAAAIQ3AAAAAAAAEN4AAAAAAAAA4Q0A
+AAAAAACENwAAAAAAABDeAAAAAAAAQHgDAAAAAAAAhDcAAAAAAAAQ3gAAAAAAAEB4AwAAAAAAAOEN
+AAAAAAAAEN4AAAAAAABAeAMAAAAAAADhDQAAAAAAAIQ3AAAAAAAAQHgDAAAAAAAA4Q0AAAAAAACE
+NwAAAAAAABDeAAAAAAAAAOENAAAAAAAAhDcAAAAAAAAQ3gAAAAAAAEB4AwAAAAAAAIQ3AAAAAAAA
+EN4AAAAAAABAeAMAAAAAAADhzSIAAAAAAACA8AYAAAAAAADCGwAAAAAAAAhvAAAAAAAAgPAGAAAA
+AAAAwhsAAAAAAAAIbwAAAAAAACC8AQAAAAAAAMIbAAAAAAAACG8AAAAAAAAgvAEAAAAAAIDwBgAA
+AAAAAAhvAAAAAAAAILwBAAAAAACA8AYAAAAAAADCGwAAAAAAACC8AQAAAAAAgPAGAAAAAAAAwhsA
+AAAAAAAIbwAAAAAAAIDwBgAAAAAAAMIbAAAAAAAACG8AAAAAAAAgvAEAAAAAAADCGwAAAAAAAAhv
+AAAAAAAAILwBAAAAAAAAwhsAAAAAAAAIbwAAAAAAACC8AQAAAAAAgPAGAAAAAAAACG8AAAAAAAAg
+vAEAAAAAAIDwBgAAAAAAAMIbAAAAAAAAILwBAAAAAACA8AYAAAAAAADCGwAAAAAAAAhvAAAAAAAA
+gPAGAAAAAAAAwhsAAAAAAAAIbwAAAAAAACC8AQAAAAAAAMIbAAAAAAAACG8AAAAAAAAgvAEAAAAA
+AIDwBgAAAAAAAAhvAAAAAAAAILwBAAAAAACA8AYAAAAAAADCGwAAAAAAACC8AQAAAAAAgPAGAAAA
+AAAAwhsAAAAAAAAgvAEAAAAAAIDwBgAAAAAAAMIbAAAAAAAACG8AAAAAAACA8AYAAAAAAADCGwAA
+AAAAAAhvAAAAAAAAILwBAAAAAAAAwhsAAAAAAAAIbwAAAAAAACC8AQAAAAAAgPAGAAAAAAAACG8A
+AAAAAAAgvAEAAAAAAIDwBgAAAAAAAMIbAAAAAAAAILwBAAAAAACA8AYAAAAAAADCGwAAAAAAAAhv
+AAAAAAAAgPAGAAAAAAAAwhsAAAAAAAAIbwAAAAAAACC8WQQAAAAAAAAQ3gAAAAAAAEB4AwAAAAAA
+AOENAAAAAAAAEN4AAAAAAABAeAMAAAAAAADhDQAAAAAAAIQ3AAAAAAAAQHgDAAAAAAAA4Q0AAAAA
+AACENwAAAAAAABDeAAAAAAAAAOENAAAAAAAAhDcAAAAAAAAQ3gAAAAAAAEB4AwAAAAAAAIQ3AAAA
+AAAAEN4AAAAAAABAeAMAAAAAAADhDQAAAAAAABDeAAAAAAAAQHgDAAAAAAAA4Q0AAAAAAACENwAA
+AAAAAEB4AwAAAAAAAOENAAAAAAAAhDcAAAAAAABAeAMAAAAAAADhDQAAAAAAAIQ3AAAAAAAAEN4A
+AAAAAAAA4Q0AAAAAAACENwAAAAAAgIIOOC1akGOENwAAAAAAgDwNb/3mriZHCG8AAAAAAADCG8Ib
+AAAAAACA8IbwBgAAAAAAgPAmvAEAAAAAACC8IbwBAAAAAAAIbwhvAAAAAAAACG/CGwAAAAAAAMKb
+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
+</xwf:image>
+  <xwf:bpel>&lt;bpel:process targetNamespace="http://www.extreme.indiana.edu/xwf/bpel/Workflow/"
+    xmlns:tns="http://www.extreme.indiana.edu/xbaya/Workflow/"
+    xmlns:typens="http://www.extreme.indiana.edu/xbaya/Workflow/xsd/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:simpleecho_invoke="http://www.wso2.org/types"
+    xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable">
+&lt;!--
+This document is automatically generated by XBaya Workflow Composer 3.8.8.
+-->
+&lt;bpel:partnerLinks>
+    &lt;bpel:partnerLink name="workflowUserPartner" partnerLinkType="tns:WorkflowLT" myRole="WorkflowProvider" />
+    &lt;bpel:partnerLink name="SimpleEcho_invokePartner" partnerLinkType="tns:SimpleEcho_invokeLT" partnerRole="SimpleEcho_invokeService" />
+  &lt;/bpel:partnerLinks>
+  &lt;bpel:variables>
+    &lt;bpel:variable name="WorkflowInput" messageType="tns:RunInputMessage" />
+    &lt;bpel:variable name="SimpleEcho_invokeInput" messageType="simpleecho_invoke:SimpleEcho" />
+    &lt;bpel:variable name="SimpleEcho_invokeOutput" messageType="simpleecho_invoke:SimpleEcho" />
+    &lt;bpel:variable name="WorkflowOutput" messageType="tns:RunOutputMessage" />
+  &lt;/bpel:variables>
+  &lt;bpel:sequence>
+    &lt;bpel:receive partnerLink="workflowUserPartner" portType="tns:Workflow" operation="Run" variable="WorkflowInput" />
+    &lt;bpel:assign>
+      &lt;bpel:copy>
+        &lt;bpel:from variable="WorkflowInput" part="input" query="/typens:Run/echo_input" />
+        &lt;bpel:to variable="SimpleEcho_invokeInput" part="parameters" query="/simpleecho_invoke:invoke/echo_input" />
+      &lt;/bpel:copy>
+    &lt;/bpel:assign>
+    &lt;bpel:invoke partnerLink="SimpleEcho_invokePartner" portType="simpleecho_invoke:SimpleEcho" operation="invoke" name="SimpleEcho_invoke" inputVariable="SimpleEcho_invokeInput" outputVariable="SimpleEcho_invokeOutput" />
+    &lt;bpel:assign>
+      &lt;bpel:copy>
+        &lt;bpel:from variable="SimpleEcho_invokeOutput" part="parameters" query="/simpleecho_invoke:invokeResponse/echo_output" />
+        &lt;bpel:to variable="WorkflowOutput" part="output" query="/typens:RunResponse/echo_output" />
+      &lt;/bpel:copy>
+    &lt;/bpel:assign>
+    &lt;bpel:reply partnerLink="workflowUserPartner" portType="tns:Workflow" operation="Run" variable="WorkflowOutput" />
+  &lt;/bpel:sequence>
+&lt;/bpel:process></xwf:bpel>
+  <xwf:workflowWSDL>&lt;wsdl:definitions targetNamespace="http://www.extreme.indiana.edu/xbaya/Workflow/" name="Workflow"
+    xmlns:tns="http://www.extreme.indiana.edu/xbaya/Workflow/"
+    xmlns:typens="http://www.extreme.indiana.edu/xbaya/Workflow/xsd/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:plnk="http://schemas.xmlsoap.org/ws/2004/03/partner-link/" xmlns:p0="http://www.wso2.org/types" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+&lt;!--
+This document is automatically generated by XBaya Workflow Composer 3.8.8.
+-->
+&lt;wsdl:documentation>&lt;/wsdl:documentation>
+  &lt;wsdl:types>
+    &lt;schema targetNamespace="http://www.extreme.indiana.edu/xbaya/Workflow/xsd/" xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="unqualified">
+      &lt;element name="Run" type="typens:RunType" />
+      &lt;complexType name="RunType">
+        &lt;sequence>
+          &lt;element name="echo_input" type="xsd:string" default="echo_output=Hi" />
+        &lt;/sequence>
+      &lt;/complexType>
+      &lt;element name="RunResponse" type="typens:RunResponseType" />
+      &lt;complexType name="RunResponseType">
+        &lt;sequence>
+          &lt;element name="echo_output" type="xsd:string" />
+        &lt;/sequence>
+      &lt;/complexType>
+    &lt;/schema>
+  &lt;/wsdl:types>
+  &lt;wsdl:message name="RunInputMessage">
+    &lt;wsdl:part name="input" element="typens:Run" />
+  &lt;/wsdl:message>
+  &lt;wsdl:message name="RunOutputMessage">
+    &lt;wsdl:part name="output" element="typens:RunResponse" />
+  &lt;/wsdl:message>
+  &lt;wsdl:portType name="Workflow">
+    &lt;wsdl:operation name="Run">
+      &lt;wsdl:input message="tns:RunInputMessage" />
+      &lt;wsdl:output message="tns:RunOutputMessage" />
+    &lt;/wsdl:operation>
+  &lt;/wsdl:portType>
+  &lt;plnk:partnerLinkType name="WorkflowLT">
+    &lt;plnk:role name="WorkflowProvider" portType="tns:Workflow" />
+  &lt;/plnk:partnerLinkType>
+  &lt;plnk:partnerLinkType name="SimpleEcho_invokeLT">
+    &lt;plnk:role name="SimpleEcho_invokeService" portType="p0:SimpleEcho" />
+  &lt;/plnk:partnerLinkType>
+&lt;/wsdl:definitions></xwf:workflowWSDL>
+</xwf:workflow>

@@ -3,8 +3,6 @@ package org.apache.airavata.xbaya.interpreter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.MappedByteBuffer;
@@ -24,26 +22,22 @@ import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
-import org.apache.axis2.deployment.AxisConfigBuilder;
 import org.apache.axis2.description.AxisService;
-import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.ListenerManager;
-import org.apache.axis2.util.Loader;
 import org.junit.Test;
-import org.python.antlr.PythonParser.classdef_return;
 
 public class WorkflowTest implements HeaderConstants {
 
 	@Test
-	public void testScheduleDynamically() throws IOException, URISyntaxException, XBayaException {
-		
-		Workflow workflow = new Workflow(readWorkflow());
-        axis2ServiceStarter();
-		((InputNode)workflow.getGraph().getNode("before")).setDefaultValue("1");
+    public void testScheduleDynamically() throws IOException, URISyntaxException, XBayaException {
+
+		Workflow workflow = new Workflow(readWorkflow("SimpleEcho.xwf"));
+        ListenerManager manager = axis2ServiceStarter();
+        ((InputNode)workflow.getGraph().getNode("input")).setDefaultValue("1");
 		WorkflowInterpreter interpretor = new WorkflowInterpreter(getConfiguration(), UUID.randomUUID().toString(), workflow, "NA", "NA", true);
 		interpretor.scheduleDynamically();
+        manager.stop();
 	}
-	
 	
 	
 	private XBayaConfiguration getConfiguration() throws URISyntaxException {
@@ -74,9 +68,9 @@ public class WorkflowTest implements HeaderConstants {
 
 
 
-	private String readWorkflow() throws IOException, URISyntaxException{
+	private String readWorkflow(String workflowFileNameInClasspath) throws IOException, URISyntaxException{
 		
-		URL url = this.getClass().getClassLoader().getSystemResource("test.xwf");
+		URL url = this.getClass().getClassLoader().getSystemResource(workflowFileNameInClasspath);
 		FileInputStream stream = new FileInputStream(new File(url.toURI()));
 		  try {
 		    FileChannel fc = stream.getChannel();
@@ -90,7 +84,7 @@ public class WorkflowTest implements HeaderConstants {
 
 	}
 
-    private void axis2ServiceStarter() throws AxisFault {
+    private ListenerManager axis2ServiceStarter() throws AxisFault {
         try {
             ConfigurationContext configContext = ConfigurationContextFactory.createBasicConfigurationContext
                     ("axis2_default.xml");
@@ -99,7 +93,7 @@ public class WorkflowTest implements HeaderConstants {
             ListenerManager manager = new ListenerManager();
             manager.init(configContext);
             manager.start();
-            Thread.sleep(10000);
+            return manager;
         } catch (Exception e) {
             throw AxisFault.makeFault(e);
         }
