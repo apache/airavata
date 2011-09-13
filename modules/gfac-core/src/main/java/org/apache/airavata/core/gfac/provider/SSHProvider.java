@@ -44,10 +44,10 @@ import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.security.impl.SSHSecurityContextImpl;
-import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
+import org.apache.airavata.core.gfac.utils.InputUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 
 /**
@@ -58,22 +58,15 @@ public class SSHProvider extends AbstractProvider {
     private static final String SPACE = " ";
     private static final String SSH_SECURITY_CONTEXT = "ssh";
     private static final int COMMAND_EXECUTION_TIMEOUT = 5;
-
+    private SSHSecurityContextImpl sshContext;
     private String command;
-
-    private String buildCommand(List<String> cmdList) {
-        StringBuffer buff = new StringBuffer();
-        for (String string : cmdList) {
-            buff.append(string);
-            buff.append(SPACE);
-        }
-        return buff.toString();
-    }
 
     private void initSSHSecurity(InvocationContext context, SSHClient ssh) throws IOException {
         try {
-            SSHSecurityContextImpl sshContext = ((SSHSecurityContextImpl) context
-                    .getSecurityContext(SSH_SECURITY_CONTEXT));
+            
+            if(sshContext == null){
+                sshContext = ((SSHSecurityContextImpl) context.getSecurityContext(SSH_SECURITY_CONTEXT));
+            }
 
             KeyProvider pkey = ssh.loadKeys(sshContext.getPrivateKeyLoc(), sshContext.getKeyPass());
 
@@ -84,18 +77,6 @@ public class SSHProvider extends AbstractProvider {
             throw new SecurityException("Cannot load security context for SSH", ne);
         }
 
-    }
-
-    public void initialize(InvocationContext context) throws ProviderException {
-    }
-
-    public void execute(InvocationContext context) throws ProviderException {
-    }
-
-    public void dispose(InvocationContext invocationContext) throws GfacException {
-    }
-
-    public void abort(InvocationContext invocationContext) throws GfacException {
     }
 
     // TODO: This method has a try/catch embedded in 'finally' method. Is there
@@ -167,7 +148,7 @@ public class SSHProvider extends AbstractProvider {
         cmdList.addAll(tmp);
 
         // create process builder from command
-        command = buildCommand(cmdList);
+        command = InputUtils.buildCommand(cmdList);
 
         // redirect StdOut and StdErr
         // TODO: Make 1> and 2> into static constants.
@@ -251,7 +232,7 @@ public class SSHProvider extends AbstractProvider {
         }
     }
 
-    public void retrieveOutput(InvocationContext context) throws ProviderException {
+    public Map<String, ?> processOutput(InvocationContext context) throws ProviderException {
         HostDescription host = context.getExecutionDescription().getHost();
         ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
         SSHClient ssh = new SSHClient();
@@ -288,7 +269,7 @@ public class SSHProvider extends AbstractProvider {
                 String stdErrStr = GfacUtils.readFileToString(localStdErrFile.getAbsolutePath());
 
                 // set to context
-                OutputUtils.fillOutputFromStdout(context.<AbstractParameter> getOutput(), stdOutStr, stdErrStr);
+                return OutputUtils.fillOutputFromStdout(context.<AbstractParameter> getOutput(), stdOutStr);
 
             } catch (ConnectionException e) {
                 throw e;
