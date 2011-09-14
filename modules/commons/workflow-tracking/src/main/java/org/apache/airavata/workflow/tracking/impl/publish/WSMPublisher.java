@@ -57,8 +57,6 @@ public class WSMPublisher extends AbstractPublisher implements NotificationPubli
 
     public WSMPublisher(int capacity, boolean defaultAsync, String brokerLoc, String topic) throws IOException {
         super(capacity, defaultAsync);
-        URL configURL = ClassLoader.getSystemResource(ConfigKeys.CONFIG_FILE_NAME);
-        configs.load(configURL.openStream());
         broker = new WseMsgBrokerClient();
         brokerEpr = broker.createEndpointReference(brokerLoc, topic);
         broker.init(brokerEpr.getAddress());
@@ -68,12 +66,10 @@ public class WSMPublisher extends AbstractPublisher implements NotificationPubli
             throws WorkflowTrackingException {
         super(capacity, defaultAsync);
         try {
-            URL configURL = ClassLoader.getSystemResource(ConfigKeys.CONFIG_FILE_NAME);
-            configs.load(configURL.openStream());
             brokerEpr = brokerEpr_;
             broker = new WseMsgBrokerClient();
             broker.init(brokerEpr_.getAddress());
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new WorkflowTrackingException(e);
         }
     }
@@ -85,11 +81,7 @@ public class WSMPublisher extends AbstractPublisher implements NotificationPubli
     }
 
     public WSMPublisher(int capacity, boolean defaultAsync, String brokerEpr_, boolean isXmlEpr) throws IOException {
-
         super(capacity, defaultAsync);
-        URL configURL = ClassLoader.getSystemResource(ConfigKeys.CONFIG_FILE_NAME);
-        configs.load(configURL.openStream());
-
         if (!isXmlEpr) {
             brokerEpr = new EndpointReference(brokerEpr_);// EndpointReferenceHelper.fro(brokerEpr_);
 
