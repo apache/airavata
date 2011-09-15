@@ -28,7 +28,7 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.commons.WorkFlowUtils;
 import org.apache.airavata.workflow.tracking.impl.subscription.LeadNotificationHandler;
 import org.apache.airavata.workflow.tracking.impl.subscription.MessageBoxNotificationHandler;
-import org.apache.airavata.wsmg.broker.wseventing.WSEProtocolSupport;
+import org.apache.airavata.wsmg.client.protocol.WSEProtocolClient;
 import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -159,7 +159,7 @@ public class LeadNotificationManager {
 
         brokerURL = WorkFlowUtils.formatURLString(brokerURL);
 
-        EndpointReference encodedEpr = WSEProtocolSupport.Client.createEndpointReference(brokerURL, topic);
+        EndpointReference encodedEpr = WSEProtocolClient.createEndpointReference(brokerURL, topic);
 
         String ret = null;
 
