@@ -35,7 +35,7 @@ import org.apache.airavata.wsmg.commons.exceptions.XMLComparisonException;
 import org.apache.airavata.wsmg.commons.util.OMElementComparator;
 import org.apache.airavata.wsmg.messenger.OutGoingQueue;
 import org.apache.airavata.wsmg.transports.jms.MessageMatcherConnection;
-import org.apache.airavata.wsmg.util.WsmgUtil;
+import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.log4j.Logger;
@@ -267,8 +267,8 @@ public class SubscriptionState {
         if (o instanceof SubscriptionState) {
             SubscriptionState subscription = (SubscriptionState) o;
 
-            ret = WsmgUtil.sameStringValue(subscription.getLocalTopic(), this.getLocalTopic())
-                    && WsmgUtil.sameStringValue(subscription.getXpathString(), this.getXpathString())
+            ret = BrokerUtil.sameStringValue(subscription.getLocalTopic(), this.getLocalTopic())
+                    && BrokerUtil.sameStringValue(subscription.getXpathString(), this.getXpathString())
                     && (subscription.getConsumerIPAddressStr().compareTo(this.getConsumerIPAddressStr())) == 0
                     && equalReferenceParameters(subscription);
 
