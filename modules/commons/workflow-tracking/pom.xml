@@ -98,12 +98,7 @@
         </dependency>
         <dependency>
             <groupId>airavata</groupId>
-            <artifactId>airavata-messagebox</artifactId>
-            <version>${airavata.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>airavata</groupId>
-            <artifactId>airavata-messagebroker</artifactId>
+            <artifactId>airavata-messenger-client</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
