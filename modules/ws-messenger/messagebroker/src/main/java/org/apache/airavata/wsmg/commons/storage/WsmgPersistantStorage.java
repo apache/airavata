@@ -48,7 +48,6 @@ import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.config.ConfigurationManager;
 import org.apache.airavata.wsmg.config.WSMGParameter;
-import org.apache.airavata.wsmg.msgbox.Storage.dbpool.DatabaseCreator;
 import org.apache.airavata.wsmg.util.Counter;
 import org.apache.airavata.wsmg.util.TimerThread;
 import org.apache.axiom.om.OMElement;

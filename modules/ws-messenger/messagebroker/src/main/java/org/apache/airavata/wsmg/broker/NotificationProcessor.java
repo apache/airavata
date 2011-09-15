@@ -37,7 +37,7 @@ import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
 import org.apache.airavata.wsmg.matching.AbstractMessageMatcher;
 import org.apache.airavata.wsmg.messenger.OutGoingQueue;
 import org.apache.airavata.wsmg.util.RunTimeStatistics;
-import org.apache.airavata.wsmg.util.WsmgUtil;
+import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
@@ -154,7 +154,7 @@ public class NotificationProcessor {
             }
         } else {
 
-            topicLocalString = WsmgUtil.getTopicLocalString(topicEl.getText());
+            topicLocalString = BrokerUtil.getTopicLocalString(topicEl.getText());
             try {
                 topicElString = topicEl.toStringWithConsume();
             } catch (XMLStreamException e) {
@@ -228,7 +228,7 @@ public class NotificationProcessor {
                     .getNamespaceURI(), "Topic"));
             if (topicEl != null) {
 
-                topicLocalString = WsmgUtil.getTopicLocalString(topicEl.getText()); // get what ever inside this element
+                topicLocalString = BrokerUtil.getTopicLocalString(topicEl.getText()); // get what ever inside this element
 
                 try {
                     topicElString = topicEl.toStringWithConsume();

@@ -31,7 +31,7 @@ import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
 import org.apache.airavata.wsmg.messenger.OutGoingQueue;
-import org.apache.airavata.wsmg.util.WsmgUtil;
+import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -85,13 +85,13 @@ public class WSNTProtocolSupport {
         OMElement topicExpressionEl = ctx.getContextParameter(ContextParameters.TOPIC_EXPRESSION_ELEMENT);
 
         if (topicExpressionEl != null) {
-            topicLocalString = WsmgUtil.getTopicLocalString(topicExpressionEl.getText());
+            topicLocalString = BrokerUtil.getTopicLocalString(topicExpressionEl.getText());
         }
 
         OMElement xpathEl = ctx.getContextParameter(ContextParameters.XPATH_ELEMENT);
 
         if (xpathEl != null) {
-            xpathString = WsmgUtil.getXPathString(xpathEl);
+            xpathString = BrokerUtil.getXPathString(xpathEl);
         }
         if (xpathString == null && topicLocalString == null) {
             throw new AxisFault("Both topic string and XPath String are null!");

@@ -31,7 +31,7 @@ import org.apache.airavata.wsmg.broker.context.ProcessingContextBuilder;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
 import org.apache.airavata.wsmg.util.WsNotificationOperations;
-import org.apache.airavata.wsmg.util.WsmgUtil;
+import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
@@ -156,7 +156,7 @@ public class WSNotificationProcessingContextBuilder extends ProcessingContextBui
         context.setEnvelope(soapEnvelope);
         extractInfoFromHeader(context, soapHeader);
         context.setMessageConext(msgContext);
-        String topicFromUrl = WsmgUtil.getTopicFromRequestPath(msgContext.getTo().getAddress());
+        String topicFromUrl = BrokerUtil.getTopicFromRequestPath(msgContext.getTo().getAddress());
         context.setContextParameter(ContextParameters.TOPIC_FROM_URL, topicFromUrl);
 
         return context;

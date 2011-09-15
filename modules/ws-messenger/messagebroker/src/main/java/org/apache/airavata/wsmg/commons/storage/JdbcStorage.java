@@ -21,15 +21,13 @@
 
 package org.apache.airavata.wsmg.commons.storage;
 
-import org.apache.airavata.wsmg.msgbox.Storage.dbpool.DatabaseCreator;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.apache.airavata.wsmg.msgbox.Storage.dbpool.ConnectionPool;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

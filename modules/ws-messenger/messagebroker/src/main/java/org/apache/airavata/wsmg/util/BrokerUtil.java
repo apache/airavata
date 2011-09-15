@@ -21,9 +21,6 @@
 
 package org.apache.airavata.wsmg.util;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
@@ -31,56 +28,7 @@ import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
 
-public class WsmgUtil {
-    private static final String BODY = "Body";
-
-    private static final String ACTION = "Action";
-
-    private static final String MESSAGE_ID = "MessageID";
-
-    private static final String XMLNS_WIDGET = "xmlns:widget";
-
-    private static final String DIALECT = "Dialect";
-
-    private static final String TOPIC = "Topic";
-
-    private static final String TO = "To";
-
-    private static final String HEADER = "Header";
-
-    private static final String ENVELOPE = "Envelope";
-
-    private static final String WSNT = "wsnt";
-
-    private static final String XSI = "xsi";
-
-    private static final String WA48 = "wa48";
-
-    private static final String S = "S";
-
-    private static final String HTTP_WIDGETS_COM = "http://widgets.com";
-
-    private static final String HTTP_WWW_IBM_COM_XMLNS_STDWIP_WEB_SERVICES_WS_TOPICS_TOPIC_EXPRESSION_SIMPLE = "http://www.ibm.com/xmlns/stdwip/web-services/WS-Topics/TopicExpression/simple";
-
-    private static final String HTTP_WWW_IBM_COM_XMLNS_STDWIP_WEB_SERVICES_WS_BASE_NOTIFICATION = "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification";
-
-    private static final String HTTP_WWW_W3_ORG_2001_XMLSCHEMA_INSTANCE = "http://www.w3.org/2001/XMLSchema-instance";
-
-    private static final String HTTP_SCHEMAS_XMLSOAP_ORG_WS_2004_08_ADDRESSING = "http://schemas.xmlsoap.org/ws/2004/08/addressing";
-
-    private static final String HTTP_SCHEMAS_XMLSOAP_ORG_SOAP_ENVELOPE = "http://schemas.xmlsoap.org/soap/envelope/";
-
-    public static String formatURLString(String url) {
-
-        if (url == null) {
-            throw new IllegalArgumentException("url can't be null");
-        }
-
-        if (url.indexOf("//") < 0) {
-            url = "http://" + url; // use default http
-        }
-        return url;
-    }
+public class BrokerUtil {  
 
     public static boolean sameStringValue(String stringA, String stringB) {
         if (stringA == null) {
@@ -98,19 +46,6 @@ public class WsmgUtil {
         }
         return false;
 
-    }
-
-    public static String getHostIP() {
-        InetAddress localAddress = null;
-        try {
-            localAddress = InetAddress.getLocalHost();
-        } catch (UnknownHostException ex) {
-            System.out.println("Error - unable to resolve localhost");
-        }
-        // Use IP address since DNS entry cannot update the laptop's entry
-        // promptly
-        String hostIP = localAddress.getHostAddress();
-        return hostIP;
     }
 
     public static String getTopicLocalString(String filterText) {

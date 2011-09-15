@@ -24,7 +24,7 @@ package org.apache.airavata.wsmg.broker.context;
 import java.util.Iterator;
 
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.util.WsmgUtil;
+import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.context.MessageContext;
@@ -140,7 +140,7 @@ public class ProcessingContextFactory implements ContextFactory {
         ProcessingContext context = createProcessingContext(msgContext.getEnvelope());
         context.setMessageConext(msgContext);
 
-        String topicFromUrl = WsmgUtil.getTopicFromRequestPath(msgContext.getTo().getAddress());
+        String topicFromUrl = BrokerUtil.getTopicFromRequestPath(msgContext.getTo().getAddress());
         context.setContextParameter(ContextParameters.TOPIC_FROM_URL, topicFromUrl);
 
         return context;

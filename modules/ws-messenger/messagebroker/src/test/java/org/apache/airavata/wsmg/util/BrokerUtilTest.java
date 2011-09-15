@@ -19,7 +19,7 @@
  *
  */
 
-package wsmg.util;
+package org.apache.airavata.wsmg.util;
 
 import javax.xml.namespace.QName;
 
@@ -27,7 +27,7 @@ import junit.framework.TestCase;
 
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
-import org.apache.airavata.wsmg.util.WsmgUtil;
+import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -37,7 +37,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestWsmgUtil extends TestCase {
+public class BrokerUtilTest extends TestCase {
 
     /**
      * @throws java.lang.Exception
@@ -52,65 +52,37 @@ public class TestWsmgUtil extends TestCase {
     @After
     public void tearDown() throws Exception {
     }
-
-    /**
-     * Test method for {@link org.apache.airavata.wsmg.util.WsmgUtil#formatURLString(java.lang.String)}.
-     */
-    @Test
-    public void testFormatURLString() {
-
-        String url = "http://www.test.com/unit_test";
-
-        assertSame(url, WsmgUtil.formatURLString(url));
-
-        url = "scp://test/test";
-
-        assertSame(url, WsmgUtil.formatURLString(url));
-
-        url = "test/test";
-
-        assertTrue(WsmgUtil.formatURLString(url).startsWith("http://"));
-
-    }
-
+    
     /**
      * Test method for
-     * {@link org.apache.airavata.wsmg.util.WsmgUtil#sameStringValue(java.lang.String, java.lang.String)} .
+     * {@link org.apache.airavata.wsmg.util.BrokerUtil#sameStringValue(java.lang.String, java.lang.String)} .
      */
     @Test
     public void testSameStringValue() {
 
-        assertTrue(WsmgUtil.sameStringValue(null, null));
-        assertTrue(WsmgUtil.sameStringValue("test", "test"));
+        assertTrue(BrokerUtil.sameStringValue(null, null));
+        assertTrue(BrokerUtil.sameStringValue("test", "test"));
 
-        assertFalse(WsmgUtil.sameStringValue("one", "two"));
-        assertFalse(WsmgUtil.sameStringValue(null, "test"));
-        assertFalse(WsmgUtil.sameStringValue("test", null));
+        assertFalse(BrokerUtil.sameStringValue("one", "two"));
+        assertFalse(BrokerUtil.sameStringValue(null, "test"));
+        assertFalse(BrokerUtil.sameStringValue("test", null));
 
-    }
-
-    /**
-     * Test method for {@link org.apache.airavata.wsmg.util.WsmgUtil#getHostIP()}.
-     */
-    @Test
-    public void testGetHostIP() {
-        assertNotNull(WsmgUtil.getHostIP());
-    }
+    }  
 
     /**
-     * Test method for {@link org.apache.airavata.wsmg.util.WsmgUtil#getTopicLocalString(java.lang.String)}.
+     * Test method for {@link org.apache.airavata.wsmg.util.BrokerUtil#getTopicLocalString(java.lang.String)}.
      */
     @Test
     public void testGetTopicLocalString() {
 
-        assertEquals("localstring", (WsmgUtil.getTopicLocalString("prefix:localstring")));
+        assertEquals("localstring", (BrokerUtil.getTopicLocalString("prefix:localstring")));
 
-        assertEquals("localstring", WsmgUtil.getTopicLocalString("localstring"));
+        assertEquals("localstring", BrokerUtil.getTopicLocalString("localstring"));
 
     }
 
     /**
-     * Test method for {@link org.apache.airavata.wsmg.util.WsmgUtil#getXPathString(org.apache.axiom.om.OMElement)}.
+     * Test method for {@link org.apache.airavata.wsmg.util.BrokerUtil#getXPathString(org.apache.axiom.om.OMElement)}.
      */
     @Test
     public void testGetXPathString() {
@@ -119,7 +91,7 @@ public class TestWsmgUtil extends TestCase {
 
         try {
 
-            WsmgUtil.getXPathString(null);
+            BrokerUtil.getXPathString(null);
             fail("method should validate invalid arguments");
         } catch (IllegalArgumentException e) {
 
@@ -133,7 +105,7 @@ public class TestWsmgUtil extends TestCase {
 
             OMElement xpathEl = factory.createOMElement(invalidQName);
 
-            WsmgUtil.getXPathString(xpathEl);
+            BrokerUtil.getXPathString(xpathEl);
 
             fail("method should validate arguments");
 
@@ -153,7 +125,7 @@ public class TestWsmgUtil extends TestCase {
 
             xpathEl.setText(xpathExpression);
 
-            WsmgUtil.getXPathString(xpathEl);
+            BrokerUtil.getXPathString(xpathEl);
 
             fail("method should reject unknown dialect");
         } catch (AxisFault e) {
@@ -171,7 +143,7 @@ public class TestWsmgUtil extends TestCase {
             xpathEl.addAttribute("Dialect", dialect, WsmgNameSpaceConstants.WSE_NS);
 
             xpathEl.setText(xpathExpression);
-            assertEquals(xpathExpression, WsmgUtil.getXPathString(xpathEl));
+            assertEquals(xpathExpression, BrokerUtil.getXPathString(xpathEl));
 
         } catch (AxisFault e) {
             fail("unable to extract xpath query: " + e.toString());
@@ -180,18 +152,18 @@ public class TestWsmgUtil extends TestCase {
     }
 
     /**
-     * Test method for {@link org.apache.airavata.wsmg.util.WsmgUtil#getTopicFromRequestPath(java.lang.String)}.
+     * Test method for {@link org.apache.airavata.wsmg.util.BrokerUtil#getTopicFromRequestPath(java.lang.String)}.
      */
     @Test
     public void testGetTopicFromRequestPath() {
 
-        assertNull(WsmgUtil.getTopicFromRequestPath(null));
-        assertNull(WsmgUtil.getTopicFromRequestPath(""));
-        assertNull(WsmgUtil.getTopicFromRequestPath("/"));
-        assertNull(WsmgUtil.getTopicFromRequestPath("/subscribe/url/"));
-        assertNull(WsmgUtil.getTopicFromRequestPath("/subscribe/url/topic/"));
+        assertNull(BrokerUtil.getTopicFromRequestPath(null));
+        assertNull(BrokerUtil.getTopicFromRequestPath(""));
+        assertNull(BrokerUtil.getTopicFromRequestPath("/"));
+        assertNull(BrokerUtil.getTopicFromRequestPath("/subscribe/url/"));
+        assertNull(BrokerUtil.getTopicFromRequestPath("/subscribe/url/topic/"));
 
-        assertEquals(WsmgUtil.getTopicFromRequestPath("/requestpath/topic/xyz"), "xyz");
+        assertEquals(BrokerUtil.getTopicFromRequestPath("/requestpath/topic/xyz"), "xyz");
 
     }
 }
