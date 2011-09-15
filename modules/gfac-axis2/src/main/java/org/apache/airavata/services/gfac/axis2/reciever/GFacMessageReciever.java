@@ -431,8 +431,9 @@ public class GFacMessageReciever implements MessageReceiver {
         SOAPHeader header = context.getEnvelope().getHeader();
         OMElement contextHeader = header.getFirstChildWithName(new QName("http://lead.extreme.indiana.edu/namespaces/2005/10/lead-context-header", "context"));
         OMElement workflowId = contextHeader.getFirstChildWithName(new QName("http://lead.extreme.indiana.edu/namespaces/2005/10/lead-context-header", "workflow-instance-id"));
-        String topic = workflowId.getText().substring(1);
-        return topic;
+        String topic =  workflowId.getText();
+        topic = topic.substring(1);
+        return topic.replaceAll("_","-");
     }
 
 }
