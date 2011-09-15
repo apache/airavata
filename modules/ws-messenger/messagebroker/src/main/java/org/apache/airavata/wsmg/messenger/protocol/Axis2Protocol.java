@@ -52,12 +52,10 @@ public class Axis2Protocol implements DeliveryProtocol {
 
     long tcpConnectionTimeout = 0;
 
-    @Override
     public void setTimeout(long timeout) {
         this.tcpConnectionTimeout = timeout;
     }
 
-    @Override
     public void deliver(ConsumerInfo consumerInfo, OMElement message, AdditionalMessageContent additionalMessageContent)
             throws SendingException {
         EndpointReference consumerReference = new EndpointReference(consumerInfo.getConsumerEprStr());
