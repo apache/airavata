@@ -29,9 +29,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.wsmg.commons.MsgBoxNameSpConsts;
 import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
 import org.apache.airavata.wsmg.msgbox.Storage.memory.InMemoryImpl;
-import org.apache.airavata.wsmg.msgbox.util.MsgBoxNameSpConsts;
 import org.apache.airavata.wsmg.msgbox.util.MsgBoxUtils;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;

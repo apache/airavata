@@ -28,6 +28,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.airavata.wsmg.commons.storage.ConnectionPool;
+import org.apache.airavata.wsmg.commons.storage.DatabaseCreator;
 import org.apache.airavata.wsmg.msgbox.ConfigurationManager;
 import org.apache.airavata.wsmg.msgbox.util.ConfigKeys;
 import org.apache.commons.logging.Log;
