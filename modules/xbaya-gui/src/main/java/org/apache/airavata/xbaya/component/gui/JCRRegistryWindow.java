@@ -25,9 +25,7 @@ import java.awt.event.ActionEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryLoader;
@@ -51,7 +49,7 @@ public class JCRRegistryWindow {
     
     private XBayaTextField usernameTextField;
     
-    private XBayaTextField passwordTextField;
+    private JPasswordField passwordTextField;
 
     /**
      * @param engine
@@ -76,7 +74,7 @@ public class JCRRegistryWindow {
     private void ok() {
         String urlString = this.urlTextField.getText();
         String username = this.usernameTextField.getText();
-        String password = this.passwordTextField.getText();
+        String password = new String(this.passwordTextField.getPassword());
 
         if (urlString.length() == 0) {
             this.engine.getErrorWindow().error(ErrorMessages.URL_EMPTY);
@@ -103,7 +101,7 @@ public class JCRRegistryWindow {
     private void initGUI() {
         this.urlTextField = new XBayaTextField();
         this.usernameTextField = new XBayaTextField();
-        this.passwordTextField = new XBayaTextField();
+        this.passwordTextField = new JPasswordField();
         XBayaLabel urlLabel = new XBayaLabel("URL", this.urlTextField);
         XBayaLabel nameLabel = new XBayaLabel("Username", this.usernameTextField);
         XBayaLabel passLabel = new XBayaLabel("Password", this.usernameTextField);
