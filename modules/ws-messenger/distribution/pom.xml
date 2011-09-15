@@ -90,7 +90,7 @@
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <archieve.name>airavta-ws-messenger</archieve.name>
+        <archieve.name>airavata-ws-messenger</archieve.name>
         <used.axis2.release>${axis2.version}</used.axis2.release>
     </properties>
 </project>
