@@ -120,6 +120,30 @@
 			</includes>
 		</fileSet>
 
+        <!--
+            ********************** copy messenger commons **********************
+        -->
+
+        <fileSet>
+            <directory>../commons/target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>airavata*.jar</include>
+            </includes>
+        </fileSet>
+
+        <!--
+            ********************** copy messenger client **********************
+        -->
+
+        <fileSet>
+            <directory>../client/target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>airavata*.jar</include>
+            </includes>
+        </fileSet>
+
 		<!--
 			********************** copymessagebrokerjar **********************
 		-->
@@ -226,6 +250,7 @@
             <dependencySet>
                 <outputDirectory>standalone-server/lib</outputDirectory>
                 <includes>
+                    <include>org.slf4j:slf4j-api:jar</include>
                     <include>org.apache.derby:derby:jar</include>
                     <include>org.apache.derby:derbytools:jar</include>
                     <include>mysql:mysql-connector-java</include>
