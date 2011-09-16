@@ -23,8 +23,8 @@ package org.apache.airavata.core.gfac.context.invocation.impl;
 
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.core.gfac.context.invocation.ExecutionContext;
-import org.apache.airavata.core.gfac.notification.Notifiable;
-import org.apache.airavata.core.gfac.notification.Notifier;
+import org.apache.airavata.core.gfac.notification.GFacNotifiable;
+import org.apache.airavata.core.gfac.notification.GFacNotifier;
 import org.apache.airavata.core.gfac.notification.impl.DefaultNotifier;
 
 /**
@@ -34,14 +34,14 @@ import org.apache.airavata.core.gfac.notification.impl.DefaultNotifier;
  */
 public class DefaultExecutionContext implements ExecutionContext {
 
-    private Notifier notificationService = new DefaultNotifier();
+    private GFacNotifier notificationService = new DefaultNotifier();
     private Registry registryService;    
     
-    public Notifier getNotifier() {
+    public GFacNotifier getNotifier() {
         return this.notificationService;
     }
 
-    public void addNotifiable(Notifiable service) {
+    public void addNotifiable(GFacNotifiable service) {
         this.notificationService.addNotifiable(service);
     }
 

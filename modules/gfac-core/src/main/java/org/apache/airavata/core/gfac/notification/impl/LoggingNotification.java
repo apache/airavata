@@ -21,15 +21,15 @@
 package org.apache.airavata.core.gfac.notification.impl;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.notification.Notifiable;
+import org.apache.airavata.core.gfac.notification.GFacNotifiable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link Notifiable} object as a SLF4J logger. Log out all the message as
+ * {@link org.apache.airavata.core.gfac.notification.GFacNotifiable} object as a SLF4J logger. Log out all the message as
  * configured in SLF4J
  */
-public class LoggingNotification implements Notifiable {
+public class LoggingNotification implements GFacNotifiable {
 
     protected final Logger log = LoggerFactory.getLogger(LoggingNotification.class);
 

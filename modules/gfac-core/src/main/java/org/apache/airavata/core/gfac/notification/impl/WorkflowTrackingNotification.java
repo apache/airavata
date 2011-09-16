@@ -25,7 +25,7 @@ import java.net.URI;
 import java.util.Properties;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.notification.Notifiable;
+import org.apache.airavata.core.gfac.notification.GFacNotifiable;
 import org.apache.airavata.workflow.tracking.Notifier;
 import org.apache.airavata.workflow.tracking.NotifierFactory;
 import org.apache.airavata.workflow.tracking.common.DurationObj;
@@ -36,7 +36,7 @@ import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
  * Workflow Tracking notification 
  * TODO:: implement properly
  */
-public class WorkflowTrackingNotification implements Notifiable {
+public class WorkflowTrackingNotification implements GFacNotifiable {
 
     private Notifier notifier;
 

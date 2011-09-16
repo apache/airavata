@@ -21,8 +21,8 @@
 
 package org.apache.airavata.core.gfac.context.invocation;
 
-import org.apache.airavata.core.gfac.notification.Notifiable;
-import org.apache.airavata.core.gfac.notification.Notifier;
+import org.apache.airavata.core.gfac.notification.GFacNotifiable;
+import org.apache.airavata.core.gfac.notification.GFacNotifier;
 import org.apache.airavata.registry.api.Registry;
 /**
  * The Execution Context is used for passing information around the whole
@@ -37,7 +37,7 @@ public interface ExecutionContext {
      * 
      * @return NotificationService to be used.
      */
-    Notifier getNotifier();
+    GFacNotifier getNotifier();
 
     /**
      * add Notifiable object.
@@ -45,7 +45,7 @@ public interface ExecutionContext {
      * @param Notifiable
      *            object to used
      */
-    void addNotifiable(Notifiable value);
+    void addNotifiable(GFacNotifiable value);
 
     /**
      * Get Registry object. It is used to retrieve important information about

@@ -25,7 +25,7 @@ import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 
 /**
  * This class represents a topic or subject that can be notified from
- * {@link Notifier} to {@link Notifiable}.
+ * {@link GFacNotifier} to {@link GFacNotifiable}.
  * 
  * TODO: Think about a better way
  */

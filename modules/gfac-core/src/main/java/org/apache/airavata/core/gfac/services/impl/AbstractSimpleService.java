@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
  * - {@link PostExecuteChain} Plugins <br/> 
  * - {@link Provider} disposal <br/>
  * - postProcess <br/>
+ * Users who wants built in notification in to their service has to implement this class
  */
 public abstract class AbstractSimpleService implements GenericService {
 
