@@ -28,59 +28,59 @@ import org.apache.airavata.core.gfac.notification.GFacNotifiable;
  */
 public class StandardOutNotification implements GFacNotifiable {
 
-    public void startSchedule(Object notifier, InvocationContext context) {
-        printOut(notifier, context);
+    public void startSchedule(InvocationContext context) {
+        printOut(context);
     }
 
-    public void finishSchedule(Object notifier, InvocationContext context) {
-        printOut(notifier, context);
+    public void finishSchedule(InvocationContext context) {
+        printOut(context);
     }
 
-    public void input(Object notifier, InvocationContext context, String... data) {
-        printOut(notifier, context, data);
+    public void input(InvocationContext context, String... data) {
+        printOut(context, data);
     }
 
     public void output(Object notifier, InvocationContext context, String... data) {
     }
 
-    public void startExecution(Object notifier, InvocationContext context) {
-        printOut(notifier, context);
+    public void startExecution(InvocationContext context) {
+        printOut(context);
     }
 
-    public void applicationInfo(Object notifier, InvocationContext context, String... data) {
-        printOut(notifier, context, data);
+    public void applicationInfo(InvocationContext context, String... data) {
+        printOut(context, data);
     }
 
-    public void finishExecution(Object notifier, InvocationContext context) {
-        printOut(notifier, context);
+    public void finishExecution(InvocationContext context) {
+        printOut(context);
     }
 
-    public void statusChanged(Object notifier, InvocationContext context, String... data) {
-        printOut(notifier, context, data);
+    public void statusChanged(InvocationContext context, String... data) {
+        printOut(context, data);
     }
 
-    public void executionFail(Object notifier, InvocationContext context, Exception e, String... data) {
-        printOut(notifier, context, data);
+    public void executionFail(InvocationContext context, Exception e, String... data) {
+        printOut(context, data);
     }
 
-    public void debug(Object notifier, InvocationContext context, String... data) {
-        printOut(notifier, context, data);
+    public void debug(InvocationContext context, String... data) {
+        printOut(context, data);
     }
 
-    public void info(Object notifier, InvocationContext context, String... data) {
-        printOut(notifier, context, data);
+    public void info(InvocationContext context, String... data) {
+        printOut(context, data);
     }
 
-    public void warning(Object notifier, InvocationContext context, String... data) {
-        printOut(notifier, context, data);
+    public void warning(InvocationContext context, String... data) {
+        printOut(context, data);
     }
 
-    public void exception(Object notifier, InvocationContext context, String... data) {
-        printOut(notifier, context, data);
+    public void exception(InvocationContext context, String... data) {
+        printOut(context, data);
     }
 
-    private void printOut(Object notifier, InvocationContext context, String... data) {
-        System.out.println("Notifier: " + notifier.getClass().toString());
+    private void printOut(InvocationContext context, String... data) {
+        System.out.println("Notifier: " + this.getClass().toString());
         if (data != null) {
             System.out.println("-----DATA-----");
             for (int i = 0; i < data.length; i++) {

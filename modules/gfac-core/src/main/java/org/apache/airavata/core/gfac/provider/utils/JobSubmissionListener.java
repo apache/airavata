@@ -123,7 +123,7 @@ public class JobSubmissionListener implements GramJobListener {
         /*
          * Notify status change
          */
-        this.context.getExecutionContext().getNotifier().statusChanged(this, this.context, jobStatusMessage);
+        this.context.getExecutionContext().getNotifier().statusChanged(this.context, jobStatusMessage);
 
         /*
          * Set new status if it is finished, notify all wait object

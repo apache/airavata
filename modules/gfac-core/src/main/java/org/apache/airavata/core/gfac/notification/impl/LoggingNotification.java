@@ -33,59 +33,59 @@ public class LoggingNotification implements GFacNotifiable {
 
     protected final Logger log = LoggerFactory.getLogger(LoggingNotification.class);
 
-    public void startSchedule(Object notifier, InvocationContext context) {
-        printOut(notifier, context, "Start scheduling");
+    public void startSchedule(InvocationContext context) {
+        printOut(context, "Start scheduling");
     }
 
-    public void finishSchedule(Object notifier, InvocationContext context) {
-        printOut(notifier, context, "Finish scheduling");
+    public void finishSchedule(InvocationContext context) {
+        printOut(context, "Finish scheduling");
     }
 
-    public void input(Object notifier, InvocationContext context, String... data) {
-        printOut(notifier, context, data);
+    public void input(InvocationContext context, String... data) {
+        printOut(context, data);
     }
 
     public void output(Object notifier, InvocationContext context, String... data) {
     }
 
-    public void startExecution(Object notifier, InvocationContext context) {
-        printOut(notifier, context, "Start execution");
+    public void startExecution(InvocationContext context) {
+        printOut(context, "Start execution");
     }
 
-    public void applicationInfo(Object notifier, InvocationContext context, String... data) {
-        printOut(notifier, context, data);
+    public void applicationInfo(InvocationContext context, String... data) {
+        printOut(context, data);
     }
 
-    public void finishExecution(Object notifier, InvocationContext context) {
-        printOut(notifier, context, "Finish execution");
+    public void finishExecution(InvocationContext context) {
+        printOut(context, "Finish execution");
     }
 
-    public void statusChanged(Object notifier, InvocationContext context, String... data) {
-        printOut(notifier, context, data);
+    public void statusChanged(InvocationContext context, String... data) {
+        printOut(context, data);
     }
 
-    public void executionFail(Object notifier, InvocationContext context, Exception e, String... data) {
-        printOut(notifier, context, data);
+    public void executionFail(InvocationContext context, Exception e, String... data) {
+        printOut(context, data);
     }
 
-    public void debug(Object notifier, InvocationContext context, String... data) {
-        printOut(notifier, context, data);
+    public void debug(InvocationContext context, String... data) {
+        printOut(context, data);
     }
 
-    public void info(Object notifier, InvocationContext context, String... data) {
-        printOut(notifier, context, data);
+    public void info(InvocationContext context, String... data) {
+        printOut(context, data);
     }
 
-    public void warning(Object notifier, InvocationContext context, String... data) {
-        printOut(notifier, context, data);
+    public void warning(InvocationContext context, String... data) {
+        printOut(context, data);
     }
 
-    public void exception(Object notifier, InvocationContext context, String... data) {
-        printOut(notifier, context, data);
+    public void exception(InvocationContext context, String... data) {
+        printOut(context, data);
     }
 
-    private void printOut(Object notifier, InvocationContext context, String... data) {
-        log.info("Notifier: " + notifier.getClass().toString());
+    private void printOut(InvocationContext context, String... data) {
+        log.info("Notifier: " + this.getClass().toString());
         if (data != null) {
             log.info("-----DATA-----");
             for (int i = 0; i < data.length; i++) {

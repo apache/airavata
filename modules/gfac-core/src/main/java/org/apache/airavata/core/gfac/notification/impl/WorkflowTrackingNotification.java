@@ -81,48 +81,48 @@ public class WorkflowTrackingNotification implements GFacNotifiable {
         this.invocationContext = this.notifier.workflowInvoked(this.context, this.initiator);
     }
 
-    public void startSchedule(Object notifier, InvocationContext context) {
+    public void startSchedule(InvocationContext context) {
     }
 
-    public void finishSchedule(Object notifier, InvocationContext context) {
+    public void finishSchedule(InvocationContext context) {
     }
 
-    public void input(Object notifier, InvocationContext context, String... data) {
+    public void input(InvocationContext context, String... data) {
     }
 
     public void output(Object notifier, InvocationContext context, String... data) {
     }
 
-    public void startExecution(Object notifier, InvocationContext context) {
+    public void startExecution(InvocationContext context) {
         this.duration = this.notifier.computationStarted();
     }
 
-    public void applicationInfo(Object notifier, InvocationContext context, String... data) {
+    public void applicationInfo(InvocationContext context, String... data) {
     }
 
-    public void finishExecution(Object notifier, InvocationContext context) {
+    public void finishExecution(InvocationContext context) {
         this.duration = this.notifier.computationFinished(this.context, this.duration);
     }
 
-    public void statusChanged(Object notifier, InvocationContext context, String... data) {
+    public void statusChanged(InvocationContext context, String... data) {
         this.notifier.info(this.context, data);
     }
 
-    public void executionFail(Object notifier, InvocationContext context, Exception e, String... data) {
+    public void executionFail(InvocationContext context, Exception e, String... data) {
         this.notifier.sendingFault(this.context, this.invocationContext, data);
     }
 
-    public void debug(Object notifier, InvocationContext context, String... data) {
+    public void debug(InvocationContext context, String... data) {
     }
 
-    public void info(Object notifier, InvocationContext context, String... data) {
+    public void info(InvocationContext context, String... data) {
         this.notifier.info(this.context, data);
     }
 
-    public void warning(Object notifier, InvocationContext context, String... data) {
+    public void warning(InvocationContext context, String... data) {
     }
 
-    public void exception(Object notifier, InvocationContext context, String... data) {
+    public void exception(InvocationContext context, String... data) {
     }
 
 	public InvocationEntity getReceiver() {

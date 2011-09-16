@@ -60,14 +60,14 @@ public abstract class AbstractProvider implements Provider {
         
         GFacNotifier notifier = invocationContext.getExecutionContext().getNotifier();
                         
-        notifier.startExecution(this, invocationContext);
+        notifier.startExecution(invocationContext);
         
         /*
          * Execution application
          */
         executeApplication(invocationContext);
         
-        notifier.finishExecution(this, invocationContext);
+        notifier.finishExecution(invocationContext);
         
         
         /*

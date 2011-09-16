@@ -33,38 +33,38 @@ public interface Subject {
     /*
      * 
      */
-    void startSchedule(Object notifier, InvocationContext context);
+    void startSchedule(InvocationContext context);
 
-    void finishSchedule(Object notifier, InvocationContext context);
+    void finishSchedule(InvocationContext context);
 
     /*
      * 
      */
-    void input(Object notifier, InvocationContext context, String... data);
+    void input(InvocationContext context, String... data);
 
     void output(Object notifier, InvocationContext context, String... data);
 
     /*
      * 
      */
-    void startExecution(Object notifier, InvocationContext context);
+    void startExecution(InvocationContext context);
 
-    void applicationInfo(Object notifier, InvocationContext context, String... data);
+    void applicationInfo(InvocationContext context, String... data);
 
-    void finishExecution(Object notifier, InvocationContext context);
+    void finishExecution(InvocationContext context);
 
-    void statusChanged(Object notifier, InvocationContext context, String... data);
+    void statusChanged(InvocationContext context, String... data);
 
-    void executionFail(Object notifier, InvocationContext context, Exception e, String... data);
+    void executionFail(InvocationContext context, Exception e, String... data);
 
     /*
      * Interface for developer to use
      */
-    void debug(Object notifier, InvocationContext context, String... data);
+    void debug(InvocationContext context, String... data);
 
-    void info(Object notifier, InvocationContext context, String... data);
+    void info(InvocationContext context, String... data);
 
-    void warning(Object notifier, InvocationContext context, String... data);
+    void warning(InvocationContext context, String... data);
 
-    void exception(Object notifier, InvocationContext context, String... data);
+    void exception(InvocationContext context, String... data);
 }

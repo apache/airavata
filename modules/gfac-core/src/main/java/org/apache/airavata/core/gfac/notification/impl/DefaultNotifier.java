@@ -49,30 +49,30 @@ public class DefaultNotifier implements GFacNotifier {
         return notifiableObjects.toArray(new GFacNotifiable[]{});
     }
 
-    public void startSchedule(Object notifier, InvocationContext context) {
+    public void startSchedule(InvocationContext context) {
         for (GFacNotifiable notif : notifiableObjects) {
             try {
-                notif.startSchedule(notifier, context);
+                notif.startSchedule(context);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
     }
 
-    public void finishSchedule(Object notifier, InvocationContext context) {
+    public void finishSchedule(InvocationContext context) {
         for (GFacNotifiable notif : notifiableObjects) {
             try {
-                notif.finishSchedule(notifier, context);
+                notif.finishSchedule(context);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
     }
 
-    public void input(Object notifier, InvocationContext context, String... data) {
+    public void input(InvocationContext context, String... data) {
         for (GFacNotifiable notif : notifiableObjects) {
             try {
-                notif.info(notifier, context, data);
+                notif.info(context, data);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
@@ -89,81 +89,70 @@ public class DefaultNotifier implements GFacNotifier {
         }
     }
 
-    public void startExecution(Object notifier, InvocationContext context) {
+    public void startExecution(InvocationContext context) {
         for (GFacNotifiable notif : notifiableObjects) {
             try {
-                notif.startExecution(notifier, context);
+                notif.startExecution(context);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
     }
 
-    public void applicationInfo(Object notifier, InvocationContext context, String... data) {
+    public void applicationInfo(InvocationContext context, String... data) {
         for (GFacNotifiable notif : notifiableObjects) {
             try {
-                notif.applicationInfo(notifier, context, data);
+                notif.applicationInfo(context, data);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
     }
 
-    public void finishExecution(Object notifier, InvocationContext context) {
+    public void finishExecution(InvocationContext context) {
         for (GFacNotifiable notif : notifiableObjects) {
             try {
-                notif.finishExecution(notifier, context);
+                notif.finishExecution(context);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
     }
 
-    public void statusChanged(Object notifier, InvocationContext context, String... data) {
+    public void statusChanged(InvocationContext context, String... data) {
         for (GFacNotifiable notif : notifiableObjects) {
             try {
-                notif.statusChanged(notifier, context, data);
+                notif.statusChanged(context, data);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
     }
 
-    public void executionFail(Object notifier, InvocationContext context, Exception e, String... data) {
+    public void executionFail(InvocationContext context, Exception e, String... data) {
         for (GFacNotifiable notif : notifiableObjects) {
             try {
-                notif.executionFail(notifier, context, e, data);
+                notif.executionFail(context, e, data);
             } catch (Exception ex) {
                 logger.error(ex.getMessage(), ex);
             }
         }
     }
 
-    public void debug(Object notifier, InvocationContext context, String... data) {
+    public void debug(InvocationContext context, String... data) {
         for (GFacNotifiable notif : notifiableObjects) {
             try {
-                notif.debug(notifier, context, data);
+                notif.debug(context, data);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
     }
 
-    public void info(Object notifier, InvocationContext context, String... data) {
+    public void info(InvocationContext context, String... data) {
         for (GFacNotifiable notif : notifiableObjects) {
             try {
-                notif.info(notifier, context, data);
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            }
-        }
-
-    }
-
-    public void warning(Object notifier, InvocationContext context, String... data) {
-        for (GFacNotifiable notif : notifiableObjects) {
-            try {
-                notif.warning(notifier, context, data);
+                notif.info(context, data);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
@@ -171,10 +160,21 @@ public class DefaultNotifier implements GFacNotifier {
 
     }
 
-    public void exception(Object notifier, InvocationContext context, String... data) {
+    public void warning(InvocationContext context, String... data) {
         for (GFacNotifiable notif : notifiableObjects) {
             try {
-                notif.exception(notifier, context, data);
+                notif.warning(context, data);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
+    }
+
+    public void exception(InvocationContext context, String... data) {
+        for (GFacNotifiable notif : notifiableObjects) {
+            try {
+                notif.exception(context, data);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }

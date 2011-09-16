@@ -148,7 +148,7 @@ public class GramProvider extends AbstractProvider {
                     .append(app.getTmpDir())
                     .append(" Globus GateKeeper cantact = ")
                     .append(gateKeeper);
-            invocationContext.getExecutionContext().getNotifier().info(this, invocationContext, buf.toString());
+            invocationContext.getExecutionContext().getNotifier().info(invocationContext, buf.toString());
 
             /*
              * The first boolean is to specify the job is a batch job - use true
@@ -158,14 +158,14 @@ public class GramProvider extends AbstractProvider {
             job.request(gateKeeper, false, false);
             String gramJobid = job.getIDAsString();
             log.info("JobID = " + gramJobid);
-            invocationContext.getExecutionContext().getNotifier().info(this, invocationContext, "JobID=" + gramJobid);
+            invocationContext.getExecutionContext().getNotifier().info(invocationContext, "JobID=" + gramJobid);
 
             log.info(buf.toString());
 
             invocationContext
                     .getExecutionContext()
                     .getNotifier()
-                    .applicationInfo(this, invocationContext, gramJobid, gateKeeper, null, null,
+                    .applicationInfo(invocationContext, gramJobid, gateKeeper, null, null,
                             gssCred.getName().toString(), null, job.getRSL());
 
             /*
