@@ -25,32 +25,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.notification.Notifiable;
-import org.apache.airavata.core.gfac.notification.Notifier;
+import org.apache.airavata.core.gfac.notification.GFacNotifiable;
+import org.apache.airavata.core.gfac.notification.GFacNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The default notifier which uses {@link ArrayList} to store {@link Notifiable}
+ * The default notifier which uses {@link ArrayList} to store {@link org.apache.airavata.core.gfac.notification.GFacNotifiable}
  * objects. Notification method is done by a single thread. It ignore all errors
- * from {@link Notifiable} object.
+ * from {@link org.apache.airavata.core.gfac.notification.GFacNotifiable} object.
  */
-public class DefaultNotifier implements Notifier {
+public class DefaultNotifier implements GFacNotifier {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultNotifier.class);
 
-    private List<Notifiable> notifiableObjects = new ArrayList<Notifiable>();
+    private List<GFacNotifiable> notifiableObjects = new ArrayList<GFacNotifiable>();
 
-    public void addNotifiable(Notifiable notif) {
+    public void addNotifiable(GFacNotifiable notif) {
         notifiableObjects.add(notif);
     }
 
-    public Notifiable[] getNotifiable() {
-        return notifiableObjects.toArray(new Notifiable[]{});
+    public GFacNotifiable[] getNotifiable() {
+        return notifiableObjects.toArray(new GFacNotifiable[]{});
     }
 
     public void startSchedule(Object notifier, InvocationContext context) {
-        for (Notifiable notif : notifiableObjects) {
+        for (GFacNotifiable notif : notifiableObjects) {
             try {
                 notif.startSchedule(notifier, context);
             } catch (Exception e) {
@@ -60,7 +60,7 @@ public class DefaultNotifier implements Notifier {
     }
 
     public void finishSchedule(Object notifier, InvocationContext context) {
-        for (Notifiable notif : notifiableObjects) {
+        for (GFacNotifiable notif : notifiableObjects) {
             try {
                 notif.finishSchedule(notifier, context);
             } catch (Exception e) {
@@ -70,7 +70,7 @@ public class DefaultNotifier implements Notifier {
     }
 
     public void input(Object notifier, InvocationContext context, String... data) {
-        for (Notifiable notif : notifiableObjects) {
+        for (GFacNotifiable notif : notifiableObjects) {
             try {
                 notif.info(notifier, context, data);
             } catch (Exception e) {
@@ -80,7 +80,7 @@ public class DefaultNotifier implements Notifier {
     }
 
     public void output(Object notifier, InvocationContext context, String... data) {
-        for (Notifiable notif : notifiableObjects) {
+        for (GFacNotifiable notif : notifiableObjects) {
             try {
                 notif.output(notifier, context, data);
             } catch (Exception e) {
@@ -90,7 +90,7 @@ public class DefaultNotifier implements Notifier {
     }
 
     public void startExecution(Object notifier, InvocationContext context) {
-        for (Notifiable notif : notifiableObjects) {
+        for (GFacNotifiable notif : notifiableObjects) {
             try {
                 notif.startExecution(notifier, context);
             } catch (Exception e) {
@@ -100,7 +100,7 @@ public class DefaultNotifier implements Notifier {
     }
 
     public void applicationInfo(Object notifier, InvocationContext context, String... data) {
-        for (Notifiable notif : notifiableObjects) {
+        for (GFacNotifiable notif : notifiableObjects) {
             try {
                 notif.applicationInfo(notifier, context, data);
             } catch (Exception e) {
@@ -110,7 +110,7 @@ public class DefaultNotifier implements Notifier {
     }
 
     public void finishExecution(Object notifier, InvocationContext context) {
-        for (Notifiable notif : notifiableObjects) {
+        for (GFacNotifiable notif : notifiableObjects) {
             try {
                 notif.finishExecution(notifier, context);
             } catch (Exception e) {
@@ -120,7 +120,7 @@ public class DefaultNotifier implements Notifier {
     }
 
     public void statusChanged(Object notifier, InvocationContext context, String... data) {
-        for (Notifiable notif : notifiableObjects) {
+        for (GFacNotifiable notif : notifiableObjects) {
             try {
                 notif.statusChanged(notifier, context, data);
             } catch (Exception e) {
@@ -130,7 +130,7 @@ public class DefaultNotifier implements Notifier {
     }
 
     public void executionFail(Object notifier, InvocationContext context, Exception e, String... data) {
-        for (Notifiable notif : notifiableObjects) {
+        for (GFacNotifiable notif : notifiableObjects) {
             try {
                 notif.executionFail(notifier, context, e, data);
             } catch (Exception ex) {
@@ -140,7 +140,7 @@ public class DefaultNotifier implements Notifier {
     }
 
     public void debug(Object notifier, InvocationContext context, String... data) {
-        for (Notifiable notif : notifiableObjects) {
+        for (GFacNotifiable notif : notifiableObjects) {
             try {
                 notif.debug(notifier, context, data);
             } catch (Exception e) {
@@ -150,7 +150,7 @@ public class DefaultNotifier implements Notifier {
     }
 
     public void info(Object notifier, InvocationContext context, String... data) {
-        for (Notifiable notif : notifiableObjects) {
+        for (GFacNotifiable notif : notifiableObjects) {
             try {
                 notif.info(notifier, context, data);
             } catch (Exception e) {
@@ -161,7 +161,7 @@ public class DefaultNotifier implements Notifier {
     }
 
     public void warning(Object notifier, InvocationContext context, String... data) {
-        for (Notifiable notif : notifiableObjects) {
+        for (GFacNotifiable notif : notifiableObjects) {
             try {
                 notif.warning(notifier, context, data);
             } catch (Exception e) {
@@ -172,7 +172,7 @@ public class DefaultNotifier implements Notifier {
     }
 
     public void exception(Object notifier, InvocationContext context, String... data) {
-        for (Notifiable notif : notifiableObjects) {
+        for (GFacNotifiable notif : notifiableObjects) {
             try {
                 notif.exception(notifier, context, data);
             } catch (Exception e) {

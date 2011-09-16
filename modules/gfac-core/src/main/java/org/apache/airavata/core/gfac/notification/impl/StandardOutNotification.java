@@ -21,12 +21,12 @@
 package org.apache.airavata.core.gfac.notification.impl;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.notification.Notifiable;
+import org.apache.airavata.core.gfac.notification.GFacNotifiable;
 
 /**
  * Print out all notification to System.out
  */
-public class StandardOutNotification implements Notifiable {
+public class StandardOutNotification implements GFacNotifiable {
 
     public void startSchedule(Object notifier, InvocationContext context) {
         printOut(notifier, context);

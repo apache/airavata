@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.ProviderException;
-import org.apache.airavata.core.gfac.notification.Notifier;
+import org.apache.airavata.core.gfac.notification.GFacNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ public abstract class AbstractProvider implements Provider {
          */
         setupEnvironment(invocationContext);
         
-        Notifier notifier = invocationContext.getExecutionContext().getNotifier();       
+        GFacNotifier notifier = invocationContext.getExecutionContext().getNotifier();
                         
         notifier.startExecution(this, invocationContext);
         

@@ -22,18 +22,7 @@
 package org.apache.airavata.core.gfac.notification;
 
 /**
- * Object which sends out notification
+ * Object that will be notified
  */
-public interface Notifier extends Subject {
-    /**
-     * Add {@link Notifiable} object to be notified
-     * @param notif
-     */
-    void addNotifiable(Notifiable notif);
-    
-    /**
-     * Get the current {@link Notifiable} objects
-     * @return array of objects
-     */
-    Notifiable[] getNotifiable();
+public interface GFacNotifiable extends Subject {
 }
