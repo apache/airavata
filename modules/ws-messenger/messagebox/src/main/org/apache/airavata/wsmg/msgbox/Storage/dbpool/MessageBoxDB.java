@@ -40,6 +40,7 @@ import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.airavata.wsmg.commons.storage.JdbcStorage;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
 import org.apache.log4j.Logger;
@@ -54,9 +55,7 @@ public class MessageBoxDB {
 
     private static Set<String> msgBoxids;
 
-    public static final String SELECT_ALL_FROM_MSGBOXES = "SELECT * FROM msgBoxes";
-
-    private static JdbcStorage db;
+    public static final String SELECT_ALL_FROM_MSGBOXES = "SELECT * FROM msgBoxes";    
 
     public static String SQL_STORE_MESSAGE_STATEMENT = "INSERT INTO msgbox (content, msgboxid, messageid,soapaction) VALUES (?,?,?,?)";
 
@@ -67,12 +66,33 @@ public class MessageBoxDB {
     public static String SQL_SELECT_STATEMENT1 = "SELECT * FROM %s WHERE msgboxid='%s' ORDER BY time ";
 
     public static String SQL_DELETE_ANCIENT_STATEMENT = "DELETE FROM %s WHERE time <'%s'";
+    
+    private JdbcStorage db;
+    
+    private static MessageBoxDB instance;
+    
+    private long time;    
 
-    public MessageBoxDB(JdbcStorage db) {
+    private MessageBoxDB(JdbcStorage db) {
         this.db = db;
     }
+    
+    public static MessageBoxDB initialize(JdbcStorage db, long time) throws SQLException{
+        if(instance == null){
+            instance = new MessageBoxDB(db);
+            setMsgBoxidList(db);
+        }
+        return instance;
+    }
+    
+    public static MessageBoxDB getInstance(){
+        if(instance==null){
+            throw new RuntimeException("Please initialize this object first using initialize(JdbcStorage, long)");
+        }
+        return instance;
+    }
 
-    public static void createMsgBx(String messageBoxId, String tableName) throws SQLException, IOException {
+    public void createMsgBx(String messageBoxId, String tableName) throws SQLException, IOException {
         if (!msgBoxids.contains(messageBoxId)) {
             Connection connection = db.connect();
             Statement statement = connection.createStatement();
@@ -85,7 +105,7 @@ public class MessageBoxDB {
             throw new AxisFault("The message box ID requested already exists");
     }
 
-    public static void addMessage(String msgBoxID, String messageID, String soapAction, OMElement message)
+    public void addMessage(String msgBoxID, String messageID, String soapAction, OMElement message)
             throws SQLException, IOException, XMLStreamException {
         if (msgBoxids.contains(msgBoxID)) {
             Connection connection = db.connect();
@@ -100,7 +120,7 @@ public class MessageBoxDB {
             stmt.setString(2, msgBoxID);
             stmt.setString(3, messageID);
             stmt.setString(4, soapAction);
-            db.insert(stmt);
+            db.insertAndClose(stmt);
             stmt.close();
             connection.commit();
             db.closeConnection(connection);
@@ -109,7 +129,7 @@ public class MessageBoxDB {
         }
     }
 
-    public static void deleteMessageBox(String msgBoxId) throws SQLException {
+    public void deleteMessageBox(String msgBoxId) throws SQLException {
 
         if (msgBoxids.contains(msgBoxId)) {
             Connection connection = db.connect();
@@ -121,7 +141,7 @@ public class MessageBoxDB {
         }
     }
 
-    public static List<String> removeAllMessagesforClient(String msgBoxId) throws SQLException, IOException,
+    public List<String> removeAllMessagesforClient(String msgBoxId) throws SQLException, IOException,
             ClassNotFoundException, XMLStreamException {
         LinkedList<String> list = new LinkedList<String>();
         if (msgBoxids.contains(msgBoxId)) {
@@ -142,7 +162,7 @@ public class MessageBoxDB {
             resultSet.close();
             stmt.close();
             stmt = connection.prepareStatement(String.format(SQL_DELETE_ALL_STATEMENT, "msgbox", msgBoxId));
-            db.insert(stmt);
+            db.insertAndClose(stmt);
             stmt.close();
             connection.commit();
             db.closeConnection(connection);
@@ -150,14 +170,13 @@ public class MessageBoxDB {
         return list;
     }
 
-    public static void removeAncientMessages() {
+    public void removeAncientMessages() {
         try {
             Connection connection = db.connect();
-            long interval = db.getInterval();
-            long persevetime = (System.currentTimeMillis() - interval);
+            long persevetime = System.currentTimeMillis() - this.time;
             PreparedStatement stmt = connection.prepareStatement(String.format(SQL_DELETE_ANCIENT_STATEMENT, "msgBox",
                     persevetime));
-            db.insert(stmt);
+            db.insertAndClose(stmt);
             stmt.close();
             db.closeConnection(connection);
         } catch (SQLException e) {
@@ -166,13 +185,7 @@ public class MessageBoxDB {
 
     }
 
-    public static void setJdbcStorage(JdbcStorage db2) throws SQLException {
-        db = db2;
-        setMsgBoxidList();
-
-    }
-
-    private static void setMsgBoxidList() throws SQLException {
+    private static void setMsgBoxidList(JdbcStorage db) throws SQLException {
         msgBoxids = Collections.synchronizedSet(new HashSet<String>());
         Connection connection = db.connect();
         Statement statement = connection.createStatement();

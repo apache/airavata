@@ -30,8 +30,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
+import org.apache.airavata.wsmg.commons.storage.JdbcStorage;
 import org.apache.airavata.wsmg.msgbox.Storage.dbpool.DatabaseStorageImpl;
-import org.apache.airavata.wsmg.msgbox.Storage.dbpool.JdbcStorage;
 import org.apache.airavata.wsmg.msgbox.Storage.memory.InMemoryImpl;
 import org.apache.airavata.wsmg.msgbox.util.ConfigKeys;
 import org.apache.airavata.wsmg.msgbox.util.MsgBoxCommonConstants;
@@ -39,17 +40,18 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.Handler;
 import org.apache.axis2.engine.Phase;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This class initialize the messageBox service by setting the messageStore based on the configuration done by the user
- * This is the LifeCycle class
+ * This class initialize the messageBox service by setting the messageStore
+ * based on the configuration done by the user This is the LifeCycle class
  */
 public class MsgBoxServiceLifeCycle implements org.apache.axis2.engine.ServiceLifeCycle {
 
-    private static final String CONFIGURATION_FILE_NAME = "configuration.file.name";
-    Logger logger = Logger.getLogger(MsgBoxServiceLifeCycle.class);
-    JdbcStorage db;
+    private static final String CONFIGURATION_FILE_NAME = "msgBox.properties";
+    private static final Logger logger = LoggerFactory.getLogger(MsgBoxServiceLifeCycle.class);
+    private JdbcStorage db;
 
     public void shutDown(ConfigurationContext configurationcontext, AxisService axisservice) {
         System.out.println("Message box shutting down");
@@ -62,7 +64,7 @@ public class MsgBoxServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
         overrideAddressingPhaseHander(configurationcontext);
 
         // Load the configuration file from the classpath
-        ConfigurationManager confmanager = new ConfigurationManager("conf" + File.separator + "msgBox.properties");
+        ConfigurationManager confmanager = new ConfigurationManager("conf" + File.separator + CONFIGURATION_FILE_NAME);
         configurationcontext.setProperty(MsgBoxCommonConstants.CONF_MANAGER, confmanager);
         initDatabase(configurationcontext, confmanager);
         configurationcontext.setProperty(MsgBoxCommonConstants.INIT_MSG_BOX_SKELETON_TRUE, false);
@@ -73,13 +75,19 @@ public class MsgBoxServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
         boolean dbImplemented = true;
         if (confmanager.getConfig(ConfigKeys.USE_DATABSE_STORAGE).equalsIgnoreCase("true")) {
             if (!checkConnection(confmanager)) {
-                logger.fatal("Database creation failure at MsgBoxServiceLifeCycle class. Cannot connect with the database");
+                logger.error("Database creation failure at MsgBoxServiceLifeCycle class. Cannot connect with the database");
                 throw new RuntimeException("Database failure");
             }
-            db = new JdbcStorage(true, confmanager);
+            
+            String jdbcUrl = confmanager.getConfig(ConfigKeys.MSG_BOX_JDBC_URL);
+            String jdbcDriver = confmanager.getConfig(ConfigKeys.JDBC_DRIVER);
+            db = new JdbcStorage(jdbcUrl, jdbcDriver);
             try {
-                /* This fails if the table: msgBoxes is not there in the database */
-                MsgBoxServiceSkeleton.setStorage(new DatabaseStorageImpl(db));
+                /*
+                 * This fails if the table: msgBoxes is not there in the
+                 * database
+                 */
+                MsgBoxServiceSkeleton.setStorage(new DatabaseStorageImpl(db, getInterval(confmanager)));
             } catch (SQLException e) {
                 throw new RuntimeException("Database failure");
             }
@@ -104,10 +112,10 @@ public class MsgBoxServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
             try {
                 conn.close();
             } catch (SQLException e) {
-                logger.fatal("Database connect is not closed at the test", e);
+                logger.error("Database connect is not closed at the test", e);
             }
         } catch (Exception e) {
-            logger.fatal("Checked for database connection with provided info. Failed connection", e);
+            logger.error("Checked for database connection with provided info. Failed connection", e);
             dbexists = false;
         }
         return dbexists;
@@ -141,6 +149,18 @@ public class MsgBoxServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
         if (!foundFlag) {
             throw new RuntimeException("unable to find addressing phase - inside inflow phases");
         }
-
     }
+
+    private long getInterval(ConfigurationManager configs) {
+        int messagePreservationDays = configs.getConfig(ConfigKeys.MSG_PRESV_DAYS, 2);
+        int messagePreservationHours = configs.getConfig(ConfigKeys.MSG_PRESV_HRS, 0);
+        int messagePreservationMinutes = configs.getConfig(ConfigKeys.MSG_PRESV_MINS, 0);
+
+        long interval = messagePreservationDays * 24;
+        interval = (interval + messagePreservationHours) * 60;
+        interval = (interval + messagePreservationMinutes) * 60;
+        interval = interval * 1000;
+        return interval;
+    }
+
 }

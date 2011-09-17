@@ -21,7 +21,6 @@
 
 package org.apache.airavata.wsmg.messenger;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -33,8 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.commons.WsmgVersion;
+import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.commons.storage.WsmgPersistantStorage;
-import org.apache.airavata.wsmg.config.ConfigurationManager;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.messenger.strategy.SendingStrategy;
 import org.apache.airavata.wsmg.messenger.strategy.impl.FixedParallelSender;
