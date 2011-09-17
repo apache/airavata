@@ -31,7 +31,7 @@ import org.apache.airavata.wsmg.broker.ConsumerInfo;
 import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
-import org.apache.airavata.wsmg.config.ConfigurationManager;
+import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.messenger.protocol.Axis2Protocol;
 import org.apache.airavata.wsmg.messenger.protocol.DeliveryProtocol;

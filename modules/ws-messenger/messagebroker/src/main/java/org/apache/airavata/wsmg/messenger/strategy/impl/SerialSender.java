@@ -30,7 +30,7 @@ import org.apache.airavata.wsmg.broker.AdditionalMessageContent;
 import org.apache.airavata.wsmg.broker.ConsumerInfo;
 import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.commons.OutGoingMessage;
-import org.apache.airavata.wsmg.config.ConfigurationManager;
+import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.messenger.ConsumerUrlManager;
 import org.apache.airavata.wsmg.messenger.SenderUtils;

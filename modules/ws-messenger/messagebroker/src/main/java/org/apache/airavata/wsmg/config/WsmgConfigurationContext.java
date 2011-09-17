@@ -29,6 +29,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.airavata.wsmg.broker.NotificationProcessor;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionManager;
+import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.commons.storage.WsmgStorage;
 import org.apache.airavata.wsmg.matching.AbstractMessageMatcher;
 import org.apache.airavata.wsmg.matching.XPath.YFilterMessageMatcher;
@@ -38,15 +39,9 @@ public class WsmgConfigurationContext {
 
     private OutGoingQueue outgoingQueue = null;
 
-    // private AbstractMessageMatcher messageMatcher;
-
     private List<AbstractMessageMatcher> messageMatchers = new LinkedList<AbstractMessageMatcher>();
 
-    private Map<Object, Object> publisherRegistrationDB = new HashMap<Object, Object>();// TODO:
-
-    // parameterize
-    // the
-    // map
+    private Map<Object, Object> publisherRegistrationDB = new HashMap<Object, Object>();
 
     private ReentrantReadWriteLock messegeMatchersLock = new ReentrantReadWriteLock();
 

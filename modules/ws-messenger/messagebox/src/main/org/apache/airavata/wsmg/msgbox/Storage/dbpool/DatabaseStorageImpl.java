@@ -28,6 +28,7 @@ import java.util.UUID;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.airavata.wsmg.commons.storage.JdbcStorage;
 import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
 import org.apache.axiom.om.OMElement;
 
@@ -41,21 +42,21 @@ public class DatabaseStorageImpl implements MsgBoxStorage {
 
     // private final static MLogger logger = MLogger.getLogger();
 
-    public DatabaseStorageImpl(JdbcStorage db) throws SQLException {
-        MessageBoxDB.setJdbcStorage(db);
+    public DatabaseStorageImpl(JdbcStorage db, long timeOfOldMessage) throws SQLException {
+        MessageBoxDB.initialize(db, timeOfOldMessage);
     }
 
     public String createMsgBox() throws SQLException, IOException {
         // String uuid = FastUUIDGen.nextUUID();// generate uuid
 
         String uuid = UUID.randomUUID().toString();
-        MessageBoxDB.createMsgBx(uuid, "msgBoxes");
+        MessageBoxDB.getInstance().createMsgBx(uuid, "msgBoxes");
         return uuid;
     }
 
     public void destroyMsgBox(String key) throws Exception {
         try {
-            MessageBoxDB.deleteMessageBox(key);
+            MessageBoxDB.getInstance().deleteMessageBox(key);
         } catch (SQLException e) {
             throw new Exception("Could not destroy the message box with key " + key, e);
         }
@@ -69,7 +70,7 @@ public class DatabaseStorageImpl implements MsgBoxStorage {
         List<String> list = null;
 
         try {
-            list = MessageBoxDB.removeAllMessagesforClient(key);
+            list = MessageBoxDB.getInstance().removeAllMessagesforClient(key);
 
         } catch (SQLException e) {
             throw new Exception("Error reading the message with the key " + key, e);
@@ -82,12 +83,11 @@ public class DatabaseStorageImpl implements MsgBoxStorage {
 
     public void putMessageIntoMsgBox(String msgBoxID, String messageID, String soapAction, OMElement message)
             throws SQLException, IOException, XMLStreamException {
-        MessageBoxDB.addMessage(msgBoxID, messageID, soapAction, message);
+        MessageBoxDB.getInstance().addMessage(msgBoxID, messageID, soapAction, message);
     }
 
     public void removeAncientMessages() throws Exception {
-        MessageBoxDB.removeAncientMessages();
-
+        MessageBoxDB.getInstance().removeAncientMessages();
     }
 
 }
