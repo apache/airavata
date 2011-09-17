@@ -50,16 +50,9 @@ public class JdbcStorage {
                         Connection.TRANSACTION_SERIALIZABLE);
             } else {
                 connectionPool = new ConnectionPool(driver, url, initCon, maxCon, true);
-            }
-            DatabaseCreator dbCreator = new DatabaseCreator(connectionPool);
-            if (!dbCreator.isDatabaseStructureCreated("SELECT * from subscription")) {
-                dbCreator.createMsgBrokerDatabase();
-                log.info("New Database created for Message Broker");
-            } else {
-                log.info("Database already created for Message Broker!");
-            }
+            }            
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create database connection poll.", e);
+            throw new RuntimeException("Failed to create database connection pool.", e);
         }
     }
 

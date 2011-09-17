@@ -63,13 +63,15 @@ public class DatabaseCreator {
     private static DatabaseType[] supportedDatabase = new DatabaseType[] { DatabaseType.derby, DatabaseType.mysql };
 
     private static Logger log = LoggerFactory.getLogger(DatabaseCreator.class);
-    private ConnectionPool connectionPool;
-    private String delimiter = ";";
-    Connection conn = null;
-    Statement statement;
+    private static final String delimiter = ";";
 
-    public DatabaseCreator(ConnectionPool dataSource) {
-        this.connectionPool = dataSource;
+    /**
+     * Creates database
+     * 
+     * @throws Exception
+     */
+    public static void createMsgBoxDatabase(Connection conn) throws Exception {
+        createDatabase("msgBox", conn);
     }
 
     /**
@@ -77,17 +79,8 @@ public class DatabaseCreator {
      * 
      * @throws Exception
      */
-    public void createMsgBoxDatabase() throws Exception {
-        createDatabase("msgBox");
-    }
-
-    /**
-     * Creates database
-     * 
-     * @throws Exception
-     */
-    public void createMsgBrokerDatabase() throws Exception {
-        createDatabase("msgBroker");
+    public static void createMsgBrokerDatabase(Connection conn) throws Exception {
+        createDatabase("msgBroker", conn);
     }
 
     /**
@@ -98,13 +91,12 @@ public class DatabaseCreator {
      * @return <code>true</core> if checkSQL is success, else <code>false</code>
      *         .
      */
-    public boolean isDatabaseStructureCreated(String checkSQL) {
+    public static boolean isDatabaseStructureCreated(String checkSQL, Connection conn) {
         try {
             if (log.isTraceEnabled()) {
                 log.trace("Running a query to test the database tables existence.");
             }
             // check whether the tables are already created with a query
-            Connection conn = connectionPool.getConnection();
             Statement statement = null;
             try {
                 statement = conn.createStatement();
@@ -134,13 +126,13 @@ public class DatabaseCreator {
      * @param sql
      * @throws Exception
      */
-    private void executeSQL(String sql) throws Exception {
+    private static void executeSQL(String sql, Connection conn) throws Exception {
         // Check and ignore empty statements
         if ("".equals(sql.trim())) {
             return;
         }
 
-        ResultSet resultSet = null;
+        Statement statement = null;
         try {
             if (log.isDebugEnabled()) {
                 log.debug("SQL : " + sql);
@@ -148,9 +140,10 @@ public class DatabaseCreator {
 
             boolean ret;
             int updateCount = 0, updateCountTotal = 0;
+            statement = conn.createStatement();
             ret = statement.execute(sql);
             updateCount = statement.getUpdateCount();
-            resultSet = statement.getResultSet();
+            ResultSet resultSet = statement.getResultSet();
             do {
                 if (!ret) {
                     if (updateCount != -1) {
@@ -182,9 +175,9 @@ public class DatabaseCreator {
                 throw new Exception("Error occurred while executing : " + sql, e);
             }
         } finally {
-            if (resultSet != null) {
+            if (statement != null) {
                 try {
-                    resultSet.close();
+                    statement.close();
                 } catch (SQLException e) {
                     log.error("Error occurred while closing result set.", e);
                 }
@@ -252,7 +245,7 @@ public class DatabaseCreator {
      * @param databaseType
      * @return script location
      */
-    private String getScriptLocation(String prefix, DatabaseType databaseType) {
+    private static String getScriptLocation(String prefix, DatabaseType databaseType) {
         String scriptName = prefix + "-" + databaseType + ".sql";
         if (log.isDebugEnabled()) {
             log.debug("Loading database script from :" + scriptName);
@@ -260,37 +253,38 @@ public class DatabaseCreator {
         return "database_scripts" + File.separator + scriptName;
     }
 
-    private void createDatabase(String prefix) throws Exception {
+    private static void createDatabase(String prefix, Connection conn) throws Exception {
+        Statement statement = null;
         try {
-            conn = connectionPool.getConnection();
             conn.setAutoCommit(false);
             statement = conn.createStatement();
-            executeSQLScript(getScriptLocation(prefix, DatabaseCreator.getDatabaseType(this.conn)));
+            executeSQLScript(getScriptLocation(prefix, DatabaseCreator.getDatabaseType(conn)), conn);
             conn.commit();
             if (log.isTraceEnabled()) {
                 log.trace("Airavatatables are created successfully.");
             }
         } catch (SQLException e) {
-            String msg = "Failed to create database tables for Airavataresource store. " + e.getMessage();
+            String msg = "Failed to create database tables for Airavata resource store. " + e.getMessage();
             log.error(msg, e);
             throw new Exception(msg, e);
         } finally {
+            conn.setAutoCommit(true);
             try {
-                if (conn != null) {
-                    conn.close();
+                if (statement != null) {
+                    statement.close();
                 }
             } catch (SQLException e) {
-                log.error("Failed to close database connection.", e);
+                log.error("Failed to close statement.", e);
             }
         }
     }
 
-    private void executeSQLScript(String dbscriptName) throws Exception {
+    private static void executeSQLScript(String dbscriptName, Connection conn) throws Exception {
         StringBuffer sql = new StringBuffer();
         BufferedReader reader = null;
 
         try {
-            InputStream is = this.getClass().getClassLoader().getResourceAsStream(dbscriptName);
+            InputStream is = DatabaseCreator.class.getClassLoader().getResourceAsStream(dbscriptName);
             reader = new BufferedReader(new InputStreamReader(is));
             String line;
             while ((line = reader.readLine()) != null) {
@@ -317,13 +311,13 @@ public class DatabaseCreator {
                     sql.append("\n");
                 }
                 if ((checkStringBufferEndsWith(sql, delimiter))) {
-                    executeSQL(sql.substring(0, sql.length() - delimiter.length()));
+                    executeSQL(sql.substring(0, sql.length() - delimiter.length()), conn);
                     sql.replace(0, sql.length(), "");
                 }
             }
             // Catch any statements not followed by ;
             if (sql.length() > 0) {
-                executeSQL(sql.toString());
+                executeSQL(sql.toString(), conn);
             }
         } catch (IOException e) {
             log.error("Error occurred while executing SQL script for creating Airavatadatabase", e);
