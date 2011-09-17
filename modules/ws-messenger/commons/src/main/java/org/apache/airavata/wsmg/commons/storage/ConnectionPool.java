@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
 
@@ -52,7 +53,7 @@ public class ConnectionPool {
     private boolean autoCommit = true;
     private boolean waitIfBusy;
 
-    private Integer needConnection = 0;
+    private AtomicInteger needConnection = new AtomicInteger(0);
     private boolean stop;
 
     private Stack<Connection> availableConnections;
@@ -152,7 +153,7 @@ public class ConnectionPool {
         } else {
             // request connection creation and then wait
             synchronized (needConnection) {
-                needConnection++;
+                needConnection.incrementAndGet();
                 needConnection.notifyAll();
             }
 
@@ -193,11 +194,11 @@ public class ConnectionPool {
 
     private synchronized void fillUpConnection() throws SQLException {
         synchronized (needConnection) {
-            if (needConnection > 0) {
+            if (needConnection.get() > 0) {
                 Connection connection = makeNewConnection();
                 availableConnections.push(connection);
                 setTimeStamp(connection);
-                needConnection--;
+                needConnection.decrementAndGet();
             }
         }
     }
