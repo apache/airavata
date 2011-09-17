@@ -102,10 +102,6 @@
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-transport-local</artifactId>
         </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
 
         <!-- Logging -->
         <dependency>

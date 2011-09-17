@@ -41,11 +41,12 @@ import org.apache.airavata.wsmg.messenger.ConsumerUrlManager;
 import org.apache.airavata.wsmg.messenger.SenderUtils;
 import org.apache.airavata.wsmg.messenger.strategy.SendingStrategy;
 import org.apache.axiom.om.OMElement;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ParallelSender extends Thread implements SendingStrategy {
 
-    private Logger log = Logger.getLogger(ParallelSender.class);
+    private static final Logger log = LoggerFactory.getLogger(ParallelSender.class);
 
     private ConcurrentHashMap<String, ConsumerHandler> activeConsumerHanders = new ConcurrentHashMap<String, ConsumerHandler>();
 
@@ -101,8 +102,7 @@ public class ParallelSender extends Thread implements SendingStrategy {
                 distributeOverConsumerQueues(outGoingMessage);
 
             } catch (Exception e) {
-
-                log.fatal("Unexpected_exception:", e);
+                log.error("Unexpected_exception:", e);
             }
 
             dequeuedMessageCounter++;
@@ -280,7 +280,7 @@ public class ParallelSender extends Thread implements SendingStrategy {
                     sender.send(m.getConsumerInfo(), messgae2Send, m.getHeader());
 
                 } catch (Exception e) {
-                    log.fatal(e);
+                    log.error(e.getMessage(), e);
                 }
 
             }

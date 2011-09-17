@@ -36,8 +36,8 @@ import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
 import org.apache.airavata.wsmg.matching.AbstractMessageMatcher;
 import org.apache.airavata.wsmg.messenger.OutGoingQueue;
-import org.apache.airavata.wsmg.util.RunTimeStatistics;
 import org.apache.airavata.wsmg.util.BrokerUtil;
+import org.apache.airavata.wsmg.util.RunTimeStatistics;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
@@ -45,11 +45,12 @@ import org.apache.axiom.om.OMException;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axis2.AxisFault;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NotificationProcessor {
 
-    org.apache.log4j.Logger logger = Logger.getLogger(NotificationProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(NotificationProcessor.class);
 
     WsmgConfigurationContext wsmgConfigContext = null;
 
@@ -158,8 +159,7 @@ public class NotificationProcessor {
             try {
                 topicElString = topicEl.toStringWithConsume();
             } catch (XMLStreamException e) {
-                // TODO Auto-generated catch block Add throw
-                logger.fatal("exceptions occured at WSE " + "eventing notification creating", e);
+                logger.error("exceptions occured at WSE eventing notification creating", e);
             }
             additionalMessageContent.setTopicElement(topicElString);
         }
@@ -233,9 +233,7 @@ public class NotificationProcessor {
                 try {
                     topicElString = topicEl.toStringWithConsume();
                 } catch (XMLStreamException e) {
-                    // TODO Add with throws block
-                    logger.fatal("exception occured while " + "creating NotificationConsumer", e);
-
+                    logger.error("exception occured while creating NotificationConsumer", e);
                 }
                 additionalMessageContent.setTopicElement(topicElString);
             }
@@ -246,8 +244,7 @@ public class NotificationProcessor {
                 try {
                     producerReferenceElString = producerReferenceEl.toStringWithConsume();
                 } catch (XMLStreamException e) {
-
-                    logger.fatal("exception occured while " + "creating notification consumer", e);
+                    logger.error("exception occured while creating notification consumer", e);
 
                 }
                 additionalMessageContent.setProducerReference(producerReferenceElString);
@@ -260,8 +257,7 @@ public class NotificationProcessor {
             try {
                 message = notificationMessageEl.toStringWithConsume();
             } catch (XMLStreamException e) {
-                logger.error("exception occured while " + "creating notification consumer", e);
-
+                logger.error("exception occured while creating notification consumer", e);
                 throw new AxisFault("unable to serialize the message", e);
             }
 
@@ -293,7 +289,7 @@ public class NotificationProcessor {
             save(matchedConsumers, notificationMessage, additionalMessageContent);
 
         } catch (RuntimeException e) {
-            logger.fatal("Caught RuntimeException", e);
+            logger.error("Caught RuntimeException", e);
         }
 
     }

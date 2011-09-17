@@ -40,11 +40,12 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Axis2Protocol implements DeliveryProtocol {
 
-    Logger logger = Logger.getLogger(Axis2Protocol.class);
+    private static final Logger logger = LoggerFactory.getLogger(Axis2Protocol.class);
 
     SOAPFactory soapfactory = OMAbstractFactory.getSOAP11Factory();
 
@@ -76,7 +77,7 @@ public class Axis2Protocol implements DeliveryProtocol {
                     topicEl = CommonRoutines.reader2OMElement(new StringReader(topicElString));
                     soapHeaders.add(topicEl);
                 } catch (XMLStreamException e) {
-                    logger.fatal("exception at topicEl xmlStreamException", e);
+                    logger.error("exception at topicEl xmlStreamException", e);
                 }
             }
         }

@@ -40,11 +40,12 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.EndpointReferenceHelper;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WSEProtocolSupport {
 
-    Logger log = Logger.getLogger(WSEProtocolSupport.class);
+    private static final Logger log = LoggerFactory.getLogger(WSEProtocolSupport.class);
 
     public SubscriptionState createSubscriptionState(ProcessingContext ctx, OutGoingQueue outgoingQueue)
             throws AxisFault {
@@ -182,8 +183,7 @@ public class WSEProtocolSupport {
             responseMessage.addChild(subscriptionManagerEpr);
             subscriptionManagerEpr.setNamespace(responseMessage.getNamespace());
         } catch (AxisFault e) {
-            // TODO Auto-generated catch block
-            log.fatal("unable to resolve EPR from OM", e);
+            log.error("unable to resolve EPR from OM", e);
             throw e;
         }
 

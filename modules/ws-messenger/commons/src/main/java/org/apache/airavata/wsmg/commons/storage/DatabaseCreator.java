@@ -45,9 +45,7 @@ import org.slf4j.LoggerFactory;
 public class DatabaseCreator {
 
     public enum DatabaseType {
-        derby("(?i).*derby.*"), 
-        mysql("(?i).*mysql.*"), 
-        other("");
+        derby("(?i).*derby.*"), mysql("(?i).*mysql.*"), other("");
 
         private String pattern;
 
@@ -84,7 +82,8 @@ public class DatabaseCreator {
     }
 
     /**
-     * Checks whether database tables are created by using select * on given table name
+     * Checks whether database tables are created by using select * on given
+     * table name
      * 
      * @param tableName
      *            Table which should be existed
@@ -93,9 +92,9 @@ public class DatabaseCreator {
      */
     public static boolean isDatabaseStructureCreated(String tableName, Connection conn) {
         try {
-            if (log.isTraceEnabled()) {
-                log.trace("Running a query to test the database tables existence.");
-            }
+
+            log.debug("Running a query to test the database tables existence.");
+
             // check whether the tables are already created with a query
             Statement statement = null;
             try {
@@ -134,9 +133,7 @@ public class DatabaseCreator {
 
         Statement statement = null;
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("SQL : " + sql);
-            }
+            log.debug("SQL : " + sql);
 
             boolean ret;
             int updateCount = 0, updateCountTotal = 0;
@@ -157,9 +154,8 @@ public class DatabaseCreator {
                 }
             } while (ret);
 
-            if (log.isDebugEnabled()) {
-                log.debug(sql + " : " + updateCountTotal + " rows affected");
-            }
+            log.debug(sql + " : " + updateCountTotal + " rows affected");
+
             SQLWarning warning = conn.getWarnings();
             while (warning != null) {
                 log.info(warning + " sql warning");
@@ -246,10 +242,8 @@ public class DatabaseCreator {
      * @return script location
      */
     private static String getScriptLocation(String prefix, DatabaseType databaseType) {
-        String scriptName = prefix + "-" + databaseType + ".sql";
-        if (log.isDebugEnabled()) {
-            log.debug("Loading database script from :" + scriptName);
-        }
+        String scriptName = prefix + "-" + databaseType + ".sql";        
+        log.debug("Loading database script from :" + scriptName);
         return "database_scripts" + File.separator + scriptName;
     }
 
@@ -260,9 +254,7 @@ public class DatabaseCreator {
             statement = conn.createStatement();
             executeSQLScript(getScriptLocation(prefix, DatabaseCreator.getDatabaseType(conn)), conn);
             conn.commit();
-            if (log.isTraceEnabled()) {
-                log.trace("Airavatatables are created successfully.");
-            }
+            log.debug("Tables are created successfully.");
         } catch (SQLException e) {
             String msg = "Failed to create database tables for Airavata resource store. " + e.getMessage();
             log.error(msg, e);
@@ -320,8 +312,8 @@ public class DatabaseCreator {
                 executeSQL(sql.toString(), conn);
             }
         } catch (IOException e) {
-            log.error("Error occurred while executing SQL script for creating Airavatadatabase", e);
-            throw new Exception("Error occurred while executing SQL script for creating Airavatadatabase", e);
+            log.error("Error occurred while executing SQL script for creating Airavata database", e);
+            throw new Exception("Error occurred while executing SQL script for creating Airavata database", e);
 
         } finally {
             if (reader != null) {

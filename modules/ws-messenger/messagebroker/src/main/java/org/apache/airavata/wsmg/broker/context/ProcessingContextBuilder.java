@@ -27,8 +27,4 @@ public abstract class ProcessingContextBuilder {
 
     public abstract ProcessingContext build(OMElement elem);
 
-    // public abstract ProcessingContext build(SOAPEnvelope elem);
-
-    // public abstract ProcessingContext build(MessageContext msgContext);
-
 }

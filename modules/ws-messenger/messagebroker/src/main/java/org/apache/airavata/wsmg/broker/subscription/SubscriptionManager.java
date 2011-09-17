@@ -50,12 +50,12 @@ import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
 import org.apache.airavata.wsmg.matching.AbstractMessageMatcher;
 import org.apache.airavata.wsmg.messenger.OutGoingQueue;
-import org.apache.airavata.wsmg.transports.jms.MessageMatcherConnection;
 import org.apache.airavata.wsmg.util.RunTimeStatistics;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axis2.AxisFault;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manages subscribers.
@@ -63,7 +63,7 @@ import org.apache.log4j.Logger;
  */
 public class SubscriptionManager {
 
-    private Logger log = Logger.getLogger(SubscriptionManager.class);
+    private static final Logger log = LoggerFactory.getLogger(SubscriptionManager.class);
 
     private HashMap<String, SubscriptionState> subscriptions = new HashMap<String, SubscriptionState>(); // JDK15
 
@@ -115,7 +115,7 @@ public class SubscriptionManager {
         AbstractMap<String, SubscriptionState> ret = null;
         readLockUnlockSubscriptions(true);
         try {
-            ret = (AbstractMap<String, SubscriptionState>) subscriptions.clone();
+            ret = new HashMap<String, SubscriptionState>(subscriptions);
         } finally {
             readLockUnlockSubscriptions(false);
         }
@@ -128,7 +128,7 @@ public class SubscriptionManager {
 
         String subId = createSubscription(null, ctx);
         if (subId == null) {
-            log.fatal("ERROR: No subscription created");
+            log.error("ERROR: No subscription created");
             return;
         }
 
@@ -181,13 +181,7 @@ public class SubscriptionManager {
         }
 
         for (AbstractMessageMatcher m : wsmgConfig.getMessageMatchers()) {
-
-            MessageMatcherConnection wsntAdapterConnection = m.handleSubscribe(state, key);
-
-            if (wsntAdapterConnection != null) {
-                state.addMessageMatcherConnection(wsntAdapterConnection);
-            }
-
+            m.handleSubscribe(state, key);
         }
 
         if (subscriptionId == null) { // New subscription entry,
@@ -202,7 +196,7 @@ public class SubscriptionManager {
                 subscriptionDB.insert(state);
 
             } catch (Exception ex) {
-                log.fatal("unable to insert subscription to database", ex);
+                log.error("unable to insert subscription to database", ex);
                 throw new AxisFault("unable to insert subscription to database ", ex);
             }
         }
@@ -318,7 +312,7 @@ public class SubscriptionManager {
                 createSubscription(subscriptionId, context);
 
             } catch (XMLStreamException e) {
-                log.fatal("error occured while checking subscription db", e);
+                log.error("error occured while checking subscription db", e);
             }
         }
         RunTimeStatistics.totalSubscriptionsAtStartUp += subscriptionEntry.size();
@@ -363,10 +357,6 @@ public class SubscriptionManager {
         if (subscription == null) {
             throw AxisFault.makeFault(new RuntimeException("unknown subscription: " + subId));
 
-        }
-
-        for (MessageMatcherConnection m : subscription.getMessageMatcherConnections()) {
-            m.stop();
         }
 
         subscriptionDB.delete(subId);

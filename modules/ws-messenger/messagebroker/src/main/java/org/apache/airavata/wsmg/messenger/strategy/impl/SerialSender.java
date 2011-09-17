@@ -36,11 +36,12 @@ import org.apache.airavata.wsmg.messenger.ConsumerUrlManager;
 import org.apache.airavata.wsmg.messenger.SenderUtils;
 import org.apache.airavata.wsmg.messenger.strategy.SendingStrategy;
 import org.apache.axiom.om.OMElement;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SerialSender extends Thread implements SendingStrategy {
 
-    Logger log = Logger.getLogger(SerialSender.class);
+    private static final Logger log = LoggerFactory.getLogger(SerialSender.class);
 
     private boolean stopFlag = false;
 
@@ -72,8 +73,7 @@ public class SerialSender extends Thread implements SendingStrategy {
                 sendNotification(outGoingMessage);
 
             } catch (Exception e) {
-
-                log.fatal("Unexpected_exception:", e);
+                log.error("Unexpected_exception:", e);
             }
         }
     }
@@ -104,7 +104,7 @@ public class SerialSender extends Thread implements SendingStrategy {
             }
 
         } catch (XMLStreamException e) {
-            log.fatal(e);
+            log.error(e.getMessage(), e);
         }
 
     }

@@ -230,7 +230,7 @@
 
 		<fileSet>
 			<directory>../messagebroker/src/main/resources/database_scripts</directory>
-			<outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
+			<outputDirectory>standalone-server/conf/database_scripts</outputDirectory>
 			<includes>
 				<include>*sql*</include>
 			</includes>
@@ -238,7 +238,7 @@
 
 		<fileSet>
 			<directory>../messagebox/src/main/resources/database_scripts</directory>
-			<outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
+			<outputDirectory>standalone-server/conf/database_scripts</outputDirectory>
 			<includes>
 				<include>*sql*</include>
 			</includes>

@@ -26,21 +26,24 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.airavata.wsmg.broker.ConsumerInfo;
+import org.apache.airavata.wsmg.broker.ConsumerList;
+import org.apache.airavata.wsmg.broker.ConsumerListManager;
+import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
+import org.apache.airavata.wsmg.config.WSMGParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.berkeley.cs.db.yfilter.filter.EXfilterBasic;
 import edu.berkeley.cs.db.yfilter.filter.SystemGlobals;
 import edu.berkeley.cs.db.yfilterplus.queryparser.Query;
 import edu.berkeley.cs.db.yfilterplus.queryparser.XPQuery;
 import edu.berkeley.cs.db.yfilterplus.xmltree.XMLTree;
-import org.apache.airavata.wsmg.broker.ConsumerInfo;
-import org.apache.airavata.wsmg.broker.ConsumerList;
-import org.apache.airavata.wsmg.broker.ConsumerListManager;
-import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
-import org.apache.airavata.wsmg.config.WSMGParameter;
-import org.apache.log4j.Logger;
 
 
 public class YFilterInfo {
+    private static final Logger logger = LoggerFactory.getLogger(YFilterInfo.class);
+    
     private EXfilterBasic yfilter = new EXfilterBasic();
     private HashMap<Integer, String> yFilterIdToXPath = new HashMap<Integer, String>();
     private HashMap<Integer, Query> yFilterIdToQuery = new HashMap<Integer, Query>();
@@ -48,8 +51,6 @@ public class YFilterInfo {
     private ConsumerListManager consumerListmanager = new ConsumerListManager();
     private int index = 0;
     private int counter = 0;
-
-    private Logger logger = Logger.getLogger(YFilterInfo.class);
 
     public EXfilterBasic getYfilter() {
         return yfilter;

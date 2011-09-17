@@ -36,11 +36,13 @@ import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.matching.AbstractMessageMatcher;
 import org.apache.airavata.wsmg.messenger.OutGoingQueue;
-import org.apache.airavata.wsmg.transports.jms.MessageMatcherConnection;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class YFilterMessageMatcher extends AbstractMessageMatcher {
 
+    private static final Logger logger = LoggerFactory.getLogger(YFilterMessageMatcher.class);
+    
     private OutGoingQueue outGoingQueue = null;
 
     // private HashMap subIdToQuery=new HashMap();
@@ -53,13 +55,8 @@ public class YFilterMessageMatcher extends AbstractMessageMatcher {
     // YFilter object
     private ConsumerListManager consumerListmanager = new ConsumerListManager();
 
-    // private String[] queries = new String[1000000];
-
-    private Logger logger = Logger.getLogger(YFilterMessageMatcher.class);
-
     public YFilterMessageMatcher(Map<Object, Object> publisherRegistrationDB) {
         super(publisherRegistrationDB);
-        // TODO Auto-generated constructor stub
     }
 
     public void start(String carrierLocation) {
@@ -154,7 +151,7 @@ public class YFilterMessageMatcher extends AbstractMessageMatcher {
         return ret;
     }
 
-    public MessageMatcherConnection handleSubscribe(SubscriptionState subscribeRequest, String subscriptionId) {
+    public void handleSubscribe(SubscriptionState subscribeRequest, String subscriptionId) {
 
         // Get the write lock
         writeLockUnlockConsumers(true);
@@ -185,7 +182,7 @@ public class YFilterMessageMatcher extends AbstractMessageMatcher {
             writeLockUnlockConsumers(false);
         }
 
-        return null;
+        return;
     }
 
 }

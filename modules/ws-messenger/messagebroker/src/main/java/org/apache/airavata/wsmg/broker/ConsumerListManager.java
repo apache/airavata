@@ -25,15 +25,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConsumerListManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(ConsumerListManager.class);
+    
     protected Map<String, ConsumerList> token2ConsumerListMap = new HashMap<String, ConsumerList>();
 
     protected Map<String, String> subId2Token = new HashMap<String, String>();
-
-    Logger logger = Logger.getLogger(ConsumerListManager.class);
 
     // token can be a topic or an XPath String
     public void addToConsumerList(String token, SubscriptionState subscribeRequest, String subscriptionId) {
@@ -62,7 +63,7 @@ public class ConsumerListManager {
 
         ConsumerList consumerList = token2ConsumerListMap.get(tokenString);
         if (consumerList == null) {
-            logger.fatal("*****ERROR:Cannot find the token to delete: " + tokenString);
+            logger.error("*****ERROR:Cannot find the token to delete: " + tokenString);
             return 0;
         }
         int result = consumerList.removeConsumer(subscriptionId);

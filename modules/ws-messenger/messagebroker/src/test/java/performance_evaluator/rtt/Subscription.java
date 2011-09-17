@@ -24,14 +24,15 @@ package performance_evaluator.rtt;
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
 import org.apache.airavata.wsmg.client.MessageBrokerClient;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Subscription {
 
     private String subscriptionID;
 
     private String topic;
-    private final static org.apache.log4j.Logger logger = Logger.getLogger(Subscription.class);
+    private final static Logger logger = LoggerFactory.getLogger(Subscription.class);
     private ConsumerNotificationHandler handler;
     private MessageBrokerClient client;
     private EndpointReference messageBoxEPR;
