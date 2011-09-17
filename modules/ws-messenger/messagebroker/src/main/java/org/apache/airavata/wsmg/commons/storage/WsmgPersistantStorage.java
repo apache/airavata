@@ -237,6 +237,8 @@ public class WsmgPersistantStorage implements WsmgStorage {
     public Object blockingDequeue() {
         while (true) {
             try {
+                //FIXME::: WHY RETURN KeyValueWrapper Object??????
+                //FIXME::: Can it cast to OutGoingMessage????
                 KeyValueWrapper wrapper = retrive();
                 done(wrapper.getKey());
                 return wrapper.getValue();
