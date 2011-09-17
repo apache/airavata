@@ -74,22 +74,35 @@ public class WsmgPersistantStorage implements WsmgStorage {
         db = new JdbcStorage(config.getConfig(WsmgCommonConstants.CONFIG_JDBC_URL),
                 config.getConfig(WsmgCommonConstants.CONFIG_JDBC_DRIVER));
 
-        // inject dbname to sql statement.
-        SubscriptionConstants.ORDINARY_SUBSCRIPTION_INSERT_QUERY = String.format(
-                SubscriptionConstants.INSERT_SQL_QUERY, ordinarySubsTblName);
-
-        SubscriptionConstants.SPECIAL_SUBSCRIPTION_INSERT_QUERY = String.format(SubscriptionConstants.INSERT_SQL_QUERY,
-                specialSubsTblName);
-
-        if (WSMGParameter.measureMessageRate) {
-            TimerThread timerThread = new TimerThread(storeToDBCounter, " StoreSubScriptionToDBCounter");
-            new Thread(timerThread).start();
-        }
-
         try {
+            /*
+             * Check database
+             */
+            Connection conn = db.connect();
+            if (!DatabaseCreator.isDatabaseStructureCreated("SELECT * from subscription", conn)) {
+                DatabaseCreator.createMsgBrokerDatabase(conn);
+                logger.info("New Database created for Message Broker");
+            } else {
+                logger.info("Database already created for Message Broker!");
+            }
+            db.closeConnection(conn);
+
+            // inject dbname to sql statement.
+            SubscriptionConstants.ORDINARY_SUBSCRIPTION_INSERT_QUERY = String.format(
+                    SubscriptionConstants.INSERT_SQL_QUERY, ordinarySubsTblName);
+
+            SubscriptionConstants.SPECIAL_SUBSCRIPTION_INSERT_QUERY = String.format(
+                    SubscriptionConstants.INSERT_SQL_QUERY, specialSubsTblName);
+
+            if (WSMGParameter.measureMessageRate) {
+                TimerThread timerThread = new TimerThread(storeToDBCounter, " StoreSubScriptionToDBCounter");
+                new Thread(timerThread).start();
+            }
+
             initMessageQueueStorage();
-        } catch (SQLException sqlEx) {
-            throw AxisFault.makeFault(sqlEx);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw AxisFault.makeFault(e);
         }
     }
 
@@ -524,11 +537,11 @@ public class WsmgPersistantStorage implements WsmgStorage {
                 stmt.addBatch("lock tables disQ write, MaxIDTable write, MinIDTable write;");
                 totalStatement++;
             } else if (DatabaseType.derby.equals(databaseType)) {
-                stmt.addBatch("lock table disQ execusive mode;");
+                stmt.addBatch("lock table disQ in exclusive mode;");
                 totalStatement++;
-                stmt.addBatch("lock table MaxIDTable execusive mode;");
+                stmt.addBatch("lock table MaxIDTable in exclusive mode;");
                 totalStatement++;
-                stmt.addBatch("lock table MinIDTable execusive mode;");
+                stmt.addBatch("lock table MinIDTable in exclusive mode;");
                 totalStatement++;
             }
             stmt.addBatch("Delete from disQ;");
@@ -641,13 +654,13 @@ public class WsmgPersistantStorage implements WsmgStorage {
         try {
             switch (databaseType) {
             case derby:
-                sql = "LOCK TABLE " + QueueContants.TABLE_NAME_MAXID + " EXCLUSIVE MODE";
-                String sql2 = "LOCK TABLE " + QueueContants.TABLE_NAME_MINID + " EXCLUSIVE MODE";
+                sql = "LOCK TABLE " + QueueContants.TABLE_NAME_MAXID + " IN EXCLUSIVE MODE";
+                String sql2 = "LOCK TABLE " + QueueContants.TABLE_NAME_MINID + " IN EXCLUSIVE MODE";
                 stmt = connection.prepareStatement(sql);
-                stmt.executeQuery();
+                stmt.execute();
                 stmt.close();
                 stmt = connection.prepareStatement(sql2);
-                stmt.executeQuery();
+                stmt.execute();
                 break;
             case mysql:
                 sql = "lock tables " + QueueContants.TABLE_NAME_MAXID + " write" + "," + QueueContants.TABLE_NAME_MINID
