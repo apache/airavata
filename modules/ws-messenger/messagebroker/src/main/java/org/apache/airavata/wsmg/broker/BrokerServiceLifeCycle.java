@@ -53,13 +53,10 @@ public class BrokerServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
     SendingStrategy method = null;
 
     public void shutDown(ConfigurationContext arg, AxisService service) {
-
         log.info("broker shutting down");
-
         if (method != null) {
             method.shutdown();
         }
-
     }
 
     public void startUp(ConfigurationContext configContext, AxisService axisService) {
@@ -67,9 +64,7 @@ public class BrokerServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
         Boolean inited = (Boolean) configContext.getProperty(WsmgCommonConstants.BROKER_INITED);
 
         if (inited == null || inited == false) {
-
             log.info("starting broker");
-
             overrideAddressingPhaseHander(configContext);
             initConfigurations(configContext, axisService);
 

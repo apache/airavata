@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
+import org.apache.airavata.wsmg.commons.storage.DatabaseCreator;
 import org.apache.airavata.wsmg.commons.storage.JdbcStorage;
 import org.apache.airavata.wsmg.msgbox.Storage.dbpool.DatabaseStorageImpl;
 import org.apache.airavata.wsmg.msgbox.Storage.memory.InMemoryImpl;
@@ -54,7 +55,7 @@ public class MsgBoxServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
     private JdbcStorage db;
 
     public void shutDown(ConfigurationContext configurationcontext, AxisService axisservice) {
-        System.out.println("Message box shutting down");
+        logger.info("Message box shutting down");
         if (db != null)
             db.closeAllConnections();
     }
@@ -81,14 +82,28 @@ public class MsgBoxServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
             
             String jdbcUrl = confmanager.getConfig(ConfigKeys.MSG_BOX_JDBC_URL);
             String jdbcDriver = confmanager.getConfig(ConfigKeys.JDBC_DRIVER);
-            db = new JdbcStorage(jdbcUrl, jdbcDriver);
+            db = new JdbcStorage(10, 50, jdbcUrl, jdbcDriver, true);
             try {
+                /*
+                 * Check database
+                 */
+                Connection conn = db.connect();
+                if (!DatabaseCreator.isDatabaseStructureCreated("SELECT * from subscription", conn)) {
+                    DatabaseCreator.createMsgBoxDatabase(conn);
+                    logger.info("New Database created for Message Box");
+                } else {
+                    logger.info("Database already created for Message Box!");
+                }
+                db.closeConnection(conn);
+                
+                
                 /*
                  * This fails if the table: msgBoxes is not there in the
                  * database
                  */
                 MsgBoxServiceSkeleton.setStorage(new DatabaseStorageImpl(db, getInterval(confmanager)));
-            } catch (SQLException e) {
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
                 throw new RuntimeException("Database failure");
             }
         }

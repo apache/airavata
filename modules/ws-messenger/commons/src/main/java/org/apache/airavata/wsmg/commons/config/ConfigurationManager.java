@@ -31,7 +31,7 @@ public class ConfigurationManager {
         try {
             configurations.load(this.getClass().getClassLoader().getResourceAsStream(configFileName));
         } catch (Exception e) {
-            throw new RuntimeException("unable to load configurations", e);
+            throw new RuntimeException("unable to load configurations:::" + configFileName, e);
         }
     }
 
