@@ -29,11 +29,12 @@ import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.OMNode;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OMElementComparator {
 
-    private static Logger log = Logger.getLogger(OMElementComparator.class);
+    private static final Logger log = LoggerFactory.getLogger(OMElementComparator.class);
 
     private Vector<String> ignorableNamespaceList = new Vector<String>();
 

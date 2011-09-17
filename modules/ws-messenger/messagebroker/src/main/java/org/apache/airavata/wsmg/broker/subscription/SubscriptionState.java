@@ -24,8 +24,6 @@ package org.apache.airavata.wsmg.broker.subscription;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -34,15 +32,15 @@ import org.apache.airavata.wsmg.broker.ConsumerInfo;
 import org.apache.airavata.wsmg.commons.exceptions.XMLComparisonException;
 import org.apache.airavata.wsmg.commons.util.OMElementComparator;
 import org.apache.airavata.wsmg.messenger.OutGoingQueue;
-import org.apache.airavata.wsmg.transports.jms.MessageMatcherConnection;
 import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SubscriptionState {
 
-    private final Logger logger = Logger.getLogger(SubscriptionState.class);
+    private final Logger logger = LoggerFactory.getLogger(SubscriptionState.class);
 
     private long creationTime = 0;
     private long lastAvailableTime = 0;
@@ -64,8 +62,6 @@ public class SubscriptionState {
     URI consumerURI = null;
 
     private OutGoingQueue outGoingQueue;
-
-    private List<MessageMatcherConnection> messageMatcherConnections = new LinkedList<MessageMatcherConnection>();
 
     /**
      * @return Returns the creationTime.
@@ -144,15 +140,7 @@ public class SubscriptionState {
         // String topicLocalString = topicExpressionQName.getLocalPart();
         return localTopicString;
     }
-
-    public List<MessageMatcherConnection> getMessageMatcherConnections() {
-        return messageMatcherConnections;
-    }
-
-    public void addMessageMatcherConnection(MessageMatcherConnection connection) {
-        messageMatcherConnections.add(connection);
-    }
-
+   
     /**
      * @return Returns the consumeReference.
      */

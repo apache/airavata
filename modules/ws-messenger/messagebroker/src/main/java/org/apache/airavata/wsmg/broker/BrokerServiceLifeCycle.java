@@ -45,12 +45,13 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.Handler;
 import org.apache.axis2.engine.Phase;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BrokerServiceLifeCycle implements org.apache.axis2.engine.ServiceLifeCycle {
 
-    Logger log = Logger.getLogger(BrokerServiceLifeCycle.class);
-    SendingStrategy method = null;
+    private static final Logger log = LoggerFactory.getLogger(BrokerServiceLifeCycle.class);
+    private SendingStrategy method = null;
 
     public void shutDown(ConfigurationContext arg, AxisService service) {
         log.info("broker shutting down");
@@ -103,7 +104,7 @@ public class BrokerServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
                         WsmgCommonConstants.TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS, configMan);
 
             } catch (AxisFault e) {
-                throw new RuntimeException("unable to init persistant storage", e);
+                throw new RuntimeException("Unable to init Broker persistant storage", e);
             }
         }
 

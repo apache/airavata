@@ -34,18 +34,16 @@ import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.matching.AbstractMessageMatcher;
 import org.apache.airavata.wsmg.messenger.OutGoingQueue;
-import org.apache.airavata.wsmg.transports.jms.MessageMatcherConnection;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DirectWsntMessageMatcher extends AbstractMessageMatcher {
 
+    private static final Logger logger = LoggerFactory.getLogger(DirectWsntMessageMatcher.class);
+    
     private ConsumerListManager consumerListmanager = new ConsumerListManager();
 
-    private OutGoingQueue outGoingQueue = null;
-
-    // private Map topic2ConsumerListMap = new HashMap();
-
-    Logger logger = Logger.getLogger(DirectWsntMessageMatcher.class);
+    private OutGoingQueue outGoingQueue = null;   
 
     public DirectWsntMessageMatcher(
 
@@ -63,12 +61,12 @@ public class DirectWsntMessageMatcher extends AbstractMessageMatcher {
         currentMessageCache = new Hashtable<String, String>();
     }
 
-    public MessageMatcherConnection handleSubscribe(SubscriptionState subscribeRequest, String subscriptionId) {
+    public void handleSubscribe(SubscriptionState subscribeRequest, String subscriptionId) {
 
         String topicExpression = subscribeRequest.getLocalTopic();
         if (topicExpression == null || topicExpression.length() == 0) {
             logger.error("ERROR:WsntAdapterConnection creation failed.");
-            return null;
+            return;
         }
 
         writeLockUnlockConsumers(true);
@@ -82,7 +80,7 @@ public class DirectWsntMessageMatcher extends AbstractMessageMatcher {
             writeLockUnlockConsumers(false);
         }
 
-        return null;
+        return;
 
     }
 

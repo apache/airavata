@@ -27,11 +27,12 @@ import java.util.Set;
 import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.axis2.AxisFault;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class CleanUpThread implements Runnable {
 
-    private final static Logger log = Logger.getLogger(CleanUpThread.class);
+    private static final Logger logger = LoggerFactory.getLogger(CleanUpThread.class);
 
     SubscriptionManager subMan = null;
 
@@ -49,7 +50,7 @@ class CleanUpThread implements Runnable {
         final long skipCheckInterval = 1000 * 60 * 10; // 10 minutes
         final long checkupInterval = 1000 * 60 * 5; // 5 minutes
         int MAX_TRY = 3;
-        log.info("Starting Subscription Cleaning up Thread.");
+        logger.info("Starting Subscription Cleaning up Thread.");
         while (true) {
             long currentTime = System.currentTimeMillis();
             long expiredStartTime = 0;
@@ -84,17 +85,16 @@ class CleanUpThread implements Runnable {
                         try {
                             subMan.removeSubscription(key);
                         } catch (AxisFault e) {
-
-                            log.error(e);
+                            logger.error(e.getMessage(), e);
                         }
                         // Not need to remove the key from the keyset since
                         // the keyset
                         // "is backed by the map, so changes to the map are reflected in the set, and vice-versa."
                         // i.remove(); //add this will cause
                         // ConcurrentModificationException
-                        log.info("*****Deleted (expiration)" + key + "-->" + subscription.getConsumerIPAddressStr()
+                        logger.info("*****Deleted (expiration)" + key + "-->" + subscription.getConsumerIPAddressStr()
                                 + "##" + subscription.getLocalTopic());
-                        log.info("*****Deleted (expiration)" + key + "-->" + subscription.getConsumerIPAddressStr()
+                        logger.info("*****Deleted (expiration)" + key + "-->" + subscription.getConsumerIPAddressStr()
                                 + "##" + subscription.getLocalTopic());
                         continue;
                     }
@@ -121,7 +121,7 @@ class CleanUpThread implements Runnable {
                                 subMan.removeSubscription(key);
                             } catch (AxisFault e) {
                                 // TODO Auto-generated catch block
-                                log.error(e);
+                                logger.error(e.getMessage(), e);
                             }
 
                             // Remove from hashtable seperately to avoid
@@ -129,9 +129,9 @@ class CleanUpThread implements Runnable {
                             // with
                             // i.next()
                             iterator.remove();
-                            log.info("*****Deleted (unavailable)" + key + "-->"
+                            logger.info("*****Deleted (unavailable)" + key + "-->"
                                     + subscription.getConsumerIPAddressStr() + "##" + subscription.getLocalTopic());
-                            log.info("*****Deleted (unavailable)" + key + "-->"
+                            logger.info("*****Deleted (unavailable)" + key + "-->"
                                     + subscription.getConsumerIPAddressStr() + "##" + subscription.getLocalTopic());
                         }
                     }
@@ -140,8 +140,7 @@ class CleanUpThread implements Runnable {
             try {
                 Thread.sleep(checkupInterval);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                log.error("thread was interrupped", e);
+                logger.error("thread was interrupped", e);
             }
         }
 

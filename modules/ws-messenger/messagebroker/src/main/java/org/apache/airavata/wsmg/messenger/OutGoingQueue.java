@@ -25,11 +25,12 @@ import org.apache.airavata.wsmg.commons.OutGoingMessage;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.util.Counter;
 import org.apache.airavata.wsmg.util.TimerThread;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OutGoingQueue {
 
-    Logger logger = Logger.getLogger(OutGoingQueue.class);
+    private static final Logger logger = LoggerFactory.getLogger(OutGoingQueue.class);
 
     private Counter storeToOutQueueCounter;
 

@@ -26,11 +26,12 @@ import java.io.File;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoadConfigProperties {
 
-    private static Logger logger = Logger.getLogger(LoadConfigProperties.class);
+    private static Logger logger = LoggerFactory.getLogger(LoadConfigProperties.class);
 
     public static LoadConfigProperties confProp = null;
     private String axisRepo = null;

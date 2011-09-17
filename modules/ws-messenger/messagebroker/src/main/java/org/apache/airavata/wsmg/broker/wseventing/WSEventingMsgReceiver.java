@@ -28,7 +28,8 @@ import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
 import org.apache.airavata.wsmg.util.WsEventingOperations;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * BrokerServiceMessageReceiverInOut message receiver
@@ -36,7 +37,7 @@ import org.apache.log4j.Logger;
 
 public class WSEventingMsgReceiver extends AbstractBrokerMsgReceiver {
 
-    org.apache.log4j.Logger log = Logger.getLogger(WSEventingMsgReceiver.class);
+    private static final Logger log = LoggerFactory.getLogger(WSEventingMsgReceiver.class);
     WSEProcessingContextBuilder builder = new WSEProcessingContextBuilder();
 
     public MessageContext process(MessageContext inMsg, String operationName) throws AxisFault {

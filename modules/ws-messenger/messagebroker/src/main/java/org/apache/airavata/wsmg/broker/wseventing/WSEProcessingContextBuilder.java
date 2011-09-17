@@ -30,8 +30,8 @@ import org.apache.airavata.wsmg.broker.context.ProcessingContext;
 import org.apache.airavata.wsmg.broker.context.ProcessingContextBuilder;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
-import org.apache.airavata.wsmg.util.WsEventingOperations;
 import org.apache.airavata.wsmg.util.BrokerUtil;
+import org.apache.airavata.wsmg.util.WsEventingOperations;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
@@ -39,11 +39,12 @@ import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReferenceHelper;
 import org.apache.axis2.context.MessageContext;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WSEProcessingContextBuilder extends ProcessingContextBuilder {
 
-    Logger logger = Logger.getLogger(WSEProcessingContextBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(WSEProcessingContextBuilder.class);
 
     public ProcessingContext build(OMElement elem) {
 

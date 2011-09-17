@@ -27,7 +27,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 interface TaskCompletionCallback {
     void onCompletion(ThreadCrew.WSMGRunnable r);
@@ -40,10 +41,8 @@ interface RunnableEx {
 
 public class ThreadCrew implements TaskCompletionCallback {
 
+    private static final Logger log = LoggerFactory.getLogger(ThreadCrew.class);
     int nextIndex = 0;
-
-    Logger log = Logger.getLogger(ThreadCrew.class);
-
     List<WSMGRunnable> wsmgRunnables = new ArrayList<WSMGRunnable>();
 
     ExecutorService service;

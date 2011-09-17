@@ -32,7 +32,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import org.apache.airavata.wsmg.broker.AdditionalMessageContent;
 import org.apache.airavata.wsmg.broker.ConsumerInfo;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
-import org.apache.airavata.wsmg.transports.jms.MessageMatcherConnection;
 
 public abstract class AbstractMessageMatcher {
 
@@ -56,7 +55,7 @@ public abstract class AbstractMessageMatcher {
     // Message can be either String or XmlElement. Added XMLElement for
     // performance consideration so that if not using queue,
     // we don't need to serialize to String
-    // If we already serialized to String because of the uing queue, we don't
+    // If we already serialized to String because of the using queue, we don't
     // have to change back to XMLElement until the delivery to consumers
 
     public abstract void populateMatches(String wsntMessageConverterClassName,
@@ -65,7 +64,7 @@ public abstract class AbstractMessageMatcher {
 
     public abstract int handleUnsubscribe(String subscriptionId);
 
-    public abstract MessageMatcherConnection handleSubscribe(SubscriptionState subscribeRequest, String subscriptionId);
+    public abstract void handleSubscribe(SubscriptionState subscribeRequest, String subscriptionId);
 
     public String handleGetCurrentMessage(String topic) {
         String currentMessage = currentMessageCache.get(topic);

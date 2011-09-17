@@ -40,7 +40,8 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * this class is not thread safe
@@ -48,7 +49,7 @@ import org.apache.log4j.Logger;
 
 public class SenderUtils {
 
-    Logger logger = Logger.getLogger(SenderUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(SenderUtils.class);
 
     OMFactory factory = OMAbstractFactory.getOMFactory();
 
@@ -155,9 +156,7 @@ public class SenderUtils {
             try {
                 topicEl = CommonRoutines.reader2OMElement(new StringReader(topicElString));
             } catch (XMLStreamException e) {
-                // TODO add with throws
-                logger.fatal("XMLStreamreader exception when setting topicEl", e);
-                e.printStackTrace();
+                logger.error("XMLStreamreader exception when setting topicEl", e);
             }
             notificationMessageEl.addChild(topicEl);
         }
@@ -167,8 +166,7 @@ public class SenderUtils {
             try {
                 producerReferenceEl = CommonRoutines.reader2OMElement(new StringReader(producerReferenceElString));
             } catch (XMLStreamException e) {
-                logger.fatal("XMLStreamException at " + "creating producerReferenceEl", e);
-                e.printStackTrace();
+                logger.error("XMLStreamException at creating producerReferenceEl", e);
             }
             notificationMessageEl.addChild(producerReferenceEl);
         }
