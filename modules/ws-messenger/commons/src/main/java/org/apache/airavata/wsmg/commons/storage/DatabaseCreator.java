@@ -84,14 +84,14 @@ public class DatabaseCreator {
     }
 
     /**
-     * Checks whether database tables are created.
+     * Checks whether database tables are created by using select * on given table name
      * 
-     * @param checkSQL
-     *            SQL execute during check.
+     * @param tableName
+     *            Table which should be existed
      * @return <code>true</core> if checkSQL is success, else <code>false</code>
      *         .
      */
-    public static boolean isDatabaseStructureCreated(String checkSQL, Connection conn) {
+    public static boolean isDatabaseStructureCreated(String tableName, Connection conn) {
         try {
             if (log.isTraceEnabled()) {
                 log.trace("Running a query to test the database tables existence.");
@@ -100,7 +100,7 @@ public class DatabaseCreator {
             Statement statement = null;
             try {
                 statement = conn.createStatement();
-                ResultSet rs = statement.executeQuery(checkSQL);
+                ResultSet rs = statement.executeQuery("select * from " + tableName);
                 if (rs != null) {
                     rs.close();
                 }

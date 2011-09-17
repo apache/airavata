@@ -59,6 +59,8 @@ import org.slf4j.LoggerFactory;
 public class WsmgPersistantStorage implements WsmgStorage {
     private static final Logger logger = LoggerFactory.getLogger(WsmgPersistantStorage.class);
 
+    private static final String TABLE_NAME_TO_CHECK = "subscription";
+    
     private Counter storeToDBCounter = new Counter();
 
     private JdbcStorage db = null;
@@ -79,7 +81,7 @@ public class WsmgPersistantStorage implements WsmgStorage {
              * Check database
              */
             Connection conn = db.connect();
-            if (!DatabaseCreator.isDatabaseStructureCreated("SELECT * from subscription", conn)) {
+            if (!DatabaseCreator.isDatabaseStructureCreated(TABLE_NAME_TO_CHECK, conn)) {
                 DatabaseCreator.createMsgBrokerDatabase(conn);
                 logger.info("New Database created for Message Broker");
             } else {

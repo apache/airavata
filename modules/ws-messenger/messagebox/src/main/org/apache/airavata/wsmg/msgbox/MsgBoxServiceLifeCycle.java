@@ -50,8 +50,10 @@ import org.slf4j.LoggerFactory;
  */
 public class MsgBoxServiceLifeCycle implements org.apache.axis2.engine.ServiceLifeCycle {
 
-    private static final String CONFIGURATION_FILE_NAME = "msgBox.properties";
+    
     private static final Logger logger = LoggerFactory.getLogger(MsgBoxServiceLifeCycle.class);
+    private static final String CONFIGURATION_FILE_NAME = "msgBox.properties";
+    private static final String TABLE_NAME_TO_CHECK = "msgbox";
     private JdbcStorage db;
 
     public void shutDown(ConfigurationContext configurationcontext, AxisService axisservice) {
@@ -88,7 +90,7 @@ public class MsgBoxServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
                  * Check database
                  */
                 Connection conn = db.connect();
-                if (!DatabaseCreator.isDatabaseStructureCreated("SELECT * from subscription", conn)) {
+                if (!DatabaseCreator.isDatabaseStructureCreated(TABLE_NAME_TO_CHECK, conn)) {
                     DatabaseCreator.createMsgBoxDatabase(conn);
                     logger.info("New Database created for Message Box");
                 } else {
