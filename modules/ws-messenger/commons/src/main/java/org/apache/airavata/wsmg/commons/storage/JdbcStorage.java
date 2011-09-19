@@ -32,10 +32,6 @@ import org.slf4j.LoggerFactory;
 public class JdbcStorage {
     private static Logger log = LoggerFactory.getLogger(JdbcStorage.class);
 
-    private PreparedStatement stmt = null;
-
-    private ResultSet rs = null;
-
     private ConnectionPool connectionPool;
 
     public JdbcStorage(String jdbcUrl, String jdbcDriver) {
@@ -50,9 +46,52 @@ public class JdbcStorage {
                         Connection.TRANSACTION_SERIALIZABLE);
             } else {
                 connectionPool = new ConnectionPool(driver, url, initCon, maxCon, true);
-            }            
+            }
         } catch (Exception e) {
             throw new RuntimeException("Failed to create database connection pool.", e);
+        }
+    }
+
+    /**
+     * Check if this connection pool is auto commit or not
+     * 
+     * @return
+     */
+    public boolean isAutoCommit() {
+        return connectionPool.isAutoCommit();
+    }
+
+    public void commit(Connection conn) {
+        try {
+            if (conn != null && !conn.getAutoCommit()) {
+                conn.commit();
+            }
+        } catch (SQLException sqle) {
+            log.error("Cannot commit data", sqle);
+        }
+    }
+
+    public void commitAndFree(Connection conn) {
+        commit(conn);
+        if (conn != null) {
+            closeConnection(conn);
+        }
+    }
+
+    public void rollback(Connection conn) {
+        try {
+            if (conn != null && !conn.getAutoCommit()) {
+                conn.rollback();
+            }
+        } catch (SQLException sqle) {
+            log.error("Cannot Rollback data", sqle);
+        }
+    }
+
+    public void rollbackAndFree(Connection conn) {
+        rollback(conn);
+        if (conn != null) {
+            closeConnection(conn);
         }
     }
 
@@ -75,17 +114,21 @@ public class JdbcStorage {
     public int update(String query) throws SQLException {
         int result = 0;
         Connection conn = null;
+        PreparedStatement stmt = null;
         try {
             conn = connectionPool.getConnection();
             stmt = conn.prepareStatement(query);
             result = stmt.executeUpdate();
+            commit(conn);
+        } catch (SQLException sql) {
+            rollback(conn);
+            throw sql;
         } finally {
-            if (conn != null) {
-                connectionPool.free(conn);
-            }
-
             if (stmt != null && !stmt.isClosed()) {
                 stmt.close();
+            }            
+            if(conn!=null){
+                closeConnection(conn);
             }
         }
         return result;
@@ -111,44 +154,23 @@ public class JdbcStorage {
         return rows;
     }
 
-    public ResultSet query(String query) throws SQLException {
-        ResultSet rs = null;
-        Connection conn = null;
-        try {
-            conn = connectionPool.getConnection();
-            stmt = conn.prepareStatement(query);
-            rs = stmt.executeQuery();
-            conn.setAutoCommit(false);
-        } finally {
-            if (conn != null) {
-                connectionPool.free(conn);
-            }
-        }
-        return rs;
-    }
-
-    public void close() throws SQLException {
-        if (stmt != null && !stmt.isClosed()) {
-            stmt.close();
-        }
-    }
-
     public int countRow(String tableName, String columnName) throws SQLException {
         String query = new String("SELECT COUNT(" + columnName + ") FROM " + tableName);
         int count = -1;
         Connection conn = null;
+        PreparedStatement stmt = null;
         try {
             conn = connectionPool.getConnection();
             stmt = conn.prepareStatement(query);
-            rs = stmt.executeQuery();
+            ResultSet rs = stmt.executeQuery();
             rs.next();
             count = rs.getInt(1);
         } finally {
-            if (conn != null) {
-                connectionPool.free(conn);
-            }
             if (stmt != null && !stmt.isClosed()) {
                 stmt.close();
+            }
+            if (conn != null) {
+                connectionPool.free(conn);
             }
         }
         return count;
@@ -162,34 +184,19 @@ public class JdbcStorage {
     public int insert(String query) throws SQLException {
         int rows = 0;
         Connection conn = null;
+        PreparedStatement stmt = null;
         try {
             conn = connectionPool.getConnection();
             stmt = conn.prepareStatement(query);
             rows = stmt.executeUpdate();
         } finally {
-            if (conn != null) {
-                connectionPool.free(conn);
-            }
             if (stmt != null && !stmt.isClosed()) {
                 stmt.close();
             }
-        }
-        return rows;
-    }
 
-    /**
-     * This method is provided so that yo can have better control over the
-     * statement. For example: You can use stmt.setString to convert quotation
-     * mark automatically in an INSERT statement
-     * 
-     * NOTE: Statement is closed after execution
-     */
-    public int insertAndClose(PreparedStatement stmt) throws SQLException {
-        int rows = 0;
-        try {
-            rows = stmt.executeUpdate();
-        } finally {
-            stmt.close();
+            if (conn != null) {
+                connectionPool.free(conn);
+            }
         }
         return rows;
     }
@@ -197,5 +204,5 @@ public class JdbcStorage {
     public void closeAllConnections() {
         if (connectionPool != null)
             connectionPool.dispose();
-    }
+    }    
 }

@@ -31,7 +31,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -43,87 +43,116 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.airavata.wsmg.commons.storage.JdbcStorage;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This is the core class which used by DatabaseStorageImpl to perform all the service operations, DatabaseStorageImpl class
- * simply use this class in its operation methods to perform the actual funcationality.
+ * This is the core class which used by DatabaseStorageImpl to perform all the
+ * service operations, DatabaseStorageImpl class simply use this class in its
+ * operation methods to perform the actual funcationality.
  */
 public class MessageBoxDB {
 
-    static Logger logger = Logger.getLogger(MessageBoxDB.class);
+    private static final String MSGBOXES_TABLENAME = "msgBoxes";
+    private static final String MSGBOX_TABLENAME = "msgbox";
+
+    private static final Logger logger = LoggerFactory.getLogger(MessageBoxDB.class);
 
     private static Set<String> msgBoxids;
 
-    public static final String SELECT_ALL_FROM_MSGBOXES = "SELECT * FROM msgBoxes";    
+    public static final String SELECT_ALL_FROM_MSGBOXES = "SELECT * FROM " + MSGBOXES_TABLENAME;
 
-    public static String SQL_STORE_MESSAGE_STATEMENT = "INSERT INTO msgbox (content, msgboxid, messageid,soapaction) VALUES (?,?,?,?)";
+    public static final String SQL_CREATE_MSGBOXES_STATEMENT = "INSERT INTO " + MSGBOXES_TABLENAME
+            + " (msgboxid) VALUES (?)";
 
-    public static String SQL_CREATE_MSGBOX_STATEMENT = "INSERT INTO %s (msgboxid) VALUES ('%s')";
+    public static final String SQL_DELETE_MSGBOXES_STATEMENT = "DELETE FROM " + MSGBOXES_TABLENAME
+            + " WHERE msgboxid = ?";
 
-    public static String SQL_DELETE_ALL_STATEMENT = "DELETE FROM %s WHERE msgboxid='%s'";
+    public static final String SQL_STORE_MESSAGE_STATEMENT = "INSERT INTO " + MSGBOX_TABLENAME
+            + " (content, msgboxid, messageid,soapaction) VALUES (?,?,?,?)";
 
-    public static String SQL_SELECT_STATEMENT1 = "SELECT * FROM %s WHERE msgboxid='%s' ORDER BY time ";
+    public static final String SQL_SELECT_MSGBOX_STATEMENT = "SELECT * FROM " + MSGBOX_TABLENAME
+            + " WHERE msgboxid = ? ORDER BY time ";
 
-    public static String SQL_DELETE_ANCIENT_STATEMENT = "DELETE FROM %s WHERE time <'%s'";
-    
+    public static final String SQL_DELETE_MSGBOX_STATEMENT = "DELETE FROM " + MSGBOX_TABLENAME + " WHERE msgboxid = ?";
+
+    public static final String SQL_DELETE_ANCIENT_STATEMENT = "DELETE FROM " + MSGBOX_TABLENAME + " WHERE time < ?";
+
     private JdbcStorage db;
-    
-    private static MessageBoxDB instance;
-    
-    private long time;    
 
-    private MessageBoxDB(JdbcStorage db) {
+    private static MessageBoxDB instance;
+
+    private long time;
+
+    private MessageBoxDB(JdbcStorage db, long time) {
         this.db = db;
+        this.time = time;
     }
-    
-    public static MessageBoxDB initialize(JdbcStorage db, long time) throws SQLException{
-        if(instance == null){
-            instance = new MessageBoxDB(db);
+
+    public static MessageBoxDB initialize(JdbcStorage db, long time) throws SQLException {
+        if (instance == null) {
+            instance = new MessageBoxDB(db, time);
             setMsgBoxidList(db);
         }
         return instance;
     }
-    
-    public static MessageBoxDB getInstance(){
-        if(instance==null){
+
+    public static MessageBoxDB getInstance() {
+        if (instance == null) {
             throw new RuntimeException("Please initialize this object first using initialize(JdbcStorage, long)");
         }
         return instance;
     }
 
-    public void createMsgBx(String messageBoxId, String tableName) throws SQLException, IOException {
+    public void createMsgBx(String messageBoxId) throws SQLException, IOException {
         if (!msgBoxids.contains(messageBoxId)) {
-            Connection connection = db.connect();
-            Statement statement = connection.createStatement();
-            System.out.println(tableName + ":" + messageBoxId);
-            statement.execute(String.format(SQL_CREATE_MSGBOX_STATEMENT, tableName, messageBoxId));
-            connection.commit();
-            db.closeConnection(connection);
-            msgBoxids.add(messageBoxId);
-        } else
+
+            Connection connection = null;
+            try {
+                logger.debug(MSGBOXES_TABLENAME + ":" + messageBoxId);
+
+                connection = db.connect();
+                PreparedStatement statement = connection.prepareStatement(SQL_CREATE_MSGBOXES_STATEMENT);
+                statement.setString(1, messageBoxId);
+                db.executeUpdateAndClose(statement);
+                db.commitAndFree(connection);
+
+                msgBoxids.add(messageBoxId);
+
+            } catch (SQLException sql) {
+                db.rollbackAndFree(connection);
+                throw sql;
+            }
+        } else {
             throw new AxisFault("The message box ID requested already exists");
+        }
     }
 
     public void addMessage(String msgBoxID, String messageID, String soapAction, OMElement message)
             throws SQLException, IOException, XMLStreamException {
         if (msgBoxids.contains(msgBoxID)) {
-            Connection connection = db.connect();
-            PreparedStatement stmt = connection.prepareStatement(SQL_STORE_MESSAGE_STATEMENT);
-            byte[] buffer;
-            ByteArrayOutputStream output = new ByteArrayOutputStream();
-            ObjectOutputStream out = new ObjectOutputStream(output);
-            out.writeObject(message.toStringWithConsume());
-            buffer = output.toByteArray();
-            ByteArrayInputStream in = new ByteArrayInputStream(buffer);
-            stmt.setBinaryStream(1, in, buffer.length);
-            stmt.setString(2, msgBoxID);
-            stmt.setString(3, messageID);
-            stmt.setString(4, soapAction);
-            db.insertAndClose(stmt);
-            stmt.close();
-            connection.commit();
-            db.closeConnection(connection);
+
+            Connection connection = null;
+            try {
+                connection = db.connect();
+                PreparedStatement stmt = connection.prepareStatement(SQL_STORE_MESSAGE_STATEMENT);
+                ByteArrayOutputStream output = new ByteArrayOutputStream();
+                ObjectOutputStream out = new ObjectOutputStream(output);
+                out.writeObject(message.toStringWithConsume());
+                byte[] buffer = output.toByteArray();
+                ByteArrayInputStream in = new ByteArrayInputStream(buffer);
+                stmt.setBinaryStream(1, in, buffer.length);
+                stmt.setString(2, msgBoxID);
+                stmt.setString(3, messageID);
+                stmt.setString(4, soapAction);
+
+                db.executeUpdateAndClose(stmt);
+                db.commitAndFree(connection);
+
+            } catch (SQLException sql) {
+                db.rollbackAndFree(connection);
+                throw sql;
+            }
         } else {
             throw new AxisFault("Currently a messagebox is not available with given message box id :" + msgBoxID);
         }
@@ -132,12 +161,27 @@ public class MessageBoxDB {
     public void deleteMessageBox(String msgBoxId) throws SQLException {
 
         if (msgBoxids.contains(msgBoxId)) {
-            Connection connection = db.connect();
-            Statement statement = connection.createStatement();
-            statement.execute(String.format(SQL_DELETE_ALL_STATEMENT, "msgbox", msgBoxId));
-            statement.execute(String.format(SQL_DELETE_ALL_STATEMENT, "msgBoxes", msgBoxId));
-            db.closeConnection(connection);
-            msgBoxids.remove(msgBoxId);
+
+            Connection connection = null;
+            try {
+                connection = db.connect();
+                PreparedStatement statement = connection.prepareStatement(SQL_DELETE_MSGBOXES_STATEMENT);
+                statement.setString(1, msgBoxId);
+                db.executeUpdateAndClose(statement);
+                statement = connection.prepareStatement(SQL_DELETE_MSGBOX_STATEMENT);
+                statement.setString(1, msgBoxId);
+                db.executeUpdateAndClose(statement);
+
+                // commit
+                db.commitAndFree(connection);
+
+                // remove from set
+                msgBoxids.remove(msgBoxId);
+
+            } catch (SQLException sql) {
+                db.rollbackAndFree(connection);
+                throw sql;
+            }
         }
     }
 
@@ -145,57 +189,97 @@ public class MessageBoxDB {
             ClassNotFoundException, XMLStreamException {
         LinkedList<String> list = new LinkedList<String>();
         if (msgBoxids.contains(msgBoxId)) {
-            Connection connection = db.connect();
 
-            PreparedStatement stmt = connection.prepareStatement(String.format(SQL_SELECT_STATEMENT1, "msgbox",
-                    msgBoxId));
-            ResultSet resultSet = stmt.executeQuery();
-//            resultSet.beforeFirst();
+            Connection connection = null;
+            PreparedStatement stmt = null;
+            try {
+                connection = db.connect();
+                stmt = connection.prepareStatement(SQL_SELECT_MSGBOX_STATEMENT);
+                stmt.setString(1, msgBoxId);
+                ResultSet resultSet = stmt.executeQuery();
+                while (resultSet.next()) {
+                    InputStream in = resultSet.getAsciiStream("content");
+                    ObjectInputStream s = new ObjectInputStream(in);
+                    String xmlString = (String) s.readObject();
+                    logger.debug(xmlString);
+                    list.addFirst(xmlString);
+                }
+                resultSet.close();
+                stmt.close();
 
-            while (resultSet.next()) {
-                InputStream in = resultSet.getAsciiStream("content");
-                ObjectInputStream s = new ObjectInputStream(in);
-                String xmlString = (String) s.readObject();
-                System.out.println(xmlString);
-                list.addFirst(xmlString);
+                /*
+                 * Delete all retrieved messages
+                 */
+                stmt = connection.prepareStatement(SQL_DELETE_MSGBOX_STATEMENT);
+                stmt.setString(1, msgBoxId);
+                db.executeUpdateAndClose(stmt);
+
+                // commit
+                db.commit(connection);
+            } catch (SQLException sql) {
+                db.rollback(connection);
+                throw sql;
+            } finally {
+
+                /*
+                 * If there is error during query, close everything and throw
+                 * error
+                 */
+                try {
+                    if (stmt != null && !stmt.isClosed()) {
+                        stmt.close();
+                    }
+                } catch (SQLException sql) {
+                    throw sql;
+                } finally {
+                    if (connection != null) {
+                        db.closeConnection(connection);
+                    }
+                }
             }
-            resultSet.close();
-            stmt.close();
-            stmt = connection.prepareStatement(String.format(SQL_DELETE_ALL_STATEMENT, "msgbox", msgBoxId));
-            db.insertAndClose(stmt);
-            stmt.close();
-            connection.commit();
-            db.closeConnection(connection);
         }
         return list;
     }
 
     public void removeAncientMessages() {
+        Connection connection = null;
         try {
-            Connection connection = db.connect();
+            connection = db.connect();
+            PreparedStatement stmt = connection.prepareStatement(SQL_DELETE_ANCIENT_STATEMENT);
             long persevetime = System.currentTimeMillis() - this.time;
-            PreparedStatement stmt = connection.prepareStatement(String.format(SQL_DELETE_ANCIENT_STATEMENT, "msgBox",
-                    persevetime));
-            db.insertAndClose(stmt);
-            stmt.close();
-            db.closeConnection(connection);
-        } catch (SQLException e) {
-            logger.fatal("Caught exception while removing old entries from msgbox db table", e);
+            stmt.setTimestamp(1, new Timestamp(persevetime));
+            db.executeUpdateAndClose(stmt);
+            db.commitAndFree(connection);
+        } catch (SQLException sql) {
+            db.rollbackAndFree(connection);
+            logger.error("Caught exception while removing old entries from msgbox db table", sql);
         }
 
     }
 
     private static void setMsgBoxidList(JdbcStorage db) throws SQLException {
         msgBoxids = Collections.synchronizedSet(new HashSet<String>());
-        Connection connection = db.connect();
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(SELECT_ALL_FROM_MSGBOXES);
-        while (resultSet.next()) {
-            msgBoxids.add(resultSet.getString("msgboxid"));
+
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        try {
+            connection = db.connect();
+            stmt = connection.prepareStatement(SELECT_ALL_FROM_MSGBOXES);
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                msgBoxids.add(resultSet.getString("msgboxid"));
+            }
+        } finally {
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException sql) {
+                throw sql;
+            } finally {
+                db.commitAndFree(connection);
+            }
         }
-        statement.close();
-        connection.commit();
-        db.closeConnection(connection);
     }
 
 }
