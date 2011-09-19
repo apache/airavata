@@ -118,15 +118,19 @@ public class JdbcStorage {
             conn = connectionPool.getConnection();
             stmt = conn.prepareStatement(query);
             rs = stmt.executeQuery();
+            conn.setAutoCommit(false);
         } finally {
             if (conn != null) {
                 connectionPool.free(conn);
             }
-            if (stmt != null && !stmt.isClosed()) {
-                stmt.close();
-            }
         }
         return rs;
+    }
+
+    public void close() throws SQLException {
+        if (stmt != null && !stmt.isClosed()) {
+            stmt.close();
+        }
     }
 
     public int countRow(String tableName, String columnName) throws SQLException {

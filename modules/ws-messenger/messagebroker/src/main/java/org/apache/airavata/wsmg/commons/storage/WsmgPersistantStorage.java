@@ -88,7 +88,6 @@ public class WsmgPersistantStorage implements WsmgStorage {
                 logger.info("Database already created for Message Broker!");
             }
             db.closeConnection(conn);
-
             // inject dbname to sql statement.
             SubscriptionConstants.ORDINARY_SUBSCRIPTION_INSERT_QUERY = String.format(
                     SubscriptionConstants.INSERT_SQL_QUERY, ordinarySubsTblName);
@@ -142,6 +141,7 @@ public class WsmgPersistantStorage implements WsmgStorage {
         } finally {
             if (rs != null) {
                 try {
+                    db.close();
                     rs.close();
                 } catch (SQLException ex) {
                     logger.error("sql exception occured", ex);
