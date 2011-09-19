@@ -117,11 +117,9 @@ public class Consumer extends Thread {
 
 					numberOfMsgRecieved.incrementAndGet();
 
-					/*
-					 * System.out .println(String.format(
-					 * "consumer [%s] recieved: %s", getName(),
-					 * numberOfMsgRecieved));
-					 */
+					 System.out .println(String.format(
+					 "consumer [%s] recieved: %s", getName(),
+					 numberOfMsgRecieved));
 				} catch (Exception e) {
 					System.err.print("invalid msg recieved");
 				}
