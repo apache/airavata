@@ -136,6 +136,26 @@
 			</includes>
 		</fileSet>
 
+        <!--
+			********************** copy commons and client jar **********************
+		-->
+
+		<fileSet>
+			<directory>../ws-messenger/commons/target</directory>
+			<outputDirectory>lib</outputDirectory>
+			<includes>
+				<include>airavata-messenger-commons*.jar</include>
+			</includes>
+		</fileSet>
+
+        <fileSet>
+			<directory>../ws-messenger/client/target</directory>
+			<outputDirectory>lib</outputDirectory>
+			<includes>
+				<include>airavata-messenger-client*.jar</include>
+			</includes>
+		</fileSet>
+
 		<!--
 			********************** copy messagebroker+ messagebox samples **********************
 		-->
