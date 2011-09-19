@@ -105,6 +105,15 @@ public class ConnectionPool {
         initialize(initialConnections, maxConnections, waitIfBusy);
     }
 
+    /**
+     * Check if this connection pool is auto commit or not
+     * 
+     * @return
+     */
+    public boolean isAutoCommit() {
+        return this.autoCommit;
+    }
+
     private void initialize(int initialConnections, int maxConnections, boolean waitIfBusy) throws SQLException {
         this.maxConnections = maxConnections;
         this.waitIfBusy = waitIfBusy;

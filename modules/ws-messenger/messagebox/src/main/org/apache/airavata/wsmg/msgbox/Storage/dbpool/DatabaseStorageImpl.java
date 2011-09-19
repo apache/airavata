@@ -36,21 +36,15 @@ import org.apache.axiom.om.OMElement;
  * Database message Storage Implementation, if msgBox.properties configured to use database this will set as the storage
  * for MsgBoxSerivceSkeleton
  */
-public class DatabaseStorageImpl implements MsgBoxStorage {
-
-    // private MessageBoxDB messageBoxDB;
-
-    // private final static MLogger logger = MLogger.getLogger();
+public class DatabaseStorageImpl implements MsgBoxStorage {  
 
     public DatabaseStorageImpl(JdbcStorage db, long timeOfOldMessage) throws SQLException {
         MessageBoxDB.initialize(db, timeOfOldMessage);
     }
 
     public String createMsgBox() throws SQLException, IOException {
-        // String uuid = FastUUIDGen.nextUUID();// generate uuid
-
         String uuid = UUID.randomUUID().toString();
-        MessageBoxDB.getInstance().createMsgBx(uuid, "msgBoxes");
+        MessageBoxDB.getInstance().createMsgBx(uuid);
         return uuid;
     }
 
@@ -60,13 +54,9 @@ public class DatabaseStorageImpl implements MsgBoxStorage {
         } catch (SQLException e) {
             throw new Exception("Could not destroy the message box with key " + key, e);
         }
-        // logger.finest("Message box with key " + key +
-        // " was destroyed successfully");
-
     }
 
     public List<String> takeMessagesFromMsgBox(String key) throws Exception {
-        // String[] message;
         List<String> list = null;
 
         try {
