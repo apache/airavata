@@ -230,7 +230,7 @@ public class GFacMessageReciever implements MessageReceiver {
         EndpointReference gfacUrl = messageContext.getConfigurationContext().getListenerManager()
                 .getEPRforService(WSConstants.GFAC_SERVICE_NAME, WSConstants.GFAC_INVOKE_METHOD, WSConstants.GFAC_TRANSPORT);
         String serviceName = getOriginalServiceName(messageContext);
-        String serviceEpr = gfacUrl.getAddress().split("GFacService")[0] + serviceName;
+        String serviceEpr = gfacUrl.getAddress().split(WSConstants.GFAC_SERVICE_NAME)[0] + serviceName;
         ConfigurationContext context = messageContext.getConfigurationContext();
         // TODO this logic has to change based on the logic we are storing data
         // into repository
