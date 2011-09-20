@@ -174,4 +174,7 @@ public interface WSConstants {
      * schemaLocation
      */
     public static final String SCHEMA_LOCATION_ATTRIBUTE = "schemaLocation";
+    String GFAC_SERVICE_NAME = "GFacService";
+    String GFAC_INVOKE_METHOD = "invoke";
+    String GFAC_TRANSPORT = "http";
 }
