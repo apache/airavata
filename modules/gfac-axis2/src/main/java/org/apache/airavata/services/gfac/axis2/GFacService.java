@@ -38,11 +38,14 @@ import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.services.gfac.axis2.handlers.AmazonSecurityHandler;
 import org.apache.airavata.services.gfac.axis2.handlers.MyProxySecurityHandler;
+import org.apache.airavata.services.gfac.axis2.util.WSConstants;
+import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.engine.ServiceLifeCycle;
+import org.apache.axis2.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +96,15 @@ public class GFacService implements ServiceLifeCycle {
             RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
             Repository repository = repositoryFactory.getRepository(map);
             Credentials credentials = new SimpleCredentials(map.get(JCR_USER), map.get(JCR_PASS).toCharArray());
+            JCRRegistry registry = new JCRRegistry(repository,credentials);
+            String localAddress = Utils.getIpAddress(context.getAxisConfiguration());
+            String port = context.getAxisConfiguration().getTransportIn("http").getReceiver().PARAM_PORT;
+            localAddress = "http://" + localAddress + ":" + port ;
+            if(context.getContextRoot().startsWith("/")){
+                localAddress =  localAddress +
+                        context.getServiceContextPath() + "/" + WSConstants.GFAC_SERVICE_NAME;
+            }
+            registry.saveGFacDescriptor(localAddress);
             context.setProperty(CONFIGURATION_CONTEXT_REGISTRY, new JCRRegistry(repository, credentials));
         } catch (Exception e) {
             log.error(e.getMessage(), e);

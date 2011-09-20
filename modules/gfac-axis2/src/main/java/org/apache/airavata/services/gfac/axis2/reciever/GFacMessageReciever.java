@@ -46,6 +46,7 @@ import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.services.gfac.axis2.GFacService;
 import org.apache.airavata.services.gfac.axis2.util.GFacServiceOperations;
+import org.apache.airavata.services.gfac.axis2.util.WSConstants;
 import org.apache.airavata.services.gfac.axis2.util.WSDLUtil;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -65,7 +66,6 @@ import org.apache.axis2.util.MessageContextBuilder;
 import org.apache.axis2.util.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.jackrabbit.core.data.AbstractDataRecord;
 import org.xmlpull.v1.builder.XmlDocument;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
 
@@ -152,13 +152,14 @@ public class GFacMessageReciever implements MessageReceiver {
         String topic = getTopic(messageContext);
         OMElement outputElement = null;
         try {
-            WorkflowTrackingNotification notification = new WorkflowTrackingNotification(brokerURL,topic);
-//            LoggingNotification notification = new LoggingNotification();
-            DefaultInvocationContext ct = new DefaultInvocationContext();
-            ct.setExecutionContext(new DefaultExecutionContext());
-            ct.setServiceName(serviceName);
-            ct.getExecutionContext().setRegistryService(getRegistry(context));
-            ct.getExecutionContext().addNotifiable(notification);
+            WorkflowTrackingNotification workflowNotification = new WorkflowTrackingNotification(brokerURL,topic);
+            LoggingNotification loggingNotification = new LoggingNotification();
+            DefaultInvocationContext invocationContext = new DefaultInvocationContext();
+            invocationContext.setExecutionContext(new DefaultExecutionContext());
+            invocationContext.setServiceName(serviceName);
+            invocationContext.getExecutionContext().setRegistryService(getRegistry(context));
+            invocationContext.getExecutionContext().addNotifiable(workflowNotification);
+            invocationContext.getExecutionContext().addNotifiable(loggingNotification);
 
             /*
              * read from registry and set the correct parameters
@@ -191,14 +192,14 @@ public class GFacMessageReciever implements MessageReceiver {
                 outputParam.add(parameter.getName(), SchemaUtil.mapFromType(parameter.getType()));
             }
 
-            ct.setInput(inputParam);
-            ct.setOutput(outputParam);
+            invocationContext.setInput(inputParam);
+            invocationContext.setOutput(outputParam);
 
             if (service == null) {
                 service = new PropertyServiceFactory(GFacService.REPOSITORY_PROPERTIES).createService();
             }
             // invoke service
-            service.execute(ct);
+            service.execute(invocationContext);
 
             /*
              * Process Output
@@ -207,7 +208,7 @@ public class GFacMessageReciever implements MessageReceiver {
             OMNamespace omNs = fac.createOMNamespace("http://ws.apache.org/axis2/xsd", "ns1");
             outputElement = fac.createOMElement("invokeResponse", omNs);
 
-            ParameterContextImpl paramContext = (ParameterContextImpl) ct
+            ParameterContextImpl paramContext = (ParameterContextImpl) invocationContext
                     .<AbstractParameter>getMessageContext("output");
             for (Iterator<String> iterator = paramContext.getNames(); iterator.hasNext(); ) {
                 String name = iterator.next();
@@ -227,7 +228,7 @@ public class GFacMessageReciever implements MessageReceiver {
     private void processgetWSDLOperation(MessageContext messageContext) throws Exception {
         MessageContext response = null;
         EndpointReference gfacUrl = messageContext.getConfigurationContext().getListenerManager()
-                .getEPRforService("GFacService", "invoke", "http");
+                .getEPRforService(WSConstants.GFAC_SERVICE_NAME, WSConstants.GFAC_INVOKE_METHOD, WSConstants.GFAC_TRANSPORT);
         String serviceName = getOriginalServiceName(messageContext);
         String serviceEpr = gfacUrl.getAddress().split("GFacService")[0] + serviceName;
         ConfigurationContext context = messageContext.getConfigurationContext();
