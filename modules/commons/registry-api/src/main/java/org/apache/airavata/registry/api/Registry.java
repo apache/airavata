@@ -129,4 +129,11 @@ public interface Registry {
      * @return
      */
     public boolean saveGFacDescriptor(String gfacURL);
+
+    /**
+     * This method can be used to unset the gfacURL from repository resource
+     * @param gfacURL
+     * @return
+     */
+    public boolean deleteGFacDescriptor(String gfacURL);
 }
