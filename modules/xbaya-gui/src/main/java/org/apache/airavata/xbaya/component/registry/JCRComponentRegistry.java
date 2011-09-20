@@ -38,9 +38,21 @@ public class JCRComponentRegistry extends ComponentRegistry {
     public JCRComponentRegistry(URI url, String username, String password) {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("org.apache.jackrabbit.repository.uri", url.toString());
+        registerUserManagers();
         this.registry = new JCRRegistry("org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", username,
                 password, map);        
     }
+
+	/**
+	 * to manually trigger user manager registrations
+	 */
+    private void registerUserManagers() {
+		try {
+			Class.forName("org.apache.airavata.xbaya.component.registry.jackrabbit.user.JackRabbitUserManagerWrap");
+		} catch (ClassNotFoundException e) {
+			//error in registering user managers
+		}
+	}
 
     /**
      * @see org.apache.airavata.xbaya.component.registry.ComponentRegistry#getComponentTree()

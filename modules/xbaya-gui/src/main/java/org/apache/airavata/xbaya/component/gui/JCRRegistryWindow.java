@@ -25,16 +25,20 @@ import java.awt.event.ActionEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryLoader;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
-import org.apache.airavata.xbaya.component.registry.URLComponentRegistry;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
+import org.apache.airavata.xbaya.gui.XBayaLinkButton;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
 
 public class JCRRegistryWindow {
@@ -50,6 +54,8 @@ public class JCRRegistryWindow {
     private XBayaTextField usernameTextField;
     
     private JPasswordField passwordTextField;
+
+	private XBayaLinkButton newUserButton;
 
     /**
      * @param engine
@@ -95,6 +101,10 @@ public class JCRRegistryWindow {
         this.loader.load(registry);
     }
 
+    private void createNewUser(){
+    	
+    }
+    
     /**
      * Initializes the GUI.
      */
@@ -106,16 +116,34 @@ public class JCRRegistryWindow {
         XBayaLabel nameLabel = new XBayaLabel("Username", this.usernameTextField);
         XBayaLabel passLabel = new XBayaLabel("Password", this.usernameTextField);
         
-
+        this.newUserButton = new XBayaLinkButton("Create new user...");
+        newUserButton.setHorizontalAlignment(XBayaLinkButton.RIGHT);
+        JLabel emptyLabel = new JLabel("");
+        
+        newUserButton.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+            	createNewUser();
+            }
+        });
+        
         GridPanel infoPanel = new GridPanel();
         infoPanel.add(urlLabel);
         infoPanel.add(this.urlTextField);
+//		GridBagConstraints c = new GridBagConstraints();
+//		c.fill = GridBagConstraints.HORIZONTAL;
+//		c.gridwidth = 2;
+//		c.gridx = 0;
+//		c.gridy = 1;
+//		infoPanel.getContentPanel().add(new JSeparator(SwingConstants.HORIZONTAL),c);
+//		infoPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         infoPanel.add(nameLabel);
         infoPanel.add(this.usernameTextField);
         infoPanel.add(passLabel);
         infoPanel.add(this.passwordTextField);
-        infoPanel.layout(3, 2, GridPanel.WEIGHT_NONE, 1);
-
+        infoPanel.add(emptyLabel);
+        infoPanel.add(this.newUserButton);
+        infoPanel.layout(4, 2, GridPanel.WEIGHT_NONE, 1);
+        
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
