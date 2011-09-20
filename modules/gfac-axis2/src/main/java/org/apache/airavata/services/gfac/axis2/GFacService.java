@@ -69,6 +69,7 @@ public class GFacService implements ServiceLifeCycle {
 
     public void startUp(ConfigurationContext configctx, AxisService service){
         AxisConfiguration config = null;
+        configctx.getAxisConfiguration().getTransportsIn().get("http").getParameter("port");
         List<Phase> phases = null;
         config = service.getAxisConfiguration();
         phases = config.getInFlowPhases();
@@ -96,14 +97,13 @@ public class GFacService implements ServiceLifeCycle {
             RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
             Repository repository = repositoryFactory.getRepository(map);
             Credentials credentials = new SimpleCredentials(map.get(JCR_USER), map.get(JCR_PASS).toCharArray());
-            JCRRegistry registry = new JCRRegistry(repository,credentials);
+            JCRRegistry registry = new JCRRegistry(repository, credentials);
             String localAddress = Utils.getIpAddress(context.getAxisConfiguration());
-            String port = context.getAxisConfiguration().getTransportIn("http").getReceiver().PARAM_PORT;
-            localAddress = "http://" + localAddress + ":" + port ;
-            if(context.getContextRoot().startsWith("/")){
-                localAddress =  localAddress +
-                        context.getServiceContextPath() + "/" + WSConstants.GFAC_SERVICE_NAME;
-            }
+            String port = (String) context.getAxisConfiguration().getTransportsIn().get("http").getParameter("port").getValue();
+            localAddress = "http://" + localAddress + ":" + port;
+            localAddress = localAddress + "/" +
+                    context.getContextRoot() + "/" + context.getServicePath() + "/" + WSConstants.GFAC_SERVICE_NAME;
+            System.out.println(localAddress);
             registry.saveGFacDescriptor(localAddress);
             context.setProperty(CONFIGURATION_CONTEXT_REGISTRY, new JCRRegistry(repository, credentials));
         } catch (Exception e) {
