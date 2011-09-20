@@ -22,6 +22,7 @@
 package org.apache.airavata.registry.api.impl;
 
 import java.lang.reflect.Constructor;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -425,17 +426,42 @@ public class JCRRegistry implements Axis2Registry {
 
     public boolean saveGFacDescriptor(String gfacURL) {
         Session session = null;
-        String result = null;
         try {
+            URI uri = new URI(gfacURL);
+            String propertyName = uri.getHost() + "-" + uri.getPort();
             session = getSession();
             Node gfacDataNode = getOrAddNode(session.getRootNode(), GFAC_INSTANCE_DATA);
             try {
-                Property prop = gfacDataNode.getProperty(GFAC_URL_PROPERTY_NAME);
-                result = prop.getString();
-                prop.setValue(result + "," + gfacURL);
+                Property prop = gfacDataNode.getProperty(propertyName);
+                prop.setValue(gfacURL);
+                session.save();
             } catch (PathNotFoundException e) {
-                gfacDataNode.setProperty(GFAC_URL_PROPERTY_NAME, gfacURL);
+                gfacDataNode.setProperty(propertyName, gfacURL);
+                session.save();
             }
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            return false;
+            // TODO propagate
+        } finally {
+            if (session != null && session.isLive()) {
+                session.logout();
+            }
+            return true;
+        }
+    }
+
+    public boolean deleteGFacDescriptor(String gfacURL) {
+        Session session = null;
+        try {
+            URI uri = new URI(gfacURL);
+            String propertyName = uri.getHost() + "-" + uri.getPort();
+            session = getSession();
+            Node gfacDataNode = getOrAddNode(session.getRootNode(), GFAC_INSTANCE_DATA);
+            Property prop = gfacDataNode.getProperty(propertyName);
+            prop.setValue((String) null);
+            session.save();
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
