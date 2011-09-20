@@ -35,6 +35,7 @@ import javax.jcr.RepositoryFactory;
 import javax.jcr.SimpleCredentials;
 
 import org.apache.airavata.core.gfac.services.GenericService;
+import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.services.gfac.axis2.handlers.AmazonSecurityHandler;
 import org.apache.airavata.services.gfac.axis2.handlers.MyProxySecurityHandler;
@@ -66,6 +67,7 @@ public class GFacService implements ServiceLifeCycle {
     public static final String JCR_PASS = "jcr.pass";
 
     public static GenericService service;
+    public static final String GFAC_URL = "GFacURL";
 
     public void startUp(ConfigurationContext configctx, AxisService service){
         AxisConfiguration config = null;
@@ -97,7 +99,7 @@ public class GFacService implements ServiceLifeCycle {
             RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
             Repository repository = repositoryFactory.getRepository(map);
             Credentials credentials = new SimpleCredentials(map.get(JCR_USER), map.get(JCR_PASS).toCharArray());
-            JCRRegistry registry = new JCRRegistry(repository, credentials);
+            Registry registry = new JCRRegistry(repository, credentials);
             String localAddress = Utils.getIpAddress(context.getAxisConfiguration());
             String port = (String) context.getAxisConfiguration().getTransportsIn().get("http").getParameter("port").getValue();
             localAddress = "http://" + localAddress + ":" + port;
@@ -105,12 +107,16 @@ public class GFacService implements ServiceLifeCycle {
                     context.getContextRoot() + "/" + context.getServicePath() + "/" + WSConstants.GFAC_SERVICE_NAME;
             System.out.println(localAddress);
             registry.saveGFacDescriptor(localAddress);
-            context.setProperty(CONFIGURATION_CONTEXT_REGISTRY, new JCRRegistry(repository, credentials));
+            context.setProperty(CONFIGURATION_CONTEXT_REGISTRY, registry);
+            context.setProperty(GFAC_URL,localAddress);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
 
     public void shutDown(ConfigurationContext configctx, AxisService service) {
+        Registry registry = (JCRRegistry) configctx.getProperty(CONFIGURATION_CONTEXT_REGISTRY);
+        String gfacURL = (String) configctx.getProperty(GFAC_URL);
+        registry.deleteGFacDescriptor(gfacURL);
     }
 }
