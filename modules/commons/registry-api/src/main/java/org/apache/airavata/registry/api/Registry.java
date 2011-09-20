@@ -121,5 +121,12 @@ public interface Registry {
 	 * @param hostName
 	 * @return the deployment descriptions with matched names
 	 */
-	public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName);	
+	public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName);
+
+    /**
+     * This method can be used to save the gfacURL in to registry
+     * @param gfacURL
+     * @return
+     */
+    public boolean saveGFacDescriptor(String gfacURL);
 }

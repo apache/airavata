@@ -49,10 +49,12 @@ import org.apache.commons.logging.LogFactory;
 public class JCRRegistry implements Axis2Registry {
 
 	private static final String SERVICE_NODE_NAME = "SERVICE_HOST";
+    private static final String GFAC_INSTANCE_DATA = "GFAC_INSTANCE_DATA";
 	private static final String DEPLOY_NODE_NAME = "APP_HOST";
 	private static final String HOST_NODE_NAME = "GFAC_HOST";
 	private static final String XML_PROPERTY_NAME = "XML";
 	private static final String WSDL_PROPERTY_NAME = "WSDL";
+    private static final String GFAC_URL_PROPERTY_NAME = "GFAC_URL_LIST";
 	private static final String LINK_NAME = "LINK";
 
 	private Repository repository;
@@ -420,4 +422,31 @@ public class JCRRegistry implements Axis2Registry {
         }
         return result;
     }
+
+    public boolean saveGFacDescriptor(String gfacURL) {
+        Session session = null;
+        String result = null;
+        try {
+            session = getSession();
+            Node gfacDataNode = getOrAddNode(session.getRootNode(), GFAC_INSTANCE_DATA);
+            try {
+                Property prop = gfacDataNode.getProperty(GFAC_URL_PROPERTY_NAME);
+                result = prop.getString();
+                prop.setValue(result + "," + gfacURL);
+            } catch (PathNotFoundException e) {
+                gfacDataNode.setProperty(GFAC_URL_PROPERTY_NAME, gfacURL);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            return false;
+            // TODO propagate
+        } finally {
+            if (session != null && session.isLive()) {
+                session.logout();
+            }
+            return true;
+        }
+    }
+
 }
