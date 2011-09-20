@@ -68,7 +68,7 @@
 
 	<target name="run" depends="build">
 
-		<java classname="wsmg.samples.msgBox.SimpleMsgBoxExec" fork="true">
+		<java classname="org.apache.airavata.wsmg.samples.msgBox.SimpleMsgBoxExec" fork="true">
 			<classpath refid="msgbox.class.path" />
 		</java>
 

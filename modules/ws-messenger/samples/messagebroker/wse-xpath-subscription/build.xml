@@ -22,7 +22,7 @@
 
 
 
-<project name="wsmgsamples" default="run" basedir=".">
+<project name="wse-xpath-sub-sample" default="run" basedir=".">
 
 	<property file="build.properties" />
 	<property name="lib.path" value="../../../lib" />
