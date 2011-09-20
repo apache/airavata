@@ -19,7 +19,7 @@
  *
 */
 
-package wsmg.samples.msgBox;
+package org.apache.airavata.wsmg.samples.msgBox;
 
 import java.io.IOException;
 import java.io.StringReader;

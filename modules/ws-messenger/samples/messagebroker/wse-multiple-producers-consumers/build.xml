@@ -22,7 +22,7 @@
 
 
 
-<project name="wsmgsamples" default="run" basedir=".">
+<project name="wse-multi-sample" default="run" basedir=".">
 
 	<property file="build.properties" />
 	<property name="lib.path" value="../../../lib" />

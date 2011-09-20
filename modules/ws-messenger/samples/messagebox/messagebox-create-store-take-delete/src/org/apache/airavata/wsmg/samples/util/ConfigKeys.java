@@ -19,7 +19,7 @@
  *
 */
 
-package wsmg.samples.util;
+package org.apache.airavata.wsmg.samples.util;
 
 public class ConfigKeys {
 	
