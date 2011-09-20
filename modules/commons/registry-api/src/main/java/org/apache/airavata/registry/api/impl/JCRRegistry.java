@@ -40,6 +40,8 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.Value;
 
 import org.apache.airavata.registry.api.Axis2Registry;
+import org.apache.airavata.registry.api.user.UserManager;
+import org.apache.airavata.registry.api.user.UserManagerFactory;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -60,7 +62,8 @@ public class JCRRegistry implements Axis2Registry {
 
 	private Repository repository;
 	private Credentials credentials;
-
+	private UserManager userManager;
+	
 	private static Log log = LogFactory.getLog(JCRRegistry.class);
 
 	public JCRRegistry(String className, String user, String pass,
@@ -78,7 +81,7 @@ public class JCRRegistry implements Axis2Registry {
 			repository = repositoryFactory.getRepository(map);
 			credentials = new SimpleCredentials(user,
 					new String(pass).toCharArray());
-
+			userManager = UserManagerFactory.getUserManager(className);
 		} catch (ClassNotFoundException e) {
 			log.error("Error class path settting", e);
 		} catch (RepositoryException e) {
