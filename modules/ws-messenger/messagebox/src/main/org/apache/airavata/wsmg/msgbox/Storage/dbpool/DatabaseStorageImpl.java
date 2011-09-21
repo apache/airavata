@@ -22,24 +22,54 @@
 package org.apache.airavata.wsmg.msgbox.Storage.dbpool;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.airavata.wsmg.commons.storage.DatabaseCreator;
 import org.apache.airavata.wsmg.commons.storage.JdbcStorage;
 import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
 import org.apache.axiom.om.OMElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Database message Storage Implementation, if msgBox.properties configured to use database this will set as the storage
- * for MsgBoxSerivceSkeleton
+ * Database message Storage Implementation, if msgBox.properties configured to
+ * use database this will set as the storage for MsgBoxSerivceSkeleton
  */
-public class DatabaseStorageImpl implements MsgBoxStorage {  
+public class DatabaseStorageImpl implements MsgBoxStorage {
 
-    public DatabaseStorageImpl(JdbcStorage db, long timeOfOldMessage) throws SQLException {
-        MessageBoxDB.initialize(db, timeOfOldMessage);
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseStorageImpl.class);
+    
+    private static final String TABLE_NAME_TO_CHECK = "msgbox";
+    
+    private JdbcStorage db;   
+
+    public DatabaseStorageImpl(String jdbcUrl, String jdbcDriver, long timeOfOldMessage) {
+        try {
+            db = new JdbcStorage(10, 50, jdbcUrl, jdbcDriver, true);
+            
+            /*
+             * Check database
+             */
+            Connection conn = db.connect();
+            if (!DatabaseCreator.isDatabaseStructureCreated(TABLE_NAME_TO_CHECK, conn)) {
+                DatabaseCreator.createMsgBoxDatabase(conn);
+                logger.info("New Database created for Message Box");
+            } else {
+                logger.info("Database already created for Message Box!");
+            }
+            db.closeConnection(conn);
+                       
+            MessageBoxDB.initialize(db, timeOfOldMessage);
+            
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RuntimeException("Database failure");
+        }
     }
 
     public String createMsgBox() throws SQLException, IOException {
@@ -78,6 +108,12 @@ public class DatabaseStorageImpl implements MsgBoxStorage {
 
     public void removeAncientMessages() throws Exception {
         MessageBoxDB.getInstance().removeAncientMessages();
+    }
+
+    public void dispose() {
+        if(db != null){
+            db.closeAllConnections();   
+        }
     }
 
 }

@@ -22,8 +22,6 @@
 package org.apache.airavata.wsmg.broker;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.List;
 
 import org.apache.airavata.wsmg.broker.handler.PublishedMessageHandler;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionManager;
@@ -32,6 +30,7 @@ import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.commons.storage.WsmgInMemoryStorage;
 import org.apache.airavata.wsmg.commons.storage.WsmgPersistantStorage;
 import org.apache.airavata.wsmg.commons.storage.WsmgStorage;
+import org.apache.airavata.wsmg.commons.util.Axis2Utils;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
 import org.apache.airavata.wsmg.messenger.ConsumerUrlManager;
@@ -40,15 +39,13 @@ import org.apache.airavata.wsmg.messenger.strategy.impl.FixedParallelSender;
 import org.apache.airavata.wsmg.messenger.strategy.impl.ParallelSender;
 import org.apache.airavata.wsmg.messenger.strategy.impl.SerialSender;
 import org.apache.airavata.wsmg.util.RunTimeStatistics;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
-import org.apache.axis2.engine.Handler;
-import org.apache.axis2.engine.Phase;
+import org.apache.axis2.engine.ServiceLifeCycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BrokerServiceLifeCycle implements org.apache.axis2.engine.ServiceLifeCycle {
+public class BrokerServiceLifeCycle implements ServiceLifeCycle {
 
     private static final Logger log = LoggerFactory.getLogger(BrokerServiceLifeCycle.class);
     private SendingStrategy method = null;
@@ -66,7 +63,7 @@ public class BrokerServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
 
         if (inited == null || inited == false) {
             log.info("starting broker");
-            overrideAddressingPhaseHander(configContext);
+            Axis2Utils.overrideAddressingPhaseHander(configContext, new PublishedMessageHandler());
             initConfigurations(configContext, axisService);
 
             WsmgConfigurationContext brokerConext = (WsmgConfigurationContext) configContext
@@ -87,25 +84,25 @@ public class BrokerServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
         WsmgConfigurationContext wsmgConfig = new WsmgConfigurationContext();
         configContext.setProperty(WsmgCommonConstants.BROKER_WSMGCONFIG, wsmgConfig);
 
-        ConfigurationManager configMan = new ConfigurationManager("conf" + File.separator + WsmgCommonConstants.BROKER_CONFIGURATION_FILE_NAME);
+        ConfigurationManager configMan = new ConfigurationManager("conf" + File.separator
+                + WsmgCommonConstants.BROKER_CONFIGURATION_FILE_NAME);
 
         wsmgConfig.setConfigurationManager(configMan);
 
         String type = configMan.getConfig(WsmgCommonConstants.CONFIG_STORAGE_TYPE,
                 WsmgCommonConstants.STORAGE_TYPE_PERSISTANT);
 
+        /*
+         * Determine Storage
+         */
         WsmgStorage storage = null;
 
         if (WsmgCommonConstants.STORAGE_TYPE_IN_MEMORY.equalsIgnoreCase(type)) {
             storage = new WsmgInMemoryStorage();
         } else {
-            try {
-                storage = new WsmgPersistantStorage(WsmgCommonConstants.TABLE_NAME_EXPIRABLE_SUBCRIPTIONS,
-                        WsmgCommonConstants.TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS, configMan);
-
-            } catch (AxisFault e) {
-                throw new RuntimeException("Unable to init Broker persistant storage", e);
-            }
+            String jdbcUrl = configMan.getConfig(WsmgCommonConstants.CONFIG_JDBC_URL);
+            String jdbcDriver = configMan.getConfig(WsmgCommonConstants.CONFIG_JDBC_DRIVER);
+            storage = new WsmgPersistantStorage(jdbcUrl, jdbcDriver);
         }
 
         wsmgConfig.setStorage(storage);
@@ -179,40 +176,4 @@ public class BrokerServiceLifeCycle implements org.apache.axis2.engine.ServiceLi
         method.start();
         log.info(initedmethod + " sending method inited");
     }
-
-    /**
-     * @param configContext
-     */
-    private void overrideAddressingPhaseHander(ConfigurationContext configContext) {
-
-        List<Phase> inflowPhases = configContext.getAxisConfiguration().getPhasesInfo().getINPhases();
-        boolean foundFlag = false;
-
-        for (Phase p : inflowPhases) {
-
-            if (p.getName().equalsIgnoreCase("Addressing")) {
-
-                List<Handler> handlers = p.getHandlers();
-
-                for (Iterator<Handler> ite = handlers.iterator(); ite.hasNext();) {
-                    Handler h = ite.next();
-                    if (h.getClass().isAssignableFrom(PublishedMessageHandler.class)) {
-                        p.removeHandler(h.getHandlerDesc());
-                        break;
-                    }
-                }
-
-                p.addHandler(new PublishedMessageHandler(), 0);
-                foundFlag = true;
-                break;
-            }
-
-        }
-
-        if (!foundFlag) {
-            throw new RuntimeException("unable to find addressing phase - inside inflow phases");
-        }
-
-    }
-
 }

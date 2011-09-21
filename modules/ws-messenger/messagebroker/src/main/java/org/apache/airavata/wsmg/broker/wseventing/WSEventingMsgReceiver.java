@@ -43,44 +43,35 @@ public class WSEventingMsgReceiver extends AbstractBrokerMsgReceiver {
     public MessageContext process(MessageContext inMsg, String operationName) throws AxisFault {
 
         WsEventingOperations msgType = WsEventingOperations.valueFrom(operationName);
-
         ProcessingContext processingContext = builder.build(inMsg, msgType);
-
         MessageContext outputMsg = null;
 
+        log.debug("WS-Eventing: " + msgType);
+        
         switch (msgType) {
         case SUBSCRIBE: {
-
             WsmgConfigurationContext brokerConfigContext = (WsmgConfigurationContext) inMsg.getConfigurationContext()
                     .getProperty(WsmgCommonConstants.BROKER_WSMGCONFIG);
 
             brokerConfigContext.getSubscriptionManager().subscribe(processingContext);
             outputMsg = createOutputMessageContext(inMsg, processingContext);
-        }
             break;
+        }
         case UNSUBSCRIBE: {
-
             WsmgConfigurationContext brokerConfigContext = (WsmgConfigurationContext) inMsg.getConfigurationContext()
                     .getProperty(WsmgCommonConstants.BROKER_WSMGCONFIG);
 
             brokerConfigContext.getSubscriptionManager().unsubscribe(processingContext);
             outputMsg = createOutputMessageContext(inMsg, processingContext);
-        }
             break;
+        }
         case RENEW:
-            // throw AxisFault.makeFault("unsupported operation" +
-            // msgType.toString());
-            break;
         case GET_STATUS:
-            // nothing to do
-            break;
         case SUBSCRIPTION_END:
-            // nothing to do
-            break;
+        default:
+            throw new AxisFault("unsupported operation" + msgType.toString());
 
         }
-
         return outputMsg;
     }
-
-}// end of class
+}

@@ -34,14 +34,14 @@ class CleanUpThread implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(CleanUpThread.class);
 
-    SubscriptionManager subMan = null;
+    private SubscriptionManager subMan;
 
     public CleanUpThread(SubscriptionManager manager) {
-        subMan = manager;
+        this.subMan = manager;
     }
 
     public void run() {
-        // logger.info("CleanUpThread started");
+        logger.debug("CleanUpThread started");
         String key = null;
         SubscriptionState subscription = null;
         Set<String> keySet = null;

@@ -19,140 +19,107 @@
  under the License.
 
 -->
-
 <serviceGroup>
-	<service name="EventingService" class="org.apache.airavata.wsmg.broker.BrokerServiceLifeCycle">
+    <service name="EventingService" class="org.apache.airavata.wsmg.broker.BrokerServiceLifeCycle">
 
-		<operation name="renew">
-			<messageReceiver class="org.apache.airavata.wsmg.broker.wseventing.WSEventingMsgReceiver" />
+        <operation name="renew">
+            <messageReceiver class="org.apache.airavata.wsmg.broker.wseventing.WSEventingMsgReceiver" />
+            <actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/Renew
+            </actionMapping>
+            <outputActionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/RenewResponse
+            </outputActionMapping>
+        </operation>
 
-			<actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/Renew
-			</actionMapping>
-			<outputActionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/RenewResponse
-			</outputActionMapping>
-		</operation>
+        <operation name="getStatus">
+            <messageReceiver class="org.apache.airavata.wsmg.broker.wseventing.WSEventingMsgReceiver" />
+            <actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/GetStatus
+            </actionMapping>
+            <outputActionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/GetStatusResponse
+            </outputActionMapping>
+        </operation>
 
-		<operation name="getStatus">
+        <operation name="subscriptionEnd">
+            <messageReceiver class="org.apache.airavata.wsmg.broker.wseventing.WSEventingMsgReceiver" />
+            <actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/SubscriptionEnd
+            </actionMapping>
+        </operation>
 
-			<messageReceiver class="org.apache.airavata.wsmg.broker.wseventing.WSEventingMsgReceiver" />
+        <operation name="subscribe">
+            <messageReceiver class="org.apache.airavata.wsmg.broker.wseventing.WSEventingMsgReceiver" />
+            <actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/Subscribe
+            </actionMapping>
+            <outputActionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/SubscribeResponse
+            </outputActionMapping>
+        </operation>
 
-			<actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/GetStatus
-			</actionMapping>
-			<outputActionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/GetStatusResponse
-			</outputActionMapping>
-		</operation>
+        <operation name="unsubscribe">
+            <messageReceiver class="org.apache.airavata.wsmg.broker.wseventing.WSEventingMsgReceiver" />
+            <actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/Unsubscribe
+            </actionMapping>
+            <outputActionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/UnsubscribeResponse
+            </outputActionMapping>
+        </operation>
 
-		<operation name="subscriptionEnd">
+        <operation name="publish">
+            <messageReceiver class="org.apache.airavata.wsmg.broker.wseventing.WSEventingPublishMsgReceiver" />
+            <actionMapping>http://org.apache.airavata/WseNotification
+            </actionMapping>
+        </operation>
 
-			<messageReceiver class="org.apache.airavata.wsmg.broker.wseventing.WSEventingMsgReceiver" />
+    </service>
 
-			<actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/SubscriptionEnd
-			</actionMapping>
-		</operation>
+    <service name="NotificationService" class="org.apache.airavata.wsmg.broker.BrokerServiceLifeCycle">
 
-		<operation name="subscribe">
+        <operation name="notify">
+            <messageReceiver class="org.apache.airavata.wsmg.broker.wsnotification.WSNotificationMsgReceiver" />
+            <actionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/Notify
+            </actionMapping>
+            <outputActionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/NotifyResponse
+            </outputActionMapping>
+        </operation>
+        
+        <operation name="subscribe">
+            <messageReceiver class="org.apache.airavata.wsmg.broker.wsnotification.WSNotificationMsgReceiver" />
+            <actionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/SubscribeRequest
+            </actionMapping>
+            <outputActionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/SubscribeRequestResponse
+            </outputActionMapping>
+        </operation>
 
-			<messageReceiver class="org.apache.airavata.wsmg.broker.wseventing.WSEventingMsgReceiver" />
+        <operation name="getCurrentMessage">
+            <messageReceiver class="org.apache.airavata.wsmg.broker.wsnotification.WSNotificationMsgReceiver" />
+            <actionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/GetCurrentMessageRequest
+            </actionMapping>
+            <outputActionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/GetCurrentMessageResponse
+            </outputActionMapping>
+        </operation>
+        
+        <operation name="pauseSubscription">
+            <messageReceiver class="org.apache.airavata.wsmg.broker.wsnotification.WSNotificationMsgReceiver" />
+            <actionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/PauseSubsriptionRequest
+            </actionMapping>
+            <outputActionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/PauseSubscriptionResponse
+            </outputActionMapping>
+        </operation>
+        
+        <operation name="resumeSubscription">
+            <messageReceiver class="org.apache.airavata.wsmg.broker.wsnotification.WSNotificationMsgReceiver" />
+            <actionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/ResumeSubsriptionRequest
+            </actionMapping>
+            <outputActionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/ResumeSubscriptionResponse
+            </outputActionMapping>
+        </operation>
 
-			<actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/Subscribe
-			</actionMapping>
-			<outputActionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/SubscribeResponse
-			</outputActionMapping>
-		</operation>
+        <operation name="unsubscribe">
+            <messageReceiver class="org.apache.airavata.wsmg.broker.wsnotification.WSNotificationMsgReceiver" />
+            <actionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/UnsubsribeRequest
+            </actionMapping>
+            <outputActionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/UnsubscribeResponse
+            </outputActionMapping>
+        </operation>
 
-		<operation name="unsubscribe">
+    </service>
 
-			<messageReceiver class="org.apache.airavata.wsmg.broker.wseventing.WSEventingMsgReceiver" />
-			<actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/Unsubscribe
-			</actionMapping>
+    <parameter name="configuration.file.name" locked="false">msgBroker.properties</parameter>
 
-			<outputActionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/UnsubscribeResponse
-			</outputActionMapping>
-		</operation>
-
-		<operation name="publish">
-			<messageReceiver
-				class="org.apache.airavata.wsmg.broker.wseventing.WSEventingPublishMsgReceiver" />
-			<actionMapping>http://org.apache.airavata/WseNotification
-			</actionMapping>
-		</operation>
-
-	</service>
-
-	<service name="NotificationService" class="org.apache.airavata.wsmg.broker.BrokerServiceLifeCycle">
-
-		<operation name="notify">
-			<messageReceiver
-				class="org.apache.airavata.wsmg.broker.wsnotification.WSNotificationMsgReceiver" />
-
-			<actionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/Notify
-			</actionMapping>
-			<outputActionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/NotifyResponse
-			</outputActionMapping>
-		</operation>
-		<operation name="subscribe">
-
-			<messageReceiver
-				class="org.apache.airavata.wsmg.broker.wsnotification.WSNotificationMsgReceiver" />
-
-			<actionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/SubscribeRequest
-			</actionMapping>
-			<outputActionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/SubscribeRequestResponse
-			</outputActionMapping>
-		</operation>
-
-		<operation name="getCurrentMessage">
-
-			<messageReceiver
-				class="org.apache.airavata.wsmg.broker.wsnotification.WSNotificationMsgReceiver" />
-
-			<actionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/GetCurrentMessageRequest
-			</actionMapping>
-
-			<outputActionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/GetCurrentMessageResponse
-			</outputActionMapping>
-
-		</operation>
-		<operation name="pauseSubscription">
-
-			<messageReceiver
-				class="org.apache.airavata.wsmg.broker.wsnotification.WSNotificationMsgReceiver" />
-
-			<actionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/PauseSubsriptionRequest
-			</actionMapping>
-
-			<outputActionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/PauseSubscriptionResponse
-			</outputActionMapping>
-
-		</operation>
-		<operation name="resumeSubscription">
-
-			<messageReceiver
-				class="org.apache.airavata.wsmg.broker.wsnotification.WSNotificationMsgReceiver" />
-
-			<actionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/ResumeSubsriptionRequest
-			</actionMapping>
-
-			<outputActionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/ResumeSubscriptionResponse
-			</outputActionMapping>
-
-		</operation>
-
-		<operation name="unsubscribe">
-
-			<messageReceiver
-				class="org.apache.airavata.wsmg.broker.wsnotification.WSNotificationMsgReceiver" />
-
-			<actionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/UnsubsribeRequest
-			</actionMapping>
-
-			<outputActionMapping>http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification/UnsubscribeResponse
-			</outputActionMapping>
-
-		</operation>
-
-	</service>
-	
-	 <parameter name="configuration.file.name" locked="false">msgBroker.properties</parameter>
-	  
 </serviceGroup>

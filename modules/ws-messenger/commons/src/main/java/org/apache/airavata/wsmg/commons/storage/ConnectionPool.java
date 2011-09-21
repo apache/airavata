@@ -301,6 +301,13 @@ public class ConnectionPool {
         closeConnections(busyConnections);
         busyConnections = new Stack<Connection>();
         lastAccessTimeRecord.clear();
+        
+        try{
+            this.clenupThread.join();
+            this.producerThread.join();
+        }catch(Exception e){
+            logger.error("Cannot shutdown cleanup thread", e);
+        }
     }
 
     private void closeConnections(Stack<Connection> connections) {

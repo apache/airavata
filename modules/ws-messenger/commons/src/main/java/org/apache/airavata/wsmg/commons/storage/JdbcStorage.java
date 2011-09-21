@@ -107,10 +107,6 @@ public class JdbcStorage {
         return conn;
     }
 
-    public void closeConnection(Connection conn) {
-        connectionPool.free(conn);
-    }
-
     public int update(String query) throws SQLException {
         int result = 0;
         Connection conn = null;
@@ -124,11 +120,14 @@ public class JdbcStorage {
             rollback(conn);
             throw sql;
         } finally {
-            if (stmt != null && !stmt.isClosed()) {
-                stmt.close();
-            }            
-            if(conn!=null){
-                closeConnection(conn);
+            try {
+                if (stmt != null && !stmt.isClosed()) {
+                    stmt.close();
+                }
+            } finally {
+                if (conn != null) {
+                    closeConnection(conn);
+                }
             }
         }
         return result;
@@ -165,44 +164,30 @@ public class JdbcStorage {
             ResultSet rs = stmt.executeQuery();
             rs.next();
             count = rs.getInt(1);
+            commit(conn);
+        } catch (SQLException sql) {
+            rollback(conn);
+            throw sql;
         } finally {
-            if (stmt != null && !stmt.isClosed()) {
-                stmt.close();
-            }
-            if (conn != null) {
-                connectionPool.free(conn);
+            try {
+                if (stmt != null && !stmt.isClosed()) {
+                    stmt.close();
+                }
+            } finally {
+                if (conn != null) {
+                    closeConnection(conn);
+                }
             }
         }
         return count;
     }
 
-    /**
-     * @param query
-     * @return
-     * @throws SQLException
-     */
-    public int insert(String query) throws SQLException {
-        int rows = 0;
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = connectionPool.getConnection();
-            stmt = conn.prepareStatement(query);
-            rows = stmt.executeUpdate();
-        } finally {
-            if (stmt != null && !stmt.isClosed()) {
-                stmt.close();
-            }
-
-            if (conn != null) {
-                connectionPool.free(conn);
-            }
-        }
-        return rows;
-    }
-
+    public void closeConnection(Connection conn) {
+        connectionPool.free(conn);
+    }    
+    
     public void closeAllConnections() {
         if (connectionPool != null)
             connectionPool.dispose();
-    }    
+    }
 }
