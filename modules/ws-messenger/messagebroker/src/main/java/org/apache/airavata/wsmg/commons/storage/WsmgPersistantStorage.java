@@ -46,13 +46,11 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionEntry;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.commons.storage.DatabaseCreator.DatabaseType;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.util.Counter;
 import org.apache.airavata.wsmg.util.TimerThread;
 import org.apache.axiom.om.OMElement;
-import org.apache.axis2.AxisFault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,13 +65,11 @@ public class WsmgPersistantStorage implements WsmgStorage {
 
     private String dbName = null;
 
-    public WsmgPersistantStorage(String ordinarySubsTblName, String specialSubsTblName, ConfigurationManager config)
-            throws AxisFault {
+    public WsmgPersistantStorage(String jdbcUrl, String jdbcDriver) {
 
-        this.dbName = ordinarySubsTblName;
+        this.dbName = WsmgCommonConstants.TABLE_NAME_EXPIRABLE_SUBCRIPTIONS;
 
-        db = new JdbcStorage(config.getConfig(WsmgCommonConstants.CONFIG_JDBC_URL),
-                config.getConfig(WsmgCommonConstants.CONFIG_JDBC_DRIVER));
+        db = new JdbcStorage(jdbcUrl, jdbcDriver);
 
         Connection conn = null;
         try {
@@ -90,10 +86,10 @@ public class WsmgPersistantStorage implements WsmgStorage {
 
             // inject dbname to sql statement.
             SubscriptionConstants.ORDINARY_SUBSCRIPTION_INSERT_QUERY = String.format(
-                    SubscriptionConstants.INSERT_SQL_QUERY, ordinarySubsTblName);
+                    SubscriptionConstants.INSERT_SQL_QUERY, WsmgCommonConstants.TABLE_NAME_EXPIRABLE_SUBCRIPTIONS);
 
             SubscriptionConstants.SPECIAL_SUBSCRIPTION_INSERT_QUERY = String.format(
-                    SubscriptionConstants.INSERT_SQL_QUERY, specialSubsTblName);
+                    SubscriptionConstants.INSERT_SQL_QUERY, WsmgCommonConstants.TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS);
 
             if (WSMGParameter.measureMessageRate) {
                 TimerThread timerThread = new TimerThread(storeToDBCounter, " StoreSubScriptionToDBCounter");
@@ -103,7 +99,7 @@ public class WsmgPersistantStorage implements WsmgStorage {
             initMessageQueueStorage();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw AxisFault.makeFault(e);
+            throw new RuntimeException("Database failure");
         } finally {
             if (conn != null) {
                 db.closeConnection(conn);

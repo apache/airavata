@@ -31,22 +31,19 @@ import org.apache.axis2.description.AxisService;
 import org.apache.axis2.dispatchers.AddressingBasedDispatcher;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.util.JavaUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Dispatcher is used to validate the incoming message, this is set to Handler list in MsgBoxServiceLifeCycle.
  */
 public class StoreMessageHandler extends AddressingBasedDispatcher {
+    private static final Logger logger = LoggerFactory.getLogger(StoreMessageHandler.class);
     private static final String WSMG_MSGSTORE_SOAP_ACTION = "http://org.apache.airavata/xgws/msgbox/2004/storeMessages";
     private static final String ADDRESSING_VALIDATE_ACTION = "addressing.validateAction";
-    Logger logger = Logger.getLogger(StoreMessageHandler.class);
-    private Phase addressingPhase = null;
-
-    private AxisOperation messageBoxOperation = null;
-
-    public StoreMessageHandler() {
-
-    }
+    
+    private Phase addressingPhase;
+    private AxisOperation messageBoxOperation;
 
     public org.apache.axis2.engine.Handler.InvocationResponse invoke(MessageContext msgContext) throws AxisFault {
 

@@ -26,7 +26,7 @@ import java.util.List;
 import org.apache.axiom.om.OMElement;
 
 /**
- * Message Box storage backend. This has implemented in two ways inmemory and
+ * Message Box storage backend. This has implemented in two ways in-memory and
  * database.
  */
 public interface MsgBoxStorage {
@@ -34,6 +34,15 @@ public interface MsgBoxStorage {
 
     public void destroyMsgBox(String key) throws Exception;
 
+    /**
+     * IMPORTANT::: List retrieved from this method is sorted by time in
+     * ascending order i.e the newest message will appear as the last item in
+     * the list.
+     * 
+     * @param key
+     * @return
+     * @throws Exception
+     */
     public List<String> takeMessagesFromMsgBox(String key) throws Exception;
 
     public void putMessageIntoMsgBox(String msgBoxID, String messageID, String soapAction, OMElement message)
@@ -43,4 +52,10 @@ public interface MsgBoxStorage {
      * The ancientness is defined in the db.config file.
      */
     public void removeAncientMessages() throws Exception;
+
+    /**
+     * Clean up method
+     */
+    public void dispose();
+
 }

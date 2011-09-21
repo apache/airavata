@@ -49,6 +49,7 @@ public class MsgBoxUtils {
 
         StAXOMBuilder builder = new StAXOMBuilder(inflow);
         OMElement omElement = builder.getDocumentElement();
+        inflow.close();
         return omElement;
     }
 

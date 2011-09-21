@@ -52,7 +52,6 @@ public class WSNotificationMsgReceiver extends AbstractBrokerMsgReceiver {
 
         switch (msgType) {
         case NOTIFY: {
-
             try {
 
                 WsmgConfigurationContext brokerConfigContext = (WsmgConfigurationContext) inMsg
@@ -64,18 +63,16 @@ public class WSNotificationMsgReceiver extends AbstractBrokerMsgReceiver {
                 throw new AxisFault("unable to process message", e);
             }
             outputMsg = createOutputMessageContext(inMsg, processingContext);
-
-        }
             break;
-
+        }
         case SUBSCRIBE: {
 
             WsmgConfigurationContext brokerConfigContext = (WsmgConfigurationContext) inMsg.getConfigurationContext()
                     .getProperty(WsmgCommonConstants.BROKER_WSMGCONFIG);
             brokerConfigContext.getSubscriptionManager().subscribe(processingContext);
             outputMsg = createOutputMessageContext(inMsg, processingContext);
-        }
             break;
+        }
         case UNSUBSCRIBE: {
 
             WsmgConfigurationContext brokerConfigContext = (WsmgConfigurationContext) inMsg.getConfigurationContext()
@@ -83,11 +80,8 @@ public class WSNotificationMsgReceiver extends AbstractBrokerMsgReceiver {
 
             brokerConfigContext.getSubscriptionManager().unsubscribe(processingContext);
             outputMsg = createOutputMessageContext(inMsg, processingContext);
-
-        }
             break;
-        case GET_CURRENT_MSG:
-            throw new AxisFault("not implemented yet");
+        }
         case RESUME_SUBSCRIPTION: {
 
             WsmgConfigurationContext brokerConfigContext = (WsmgConfigurationContext) inMsg.getConfigurationContext()
@@ -95,17 +89,19 @@ public class WSNotificationMsgReceiver extends AbstractBrokerMsgReceiver {
 
             brokerConfigContext.getSubscriptionManager().resumeSubscription(processingContext);
             outputMsg = createOutputMessageContext(inMsg, processingContext);
-
-        }
             break;
+        }
         case PAUSE_SUBSCRIPTION: {
             WsmgConfigurationContext brokerConfigContext = (WsmgConfigurationContext) inMsg.getConfigurationContext()
                     .getProperty(WsmgCommonConstants.BROKER_WSMGCONFIG);
 
             brokerConfigContext.getSubscriptionManager().pauseSubscription(processingContext);
             outputMsg = createOutputMessageContext(inMsg, processingContext);
-        }
             break;
+        }
+        case GET_CURRENT_MSG:
+        default:
+            throw new AxisFault("not implemented yet");
         }
 
         return outputMsg;

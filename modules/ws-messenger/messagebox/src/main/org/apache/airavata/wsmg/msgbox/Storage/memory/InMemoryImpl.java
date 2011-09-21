@@ -21,103 +21,111 @@
 
 package org.apache.airavata.wsmg.msgbox.Storage.memory;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
 import org.apache.axiom.om.OMElement;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This is the inmemoery storage implementation for MsgBoxService, this will be initialized if msgBox.properties is
- * configured not to use database implementation.
+ * This is the in memory storage implementation for MsgBoxService, this will be
+ * initialized if msgBox.properties is configured not to use database
+ * implementation.
  */
 public class InMemoryImpl implements MsgBoxStorage {
-    static Logger logger = Logger.getLogger(InMemoryImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(InMemoryImpl.class);
 
-    ConcurrentHashMap<String, LinkedList<String>> map;
+    private HashMap<String, List<Content>> map = new HashMap<String, List<Content>>();
 
-    public ConcurrentHashMap<String, LinkedList<String>> getMap() {
-        return map;
-    }
+    private long time;
 
-    public void setMap(ConcurrentHashMap<String, LinkedList<String>> map) {
-        this.map = map;
+    public InMemoryImpl(long time) {
+        this.time = time;
     }
 
     public String createMsgBox() throws Exception {
-
-        String clientid = UUID.randomUUID().toString();
-        lookupQueue(clientid); // that will create an empty queue
-        return clientid;
+        synchronized (map) {
+            String clientid = UUID.randomUUID().toString();
+            if(map.containsKey(clientid))
+                throw new Exception("Message Box is existed with key:" + clientid);            
+            map.put(clientid, new ArrayList<Content>());            
+            return clientid;
+        }
     }
 
     public void destroyMsgBox(String key) throws Exception {
-        if (map.containsKey(key))
+        synchronized (map) {
             map.remove(key);
+        }
     }
 
-    public LinkedList<String> takeMessagesFromMsgBox(String key) throws Exception {
-
-        LinkedList<String> list;
-
+    public List<String> takeMessagesFromMsgBox(String key) throws Exception {
         synchronized (map) {
-            list = map.get(key);
-
-            if (list == null)
-                throw new IllegalArgumentException("no message box with key " + key);
+            List<Content> x = map.get(key);
+            ArrayList<String> result = new ArrayList<String>(x.size());
+            for (Content content : x) {
+                result.add(content.getContent());
+            }
+            map.put(key, new ArrayList<Content>());
+            return result;
         }
-        return list;
-
     }
 
     public void putMessageIntoMsgBox(String msgBoxID, String messageID, String soapAction, OMElement message)
             throws Exception {
-
-        // To change body of implemented methods use File | Settings | File Templates.
-        LinkedList<String> list = lookupQueue(msgBoxID);
-        if (list == null) {
-            throw new IllegalArgumentException("no message box with key " + msgBoxID + " to store the msg");
-        }
-        synchronized (list) {
-            list.addLast(message.toStringWithConsume());
-            logger.info("Message Stored in list with key " + msgBoxID);
-        }
-    }
-
-    /**
-     * The ancientness is defined in the db.config file.
-     */
-    public void removeAncientMessages() {
-        // To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void closeConnection() throws Exception {
-        // TODOn - store map back
-    }
-
-    private LinkedList<String> lookupQueue(String key) {
-
-        logger.debug("lookupQueue: calling the getMap method...");
-
-        if (key == null)
-            throw new IllegalArgumentException();
         synchronized (map) {
-            LinkedList<String> v = map.get(key);
-            logger.debug(key + " is being searched in map..");
-
-            if (v != null) {
-                logger.info("key found in map.. " + key);
-                return v;
+            if (!map.containsKey(msgBoxID)) {
+                throw new IllegalArgumentException("no message box with key " + msgBoxID + " to store the msg");
             }
-
-            logger.info("key not found in map.. " + key);
-            LinkedList<String> list = new LinkedList<String>();
-            map.put(key, list);
-            logger.debug("new list created in map.. calling the setMap method...");
-            // this.setMap(map);
-            return list;
+            List<Content> list = map.get(msgBoxID);
+            list.add(new Content(message.toStringWithConsume(), System.currentTimeMillis()));
+            logger.debug("Message Stored in list with key " + msgBoxID);
         }
     }
+
+    public void removeAncientMessages() {
+        /*
+         * O(n^2) algorithms. Better performance can be achieved with more Cache.
+         */
+        synchronized (map) {
+            long currentTime = System.currentTimeMillis();
+            Iterator<List<Content>> it = map.values().iterator();
+            while(it.hasNext()){
+                Iterator<Content> itToRemove = it.next().iterator();
+                while(itToRemove.hasNext()){
+                    Content content = itToRemove.next();
+                    if(currentTime - this.time > content.getTime()){
+                        itToRemove.remove();
+                    }
+                }                
+            }
+        }
+    }   
+
+    public void dispose() {
+        synchronized (map) {
+            map.clear();
+        }
+    }
+
+    class Content {
+        private String content;
+        private long time;
+        public Content(String content, long time) {
+            this.content = content;
+            this.time = time;
+        }
+        public String getContent() {
+            return content;
+        }
+        public long getTime() {
+            return time;
+        }
+    }
+
 }

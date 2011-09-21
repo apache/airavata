@@ -40,12 +40,11 @@ import org.apache.airavata.wsmg.messenger.strategy.impl.FixedParallelSender;
 import org.apache.airavata.wsmg.messenger.strategy.impl.ParallelSender;
 import org.apache.airavata.wsmg.messenger.strategy.impl.SerialSender;
 import org.apache.airavata.wsmg.util.RunTimeStatistics;
-import org.apache.axis2.AxisFault;
 import org.apache.log4j.Logger;
 
 public class MessengerServlet extends HttpServlet {
 
-    Logger logger = Logger.getLogger(MessengerServlet.class);
+    private static final Logger logger = Logger.getLogger(MessengerServlet.class);
 
     private static final long serialVersionUID = -7175511030332798604L;
 
@@ -143,15 +142,8 @@ public class MessengerServlet extends HttpServlet {
             throw new RuntimeException("invalid storage type specified: " + type);
         }
 
-        try {
-            WSMGParameter.OUT_GOING_QUEUE = new WsmgPersistantStorage(
-                    WsmgCommonConstants.TABLE_NAME_EXPIRABLE_SUBCRIPTIONS,
-                    WsmgCommonConstants.TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS, configMan);
-
-        } catch (AxisFault af) {
-            logger.fatal("failed to initialize storage", af);
-            throw new RuntimeException("unable to initialize storage", af);
-        }
-
+        String jdbcUrl = configMan.getConfig(WsmgCommonConstants.CONFIG_JDBC_URL);
+        String jdbcDriver = configMan.getConfig(WsmgCommonConstants.CONFIG_JDBC_DRIVER);
+        WSMGParameter.OUT_GOING_QUEUE = new WsmgPersistantStorage(jdbcUrl, jdbcDriver);
     }
 }

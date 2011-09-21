@@ -65,20 +65,21 @@ public class SubscriptionManager {
 
     private static final Logger log = LoggerFactory.getLogger(SubscriptionManager.class);
 
-    private HashMap<String, SubscriptionState> subscriptions = new HashMap<String, SubscriptionState>(); // JDK15
-
-    private WsmgStorage subscriptionDB = null;
+    private HashMap<String, SubscriptionState> subscriptions = new HashMap<String, SubscriptionState>();
 
     private ReentrantReadWriteLock subscriptionLock = new ReentrantReadWriteLock();
 
-    private int counter = 1;
+    private WSEProtocolSupport wseProtocalSupport = new WSEProtocolSupport();
+
+    private WSNTProtocolSupport wsntProtocolSupport = new WSNTProtocolSupport();
+
+    private WsmgStorage subscriptionDB;
 
     private WsmgConfigurationContext wsmgConfig;
 
     private OutGoingQueue outGoingQueue;
-
-    private WSEProtocolSupport wseProtocalSupport = new WSEProtocolSupport();
-    private WSNTProtocolSupport wsntProtocolSupport = new WSNTProtocolSupport();
+    
+    private int counter = 1;
 
     public SubscriptionManager(WsmgConfigurationContext paramters, WsmgStorage storage) {
         init(paramters, storage);
@@ -92,10 +93,8 @@ public class SubscriptionManager {
         outGoingQueue = parameters.getOutgoingQueue();
         if (WSMGParameter.enableAutoCleanSubscriptions) {
             CleanUpThread cleanUpThread = new CleanUpThread(this);
-
             Thread t = new Thread(cleanUpThread);
             t.start();
-
         }
 
         try {
@@ -235,7 +234,8 @@ public class SubscriptionManager {
     }
 
     /**
-     * if find the subscription already exists, return the current subscriptionId else return null;
+     * if find the subscription already exists, return the current
+     * subscriptionId else return null;
      */
 
     public String checkSubscriptionExist(SubscriptionState state) {
