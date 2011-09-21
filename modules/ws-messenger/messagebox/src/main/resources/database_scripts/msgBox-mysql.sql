@@ -1,8 +1,11 @@
+CREATE DATABASE IF NOT EXISTS wsmg;
+
+DROP TABLE IF EXISTS msgBoxes;
+
 CREATE TABLE `msgBoxes` (
   `msgboxid` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`msgboxid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
 
 DROP TABLE IF EXISTS msgbox;
 
