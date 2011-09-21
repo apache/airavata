@@ -23,7 +23,9 @@
     <service name="MsgBoxService" scope="application" class="org.apache.airavata.wsmg.msgbox.MsgBoxServiceLifeCycle">
         <messageReceivers>
             <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="org.apache.airavata.wsmg.msgbox.MsgBoxServiceMessageReceiverInOut" />
-        </messageReceivers>        
+        </messageReceivers>
+        <parameter name="ServiceClass">org.apache.airavata.wsmg.msgbox.MsgBoxServiceSkeleton
+        </parameter>
         <parameter name="useOriginalwsdl">false</parameter>
         <parameter name="modifyUserWSDLPortAddress">true</parameter>
         <operation name="storeMessages" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://org.apache.airavata/xgws/msgbox/2004/">
