@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.wsmg.msgbox.tests;
+package org.apache.airavata.wsmg.msgbox;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -129,7 +129,7 @@ public class InMemoryMessageBoxServer {
     public static void startMessageBox() throws Exception {
 
         AxisService axisService = new AxisService("MsgBoxService");
-        axisService.addParameter("configuration.file.name", "msgBroker.properties");
+        axisService.addParameter("configuration.file.name", "msgBox.properties");
         axisService.setServiceLifeCycle(new MsgBoxServiceLifeCycle());
 
         createOperation(axisService, "storeMessages", new MsgBoxServiceMessageReceiverInOut(),
@@ -145,7 +145,7 @@ public class InMemoryMessageBoxServer {
                 "http://org.apache.airavata/xgws/msgbox/2004/createMsgBox",
                 "http://org.apache.airavata/xgws/msgbox/2004/MsgBoxPT/createMsgBoxResponse");
         axisService.addParameter("configuration.file.name", "msgBox.properties");
-        axisService.addParameter("ServiceClass", "edu.indiana.extreme.www.xgws.msgbox.MsgBoxServiceSkeleton");
+        axisService.addParameter("ServiceClass", "org.apache.airavata.wsmg.msgbox.MsgBoxServiceSkeleton");
 
         InMemoryMessageBoxServer.deployService(axisService);
 
@@ -174,11 +174,6 @@ public class InMemoryMessageBoxServer {
     }
 
     public static ConfigurationContext getNewConfigurationContext(String repository, String axis2xml) throws Exception {
-        // File file = new File(prefixBaseDirectory(repository));
-        // if (!file.exists()) {
-        // throw new Exception("repository directory "
-        // + file.getAbsolutePath() + " does not exists");
-        // }
         return ConfigurationContextFactory.createConfigurationContextFromFileSystem(repository, axis2xml);
     }
 
@@ -270,13 +265,6 @@ public class InMemoryMessageBoxServer {
     }
 
     public static String prefixBaseDirectory(String path) {
-        // String baseDir;
-        // try {
-        // baseDir = new File(System.getProperty("basedir", ".")).getCanonicalPath();
-        // } catch (IOException e) {
-        // throw new RuntimeException(e);
-        // }
-        // return baseDir + "/" + path;
         return path;
     }
 

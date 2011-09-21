@@ -105,7 +105,7 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
         try {
             storage.putMessageIntoMsgBox(msgBoxAddr, messageID, soapAction, message);
             
-            logger.debug("Put Message to MsgBox:" + msgBoxAddr + " with message:" + message);
+            logger.debug("Put Message to MsgBox:" + msgBoxAddr + " with messageID:" + messageID);
             
             status.setText(TRUE);
         } catch (SQLException e) {
