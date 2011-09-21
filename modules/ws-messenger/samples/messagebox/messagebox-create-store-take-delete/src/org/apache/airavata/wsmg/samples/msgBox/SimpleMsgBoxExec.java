@@ -30,9 +30,9 @@ import java.util.UUID;
 import javax.xml.stream.XMLStreamException;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
-import wsmg.samples.util.ConfigKeys;
 import org.apache.airavata.wsmg.msgbox.client.MsgBoxClient;
 import org.apache.airavata.wsmg.msgbox.util.MsgBoxUtils;
+import org.apache.airavata.wsmg.samples.util.ConfigKeys;
 import java.io.*;
 
 public class SimpleMsgBoxExec {
