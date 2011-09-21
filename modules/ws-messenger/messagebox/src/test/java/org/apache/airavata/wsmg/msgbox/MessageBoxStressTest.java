@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.wsmg.msgbox.tests;
+package org.apache.airavata.wsmg.msgbox;
 
 import java.io.StringReader;
 import java.util.Iterator;
@@ -43,6 +43,7 @@ import org.junit.Test;
 
 public class MessageBoxStressTest extends TestCase {
     private int port = 5555;
+    private long timeout = 500L;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -65,18 +66,17 @@ public class MessageBoxStressTest extends TestCase {
     @Test
     public void testMessageBox() throws Exception {
 
-        String msgBoxId = UUID.randomUUID().toString();
         MsgBoxClient user = new MsgBoxClient();
 
         // test publish with Epr
         EndpointReference msgBoxEpr = user.createMessageBox("http://localhost:" + port
-                + "/axis2/services/MsgBoxService", 500L);
+                + "/axis2/services/MsgBoxService", timeout);
 
         System.out.println(msgBoxEpr.toString());
-        user.storeMessage(msgBoxEpr, 500L,
+        user.storeMessage(msgBoxEpr, timeout,
                 MsgBoxUtils.reader2OMElement(new StringReader("<test>A simple test message</test>")));
 
-        Iterator<OMElement> iterator = user.takeMessagesFromMsgBox(msgBoxEpr, 500L);
+        Iterator<OMElement> iterator = user.takeMessagesFromMsgBox(msgBoxEpr, timeout);
         int i = 0;
         if (iterator != null)
             while (iterator.hasNext()) {
@@ -85,31 +85,43 @@ public class MessageBoxStressTest extends TestCase {
                 System.out.println(iterator.next().toStringWithConsume());
             }
 
-        System.out.println("Delete message box response :  " + user.deleteMsgBox(msgBoxEpr, 500L));
+        System.out.println("Delete message box response :  " + user.deleteMsgBox(msgBoxEpr, timeout));
 
         // test invocations with id encoded in the Url
-        msgBoxId = UUID.randomUUID().toString();
         user = new MsgBoxClient();
-
-        // test publish with Epr
-        msgBoxEpr = user.createMessageBox("http://localhost:" + port + "/axis2/services/MsgBoxService", 500L);
+        msgBoxEpr = user.createMessageBox("http://localhost:" + port + "/axis2/services/MsgBoxService", timeout);
+        String msgBoxId = UUID.randomUUID().toString();
+        String address = msgBoxEpr.getAddress();
+        int biginIndex = address.indexOf("clientid");
+        if (biginIndex != -1) {
+            msgBoxId = address.substring(biginIndex + "clientid".length() + 1);
+        }
+        System.out.println("MSGBOX ID:" + msgBoxId);
 
         String mesgboxUrl = "http://localhost:" + port + "/axis2/services/MsgBoxService/clientid/" + msgBoxId;
 
-        ServiceClient client = new ServiceClient();
-        client.getOptions().setTo(new EndpointReference(mesgboxUrl));
-
         OMElement request = OMAbstractFactory.getOMFactory().createOMElement(new QName("foo"));
         request.setText("bar");
-        client.sendReceive(request);
+        ServiceClient client = null;
+        
+        try {
+            client = new ServiceClient();
+            client.getOptions().setTo(new EndpointReference(mesgboxUrl));
+            OMElement response = client.sendReceive(request);
+        } finally {
+            client.cleanupTransport();
+        }
 
-        iterator = user.takeMessagesFromMsgBox(new EndpointReference(mesgboxUrl), 500L);
+        iterator = user.takeMessagesFromMsgBox(new EndpointReference(mesgboxUrl), timeout);
         assertTrue(iterator.hasNext());
-        iterator.next();
+        while (iterator.hasNext()) {
+            i++;
+            System.out.println("Retrieved message :" + i);
+            System.out.println(iterator.next().toStringWithConsume());
+        }
         assertFalse(iterator.hasNext());
 
         System.out.println("All tests Done");
 
     }
-
 }

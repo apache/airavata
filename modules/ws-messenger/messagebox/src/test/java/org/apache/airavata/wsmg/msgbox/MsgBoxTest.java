@@ -19,10 +19,11 @@
  *
  */
 
-package org.apache.airavata.wsmg.msgbox.tests;
+package org.apache.airavata.wsmg.msgbox;
 
 import java.io.StringReader;
 import java.util.Iterator;
+import java.util.Random;
 
 import junit.framework.TestCase;
 
@@ -38,6 +39,9 @@ import org.junit.Test;
 
 public class MsgBoxTest extends TestCase {
 
+    private int port = 5555;
+    private long timeout = 50000L;
+
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
 
@@ -49,6 +53,7 @@ public class MsgBoxTest extends TestCase {
 
     @Before
     public void setUp() throws Exception {
+        InMemoryMessageBoxServer.start(null, null);
     }
 
     @After
@@ -56,34 +61,25 @@ public class MsgBoxTest extends TestCase {
     }
 
     @Test
-    public void testMessageBox() throws Exception {
-
-        String fill = "aaaaaaaaaaa";
-
-        for (int i = 0; i < 5; i++) {
-            fill = fill + fill;
-        }
-
-        System.out.println("fill size : " + fill.length());
+    public void testMessageBox() throws Exception {               
 
         MsgBoxClient user = new MsgBoxClient();
+        StringBuilder builder = new StringBuilder();
 
-        EndpointReference msgBoxEpr = user
-                .createMessageBox("http://localhost:8080/axis2/services/MsgBoxService", 5000L);
-        /*
-         * user.storeMessage(msgBoxEpr, 500L, MsgBoxUtils .reader2OMElement(new StringReader(
-         * "<test>simple test message 1</test>"))); user.storeMessage(msgBoxEpr, 500L, MsgBoxUtils .reader2OMElement(new
-         * StringReader( "<test>simple test message 2</test>"))); user.storeMessage(msgBoxEpr, 500L, MsgBoxUtils
-         * .reader2OMElement(new StringReader( "<test>simple test message 3</test>"))); user.storeMessage(msgBoxEpr,
-         * 500L, MsgBoxUtils .reader2OMElement(new StringReader( "<test>simple test message 4</test>")));
-         */
-
-        EndpointReference msgBoxEprTcpMon = new EndpointReference(msgBoxEpr.getAddress().replace("8080", "5050"));
-
+        EndpointReference msgBoxEpr = user.createMessageBox("http://localhost:" + port
+                + "/axis2/services/MsgBoxService", timeout);
+        
         for (int i = 0; i < 10; i++) {
-            String msg = String.format("<msg><seq>%d</seq><fill>%s</fill></msg>", i, fill);
+                                
+            builder.delete(0, builder.capacity());
+            Random x = new Random();
+            for (int j = 0; j < x.nextInt(50) ; j++) {
+                builder.append("123456789");
+            }
+            
+            String msg = String.format("<msg><seq>%d</seq><fill>%s</fill></msg>", i, builder.toString());
 
-            user.storeMessage(msgBoxEpr, 500L, MsgBoxUtils.reader2OMElement(new StringReader(msg)));
+            user.storeMessage(msgBoxEpr, timeout, MsgBoxUtils.reader2OMElement(new StringReader(msg)));
 
             Thread.sleep(200L);
         }
@@ -91,14 +87,13 @@ public class MsgBoxTest extends TestCase {
         Iterator<OMElement> iterator = null;
 
         try {
-            iterator = user.takeMessagesFromMsgBox(msgBoxEprTcpMon, 5000L);
+            iterator = user.takeMessagesFromMsgBox(msgBoxEpr, timeout);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         if (iterator != null)
             while (iterator.hasNext()) {
-
                 System.out.println(iterator.next().toStringWithConsume());
             }
 
