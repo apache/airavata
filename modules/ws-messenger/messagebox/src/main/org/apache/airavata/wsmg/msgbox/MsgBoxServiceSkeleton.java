@@ -57,6 +57,7 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
         this.storage = (MsgBoxStorage) context.getConfigurationContext().getProperty(
                 MsgBoxCommonConstants.MSGBOX_STORAGE);
         
+        logger.info("Start clean up thread for messagebox");
         deletingThread = new Thread(new DeleteOldMessageRunnable());
         deletingThread.start();
     }
@@ -78,6 +79,8 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
     public OMElement createMsgBox() throws Exception {
         try {
             String createdMsgBoxId = storage.createMsgBox();
+            
+            logger.debug("MsgBox created:" + createdMsgBoxId);
 
             /*
              * Output response
@@ -101,6 +104,9 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
         OMElement status = factory.createOMElement(MsgBoxCommonConstants.MSGBOX_STATUS_QNAME);
         try {
             storage.putMessageIntoMsgBox(msgBoxAddr, messageID, soapAction, message);
+            
+            logger.debug("Put Message to MsgBox:" + msgBoxAddr + " with message:" + message);
+            
             status.setText(TRUE);
         } catch (SQLException e) {
             logger.error("Error while storing message: " + message + " in msgbx: " + msgBoxAddr, e);
@@ -123,6 +129,7 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
                 for (String string : list) {
                     messageSet.addChild(MsgBoxUtils.reader2OMElement(new StringReader(string)));
                 }
+                logger.debug("Take all messages from MsgBox:" + msgBoxAddr);
             } else {
                 logger.debug("  no messages..  ");
             }
@@ -141,6 +148,7 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
         String addr = msgBoxAddr;
         try{
             storage.destroyMsgBox(addr);
+            logger.debug("Destry MsgBox:" + msgBoxAddr);
             statusEl.setText(TRUE);
         }catch(Exception e){
             logger.error("Error while delete msgbx: " + msgBoxAddr, e);

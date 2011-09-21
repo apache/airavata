@@ -258,6 +258,7 @@ public class DatabaseCreator {
         } catch (SQLException e) {
             String msg = "Failed to create database tables for Airavata resource store. " + e.getMessage();
             log.error(msg, e);
+            conn.rollback();
             throw new Exception(msg, e);
         } finally {
             conn.setAutoCommit(true);

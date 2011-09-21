@@ -31,7 +31,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -74,7 +73,8 @@ public class MessageBoxDB {
 
     public static final String SQL_DELETE_MSGBOX_STATEMENT = "DELETE FROM " + MSGBOX_TABLENAME + " WHERE msgboxid = ?";
 
-    public static final String SQL_DELETE_ANCIENT_STATEMENT = "DELETE FROM " + MSGBOX_TABLENAME + " WHERE time < ?";
+    public static final String SQL_DELETE_ANCIENT_STATEMENT = "DELETE FROM " + MSGBOX_TABLENAME
+            + " WHERE {fn TIMESTAMPDIFF(SQL_TSI_FRAC_SECOND, CURRENT_TIMESTAMP, time) } > ?";
 
     private JdbcStorage db;
 
@@ -244,8 +244,7 @@ public class MessageBoxDB {
         try {
             connection = db.connect();
             PreparedStatement stmt = connection.prepareStatement(SQL_DELETE_ANCIENT_STATEMENT);
-            long persevetime = System.currentTimeMillis() - this.time;
-            stmt.setTimestamp(1, new Timestamp(persevetime));
+            stmt.setLong(1, this.time);
             db.executeUpdateAndClose(stmt);
             db.commitAndFree(connection);
         } catch (SQLException sql) {
