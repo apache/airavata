@@ -89,7 +89,7 @@ public class NewJCRRegistryUserDialog {
         }
 
         JCRComponentRegistry registry = new JCRComponentRegistry(url, username, password);
-
+        this.engine.getConfiguration().setJcrComponentRegistry(registry);
         hide();
 
         this.loader.load(registry);
