@@ -19,19 +19,39 @@
  *
  */
 
-package wsmg.util;
+package org.apache.airavata.wsmg.commons;
 
-public interface ConfigKeys {
+import java.util.Date;
 
-    String CONFIG_FILE_NAME = "unit_tests.properties";
+import junit.framework.TestCase;
 
-    String BROKER_EVENTING_SERVICE_EPR = "broker.eventing.service.epr";
-    String BROKER_NOTIFICATIONS_SERVICE_EPR = "broker.notification.service.epr";
+import org.apache.airavata.wsmg.commons.CommonRoutines;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-    String CONSUMER_EPR = "consumer.location";
-    String CONSUMER_PORT = "consumer.port";
-    String TOPIC_SIMPLE = "topic.simple";
-    String TOPIC_XPATH = "topic.xpath";
-    String AXIS2_REPO = "axis2.repo";
+public class TestCommonRoutines extends TestCase {
+
+    /**
+     * @throws java.lang.Exception
+     */
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    /**
+     * @throws java.lang.Exception
+     */
+    @After
+    public void tearDown() throws Exception {
+    }
+
+    /**
+     * Test method for {@link org.apache.airavata.wsmg.commons.CommonRoutines#getXsdDateTime(java.util.Date)}.
+     */
+    @Test
+    public void testGetXsdDateTime() {
+        assertNotNull(CommonRoutines.getXsdDateTime(new Date()));
+    }
 
 }

@@ -19,7 +19,7 @@
  *
  */
 
-package wsmg.client;
+package org.apache.airavata.wsmg.client;
 
 import static org.junit.Assert.assertTrue;
 
@@ -29,7 +29,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
 import org.apache.airavata.wsmg.client.MsgBrokerClientException;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
-import org.apache.airavata.wsmg.util.test.TestUtilServer;
+import org.apache.airavata.wsmg.util.TestUtilServer;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
 import org.junit.After;

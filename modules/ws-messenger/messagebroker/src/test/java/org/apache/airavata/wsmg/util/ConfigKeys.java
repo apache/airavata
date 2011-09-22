@@ -19,31 +19,19 @@
  *
  */
 
-package performance_evaluator.rtt;
+package org.apache.airavata.wsmg.util;
 
-import org.apache.axiom.soap.SOAPEnvelope;
+public interface ConfigKeys {
 
-public class StatContainer {
-    private SOAPEnvelope msgEnvelope = null;
-    private long rtt = 0l;
-    private long receivedTime = 0l;
+    String CONFIG_FILE_NAME = "unit_tests.properties";
 
-    public StatContainer(SOAPEnvelope msgEnvelope) {
-        this.msgEnvelope = msgEnvelope;
-        this.receivedTime = System.currentTimeMillis();
-        this.rtt = this.receivedTime
-                - Long.parseLong(msgEnvelope.getBody().getFirstElement().getFirstElement().getText());
-    }
+    String BROKER_EVENTING_SERVICE_EPR = "broker.eventing.service.epr";
+    String BROKER_NOTIFICATIONS_SERVICE_EPR = "broker.notification.service.epr";
 
-    public long getRondTripTime() {
-        return this.rtt;
-    }
+    String CONSUMER_EPR = "consumer.location";
+    String CONSUMER_PORT = "consumer.port";
+    String TOPIC_SIMPLE = "topic.simple";
+    String TOPIC_XPATH = "topic.xpath";
+    String AXIS2_REPO = "axis2.repo";
 
-    public SOAPEnvelope getMsgEnvelope() {
-        return msgEnvelope;
-    }
-
-    public long getMessageReceivedTime() {
-        return this.receivedTime;
-    }
 }

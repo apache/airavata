@@ -19,7 +19,7 @@
  *
  */
 
-package performance_evaluator.rtt;
+package org.apache.airavata.wsmg.performance_evaluator.rtt;
 
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
 import org.apache.airavata.wsmg.client.MessageBrokerClient;

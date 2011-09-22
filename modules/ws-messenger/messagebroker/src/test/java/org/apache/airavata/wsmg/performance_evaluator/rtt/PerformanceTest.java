@@ -19,7 +19,7 @@
  *
  */
 
-package performance_evaluator.rtt;
+package org.apache.airavata.wsmg.performance_evaluator.rtt;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -36,9 +36,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 
-import performance_evaluator.rtt.util.ConfigKeys;
-import performance_evaluator.rtt.util.LoadMsgPayload;
-import performance_evaluator.rtt.util.LoadXpath;
+import org.apache.airavata.wsmg.performance_evaluator.rtt.util.ConfigKeys;
+import org.apache.airavata.wsmg.performance_evaluator.rtt.util.LoadMsgPayload;
+import org.apache.airavata.wsmg.performance_evaluator.rtt.util.LoadXpath;
+
 
 class Stat {
     String name;

@@ -19,7 +19,7 @@
  *
  */
 
-package wsmg.broker;
+package org.apache.airavata.wsmg.broker;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -29,20 +29,20 @@ import java.util.concurrent.LinkedBlockingQueue;
 import junit.framework.TestCase;
 
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
-import org.apache.airavata.wsmg.client.WsntMsgBrokerClient;
-import org.apache.airavata.wsmg.util.test.TestUtilServer;
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
+import org.apache.airavata.wsmg.util.TestUtilServer;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
 import org.junit.Test;
 
-public class BrokerWSNTTest extends TestCase implements ConsumerNotificationHandler {
+public class BrokerWSETest extends TestCase implements ConsumerNotificationHandler {
 
     static Properties configs = new Properties();
 
     BlockingQueue<SOAPEnvelope> queue = new LinkedBlockingQueue<SOAPEnvelope>();
 
     public void handleNotification(SOAPEnvelope msgEnvelope) {
-        // queue.add(msgEnvelope);
+        queue.add(msgEnvelope);
         System.out.println("Received " + msgEnvelope);
     }
 
@@ -59,45 +59,37 @@ public class BrokerWSNTTest extends TestCase implements ConsumerNotificationHand
     public void testRoundTrip() throws InterruptedException {
 
         try {
+
+            String brokerEPR = "http://127.0.0.1:8080/axis2/services/EventingService";
             long value = System.currentTimeMillis();
             String msg = String.format("<msg> current time is : %d </msg>", value);
 
-            WsntMsgBrokerClient wsntMsgBrokerClient = new WsntMsgBrokerClient();
-
+            WseMsgBrokerClient wseMsgBrokerClient = new WseMsgBrokerClient();
+            wseMsgBrokerClient.init(brokerEPR);
             int consumerPort = 6767;
 
-            String brokerEPR = "http://127.0.0.1:5555/axis2/services/NotificationService";
-            wsntMsgBrokerClient.init(brokerEPR);
-            String[] consumerEPRs = wsntMsgBrokerClient.startConsumerService(consumerPort, this);
+            String[] consumerEPRs = wseMsgBrokerClient.startConsumerService(consumerPort, this);
 
             assertTrue(consumerEPRs.length > 0);
 
-            String topic = "WsntRoundTripTestTopic";
+            String topic = "WseRoundTripTestTopic";
 
-            String topicSubscriptionID = wsntMsgBrokerClient.subscribe(brokerEPR, consumerEPRs[0], topic);
+            String subscriptionID = wseMsgBrokerClient.subscribe(brokerEPR, consumerEPRs[0], topic);
+            wseMsgBrokerClient.subscribe(consumerEPRs[0], topic, "/foo/bar");
 
-            System.out.println("topic subscription id: " + topicSubscriptionID);
+            wseMsgBrokerClient.publish(topic, msg);
 
-            String xpathSubscriptionID = wsntMsgBrokerClient.subscribe(consumerEPRs[0], topic, "/foo/bar");
-
-            System.out.println("xpath subscription id: " + xpathSubscriptionID);
-
-
-            wsntMsgBrokerClient.publish(topic, msg);
-
-            wsntMsgBrokerClient.publish(topic, "<foo><bar>eligible to</bar></foo>");
+            wseMsgBrokerClient.publish(topic, "<foo><bar>Test</bar></foo>");
 
             Thread.sleep(2000);
 
             try {
-                wsntMsgBrokerClient.unSubscribe(topicSubscriptionID);
-                wsntMsgBrokerClient.unSubscribe(xpathSubscriptionID);
+                wseMsgBrokerClient.unSubscribe(subscriptionID);
             } catch (AxisFault e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-
-            wsntMsgBrokerClient.shutdownConsumerService();
+            wseMsgBrokerClient.shutdownConsumerService();
 
         } catch (AxisFault e) {
             e.printStackTrace();
@@ -116,7 +108,7 @@ public class BrokerWSNTTest extends TestCase implements ConsumerNotificationHand
 
     @Override
     protected void tearDown() throws Exception {
-        TestUtilServer.stop();
+        // TestUtilServer.stop();
     }
 
 }

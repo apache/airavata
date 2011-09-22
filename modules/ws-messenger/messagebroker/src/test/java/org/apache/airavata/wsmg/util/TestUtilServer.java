@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.wsmg.util.test;
+package org.apache.airavata.wsmg.util;
 
 import java.io.File;
 import java.io.FilenameFilter;

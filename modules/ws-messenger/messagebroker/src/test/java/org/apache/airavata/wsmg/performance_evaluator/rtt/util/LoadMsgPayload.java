@@ -19,7 +19,7 @@
  *
  */
 
-package performance_evaluator.rtt.util;
+package org.apache.airavata.wsmg.performance_evaluator.rtt.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
