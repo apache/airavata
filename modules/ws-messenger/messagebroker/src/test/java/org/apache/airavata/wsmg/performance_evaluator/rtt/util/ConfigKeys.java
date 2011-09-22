@@ -19,7 +19,7 @@
  *
  */
 
-package performance_evaluator.rtt.util;
+package org.apache.airavata.wsmg.performance_evaluator.rtt.util;
 
 public interface ConfigKeys {
     String CONFIG_FILE_NAME = "configurations.properties";

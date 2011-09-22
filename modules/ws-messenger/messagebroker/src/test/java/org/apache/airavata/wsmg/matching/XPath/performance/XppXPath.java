@@ -19,7 +19,7 @@
  *
  */
 
-package wsmg.matching.XPath.performance;
+package org.apache.airavata.wsmg.matching.XPath.performance;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;

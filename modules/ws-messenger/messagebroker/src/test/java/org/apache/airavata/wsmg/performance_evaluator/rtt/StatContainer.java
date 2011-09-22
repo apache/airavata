@@ -19,39 +19,31 @@
  *
  */
 
-package wsmg.commons;
+package org.apache.airavata.wsmg.performance_evaluator.rtt;
 
-import java.util.Date;
+import org.apache.axiom.soap.SOAPEnvelope;
 
-import junit.framework.TestCase;
+public class StatContainer {
+    private SOAPEnvelope msgEnvelope = null;
+    private long rtt = 0l;
+    private long receivedTime = 0l;
 
-import org.apache.airavata.wsmg.commons.CommonRoutines;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-public class TestCommonRoutines extends TestCase {
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
+    public StatContainer(SOAPEnvelope msgEnvelope) {
+        this.msgEnvelope = msgEnvelope;
+        this.receivedTime = System.currentTimeMillis();
+        this.rtt = this.receivedTime
+                - Long.parseLong(msgEnvelope.getBody().getFirstElement().getFirstElement().getText());
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown() throws Exception {
+    public long getRondTripTime() {
+        return this.rtt;
     }
 
-    /**
-     * Test method for {@link org.apache.airavata.wsmg.commons.CommonRoutines#getXsdDateTime(java.util.Date)}.
-     */
-    @Test
-    public void testGetXsdDateTime() {
-        assertNotNull(CommonRoutines.getXsdDateTime(new Date()));
+    public SOAPEnvelope getMsgEnvelope() {
+        return msgEnvelope;
     }
 
+    public long getMessageReceivedTime() {
+        return this.receivedTime;
+    }
 }

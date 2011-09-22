@@ -19,7 +19,7 @@
  *
  */
 
-package wsmg.matching.XPath;
+package org.apache.airavata.wsmg.matching.XPath;
 
 import java.net.URL;
 import java.util.Properties;
@@ -32,6 +32,7 @@ import junit.framework.TestCase;
 
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
+import org.apache.airavata.wsmg.util.ConfigKeys;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
@@ -40,7 +41,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import wsmg.util.ConfigKeys;
 
 public class TestWseXpathAndTopicSubscription extends TestCase implements ConsumerNotificationHandler {
 

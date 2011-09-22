@@ -19,7 +19,7 @@
  *
  */
 
-package performance_evaluator.rtt;
+package org.apache.airavata.wsmg.performance_evaluator.rtt;
 
 import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
