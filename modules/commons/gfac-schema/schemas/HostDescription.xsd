@@ -1,94 +1,38 @@
 <!--Licensed to the Apache Software Foundation (ASF) under one or more contributor 
-	license agreements. See the NOTICE file distributed with this work for additional 
-	information regarding copyright ownership. The ASF licenses this file to 
-	you under the Apache License, Version 2.0 (theÏ "License"); you may not use 
-	this file except in compliance with the License. You may obtain a copy of 
-	the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
-	by applicable law or agreed to in writing, software distributed under the 
-	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
-	OF ANY ~ KIND, either express or implied. See the License for the specific 
-	language governing permissions and limitations under the License. -->
-	
-<schema targetNamespace="http://schemas.airavata.apache.org/gfac"
-        xmlns:gFac="http://schemas.airavata.apache.org/gfac"
-        xmlns="http://www.w3.org/2001/XMLSchema"
-        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-        elementFormDefault="qualified">
-	<import namespace="http://schemas.airavata.apache.org/gfac" schemaLocation="BasicTypes.xsd"></import>
+    license agreements. See the NOTICE file distributed with this work for additional 
+    information regarding copyright ownership. The ASF licenses this file to 
+    you under the Apache License, Version 2.0 (theÏ "License"); you may not use 
+    this file except in compliance with the License. You may obtain a copy of 
+    the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+    by applicable law or agreed to in writing, software distributed under the 
+    License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+    OF ANY ~ KIND, either express or implied. See the License for the specific 
+    language governing permissions and limitations under the License. -->
 
-    <element name="HostDescription" type="gFac:hostDescriptionType"/>
+<schema targetNamespace="http://schemas.airavata.apache.org/gfac/type"
+    xmlns:gfac="http://schemas.airavata.apache.org/gfac/type" xmlns="http://www.w3.org/2001/XMLSchema"
+    elementFormDefault="qualified">
 
-    <complexType name="hostDescriptionType">
-        <sequence>
-            <element name="authorInfo" type="gFac:authorInfoType" minOccurs="0" maxOccurs="unbounded"/>
-            <element name="documentInfo" type="gFac:documentInfoType" minOccurs="0" maxOccurs="1"/>
-            <element name="hostName" type="xsd:string" minOccurs="1" maxOccurs="1" />
-            <element name="hostConfiguration" type="gFac:hostConfigurationType" minOccurs="1" maxOccurs="1" />
-        </sequence>
-    </complexType>
-
-    <complexType name="hostConfigurationType">
-        <sequence>
-            <!-- This is the path to the GFac installation -->
-            <element name="gFacPath" type="xsd:string" minOccurs="1" maxOccurs="1" />
-
-            <!-- Temporary directory on this host -->
-            <element name="tmpDir" type="xsd:string" minOccurs="1" maxOccurs="1" />
-
-            <!-- Port range to start the service -->
-            <element name="portRange" type="gFac:portRangeType" minOccurs="0" maxOccurs="1" />
-
-            <!-- JAVA -->
-            <element name="java" type="gFac:packageType" minOccurs="0" maxOccurs="unbounded" />
-
-            <!-- Other packages -->
-            <element name="package" type="gFac:packageType" minOccurs="0" maxOccurs="unbounded" />
-
-            <!-- This can be used to pass env variables to the service
-            or application at startup. Unused as of now -->
-            <element name="hostEnv" type="gFac:nameValuePairType" minOccurs="0" maxOccurs="unbounded"/>
-            <element name="globusGatekeeper" type="gFac:globusGatekeeperType" minOccurs="0" maxOccurs="unbounded"/>
-            <element name="gridFTP" type="gFac:gridFTPType" minOccurs="0" maxOccurs="unbounded"/>
-            <element name="sshEnabled" type="xsd:boolean" minOccurs="0" maxOccurs="1"/>
-        </sequence>
-    </complexType>
-
-    <complexType name="globusGatekeeperType" >
-        <sequence>
-            <element name="name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
-            <element name="endPointReference" type="xsd:anyURI" minOccurs="1" maxOccurs="1"/>
-            <element name="jobmanagertype" type="gFac:globusJobManagerType" minOccurs="1" maxOccurs="1"/>
-        </sequence>
-        <attribute name="wsGram" type="xsd:boolean" use="optional"/>
-    </complexType>
-
-    <complexType name="gridFTPType" >
-        <sequence>
-            <element name="name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
-            <element name="endPointReference" type="xsd:anyURI" minOccurs="1" maxOccurs="1"/>
-        </sequence>
-    </complexType>
-
-    <!-- Specifies the range of ports that can be used for starting the service. If the
-    start = end, then the service will be started on the given port -->
-    <complexType name="portRangeType">
-        <sequence>
-            <element name="start" type="xsd:int" minOccurs="1" maxOccurs="1"/>
-            <element name="end" type="xsd:int" minOccurs="1" maxOccurs="1"/>
-        </sequence>
-    </complexType>
-
-    <simpleType name="globusJobManagerType">
-      <restriction base="xsd:string">
-        <enumeration value="PBS"/>
-        <enumeration value="SGE"/>
-        <enumeration value="FORK"/>
-        <enumeration value="LSF"/>
-        <enumeration value="MULTI"/>
-        <enumeration value="CONDOR"/>
-        <enumeration value="SPRUCE"/>
-        <enumeration value="Loadleveler"/>        
-      </restriction>
-    </simpleType>
+        <element name="globusHost" type="gfac:globusHost" />
+        <element name="hostDescription" type="gfac:hostDescription" />
+        
+        <!-- Globus Host Description -->
+        <complexType name="globusHost">
+            <complexContent>
+                <extension base="gfac:hostDescription">
+                    <sequence>
+                        <element minOccurs="0" name="globusGateKeeperEndPoint" type="string" />
+                        <element minOccurs="0" name="gridFTPEndPoint" type="string" />
+                    </sequence>
+                </extension>
+            </complexContent>
+        </complexType>
+        
+        <!-- Host Description -->
+        <complexType name="hostDescription">
+            <sequence>
+                <element minOccurs="0" name="name" type="string" />
+            </sequence>
+        </complexType>
 
 </schema>
