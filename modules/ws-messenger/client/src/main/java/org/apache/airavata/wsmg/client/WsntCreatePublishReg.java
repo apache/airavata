@@ -24,7 +24,7 @@ package org.apache.airavata.wsmg.client;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -57,7 +57,7 @@ public class WsntCreatePublishReg extends WidgetStub {
     public WsrfResourceStub registerPublisher(EndpointReference omEndpointReference) throws AxisFault {
 
         // invoker.setMessageId(null);
-        OMElement message = factory.createOMElement(new QName(WsmgNameSpaceConstants.WSBR_NS.getNamespaceURI(),
+        OMElement message = factory.createOMElement(new QName(NameSpaceConstants.WSBR_NS.getNamespaceURI(),
                 "RegisterPublisher"));
         // builder.newFragment(WsmgConstants.WSBR_NS,
         // "RegisterPublisher");
@@ -67,7 +67,7 @@ public class WsntCreatePublishReg extends WidgetStub {
         OMElement publisherRef = null;
 
         publisherRef = EndpointReferenceHelper.toOM(factory, omEndpointReference, new QName(
-                WsmgNameSpaceConstants.WSBR_NS.getNamespaceURI(), "PublisherReference"), WsmgNameSpaceConstants.WSA_NS
+                NameSpaceConstants.WSBR_NS.getNamespaceURI(), "PublisherReference"), NameSpaceConstants.WSA_NS
                 .getNamespaceURI());
 
         message.addChild(publisherRef);
@@ -78,7 +78,7 @@ public class WsntCreatePublishReg extends WidgetStub {
         client.cleanupTransport();
 
         OMElement publisherRegistrationRef = responseMessage.getFirstChildWithName(new QName(
-                WsmgNameSpaceConstants.WSBR_NS.getNamespaceURI(), "PublisherRegistrationReference"));
+                NameSpaceConstants.WSBR_NS.getNamespaceURI(), "PublisherRegistrationReference"));
 
         EndpointReference epr = EndpointReferenceHelper.fromOM(publisherRegistrationRef);
         return new WsrfResourceStub(epr, getTimeoutInMilliSeconds());
@@ -97,13 +97,13 @@ public class WsntCreatePublishReg extends WidgetStub {
 
             client.engageModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING);
         } else {
-            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", NameSpaceConstants.WSA_NS);
             msgId.setText(uuid);
 
-            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", NameSpaceConstants.WSA_NS);
             to.setText(opts.getTo().getAddress());
 
-            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", NameSpaceConstants.WSA_NS);
             action.setText(message.getNamespace().getNamespaceURI() + "/" + message.getLocalName());
 
             client.addHeader(action);

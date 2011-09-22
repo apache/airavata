@@ -24,7 +24,7 @@ package org.apache.airavata.wsmg.broker.wsnotification;
 import org.apache.airavata.wsmg.broker.AbstractBrokerMsgReceiver;
 import org.apache.airavata.wsmg.broker.context.ProcessingContext;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
 import org.apache.airavata.wsmg.util.WsNotificationOperations;
 import org.apache.axis2.AxisFault;
@@ -58,7 +58,7 @@ public class WSNotificationMsgReceiver extends AbstractBrokerMsgReceiver {
                         .getConfigurationContext().getProperty(WsmgCommonConstants.BROKER_WSMGCONFIG);
 
                 brokerConfigContext.getNotificationProcessor().processMsg(processingContext,
-                        WsmgNameSpaceConstants.WSNT_NS);
+                        NameSpaceConstants.WSNT_NS);
             } catch (Exception e) {
                 throw new AxisFault("unable to process message", e);
             }

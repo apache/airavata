@@ -29,7 +29,7 @@ import org.apache.airavata.wsmg.broker.context.ContextParameters;
 import org.apache.airavata.wsmg.broker.context.ProcessingContext;
 import org.apache.airavata.wsmg.broker.context.ProcessingContextBuilder;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.airavata.wsmg.util.WsNotificationOperations;
 import org.apache.axiom.om.OMElement;
@@ -52,7 +52,7 @@ public class WSNotificationProcessingContextBuilder extends ProcessingContextBui
         ProcessingContext processingContext = new ProcessingContext();
 
         if (elem == null
-                || (!elem.getNamespace().getNamespaceURI().equals(WsmgNameSpaceConstants.WSNT_NS.getNamespaceURI()))) {
+                || (!elem.getNamespace().getNamespaceURI().equals(NameSpaceConstants.WSNT_NS.getNamespaceURI()))) {
 
             logger.warn("invalid message payload recieved: " + elem);
 
@@ -70,7 +70,7 @@ public class WSNotificationProcessingContextBuilder extends ProcessingContextBui
     public void onSubscription(ProcessingContext context, OMElement subscribeElement) {
         context.setContextParameter(ContextParameters.SUBSCRIBE_ELEMENT, subscribeElement);
 
-        OMElement consumerReference = subscribeElement.getFirstChildWithName(new QName(WsmgNameSpaceConstants.WSNT_NS
+        OMElement consumerReference = subscribeElement.getFirstChildWithName(new QName(NameSpaceConstants.WSNT_NS
                 .getNamespaceURI(), "ConsumerReference"));
         if (consumerReference == null) {
             logger.warn("unable to find consumer reference" + " in subscribe message: " + subscribeElement);
@@ -87,7 +87,7 @@ public class WSNotificationProcessingContextBuilder extends ProcessingContextBui
             return;
         }
 
-        OMElement topicExpression = subscribeElement.getFirstChildWithName(new QName(WsmgNameSpaceConstants.WSNT_NS
+        OMElement topicExpression = subscribeElement.getFirstChildWithName(new QName(NameSpaceConstants.WSNT_NS
                 .getNamespaceURI(), "TopicExpression"));
 
         if (topicExpression != null) { // topic can be null
@@ -96,21 +96,21 @@ public class WSNotificationProcessingContextBuilder extends ProcessingContextBui
 
         }
 
-        OMElement useNotify = subscribeElement.getFirstChildWithName(new QName(WsmgNameSpaceConstants.WSNT_NS
+        OMElement useNotify = subscribeElement.getFirstChildWithName(new QName(NameSpaceConstants.WSNT_NS
                 .getNamespaceURI(), "UseNotify"));
 
         if (useNotify != null) {
             context.setContextParameter(ContextParameters.USE_NOTIFY_ELEMENT, useNotify);
         }
 
-        OMElement selector = subscribeElement.getFirstChildWithName(new QName(WsmgNameSpaceConstants.WSNT_NS
+        OMElement selector = subscribeElement.getFirstChildWithName(new QName(NameSpaceConstants.WSNT_NS
                 .getNamespaceURI(), "Selector"));
 
         if (selector != null) {
             context.setContextParameter(ContextParameters.XPATH_ELEMENT, selector);
         }
 
-        OMElement subscriptionPolicy = subscribeElement.getFirstChildWithName(new QName(WsmgNameSpaceConstants.WSNT_NS
+        OMElement subscriptionPolicy = subscribeElement.getFirstChildWithName(new QName(NameSpaceConstants.WSNT_NS
                 .getNamespaceURI(), WsmgCommonConstants.SUBSCRIPTION_POLICY));
 
         if (subscriptionPolicy != null) {
@@ -143,7 +143,7 @@ public class WSNotificationProcessingContextBuilder extends ProcessingContextBui
         switch (operation) {
         case SUBSCRIBE: {
 
-            Iterator<OMElement> iterator = soapBody.getChildrenWithName(new QName(WsmgNameSpaceConstants.WSNT_NS
+            Iterator<OMElement> iterator = soapBody.getChildrenWithName(new QName(NameSpaceConstants.WSNT_NS
                     .getNamespaceURI(), "SubscribeRequest"));
             if (!iterator.hasNext()) {
                 throw new RuntimeException("invalid message context - unable to find Subscribe information");
@@ -165,7 +165,7 @@ public class WSNotificationProcessingContextBuilder extends ProcessingContextBui
 
     private void extractInfoFromHeader(ProcessingContext context, SOAPHeader header) {
 
-        Iterator ite = header.getChildrenWithName(new QName(WsmgNameSpaceConstants.WSNT_NS.getNamespaceURI(),
+        Iterator ite = header.getChildrenWithName(new QName(NameSpaceConstants.WSNT_NS.getNamespaceURI(),
                 WsmgCommonConstants.SUBSCRIPTION_ID));
         if (ite.hasNext()) {
             OMElement identifier = (OMElement) ite.next();

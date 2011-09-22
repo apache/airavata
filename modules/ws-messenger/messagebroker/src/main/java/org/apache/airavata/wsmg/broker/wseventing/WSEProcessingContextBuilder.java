@@ -29,7 +29,7 @@ import org.apache.airavata.wsmg.broker.context.ContextParameters;
 import org.apache.airavata.wsmg.broker.context.ProcessingContext;
 import org.apache.airavata.wsmg.broker.context.ProcessingContextBuilder;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.airavata.wsmg.util.WsEventingOperations;
 import org.apache.axiom.om.OMElement;
@@ -86,7 +86,7 @@ public class WSEProcessingContextBuilder extends ProcessingContextBuilder {
         case SUBSCRIBE: {
 
             Iterator<OMElement> iterator = msgContext.getEnvelope().getBody()
-                    .getChildrenWithName(new QName(WsmgNameSpaceConstants.WSE_NS.getNamespaceURI(), "Subscribe"));
+                    .getChildrenWithName(new QName(NameSpaceConstants.WSE_NS.getNamespaceURI(), "Subscribe"));
 
             if (!iterator.hasNext()) {
                 throw new RuntimeException("invalid subscription message - no subscribe element");
@@ -117,7 +117,7 @@ public class WSEProcessingContextBuilder extends ProcessingContextBuilder {
         processingContext.setContextParameter(ContextParameters.SUBSCRIBE_ELEMENT, subscribeElement);
 
         // -- check optional element - expires
-        Iterator iterator = subscribeElement.getChildrenWithName(new QName(WsmgNameSpaceConstants.WSE_NS
+        Iterator iterator = subscribeElement.getChildrenWithName(new QName(NameSpaceConstants.WSE_NS
                 .getNamespaceURI(), "Expires"));
 
         if (iterator.hasNext()) {
@@ -127,7 +127,7 @@ public class WSEProcessingContextBuilder extends ProcessingContextBuilder {
 
         }
 
-        iterator = subscribeElement.getChildrenWithName(new QName(WsmgNameSpaceConstants.WSE_NS.getNamespaceURI(),
+        iterator = subscribeElement.getChildrenWithName(new QName(NameSpaceConstants.WSE_NS.getNamespaceURI(),
                 "Filter"));
 
         if (!iterator.hasNext()) {
@@ -138,7 +138,7 @@ public class WSEProcessingContextBuilder extends ProcessingContextBuilder {
 
         processingContext.setContextParameter(ContextParameters.FILTER_ELEMENT, iterator.next());
 
-        iterator = subscribeElement.getChildrenWithName(new QName(WsmgNameSpaceConstants.WSE_NS.getNamespaceURI(),
+        iterator = subscribeElement.getChildrenWithName(new QName(NameSpaceConstants.WSE_NS.getNamespaceURI(),
                 "Delivery"));
 
         if (!iterator.hasNext()) {
@@ -147,7 +147,7 @@ public class WSEProcessingContextBuilder extends ProcessingContextBuilder {
 
         OMElement delivery = (OMElement) iterator.next();
 
-        iterator = delivery.getChildrenWithName(new QName(WsmgNameSpaceConstants.WSE_NS.getNamespaceURI(), "NotifyTo"));
+        iterator = delivery.getChildrenWithName(new QName(NameSpaceConstants.WSE_NS.getNamespaceURI(), "NotifyTo"));
 
         if (!iterator.hasNext()) {
             throw new RuntimeException("invalid subscription - unable to find NotifyTo tag");
@@ -170,7 +170,7 @@ public class WSEProcessingContextBuilder extends ProcessingContextBuilder {
 
     private void extractInfoFromHeader(ProcessingContext context, SOAPHeader header) {
 
-        Iterator ite = header.getChildrenWithName(new QName(WsmgNameSpaceConstants.WSE_NS.getNamespaceURI(),
+        Iterator ite = header.getChildrenWithName(new QName(NameSpaceConstants.WSE_NS.getNamespaceURI(),
                 WsmgCommonConstants.SUBSCRIPTION_ID));
 
         if (ite.hasNext()) {

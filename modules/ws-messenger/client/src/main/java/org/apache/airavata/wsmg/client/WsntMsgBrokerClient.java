@@ -28,7 +28,7 @@ import org.apache.airavata.wsmg.client.protocol.WSNTProtocolClient;
 import org.apache.airavata.wsmg.client.util.ClientUtil;
 import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -61,7 +61,7 @@ public class WsntMsgBrokerClient extends CommonMsgBrokerClient implements Messag
         OMFactory factory = OMAbstractFactory.getOMFactory();
 
         OMElement wrappedMsg = factory.createOMElement(WsmgCommonConstants.WSMG_PLAIN_TEXT_WRAPPER,
-                WsmgNameSpaceConstants.WSMG_NS);
+                NameSpaceConstants.WSMG_NS);
 
         wrappedMsg.setText(plainText);
         publish(topic, wrappedMsg);
@@ -111,7 +111,7 @@ public class WsntMsgBrokerClient extends CommonMsgBrokerClient implements Messag
             OMElement responseMessage = client.sendReceive(message);
             client.cleanupTransport();
 
-            OMElement sr = responseMessage.getFirstChildWithName(new QName(WsmgNameSpaceConstants.WSNT_NS
+            OMElement sr = responseMessage.getFirstChildWithName(new QName(NameSpaceConstants.WSNT_NS
                     .getNamespaceURI(), "SubscriptionReference"));
 
             if (sr == null) {

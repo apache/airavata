@@ -29,7 +29,7 @@ import org.apache.airavata.wsmg.broker.context.ContextParameters;
 import org.apache.airavata.wsmg.broker.context.ProcessingContext;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.messenger.OutGoingQueue;
 import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.axiom.om.OMAbstractFactory;
@@ -116,8 +116,8 @@ public class WSNTProtocolSupport {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
 
-        ctx.addResponseMsgNameSpaces(WsmgNameSpaceConstants.WSNT_NS);
-        OMElement responseMessage = factory.createOMElement("SubscribeResponse", WsmgNameSpaceConstants.WSNT_NS);
+        ctx.addResponseMsgNameSpaces(NameSpaceConstants.WSNT_NS);
+        OMElement responseMessage = factory.createOMElement("SubscribeResponse", NameSpaceConstants.WSNT_NS);
 
         OMElement identifier = factory.createOMElement(WsmgCommonConstants.SUBSCRIPTION_ID,
                 responseMessage.getNamespace());
@@ -129,7 +129,7 @@ public class WSNTProtocolSupport {
         OMElement subscriptionReference = null;
         try {
             subscriptionReference = EndpointReferenceHelper.toOM(factory, serviceLocationEndpointReference, new QName(
-                    "SubscriptionReference"), WsmgNameSpaceConstants.WSA_NS.getNamespaceURI());
+                    "SubscriptionReference"), NameSpaceConstants.WSA_NS.getNamespaceURI());
 
             responseMessage.addChild(subscriptionReference);
             subscriptionReference.setNamespace(responseMessage.getNamespace());
@@ -148,20 +148,20 @@ public class WSNTProtocolSupport {
                 String xpathExpression) throws AxisFault {
             OMFactory factory = OMAbstractFactory.getOMFactory();
 
-            OMElement message = factory.createOMElement("SubscribeRequest", WsmgNameSpaceConstants.WSNT_NS);
+            OMElement message = factory.createOMElement("SubscribeRequest", NameSpaceConstants.WSNT_NS);
 
             if (topicExpression != null) {
-                OMElement topicExpEl = factory.createOMElement("TopicExpression", WsmgNameSpaceConstants.WSNT_NS,
+                OMElement topicExpEl = factory.createOMElement("TopicExpression", NameSpaceConstants.WSNT_NS,
                         message);
 
                 topicExpEl.addAttribute("Dialect", WsmgCommonConstants.TOPIC_EXPRESSION_SIMPLE_DIALECT,
-                        WsmgNameSpaceConstants.WSNT_NS);
-                topicExpEl.declareNamespace(WsmgNameSpaceConstants.WIDGET_NS);
-                topicExpEl.setText(WsmgNameSpaceConstants.WIDGET_NS.getPrefix() + ":" + topicExpression);
+                        NameSpaceConstants.WSNT_NS);
+                topicExpEl.declareNamespace(NameSpaceConstants.WIDGET_NS);
+                topicExpEl.setText(NameSpaceConstants.WIDGET_NS.getPrefix() + ":" + topicExpression);
             }
 
             if (xpathExpression != null) {
-                OMElement xpathExpEl = factory.createOMElement("Selector", WsmgNameSpaceConstants.WSNT_NS, message);
+                OMElement xpathExpEl = factory.createOMElement("Selector", NameSpaceConstants.WSNT_NS, message);
                 xpathExpEl.addAttribute("Dialect", WsmgCommonConstants.XPATH_DIALECT, null);
                 xpathExpEl.setText(xpathExpression);
             }
@@ -170,7 +170,7 @@ public class WSNTProtocolSupport {
             useNotifyEl.setText("true");// check wether we still need this
 
             OMElement eprCrEl = EndpointReferenceHelper.toOM(factory, eventSinkLocation,
-                    new QName("ConsumerReference"), WsmgNameSpaceConstants.WSA_NS.getNamespaceURI());
+                    new QName("ConsumerReference"), NameSpaceConstants.WSA_NS.getNamespaceURI());
 
             message.addChild(eprCrEl);
             eprCrEl.setNamespace(message.getNamespace());
@@ -187,7 +187,7 @@ public class WSNTProtocolSupport {
             Map<QName, OMElement> referenceParams = subscriptionReferenceEPR.getAllReferenceParameters();
 
             if (referenceParams != null) {
-                QName identifierQName = new QName(WsmgNameSpaceConstants.WSNT_NS.getNamespaceURI(),
+                QName identifierQName = new QName(NameSpaceConstants.WSNT_NS.getNamespaceURI(),
                         WsmgCommonConstants.SUBSCRIPTION_ID);
 
                 OMElement identifierEl = referenceParams.get(identifierQName);
@@ -200,7 +200,7 @@ public class WSNTProtocolSupport {
 
         public static OMElement createUnsubscribeMsg() {
             OMFactory factory = OMAbstractFactory.getOMFactory();
-            OMElement message = factory.createOMElement("UnsubsribeRequest", WsmgNameSpaceConstants.WSNT_NS);
+            OMElement message = factory.createOMElement("UnsubsribeRequest", NameSpaceConstants.WSNT_NS);
 
             return message;
         }
@@ -209,14 +209,14 @@ public class WSNTProtocolSupport {
                 throws AxisFault {
             OMFactory factory = OMAbstractFactory.getOMFactory();
 
-            OMElement topicExpEl = factory.createOMElement("Topic", WsmgNameSpaceConstants.WSNT_NS);
+            OMElement topicExpEl = factory.createOMElement("Topic", NameSpaceConstants.WSNT_NS);
             topicExpEl.addAttribute("Dialect", WsmgCommonConstants.TOPIC_EXPRESSION_SIMPLE_DIALECT, null);
-            topicExpEl.declareNamespace(WsmgNameSpaceConstants.WIDGET_NS);
-            topicExpEl.setText(WsmgNameSpaceConstants.WIDGET_NS.getPrefix() + ":" + topic);
+            topicExpEl.declareNamespace(NameSpaceConstants.WIDGET_NS);
+            topicExpEl.setText(NameSpaceConstants.WIDGET_NS.getPrefix() + ":" + topic);
 
-            OMElement messageToNotify = factory.createOMElement("Notify", WsmgNameSpaceConstants.WSNT_NS);
-            messageToNotify.declareNamespace(WsmgNameSpaceConstants.WSNT_NS);
-            messageToNotify.declareNamespace(WsmgNameSpaceConstants.WSA_NS);
+            OMElement messageToNotify = factory.createOMElement("Notify", NameSpaceConstants.WSNT_NS);
+            messageToNotify.declareNamespace(NameSpaceConstants.WSNT_NS);
+            messageToNotify.declareNamespace(NameSpaceConstants.WSA_NS);
             OMElement notificationMesssageEl = factory.createOMElement("NotificationMessage",
                     messageToNotify.getNamespace(), messageToNotify);
 
@@ -225,7 +225,7 @@ public class WSNTProtocolSupport {
             notificationMesssageEl
                     .addChild(EndpointReferenceHelper.toOM(factory, producerReference, new QName(notificationMesssageEl
                             .getNamespace().getNamespaceURI(), "ProducerReference", notificationMesssageEl
-                            .getNamespace().getPrefix()), WsmgNameSpaceConstants.WSA_NS.getNamespaceURI()));
+                            .getNamespace().getPrefix()), NameSpaceConstants.WSA_NS.getNamespaceURI()));
 
             OMElement messageEl = factory.createOMElement("Message", notificationMesssageEl.getNamespace(),
                     notificationMesssageEl);

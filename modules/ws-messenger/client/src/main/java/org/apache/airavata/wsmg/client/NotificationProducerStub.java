@@ -25,7 +25,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.wsmg.client.util.ClientUtil;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -61,7 +61,7 @@ public class NotificationProducerStub extends WidgetStub {
 
     public OMElement getCurrentMessage(OMElement topicExp) throws AxisFault {
 
-        OMElement message = factory.createOMElement("GetCurrentMessage", WsmgNameSpaceConstants.WSNT_NS);
+        OMElement message = factory.createOMElement("GetCurrentMessage", NameSpaceConstants.WSNT_NS);
         message.addChild(topicExp);
 
         ServiceClient client = createServiceClient(message);
@@ -83,12 +83,12 @@ public class NotificationProducerStub extends WidgetStub {
         if (client.getAxisConfiguration().getModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING) != null) {
             client.engageModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING);
         } else {
-            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", NameSpaceConstants.WSA_NS);
             msgId.setText(uuid);
-            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", NameSpaceConstants.WSA_NS);
             to.setText(opts.getTo().getAddress());
 
-            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", NameSpaceConstants.WSA_NS);
             action.setText(message.getNamespace().getNamespaceURI() + "/" + message.getLocalName());
 
             client.addHeader(action);
@@ -126,12 +126,12 @@ public class NotificationProducerStub extends WidgetStub {
     public SubscriptionStub subscribe(EndpointReference consumerReference, OMElement topicExpression,
             OMElement xpathExpression, boolean useNotfy, boolean wsrm) throws AxisFault {
 
-        OMElement message = factory.createOMElement("SubscribeRequest", WsmgNameSpaceConstants.WSNT_NS);
+        OMElement message = factory.createOMElement("SubscribeRequest", NameSpaceConstants.WSNT_NS);
 
-        message.declareNamespace(WsmgNameSpaceConstants.WSNT_NS);
+        message.declareNamespace(NameSpaceConstants.WSNT_NS);
 
         OMElement eprCrEl = EndpointReferenceHelper.toOM(factory, consumerReference, new QName("ConsumerReference"),
-                WsmgNameSpaceConstants.WSA_NS.getNamespaceURI());
+                NameSpaceConstants.WSA_NS.getNamespaceURI());
 
         message.addChild(eprCrEl);
         eprCrEl.setNamespace(message.getNamespace());
@@ -159,7 +159,7 @@ public class NotificationProducerStub extends WidgetStub {
         client.cleanupTransport();
 
         OMElement sr = responseMessage.getFirstChildWithName(new QName(
-                WsmgNameSpaceConstants.WSNT_NS.getNamespaceURI(), "SubscriptionReference"));
+                NameSpaceConstants.WSNT_NS.getNamespaceURI(), "SubscriptionReference"));
 
         if (sr == null) {
             throw new AxisFault("unable to subscribe, invalid response returned by broker");

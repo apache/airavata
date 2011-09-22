@@ -23,7 +23,7 @@ package org.apache.airavata.wsmg.msgbox.client;
 
 import java.util.Iterator;
 
-import org.apache.airavata.wsmg.commons.MsgBoxNameSpConsts;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -91,11 +91,11 @@ public class TakeMessages {
     }
 
     private OMElement createMessageEl(String msgboxid) throws AxisFault {
-        OMElement message = factory.createOMElement("takeMessages", MsgBoxNameSpConsts.MSG_BOX);
-        OMElement msgBoxId = factory.createOMElement("MsgBoxId", MsgBoxNameSpConsts.MSG_BOX);
+        OMElement message = factory.createOMElement("takeMessages", NameSpaceConstants.MSG_BOX);
+        OMElement msgBoxId = factory.createOMElement("MsgBoxId", NameSpaceConstants.MSG_BOX);
         msgBoxId.setText(msgboxid);
         message.addChild(msgBoxId);
-        message.declareNamespace(MsgBoxNameSpConsts.MSG_BOX);
+        message.declareNamespace(NameSpaceConstants.MSG_BOX);
         return message;
     }
 

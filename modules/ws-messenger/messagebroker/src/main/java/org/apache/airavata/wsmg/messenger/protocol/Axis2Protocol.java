@@ -30,7 +30,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.airavata.wsmg.broker.AdditionalMessageContent;
 import org.apache.airavata.wsmg.broker.ConsumerInfo;
 import org.apache.airavata.wsmg.commons.CommonRoutines;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.ElementHelper;
@@ -67,7 +67,7 @@ public class Axis2Protocol implements DeliveryProtocol {
         String actionString = null;
         List<OMElement> soapHeaders = new LinkedList<OMElement>();
         if (consumerInfo.getType().compareTo("wsnt") == 0) {
-            actionString = WsmgNameSpaceConstants.WSNT_NS.getNamespaceURI() + "/Notify";
+            actionString = NameSpaceConstants.WSNT_NS.getNamespaceURI() + "/Notify";
         } else { // wse
             actionString = additionalMessageContent.getAction();
             String topicElString = additionalMessageContent.getTopicElement();
@@ -114,12 +114,12 @@ public class Axis2Protocol implements DeliveryProtocol {
 
         ServiceClient client = getServiceClient();
 
-        SOAPHeaderBlock msgIdEl = soapfactory.createSOAPHeaderBlock("MessageID", WsmgNameSpaceConstants.WSA_NS);
+        SOAPHeaderBlock msgIdEl = soapfactory.createSOAPHeaderBlock("MessageID", NameSpaceConstants.WSA_NS);
         msgIdEl.setText(msgId);
-        SOAPHeaderBlock actionEl = soapfactory.createSOAPHeaderBlock("Action", WsmgNameSpaceConstants.WSA_NS);
+        SOAPHeaderBlock actionEl = soapfactory.createSOAPHeaderBlock("Action", NameSpaceConstants.WSA_NS);
         actionEl.setText(action);
 
-        SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", WsmgNameSpaceConstants.WSA_NS);
+        SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", NameSpaceConstants.WSA_NS);
         to.setText(consumerLocation.getAddress());
 
         client.addHeader(actionEl);

@@ -3,7 +3,7 @@ package org.apache.airavata.wsmg.client.protocol;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -36,26 +36,26 @@ public class WSEProtocolClient {
         OMElement filterEl = null;
 
         if (hasTopicExpression && hasXPathExpression) {
-            filterEl = factory.createOMElement("Filter", WsmgNameSpaceConstants.WSE_NS);
+            filterEl = factory.createOMElement("Filter", NameSpaceConstants.WSE_NS);
 
             filterEl.addAttribute("Dialect", WsmgCommonConstants.TOPIC_AND_XPATH_DIALECT, null);
-            OMElement topicExpressionEl = factory.createOMElement("TopicExpression", WsmgNameSpaceConstants.WSNT_NS);
+            OMElement topicExpressionEl = factory.createOMElement("TopicExpression", NameSpaceConstants.WSNT_NS);
             topicExpressionEl.addAttribute("Dialect", WsmgCommonConstants.TOPIC_EXPRESSION_SIMPLE_DIALECT, null);
-            topicExpressionEl.declareNamespace(WsmgNameSpaceConstants.WIDGET_NS);
-            topicExpressionEl.setText(WsmgNameSpaceConstants.WIDGET_NS.getPrefix() + ":" + topicExpression);
+            topicExpressionEl.declareNamespace(NameSpaceConstants.WIDGET_NS);
+            topicExpressionEl.setText(NameSpaceConstants.WIDGET_NS.getPrefix() + ":" + topicExpression);
             filterEl.addChild(topicExpressionEl);
-            OMElement xpathEl = factory.createOMElement("MessageContent", WsmgNameSpaceConstants.WSNT_NS);
+            OMElement xpathEl = factory.createOMElement("MessageContent", NameSpaceConstants.WSNT_NS);
             xpathEl.addAttribute("Dialect", WsmgCommonConstants.XPATH_DIALECT, null);
             xpathEl.setText(xpathExpression);
             filterEl.addChild(xpathEl);
         } else if (hasTopicExpression) {
-            filterEl = factory.createOMElement("Filter", WsmgNameSpaceConstants.WSE_NS);
+            filterEl = factory.createOMElement("Filter", NameSpaceConstants.WSE_NS);
 
             filterEl.addAttribute("Dialect", WsmgCommonConstants.TOPIC_EXPRESSION_SIMPLE_DIALECT, null);
-            filterEl.declareNamespace(WsmgNameSpaceConstants.WIDGET_NS);
-            filterEl.setText(WsmgNameSpaceConstants.WIDGET_NS.getPrefix() + ":" + topicExpression);
+            filterEl.declareNamespace(NameSpaceConstants.WIDGET_NS);
+            filterEl.setText(NameSpaceConstants.WIDGET_NS.getPrefix() + ":" + topicExpression);
         } else if (hasXPathExpression) {
-            filterEl = factory.createOMElement("Filter", WsmgNameSpaceConstants.WSE_NS);
+            filterEl = factory.createOMElement("Filter", NameSpaceConstants.WSE_NS);
 
             filterEl.addAttribute("Dialect", WsmgCommonConstants.XPATH_DIALECT, null);
             filterEl.setText(xpathExpression);
@@ -68,17 +68,17 @@ public class WSEProtocolClient {
             String xpathExpression, long expireTime) throws AxisFault {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMElement subscribeMsg = factory.createOMElement("Subscribe", WsmgNameSpaceConstants.WSE_NS);
+        OMElement subscribeMsg = factory.createOMElement("Subscribe", NameSpaceConstants.WSE_NS);
 
-        OMElement delivery = factory.createOMElement("Delivery", WsmgNameSpaceConstants.WSE_NS);
+        OMElement delivery = factory.createOMElement("Delivery", NameSpaceConstants.WSE_NS);
 
-        OMElement expires = factory.createOMElement("Expires", WsmgNameSpaceConstants.WSE_NS);
+        OMElement expires = factory.createOMElement("Expires", NameSpaceConstants.WSE_NS);
         expires.setText(Long.toString(expireTime));
         subscribeMsg.addChild(expires);
 
         OMElement notifyTo = EndpointReferenceHelper.toOM(factory, eventSink,
-                new QName(WsmgNameSpaceConstants.WSE_NS.getNamespaceURI(), "NotifyTo"),
-                WsmgNameSpaceConstants.WSA_NS.getNamespaceURI());
+                new QName(NameSpaceConstants.WSE_NS.getNamespaceURI(), "NotifyTo"),
+                NameSpaceConstants.WSA_NS.getNamespaceURI());
 
         delivery.addChild(notifyTo);
         subscribeMsg.addChild(delivery);
@@ -89,7 +89,7 @@ public class WSEProtocolClient {
             subscribeMsg.addChild(filterEl);
         }
 
-        subscribeMsg.declareNamespace(WsmgNameSpaceConstants.WSA_NS);
+        subscribeMsg.declareNamespace(NameSpaceConstants.WSA_NS);
 
         return subscribeMsg;
     }
@@ -97,14 +97,14 @@ public class WSEProtocolClient {
     public static String decodeSubscribeResponse(OMElement responseSubscriptionsManagerElement) throws AxisFault {
         String subscriptionId = null;
         OMElement referencePropertiesEl = responseSubscriptionsManagerElement.getFirstChildWithName(new QName(
-                WsmgNameSpaceConstants.WSA_NS.getNamespaceURI(), "ReferenceProperties"));
+                NameSpaceConstants.WSA_NS.getNamespaceURI(), "ReferenceProperties"));
 
         if (referencePropertiesEl == null) {
             referencePropertiesEl = responseSubscriptionsManagerElement.getFirstChildWithName(new QName(
-                    WsmgNameSpaceConstants.WSA_NS.getNamespaceURI(), "ReferenceParameters"));
+                    NameSpaceConstants.WSA_NS.getNamespaceURI(), "ReferenceParameters"));
         }
 
-        OMElement identifierEl = referencePropertiesEl.getFirstChildWithName(new QName(WsmgNameSpaceConstants.WSE_NS
+        OMElement identifierEl = referencePropertiesEl.getFirstChildWithName(new QName(NameSpaceConstants.WSE_NS
                 .getNamespaceURI(), WsmgCommonConstants.SUBSCRIPTION_ID));
 
         if (identifierEl == null) {
@@ -117,7 +117,7 @@ public class WSEProtocolClient {
 
     public static OMElement createUnsubscribeMsg() {
         OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMElement message = factory.createOMElement("Unsubscribe", WsmgNameSpaceConstants.WSE_NS);
+        OMElement message = factory.createOMElement("Unsubscribe", NameSpaceConstants.WSE_NS);
 
         return message;
     }

@@ -24,7 +24,7 @@ package org.apache.airavata.wsmg.broker;
 import java.util.List;
 
 import org.apache.airavata.wsmg.broker.context.ProcessingContext;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
@@ -92,8 +92,8 @@ public abstract class AbstractBrokerMsgReceiver extends AbstractMessageReceiver 
 
     private void declareResponseMsgNamespace(SOAPEnvelope outputEnvelope, List<OMNamespace> namespaces) {
 
-        if (!namespaces.contains(WsmgNameSpaceConstants.WSA_NS)) {
-            namespaces.add(WsmgNameSpaceConstants.WSA_NS);// declare WSA by default
+        if (!namespaces.contains(NameSpaceConstants.WSA_NS)) {
+            namespaces.add(NameSpaceConstants.WSA_NS);// declare WSA by default
         }
 
         for (OMNamespace ns : namespaces) {

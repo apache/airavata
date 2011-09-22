@@ -25,7 +25,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.wsmg.client.util.ClientUtil;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -75,7 +75,7 @@ public class WseCreateSubscription {
             throw AxisFault.makeFault(new RuntimeException("no response recieved for subscription message"));
         }
         OMElement responseSubscriptionsManagerElement = responseMessage.getFirstChildWithName(new QName(
-                WsmgNameSpaceConstants.WSE_NS.getNamespaceURI(), "SubscriptionManager"));
+                NameSpaceConstants.WSE_NS.getNamespaceURI(), "SubscriptionManager"));
         return responseSubscriptionsManagerElement;
     }
 
@@ -94,13 +94,13 @@ public class WseCreateSubscription {
 
             client.engageModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING);
         } else {
-            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", NameSpaceConstants.WSA_NS);
             msgId.setText(UUIDGenerator.getUUID());
 
-            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", NameSpaceConstants.WSA_NS);
             to.setText(opts.getTo().getAddress());
 
-            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", NameSpaceConstants.WSA_NS);
             action.setText(message.getNamespace().getNamespaceURI() + "/" + message.getLocalName());
 
             client.addHeader(action);
@@ -115,16 +115,16 @@ public class WseCreateSubscription {
     private OMElement createMessageEl(EndpointReference eventSinkReferenceEPR, OMElement filterEl, long expireTime)
             throws AxisFault {
 
-        OMElement message = factory.createOMElement("Subscribe", WsmgNameSpaceConstants.WSE_NS);
+        OMElement message = factory.createOMElement("Subscribe", NameSpaceConstants.WSE_NS);
 
-        OMElement delivery = factory.createOMElement("Delivery", WsmgNameSpaceConstants.WSE_NS);
+        OMElement delivery = factory.createOMElement("Delivery", NameSpaceConstants.WSE_NS);
 
-        OMElement expires = factory.createOMElement("Expires", WsmgNameSpaceConstants.WSE_NS);
+        OMElement expires = factory.createOMElement("Expires", NameSpaceConstants.WSE_NS);
         expires.setText(Long.toString(expireTime));
         message.addChild(expires);
 
         OMElement notifyTo = EndpointReferenceHelper.toOM(factory, eventSinkReferenceEPR, new QName(
-                WsmgNameSpaceConstants.WSE_NS.getNamespaceURI(), "NotifyTo"), WsmgNameSpaceConstants.WSA_NS
+                NameSpaceConstants.WSE_NS.getNamespaceURI(), "NotifyTo"), NameSpaceConstants.WSA_NS
                 .getNamespaceURI());
 
         delivery.addChild(notifyTo);
@@ -134,7 +134,7 @@ public class WseCreateSubscription {
             message.addChild(filterEl);
         }
 
-        message.declareNamespace(WsmgNameSpaceConstants.WSA_NS);
+        message.declareNamespace(NameSpaceConstants.WSA_NS);
 
         return message;
     }
