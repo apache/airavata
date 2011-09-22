@@ -28,8 +28,6 @@ import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
 
-import org.apache.airavata.wsmg.msgbox.MsgBoxServiceLifeCycle;
-import org.apache.airavata.wsmg.msgbox.MsgBoxServiceMessageReceiverInOut;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
 import org.apache.axis2.context.ConfigurationContext;

@@ -19,10 +19,6 @@
             <artifactId>airavata-messenger-commons</artifactId>
             <version>${airavata.version}</version>
         </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
 
         <!-- Logging -->
         <dependency>

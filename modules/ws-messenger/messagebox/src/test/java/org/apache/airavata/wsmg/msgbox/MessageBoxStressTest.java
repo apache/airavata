@@ -43,7 +43,7 @@ import org.junit.Test;
 
 public class MessageBoxStressTest extends TestCase {
     private int port = 5555;
-    private long timeout = 500L;
+    private long timeout = 5000L;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
