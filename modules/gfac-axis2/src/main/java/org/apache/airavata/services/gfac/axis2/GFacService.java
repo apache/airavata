@@ -33,6 +33,7 @@ import javax.jcr.Credentials;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryFactory;
 import javax.jcr.SimpleCredentials;
+import javax.security.auth.login.Configuration;
 
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.registry.api.Registry;
@@ -50,7 +51,7 @@ import org.apache.axis2.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GFacService implements ServiceLifeCycle {
+public class GFacService extends Thread implements ServiceLifeCycle {
     
     private static final Logger log = LoggerFactory.getLogger(GFacService.class);
 
@@ -67,9 +68,12 @@ public class GFacService implements ServiceLifeCycle {
     public static final String JCR_PASS = "jcr.pass";
 
     public static GenericService service;
+    public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
+    public ConfigurationContext context;
     public static final String GFAC_URL = "GFacURL";
 
     public void startUp(ConfigurationContext configctx, AxisService service){
+        this.context = configctx;
         AxisConfiguration config = null;
         configctx.getAxisConfiguration().getTransportsIn().get("http").getParameter("port");
         List<Phase> phases = null;
@@ -99,6 +103,7 @@ public class GFacService implements ServiceLifeCycle {
             RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
             Repository repository = repositoryFactory.getRepository(map);
             Credentials credentials = new SimpleCredentials(map.get(JCR_USER), map.get(JCR_PASS).toCharArray());
+
             Registry registry = new JCRRegistry(repository, credentials);
             String localAddress = Utils.getIpAddress(context.getAxisConfiguration());
             String port = (String) context.getAxisConfiguration().getTransportsIn().get("http").getParameter("port").getValue();
@@ -106,9 +111,9 @@ public class GFacService implements ServiceLifeCycle {
             localAddress = localAddress + "/" +
                     context.getContextRoot() + "/" + context.getServicePath() + "/" + WSConstants.GFAC_SERVICE_NAME;
             System.out.println(localAddress);
-            registry.saveGFacDescriptor(localAddress);
             context.setProperty(CONFIGURATION_CONTEXT_REGISTRY, registry);
             context.setProperty(GFAC_URL,localAddress);
+            this.start();
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
@@ -118,5 +123,24 @@ public class GFacService implements ServiceLifeCycle {
         Registry registry = (JCRRegistry) configctx.getProperty(CONFIGURATION_CONTEXT_REGISTRY);
         String gfacURL = (String) configctx.getProperty(GFAC_URL);
         registry.deleteGFacDescriptor(gfacURL);
+        try {
+            this.join();
+        } catch (InterruptedException e) {
+            log.info("GFacURL update thread is interrupted");
+        }
+    }
+
+    public void run() {
+        try {
+            while (true) {
+                Registry registry = (Registry) this.context.getProperty(CONFIGURATION_CONTEXT_REGISTRY);
+                String localAddress = (String) this.context.getProperty(GFAC_URL);
+                registry.saveGFacDescriptor(localAddress);
+                log.info("Updated the GFac URL in to Repository");
+                Thread.sleep(GFAC_URL_UPDATE_INTERVAL);
+            }
+        } catch (InterruptedException e) {
+            log.info("GFacURL update thread is interrupted");
+        }
     }
 }
