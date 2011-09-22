@@ -40,11 +40,12 @@ import org.apache.airavata.wsmg.messenger.strategy.impl.FixedParallelSender;
 import org.apache.airavata.wsmg.messenger.strategy.impl.ParallelSender;
 import org.apache.airavata.wsmg.messenger.strategy.impl.SerialSender;
 import org.apache.airavata.wsmg.util.RunTimeStatistics;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MessengerServlet extends HttpServlet {
 
-    private static final Logger logger = Logger.getLogger(MessengerServlet.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessengerServlet.class);
 
     private static final long serialVersionUID = -7175511030332798604L;
 
@@ -138,7 +139,7 @@ public class MessengerServlet extends HttpServlet {
                 WsmgCommonConstants.CONFIG_STORAGE_TYPE);
 
         if (WsmgCommonConstants.STORAGE_TYPE_IN_MEMORY.equalsIgnoreCase(type)) {
-            logger.fatal("invalid storage type specified: " + type);
+            logger.error("invalid storage type specified: " + type);
             throw new RuntimeException("invalid storage type specified: " + type);
         }
 
