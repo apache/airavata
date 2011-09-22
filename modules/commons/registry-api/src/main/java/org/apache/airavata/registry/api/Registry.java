@@ -136,4 +136,7 @@ public interface Registry {
      * @return
      */
     public boolean deleteGFacDescriptor(String gfacURL);
+
+    public List<String> getGFacDescriptorList();
+
 }

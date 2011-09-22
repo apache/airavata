@@ -23,21 +23,10 @@ package org.apache.airavata.registry.api.impl;
 
 import java.lang.reflect.Constructor;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.util.*;
 
-import javax.jcr.Credentials;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
-import javax.jcr.RepositoryFactory;
-import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
-import javax.jcr.Value;
+import javax.jcr.*;
 
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.user.UserManager;
@@ -48,6 +37,7 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.util.SchemaUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import sun.security.tools.TimestampedSigner;
 
 public class JCRRegistry implements Axis2Registry {
 
@@ -58,9 +48,10 @@ public class JCRRegistry implements Axis2Registry {
 	private static final String XML_PROPERTY_NAME = "XML";
 	private static final String WSDL_PROPERTY_NAME = "WSDL";
     private static final String GFAC_URL_PROPERTY_NAME = "GFAC_URL_LIST";
-	private static final String LINK_NAME = "LINK";
+    private static final String LINK_NAME = "LINK";
+    public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 
-	private Repository repository;
+    private Repository repository;
 	private Credentials credentials;
 	private UserManager userManager;
 	
@@ -103,6 +94,8 @@ public class JCRRegistry implements Axis2Registry {
 	private Node getServiceNode(Session session) throws RepositoryException {
 		return getOrAddNode(session.getRootNode(), SERVICE_NODE_NAME);
 	}
+
+
 
 	private Node getDeploymentNode(Session session) throws RepositoryException {
 		return getOrAddNode(session.getRootNode(), DEPLOY_NODE_NAME);
@@ -428,6 +421,8 @@ public class JCRRegistry implements Axis2Registry {
     }
 
     public boolean saveGFacDescriptor(String gfacURL) {
+        java.util.Date today = Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTime();
+        Timestamp timestamp = new Timestamp(today.getTime());
         Session session = null;
         try {
             URI uri = new URI(gfacURL);
@@ -436,10 +431,10 @@ public class JCRRegistry implements Axis2Registry {
             Node gfacDataNode = getOrAddNode(session.getRootNode(), GFAC_INSTANCE_DATA);
             try {
                 Property prop = gfacDataNode.getProperty(propertyName);
-                prop.setValue(gfacURL);
+                prop.setValue(gfacURL + ";" + timestamp.getTime());
                 session.save();
             } catch (PathNotFoundException e) {
-                gfacDataNode.setProperty(propertyName, gfacURL);
+                gfacDataNode.setProperty(propertyName, gfacURL + ";" + timestamp.getTime());
                 session.save();
             }
         } catch (Exception e) {
@@ -477,5 +472,30 @@ public class JCRRegistry implements Axis2Registry {
             return true;
         }
     }
+
+    public List<String> getGFacDescriptorList() {
+        Session session = null;
+        List<String> urlList = new ArrayList<String>();
+        java.util.Date today = Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTime();
+        Timestamp timestamp = new Timestamp(today.getTime());
+        try {
+            session = getSession();
+            Node gfacNode = getOrAddNode(session.getRootNode(), GFAC_INSTANCE_DATA);
+            PropertyIterator propertyIterator = gfacNode.getProperties();
+            while (propertyIterator.hasNext()) {
+                Property property = propertyIterator.nextProperty();
+                if(!"nt:unstructured".equals(property.getString())){
+                    Timestamp setTime = new Timestamp(new Long(property.getString().split(";")[1]));
+                    if(GFAC_URL_UPDATE_INTERVAL > (timestamp.getTime() - setTime.getTime())){
+                        urlList.add(property.getString().split(";")[0]);
+                    }
+                }
+            }
+        } catch (RepositoryException e) {
+            e.printStackTrace();
+        }
+        return urlList;
+    }
+
 
 }
