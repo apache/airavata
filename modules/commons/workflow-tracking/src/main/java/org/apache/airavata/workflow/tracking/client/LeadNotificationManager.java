@@ -29,7 +29,7 @@ import org.apache.airavata.commons.WorkFlowUtils;
 import org.apache.airavata.workflow.tracking.impl.subscription.LeadNotificationHandler;
 import org.apache.airavata.workflow.tracking.impl.subscription.MessageBoxNotificationHandler;
 import org.apache.airavata.wsmg.client.protocol.WSEProtocolClient;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
@@ -165,7 +165,7 @@ public class LeadNotificationManager {
 
         try {
             OMElement eprCrEl = EndpointReferenceHelper.toOM(OMAbstractFactory.getOMFactory(), encodedEpr, new QName(
-                    "EndpointReference"), WsmgNameSpaceConstants.WSA_NS.getNamespaceURI());
+                    "EndpointReference"), NameSpaceConstants.WSA_NS.getNamespaceURI());
 
             ret = eprCrEl.toStringWithConsume();
 
