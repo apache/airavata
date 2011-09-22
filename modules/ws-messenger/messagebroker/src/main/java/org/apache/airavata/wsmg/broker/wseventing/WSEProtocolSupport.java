@@ -31,7 +31,7 @@ import org.apache.airavata.wsmg.broker.context.ProcessingContext;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
 import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.messenger.OutGoingQueue;
 import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.axiom.om.OMAbstractFactory;
@@ -117,12 +117,12 @@ public class WSEProtocolSupport {
                     throw new AxisFault("xpath expression is not given");
                 }
             } else if (filterDialectAttrib.compareTo(WsmgCommonConstants.TOPIC_AND_XPATH_DIALECT) == 0) {
-                OMElement topicEl = filterEl.getFirstChildWithName(new QName(WsmgNameSpaceConstants.WSNT_NS
+                OMElement topicEl = filterEl.getFirstChildWithName(new QName(NameSpaceConstants.WSNT_NS
                         .getNamespaceURI(), "TopicExpression"));
                 if (topicEl != null) {
                     topicLocalString = BrokerUtil.getTopicLocalString(topicEl.getText());
                 }
-                OMElement xpathEl = filterEl.getFirstChildWithName(new QName(WsmgNameSpaceConstants.WSNT_NS
+                OMElement xpathEl = filterEl.getFirstChildWithName(new QName(NameSpaceConstants.WSNT_NS
                         .getNamespaceURI(), "MessageContent"));
                 if (xpathEl != null) {
                     xpathString = xpathEl.getText();
@@ -155,9 +155,9 @@ public class WSEProtocolSupport {
 
         OMFactory factory = OMAbstractFactory.getOMFactory();
 
-        ctx.addResponseMsgNameSpaces(WsmgNameSpaceConstants.WSE_NS);
+        ctx.addResponseMsgNameSpaces(NameSpaceConstants.WSE_NS);
 
-        OMElement responseMessage = factory.createOMElement("SubscribeResponse", WsmgNameSpaceConstants.WSE_NS);
+        OMElement responseMessage = factory.createOMElement("SubscribeResponse", NameSpaceConstants.WSE_NS);
 
         OMElement identifier = factory.createOMElement(WsmgCommonConstants.SUBSCRIPTION_ID,
                 responseMessage.getNamespace());
@@ -177,8 +177,8 @@ public class WSEProtocolSupport {
         try {
 
             subscriptionManagerEpr = EndpointReferenceHelper.toOM(factory, serviceLocationEndpointReference, new QName(
-                    WsmgNameSpaceConstants.WSE_NS.getNamespaceURI(), "SubscriptionManager"),
-                    WsmgNameSpaceConstants.WSA_NS.getNamespaceURI());
+                    NameSpaceConstants.WSE_NS.getNamespaceURI(), "SubscriptionManager"),
+                    NameSpaceConstants.WSA_NS.getNamespaceURI());
 
             responseMessage.addChild(subscriptionManagerEpr);
             subscriptionManagerEpr.setNamespace(responseMessage.getNamespace());

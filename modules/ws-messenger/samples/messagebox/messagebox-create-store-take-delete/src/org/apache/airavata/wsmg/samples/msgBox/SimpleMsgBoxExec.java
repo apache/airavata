@@ -84,8 +84,10 @@ public class SimpleMsgBoxExec {
 				}
 			}
 
+		/*
 		System.out.println("Delete message box response :  "
 				+ client.deleteMsgBox(msgBoxEpr, 500L));
+				*/
 	}
 
 }

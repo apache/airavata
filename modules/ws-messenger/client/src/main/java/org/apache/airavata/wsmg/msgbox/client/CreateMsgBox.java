@@ -24,7 +24,7 @@ package org.apache.airavata.wsmg.msgbox.client;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.wsmg.client.util.ClientUtil;
-import org.apache.airavata.wsmg.commons.MsgBoxNameSpConsts;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -84,11 +84,11 @@ public class CreateMsgBox {
     }
 
     private OMElement createMessageEl() throws AxisFault {
-        OMElement message = factory.createOMElement("createMsgBox", MsgBoxNameSpConsts.MSG_BOX);
-        OMElement msgBoxId = factory.createOMElement("MsgBoxId", MsgBoxNameSpConsts.MSG_BOX);
+        OMElement message = factory.createOMElement("createMsgBox", NameSpaceConstants.MSG_BOX);
+        OMElement msgBoxId = factory.createOMElement("MsgBoxId", NameSpaceConstants.MSG_BOX);
         msgBoxId.setText("Create message box");
         message.addChild(msgBoxId);
-        message.declareNamespace(MsgBoxNameSpConsts.MSG_BOX);
+        message.declareNamespace(NameSpaceConstants.MSG_BOX);
         return message;
     }
 
@@ -98,7 +98,7 @@ public class CreateMsgBox {
         opts.setProperty(org.apache.axis2.transport.http.HTTPConstants.CHUNKED, Boolean.FALSE);
         opts.setTo(new EndpointReference(this.msgBoxEndPointReference));
         opts.setMessageId(uuid);
-        opts.setAction(MsgBoxNameSpConsts.MSG_BOX.getNamespaceURI() + "/" + "createMsgBox");
+        opts.setAction(NameSpaceConstants.MSG_BOX.getNamespaceURI() + "/" + "createMsgBox");
 
         opts.setTimeOutInMilliSeconds(getTimeoutInMilliSeconds());
         ServiceClient client = new ServiceClient();

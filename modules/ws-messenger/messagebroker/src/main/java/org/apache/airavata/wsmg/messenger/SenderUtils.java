@@ -30,7 +30,7 @@ import org.apache.airavata.wsmg.broker.AdditionalMessageContent;
 import org.apache.airavata.wsmg.broker.ConsumerInfo;
 import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.messenger.protocol.Axis2Protocol;
@@ -145,10 +145,10 @@ public class SenderUtils {
     public OMElement wrapRawMessageToWsntWrappedFormat(OMElement rawNotif,
             AdditionalMessageContent additionalMessageContent) {
 
-        OMElement fullNotif = factory.createOMElement("Notify", WsmgNameSpaceConstants.WSNT_NS);
+        OMElement fullNotif = factory.createOMElement("Notify", NameSpaceConstants.WSNT_NS);
 
         OMElement notificationMessageEl = factory.createOMElement("NotificationMessage",
-                WsmgNameSpaceConstants.WSNT_NS, fullNotif);
+                NameSpaceConstants.WSNT_NS, fullNotif);
 
         String topicElString = additionalMessageContent.getTopicElement();
         if (topicElString != null) {
@@ -171,7 +171,7 @@ public class SenderUtils {
             notificationMessageEl.addChild(producerReferenceEl);
         }
 
-        OMElement messageEl = factory.createOMElement("Message", WsmgNameSpaceConstants.WSNT_NS, notificationMessageEl);
+        OMElement messageEl = factory.createOMElement("Message", NameSpaceConstants.WSNT_NS, notificationMessageEl);
         messageEl.addChild(rawNotif);
 
         return fullNotif;

@@ -31,7 +31,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.airavata.wsmg.broker.context.ContextParameters;
 import org.apache.airavata.wsmg.broker.context.ProcessingContext;
 import org.apache.airavata.wsmg.commons.OutGoingMessage;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
 import org.apache.airavata.wsmg.matching.AbstractMessageMatcher;
@@ -99,7 +99,7 @@ public class NotificationProcessor {
                 .getSoapAction(), ctx.getMessageContext().getMessageID());
         additionalMessageContent.setTrackId(trackId);
 
-        if (WsmgNameSpaceConstants.WSNT_NS.equals(protocolNs)) {
+        if (NameSpaceConstants.WSNT_NS.equals(protocolNs)) {
 
             onWSNTMsg(ctx, additionalMessageContent);
             setResponseMsg(ctx, trackId, protocolNs);
@@ -125,7 +125,7 @@ public class NotificationProcessor {
         String topicElString = null;
         String topicLocalString = null;
 
-        QName qName = new QName(WsmgNameSpaceConstants.WSNT_NS.getNamespaceURI(), "Topic");
+        QName qName = new QName(NameSpaceConstants.WSNT_NS.getNamespaceURI(), "Topic");
 
         OMElement topicEl = ctx.getMessageContext().getEnvelope().getHeader().getFirstChildWithName(qName);
 
@@ -224,7 +224,7 @@ public class NotificationProcessor {
 
             String topicLocalString = null;
 
-            OMElement topicEl = wrappedMessageEl.getFirstChildWithName(new QName(WsmgNameSpaceConstants.WSNT_NS
+            OMElement topicEl = wrappedMessageEl.getFirstChildWithName(new QName(NameSpaceConstants.WSNT_NS
                     .getNamespaceURI(), "Topic"));
             if (topicEl != null) {
 
@@ -238,7 +238,7 @@ public class NotificationProcessor {
                 additionalMessageContent.setTopicElement(topicElString);
             }
             OMElement producerReferenceEl = wrappedMessageEl.getFirstChildWithName(new QName(
-                    WsmgNameSpaceConstants.WSNT_NS.getNamespaceURI(), "ProducerReference"));
+                    NameSpaceConstants.WSNT_NS.getNamespaceURI(), "ProducerReference"));
 
             if (producerReferenceEl != null) {
                 try {
@@ -251,7 +251,7 @@ public class NotificationProcessor {
             }
 
             OMElement notificationMessageEl = wrappedMessageEl.getFirstChildWithName(
-                    new QName(WsmgNameSpaceConstants.WSNT_NS.getNamespaceURI(), "Message")).getFirstElement();
+                    new QName(NameSpaceConstants.WSNT_NS.getNamespaceURI(), "Message")).getFirstElement();
 
             String message = null;
             try {

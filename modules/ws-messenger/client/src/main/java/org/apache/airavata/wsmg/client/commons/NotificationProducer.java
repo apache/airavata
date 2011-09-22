@@ -22,7 +22,7 @@
 package org.apache.airavata.wsmg.client.commons;
 
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -79,14 +79,14 @@ public class NotificationProducer {
             brokerLocationEPR.addReferenceParameter(topicExpressionEl);
             client.engageModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING);
         } else {
-            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", NameSpaceConstants.WSA_NS);
             msgId.setText(UUIDGenerator.getUUID());
 
-            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", NameSpaceConstants.WSA_NS);
             to.setText(brokerLocationEPR.getAddress());
 
-            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", WsmgNameSpaceConstants.WSA_NS);
-            action.setText("wsnt".equals(type) ? WsmgNameSpaceConstants.WSNT_NS.getNamespaceURI() + "/Notify"
+            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", NameSpaceConstants.WSA_NS);
+            action.setText("wsnt".equals(type) ? NameSpaceConstants.WSNT_NS.getNamespaceURI() + "/Notify"
                     : WsmgCommonConstants.WSMG_PUBLISH_SOAP_ACTION);
             if (topicExpressionEl != null) {
                 try {
@@ -104,7 +104,7 @@ public class NotificationProducer {
 
         Options opts = new Options();
 
-        opts.setAction("wsnt".equals(type) ? WsmgNameSpaceConstants.WSNT_NS.getNamespaceURI() + "/Notify"
+        opts.setAction("wsnt".equals(type) ? NameSpaceConstants.WSNT_NS.getNamespaceURI() + "/Notify"
                 : WsmgCommonConstants.WSMG_PUBLISH_SOAP_ACTION);
 
         opts.setTo(brokerLocationEPR);

@@ -44,7 +44,7 @@ import org.apache.airavata.wsmg.broker.wseventing.WSEProtocolSupport;
 import org.apache.airavata.wsmg.broker.wsnotification.WSNTProtocolSupport;
 import org.apache.airavata.wsmg.broker.wsnotification.WSNotificationProcessingContextBuilder;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.commons.storage.WsmgStorage;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
@@ -131,7 +131,7 @@ public class SubscriptionManager {
             return;
         }
 
-        if (WsmgNameSpaceConstants.WSE_NS.equals(ctx.getContextParameter(ContextParameters.SUBSCRIBE_ELEMENT)
+        if (NameSpaceConstants.WSE_NS.equals(ctx.getContextParameter(ContextParameters.SUBSCRIBE_ELEMENT)
                 .getNamespace())) {
             wseProtocalSupport.createSubscribeResponse(ctx, subId);
 
@@ -156,7 +156,7 @@ public class SubscriptionManager {
 
         // get the first element element inside the soap body element and check
         // whether namespace is WSE
-        if (WsmgNameSpaceConstants.WSE_NS.equals(ctx.getContextParameter(ContextParameters.SUBSCRIBE_ELEMENT)
+        if (NameSpaceConstants.WSE_NS.equals(ctx.getContextParameter(ContextParameters.SUBSCRIBE_ELEMENT)
                 .getNamespace())) {
             state = wseProtocalSupport.createSubscriptionState(ctx, outGoingQueue);
         } else { // Handle WSNT
@@ -299,7 +299,7 @@ public class SubscriptionManager {
                 subscribeXmlElement = builder.getDocumentElement();
 
                 if (subscribeXmlElement.getNamespace().getNamespaceURI()
-                        .equals(WsmgNameSpaceConstants.WSNT_NS.getNamespaceURI())) {
+                        .equals(NameSpaceConstants.WSNT_NS.getNamespaceURI())) {
                     processingCtxBuilder = wsntBuilder;
 
                 } else {

@@ -30,7 +30,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.wsmg.client.util.DcDate;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -89,7 +89,7 @@ public class WsrfResourceStub {
     public void destroy() throws AxisFault {
         String uuid = UUIDGenerator.getUUID();
         opts.setMessageId(uuid);
-        OMElement message = factory.createOMElement("Destroy", WsmgNameSpaceConstants.WSRL_NS);
+        OMElement message = factory.createOMElement("Destroy", NameSpaceConstants.WSRL_NS);
         opts.setAction(message.getNamespace().getNamespaceURI() + "/" + message.getLocalName());
         opts.setTimeOutInMilliSeconds(getTimeoutInMilliSeconds());
 
@@ -99,13 +99,13 @@ public class WsrfResourceStub {
 
             client.engageModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING);
         } else {
-            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", NameSpaceConstants.WSA_NS);
             msgId.setText(uuid);
 
-            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", NameSpaceConstants.WSA_NS);
             to.setText(this.resourceEndpointReference.getAddress());
 
-            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", NameSpaceConstants.WSA_NS);
             action.setText(message.getNamespace().getNamespaceURI() + "/" + message.getLocalName());
 
             client.addHeader(action);
@@ -120,7 +120,7 @@ public class WsrfResourceStub {
     public void setTerminationTime(Calendar cal) throws AxisFault {
         String uuid = UUIDGenerator.getUUID();
         opts.setMessageId(uuid);
-        OMElement message = factory.createOMElement("SetTerminationTime", WsmgNameSpaceConstants.WSRL_NS);
+        OMElement message = factory.createOMElement("SetTerminationTime", NameSpaceConstants.WSRL_NS);
         opts.setAction(message.getNamespace().getNamespaceURI() + "/" + message.getLocalName());
 
         opts.setTimeOutInMilliSeconds(getTimeoutInMilliSeconds());
@@ -142,13 +142,13 @@ public class WsrfResourceStub {
         if (client.getAxisConfiguration().getModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING) != null) {
             client.engageModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING);
         } else {
-            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", NameSpaceConstants.WSA_NS);
             msgId.setText(uuid);
 
-            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", NameSpaceConstants.WSA_NS);
             to.setText(this.resourceEndpointReference.getAddress());
 
-            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", NameSpaceConstants.WSA_NS);
             action.setText(message.getNamespace().getNamespaceURI() + "/" + message.getLocalName());
 
             client.addHeader(action);
@@ -162,7 +162,7 @@ public class WsrfResourceStub {
 
     public List<OMElement> getResourceProperty(QName qn) throws AxisFault { // List<XmlElement>
 
-        OMElement messageEl = factory.createOMElement("GetResourceProperty", WsmgNameSpaceConstants.WSRP_NS);
+        OMElement messageEl = factory.createOMElement("GetResourceProperty", NameSpaceConstants.WSRP_NS);
         String uuid = UUIDGenerator.getUUID();
 
         opts.setTimeOutInMilliSeconds(getTimeoutInMilliSeconds());
@@ -185,13 +185,13 @@ public class WsrfResourceStub {
             client.engageModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING);
         } else {
 
-            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", NameSpaceConstants.WSA_NS);
             msgId.setText(uuid);
 
-            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", NameSpaceConstants.WSA_NS);
             to.setText(this.resourceEndpointReference.getAddress());
 
-            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", NameSpaceConstants.WSA_NS);
             action.setText(messageEl.getNamespace().getNamespaceURI() + "/" + messageEl.getLocalName());
 
             client.addHeader(action);
@@ -208,7 +208,7 @@ public class WsrfResourceStub {
 
     public List<OMElement> getMultipleResourceProperties(QName[] qnamez) throws AxisFault { // TODO
 
-        OMElement messageEl = factory.createOMElement("GetMultipleResourceProperties", WsmgNameSpaceConstants.WSRP_NS);
+        OMElement messageEl = factory.createOMElement("GetMultipleResourceProperties", NameSpaceConstants.WSRP_NS);
         String uuid = UUIDGenerator.getUUID();
         opts.setMessageId(uuid);
         opts.setAction(messageEl.getNamespace().getNamespaceURI() + "/" + messageEl.getLocalName());
@@ -223,7 +223,7 @@ public class WsrfResourceStub {
 
             OMNamespace ns = factory.createOMNamespace(qn.getNamespaceURI(), qn.getPrefix());
 
-            OMElement child = factory.createOMElement("ResourceProperty", WsmgNameSpaceConstants.WSRP_NS);
+            OMElement child = factory.createOMElement("ResourceProperty", NameSpaceConstants.WSRP_NS);
 
             QName textQName = new QName(qn.getNamespaceURI(), qn.getLocalPart(), qn.getPrefix());
 
@@ -241,13 +241,13 @@ public class WsrfResourceStub {
 
             client.engageModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING);
         } else {
-            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", NameSpaceConstants.WSA_NS);
             msgId.setText(uuid);
 
-            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", NameSpaceConstants.WSA_NS);
             to.setText(this.resourceEndpointReference.getAddress());
 
-            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", NameSpaceConstants.WSA_NS);
             action.setText(messageEl.getNamespace().getNamespaceURI() + "/" + messageEl.getLocalName());
 
             client.addHeader(action);
@@ -269,11 +269,11 @@ public class WsrfResourceStub {
         String uuid = UUIDGenerator.getUUID();
         opts.setMessageId(uuid);
         opts.setTimeOutInMilliSeconds(getTimeoutInMilliSeconds());
-        OMElement messageEl = factory.createOMElement("QueryResourceProperties", WsmgNameSpaceConstants.WSRP_NS);
+        OMElement messageEl = factory.createOMElement("QueryResourceProperties", NameSpaceConstants.WSRP_NS);
 
         opts.setAction(messageEl.getNamespace().getNamespaceURI() + "/" + messageEl.getLocalName());
 
-        OMElement queryExpressionEl = factory.createOMElement("QueryExpression", WsmgNameSpaceConstants.WSRP_NS);
+        OMElement queryExpressionEl = factory.createOMElement("QueryExpression", NameSpaceConstants.WSRP_NS);
 
         queryExpressionEl.addAttribute("dialect", WsmgCommonConstants.XPATH_DIALECT, null);
 
@@ -285,13 +285,13 @@ public class WsrfResourceStub {
             client.engageModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING);
         } else {
 
-            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", NameSpaceConstants.WSA_NS);
             msgId.setText(uuid);
 
-            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", NameSpaceConstants.WSA_NS);
             to.setText(this.resourceEndpointReference.getAddress());
 
-            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", NameSpaceConstants.WSA_NS);
             action.setText(messageEl.getNamespace().getNamespaceURI() + "/" + messageEl.getLocalName());
 
             client.addHeader(action);
@@ -310,7 +310,7 @@ public class WsrfResourceStub {
             throw new IllegalArgumentException("at least one request is required");
         }
 
-        OMElement messageEl = factory.createOMElement("SetResourceProperties", WsmgNameSpaceConstants.WSRP_NS);
+        OMElement messageEl = factory.createOMElement("SetResourceProperties", NameSpaceConstants.WSRP_NS);
 
         String uuid = UUIDGenerator.getUUID();
         opts.setMessageId(uuid);
@@ -332,13 +332,13 @@ public class WsrfResourceStub {
 
             client.engageModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING);
         } else {
-            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", NameSpaceConstants.WSA_NS);
             msgId.setText(uuid);
 
-            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", NameSpaceConstants.WSA_NS);
             to.setText(this.resourceEndpointReference.getAddress());
 
-            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", NameSpaceConstants.WSA_NS);
             action.setText(messageEl.getNamespace().getNamespaceURI() + "/" + messageEl.getLocalName());
 
             client.addHeader(action);

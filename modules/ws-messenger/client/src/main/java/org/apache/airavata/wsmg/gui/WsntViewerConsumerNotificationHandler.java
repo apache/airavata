@@ -27,7 +27,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.slf4j.Logger;
@@ -59,14 +59,14 @@ public class WsntViewerConsumerNotificationHandler implements ConsumerNotificati
 
     private void addBriefMsg(SOAPEnvelope env) throws XMLStreamException {
 
-        QName notify = new QName(WsmgNameSpaceConstants.WSNT_NS.getNamespaceURI(), "Notify",
-                WsmgNameSpaceConstants.WSNT_NS.getPrefix());
+        QName notify = new QName(NameSpaceConstants.WSNT_NS.getNamespaceURI(), "Notify",
+                NameSpaceConstants.WSNT_NS.getPrefix());
 
-        QName notifyMsg = new QName(WsmgNameSpaceConstants.WSNT_NS.getNamespaceURI(), "NotificationMessage",
-                WsmgNameSpaceConstants.WSNT_NS.getPrefix());
+        QName notifyMsg = new QName(NameSpaceConstants.WSNT_NS.getNamespaceURI(), "NotificationMessage",
+                NameSpaceConstants.WSNT_NS.getPrefix());
 
-        QName msg = new QName(WsmgNameSpaceConstants.WSNT_NS.getNamespaceURI(), "Message",
-                WsmgNameSpaceConstants.WSNT_NS.getPrefix());
+        QName msg = new QName(NameSpaceConstants.WSNT_NS.getNamespaceURI(), "Message",
+                NameSpaceConstants.WSNT_NS.getPrefix());
 
         if (env.getBody() == null) {
             throw new RuntimeException("invalid soap envelope - no soap body");

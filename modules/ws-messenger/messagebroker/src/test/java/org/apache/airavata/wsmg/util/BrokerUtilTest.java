@@ -26,7 +26,7 @@ import javax.xml.namespace.QName;
 import junit.framework.TestCase;
 
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -121,7 +121,7 @@ public class BrokerUtilTest extends TestCase {
             OMNamespace ns = factory.createOMNamespace("unit_test", "jnt");
 
             OMElement xpathEl = factory.createOMElement("TestXpath", ns);
-            xpathEl.addAttribute("Dialect", dialect, WsmgNameSpaceConstants.WSE_NS);
+            xpathEl.addAttribute("Dialect", dialect, NameSpaceConstants.WSE_NS);
 
             xpathEl.setText(xpathExpression);
 
@@ -140,7 +140,7 @@ public class BrokerUtilTest extends TestCase {
             OMNamespace ns = factory.createOMNamespace("unit_test", "jnt");
 
             OMElement xpathEl = factory.createOMElement("TestXpath", ns);
-            xpathEl.addAttribute("Dialect", dialect, WsmgNameSpaceConstants.WSE_NS);
+            xpathEl.addAttribute("Dialect", dialect, NameSpaceConstants.WSE_NS);
 
             xpathEl.setText(xpathExpression);
             assertEquals(xpathExpression, BrokerUtil.getXPathString(xpathEl));

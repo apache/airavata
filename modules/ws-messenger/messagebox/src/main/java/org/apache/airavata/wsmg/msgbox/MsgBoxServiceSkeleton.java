@@ -25,7 +25,7 @@ import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.apache.airavata.wsmg.commons.MsgBoxNameSpConsts;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
 import org.apache.airavata.wsmg.msgbox.util.MsgBoxCommonConstants;
 import org.apache.airavata.wsmg.msgbox.util.MsgBoxUtils;
@@ -115,7 +115,7 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
             //FIXME: Should we throw exception?? or client will read false status
         }
         resp.addChild(status);
-        resp.declareNamespace(MsgBoxNameSpConsts.MSG_BOX);
+        resp.declareNamespace(NameSpaceConstants.MSG_BOX);
         return resp;
     }
 
@@ -134,7 +134,7 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
                 logger.debug("  no messages..  ");
             }
             respEl.addChild(messageSet);
-            respEl.declareNamespace(MsgBoxNameSpConsts.MSG_BOX);
+            respEl.declareNamespace(NameSpaceConstants.MSG_BOX);
             return respEl;
         } catch (Exception e) {
             logger.error("Error taking mesages of message box: " + msgBoxAddr, e);

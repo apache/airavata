@@ -57,19 +57,7 @@ public class WsmgCommonConstants {
 
     public static final String EPR_SOURCE_HELPER_TO_OM_GET_EPR_PROPERTIES = "http://www.w3.org/2005/08/addressing";
 
-    public final static String WSN1_0_ActionPrefix = "http://www.ibm.com/xmlns/stdwip";
-
-    public final static String WSN1_2_ActionPrefix = "http://docs.oasis-open.org/wsn";
-
-    public final static String WSN_ActionPrefix = WSN1_2_ActionPrefix;
-
     public final static String WSMG_PUBLISH_SOAP_ACTION = "http://org.apache.airavata/WseNotification";
-    /**
-     * Constants to switch between different web service Stacks and Transports
-     * 
-     */
-    public static final int BROKER_WEB_SERVICE_STACK_STANDALONE_AXIS2 = 2;
-    public static final int BROKER_WEB_SERVICE_STACK_TOMCAT_AXIS2 = 4;
 
     public static final String STORAGE_TYPE_IN_MEMORY = "memory";
     public static final String STORAGE_TYPE_PERSISTANT = "persistent";
@@ -97,9 +85,6 @@ public class WsmgCommonConstants {
 
     public static final String CONFIG_SENDING_BATCH_SIZE = "sending.batch.size";
     public static final String CONFIG_SENDING_THREAD_POOL_SIZE = "sending.thread.pool.size";
-
-    public static final String TABLE_NAME_EXPIRABLE_SUBCRIPTIONS = "subscription";
-    public static final String TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS = "specialSubscription";
 
     public static final String BROKER_CONFIGURATION_FILE_NAME = "msgBroker.properties";
 

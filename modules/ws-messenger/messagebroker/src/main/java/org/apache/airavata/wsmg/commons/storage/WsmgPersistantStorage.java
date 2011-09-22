@@ -57,7 +57,13 @@ import org.slf4j.LoggerFactory;
 public class WsmgPersistantStorage implements WsmgStorage {
     private static final Logger logger = LoggerFactory.getLogger(WsmgPersistantStorage.class);
 
-    private static final String TABLE_NAME_TO_CHECK = "subscription";
+    /*
+     * Table name
+     */
+    public static final String TABLE_NAME_EXPIRABLE_SUBCRIPTIONS = "subscription";
+    public static final String TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS = "specialSubscription";
+    
+    private static final String TABLE_NAME_TO_CHECK = TABLE_NAME_EXPIRABLE_SUBCRIPTIONS;
 
     private Counter storeToDBCounter = new Counter();
 
@@ -67,7 +73,7 @@ public class WsmgPersistantStorage implements WsmgStorage {
 
     public WsmgPersistantStorage(String jdbcUrl, String jdbcDriver) {
 
-        this.dbName = WsmgCommonConstants.TABLE_NAME_EXPIRABLE_SUBCRIPTIONS;
+        this.dbName = TABLE_NAME_EXPIRABLE_SUBCRIPTIONS;
 
         db = new JdbcStorage(jdbcUrl, jdbcDriver);
 
@@ -86,10 +92,10 @@ public class WsmgPersistantStorage implements WsmgStorage {
 
             // inject dbname to sql statement.
             SubscriptionConstants.ORDINARY_SUBSCRIPTION_INSERT_QUERY = String.format(
-                    SubscriptionConstants.INSERT_SQL_QUERY, WsmgCommonConstants.TABLE_NAME_EXPIRABLE_SUBCRIPTIONS);
+                    SubscriptionConstants.INSERT_SQL_QUERY, TABLE_NAME_EXPIRABLE_SUBCRIPTIONS);
 
             SubscriptionConstants.SPECIAL_SUBSCRIPTION_INSERT_QUERY = String.format(
-                    SubscriptionConstants.INSERT_SQL_QUERY, WsmgCommonConstants.TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS);
+                    SubscriptionConstants.INSERT_SQL_QUERY, TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS);
 
             if (WSMGParameter.measureMessageRate) {
                 TimerThread timerThread = new TimerThread(storeToDBCounter, " StoreSubScriptionToDBCounter");

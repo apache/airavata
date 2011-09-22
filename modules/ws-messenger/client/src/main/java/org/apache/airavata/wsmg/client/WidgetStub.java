@@ -22,7 +22,7 @@
 package org.apache.airavata.wsmg.client;
 
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -47,7 +47,7 @@ public class WidgetStub extends WsrfResourceStub {
 
     public void generateNotification() throws AxisFault {
 
-        OMElement message = factory.createOMElement("generateNotification", WsmgNameSpaceConstants.WIDGET_NS);
+        OMElement message = factory.createOMElement("generateNotification", NameSpaceConstants.WIDGET_NS);
 
         ServiceClient client = createServiceClient(message);
         client.sendReceive(message);
@@ -64,13 +64,13 @@ public class WidgetStub extends WsrfResourceStub {
             client.engageModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING);
         } else {
 
-            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock msgId = soapfactory.createSOAPHeaderBlock("MessageID", NameSpaceConstants.WSA_NS);
             msgId.setText(uuid);
 
-            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock to = soapfactory.createSOAPHeaderBlock("To", NameSpaceConstants.WSA_NS);
             to.setText(opts.getTo().getAddress());
 
-            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", WsmgNameSpaceConstants.WSA_NS);
+            SOAPHeaderBlock action = soapfactory.createSOAPHeaderBlock("Action", NameSpaceConstants.WSA_NS);
             action.setText(message.getNamespace().getNamespaceURI() + "/" + message.getLocalName());
 
             client.addHeader(action);

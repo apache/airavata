@@ -28,7 +28,7 @@ import org.apache.airavata.wsmg.client.protocol.WSEProtocolClient;
 import org.apache.airavata.wsmg.client.util.ClientUtil;
 import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -43,7 +43,7 @@ public class WseMsgBrokerClient extends CommonMsgBrokerClient implements Message
 
     protected long timeoutInMilliSeconds = WsmgCommonConstants.DEFAULT_CLIENT_SOCKET_TIME_OUT_MILLIES;
 
-    final static String WIDGET_NS_PREFIX = WsmgNameSpaceConstants.WIDGET_NS.getPrefix() + ":";
+    final static String WIDGET_NS_PREFIX = NameSpaceConstants.WIDGET_NS.getPrefix() + ":";
 
     protected NotificationProducer notificationProducer = new NotificationProducer();
     protected ConsumerServerHandler consumerServerHandler = new ConsumerServerHandler();
@@ -64,7 +64,7 @@ public class WseMsgBrokerClient extends CommonMsgBrokerClient implements Message
         OMFactory factory = OMAbstractFactory.getOMFactory();
 
         OMElement wrappedMsg = factory.createOMElement(WsmgCommonConstants.WSMG_PLAIN_TEXT_WRAPPER,
-                WsmgNameSpaceConstants.WSMG_NS);
+                NameSpaceConstants.WSMG_NS);
 
         wrappedMsg.setText(plainText);
         publish(topic, wrappedMsg);
@@ -77,9 +77,9 @@ public class WseMsgBrokerClient extends CommonMsgBrokerClient implements Message
         OMElement topicExpressionEl = null;
 
         if (topic != null) {
-            topicExpressionEl = factory.createOMElement("Topic", WsmgNameSpaceConstants.WSNT_NS);
+            topicExpressionEl = factory.createOMElement("Topic", NameSpaceConstants.WSNT_NS);
             topicExpressionEl.addAttribute("Dialect", WsmgCommonConstants.TOPIC_EXPRESSION_SIMPLE_DIALECT, null);
-            topicExpressionEl.declareNamespace(WsmgNameSpaceConstants.WIDGET_NS);
+            topicExpressionEl.declareNamespace(NameSpaceConstants.WIDGET_NS);
             topicExpressionEl.setText(WIDGET_NS_PREFIX + topic);
 
         }
@@ -121,7 +121,7 @@ public class WseMsgBrokerClient extends CommonMsgBrokerClient implements Message
             }
 
             OMElement responseSubscriptionsManagerElement = responseMessage.getFirstChildWithName(new QName(
-                    WsmgNameSpaceConstants.WSE_NS.getNamespaceURI(), "SubscriptionManager"));
+                    NameSpaceConstants.WSE_NS.getNamespaceURI(), "SubscriptionManager"));
 
             subscriptionId = WSEProtocolClient.decodeSubscribeResponse(responseSubscriptionsManagerElement);
 

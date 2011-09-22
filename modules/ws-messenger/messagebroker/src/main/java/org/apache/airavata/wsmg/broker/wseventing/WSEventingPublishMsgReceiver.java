@@ -24,7 +24,7 @@ package org.apache.airavata.wsmg.broker.wseventing;
 import org.apache.airavata.wsmg.broker.AbstractBrokerMsgReceiver;
 import org.apache.airavata.wsmg.broker.context.ProcessingContext;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.WsmgNameSpaceConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
 import org.apache.airavata.wsmg.util.WsEventingOperations;
 import org.apache.axiom.om.OMElement;
@@ -45,7 +45,7 @@ public class WSEventingPublishMsgReceiver extends AbstractBrokerMsgReceiver {
             WsmgConfigurationContext brokerConfigContext = (WsmgConfigurationContext) inMsgContext
                     .getConfigurationContext().getProperty(WsmgCommonConstants.BROKER_WSMGCONFIG);
 
-            brokerConfigContext.getNotificationProcessor().processMsg(processingContext, WsmgNameSpaceConstants.WSE_NS);
+            brokerConfigContext.getNotificationProcessor().processMsg(processingContext, NameSpaceConstants.WSE_NS);
         } catch (Exception e) {
             throw new AxisFault("unable to process message", e);
         }
@@ -63,7 +63,7 @@ public class WSEventingPublishMsgReceiver extends AbstractBrokerMsgReceiver {
 
             outputContext = super.createOutputMessageContext(inMsg, processingContext);
 
-            String responseAction = String.format("%s/%s", WsmgNameSpaceConstants.WSE_NS.getNamespaceURI(),
+            String responseAction = String.format("%s/%s", NameSpaceConstants.WSE_NS.getNamespaceURI(),
                     responseMessage.getLocalName());
 
             outputContext.setSoapAction(responseAction);
