@@ -87,7 +87,7 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
         int messagePreservationHours = configs.getConfig(ConfigKeys.MSG_PRESV_HRS, 0);
         int messagePreservationMinutes = configs.getConfig(ConfigKeys.MSG_PRESV_MINS, 0);
 
-        long interval = messagePreservationDays * 24;
+        long interval = messagePreservationDays * 24l;
         interval = (interval + messagePreservationHours) * 60;
         interval = (interval + messagePreservationMinutes) * 60;
         interval = interval * 1000;
