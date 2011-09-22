@@ -140,7 +140,6 @@ public class DatabaseCreator {
             statement = conn.createStatement();
             ret = statement.execute(sql);
             updateCount = statement.getUpdateCount();
-            ResultSet resultSet = statement.getResultSet();
             do {
                 if (!ret) {
                     if (updateCount != -1) {
@@ -150,7 +149,6 @@ public class DatabaseCreator {
                 ret = statement.getMoreResults();
                 if (ret) {
                     updateCount = statement.getUpdateCount();
-                    resultSet = statement.getResultSet();
                 }
             } while (ret);
 

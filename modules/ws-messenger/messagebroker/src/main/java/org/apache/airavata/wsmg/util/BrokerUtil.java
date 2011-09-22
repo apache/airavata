@@ -28,24 +28,20 @@ import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
 
-public class BrokerUtil {  
+public class BrokerUtil {
 
-    public static boolean sameStringValue(String stringA, String stringB) {
-        if (stringA == null) {
-            if (stringB == null) {
-                return true;
-            }
-            return false;
-
-        }
-        // StringA!=null
-        if (stringB == null)
-            return false;
-        if (stringA.compareTo(stringB) == 0) {
-            return true;
-        }
-        return false;
-
+    /**
+     * Compares String {@code x} with String {@code y}. The result is {@code true} if and only
+     * if both arguments are {@code null} or String {@code x} has the same sequence of
+     * characters as String {@code y}.
+     * 
+     * @param x
+     * @param y
+     * @return {@code true} if the String {@code x} and String {@code y} are
+     *          equivalent, {@code false} otherwise
+     */
+    public static boolean sameStringValue(String x, String y) {
+        return (x == null && y == null) || (x != null && y != null && x.equals(y));
     }
 
     public static String getTopicLocalString(String filterText) {

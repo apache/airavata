@@ -21,22 +21,33 @@
 
 package org.apache.airavata.wsmg.commons.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
-import org.apache.airavata.wsmg.commons.exceptions.XMLComparisonException;
+import javax.xml.namespace.QName;
+
+import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNamespace;
-import org.apache.axiom.om.OMNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OMElementComparator {
+/**
+ * Compare two OMElement with its namespace, attributes, children, and text.
+ * Current implementation supports ignore namespace checking i.e. if the
+ * namespace is in the list, it is skipped and return as equals.
+ */
+public class OMElementComparator {   
 
     private static final Logger log = LoggerFactory.getLogger(OMElementComparator.class);
 
-    private Vector<String> ignorableNamespaceList = new Vector<String>();
+    private static List<String> ignorableNamespaceList = new ArrayList<String>();
+    
+    private OMElementComparator(){        
+    }
 
     public void addIgnorableNamespace(String nsURI) {
         ignorableNamespaceList.add(nsURI);
@@ -44,55 +55,37 @@ public class OMElementComparator {
 
     public void clearIgnorableNamespaces() {
         ignorableNamespaceList.clear();
-    }
+    }   
 
-    public boolean compare(OMElement elementOne, OMElement elementTwo) throws XMLComparisonException {
+    public static boolean compare(OMElement elementOne, OMElement elementTwo) {
 
-        // ignore if the elements belong to any of the ignorable namespaces list
         if (isIgnorable(elementOne) || isIgnorable(elementTwo)) {
+            // ignore if the elements belong to any of the ignorable namespaces
+            // list
             return true;
-        }
-
-        if (elementOne == null && elementTwo == null) {
-            log.info("Both Elements are null.");
+        } else if (elementOne == null && elementTwo == null) {
+            log.debug("Both Elements are null.");
             return true;
-        }
-        if (elementOne == null && elementTwo != null) {
-            throw new XMLComparisonException("Element One is null and Element Two is not null");
-        }
-        if (elementOne != null && elementTwo == null) {
-            throw new XMLComparisonException("Element Two is null and Element One is not null");
+        } else if (elementOne == null || elementTwo == null) {
+            log.debug("One of item to compare is null");
+            return false;
         }
 
-        compare("Elements names are not equal. ", elementOne.getLocalName(), elementTwo.getLocalName());
-
-        compare("Element namespaces are not equal", elementOne.getNamespace(), elementTwo.getNamespace());
-
-        compareAllAttributes(elementOne, elementTwo);
-
-        /*
-         * Trimming the value of the XMLElement is not correct since this compare method cannot be used to compare
-         * element contents with trailing and leading whitespaces BUT for the practicalltiy of tests and to get the
-         * current tests working we have to trim() the contents
-         */
-        compare("Elements texts are not equal ", elementOne.getText().trim(), elementTwo.getText().trim());
-
-        compareAllChildren(elementOne, elementTwo);
-
-        return true;
+        return BrokerUtil.sameStringValue(elementOne.getLocalName(), elementTwo.getLocalName())
+                && compare(elementOne.getNamespace(), elementTwo.getNamespace())
+                && compareAttibutes(elementOne, elementTwo)
+                /*
+                 * Trimming the value of the XMLElement is not correct since
+                 * this compare method cannot be used to compare element
+                 * contents with trailing and leading whitespaces BUT for the
+                 * practical side of tests and to get the current tests working
+                 * we have to trim() the contents
+                 */
+                && BrokerUtil.sameStringValue(elementOne.getText().trim(), elementTwo.getText().trim())
+                && compareChildren(elementOne, elementTwo);
     }
 
-    private void compareAllAttributes(OMElement elementOne, OMElement elementTwo) throws XMLComparisonException {
-        compareAttibutes(elementOne, elementTwo);
-        compareAttibutes(elementTwo, elementOne);
-    }
-
-    private void compareAllChildren(OMElement elementOne, OMElement elementTwo) throws XMLComparisonException {
-        compareChildren(elementOne, elementTwo);
-        compareChildren(elementTwo, elementOne);
-    }
-
-    private boolean isIgnorable(OMElement elt) {
+    private static boolean isIgnorable(OMElement elt) {
         if (elt != null) {
             OMNamespace namespace = elt.getNamespace();
             if (namespace != null) {
@@ -105,79 +98,84 @@ public class OMElementComparator {
         }
     }
 
-    private void compareChildren(OMElement elementOne, OMElement elementTwo) throws XMLComparisonException {
-        // ignore if the elements belong to any of the ignorable namespaces list
-        if (isIgnorable(elementOne) || isIgnorable(elementTwo)) {
-            return;
+    private static boolean compareChildren(OMElement elementOne, OMElement elementTwo) {
+        HashMap<QName, OMElement> map = new HashMap<QName, OMElement>();
+        Iterator oneIter = elementOne.getChildElements();
+        while (oneIter.hasNext()) {
+            OMElement elementOneChild = (OMElement) oneIter.next();
+            OMElement elementTwoChild = elementTwo.getFirstChildWithName(elementOneChild.getQName());
+            if (!compare(elementOneChild, elementTwoChild)) {
+                return false;
+            }
+
+            /*
+             * Cache for later access
+             */
+            map.put(elementOneChild.getQName(), elementOneChild);
         }
-        Iterator elementOneChildren = elementOne.getChildren();
-        while (elementOneChildren.hasNext()) {
-            OMNode omNode = (OMNode) elementOneChildren.next();
-            if (omNode instanceof OMElement) {
-                OMElement elementOneChild = (OMElement) omNode;
-                OMElement elementTwoChild = null;
-                // Do the comparison only if the element is not ignorable
-                if (!isIgnorable(elementOneChild)) {
-                    elementTwoChild = elementTwo.getFirstChildWithName(elementOneChild.getQName());
-                    // Do the comparison only if the element is not ignorable
-                    if (!isIgnorable(elementTwoChild)) {
-                        if (elementTwoChild == null) {
-                            throw new XMLComparisonException(" There is no " + elementOneChild.getLocalName()
-                                    + " element under " + elementTwo.getLocalName());
-                        }
-                    }
-                }
-                compare(elementOneChild, elementTwoChild);
+
+        /*
+         * Case the second element has more elements than the first
+         */
+        Iterator twoIter = elementTwo.getChildElements();
+        while (twoIter.hasNext()) {
+            OMElement elementTwoChild = (OMElement) twoIter.next();
+            if (!isIgnorable(elementTwoChild) && !map.containsKey(elementTwoChild.getQName())) {
+                return false;
             }
         }
+
+        return true;
     }
 
-    private void compareAttibutes(OMElement elementOne, OMElement elementTwo) throws XMLComparisonException {
+    private static boolean compareAttibutes(OMElement elementOne, OMElement elementTwo) {
         int elementOneAtribCount = 0;
         int elementTwoAtribCount = 0;
-        Iterator attributes = elementOne.getAllAttributes();
-        while (attributes.hasNext()) {
-            OMAttribute omAttribute = (OMAttribute) attributes.next();
+        Iterator oneIter = elementOne.getAllAttributes();
+        while (oneIter.hasNext()) {
+
+            /*
+             * This catches a case where the first one has more items than the
+             * second one (one.attributes.size > two.attributes.size) and a case
+             * where the first and the second have a different attributes.
+             * (one.attributes.size == two.attributes.size)
+             */
+            OMAttribute omAttribute = (OMAttribute) oneIter.next();
             OMAttribute attr = elementTwo.getAttribute(omAttribute.getQName());
             if (attr == null) {
-                throw new XMLComparisonException("Attributes are not the same in two elements. Attribute "
-                        + omAttribute.getLocalName() + " != ");
+                log.debug("Attribute " + omAttribute + " is not found in both elements.");
+                return false;
             }
+            /*
+             * Count attributes in the first item
+             */
             elementOneAtribCount++;
         }
 
+        /*
+         * Count attributes in the second item
+         */
         Iterator elementTwoIter = elementTwo.getAllAttributes();
         while (elementTwoIter.hasNext()) {
             elementTwoIter.next();
             elementTwoAtribCount++;
-
         }
 
-        if (elementOneAtribCount != elementTwoAtribCount) {
-            throw new XMLComparisonException("Attributes are not the same in two elements.");
-        }
+        /*
+         * This catches a case where the second one has more items than the
+         * first one. (two.attributes.size > one.attributes.size)
+         */
+        log.debug("Number of Attributes are equal? : " + (elementOneAtribCount == elementTwoAtribCount));
+        return elementOneAtribCount == elementTwoAtribCount;
     }
 
-    private void compare(String failureNotice, String one, String two) throws XMLComparisonException {
-        if (!one.equals(two)) {
-            throw new XMLComparisonException(failureNotice + one + " != " + two);
-        }
-    }
-
-    private void compare(String failureNotice, OMNamespace one, OMNamespace two) throws XMLComparisonException {
-        if (one == null && two == null) {
-            return;
-        } else if (one != null && two == null) {
-            throw new XMLComparisonException("First Namespace is NOT null. But the second is null");
-        } else if (one == null && two != null) {
-            throw new XMLComparisonException("First Namespace is null. But the second is NOT null");
-        }
-
-        if (!one.getNamespaceURI().equals(two.getNamespaceURI())) {
-            throw new XMLComparisonException(failureNotice + one + " != " + two);
-        }
-
-        // Do we need to compare prefixes as well
+    /*
+     * Compare only URI not prefix
+     */
+    private static boolean compare(OMNamespace x, OMNamespace y) {
+        log.debug("Compare namespace:" + x + " with " + y);
+        return (x == null && y == null)
+                || (x != null && y != null && BrokerUtil.sameStringValue(x.getNamespaceURI(), y.getNamespaceURI()));
     }
 
 }

@@ -25,11 +25,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.wsmg.broker.ConsumerInfo;
-import org.apache.airavata.wsmg.commons.exceptions.XMLComparisonException;
 import org.apache.airavata.wsmg.commons.util.OMElementComparator;
 import org.apache.airavata.wsmg.messenger.OutGoingQueue;
 import org.apache.airavata.wsmg.util.BrokerUtil;
@@ -140,7 +140,7 @@ public class SubscriptionState {
         // String topicLocalString = topicExpressionQName.getLocalPart();
         return localTopicString;
     }
-   
+
     /**
      * @return Returns the consumeReference.
      */
@@ -250,70 +250,52 @@ public class SubscriptionState {
 
     @Override
     public boolean equals(Object o) {
-        boolean ret = false;
-
         if (o instanceof SubscriptionState) {
             SubscriptionState subscription = (SubscriptionState) o;
-
-            ret = BrokerUtil.sameStringValue(subscription.getLocalTopic(), this.getLocalTopic())
+            return BrokerUtil.sameStringValue(subscription.getLocalTopic(), this.getLocalTopic())
                     && BrokerUtil.sameStringValue(subscription.getXpathString(), this.getXpathString())
-                    && (subscription.getConsumerIPAddressStr().compareTo(this.getConsumerIPAddressStr())) == 0
+                    && BrokerUtil.sameStringValue(subscription.getConsumerIPAddressStr(),
+                            this.getConsumerIPAddressStr()) 
                     && equalReferenceParameters(subscription);
-
         }
-
-        return ret;
+        return false;
     }
-
-    // TODO : find a better way to do this.
+    
     private boolean equalReferenceParameters(SubscriptionState anotherSubscription) {
 
         Map<QName, OMElement> otherRefProperties = anotherSubscription.getConsumerReference()
                 .getAllReferenceParameters();
         Map<QName, OMElement> myRefProperties = getConsumerReference().getAllReferenceParameters();
 
-        if (otherRefProperties == null) {
-
-            if (myRefProperties == null) {
-                return true;
-            }
+        /*
+         * Basic comparison
+         */
+        if (otherRefProperties == null && myRefProperties == null) {
+            return true;
+        } else if (otherRefProperties == null || myRefProperties == null) {
             return false;
-
-        }
-
-        if (myRefProperties == null) {
+        } else if (otherRefProperties.size() != myRefProperties.size()) {
             return false;
         }
 
-        if (otherRefProperties.size() != myRefProperties.size()) {
-            return false;
-        }
-
-        Iterator<QName> iterator = otherRefProperties.keySet().iterator();
-
+        /*
+         * This OMElementComparator supports ignore list, but we don't use it here.
+         */        
+        Iterator<Entry<QName, OMElement>> iterator = otherRefProperties.entrySet().iterator();        
         while (iterator.hasNext()) {
 
-            QName key = iterator.next();
-            OMElement myElement = myRefProperties.get(key);
-            if (myElement == null) {
+            Entry<QName, OMElement> entry = iterator.next();
+            if (!myRefProperties.containsKey(entry.getKey())) {
                 return false;
             }
 
-            OMElement otherElement = otherRefProperties.get(key);
+            OMElement myElement = myRefProperties.get(entry.getKey());
+            OMElement otherElement = entry.getValue();
 
-            // TODO : find out another way to compare two OMelements
-            OMElementComparator comparator = new OMElementComparator();
-            try {
-                if (!comparator.compare(myElement, otherElement)) {
-                    return false;
-                }
-            } catch (XMLComparisonException e) {
-
-                logger.info("unable to compare om elements", e);
+            if (!OMElementComparator.compare(myElement, otherElement)) {
                 return false;
             }
         }
-
         return true;
     }
 
