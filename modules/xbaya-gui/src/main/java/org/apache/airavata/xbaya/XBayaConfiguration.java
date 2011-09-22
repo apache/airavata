@@ -26,6 +26,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 
 import xsul.lead.LeadDeploymentConfig;
@@ -51,6 +52,7 @@ public class XBayaConfiguration {
 
     private URI gpelInstanceID = null;
 
+    private JCRComponentRegistry jcrComponentRegistry = null;
     // ODE
     private String odeURL = XBayaConstants.DEFAULT_ODE_URL;
 
@@ -745,4 +747,11 @@ public class XBayaConfiguration {
         return this.closeOnExit;
     }
 
+    public JCRComponentRegistry getJcrComponentRegistry() {
+        return jcrComponentRegistry;
+    }
+
+    public void setJcrComponentRegistry(JCRComponentRegistry jcrComponentRegistry) {
+        this.jcrComponentRegistry = jcrComponentRegistry;
+    }
 }

@@ -21,8 +21,8 @@
 
 package org.apache.airavata.xbaya.util;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.InputStream;
+import java.net.*;
 
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -84,7 +84,30 @@ public class XBayaUtil {
             leadContext.setResourceMapping(resourceMapping);
         }
         return leadContext;
+
+
     }
 
+    public static boolean isURLExists(String URLName) {
+        try {
+            if (!URLName.toUpperCase().contains("HTTP"))
+                URLName = "http://" + URLName;
+            URL url = new URL(URLName);
+            System.setProperty("java.net.useSystemProxies", "true");
+            HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+            urlConn.setConnectTimeout(9000);
+            urlConn.setReadTimeout(9000);
+            urlConn.connect();
+            if (HttpURLConnection.HTTP_OK == urlConn.getResponseCode())
+                return true;
+            else
+                return false;
+        } catch (SocketTimeoutException e) {
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }

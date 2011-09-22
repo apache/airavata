@@ -31,12 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.swing.AbstractAction;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.StringUtil;
@@ -61,8 +56,10 @@ import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ode.ODEClient;
+import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
+import org.jcp.xml.dsig.internal.dom.Utils;
 import org.ogce.schemas.gfac.beans.HostBean;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
@@ -94,7 +91,7 @@ public class DynamicWorkflowRunnerWindow {
 
     private XBayaTextField xRegistryTextField;
 
-    private XBayaTextField gfacTextField;
+    private JComboBox gfacUrlListField;
 
     private JCheckBox interactChkBox;
 
@@ -116,7 +113,15 @@ public class DynamicWorkflowRunnerWindow {
      */
     public void show() {
         this.workflow = this.engine.getWorkflow();
-
+        List<String> urlList = this.engine.getConfiguration().getJcrComponentRegistry().getGFacURLList();
+        //When run xbaya continously urls can be repeating, so first remove everything and then add
+        this.gfacUrlListField.removeAllItems();
+        for(String gfacUrl:urlList){
+            if(XBayaUtil.isURLExists(gfacUrl + "?wsdl")){
+                this.gfacUrlListField.addItem(gfacUrl);
+            }
+        }
+        this.gfacUrlListField.setEditable(true);
         MonitorConfiguration notifConfig = this.engine.getMonitor().getConfiguration();
         if (notifConfig.getBrokerURL() == null) {
             this.engine.getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
@@ -166,7 +171,7 @@ public class DynamicWorkflowRunnerWindow {
         this.topicTextField.setText(UUID.randomUUID().toString());
 
         XBayaConfiguration config = this.engine.getConfiguration();
-        this.gfacTextField.setText(config.getGFacURL().toString());
+//        this.gfacTextField.setText(config.getGFacURL().toString());
         URI registryURL = config.getXRegistryURL();
         if (null != registryURL) {
             this.xRegistryTextField.setText(registryURL.toString());
@@ -218,9 +223,8 @@ public class DynamicWorkflowRunnerWindow {
         XBayaLabel topicLabel = new XBayaLabel("Notification topic", this.topicTextField);
         this.xRegistryTextField = new XBayaTextField();
         XBayaLabel xRegistryLabel = new XBayaLabel("XRegistry URL", this.xRegistryTextField);
-        this.gfacTextField = new XBayaTextField();
-        XBayaLabel gfacLabel = new XBayaLabel("GFac URL", this.gfacTextField);
-
+        this.gfacUrlListField = new JComboBox();
+        XBayaLabel gfacURLLabel  = new XBayaLabel("GFac URL", this.gfacUrlListField);
         this.interactChkBox = new JCheckBox();
         this.interactChkBox.setSelected(false);
         XBayaLabel interactLabel = new XBayaLabel("Enable Service Interactions", this.interactChkBox);
@@ -232,8 +236,10 @@ public class DynamicWorkflowRunnerWindow {
         infoPanel.add(this.topicTextField);
         infoPanel.add(xRegistryLabel);
         infoPanel.add(this.xRegistryTextField);
-        infoPanel.add(gfacLabel);
-        infoPanel.add(this.gfacTextField);
+//        infoPanel.add(gfacLabel);
+//        infoPanel.add(this.gfacTextField);
+        infoPanel.add(gfacURLLabel);
+        infoPanel.add(this.gfacUrlListField);
         infoPanel.add(interactLabel);
         infoPanel.add(this.interactChkBox);
 
@@ -321,7 +327,7 @@ public class DynamicWorkflowRunnerWindow {
             }
         }
 
-        final String gFacUrl = this.gfacTextField.getText();
+        final String gFacUrl = (String)this.gfacUrlListField.getSelectedItem();
         if (null != gFacUrl && !"".equals(gFacUrl)) {
             try {
                 this.engine.getConfiguration().setGFacURL(new URI(gFacUrl));

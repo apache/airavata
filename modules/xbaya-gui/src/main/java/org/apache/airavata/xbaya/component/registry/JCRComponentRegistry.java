@@ -40,7 +40,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
         map.put("org.apache.jackrabbit.repository.uri", url.toString());
         registerUserManagers();
         this.registry = new JCRRegistry("org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", username,
-                password, map);        
+                password, map);
     }
 
 	/**
@@ -76,6 +76,10 @@ public class JCRComponentRegistry extends ComponentRegistry {
     @Override
     public String getName() {
         return NAME;
+    }
+
+    public List<String> getGFacURLList(){
+        return this.registry.getGFacDescriptorList();
     }
 
 }
