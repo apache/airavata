@@ -29,6 +29,7 @@ import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
@@ -121,7 +122,7 @@ public class BrokerUtilTest extends TestCase {
             OMNamespace ns = factory.createOMNamespace("unit_test", "jnt");
 
             OMElement xpathEl = factory.createOMElement("TestXpath", ns);
-            xpathEl.addAttribute("Dialect", dialect, NameSpaceConstants.WSE_NS);
+            xpathEl.addAttribute("Dialect", dialect, null);
 
             xpathEl.setText(xpathExpression);
 
@@ -140,7 +141,7 @@ public class BrokerUtilTest extends TestCase {
             OMNamespace ns = factory.createOMNamespace("unit_test", "jnt");
 
             OMElement xpathEl = factory.createOMElement("TestXpath", ns);
-            xpathEl.addAttribute("Dialect", dialect, NameSpaceConstants.WSE_NS);
+            xpathEl.addAttribute("Dialect", dialect, null);
 
             xpathEl.setText(xpathExpression);
             assertEquals(xpathExpression, BrokerUtil.getXPathString(xpathEl));
