@@ -37,7 +37,6 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.util.SchemaUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import sun.security.tools.TimestampedSigner;
 
 public class JCRRegistry implements Axis2Registry {
 
