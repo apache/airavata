@@ -18,14 +18,15 @@
  * under the License.
  *
  */
+package org.apache.airavata.wsmg.messenger;
 
-package org.apache.airavata.wsmg.messenger.strategy;
+import org.apache.airavata.wsmg.broker.AdditionalMessageContent;
+import org.apache.airavata.wsmg.broker.ConsumerInfo;
+import org.apache.airavata.wsmg.messenger.protocol.DeliveryProtocol;
+import org.apache.axiom.om.OMElement;
 
-import org.apache.airavata.wsmg.commons.OutGoingMessage;
-import org.apache.airavata.wsmg.messenger.Deliverable;
-
-public interface SendingStrategy {
-    void init();
-    void addMessageToSend(OutGoingMessage outMessage, Deliverable deliverable);
-    void shutdown();
+public interface Deliverable {
+    void setProtocol(DeliveryProtocol protocol);
+    
+    void send(ConsumerInfo consumerInfo, OMElement message, AdditionalMessageContent additionalMessageContent);
 }

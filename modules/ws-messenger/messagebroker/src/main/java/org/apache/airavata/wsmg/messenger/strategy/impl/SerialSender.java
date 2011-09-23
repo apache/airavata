@@ -30,82 +30,46 @@ import org.apache.airavata.wsmg.broker.AdditionalMessageContent;
 import org.apache.airavata.wsmg.broker.ConsumerInfo;
 import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.commons.OutGoingMessage;
-import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
-import org.apache.airavata.wsmg.config.WSMGParameter;
-import org.apache.airavata.wsmg.messenger.ConsumerUrlManager;
-import org.apache.airavata.wsmg.messenger.SenderUtils;
+import org.apache.airavata.wsmg.messenger.Deliverable;
 import org.apache.airavata.wsmg.messenger.strategy.SendingStrategy;
 import org.apache.axiom.om.OMElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SerialSender extends Thread implements SendingStrategy {
+public class SerialSender implements SendingStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(SerialSender.class);
-
-    private boolean stopFlag = false;
-
-    SenderUtils sender;
-
-    public SerialSender(ConfigurationManager config, ConsumerUrlManager urlman) {
-        sender = new SenderUtils(urlman, config);
+    
+    public void init() {   
     }
-
+    
     public void shutdown() {
-        stopFlag = true;
-        log.info("delivery thread termination notificaiton recieved");
+    }   
+    
+    public void addMessageToSend(OutGoingMessage outMessage, Deliverable deliverable) {
+        sendNotification(outMessage, deliverable);
     }
 
-    public void run() {
-
-        log.debug("run - delivery thread");
-
-        while (!stopFlag) {
-
-            try {
-
-                OutGoingMessage outGoingMessage = (OutGoingMessage) WSMGParameter.OUT_GOING_QUEUE.blockingDequeue();
-
-                if (WSMGParameter.showTrackId)
-                    log.debug(outGoingMessage.getAdditionalMessageContent().getTrackId()
-                            + ": dequeued from outgoing queue");
-
-                sendNotification(outGoingMessage);
-
-            } catch (Exception e) {
-                log.error("Unexpected_exception:", e);
-            }
-        }
-    }
-
-    public synchronized void sendNotification(OutGoingMessage outGoingMessage) {
+    public void sendNotification(OutGoingMessage outGoingMessage, Deliverable deliverable) {
 
         if (outGoingMessage == null) {
-            log.error("got a null outgoing message");
+            log.error("Got a null outgoing message");
             return;
         }
         String messageString = outGoingMessage.getTextMessage();
 
         List<ConsumerInfo> consumerInfoList = outGoingMessage.getConsumerInfoList();
         AdditionalMessageContent soapHeader = outGoingMessage.getAdditionalMessageContent();
-        deliverMessage(consumerInfoList, messageString, soapHeader);
-    }
-
-    private void deliverMessage(List<ConsumerInfo> consumerInfoList, String messageString,
-            AdditionalMessageContent additionalMessageContent) {
-
+        
         try {
             OMElement messgae2Send = CommonRoutines.reader2OMElement(new StringReader(messageString));
 
             for (ConsumerInfo obj : consumerInfoList) {
-
-                sender.send(obj, messgae2Send, additionalMessageContent);
-
+                deliverable.send(obj, messgae2Send, soapHeader);
             }
 
         } catch (XMLStreamException e) {
             log.error(e.getMessage(), e);
-        }
-
+        }        
     }
 }

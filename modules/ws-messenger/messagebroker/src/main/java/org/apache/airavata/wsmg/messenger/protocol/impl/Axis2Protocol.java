@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.wsmg.messenger.protocol;
+package org.apache.airavata.wsmg.messenger.protocol.impl;
 
 import java.io.StringReader;
 import java.util.LinkedList;
@@ -31,6 +31,8 @@ import org.apache.airavata.wsmg.broker.AdditionalMessageContent;
 import org.apache.airavata.wsmg.broker.ConsumerInfo;
 import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.commons.NameSpaceConstants;
+import org.apache.airavata.wsmg.messenger.protocol.DeliveryProtocol;
+import org.apache.airavata.wsmg.messenger.protocol.SendingException;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.ElementHelper;
@@ -40,6 +42,7 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
+import org.apache.axis2.transport.http.HTTPConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,15 +50,11 @@ public class Axis2Protocol implements DeliveryProtocol {
 
     private static final Logger logger = LoggerFactory.getLogger(Axis2Protocol.class);
 
-    SOAPFactory soapfactory = OMAbstractFactory.getSOAP11Factory();
+    private static SOAPFactory soapfactory = OMAbstractFactory.getSOAP11Factory();
 
-    ServiceClient nonThreadLocalServiceClient = null;
+    private ServiceClient nonThreadLocalServiceClient;
 
-    long tcpConnectionTimeout = 0;
-
-    public void setTimeout(long timeout) {
-        this.tcpConnectionTimeout = timeout;
-    }
+    long tcpConnectionTimeout;
 
     public void deliver(ConsumerInfo consumerInfo, OMElement message, AdditionalMessageContent additionalMessageContent)
             throws SendingException {
@@ -82,36 +81,35 @@ public class Axis2Protocol implements DeliveryProtocol {
             }
         }
 
+        ServiceClient client = null;
         try {
 
-            ServiceClient client = configureServiceClient(actionString, consumerReference,
-                    additionalMessageContent.getMessageID(), soapHeaders);
+            client = configureServiceClient(actionString, consumerReference, additionalMessageContent.getMessageID(),
+                    soapHeaders);
 
             client.sendRobust(message);
-            client.cleanupTransport();
 
         } catch (AxisFault ex) {
             throw new SendingException(ex.getCause());
+        } finally {
+            if (client != null) {
+                try {
+                    client.cleanupTransport();
+                } catch (AxisFault ex) {
+                    logger.error(ex.getMessage(), ex);
+                }
+            }
         }
     }
 
-    private ServiceClient getServiceClient() throws AxisFault {
-
-        ServiceClient ret = nonThreadLocalServiceClient;
-        if (ret == null) {
-            ret = new ServiceClient();
-
-            nonThreadLocalServiceClient = ret;
-        }
-        ret.removeHeaders();
-        return ret;
+    public void setTimeout(long timeout) {
+        this.tcpConnectionTimeout = timeout;
     }
 
     private ServiceClient configureServiceClient(String action, EndpointReference consumerLocation, String msgId,
             List<OMElement> soapHeaders) throws AxisFault {
 
         // not engaging addressing modules
-
         ServiceClient client = getServiceClient();
 
         SOAPHeaderBlock msgIdEl = soapfactory.createSOAPHeaderBlock("MessageID", NameSpaceConstants.WSA_NS);
@@ -127,15 +125,12 @@ public class Axis2Protocol implements DeliveryProtocol {
         client.addHeader(to);
 
         for (OMElement omHeader : soapHeaders) {
-
             try {
                 SOAPHeaderBlock headerBlock = ElementHelper.toSOAPHeaderBlock(omHeader, soapfactory);
-
                 client.addHeader(headerBlock);
             } catch (Exception e) {
                 throw AxisFault.makeFault(e);
             }
-
         }
 
         Options opts = new Options();
@@ -143,12 +138,18 @@ public class Axis2Protocol implements DeliveryProtocol {
         opts.setMessageId(msgId);
         opts.setTo(consumerLocation);
         opts.setAction(action);
-        opts.setProperty(org.apache.axis2.transport.http.HTTPConstants.CHUNKED, Boolean.FALSE);
-
-        opts.setProperty(org.apache.axis2.transport.http.HTTPConstants.HTTP_PROTOCOL_VERSION,
-                org.apache.axis2.transport.http.HTTPConstants.HEADER_PROTOCOL_10);
+        opts.setProperty(HTTPConstants.CHUNKED, Boolean.FALSE);
+        opts.setProperty(HTTPConstants.HTTP_PROTOCOL_VERSION, HTTPConstants.HEADER_PROTOCOL_10);
         client.setOptions(opts);
 
         return client;
+    }
+
+    private ServiceClient getServiceClient() throws AxisFault {
+        if (nonThreadLocalServiceClient == null) {
+            nonThreadLocalServiceClient = new ServiceClient();
+        }
+        nonThreadLocalServiceClient.removeHeaders();
+        return nonThreadLocalServiceClient;
     }
 }

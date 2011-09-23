@@ -21,221 +21,112 @@
 
 package org.apache.airavata.wsmg.messenger.strategy.impl;
 
-import java.io.StringReader;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.airavata.wsmg.broker.ConsumerInfo;
-import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.commons.OutGoingMessage;
-import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
-import org.apache.airavata.wsmg.config.WSMGParameter;
-import org.apache.airavata.wsmg.messenger.ConsumerUrlManager;
-import org.apache.airavata.wsmg.messenger.SenderUtils;
+import org.apache.airavata.wsmg.messenger.Deliverable;
 import org.apache.airavata.wsmg.messenger.strategy.SendingStrategy;
-import org.apache.axiom.om.OMElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FixedParallelSender extends Thread implements SendingStrategy {
+public class FixedParallelSender implements SendingStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(FixedParallelSender.class);
 
-    private ConcurrentHashMap<String, ConsumerHandler> activeConsumerHanders = new ConcurrentHashMap<String, ConsumerHandler>();
-
-    private ThreadCrew threadCrew = null;
-
-    private ConsumerUrlManager urlManager = null;
-    private ConfigurationManager configManager = null;
+    private ConcurrentHashMap<String, FixedParallelConsumerHandler> activeConsumerHanders = new ConcurrentHashMap<String, FixedParallelConsumerHandler>();
 
     private long consumerHandlerIdCounter;
 
-    private boolean stopFlag = false;
+    private int batchSize;
 
-    public FixedParallelSender(ConfigurationManager config, ConsumerUrlManager urlMan) {
+    private ExecutorService threadPool;
 
-        int poolSize = config.getConfig(WsmgCommonConstants.CONFIG_SENDING_THREAD_POOL_SIZE,
-                WsmgCommonConstants.DEFAULT_SENDING_THREAD_POOL_SIZE);
+    public FixedParallelSender(int poolsize, int batchsize) {
+        this.threadPool = Executors.newFixedThreadPool(poolsize);
+        this.batchSize = batchsize;
+    }
 
-        threadCrew = new ThreadCrew(poolSize);
-        urlManager = urlMan;
-        configManager = config;
+    public void init() {
+
+    }
+
+    public void addMessageToSend(OutGoingMessage outMessage, Deliverable deliverable) {
+        distributeOverConsumerQueues(outMessage, deliverable);
     }
 
     public void shutdown() {
-        stopFlag = true;
+        threadPool.shutdown();
     }
 
-    public void run() {
-        int dequeuedMessageCounter = 0;
-
-        while (!stopFlag) {
-
-            try {
-
-                if (log.isDebugEnabled())
-                    log.debug("before dequeue -  delivery thread");
-
-                OutGoingMessage outGoingMessage = (OutGoingMessage) WSMGParameter.OUT_GOING_QUEUE.blockingDequeue();
-
-                if (WSMGParameter.showTrackId)
-                    log.debug(outGoingMessage.getAdditionalMessageContent().getTrackId()
-                            + ": dequeued from outgoing queue");
-
-                distributeOverConsumerQueues(outGoingMessage);
-
-            } catch (Exception e) {
-                log.error("Unexpected_exception:", e);
-            }
-
-            dequeuedMessageCounter++;
-        }
-
-        threadCrew.stop();
-
-    }
-
-    public void distributeOverConsumerQueues(OutGoingMessage message) {
+    public void distributeOverConsumerQueues(OutGoingMessage message, Deliverable deliverable) {
         List<ConsumerInfo> consumerInfoList = message.getConsumerInfoList();
 
         for (ConsumerInfo consumer : consumerInfoList) {
-
-            sendToConsumerHandler(consumer, message);
-
+            sendToConsumerHandler(consumer, message, deliverable);
         }
-
     }
 
-    private ConsumerHandler sendToConsumerHandler(ConsumerInfo consumer, OutGoingMessage message) {
+    private void sendToConsumerHandler(ConsumerInfo consumer, OutGoingMessage message,
+            Deliverable deliverable) {
 
         String consumerUrl = consumer.getConsumerEprStr();
 
         LightweightMsg lwm = new LightweightMsg(consumer, message.getTextMessage(),
                 message.getAdditionalMessageContent());
 
-        ConsumerHandler handler = activeConsumerHanders.get(consumerUrl);
-
-        if (handler == null) {
-            handler = new ConsumerHandler(getNextConsumerHandlerId(), consumerUrl, configManager, urlManager);
-            activeConsumerHanders.put(consumerUrl, handler);
-            handler.submitMessage(lwm); // import to submit before execute.
-            threadCrew.submitTask(handler);
-            // (to remove a possible race
-            // condition)
-        } else {
-            handler.submitMessage(lwm);
-        }
-
-        return handler;
-
+        synchronized (activeConsumerHanders) {
+            FixedParallelConsumerHandler handler = activeConsumerHanders.get(consumerUrl);
+            if (handler == null) {
+                handler = new FixedParallelConsumerHandler(consumerHandlerIdCounter++, consumerUrl, deliverable);
+                activeConsumerHanders.put(consumerUrl, handler);
+                handler.submitMessage(lwm);
+                threadPool.submit(handler);
+            } else {
+                handler.submitMessage(lwm);
+            }
+        }        
     }
 
-    private long getNextConsumerHandlerId() {
-        return ++consumerHandlerIdCounter;
+    public void removeFromList(ConsumerHandler h) {
+        if (!activeConsumerHanders.remove(h.getConsumerUrl(), h)) {
+            log.debug(String.format("inactive consumer handler " + "is already removed: id %d, url : %s", h.getId(),
+                    h.getConsumerUrl()));
+        }
     }
+    
+    class FixedParallelConsumerHandler extends ConsumerHandler {
 
-    class ConsumerHandler implements RunnableEx {
-
-        LinkedBlockingQueue<LightweightMsg> queue = new LinkedBlockingQueue<LightweightMsg>();
-
-        final long id;
-        int batchSize;
-
-        ThreadLocal<SenderUtils> threadlocalSender = new ThreadLocal<SenderUtils>();
-
-        // SenderUtils sender = null;
-        String consumerUrl;
-
-        ConfigurationManager configMan;
-        ConsumerUrlManager consumerURLManager;
-
-        public ConsumerHandler(long handlerId, String url, ConfigurationManager config, ConsumerUrlManager urlMan) {
-
-            configMan = config;
-            consumerURLManager = urlMan;
-            // sender = new SenderUtils(urlMan, config, true);
-            id = handlerId;
-            consumerUrl = url;
-
-            batchSize = config.getConfig(WsmgCommonConstants.CONFIG_SENDING_BATCH_SIZE,
-                    WsmgCommonConstants.DEFAULT_SENDING_BATCH_SIZE);
-        }
-
-        public long getId() {
-            return id;
-        }
-
-        public String getConsumerUrl() {
-            return consumerUrl;
-        }
-
-        private SenderUtils getSender() {
-
-            SenderUtils s = threadlocalSender.get();
-
-            if (s == null) {
-                s = new SenderUtils(consumerURLManager, configMan);
-                threadlocalSender.set(s);
-            }
-
-            return s;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-
-            if (o instanceof ConsumerHandler) {
-                ConsumerHandler h = (ConsumerHandler) o;
-                return h.getId() == id && h.getConsumerUrl().equals(this.getConsumerUrl());
-            }
-
-            return false;
-        }
-
-        public void submitMessage(LightweightMsg msg) {
-            queue.add(msg);
+        public FixedParallelConsumerHandler(long handlerId, String url, Deliverable deliverable) {
+            super(handlerId, url, deliverable);
         }
 
         public void run() {
 
-            if (log.isDebugEnabled())
-                log.debug(String.format("starting consumer handler: id :%d, url : %s", getId(), getConsumerUrl()));
+            log.debug(String.format("starting consumer handler: id :%d, url : %s", getId(), getConsumerUrl()));
 
-            LinkedList<LightweightMsg> localList = new LinkedList<LightweightMsg>();
+            ArrayList<LightweightMsg> localList = new ArrayList<LightweightMsg>();
 
             queue.drainTo(localList, batchSize);
 
             send(localList);
             localList.clear();
 
-            if (log.isDebugEnabled())
-                log.debug(String.format("calling on completion from : %d,", getId()));
-
-        }
-
-        private void send(LinkedList<LightweightMsg> list) {
-
-            SenderUtils s = getSender();
-
-            while (!list.isEmpty()) {
-
-                LightweightMsg m = list.removeFirst();
-
-                try {
-                    OMElement messgae2Send = CommonRoutines.reader2OMElement(new StringReader(m.getPayLoad()));
-
-                    s.send(m.getConsumerInfo(), messgae2Send, m.getHeader());
-
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
+            log.debug(String.format("calling on completion from : %d,", getId()));
+            
+            
+            /*
+             * Remove handler if there is no message
+             */
+            synchronized (activeConsumerHanders) {  
+                if(queue.size() == 0){
+                    removeFromList(this);
                 }
-
             }
-
         }
     }
-
 }

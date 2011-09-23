@@ -21,211 +21,109 @@
 
 package org.apache.airavata.wsmg.messenger.strategy.impl;
 
-import java.io.StringReader;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.airavata.wsmg.broker.ConsumerInfo;
-import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.commons.OutGoingMessage;
-import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
-import org.apache.airavata.wsmg.config.WSMGParameter;
-import org.apache.airavata.wsmg.messenger.ConsumerUrlManager;
-import org.apache.airavata.wsmg.messenger.SenderUtils;
+import org.apache.airavata.wsmg.messenger.Deliverable;
 import org.apache.airavata.wsmg.messenger.strategy.SendingStrategy;
-import org.apache.axiom.om.OMElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ParallelSender extends Thread implements SendingStrategy {
+/**
+ * Each subscriber (URL Endpoint) will have its own thread to send a message to
+ * 
+ */
+public class ParallelSender implements SendingStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(ParallelSender.class);
 
-    private ConcurrentHashMap<String, ConsumerHandler> activeConsumerHanders = new ConcurrentHashMap<String, ConsumerHandler>();
+    private ConcurrentHashMap<String, ParallelConsumerHandler> activeConsumerHanders = new ConcurrentHashMap<String, ParallelConsumerHandler>();
 
-    private final ExecutorService threadPool;
-    private long consumerHandlerIdCounter = 0L;
-    private boolean stopFlag = false;
+    private ExecutorService threadPool;
+    private long consumerHandlerIdCounter;
 
-    private ConsumerUrlManager urlManager = null;
-    private ConfigurationManager configManager = null;
+    public void init() {
+        this.threadPool = Executors.newCachedThreadPool();
+    }
 
-    private ConsumerHandlerCompletionCallback consumerCallback = new ConsumerHandlerCompletionCallback() {
-
-        public void onCompletion(ConsumerHandler h) {
-
-            if (!activeConsumerHanders.remove(h.getConsumerUrl(), h)) {
-
-                if (log.isDebugEnabled())
-                    log.debug(String.format("inactive consumer handler " + "is already removed: id %d, url : %s",
-                            h.getId(), h.getConsumerUrl()));
-            }
-
-        }
-    };
-
-    public ParallelSender(ConfigurationManager config, ConsumerUrlManager urlMan) {
-        urlManager = urlMan;
-        configManager = config;
-
-        threadPool = Executors.newCachedThreadPool();
-
+    public void addMessageToSend(OutGoingMessage outMessage, Deliverable deliverable) {
+        distributeOverConsumerQueues(outMessage, deliverable);
     }
 
     public void shutdown() {
-        stopFlag = true;
-    }
-
-    public void run() {
-        int dequeuedMessageCounter = 0;
-
-        while (!stopFlag) {
-
-            try {
-
-                if (log.isDebugEnabled())
-                    log.debug("before dequeue -  delivery thread");
-
-                OutGoingMessage outGoingMessage = (OutGoingMessage) WSMGParameter.OUT_GOING_QUEUE.blockingDequeue();
-
-                if (WSMGParameter.showTrackId)
-                    log.debug(outGoingMessage.getAdditionalMessageContent().getTrackId()
-                            + ": dequeued from outgoing queue");
-
-                distributeOverConsumerQueues(outGoingMessage);
-
-            } catch (Exception e) {
-                log.error("Unexpected_exception:", e);
-            }
-
-            dequeuedMessageCounter++;
-        }
-
         threadPool.shutdown();
-
     }
 
-    public void distributeOverConsumerQueues(OutGoingMessage message) {
+    public void distributeOverConsumerQueues(OutGoingMessage message, Deliverable deliverable) {
         List<ConsumerInfo> consumerInfoList = message.getConsumerInfoList();
-
         for (ConsumerInfo consumer : consumerInfoList) {
-
-            sendToConsumerHandler(consumer, message);
-
+            sendToConsumerHandler(consumer, message, deliverable);
         }
-
     }
 
-    private ConsumerHandler sendToConsumerHandler(ConsumerInfo consumer, OutGoingMessage message) {
-
+    private void sendToConsumerHandler(ConsumerInfo consumer, OutGoingMessage message, Deliverable deliverable) {
         String consumerUrl = consumer.getConsumerEprStr();
 
         LightweightMsg lwm = new LightweightMsg(consumer, message.getTextMessage(),
                 message.getAdditionalMessageContent());
 
-        ConsumerHandler handler = activeConsumerHanders.get(consumerUrl);
-
-        if (handler == null || (!handler.isActive())) {
-            handler = new ConsumerHandler(getNextConsumerHandlerId(), consumerUrl, consumerCallback, configManager,
-                    urlManager);
+        ParallelConsumerHandler handler = activeConsumerHanders.get(consumerUrl);
+        if (handler == null || !handler.isActive()) {
+            handler = new ParallelConsumerHandler(consumerHandlerIdCounter++, consumerUrl, deliverable);
             activeConsumerHanders.put(consumerUrl, handler);
-            handler.submitMessage(lwm); // import to submit before execute.
-            // (to remove a possible race
-            // condition)
-            threadPool.execute(handler);
+            handler.submitMessage(lwm);
+            threadPool.submit(handler);
         } else {
             handler.submitMessage(lwm);
         }
-
-        return handler;
     }
 
-    private long getNextConsumerHandlerId() {
-        return ++consumerHandlerIdCounter;
-    }
-
-    interface ConsumerHandlerCompletionCallback {
-
-        public void onCompletion(ConsumerHandler h);
-
-    }
-
-    class ConsumerHandler implements Runnable {
-
-        LinkedBlockingQueue<LightweightMsg> queue = new LinkedBlockingQueue<LightweightMsg>();
-
-        ReadWriteLock activeLock = new ReentrantReadWriteLock();
-
-        final long id;
-        final int MAX_UNSUCCESSFULL_DRAINS = 3;
-        final int SLEEP_TIME_SECONDS = 1;
-        int numberOfUnsuccessfullDrainAttempts = 0;
-
-        boolean active = true;
-
-        ConsumerHandlerCompletionCallback callback = null;
-        SenderUtils sender = null;
-        String consumerUrl;
-
-        public ConsumerHandler(long handlerId, String url, ConsumerHandlerCompletionCallback c,
-                ConfigurationManager config, ConsumerUrlManager urlMan) {
-            callback = c;
-            sender = new SenderUtils(urlMan, config);
-            id = handlerId;
-            consumerUrl = url;
+    public void removeFromList(ConsumerHandler h) {
+        if (!activeConsumerHanders.remove(h.getConsumerUrl(), h)) {
+            log.debug(String.format("inactive consumer handler " + "is already removed: id %d, url : %s", h.getId(),
+                    h.getConsumerUrl()));
         }
+    }
 
-        public long getId() {
-            return id;
-        }
+    class ParallelConsumerHandler extends ConsumerHandler {
 
-        public String getConsumerUrl() {
-            return consumerUrl;
+        private ReadWriteLock activeLock = new ReentrantReadWriteLock();
+
+        private static final int MAX_UNSUCCESSFULL_DRAINS = 3;
+        private static final int SLEEP_TIME_SECONDS = 1;
+        private int numberOfUnsuccessfullDrainAttempts = 0;
+
+        private boolean active;
+
+        public ParallelConsumerHandler(long handlerId, String url, Deliverable deliverable) {
+            super(handlerId, url, deliverable);
         }
 
         public boolean isActive() {
-
             boolean ret = false;
-
             activeLock.readLock().lock();
             try {
                 ret = active;
             } finally {
                 activeLock.readLock().unlock();
             }
-
             return ret;
         }
 
-        @Override
-        public boolean equals(Object o) {
-
-            if (o instanceof ConsumerHandler) {
-                ConsumerHandler h = (ConsumerHandler) o;
-                return h.getId() == id && h.getConsumerUrl().equals(this.getConsumerUrl());
-            }
-
-            return false;
-        }
-
-        public void submitMessage(LightweightMsg msg) {
-            queue.add(msg);
-        }
-
         public void run() {
+            this.active = true;
 
-            if (log.isDebugEnabled())
-                log.debug(String.format("starting consumer handler: id :%d, url : %s", getId(), getConsumerUrl()));
+            log.debug(String.format("starting consumer handler: id :%d, url : %s", getId(), getConsumerUrl()));
 
-            LinkedList<LightweightMsg> localList = new LinkedList<LightweightMsg>();
-
+            ArrayList<LightweightMsg> localList = new ArrayList<LightweightMsg>();
             while (active) {
 
                 int drainedMsgs = 0;
@@ -241,11 +139,10 @@ public class ParallelSender extends Thread implements SendingStrategy {
                     }
 
                     if (numberOfUnsuccessfullDrainAttempts >= MAX_UNSUCCESSFULL_DRAINS) {
-
                         log.debug(String.format("inactivating, %d", getId()));
-
                         active = false;
                         numberOfUnsuccessfullDrainAttempts = 0;
+                        break;
                     }
 
                 } finally {
@@ -258,38 +155,16 @@ public class ParallelSender extends Thread implements SendingStrategy {
                 if (numberOfUnsuccessfullDrainAttempts > 0) {
                     waitForMessages();
                 }
-
             }
 
-            if (log.isDebugEnabled())
-                log.debug(String.format("calling on completion from : %d,", getId()));
+            log.debug(String.format("calling on completion from : %d,", getId()));
 
-            callback.onCompletion(this);
-
-        }
-
-        private void send(LinkedList<LightweightMsg> list) {
-
-            while (!list.isEmpty()) {
-
-                LightweightMsg m = list.removeFirst();
-
-                try {
-                    OMElement messgae2Send = CommonRoutines.reader2OMElement(new StringReader(m.getPayLoad()));
-
-                    sender.send(m.getConsumerInfo(), messgae2Send, m.getHeader());
-
-                } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                }
-
-            }
+            removeFromList(this);
 
         }
 
         private void waitForMessages() {
             try {
-
                 TimeUnit.SECONDS.sleep(SLEEP_TIME_SECONDS);
                 log.debug("finished - waiting for messages");
             } catch (InterruptedException e) {
