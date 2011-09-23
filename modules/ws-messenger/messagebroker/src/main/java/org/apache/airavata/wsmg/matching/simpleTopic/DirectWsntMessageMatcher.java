@@ -24,7 +24,6 @@ package org.apache.airavata.wsmg.matching.simpleTopic;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.airavata.wsmg.broker.AdditionalMessageContent;
 import org.apache.airavata.wsmg.broker.ConsumerInfo;
@@ -45,19 +44,11 @@ public class DirectWsntMessageMatcher extends AbstractMessageMatcher {
 
     private OutGoingQueue outGoingQueue = null;   
 
-    public DirectWsntMessageMatcher(
-
-    Map<Object, Object> publisherRegistrationDB) {
-        super(publisherRegistrationDB);
-    }
-
-    public DirectWsntMessageMatcher(Map<String, SubscriptionState> subscriptionDB,
-            Map<Object, Object> publisherRegistrationDB, String carrier) {
-        super(publisherRegistrationDB);
+    public DirectWsntMessageMatcher(){
+        super();
     }
 
     public void start(String carrierLocation) {
-
         currentMessageCache = new Hashtable<String, String>();
     }
 

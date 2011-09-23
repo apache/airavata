@@ -37,16 +37,11 @@ public abstract class AbstractMessageMatcher {
 
     protected Map<String, String> currentMessageCache;
 
-    protected Map<Object, Object> publisherRegistrationDB;
-
     private ReentrantReadWriteLock consumerListLock = new ReentrantReadWriteLock();
 
     // infer types of
     // key and value
-
-    public AbstractMessageMatcher(Map<Object, Object> publisherRegistrationDB) {
-
-        this.publisherRegistrationDB = publisherRegistrationDB;
+    public AbstractMessageMatcher() {
         this.currentMessageCache = new HashMap<String, String>();
     }
 

@@ -21,32 +21,23 @@
 
 package org.apache.airavata.wsmg.commons.storage;
 
-public class KeyValueWrapper {
+import java.util.List;
 
-    private int key;
+import org.apache.airavata.wsmg.broker.subscription.SubscriptionEntry;
+import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
 
-    private Object value;
+public interface WsmgQueue {
 
-    public KeyValueWrapper(int key, Object value) {
+    List<SubscriptionEntry> getAllSubscription();
 
-        this.key = key;
-        this.value = value;
-    }
+    int insert(SubscriptionState subscription);
 
-    public int getKey() {
-        return key;
-    }
+    int delete(String subscriptionId);
 
-    public void setKey(int key) {
-        this.key = key;
-    }
+    void cleanup();
 
-    public Object getValue() {
-        return value;
-    }
+    void enqueue(Object object, String trackId);
 
-    public void setValue(Object value) {
-        this.value = value;
-    }
-
+    Object blockingDequeue();
+    
 }

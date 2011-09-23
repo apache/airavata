@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.airavata.wsmg.broker.AdditionalMessageContent;
 import org.apache.airavata.wsmg.broker.ConsumerInfo;
@@ -45,22 +44,18 @@ public class YFilterMessageMatcher extends AbstractMessageMatcher {
     
     private OutGoingQueue outGoingQueue = null;
 
-    // private HashMap subIdToQuery=new HashMap();
-    // private HashMap yFilterIdToXPath=new HashMap();
     private HashMap<String, YFilterInfo> topicToYFilterInfo = new HashMap<String, YFilterInfo>();
     private HashMap<String, String> subIdToTopic = new HashMap<String, String>();
-    // private Map xpath2ConsumerListMap = new HashMap();
 
     // used for topic only subscription, so that we don't have to create a
     // YFilter object
     private ConsumerListManager consumerListmanager = new ConsumerListManager();
 
-    public YFilterMessageMatcher(Map<Object, Object> publisherRegistrationDB) {
-        super(publisherRegistrationDB);
+    public YFilterMessageMatcher() {
+        super();
     }
 
     public void start(String carrierLocation) {
-
         currentMessageCache = new Hashtable<String, String>();
     }
 

@@ -25,6 +25,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,9 +74,7 @@ public class JdbcStorage {
 
     public void commitAndFree(Connection conn) {
         commit(conn);
-        if (conn != null) {
-            closeConnection(conn);
-        }
+        closeConnection(conn);
     }
 
     public void rollback(Connection conn) {
@@ -90,9 +89,7 @@ public class JdbcStorage {
 
     public void rollbackAndFree(Connection conn) {
         rollback(conn);
-        if (conn != null) {
-            closeConnection(conn);
-        }
+        closeConnection(conn);
     }
 
     public Connection connect() {
@@ -105,32 +102,6 @@ public class JdbcStorage {
             log.error(e.getMessage(), e);
         }
         return conn;
-    }
-
-    public int update(String query) throws SQLException {
-        int result = 0;
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = connectionPool.getConnection();
-            stmt = conn.prepareStatement(query);
-            result = stmt.executeUpdate();
-            commit(conn);
-        } catch (SQLException sql) {
-            rollback(conn);
-            throw sql;
-        } finally {
-            try {
-                if (stmt != null && !stmt.isClosed()) {
-                    stmt.close();
-                }
-            } finally {
-                if (conn != null) {
-                    closeConnection(conn);
-                }
-            }
-        }
-        return result;
     }
 
     /**
@@ -174,18 +145,33 @@ public class JdbcStorage {
                     stmt.close();
                 }
             } finally {
-                if (conn != null) {
-                    closeConnection(conn);
-                }
+                closeConnection(conn);
             }
         }
         return count;
     }
 
+    public void quietlyClose(Connection conn, Statement... stmts) {
+        if (stmts != null) {
+            for (Statement stmt : stmts) {
+                try {
+                    if (stmt != null && !stmt.isClosed()) {
+                        stmt.close();
+                    }
+                } catch (SQLException sql) {
+                    log.error(sql.getMessage(), sql);
+                }
+            }
+        }
+        closeConnection(conn);
+    }
+
     public void closeConnection(Connection conn) {
-        connectionPool.free(conn);
-    }    
-    
+        if (conn != null) {
+            connectionPool.free(conn);
+        }
+    }
+
     public void closeAllConnections() {
         if (connectionPool != null)
             connectionPool.dispose();

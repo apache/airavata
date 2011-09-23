@@ -35,7 +35,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -54,26 +53,19 @@ import org.apache.axiom.om.OMElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class WsmgPersistantStorage implements WsmgStorage {
+public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
     private static final Logger logger = LoggerFactory.getLogger(WsmgPersistantStorage.class);
 
     /*
      * Table name
      */
-    public static final String TABLE_NAME_EXPIRABLE_SUBCRIPTIONS = "subscription";
-    public static final String TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS = "specialSubscription";
-    
-    private static final String TABLE_NAME_TO_CHECK = TABLE_NAME_EXPIRABLE_SUBCRIPTIONS;
+    private static final String TABLE_NAME_TO_CHECK = SubscriptionConstants.TABLE_NAME_EXPIRABLE_SUBCRIPTIONS;
 
     private Counter storeToDBCounter = new Counter();
 
-    private JdbcStorage db = null;
-
-    private String dbName = null;
+    private JdbcStorage db;
 
     public WsmgPersistantStorage(String jdbcUrl, String jdbcDriver) {
-
-        this.dbName = TABLE_NAME_EXPIRABLE_SUBCRIPTIONS;
 
         db = new JdbcStorage(jdbcUrl, jdbcDriver);
 
@@ -90,13 +82,6 @@ public class WsmgPersistantStorage implements WsmgStorage {
                 logger.info("Database already created for Message Broker!");
             }
 
-            // inject dbname to sql statement.
-            SubscriptionConstants.ORDINARY_SUBSCRIPTION_INSERT_QUERY = String.format(
-                    SubscriptionConstants.INSERT_SQL_QUERY, TABLE_NAME_EXPIRABLE_SUBCRIPTIONS);
-
-            SubscriptionConstants.SPECIAL_SUBSCRIPTION_INSERT_QUERY = String.format(
-                    SubscriptionConstants.INSERT_SQL_QUERY, TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS);
-
             if (WSMGParameter.measureMessageRate) {
                 TimerThread timerThread = new TimerThread(storeToDBCounter, " StoreSubScriptionToDBCounter");
                 new Thread(timerThread).start();
@@ -107,22 +92,6 @@ public class WsmgPersistantStorage implements WsmgStorage {
             logger.error(e.getMessage(), e);
             throw new RuntimeException("Database failure");
         } finally {
-            if (conn != null) {
-                db.closeConnection(conn);
-            }
-        }
-    }
-
-    private void quietlyClose(Statement stmt, Connection conn) {
-        try {
-            if (stmt != null && !stmt.isClosed()) {
-                stmt.close();
-            }
-        } catch (SQLException sql) {
-            logger.error(sql.getMessage(), sql);
-        }
-
-        if (conn != null) {
             db.closeConnection(conn);
         }
     }
@@ -137,17 +106,16 @@ public class WsmgPersistantStorage implements WsmgStorage {
 
         ArrayList<SubscriptionEntry> ret = new ArrayList<SubscriptionEntry>();
 
-        String query = "SELECT * FROM " + dbName;
         Connection conn = null;
         PreparedStatement stmt = null;
         try {
 
             // get number of row first and increase the arrayList size for
             // better performance
-            int size = db.countRow(dbName, "*");
+            int size = db.countRow(SubscriptionConstants.TABLE_NAME_EXPIRABLE_SUBCRIPTIONS, "*");
 
             conn = db.connect();
-            stmt = conn.prepareStatement(query);
+            stmt = conn.prepareStatement(SubscriptionConstants.EXP_SELECT_QUERY);
             ResultSet rs = stmt.executeQuery();
             ret.ensureCapacity(size);
 
@@ -162,7 +130,7 @@ public class WsmgPersistantStorage implements WsmgStorage {
         } catch (SQLException ex) {
             logger.error("sql exception occured", ex);
         } finally {
-            quietlyClose(stmt, conn);
+            db.quietlyClose(conn, stmt);
         }
         return ret;
     }
@@ -196,11 +164,7 @@ public class WsmgPersistantStorage implements WsmgStorage {
             policyValue = WsmgCommonConstants.WSRM_POLICY_TRUE;
         }
 
-        Date today = new Date();
-        Timestamp now = new Timestamp(today.getTime());
-
-        String sql = subscription.isNeverExpire() ? SubscriptionConstants.SPECIAL_SUBSCRIPTION_INSERT_QUERY
-                : SubscriptionConstants.ORDINARY_SUBSCRIPTION_INSERT_QUERY;
+        Timestamp now = new Timestamp(System.currentTimeMillis());
 
         int result = 0;
         Connection connection = null;
@@ -208,7 +172,7 @@ public class WsmgPersistantStorage implements WsmgStorage {
         try {
 
             connection = db.connect();
-            stmt = connection.prepareStatement(sql);
+            stmt = connection.prepareStatement(SubscriptionConstants.EXP_INSERT_SQL_QUERY);
 
             stmt.setString(1, subscription.getId());
             stmt.setBinaryStream(2, new ByteArrayInputStream(subscription.getSubscribeXml().getBytes()), subscription
@@ -221,8 +185,10 @@ public class WsmgPersistantStorage implements WsmgStorage {
                     consumerReferenceParameters.getBytes().length);
             stmt.setTimestamp(8, now);
             result = db.executeUpdateAndClose(stmt);
-            storeToDBCounter.addCounter();
             db.commitAndFree(connection);
+
+            storeToDBCounter.addCounter();
+
         } catch (SQLException ex) {
             logger.error("sql exception occured", ex);
             db.rollbackAndFree(connection);
@@ -238,34 +204,19 @@ public class WsmgPersistantStorage implements WsmgStorage {
      * .lang.String)
      */
     public int delete(String subscriptionId) {
-        String query;
-        query = "DELETE FROM " + dbName + " WHERE SubscriptionId='" + subscriptionId + "'";
+        int result = 0;
+        Connection connection = null;
         try {
-            return db.update(query);
-        } catch (SQLException ex) {
-            logger.error("sql exception occured", ex);
+            connection = db.connect();
+            PreparedStatement stmt = connection.prepareStatement(SubscriptionConstants.EXP_DELETE_SQL_QUERY);
+            stmt.setString(1, subscriptionId);
+            result = db.executeUpdateAndClose(stmt);
+            db.commitAndFree(connection);
+        } catch (SQLException sql) {
+            db.rollbackAndFree(connection);
+            logger.error("sql exception occured", sql);
         }
-        return 0;
-    }
-
-    // QUEUE related
-
-    public Object blockingDequeue() {
-        while (true) {
-            try {
-                // FIXME::: WHY RETURN KeyValueWrapper Object??????
-                // FIXME::: Can it cast to OutGoingMessage????
-                KeyValueWrapper wrapper = retrive();
-                done(wrapper.getKey());
-                return wrapper.getValue();
-            } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
-                e.printStackTrace();
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-                e.printStackTrace();
-            }
-        }
+        return result;
     }
 
     public void cleanup() {
@@ -285,8 +236,24 @@ public class WsmgPersistantStorage implements WsmgStorage {
                     logger.error(e.getMessage(), e);
                 }
             }
+            db.quietlyClose(conn, stmt);
+        }
+    }
 
-            quietlyClose(stmt, conn);
+    public Object blockingDequeue() {
+        while (true) {
+            try {
+                return retrive();
+            } catch (SQLException e) {
+                logger.error(e.getMessage(), e);
+                e.printStackTrace();
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
+                e.printStackTrace();
+            }
         }
     }
 
@@ -295,6 +262,8 @@ public class WsmgPersistantStorage implements WsmgStorage {
         // Get the Max ID cache and update and unlock the table
         Connection connection = null;
         PreparedStatement stmt = null;
+        PreparedStatement stmt2 = null;
+        PreparedStatement stmt3 = null;
         try {
             int nextkey;
 
@@ -308,11 +277,9 @@ public class WsmgPersistantStorage implements WsmgStorage {
 
             if (result.next()) {
                 nextkey = result.getInt(1);
-                result.close();
-                stmt.close();
 
-                stmt = connection.prepareStatement(QueueContants.SQL_MAX_ID_INCREMENT + (nextkey));
-                db.executeUpdateAndClose(stmt);
+                stmt2 = connection.prepareStatement(QueueContants.SQL_MAX_ID_INCREMENT + (nextkey));
+                stmt2.executeUpdate();
             } else {
                 throw new RuntimeException("MAX_ID Table is not init, redeploy the service !!!");
             }
@@ -320,19 +287,18 @@ public class WsmgPersistantStorage implements WsmgStorage {
             /*
              * After update MAX_ID put data into queue table
              */
-            stmt = connection.prepareStatement(QueueContants.SQL_INSERT_STATEMENT);
-            stmt.setInt(1, nextkey);
-            stmt.setString(2, trackId);
+            stmt3 = connection.prepareStatement(QueueContants.SQL_INSERT_STATEMENT);
+            stmt3.setInt(1, nextkey);
+            stmt3.setString(2, trackId);
 
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             ObjectOutputStream out = new ObjectOutputStream(output);
             out.writeObject(object);
             byte[] buffer = output.toByteArray();
             ByteArrayInputStream in = new ByteArrayInputStream(buffer);
-            stmt.setBinaryStream(3, in, buffer.length);
-            db.executeUpdateAndClose(stmt);
+            stmt3.setBinaryStream(3, in, buffer.length);
+            stmt3.executeUpdate();
             db.commit(connection);
-
         } catch (SQLException sqlEx) {
             db.rollback(connection);
             logger.error("unable to enque the message in persistant storage", sqlEx);
@@ -346,12 +312,8 @@ public class WsmgPersistantStorage implements WsmgStorage {
                 logger.error("Cannot Unlock Table", sql);
             }
 
-            quietlyClose(stmt, connection);
+            db.quietlyClose(connection, stmt, stmt2, stmt3);
         }
-    }
-
-    public void flush() {
-        // nothing to do.
     }
 
     public int size() {
@@ -361,6 +323,9 @@ public class WsmgPersistantStorage implements WsmgStorage {
     private void initMessageQueueStorage() throws SQLException {
         Connection connection = null;
         PreparedStatement stmt = null;
+        PreparedStatement stmt2 = null;
+        PreparedStatement stmt3 = null;
+        PreparedStatement stmt4 = null;
         try {
             connection = db.connect();
 
@@ -372,20 +337,18 @@ public class WsmgPersistantStorage implements WsmgStorage {
             stmt = connection.prepareStatement(QueueContants.SQL_MAX_ID_SEPERATE_TABLE);
             ResultSet result = stmt.executeQuery();
             if (!result.next()) {
-                stmt.close();
-                stmt = connection.prepareStatement(QueueContants.SQL_MAX_ID_INSERT);
-                db.executeUpdateAndClose(stmt);
+                stmt2 = connection.prepareStatement(QueueContants.SQL_MAX_ID_INSERT);
+                stmt2.executeUpdate();
             }
 
             /*
              * Get Min ID
              */
-            stmt = connection.prepareStatement(QueueContants.SQL_MIN_ID_SEPERATE_TABLE);
-            result = stmt.executeQuery();
+            stmt3 = connection.prepareStatement(QueueContants.SQL_MIN_ID_SEPERATE_TABLE);
+            result = stmt3.executeQuery();
             if (!result.next()) {
-                stmt.close();
-                stmt = connection.prepareStatement(QueueContants.SQL_MIN_ID_INSERT);
-                db.executeUpdateAndClose(stmt);
+                stmt4 = connection.prepareStatement(QueueContants.SQL_MIN_ID_INSERT);
+                stmt4.executeUpdate();
             }
             db.commit(connection);
         } catch (SQLException sqle) {
@@ -398,19 +361,19 @@ public class WsmgPersistantStorage implements WsmgStorage {
                 logger.error("Cannot Unlock Table", sql);
             }
 
-            quietlyClose(stmt, connection);
+            db.quietlyClose(connection, stmt, stmt2, stmt3, stmt4);
         }
     }
 
-    private KeyValueWrapper retrive() throws SQLException, IOException {
-        Object obj = null;
+    private Object retrive() throws SQLException, IOException, InterruptedException {
+        long wait = 1000;
         int nextkey = -1;
         int maxid = -2;
         Connection connection = null;
         PreparedStatement stmt = null;
+        PreparedStatement stmt2 = null;
+        PreparedStatement stmt3 = null;
         ResultSet result = null;
-        long wait = 1000;
-
         while (true) {
             try {
                 connection = db.connect();
@@ -424,7 +387,6 @@ public class WsmgPersistantStorage implements WsmgStorage {
                 result = stmt.executeQuery();
                 if (result.next()) {
                     nextkey = result.getInt(1);
-                    stmt.close();
                 } else {
                     throw new RuntimeException("Queue init has failed earlier");
                 }
@@ -432,11 +394,10 @@ public class WsmgPersistantStorage implements WsmgStorage {
                 /*
                  * Get Max ID
                  */
-                stmt = connection.prepareStatement(QueueContants.SQL_MAX_ID_SEPERATE_TABLE);
-                result = stmt.executeQuery();
+                stmt2 = connection.prepareStatement(QueueContants.SQL_MAX_ID_SEPERATE_TABLE);
+                result = stmt2.executeQuery();
                 if (result.next()) {
                     maxid = result.getInt(1);
-                    stmt.close();
                 } else {
                     throw new RuntimeException("Queue init has failed earlier");
                 }
@@ -445,12 +406,13 @@ public class WsmgPersistantStorage implements WsmgStorage {
                  * Update value and exit the loop
                  */
                 if (maxid > nextkey) {
-                    stmt = connection.prepareStatement(QueueContants.SQL_MIN_ID_INCREMENT + (nextkey));
-                    db.executeUpdateAndClose(stmt);
+                    stmt3 = connection.prepareStatement(QueueContants.SQL_MIN_ID_INCREMENT + (nextkey));
+                    stmt3.executeUpdate();
                     logger.debug("Update MIN ID by one");
                     db.commit(connection);
                     break;
                 }
+
                 db.commit(connection);
             } catch (SQLException sql) {
                 db.rollback(connection);
@@ -463,7 +425,7 @@ public class WsmgPersistantStorage implements WsmgStorage {
                     logger.error("Cannot Unlock Table", sql);
                 }
 
-                quietlyClose(stmt, connection);
+                db.quietlyClose(connection, stmt, stmt2, stmt3);
             }
 
             /*
@@ -475,55 +437,46 @@ public class WsmgPersistantStorage implements WsmgStorage {
                 Thread.sleep(wait);
             } catch (InterruptedException e) {
                 logger.error(e.getMessage(), e);
-                break;
+                throw e;
             }
         }
 
         /*
-         * Create Subscription Object from MIN_ID
+         * Create Subscription Object from MIN_ID and delete data in table
          */
+        Object resultObj = null;
+        int key = -1;
         try {
             connection = db.connect();
             stmt = connection.prepareStatement(QueueContants.SQL_SELECT_STATEMENT + nextkey);
             result = stmt.executeQuery();
             if (result.next()) {
-                int id = result.getInt(1);
+                key = result.getInt(1);
                 InputStream in = result.getAsciiStream(2);
                 ObjectInputStream s = new ObjectInputStream(in);
                 try {
-                    obj = s.readObject();
+                    resultObj = s.readObject();
                 } catch (ClassNotFoundException e) {
-                    logger.error(e.getMessage(), e);
+                    logger.error("Cannot Deserialize Object from Database, ClassNotFound. ", e);
                 }
-                return new KeyValueWrapper(id, obj);
             } else {
                 throw new RuntimeException(
                         "MAX_ID and MIN_ID are inconsistent with subscription table, need to reset all data value");
             }
-        } finally {
-            quietlyClose(stmt, connection);
-        }
-    }
 
-    /**
-     * Delete data in subscription table since it is read
-     * 
-     * @param key
-     * @throws SQLException
-     */
-    private void done(int key) throws SQLException {
-        String query = null;
-        Connection connection = null;
-        try {
-            connection = db.connect();
-            query = QueueContants.SQL_DELETE_STATEMENT + key;
-            PreparedStatement stmt = connection.prepareStatement(query);
-            db.executeUpdateAndClose(stmt);
-            db.commitAndFree(connection);
-        } catch (SQLException sqle) {
-            db.rollbackAndFree(connection);
-            throw sqle;
+            try {
+                String query = QueueContants.SQL_DELETE_STATEMENT + key;
+                stmt2 = connection.prepareStatement(query);
+                stmt2.executeUpdate();
+                db.commit(connection);
+            } catch (SQLException sqle) {
+                db.rollback(connection);
+                throw sqle;
+            }
+        } finally {
+            db.quietlyClose(connection, stmt, stmt2);
         }
+        return resultObj;
     }
 
     private void batchCleanDB(Statement stmt, Connection con) throws SQLException {
@@ -717,12 +670,27 @@ public class WsmgPersistantStorage implements WsmgStorage {
 
     private static class SubscriptionConstants {
 
-        public static String INSERT_SQL_QUERY = "INSERT INTO %s(SubscriptionId, content, wsrm, Topics, XPath, ConsumerAddress, ReferenceProperties, CreationTime) "
+        public static final String TABLE_NAME_EXPIRABLE_SUBCRIPTIONS = "subscription";
+
+        public static final String TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS = "specialSubscription";
+
+        public static final String EXP_INSERT_SQL_QUERY = "INSERT INTO " + TABLE_NAME_EXPIRABLE_SUBCRIPTIONS
+                + "(SubscriptionId, content, wsrm, Topics, XPath, ConsumerAddress, ReferenceProperties, CreationTime) "
                 + "VALUES( ? , ? , ? , ? , ? , ? , ? , ?)";
 
-        public static String ORDINARY_SUBSCRIPTION_INSERT_QUERY = null;
+        public static final String EXP_DELETE_SQL_QUERY = "DELETE FROM " + TABLE_NAME_EXPIRABLE_SUBCRIPTIONS
+                + " WHERE SubscriptionId= ?";
 
-        public static String SPECIAL_SUBSCRIPTION_INSERT_QUERY = null;
+        public static final String EXP_SELECT_QUERY = "SELECT * FROM " + TABLE_NAME_EXPIRABLE_SUBCRIPTIONS;
+
+        public static final String NONEXP_INSERT_SQL_QUERY = "INSERT INTO " + TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS
+                + "(SubscriptionId, content, wsrm, Topics, XPath, ConsumerAddress, ReferenceProperties, CreationTime) "
+                + "VALUES( ? , ? , ? , ? , ? , ? , ? , ?)";
+
+        public static final String NONEXP_DELETE_SQL_QUERY = "DELETE FROM " + TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS
+                + " WHERE SubscriptionId= ?";
+
+        public static final String NONEXP_SELECT_QUERY = "SELECT * FROM " + TABLE_NAME_NON_EXPIRABLE_SUBCRIPTIONS;
     }
 
     private static class QueueContants {

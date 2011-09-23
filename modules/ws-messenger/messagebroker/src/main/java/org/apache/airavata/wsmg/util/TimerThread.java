@@ -30,10 +30,6 @@ public class TimerThread implements Runnable {
 
     String comment = "";
 
-    public TimerThread(Counter counter) {
-        this.counter = counter;
-    }
-
     public TimerThread(Counter counter, String comment) {
         this.counter = counter;
         this.comment = comment;

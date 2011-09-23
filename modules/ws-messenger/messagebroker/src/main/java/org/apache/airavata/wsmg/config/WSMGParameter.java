@@ -21,20 +21,16 @@
 
 package org.apache.airavata.wsmg.config;
 
-import org.apache.airavata.wsmg.commons.storage.WsmgStorage;
+import org.apache.airavata.wsmg.commons.storage.WsmgQueue;
 
 public class WSMGParameter {
 
     /**
      * Global variable for the Out Going queue (contains message to send to subscribers)
      */
-    public static WsmgStorage OUT_GOING_QUEUE = null; // default=null
+    public static WsmgQueue OUT_GOING_QUEUE = null; // default=null
     
     public static final boolean testOutGoingQueueMaxiumLength = false; // default=false
-
-    public static final boolean useIncomingQueue = false; // default=false
-
-    public static final boolean useOutGoingQueue = true; // default=true
 
     // enable or disable the TimerThread that displays the message rate
     public static final boolean measureMessageRate = false; // default=false    

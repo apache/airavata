@@ -28,20 +28,10 @@ import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
 
 public interface WsmgStorage {
 
-    public abstract List<SubscriptionEntry> getAllSubscription();
+    List<SubscriptionEntry> getAllSubscription();
 
-    public abstract int insert(SubscriptionState subscription);
+    int insert(SubscriptionState subscription);
 
-    public abstract int delete(String subscriptionId);
-
-    public void enqueue(Object object, String trackId);
-
-    public Object blockingDequeue();
-
-    public int size();
-
-    public void flush();
-
-    public void cleanup();
-
+    int delete(String subscriptionId);
+    
 }
