@@ -64,12 +64,8 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
         if (inited == null || inited == false) {
             log.info("starting broker");
             Axis2Utils.overrideAddressingPhaseHander(configContext, new PublishedMessageHandler());
-            initConfigurations(configContext, axisService);
-
-            WsmgConfigurationContext brokerConext = (WsmgConfigurationContext) configContext
-                    .getProperty(WsmgCommonConstants.BROKER_WSMGCONFIG);
-
-            initQueue(brokerConext.getStorage());
+            WsmgConfigurationContext brokerConext = initConfigurations(configContext, axisService);
+            initQueue(brokerConext);
             initDeliveryMethod(brokerConext.getConfigurationManager());
 
             inited = true;
@@ -79,7 +75,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
         }
     }
 
-    private void initConfigurations(ConfigurationContext configContext, AxisService axisService) {
+    private WsmgConfigurationContext initConfigurations(ConfigurationContext configContext, AxisService axisService) {
 
         WsmgConfigurationContext wsmgConfig = new WsmgConfigurationContext();
         configContext.setProperty(WsmgCommonConstants.BROKER_WSMGCONFIG, wsmgConfig);
@@ -112,14 +108,15 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
 
         NotificationProcessor notificatonProcessor = new NotificationProcessor(wsmgConfig);
         wsmgConfig.setNotificationProcessor(notificatonProcessor);
-
+        
+        return wsmgConfig;
     }
 
-    private void initQueue(WsmgStorage storage) {
+    private void initQueue(WsmgConfigurationContext context) {
 
         log.info("setting up queue");
 
-        WSMGParameter.OUT_GOING_QUEUE = storage;
+        WSMGParameter.OUT_GOING_QUEUE = context.getQueue();
 
         if (WSMGParameter.cleanQueueonStartUp) {
             log.debug("cleaning up persistant queue");
@@ -141,15 +138,12 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
                     WsmgCommonConstants.STORAGE_TYPE_PERSISTANT).equalsIgnoreCase(
                     WsmgCommonConstants.STORAGE_TYPE_IN_MEMORY)) {
 
-                // user has asked to use in memory queue
-                // but with out starting the delivery thread.
-                // this will accumulate message in memory.
-
-                log.error("conflicting configuration ditected, " + "using in memory queue with out starting delivery "
-                        + "thread will result memory growth.");
+                /*
+                 *  user has asked to use in memory queue but without starting the delivery thread. this will accumulate message in memory.
+                 */
+                log.error("conflicting configuration detected, using in memory queue without starting delivery thread will result memory growth.");
 
             }
-
             return;
         }
 

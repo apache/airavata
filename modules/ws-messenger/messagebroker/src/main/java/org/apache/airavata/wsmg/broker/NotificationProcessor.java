@@ -30,8 +30,8 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.airavata.wsmg.broker.context.ContextParameters;
 import org.apache.airavata.wsmg.broker.context.ProcessingContext;
-import org.apache.airavata.wsmg.commons.OutGoingMessage;
 import org.apache.airavata.wsmg.commons.NameSpaceConstants;
+import org.apache.airavata.wsmg.commons.OutGoingMessage;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
 import org.apache.airavata.wsmg.matching.AbstractMessageMatcher;
@@ -52,14 +52,14 @@ public class NotificationProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationProcessor.class);
 
-    WsmgConfigurationContext wsmgConfigContext = null;
+    private WsmgConfigurationContext wsmgConfigContext;
 
     protected long messageCounter = 0;
     protected long messageId = 0;
 
     OMFactory factory = OMAbstractFactory.getOMFactory();
 
-    OutGoingQueue outgoingQueue = null;
+    private OutGoingQueue outgoingQueue;
 
     public NotificationProcessor(WsmgConfigurationContext config) {
         init(config);
@@ -68,14 +68,6 @@ public class NotificationProcessor {
     private void init(WsmgConfigurationContext config) {
         this.wsmgConfigContext = config;
         outgoingQueue = config.getOutgoingQueue();
-
-        // Ramith : JMS support is removed.
-        assert (!WSMGParameter.useIncomingQueue);
-        /*
-         * PublisherThread publisherThread = new PublisherThread(wsmgConfigContext); new
-         * Thread(publisherThread).start();
-         */
-
     }
 
     private synchronized long getNextTrackId() {
@@ -272,9 +264,6 @@ public class NotificationProcessor {
     private void matchAndSave(String notificationMessage, String topicLocalString,
             AdditionalMessageContent additionalMessageContent) {
 
-        // Ramith: Jms support is not implemented now.
-        assert (!WSMGParameter.useIncomingQueue);
-
         List<ConsumerInfo> matchedConsumers = new LinkedList<ConsumerInfo>();
 
         // not use incoming queue
@@ -299,9 +288,6 @@ public class NotificationProcessor {
 
         if (consumerInfoList.size() == 0) // No subscription
             return;
-
-        assert (WSMGParameter.useOutGoingQueue); // we will only use out going
-        // queue for the moment
 
         RunTimeStatistics.addNewNotificationMessageSize(message.length());
         OutGoingMessage outGoingMessage = new OutGoingMessage();

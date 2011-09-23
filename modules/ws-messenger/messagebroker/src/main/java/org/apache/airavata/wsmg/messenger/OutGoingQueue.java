@@ -35,13 +35,11 @@ public class OutGoingQueue {
     private Counter storeToOutQueueCounter;
 
     public OutGoingQueue() {
-
         if (WSMGParameter.measureMessageRate) {
             storeToOutQueueCounter = new Counter();
             TimerThread timerThread = new TimerThread(storeToOutQueueCounter, " StoreToOutQueueCounter");
             new Thread(timerThread).start();
         }
-
     }
 
     // need synchronized???
@@ -50,7 +48,7 @@ public class OutGoingQueue {
         boolean loop = false;
         do {
 
-            // this outgoing Que is created inside the messenger which is
+            // this outgoing Queue is created inside the messenger which is
             // intended to send the notification message to the consumer.
             WSMGParameter.OUT_GOING_QUEUE.enqueue(outGoingMessage, outGoingMessage.getAdditionalMessageContent()
                     .getTrackId());

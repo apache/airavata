@@ -21,15 +21,14 @@
 
 package org.apache.airavata.wsmg.config;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.airavata.wsmg.broker.NotificationProcessor;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionManager;
 import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
+import org.apache.airavata.wsmg.commons.storage.WsmgQueue;
 import org.apache.airavata.wsmg.commons.storage.WsmgStorage;
 import org.apache.airavata.wsmg.matching.AbstractMessageMatcher;
 import org.apache.airavata.wsmg.matching.XPath.YFilterMessageMatcher;
@@ -41,8 +40,6 @@ public class WsmgConfigurationContext {
 
     private List<AbstractMessageMatcher> messageMatchers = new LinkedList<AbstractMessageMatcher>();
 
-    private Map<Object, Object> publisherRegistrationDB = new HashMap<Object, Object>();
-
     private ReentrantReadWriteLock messegeMatchersLock = new ReentrantReadWriteLock();
 
     private ConfigurationManager configurationManager;
@@ -52,37 +49,24 @@ public class WsmgConfigurationContext {
     private NotificationProcessor notificationProcessor;
 
     private WsmgStorage storage;
-
-    /**
-     * @return Returns the publisherRegistrationDB.
-     */
-    public Map getPublisherRegistrationDB() {
-        return publisherRegistrationDB;
-    }
-
-    /**
-     * @return Returns the wsntAdapter.
-     */
-
-    public List<AbstractMessageMatcher> getMessageMatchers() {
-        return messageMatchers;
-    }
+    
+    private WsmgQueue queue;   
 
     public WsmgConfigurationContext() {
-
         outgoingQueue = new OutGoingQueue();
-
         setDirectFilter();
     }
 
     private void setDirectFilter() {
-
-        messageMatchers.add(new YFilterMessageMatcher(publisherRegistrationDB));
+        messageMatchers.add(new YFilterMessageMatcher());
         // messageMatchers.add(new DirectWsntMessageMatcher(subscriptions,
         // publisherRegistrationDB));
-
     }
 
+    public List<AbstractMessageMatcher> getMessageMatchers() {
+        return messageMatchers;
+    }
+    
     public OutGoingQueue getOutgoingQueue() {
         return outgoingQueue;
     }
@@ -118,6 +102,14 @@ public class WsmgConfigurationContext {
     public void setStorage(WsmgStorage s) {
         storage = s;
     }
+    
+    public WsmgQueue getQueue() {
+        return queue;
+    }
+
+    public void setQueue(WsmgQueue s) {
+        queue = s;
+    }    
 
     public ReentrantReadWriteLock getMessegeMatcherLock() {
         return messegeMatchersLock;

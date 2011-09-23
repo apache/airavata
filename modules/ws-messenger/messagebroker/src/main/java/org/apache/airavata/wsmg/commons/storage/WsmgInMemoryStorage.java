@@ -31,7 +31,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionEntry;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
 
-public class WsmgInMemoryStorage implements WsmgStorage {
+public class WsmgInMemoryStorage implements WsmgStorage, WsmgQueue {
 
     private LinkedBlockingQueue<Object> queue = new LinkedBlockingQueue<Object>();
 
@@ -39,8 +39,18 @@ public class WsmgInMemoryStorage implements WsmgStorage {
 
     private Map<String, SubscriptionState> unexpirableSubscriptions = new ConcurrentHashMap<String, SubscriptionState>();
 
+    public int insert(SubscriptionState subscription) {
+        if (subscription.isNeverExpire()) {
+            unexpirableSubscriptions.put(subscription.getId(), subscription);
+        } else {
+            expirableSubscriptions.put(subscription.getId(), subscription);
+        }
+        return 0;
+    }
+    
     public int delete(String subscriptionId) {
-
+        expirableSubscriptions.remove(subscriptionId);
+        unexpirableSubscriptions.remove(subscriptionId);
         return 0;
     }
 
@@ -52,7 +62,6 @@ public class WsmgInMemoryStorage implements WsmgStorage {
         Collection<SubscriptionState> entries = expirableSubscriptions.values();
 
         for (SubscriptionState s : entries) {
-
             SubscriptionEntry se = new SubscriptionEntry();
             se.setSubscribeXml(s.getSubscribeXml());
             se.setSubscriptionId(s.getId());
@@ -73,9 +82,7 @@ public class WsmgInMemoryStorage implements WsmgStorage {
         Object obj = null;
 
         try {
-
             obj = queue.take();
-
         } catch (InterruptedException ie) {
             throw new RuntimeException("interruped exception occured", ie);
         }
@@ -85,31 +92,9 @@ public class WsmgInMemoryStorage implements WsmgStorage {
 
     public void cleanup() {
         queue.clear();
-
     }
 
     public void enqueue(Object object, String trackId) {
         queue.offer(object);
-
     }
-
-    public void flush() {
-        // nothing to do.
-    }
-
-    public int size() {
-        return queue.size();
-    }
-
-    public int insert(SubscriptionState subscription) {
-
-        if (subscription.isNeverExpire()) {
-            unexpirableSubscriptions.put(subscription.getId(), subscription);
-        } else {
-            expirableSubscriptions.put(subscription.getId(), subscription);
-        }
-
-        return 0;
-    }
-
 }

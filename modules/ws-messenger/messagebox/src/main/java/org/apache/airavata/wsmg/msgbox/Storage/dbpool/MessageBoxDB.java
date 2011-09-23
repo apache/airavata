@@ -190,6 +190,7 @@ public class MessageBoxDB {
 
             Connection connection = null;
             PreparedStatement stmt = null;
+            PreparedStatement stmt2 = null;
             try {
                 connection = db.connect();
                 stmt = connection.prepareStatement(SQL_SELECT_MSGBOX_STATEMENT);
@@ -202,15 +203,13 @@ public class MessageBoxDB {
                     logger.debug(xmlString);
                     list.add(xmlString);
                 }
-                resultSet.close();
-                stmt.close();
 
                 /*
                  * Delete all retrieved messages
                  */
-                stmt = connection.prepareStatement(SQL_DELETE_MSGBOX_STATEMENT);
-                stmt.setString(1, msgBoxId);
-                db.executeUpdateAndClose(stmt);
+                stmt2 = connection.prepareStatement(SQL_DELETE_MSGBOX_STATEMENT);
+                stmt2.setString(1, msgBoxId);
+                stmt2.executeUpdate();
 
                 // commit
                 db.commit(connection);
@@ -223,17 +222,7 @@ public class MessageBoxDB {
                  * If there is error during query, close everything and throw
                  * error
                  */
-                try {
-                    if (stmt != null && !stmt.isClosed()) {
-                        stmt.close();
-                    }
-                } catch (SQLException sql) {
-                    throw sql;
-                } finally {
-                    if (connection != null) {
-                        db.closeConnection(connection);
-                    }
-                }
+                db.quietlyClose(connection, stmt, stmt2);
             }
         }
         return list;
@@ -251,7 +240,6 @@ public class MessageBoxDB {
             db.rollbackAndFree(connection);
             logger.error("Caught exception while removing old entries from msgbox db table", sql);
         }
-
     }
 
     private static void setMsgBoxidList(JdbcStorage db) throws SQLException {
@@ -267,16 +255,11 @@ public class MessageBoxDB {
                 msgBoxids.add(resultSet.getString("msgboxid"));
             }
             db.commit(connection);
+        } catch(SQLException e){
+            db.rollback(connection);
+            throw e;
         } finally {
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException sql) {
-                throw sql;
-            } finally {
-                db.commitAndFree(connection);
-            }
+            db.quietlyClose(connection, stmt);            
         }
     }
 

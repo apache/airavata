@@ -43,32 +43,35 @@ import org.slf4j.LoggerFactory;
 public class DatabaseStorageImpl implements MsgBoxStorage {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseStorageImpl.class);
-    
+
     private static final String TABLE_NAME_TO_CHECK = "msgbox";
-    
-    private JdbcStorage db;   
+
+    private JdbcStorage db;
 
     public DatabaseStorageImpl(String jdbcUrl, String jdbcDriver, long timeOfOldMessage) {
+        db = new JdbcStorage(10, 50, jdbcUrl, jdbcDriver, true);
+        
+        Connection conn = null;
         try {
-            db = new JdbcStorage(10, 50, jdbcUrl, jdbcDriver, true);
-            
+
             /*
              * Check database
              */
-            Connection conn = db.connect();
+            conn = db.connect();
             if (!DatabaseCreator.isDatabaseStructureCreated(TABLE_NAME_TO_CHECK, conn)) {
                 DatabaseCreator.createMsgBoxDatabase(conn);
                 logger.info("New Database created for Message Box");
             } else {
                 logger.info("Database already created for Message Box!");
             }
-            db.closeConnection(conn);
-                       
+
             MessageBoxDB.initialize(db, timeOfOldMessage);
-            
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RuntimeException("Database failure");
+        } finally {
+            db.closeConnection(conn);
         }
     }
 
@@ -111,8 +114,8 @@ public class DatabaseStorageImpl implements MsgBoxStorage {
     }
 
     public void dispose() {
-        if(db != null){
-            db.closeAllConnections();   
+        if (db != null) {
+            db.closeAllConnections();
         }
     }
 
