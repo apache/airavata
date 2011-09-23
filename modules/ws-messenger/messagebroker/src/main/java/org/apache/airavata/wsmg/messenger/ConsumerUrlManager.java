@@ -37,6 +37,9 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/*
+ * FIXME: need thread safe version
+ */
 public class ConsumerUrlManager {
     
     private static final Logger logger = LoggerFactory.getLogger(ConsumerUrlManager.class);

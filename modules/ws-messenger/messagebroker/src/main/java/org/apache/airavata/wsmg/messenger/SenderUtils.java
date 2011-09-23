@@ -22,18 +22,14 @@
 package org.apache.airavata.wsmg.messenger;
 
 import java.io.StringReader;
-import java.lang.reflect.Constructor;
 
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.airavata.wsmg.broker.AdditionalMessageContent;
 import org.apache.airavata.wsmg.broker.ConsumerInfo;
 import org.apache.airavata.wsmg.commons.CommonRoutines;
-import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.commons.NameSpaceConstants;
-import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.config.WSMGParameter;
-import org.apache.airavata.wsmg.messenger.protocol.Axis2Protocol;
 import org.apache.airavata.wsmg.messenger.protocol.DeliveryProtocol;
 import org.apache.airavata.wsmg.messenger.protocol.SendingException;
 import org.apache.axiom.om.OMAbstractFactory;
@@ -46,38 +42,22 @@ import org.slf4j.LoggerFactory;
 /*
  * this class is not thread safe
  * */
-
-public class SenderUtils {
+public class SenderUtils implements Deliverable {
 
     private static final Logger logger = LoggerFactory.getLogger(SenderUtils.class);
 
-    OMFactory factory = OMAbstractFactory.getOMFactory();
+    private static OMFactory factory = OMAbstractFactory.getOMFactory();
 
-    ConsumerUrlManager urlManager;
+    private ConsumerUrlManager urlManager;
+    
+    private DeliveryProtocol protocol;
 
-    DeliveryProtocol protocol;
-
-    public SenderUtils(ConsumerUrlManager urlMan, ConfigurationManager config) {
+    public SenderUtils(ConsumerUrlManager urlMan) {
         urlManager = urlMan;
-
-        /*
-         * Invoke factory and config
-         */
-        String protocolClass = config.getConfig(WsmgCommonConstants.DELIVERY_PROTOCOL,
-                "org.apache.airavata.wsmg.messenger.protocol.Axis2Protocol");
-        try {
-            Class cl = Class.forName(protocolClass);
-            Constructor<DeliveryProtocol> co = cl.getConstructor(null);
-            protocol = co.newInstance((Object[]) null);
-
-        } catch (Exception e) {
-            // fallback to normal class
-            logger.error("Cannot initial protocol sender", e);
-            protocol = new Axis2Protocol();
-        }
-
-        protocol.setTimeout(Long.parseLong(config.getConfig(WsmgCommonConstants.CONFIG_SOCKET_TIME_OUT, "20000")));
-
+    }
+    
+    public void setProtocol(DeliveryProtocol protocol){
+        this.protocol = protocol;
     }
 
     public void send(ConsumerInfo consumerInfo, OMElement notificationMessageBodyEl,

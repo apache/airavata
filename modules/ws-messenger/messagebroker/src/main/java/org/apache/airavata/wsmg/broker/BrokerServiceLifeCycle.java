@@ -22,6 +22,7 @@
 package org.apache.airavata.wsmg.broker;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 
 import org.apache.airavata.wsmg.broker.handler.PublishedMessageHandler;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionManager;
@@ -33,6 +34,11 @@ import org.apache.airavata.wsmg.commons.util.Axis2Utils;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
 import org.apache.airavata.wsmg.messenger.ConsumerUrlManager;
+import org.apache.airavata.wsmg.messenger.Deliverable;
+import org.apache.airavata.wsmg.messenger.DeliveryProcessor;
+import org.apache.airavata.wsmg.messenger.SenderUtils;
+import org.apache.airavata.wsmg.messenger.protocol.DeliveryProtocol;
+import org.apache.airavata.wsmg.messenger.protocol.impl.Axis2Protocol;
 import org.apache.airavata.wsmg.messenger.strategy.SendingStrategy;
 import org.apache.airavata.wsmg.messenger.strategy.impl.FixedParallelSender;
 import org.apache.airavata.wsmg.messenger.strategy.impl.ParallelSender;
@@ -47,12 +53,15 @@ import org.slf4j.LoggerFactory;
 public class BrokerServiceLifeCycle implements ServiceLifeCycle {
 
     private static final Logger log = LoggerFactory.getLogger(BrokerServiceLifeCycle.class);
-    private SendingStrategy method = null;
+    
+    private static final long DEFAULT_SOCKET_TIME_OUT = 20000l;
+    
+    private DeliveryProcessor proc;
 
     public void shutDown(ConfigurationContext arg, AxisService service) {
         log.info("broker shutting down");
-        if (method != null) {
-            method.shutdown();
+        if (proc != null) {
+            proc.stop();
         }
     }
 
@@ -147,28 +156,57 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
             }
             return;
         }
+        
+        /*
+         * Create Protocol
+         */
+        DeliveryProtocol protocol;
+        String protocolClass = configMan.getConfig(WsmgCommonConstants.DELIVERY_PROTOCOL,
+                Axis2Protocol.class.getName());
+        try {
+            Class cl = Class.forName(protocolClass);
+            Constructor<DeliveryProtocol> co = cl.getConstructor(null);
+            protocol = co.newInstance((Object[]) null);
 
+        } catch (Exception e) {
+            log.error("Cannot initial protocol sender", e);
+            return;
+        }
+        protocol.setTimeout(configMan.getConfig(WsmgCommonConstants.CONFIG_SOCKET_TIME_OUT, DEFAULT_SOCKET_TIME_OUT));                      
+
+        /*
+         * Create delivery method 
+         */
+        SendingStrategy method = null;
+        String initedmethod = null;        
         String deliveryMethod = configMan.getConfig(WsmgCommonConstants.CONFIG_DELIVERY_METHOD,
                 WsmgCommonConstants.DELIVERY_METHOD_SERIAL);
-
-        ConsumerUrlManager urlManager = new ConsumerUrlManager(configMan);
-
-        String initedmethod = null;
-
         if (WsmgCommonConstants.DELIVERY_METHOD_PARALLEL.equalsIgnoreCase(deliveryMethod)) {
-
-            method = new ParallelSender(configMan, urlManager);
+            method = new ParallelSender();
             initedmethod = WsmgCommonConstants.DELIVERY_METHOD_PARALLEL;
-
+            
         } else if (WsmgCommonConstants.DELIVERY_METHOD_THREAD_CREW.equalsIgnoreCase(deliveryMethod)) {
-            method = new FixedParallelSender(configMan, urlManager);
+            int poolsize = configMan.getConfig(WsmgCommonConstants.CONFIG_SENDING_THREAD_POOL_SIZE,
+                    WsmgCommonConstants.DEFAULT_SENDING_THREAD_POOL_SIZE);
+            int batchsize = configMan.getConfig(WsmgCommonConstants.CONFIG_SENDING_BATCH_SIZE,
+                    WsmgCommonConstants.DEFAULT_SENDING_BATCH_SIZE);
+            method = new FixedParallelSender(poolsize, batchsize);
             initedmethod = WsmgCommonConstants.DELIVERY_METHOD_THREAD_CREW;
+            
         } else {
-            method = new SerialSender(configMan, urlManager);
+            method = new SerialSender();
             initedmethod = WsmgCommonConstants.DELIVERY_METHOD_SERIAL;
-        }
-
-        method.start();
+        }        
+        
+        /*
+         * Create Deliverable
+         */
+        ConsumerUrlManager urlManager = new ConsumerUrlManager(configMan);
+        Deliverable senderUtils = new SenderUtils(urlManager);
+        senderUtils.setProtocol(protocol);
+        
+        DeliveryProcessor proc = new DeliveryProcessor(senderUtils, method);
+        proc.start();
         log.info(initedmethod + " sending method inited");
     }
 }
