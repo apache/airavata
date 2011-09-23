@@ -29,7 +29,6 @@ import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.commons.storage.WsmgInMemoryStorage;
 import org.apache.airavata.wsmg.commons.storage.WsmgPersistantStorage;
-import org.apache.airavata.wsmg.commons.storage.WsmgStorage;
 import org.apache.airavata.wsmg.commons.util.Axis2Utils;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
@@ -91,20 +90,22 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
         /*
          * Determine Storage
          */
-        WsmgStorage storage = null;
-
         if (WsmgCommonConstants.STORAGE_TYPE_IN_MEMORY.equalsIgnoreCase(type)) {
-            storage = new WsmgInMemoryStorage();
+            WsmgInMemoryStorage inmem = new WsmgInMemoryStorage();
+
+            wsmgConfig.setStorage(inmem);
+            wsmgConfig.setQueue(inmem);
+            wsmgConfig.setSubscriptionManager(new SubscriptionManager(wsmgConfig, inmem));
+            
         } else {
             String jdbcUrl = configMan.getConfig(WsmgCommonConstants.CONFIG_JDBC_URL);
             String jdbcDriver = configMan.getConfig(WsmgCommonConstants.CONFIG_JDBC_DRIVER);
-            storage = new WsmgPersistantStorage(jdbcUrl, jdbcDriver);
-        }
-
-        wsmgConfig.setStorage(storage);
-
-        SubscriptionManager subManager = new SubscriptionManager(wsmgConfig, storage);
-        wsmgConfig.setSubscriptionManager(subManager);
+            WsmgPersistantStorage persis = new WsmgPersistantStorage(jdbcUrl, jdbcDriver);
+            
+            wsmgConfig.setStorage(persis);
+            wsmgConfig.setQueue(persis);
+            wsmgConfig.setSubscriptionManager(new SubscriptionManager(wsmgConfig, persis));
+        }                
 
         NotificationProcessor notificatonProcessor = new NotificationProcessor(wsmgConfig);
         wsmgConfig.setNotificationProcessor(notificatonProcessor);
