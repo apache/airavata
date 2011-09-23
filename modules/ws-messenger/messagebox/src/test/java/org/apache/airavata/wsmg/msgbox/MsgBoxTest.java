@@ -39,7 +39,7 @@ import org.junit.Test;
 
 public class MsgBoxTest extends TestCase {
 
-    private int port = 5555;
+    private int port = InMemoryMessageBoxServer.TESTING_PORT;
     private long timeout = 5000L;
 
     @BeforeClass

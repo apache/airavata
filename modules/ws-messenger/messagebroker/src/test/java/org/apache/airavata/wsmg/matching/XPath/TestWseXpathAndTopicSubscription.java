@@ -33,14 +33,14 @@ import junit.framework.TestCase;
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.wsmg.util.ConfigKeys;
+import org.apache.airavata.wsmg.util.TestUtilServer;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.addressing.EndpointReference;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
 
 public class TestWseXpathAndTopicSubscription extends TestCase implements ConsumerNotificationHandler {
 
@@ -58,18 +58,14 @@ public class TestWseXpathAndTopicSubscription extends TestCase implements Consum
         return queue;
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         URL configURL = ClassLoader.getSystemResource(ConfigKeys.CONFIG_FILE_NAME);
         configs.load(configURL.openStream());
+
+        TestUtilServer.start(null, null);
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
     }
@@ -88,8 +84,7 @@ public class TestWseXpathAndTopicSubscription extends TestCase implements Consum
 
             int consumerPort = new Integer(configs.getProperty(ConfigKeys.CONSUMER_PORT));
 
-            String brokerEPR = configs.getProperty(ConfigKeys.BROKER_EVENTING_SERVICE_EPR);
-
+            String brokerEPR = "http://localhost:" + TestUtilServer.TESTING_PORT + "/axis2/services/EventingService";
             WseMsgBrokerClient msgBrokerClient = new WseMsgBrokerClient();
             msgBrokerClient.init(brokerEPR);
 
@@ -101,10 +96,12 @@ public class TestWseXpathAndTopicSubscription extends TestCase implements Consum
 
             String subscriptionID = msgBrokerClient.subscribe(consumerEPRs[0], null, xpathExpression);
 
-            msgBrokerClient.publish(null,validMsg);
-            msgBrokerClient.publish(null,invalidMsg);
+            
 
             try {
+                msgBrokerClient.publish(null, AXIOMUtil.stringToOM(validMsg));
+                msgBrokerClient.publish(null, AXIOMUtil.stringToOM(invalidMsg));
+                
                 SOAPEnvelope env = getMsgQueue().take();
 
                 assertNotNull(env.getBody());

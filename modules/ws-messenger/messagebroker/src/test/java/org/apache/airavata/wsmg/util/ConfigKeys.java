@@ -25,9 +25,6 @@ public interface ConfigKeys {
 
     String CONFIG_FILE_NAME = "unit_tests.properties";
 
-    String BROKER_EVENTING_SERVICE_EPR = "broker.eventing.service.epr";
-    String BROKER_NOTIFICATIONS_SERVICE_EPR = "broker.notification.service.epr";
-
     String CONSUMER_EPR = "consumer.location";
     String CONSUMER_PORT = "consumer.port";
     String TOPIC_SIMPLE = "topic.simple";

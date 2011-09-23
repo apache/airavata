@@ -23,36 +23,34 @@ package org.apache.airavata.wsmg.broker;
 
 import java.io.IOException;
 import java.util.Properties;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import junit.framework.TestCase;
 
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
 import org.apache.airavata.wsmg.client.WsntMsgBrokerClient;
 import org.apache.airavata.wsmg.util.TestUtilServer;
+import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
 import org.junit.Test;
 
 public class BrokerWSNTTest extends TestCase implements ConsumerNotificationHandler {
-
+    
+    private static int port = TestUtilServer.TESTING_PORT;
     static Properties configs = new Properties();
 
-    BlockingQueue<SOAPEnvelope> queue = new LinkedBlockingQueue<SOAPEnvelope>();
-
     public void handleNotification(SOAPEnvelope msgEnvelope) {
-        // queue.add(msgEnvelope);
         System.out.println("Received " + msgEnvelope);
-    }
-
-    BlockingQueue<SOAPEnvelope> getMsgQueue() {
-        return queue;
     }
 
     @Override
     protected void setUp() throws Exception {
         TestUtilServer.start(null, null);
+    }
+    
+    @Override
+    protected void tearDown() throws Exception {
+        TestUtilServer.stop();
     }
 
     @Test
@@ -66,35 +64,31 @@ public class BrokerWSNTTest extends TestCase implements ConsumerNotificationHand
 
             int consumerPort = 6767;
 
-            String brokerEPR = "http://127.0.0.1:5555/axis2/services/NotificationService";
+            String brokerEPR = "http://localhost:" + port + "/axis2/services/NotificationService";
             wsntMsgBrokerClient.init(brokerEPR);
             String[] consumerEPRs = wsntMsgBrokerClient.startConsumerService(consumerPort, this);
 
             assertTrue(consumerEPRs.length > 0);
 
-            String topic = "WsntRoundTripTestTopic";
+            String topic = "/WsntRoundTripTestTopic";
 
-            String topicSubscriptionID = wsntMsgBrokerClient.subscribe(brokerEPR, consumerEPRs[0], topic);
-
+            String topicSubscriptionID = wsntMsgBrokerClient.subscribe(consumerEPRs[0], topic, null);
             System.out.println("topic subscription id: " + topicSubscriptionID);
 
-            String xpathSubscriptionID = wsntMsgBrokerClient.subscribe(consumerEPRs[0], topic, "/foo/bar");
-
-            System.out.println("xpath subscription id: " + xpathSubscriptionID);
-
-
-            wsntMsgBrokerClient.publish(topic, msg);
-
-            wsntMsgBrokerClient.publish(topic, "<foo><bar>eligible to</bar></foo>");
+            try {
+                wsntMsgBrokerClient.publish(topic, msg);
+                wsntMsgBrokerClient.publish(topic, AXIOMUtil.stringToOM("<foo><bar>Test</bar></foo>"));
+            } catch (Exception e) {
+                fail(e.getMessage());
+            }            
 
             Thread.sleep(2000);
 
             try {
                 wsntMsgBrokerClient.unSubscribe(topicSubscriptionID);
-                wsntMsgBrokerClient.unSubscribe(xpathSubscriptionID);
             } catch (AxisFault e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
+                fail(e.getMessage());                
             }
 
             wsntMsgBrokerClient.shutdownConsumerService();
@@ -104,19 +98,12 @@ public class BrokerWSNTTest extends TestCase implements ConsumerNotificationHand
             try {
                 System.in.read();
             } catch (IOException e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
 
-            // fail("unexpected exception occured");
+            fail("unexpected exception occured");
         }
         System.out.println("Broker roundtrip done");
 
     }
-
-    @Override
-    protected void tearDown() throws Exception {
-        TestUtilServer.stop();
-    }
-
 }

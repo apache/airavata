@@ -20,10 +20,9 @@
  */
 package org.apache.airavata.wsmg.client;
 
-import javax.xml.namespace.QName;
-
 import org.apache.airavata.wsmg.client.msgbox.MessagePuller;
 import org.apache.airavata.wsmg.client.msgbox.MsgboxHandler;
+import org.apache.airavata.wsmg.commons.MsgBoxQNameConstants;
 import org.apache.airavata.wsmg.commons.WsmgVersion;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMFactory;
@@ -99,7 +98,7 @@ abstract class CommonMsgBrokerClient implements MessageBrokerClient {
             if (msgBoxEpr.getAllReferenceParameters() == null)
                 throw new MsgBrokerClientException("Invalid Message Box EPR, no reference parameters found");
             String msgBoxId = msgBoxEpr.getAllReferenceParameters()
-                    .get(new QName("http://org.apache.airavata/xgws/msgbox/2004/", "MsgBoxAddr")).getText();
+                    .get(MsgBoxQNameConstants.MSG_BOXID_QNAME).getText();
             if (msgBoxId == null)
                 throw new MsgBrokerClientException("Invalid Message Box EPR, reference parameter MsgBoxAddr is missing");
             String format = msgBoxEventSink.endsWith("/") ? "%sclientid/%s" : "%s/clientid/%s";

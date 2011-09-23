@@ -27,6 +27,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.wsmg.client.MsgBrokerClientException;
 import org.apache.airavata.wsmg.client.NotificationHandler;
+import org.apache.airavata.wsmg.commons.MsgBoxQNameConstants;
 import org.apache.airavata.wsmg.msgbox.client.MsgBoxClient;
 import org.apache.axis2.addressing.EndpointReference;
 
@@ -70,7 +71,7 @@ public class MsgboxHandler {
         String clientId = toAddress.substring(biginIndex + "clientid".length() + 1);
 
         if ((msgBoxAddr.getAllReferenceParameters() == null || msgBoxAddr.getAllReferenceParameters()
-                .get(new QName("http://org.apache.airavata/xgws/msgbox/2004/", "MsgBoxAddr")).getText() == null)
+                .get(MsgBoxQNameConstants.MSG_BOXID_QNAME).getText() == null)
                 && biginIndex == -1)
             throw new MsgBrokerClientException("Invalid Message Box Address");
         this.msgBoxUser = new MsgBoxClient();
@@ -91,9 +92,9 @@ public class MsgboxHandler {
             if (msgBoxEpr.getAllReferenceParameters() == null)
                 throw new MsgBrokerClientException("Invalid Message Box EPR, no reference parameters found");
             String msgBoxId = msgBoxEpr.getAllReferenceParameters()
-                    .get(new QName("http://org.apache.airavata/xgws/msgbox/2004/", "MsgBoxAddr")).getText();
+                    .get(MsgBoxQNameConstants.MSG_BOXID_QNAME).getText();
             if (msgBoxId == null)
-                throw new MsgBrokerClientException("Invalid Message Box EPR, reference parameter MsgBoxAddr is missing");
+                throw new MsgBrokerClientException("Invalid Message Box EPR, reference parameter MsgBoxAddress is missing");
             String format = msgBoxEventSink.endsWith("/") ? "%sclientid/%s" : "%s/clientid/%s";
 
             formattedEventSink = String.format(format, msgBoxEventSink, msgBoxId);

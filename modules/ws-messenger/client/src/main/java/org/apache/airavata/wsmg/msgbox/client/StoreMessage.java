@@ -23,9 +23,7 @@ package org.apache.airavata.wsmg.msgbox.client;
 
 import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
-import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.util.UUIDGenerator;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
@@ -40,19 +38,19 @@ import org.slf4j.LoggerFactory;
 public class StoreMessage {
     private static final Logger logger = LoggerFactory.getLogger(StoreMessage.class);
     
-    private final OMFactory factory = OMAbstractFactory.getOMFactory();
     protected EndpointReference msgBoxEndPointReference;
-    protected long timeoutInMilliSeconds;    
-    private String msgBoxId;
+    protected long timeoutInMilliSeconds;
 
     public StoreMessage(EndpointReference msgBoxEpr, long timeout) throws AxisFault {
         this.msgBoxEndPointReference = msgBoxEpr;
         this.timeoutInMilliSeconds = timeout;
         String address = msgBoxEpr.getAddress();
+        
+        /*
+         * Validate
+         */
         int biginIndex = address.indexOf("clientid");
-        if (biginIndex != -1) {
-            msgBoxId = address.substring(biginIndex + "clientid".length() + 1);
-        } else {
+        if (biginIndex == -1) {
             throw new AxisFault("Invalid Message Box EPR cannot find message box ID");
         }
     }
@@ -66,7 +64,6 @@ public class StoreMessage {
     }
 
     public String execute(OMElement messageIn) throws AxisFault {
-        // OMElement message = createMessageEl(this.msgBoxId, messageIn);
         ServiceClient serviceClient = createServiceClient();
 
         OMElement responseMessage = null;
@@ -81,19 +78,7 @@ public class StoreMessage {
             throw AxisFault.makeFault(new RuntimeException("no response recieved for subscription message"));
         }
         return responseMessage.getFirstElement().getText();
-    }
-
-    private OMElement createMessageEl(String msgboxid, OMElement messageIn) throws AxisFault {
-        OMElement message = factory.createOMElement("storeMessages", NameSpaceConstants.MSG_BOX);
-        OMElement messageElement = factory.createOMElement("message", NameSpaceConstants.MSG_BOX);
-        OMElement msgBoxId = factory.createOMElement("MsgBoxId", NameSpaceConstants.MSG_BOX);
-        msgBoxId.setText(msgboxid);
-        message.addChild(msgBoxId);
-        messageElement.addChild(messageIn);
-        message.addChild(messageElement);
-        message.declareNamespace(NameSpaceConstants.MSG_BOX);
-        return message;
-    }
+    }   
 
     private ServiceClient createServiceClient() throws AxisFault {
         String uuid = UUIDGenerator.getUUID();

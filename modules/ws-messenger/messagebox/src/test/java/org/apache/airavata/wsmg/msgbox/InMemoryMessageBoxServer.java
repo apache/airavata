@@ -21,25 +21,13 @@
 
 package org.apache.airavata.wsmg.msgbox;
 
-import java.io.File;
-import java.io.FilenameFilter;
-
 import javax.xml.namespace.QName;
 
-import junit.framework.TestCase;
-
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
-import org.apache.axis2.context.ServiceContext;
-import org.apache.axis2.context.ServiceGroupContext;
-import org.apache.axis2.deployment.DeploymentEngine;
-import org.apache.axis2.description.AxisModule;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.InOutAxisOperation;
-import org.apache.axis2.description.TransportInDescription;
-import org.apache.axis2.engine.ListenerManager;
 import org.apache.axis2.engine.MessageReceiver;
 import org.apache.axis2.transport.http.SimpleHTTPServer;
 
@@ -58,48 +46,7 @@ public class InMemoryMessageBoxServer {
 
     public static synchronized void unDeployService(QName service) throws AxisFault {
         receiver.getConfigurationContext().getAxisConfiguration().removeService(service.getLocalPart());
-    }
-
-    public static synchronized void unDeployClientService() throws AxisFault {
-        if (receiver.getConfigurationContext().getAxisConfiguration() != null) {
-            receiver.getConfigurationContext().getAxisConfiguration().removeService("AnonymousService");
-        }
-    }
-
-    public static synchronized void start() throws Exception {
-        start(prefixBaseDirectory(Constants.TESTING_REPOSITORY));
-    }
-
-    public static synchronized void start(String repository) throws Exception {
-        if (count == 0) {
-            ConfigurationContext er = getNewConfigurationContext(repository);
-
-            receiver = new SimpleHTTPServer(er, TESTING_PORT);
-
-            try {
-                receiver.start();
-                ListenerManager listenerManager = er.getListenerManager();
-                TransportInDescription trsIn = new TransportInDescription(Constants.TRANSPORT_HTTP);
-                trsIn.setReceiver(receiver);
-                if (listenerManager == null) {
-                    listenerManager = new ListenerManager();
-                    listenerManager.init(er);
-                }
-                listenerManager.addListener(trsIn, true);
-                System.out.print("Server started on port " + TESTING_PORT + ".....");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e1) {
-            throw new AxisFault("Thread interuptted", e1);
-        }
-
-        count++;
-    }
+    }   
 
     public static synchronized void start(String repository, String axis2xml) throws Exception {
         if (count == 0) {
@@ -126,24 +73,24 @@ public class InMemoryMessageBoxServer {
 
     public static void startMessageBox() throws Exception {
 
+        /*
+         * Imitate service.xml
+         */
         AxisService axisService = new AxisService("MsgBoxService");
-        axisService.addParameter("configuration.file.name", "msgBox.properties");
         axisService.setServiceLifeCycle(new MsgBoxServiceLifeCycle());
-
-        createOperation(axisService, "storeMessages", new MsgBoxServiceMessageReceiverInOut(),
-                "http://org.apache.airavata/xgws/msgbox/2004/storeMessages",
-                "http://org.apache.airavata/xgws/msgbox/2004/MsgBoxPT/storeMessagesResponse");
-        createOperation(axisService, "destroyMsgBox", new MsgBoxServiceMessageReceiverInOut(),
-                "http://org.apache.airavata/xgws/msgbox/2004/destroyMsgBox",
-                "http://org.apache.airavata/xgws/msgbox/2004/MsgBoxPT/destroyMsgBoxResponse");
-        createOperation(axisService, "takeMessages", new MsgBoxServiceMessageReceiverInOut(),
-                "http://org.apache.airavata/xgws/msgbox/2004/takeMessages",
-                "http://org.apache.airavata/xgws/msgbox/2004/MsgBoxPT/takeMessagesResponse");
-        createOperation(axisService, "createMsgBox", new MsgBoxServiceMessageReceiverInOut(),
-                "http://org.apache.airavata/xgws/msgbox/2004/createMsgBox",
-                "http://org.apache.airavata/xgws/msgbox/2004/MsgBoxPT/createMsgBoxResponse");
-        axisService.addParameter("configuration.file.name", "msgBox.properties");
         axisService.addParameter("ServiceClass", "org.apache.airavata.wsmg.msgbox.MsgBoxServiceSkeleton");
+        createOperation(axisService, "storeMessages", new MsgBoxServiceMessageReceiverInOut(),
+                "http://org.apache.airavata/ws-messenger/msgbox/2011/storeMessages",
+                "http://org.apache.airavata/ws-messenger/msgbox/2011/MsgBoxPT/storeMessagesResponse");
+        createOperation(axisService, "destroyMsgBox", new MsgBoxServiceMessageReceiverInOut(),
+                "http://org.apache.airavata/ws-messenger/msgbox/2011/destroyMsgBox",
+                "http://org.apache.airavata/ws-messenger/msgbox/2011/MsgBoxPT/destroyMsgBoxResponse");
+        createOperation(axisService, "takeMessages", new MsgBoxServiceMessageReceiverInOut(),
+                "http://org.apache.airavata/ws-messenger/msgbox/2011/takeMessages",
+                "http://org.apache.airavata/ws-messenger/msgbox/2011/MsgBoxPT/takeMessagesResponse");
+        createOperation(axisService, "createMsgBox", new MsgBoxServiceMessageReceiverInOut(),
+                "http://org.apache.airavata/ws-messenger/msgbox/2011/createMsgBox",
+                "http://org.apache.airavata/ws-messenger/msgbox/2011/MsgBoxPT/createMsgBoxResponse");        
 
         InMemoryMessageBoxServer.deployService(axisService);
 
@@ -159,15 +106,6 @@ public class InMemoryMessageBoxServer {
         axisService.addOperation(operation1);
         if (inputAction != null) {
             axisService.mapActionToOperation(inputAction, operation1);
-        }
-    }
-
-    public static ConfigurationContext getNewConfigurationContext(String repository) throws Exception {
-        if (repository != null) {
-            return ConfigurationContextFactory.createConfigurationContextFromFileSystem(repository, repository
-                    + "/conf/axis2.xml");
-        } else {
-            return ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
         }
     }
 
@@ -196,71 +134,7 @@ public class InMemoryMessageBoxServer {
 
     public static ConfigurationContext getConfigurationContext() {
         return receiver.getConfigurationContext();
-    }
-
-    public static ServiceContext createAdressedEnabledClientSide(AxisService service) throws AxisFault {
-        File file = getAddressingMARFile();
-        TestCase.assertTrue(file.exists());
-        ConfigurationContext configContext = ConfigurationContextFactory.createConfigurationContextFromFileSystem(
-                prefixBaseDirectory("target/test-resources/integrationRepo"), null);
-        AxisModule axisModule = DeploymentEngine.buildModule(file, configContext.getAxisConfiguration());
-        configContext.getAxisConfiguration().addModule(axisModule);
-
-        configContext.getAxisConfiguration().addService(service);
-
-        ServiceGroupContext serviceGroupContext = configContext
-                .createServiceGroupContext(service.getAxisServiceGroup());
-        return serviceGroupContext.getServiceContext(service);
-    }
-
-    static class AddressingFilter implements FilenameFilter {
-        public boolean accept(File dir, String name) {
-            return name.startsWith("addressing") && name.endsWith(".mar");
-        }
-    }
-
-    private static File getAddressingMARFile() {
-        File dir = new File(prefixBaseDirectory(Constants.TESTING_REPOSITORY + "/modules"));
-        File[] files = dir.listFiles(new AddressingFilter());
-        TestCase.assertTrue(files.length == 1);
-        File file = files[0];
-        TestCase.assertTrue(file.exists());
-        return file;
-    }
-
-    public static ConfigurationContext createClientConfigurationContext() throws AxisFault {
-        File file = getAddressingMARFile();
-        TestCase.assertTrue(file.exists());
-
-        ConfigurationContext configContext = ConfigurationContextFactory.createConfigurationContextFromFileSystem(
-                prefixBaseDirectory(Constants.TESTING_PATH + "/integrationRepo"),
-                prefixBaseDirectory(Constants.TESTING_PATH + "/integrationRepo/conf/axis2.xml"));
-        AxisModule axisModule = DeploymentEngine.buildModule(file, configContext.getAxisConfiguration());
-        configContext.getAxisConfiguration().addModule(axisModule);
-        return configContext;
-    }
-
-    public static ConfigurationContext createClientConfigurationContext(String repo) throws AxisFault {
-        return ConfigurationContextFactory.createConfigurationContextFromFileSystem(repo, repo + "/conf/axis2.xml");
-    }
-
-    public static ServiceContext createAdressedEnabledClientSide(AxisService service, String clientHome)
-            throws AxisFault {
-        File file = getAddressingMARFile();
-        TestCase.assertTrue(file.exists());
-
-        ConfigurationContext configContext = ConfigurationContextFactory.createConfigurationContextFromFileSystem(
-                clientHome, null);
-        AxisModule axisModule = DeploymentEngine.buildModule(file, configContext.getAxisConfiguration());
-
-        configContext.getAxisConfiguration().addModule(axisModule);
-        // sysContext.getAxisConfiguration().engageModule(moduleDesc.getName());
-
-        configContext.getAxisConfiguration().addService(service);
-        ServiceGroupContext serviceGroupContext = configContext
-                .createServiceGroupContext(service.getAxisServiceGroup());
-        return serviceGroupContext.getServiceContext(service);
-    }
+    }   
 
     public static String prefixBaseDirectory(String path) {
         return path;
