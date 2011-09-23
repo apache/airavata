@@ -30,12 +30,14 @@ import javax.xml.stream.XMLStreamException;
 
 import junit.framework.TestCase;
 
-import org.apache.airavata.wsmg.client.*;
+import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.wsmg.util.ConfigKeys;
+import org.apache.airavata.wsmg.util.TestUtilServer;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.addressing.EndpointReference;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,85 +59,16 @@ public class TestWseXpathSubscription extends TestCase implements ConsumerNotifi
         return queue;
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @Before
     public void setUp() throws Exception {
         URL configURL = ClassLoader.getSystemResource(ConfigKeys.CONFIG_FILE_NAME);
         configs.load(configURL.openStream());
+
+        TestUtilServer.start(null, null);
     }
 
-    /**
-     * @throws java.lang.Exception
-     */
     @After
     public void tearDown() throws Exception {
-    }
-
-    @Test
-    public final void testXpathOnlyRoundTrip() {
-
-        try {
-
-            String validMsgFormat = "<c><b><a> %d </a></b></c>";
-            String invalidMsgFormat = "<a><b><c> %d </c></b></a>";
-
-            long value = System.currentTimeMillis();
-            String validMsg = String.format(validMsgFormat, value);
-            String invalidMsg = String.format(invalidMsgFormat, value);
-
-            int consumerPort = new Integer(configs.getProperty(ConfigKeys.CONSUMER_PORT));
-
-            String brokerEPR = configs.getProperty(ConfigKeys.BROKER_EVENTING_SERVICE_EPR);
-
-            WseMsgBrokerClient wseMsgBrokerClient = new WseMsgBrokerClient();
-            wseMsgBrokerClient.init(brokerEPR);
-
-            String[] consumerEPRs = wseMsgBrokerClient.startConsumerService(consumerPort, this);
-
-            assertTrue(consumerEPRs.length > 0);
-
-            String xpathExpression = "/c/b/a";
-
-            String subscriptionID = wseMsgBrokerClient.subscribe(consumerEPRs[0], null, xpathExpression);
-
-            wseMsgBrokerClient.publish(null,validMsg);
-            wseMsgBrokerClient.publish(null,invalidMsg);
-
-            try {
-                SOAPEnvelope env = getMsgQueue().take();
-
-                assertNotNull(env.getBody());
-                assertNotNull(env.getBody().getChildrenWithLocalName("c"));
-
-                OMElement element = (OMElement) env.getBody().getChildrenWithLocalName("c").next();
-
-                String text = element.toStringWithConsume();
-
-                assertTrue("round trip of message failed" + " - due to invalid messege content",
-                        text.indexOf(new Long(value).toString()) > 0);
-
-                Thread.sleep(5000);
-
-                assertTrue("unexpected msg recieved", getMsgQueue().isEmpty());
-
-            } catch (InterruptedException e) {
-                fail("interrupted while waiting for message");
-            } catch (XMLStreamException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                fail("invalid xml recieved: " + e.getMessage());
-            }
-
-            wseMsgBrokerClient.unSubscribe(subscriptionID);
-            wseMsgBrokerClient.shutdownConsumerService();
-
-        } catch (AxisFault e) {
-            e.printStackTrace();
-            fail("unexpected exception occured");
-        }
-
     }
 
     @Test
@@ -152,7 +85,7 @@ public class TestWseXpathSubscription extends TestCase implements ConsumerNotifi
 
             int consumerPort = new Integer(configs.getProperty(ConfigKeys.CONSUMER_PORT));
 
-            String brokerEPR = configs.getProperty(ConfigKeys.BROKER_EVENTING_SERVICE_EPR);
+            String brokerEPR = "http://localhost:" + TestUtilServer.TESTING_PORT + "/axis2/services/EventingService";
 
             WseMsgBrokerClient wseMsgBrokerClient = new WseMsgBrokerClient();
             wseMsgBrokerClient.init(brokerEPR);
@@ -166,10 +99,11 @@ public class TestWseXpathSubscription extends TestCase implements ConsumerNotifi
 
             String subscriptionID = wseMsgBrokerClient.subscribe(consumerEPRs[0], topicExpression, xpathExpression);
 
-            wseMsgBrokerClient.publish(topicExpression, validMsg);
-            wseMsgBrokerClient.publish(topicExpression, invalidMsg);
-
             try {
+                
+                wseMsgBrokerClient.publish(topicExpression, AXIOMUtil.stringToOM(validMsg));
+                wseMsgBrokerClient.publish(topicExpression, AXIOMUtil.stringToOM(invalidMsg));
+                
                 SOAPEnvelope env = getMsgQueue().take();
 
                 assertNotNull(env.getBody());

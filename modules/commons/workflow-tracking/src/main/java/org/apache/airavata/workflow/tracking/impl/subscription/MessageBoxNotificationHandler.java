@@ -23,8 +23,6 @@ package org.apache.airavata.workflow.tracking.impl.subscription;
 
 import java.rmi.RemoteException;
 
-import javax.xml.namespace.QName;
-
 import org.apache.airavata.workflow.tracking.WorkflowTrackingException;
 import org.apache.airavata.workflow.tracking.client.Callback;
 import org.apache.airavata.workflow.tracking.client.NotificationType;
@@ -35,6 +33,7 @@ import org.apache.airavata.wsmg.client.NotificationHandler;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.wsmg.client.msgbox.MessagePuller;
 import org.apache.airavata.wsmg.client.msgbox.MsgboxHandler;
+import org.apache.airavata.wsmg.commons.MsgBoxQNameConstants;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
@@ -173,7 +172,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
             if (msgBoxAddr.getAllReferenceParameters() == null)
                 throw new MsgBrokerClientException("Invalid Message Box EPR, no reference parameters found");
             String msgBoxId = msgBoxAddr.getAllReferenceParameters()
-                    .get(new QName("http://org.apache.airavata/xgws/msgbox/2004/", "MsgBoxAddr")).getText();
+                    .get(MsgBoxQNameConstants.MSG_BOXID_QNAME).getText();
             if (msgBoxId == null)
                 throw new MsgBrokerClientException("Invalid Message Box EPR, reference parameter MsgBoxAddr is missing");
             String format = msgBoxEventSink.endsWith("/") ? "%sclientid/%s" : "%s/clientid/%s";

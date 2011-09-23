@@ -42,7 +42,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class MessageBoxStressTest extends TestCase {
-    private int port = 5555;
+    private int port = InMemoryMessageBoxServer.TESTING_PORT;
     private long timeout = 5000L;
 
     @BeforeClass
@@ -106,6 +106,7 @@ public class MessageBoxStressTest extends TestCase {
         
         try {
             client = new ServiceClient();
+            System.out.println(mesgboxUrl);
             client.getOptions().setTo(new EndpointReference(mesgboxUrl));
             OMElement response = client.sendReceive(request);
         } finally {

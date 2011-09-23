@@ -25,6 +25,7 @@ import java.io.StringReader;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.airavata.wsmg.commons.MsgBoxQNameConstants;
 import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
 import org.apache.airavata.wsmg.msgbox.util.MsgBoxCommonConstants;
@@ -56,7 +57,7 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
     public void init(ServiceContext context) throws AxisFault {
         this.storage = (MsgBoxStorage) context.getConfigurationContext().getProperty(
                 MsgBoxCommonConstants.MSGBOX_STORAGE);
-        
+
         logger.info("Start clean up thread for messagebox");
         deletingThread = new Thread(new DeleteOldMessageRunnable());
         deletingThread.start();
@@ -64,14 +65,14 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
 
     public void destroy(ServiceContext context) {
         this.storage = null;
-        
+
         // stop Deleting thread
         this.stop = true;
         this.deletingThread.interrupt();
 
-        try{
+        try {
             deletingThread.join();
-        }catch(Exception e){
+        } catch (Exception e) {
             logger.error("Cannot shutdown cleanup thread", e);
         }
     }
@@ -79,14 +80,14 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
     public OMElement createMsgBox() throws Exception {
         try {
             String createdMsgBoxId = storage.createMsgBox();
-            
+
             logger.debug("MsgBox created:" + createdMsgBoxId);
 
             /*
              * Output response
              */
-            OMElement dd = factory.createOMElement(MsgBoxCommonConstants.CREATE_MSGBOX_RESP_QNAME);
-            OMElement url = factory.createOMElement(MsgBoxCommonConstants.MSG_BOXID_QNAME);
+            OMElement dd = factory.createOMElement(MsgBoxQNameConstants.CREATE_MSGBOX_RESP_QNAME);
+            OMElement url = factory.createOMElement(MsgBoxQNameConstants.MSG_BOXID_QNAME);
             url.setText(createdMsgBoxId);
             dd.addChild(url);
             return dd;
@@ -100,30 +101,31 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
 
     public OMElement storeMessages(String msgBoxAddr, String messageID, String soapAction, OMElement message)
             throws Exception {
-        OMElement resp = factory.createOMElement(MsgBoxCommonConstants.STOREMSG_RESP_QNAME);
-        OMElement status = factory.createOMElement(MsgBoxCommonConstants.MSGBOX_STATUS_QNAME);
+        OMElement resp = factory.createOMElement(MsgBoxQNameConstants.STOREMSG_RESP_QNAME);
+        OMElement status = factory.createOMElement(MsgBoxQNameConstants.MSGBOX_STATUS_QNAME);
         try {
             storage.putMessageIntoMsgBox(msgBoxAddr, messageID, soapAction, message);
-            
+
             logger.debug("Put Message to MsgBox:" + msgBoxAddr + " with messageID:" + messageID);
-            
+
             status.setText(TRUE);
         } catch (SQLException e) {
             logger.error("Error while storing message: " + message + " in msgbx: " + msgBoxAddr, e);
             status.setText(FALSE);
-            
-            //FIXME: Should we throw exception?? or client will read false status
+
+            // FIXME: Should we throw exception?? or client will read false
+            // status
         }
         resp.addChild(status);
         resp.declareNamespace(NameSpaceConstants.MSG_BOX);
         return resp;
     }
 
-    public OMElement takeMessages(String msgBoxAddr) throws Exception {        
+    public OMElement takeMessages(String msgBoxAddr) throws Exception {
         try {
-            OMElement respEl = factory.createOMElement(MsgBoxCommonConstants.TAKE_MSGBOX_RESP_QNAME);
-            OMElement messageSet = factory.createOMElement(MsgBoxCommonConstants.MSGBOX_MESSAGE_QNAME);
-            
+            OMElement respEl = factory.createOMElement(MsgBoxQNameConstants.TAKE_MSGBOX_RESP_QNAME);
+            OMElement messageSet = factory.createOMElement(MsgBoxQNameConstants.MSGBOX_MESSAGE_QNAME);
+
             List<String> list = storage.takeMessagesFromMsgBox(msgBoxAddr);
             if (list != null && list.size() != 0) {
                 for (String string : list) {
@@ -143,42 +145,43 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
     }
 
     public OMElement destroyMsgBox(String msgBoxAddr) throws Exception {
-        OMElement respEl = factory.createOMElement(MsgBoxCommonConstants.DESTROY_MSGBOX_RESP_QNAME);
-        OMElement statusEl = factory.createOMElement(MsgBoxCommonConstants.MSGBOX_STATUS_QNAME);
+        OMElement respEl = factory.createOMElement(MsgBoxQNameConstants.DESTROY_MSGBOX_RESP_QNAME);
+        OMElement statusEl = factory.createOMElement(MsgBoxQNameConstants.MSGBOX_STATUS_QNAME);
         String addr = msgBoxAddr;
-        try{
+        try {
             storage.destroyMsgBox(addr);
             logger.debug("Destry MsgBox:" + msgBoxAddr);
             statusEl.setText(TRUE);
-        }catch(Exception e){
+        } catch (Exception e) {
             logger.error("Error while delete msgbx: " + msgBoxAddr, e);
             statusEl.setText(FALSE);
-            
-            //FIXME: Should we throw exception?? or client will read false status            
+
+            // FIXME: Should we throw exception?? or client will read false
+            // status
         }
         respEl.addChild(statusEl);
         return respEl;
     }
-    
-    class DeleteOldMessageRunnable implements Runnable{
+
+    class DeleteOldMessageRunnable implements Runnable {
 
         public void run() {
-            while(!stop){
-                try{
-                    
-                    //sleep
+            while (!stop) {
+                try {
+
+                    // sleep
                     Thread.sleep(SLEEP_TIME);
-                    
-                    //try to remove old message
-                    if(storage != null){
+
+                    // try to remove old message
+                    if (storage != null) {
                         storage.removeAncientMessages();
                     }
-                }catch(Exception e){
+                } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
-            }            
+            }
         }
-        
+
     }
-    
+
 }

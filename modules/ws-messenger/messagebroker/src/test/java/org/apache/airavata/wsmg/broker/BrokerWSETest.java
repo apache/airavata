@@ -23,31 +23,24 @@ package org.apache.airavata.wsmg.broker;
 
 import java.io.IOException;
 import java.util.Properties;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import junit.framework.TestCase;
 
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.wsmg.util.TestUtilServer;
+import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
 import org.junit.Test;
 
 public class BrokerWSETest extends TestCase implements ConsumerNotificationHandler {
 
+    private static int port = TestUtilServer.TESTING_PORT;
     static Properties configs = new Properties();
 
-    BlockingQueue<SOAPEnvelope> queue = new LinkedBlockingQueue<SOAPEnvelope>();
-
     public void handleNotification(SOAPEnvelope msgEnvelope) {
-        queue.add(msgEnvelope);
         System.out.println("Received " + msgEnvelope);
-    }
-
-    BlockingQueue<SOAPEnvelope> getMsgQueue() {
-        return queue;
     }
 
     @Override
@@ -55,12 +48,17 @@ public class BrokerWSETest extends TestCase implements ConsumerNotificationHandl
         TestUtilServer.start(null, null);
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        TestUtilServer.stop();
+    }
+
     @Test
     public void testRoundTrip() throws InterruptedException {
 
         try {
 
-            String brokerEPR = "http://127.0.0.1:8080/axis2/services/EventingService";
+            String brokerEPR = "http://localhost:" + port + "/axis2/services/EventingService";
             long value = System.currentTimeMillis();
             String msg = String.format("<msg> current time is : %d </msg>", value);
 
@@ -74,20 +72,23 @@ public class BrokerWSETest extends TestCase implements ConsumerNotificationHandl
 
             String topic = "WseRoundTripTestTopic";
 
-            String subscriptionID = wseMsgBrokerClient.subscribe(brokerEPR, consumerEPRs[0], topic);
-            wseMsgBrokerClient.subscribe(consumerEPRs[0], topic, "/foo/bar");
-
-            wseMsgBrokerClient.publish(topic, msg);
-
-            wseMsgBrokerClient.publish(topic, "<foo><bar>Test</bar></foo>");
+            String subscriptionID = wseMsgBrokerClient.subscribe(consumerEPRs[0], topic, null);
+            System.out.println("topic sub id = " + subscriptionID);
+            
+            try {
+                wseMsgBrokerClient.publish(topic, msg);
+                wseMsgBrokerClient.publish(topic, AXIOMUtil.stringToOM("<foo><bar>Test</bar></foo>"));
+            } catch (Exception e) {
+                fail(e.getMessage());
+            }
 
             Thread.sleep(2000);
 
             try {
                 wseMsgBrokerClient.unSubscribe(subscriptionID);
             } catch (AxisFault e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
+                fail(e.getMessage());
             }
             wseMsgBrokerClient.shutdownConsumerService();
 
@@ -96,19 +97,11 @@ public class BrokerWSETest extends TestCase implements ConsumerNotificationHandl
             try {
                 System.in.read();
             } catch (IOException e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
-
-            // fail("unexpected exception occured");
+            fail("unexpected exception occured");
         }
         System.out.println("Broker roundtrip done");
 
     }
-
-    @Override
-    protected void tearDown() throws Exception {
-        // TestUtilServer.stop();
-    }
-
 }

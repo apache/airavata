@@ -23,6 +23,7 @@ package org.apache.airavata.wsmg.msgbox;
 
 import java.util.List;
 
+import org.apache.airavata.wsmg.commons.MsgBoxQNameConstants;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.AddressingFaultsHelper;
 import org.apache.axis2.context.MessageContext;
@@ -35,13 +36,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This Dispatcher is used to validate the incoming message, this is set to Handler list in MsgBoxServiceLifeCycle.
+ * This Dispatcher is used to validate the incoming message, this is set to
+ * Handler list in MsgBoxServiceLifeCycle.
  */
 public class StoreMessageHandler extends AddressingBasedDispatcher {
     private static final Logger logger = LoggerFactory.getLogger(StoreMessageHandler.class);
-    private static final String WSMG_MSGSTORE_SOAP_ACTION = "http://org.apache.airavata/xgws/msgbox/2004/storeMessages";
+    private static final String WSMG_MSGSTORE_SOAP_ACTION = MsgBoxQNameConstants.STOREMSG_QNAME.getNamespaceURI()
+            + MsgBoxQNameConstants.STOREMSG_QNAME.getLocalPart();
     private static final String ADDRESSING_VALIDATE_ACTION = "addressing.validateAction";
-    
+
     private Phase addressingPhase;
     private AxisOperation messageBoxOperation;
 

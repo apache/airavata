@@ -21,22 +21,14 @@
 
 package org.apache.airavata.wsmg.gui;
 
-import java.net.URL;
-import java.util.Properties;
-
-import org.apache.airavata.wsmg.client.util.ConfigKeys;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class GUITest {
 
-    static Properties configs = new Properties();
-
     @Before
     public void setUp() throws Exception {
-        URL configURL = ClassLoader.getSystemResource(ConfigKeys.CONFIG_FILE_NAME);
-        configs.load(configURL.openStream());
     }
 
     @After
@@ -45,10 +37,7 @@ public class GUITest {
 
     @Test
     public void testGUI() {
-        String[] args = new String[] { configs.getProperty(ConfigKeys.AXIS2_REPO) };
-
-        NotificationViewer.main(args);
-
+        NotificationViewer.main(null);
     }
 
 }

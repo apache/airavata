@@ -24,6 +24,7 @@ package org.apache.airavata.wsmg.msgbox.client;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.wsmg.client.util.ClientUtil;
+import org.apache.airavata.wsmg.commons.MsgBoxQNameConstants;
 import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.axiom.om.OMAbstractFactory;
@@ -51,8 +52,7 @@ public class CreateMsgBox {
 
     public CreateMsgBox(String msgBoxLocation, long timeout) {
         this.msgBoxEndPointReference = msgBoxLocation;
-        responseEl = OMAbstractFactory.getOMFactory().createOMElement(
-                new QName("http://org.apache.airavata/xgws/msgbox/2004/", "MsgBoxId"));
+        responseEl = OMAbstractFactory.getOMFactory().createOMElement(MsgBoxQNameConstants.MSG_BOXID_QNAME);
 
         timeoutInMilliSeconds = timeout;
     }

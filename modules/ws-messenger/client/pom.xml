@@ -32,11 +32,6 @@
         <!-- Axis2 -->
         <dependency>
             <groupId>org.apache.axis2</groupId>
-            <artifactId>axis2-kernel</artifactId>
-            <version>${axis2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-transport-http</artifactId>
         </dependency>
 

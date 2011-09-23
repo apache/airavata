@@ -31,66 +31,15 @@ public class NotificationViewer {
 
     boolean packFrame = false;
 
-    /*
-     * private static String getAxis2Repository(String[] cmdArgs) {
-     * 
-     * // if its in system properties get it.
-     * 
-     * if (System.getProperty(WsmgCommonConstants.CONFIG_AXIS2_REPO) != null) { File repodir = new File(System
-     * .getProperty(WsmgCommonConstants.CONFIG_AXIS2_REPO));
-     * 
-     * if (repodir.isDirectory()) { return repodir.getAbsolutePath(); }
-     * 
-     * throw new RuntimeException( "axis2 repository given in system parameter is invalid: " +
-     * repodir.getAbsolutePath());
-     * 
-     * }
-     * 
-     * if (cmdArgs.length > 1) {
-     * 
-     * if (cmdArgs[0].startsWith("-" + WsmgCommonConstants.CONFIG_AXIS2_REPO)) {
-     * 
-     * File repoDir = new File(cmdArgs[1]);
-     * 
-     * if (repoDir.isDirectory()) { return repoDir.getAbsolutePath(); }
-     * 
-     * throw new RuntimeException( "axis2 repository given as a  command line argument is invalid: " +
-     * repoDir.getAbsolutePath()); }
-     * 
-     * throw new RuntimeException("unknown commandline argument");
-     * 
-     * }
-     * 
-     * String axis2Home = System.getenv().get("AXIS2_HOME");
-     * 
-     * 
-     * if (axis2Home != null) {
-     * 
-     * String repo = axis2Home.endsWith(File.pathSeparator) ? axis2Home + "repository" : axis2Home + File.separator +
-     * "repository";
-     * 
-     * File repoDir = new File(repo);
-     * 
-     * if (repoDir.isDirectory()) {
-     * 
-     * 
-     * return repoDir.getAbsolutePath(); } }
-     * 
-     * return null; }
-     * 
-     * private static void printHelp() { System.out.println("unable to determine axis2 repository");
-     * System.out.println("please provide the system property: " + WsmgCommonConstants.CONFIG_AXIS2_REPO);
-     * System.out.println("or set AXIS2_HOME envirnment variable"); }
-     */
-
     /**
      * Construct and show the application.
      */
     public NotificationViewer() {
         NotificationViewerFrame frame = new NotificationViewerFrame();
-        // Validate frames that have preset sizes
-        // Pack frames that have useful preferred size info, e.g. from their
-        // layout
+        /*
+         * Validate frames that have preset sizes Pack frames that have useful
+         * preferred size info, e.g. from their layout
+         */
         if (packFrame) {
             frame.pack();
         } else {
@@ -118,13 +67,6 @@ public class NotificationViewer {
      *            String[]
      */
     public static void main(String[] args) {
-
-        /*
-         * final String axis2Repo = getAxis2Repository(args);
-         * 
-         * if (axis2Repo == null) { printHelp(); System.exit(1); }
-         */
-
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 try {
