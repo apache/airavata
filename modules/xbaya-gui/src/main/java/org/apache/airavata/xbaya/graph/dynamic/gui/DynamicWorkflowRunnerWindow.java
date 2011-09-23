@@ -31,7 +31,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.StringUtil;
@@ -59,19 +65,19 @@ import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
-import org.jcp.xml.dsig.internal.dom.Utils;
 import org.ogce.schemas.gfac.beans.HostBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
 
 import xregistry.generated.HostDescData;
 import xsul.XmlConstants;
 import xsul.lead.LeadResourceMapping;
-import xsul5.MLogger;
 
 public class DynamicWorkflowRunnerWindow {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(DynamicWorkflowRunnerWindow.class);
 
     private XBayaEngine engine;
 
