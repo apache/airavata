@@ -23,6 +23,7 @@ package org.apache.airavata.wsmg.messenger;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -35,6 +36,8 @@ import org.apache.airavata.wsmg.commons.WsmgVersion;
 import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.commons.storage.WsmgPersistantStorage;
 import org.apache.airavata.wsmg.config.WSMGParameter;
+import org.apache.airavata.wsmg.messenger.protocol.DeliveryProtocol;
+import org.apache.airavata.wsmg.messenger.protocol.impl.Axis2Protocol;
 import org.apache.airavata.wsmg.messenger.strategy.SendingStrategy;
 import org.apache.airavata.wsmg.messenger.strategy.impl.FixedParallelSender;
 import org.apache.airavata.wsmg.messenger.strategy.impl.ParallelSender;
@@ -49,10 +52,9 @@ public class MessengerServlet extends HttpServlet {
 
     private static final long serialVersionUID = -7175511030332798604L;
 
-    private SendingStrategy sender = null;
+    private static final long DEFAULT_SOCKET_TIME_OUT = 20000l;
 
-    public MessengerServlet() {
-    }
+    private DeliveryProcessor proc;
 
     public void init(ServletConfig config) throws ServletException {
         logger.info("Starting messenger servlet");
@@ -65,38 +67,65 @@ public class MessengerServlet extends HttpServlet {
 
     }
 
-    private void initDiliveryMethod(ConfigurationManager config) {
-        logger.info("starting dilivery thread");
+    private void initDiliveryMethod(ConfigurationManager configMan) {
+        /*
+         * Create Protocol
+         */
+        DeliveryProtocol protocol;
+        String protocolClass = configMan
+                .getConfig(WsmgCommonConstants.DELIVERY_PROTOCOL, Axis2Protocol.class.getName());
+        try {
+            Class cl = Class.forName(protocolClass);
+            Constructor<DeliveryProtocol> co = cl.getConstructor(null);
+            protocol = co.newInstance((Object[]) null);
 
-        String deliveryMethod = config.getConfig(WsmgCommonConstants.CONFIG_DELIVERY_METHOD,
-                WsmgCommonConstants.DELIVERY_METHOD_SERIAL);
+        } catch (Exception e) {
+            logger.error("Cannot initial protocol sender", e);
+            return;
+        }
+        protocol.setTimeout(configMan.getConfig(WsmgCommonConstants.CONFIG_SOCKET_TIME_OUT, DEFAULT_SOCKET_TIME_OUT));
+
+        /*
+         * Create delivery method
+         */
         SendingStrategy method = null;
-
-        ConsumerUrlManager urlManager = new ConsumerUrlManager(config);
-
         String initedmethod = null;
-
+        String deliveryMethod = configMan.getConfig(WsmgCommonConstants.CONFIG_DELIVERY_METHOD,
+                WsmgCommonConstants.DELIVERY_METHOD_SERIAL);
         if (WsmgCommonConstants.DELIVERY_METHOD_PARALLEL.equalsIgnoreCase(deliveryMethod)) {
-
-            method = new ParallelSender(config, urlManager);
+            method = new ParallelSender();
             initedmethod = WsmgCommonConstants.DELIVERY_METHOD_PARALLEL;
 
         } else if (WsmgCommonConstants.DELIVERY_METHOD_THREAD_CREW.equalsIgnoreCase(deliveryMethod)) {
-            method = new FixedParallelSender(config, urlManager);
+            int poolsize = configMan.getConfig(WsmgCommonConstants.CONFIG_SENDING_THREAD_POOL_SIZE,
+                    WsmgCommonConstants.DEFAULT_SENDING_THREAD_POOL_SIZE);
+            int batchsize = configMan.getConfig(WsmgCommonConstants.CONFIG_SENDING_BATCH_SIZE,
+                    WsmgCommonConstants.DEFAULT_SENDING_BATCH_SIZE);
+            method = new FixedParallelSender(poolsize, batchsize);
             initedmethod = WsmgCommonConstants.DELIVERY_METHOD_THREAD_CREW;
 
         } else {
-            method = new SerialSender(config, urlManager);
+            method = new SerialSender();
             initedmethod = WsmgCommonConstants.DELIVERY_METHOD_SERIAL;
         }
 
-        method.start();
+        /*
+         * Create Deliverable
+         */
+        ConsumerUrlManager urlManager = new ConsumerUrlManager(configMan);
+        Deliverable senderUtils = new SenderUtils(urlManager);
+        senderUtils.setProtocol(protocol);
+
+        proc = new DeliveryProcessor(senderUtils, method);
+        proc.start();
         logger.info(initedmethod + " sending method inited");
     }
 
     public void destroy() {
-        sender.shutdown();
         logger.info("stoping wsmg-messenger");
+        if (proc != null) {
+            proc.stop();
+        }
     }
 
     public ServletConfig getServletConfig() {
