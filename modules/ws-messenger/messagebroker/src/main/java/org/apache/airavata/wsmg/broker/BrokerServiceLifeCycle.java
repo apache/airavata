@@ -205,7 +205,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
         Deliverable senderUtils = new SenderUtils(urlManager);
         senderUtils.setProtocol(protocol);
         
-        DeliveryProcessor proc = new DeliveryProcessor(senderUtils, method);
+        proc = new DeliveryProcessor(senderUtils, method);
         proc.start();
         log.info(initedmethod + " sending method inited");
     }

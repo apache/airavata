@@ -37,34 +37,30 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
- * FIXME: need thread safe version
- */
 public class ConsumerUrlManager {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(ConsumerUrlManager.class);
 
-    private ConcurrentHashMap<String, FailedConsumerInfo> failedConsumerUrls = new ConcurrentHashMap<String, FailedConsumerInfo>(); // the
+    private ConcurrentHashMap<String, FailedConsumerInfo> failedConsumerUrls = new ConcurrentHashMap<String, FailedConsumerInfo>();
 
     private final int defaultMaxRetry;
 
-    private long expireTimeGap; // milliseconds    
+    private long expireTimeGap; // milliseconds
 
     private Timer cleanupTimer;
 
     public ConsumerUrlManager(ConfigurationManager config) {
 
-        defaultMaxRetry = Integer.parseInt(config
-                .getConfig(WsmgCommonConstants.CONFIG_MAX_MESSAGE_DELIVER_RETRIES, "2"));
+        defaultMaxRetry = config.getConfig(WsmgCommonConstants.CONFIG_MAX_MESSAGE_DELIVER_RETRIES, 2);
 
-        expireTimeGap = 1000 * 60 * Long.parseLong(config.getConfig(
-                WsmgCommonConstants.CONFIG_CONSUMER_URL_EXPIRATION_TIME_GAP, "5")); // time is in milliseconds
+        // time is in milliseconds
+        expireTimeGap = 1000 * 60 * config.getConfig(WsmgCommonConstants.CONFIG_CONSUMER_URL_EXPIRATION_TIME_GAP, 5l);
 
         // let minimum time to be 1 minute
         long timerThreadInterval = Math.max(expireTimeGap / 5, 1000 * 60);
 
         cleanupTimer = new Timer("Failed consumer url handler", true);
-        cleanupTimer.scheduleAtFixedRate(new URLCleanUpTask(failedConsumerUrls), 0, timerThreadInterval);
+        cleanupTimer.scheduleAtFixedRate(new URLCleanUpTask(), 0, timerThreadInterval);
 
     }
 
@@ -77,13 +73,14 @@ public class ConsumerUrlManager {
 
         if (isEligibleToBlackList(exception)) {
 
-            FailedConsumerInfo info = failedConsumerUrls.get(url);
-            if (info == null) {
-                info = new FailedConsumerInfo();
-                failedConsumerUrls.put(url, info);
+            synchronized (failedConsumerUrls) {
+                FailedConsumerInfo info = failedConsumerUrls.get(url);
+                if (info == null) {
+                    info = new FailedConsumerInfo();
+                    failedConsumerUrls.put(url, info);
+                }
+                info.incrementNumberOfTimesTried(timeFinished + expireTimeGap);
             }
-
-            info.incrementNumberOfTimesTried(timeFinished + expireTimeGap);
 
         } else {
 
@@ -97,20 +94,22 @@ public class ConsumerUrlManager {
     public void onSucessfullDelivery(EndpointReference consumerEndpointReference, long timeTaken) {
 
         RunTimeStatistics.addNewSuccessfulDeliverTime(timeTaken);
+        synchronized (failedConsumerUrls) {
 
-       FailedConsumerInfo info = failedConsumerUrls.remove(consumerEndpointReference.getAddress());
+            FailedConsumerInfo info = failedConsumerUrls.remove(consumerEndpointReference.getAddress());
 
-        if (info != null) {
-            logger.debug(String.format("message was delivered to " + "previously %d times failed url : %s",
-                    info.getNumberOfTimesTried(), consumerEndpointReference.getAddress()));
+            if (info != null) {
+                logger.debug(String.format("message was delivered to " + "previously %d times failed url : %s",
+                        info.getNumberOfTimesTried(), consumerEndpointReference.getAddress()));
+            }
         }
     }
 
     public boolean isUnavailable(String url) {
-
-        FailedConsumerInfo info = failedConsumerUrls.get(url);
-
-        return (info != null && info.isMaxRetryCountReached());
+        synchronized (failedConsumerUrls) {
+            FailedConsumerInfo info = failedConsumerUrls.get(url);
+            return (info != null && info.isMaxRetryCountReached());
+        }
     }
 
     private boolean isEligibleToBlackList(AxisFault f) {
@@ -123,8 +122,8 @@ public class ConsumerUrlManager {
         }
 
         /*
-         * if timeout because of the set timeout in this class In windows, timeout cause ConnectException with
-         * "Connection timed out" message
+         * if timeout because of the set timeout in this class In windows,
+         * timeout cause ConnectException with "Connection timed out" message
          */
         if (cause instanceof SocketTimeoutException || cause.getMessage().indexOf("timed out") > 0
                 || cause instanceof NoRouteToHostException) {
@@ -139,15 +138,9 @@ public class ConsumerUrlManager {
         private int numberOfTimesTried;
         private long expiryTime;
 
-        public FailedConsumerInfo() {
-            numberOfTimesTried = 0;
-            expiryTime = 0L;
-        }
-
         public void incrementNumberOfTimesTried(long expireTime) {
             numberOfTimesTried++;
             expiryTime = expireTime;
-
         }
 
         public void decrementNumberOfTimeTried() {
@@ -170,35 +163,26 @@ public class ConsumerUrlManager {
 
     class URLCleanUpTask extends TimerTask {
 
-        ConcurrentHashMap<String, FailedConsumerInfo> failedConsumers;
-
-        public URLCleanUpTask(ConcurrentHashMap<String, FailedConsumerInfo> failedUrls) {
-
-            failedConsumers = failedUrls;
-
-        }
-
         @Override
         public void run() {
 
             logger.info("starting to clean up black listed consumer urls");
             long currentTime = System.currentTimeMillis();
 
-            for (Entry<String, FailedConsumerInfo> entry : failedConsumers.entrySet()) {
-                FailedConsumerInfo info = entry.getValue();
+            synchronized (failedConsumerUrls) {
+                for (Entry<String, FailedConsumerInfo> entry : failedConsumerUrls.entrySet()) {
+                    FailedConsumerInfo info = entry.getValue();
 
-                if (info.isMaxRetryCountReached() && info.getLastAtteptExpiryTime() >= currentTime) {
+                    if (info.isMaxRetryCountReached() && info.getLastAtteptExpiryTime() >= currentTime) {
 
-                    info.decrementNumberOfTimeTried();
-                    logger.info("decrementing number of times" + " tried for consumer url: " + entry.getKey());
+                        info.decrementNumberOfTimeTried();
+                        logger.info("decrementing number of times" + " tried for consumer url: " + entry.getKey());
 
+                    }
                 }
-
             }
 
             logger.info("finished cleaning black listed consumer urls");
         }
-
     }
-
 }
