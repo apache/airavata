@@ -22,8 +22,8 @@
 package org.apache.airavata.wsmg.messenger.strategy.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -38,9 +38,7 @@ public class FixedParallelSender implements SendingStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(FixedParallelSender.class);
 
-    private ConcurrentHashMap<String, FixedParallelConsumerHandler> activeConsumerHanders = new ConcurrentHashMap<String, FixedParallelConsumerHandler>();
-
-    private long consumerHandlerIdCounter;
+    private HashMap<String, ConsumerHandler> activeConsumerHanders = new HashMap<String, ConsumerHandler>();
 
     private int batchSize;
 
@@ -71,8 +69,7 @@ public class FixedParallelSender implements SendingStrategy {
         }
     }
 
-    private void sendToConsumerHandler(ConsumerInfo consumer, OutGoingMessage message,
-            Deliverable deliverable) {
+    private void sendToConsumerHandler(ConsumerInfo consumer, OutGoingMessage message, Deliverable deliverable) {
 
         String consumerUrl = consumer.getConsumerEprStr();
 
@@ -80,34 +77,35 @@ public class FixedParallelSender implements SendingStrategy {
                 message.getAdditionalMessageContent());
 
         synchronized (activeConsumerHanders) {
-            FixedParallelConsumerHandler handler = activeConsumerHanders.get(consumerUrl);
+            ConsumerHandler handler = activeConsumerHanders.get(consumerUrl);
             if (handler == null) {
-                handler = new FixedParallelConsumerHandler(consumerHandlerIdCounter++, consumerUrl, deliverable);
+                handler = new FixedParallelConsumerHandler(consumerUrl, deliverable);
                 activeConsumerHanders.put(consumerUrl, handler);
                 handler.submitMessage(lwm);
                 threadPool.submit(handler);
             } else {
                 handler.submitMessage(lwm);
             }
-        }        
+        }
     }
 
     public void removeFromList(ConsumerHandler h) {
-        if (!activeConsumerHanders.remove(h.getConsumerUrl(), h)) {
-            log.debug(String.format("inactive consumer handler " + "is already removed: id %d, url : %s", h.getId(),
-                    h.getConsumerUrl()));
+        synchronized (activeConsumerHanders) {
+            if (activeConsumerHanders.remove(h.getConsumerUrl()) != null) {
+                log.debug(String.format("inactive consumer handler is already removed: url : %s", h.getConsumerUrl()));
+            }
         }
     }
-    
+
     class FixedParallelConsumerHandler extends ConsumerHandler {
 
-        public FixedParallelConsumerHandler(long handlerId, String url, Deliverable deliverable) {
-            super(handlerId, url, deliverable);
+        public FixedParallelConsumerHandler(String url, Deliverable deliverable) {
+            super(url, deliverable);
         }
 
         public void run() {
 
-            log.debug(String.format("starting consumer handler: id :%d, url : %s", getId(), getConsumerUrl()));
+            log.debug(String.format("FixedParallelConsumerHandler starting: %s", getConsumerUrl()));
 
             ArrayList<LightweightMsg> localList = new ArrayList<LightweightMsg>();
 
@@ -116,16 +114,13 @@ public class FixedParallelSender implements SendingStrategy {
             send(localList);
             localList.clear();
 
-            log.debug(String.format("calling on completion from : %d,", getId()));
-            
-            
+            log.debug(String.format("FixedParallelConsumerHandler done: %s,", getConsumerUrl()));
+
             /*
              * Remove handler if there is no message
              */
-            synchronized (activeConsumerHanders) {  
-                if(queue.size() == 0){
-                    removeFromList(this);
-                }
+            if (queue.size() == 0) {
+                removeFromList(this);
             }
         }
     }

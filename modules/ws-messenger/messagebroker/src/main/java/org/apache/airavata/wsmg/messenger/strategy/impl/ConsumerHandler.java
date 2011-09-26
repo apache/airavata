@@ -23,6 +23,7 @@ package org.apache.airavata.wsmg.messenger.strategy.impl;
 
 import java.io.StringReader;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.airavata.wsmg.commons.CommonRoutines;
@@ -37,33 +38,34 @@ public abstract class ConsumerHandler implements Runnable {
     
     protected LinkedBlockingQueue<LightweightMsg> queue = new LinkedBlockingQueue<LightweightMsg>();
 
-    private final long id;
+    private final String id;
 
     private String consumerUrl;
 
     private Deliverable deliverable;
 
-    public ConsumerHandler(long handlerId, String url, Deliverable deliverable) {
-        id = handlerId;
-        consumerUrl = url;
+    public ConsumerHandler(String url, Deliverable deliverable) {
+        this.id = UUID.randomUUID().toString();
+        this.consumerUrl = url;
         this.deliverable = deliverable;
     }
-
-    public long getId() {
-        return id;
-    }
-
+    
     public String getConsumerUrl() {
         return consumerUrl;
     }
-
+    
     @Override
     public boolean equals(Object o) {
         if (o instanceof ConsumerHandler) {
             ConsumerHandler h = (ConsumerHandler) o;
-            return h.getId() == this.id && h.getConsumerUrl().equals(this.getConsumerUrl());
+            return this.id.equals(h.id);            
         }
         return false;
+    }     
+
+    @Override
+    public int hashCode() {
+        return this.id.hashCode();        
     }
 
     public void submitMessage(LightweightMsg msg) {
