@@ -34,4 +34,6 @@ public interface WsmgStorage {
 
     int delete(String subscriptionId);
     
+    void dispose();
+    
 }

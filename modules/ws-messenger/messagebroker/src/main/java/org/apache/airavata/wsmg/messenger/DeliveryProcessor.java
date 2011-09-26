@@ -43,12 +43,20 @@ public class DeliveryProcessor{
 
     public void start() {
         this.running = true;
-        t = new Thread(new CheckingAndSending());
-        t.start();
+        this.t = new Thread(new CheckingAndSending());
+        this.t.start();
     }
 
     public void stop() {
         this.running = false;
+        
+        try{
+            this.t.join();
+        }catch(InterruptedException ie){
+            logger.error("Wait for sending thread to finish (join) is interrupted");
+        }
+        
+        WSMGParameter.OUT_GOING_QUEUE.dispose();
     }        
 
     private class CheckingAndSending implements Runnable {

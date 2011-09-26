@@ -42,8 +42,10 @@ import org.slf4j.LoggerFactory;
 public class ParallelSender implements SendingStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(ParallelSender.class);
+    
+    private static final long TIME_TO_WAIT_FOR_SHUTDOWN_SECOND = 30; 
 
-    private HashMap<String, ConsumerHandler> activeConsumerHanders = new HashMap<String, ConsumerHandler>();
+    private HashMap<String, ConsumerHandler> activeConsumerHandlers = new HashMap<String, ConsumerHandler>();
 
     private ExecutorService threadPool;
 
@@ -59,7 +61,15 @@ public class ParallelSender implements SendingStrategy {
     }
 
     public void shutdown() {
+        log.debug("Shutting down");
+        
         threadPool.shutdown();
+        try{
+            threadPool.awaitTermination(TIME_TO_WAIT_FOR_SHUTDOWN_SECOND, TimeUnit.SECONDS);
+        }catch(InterruptedException ie){
+            log.error("Interrupted while waiting thread pool to shutdown");
+        }        
+        log.debug("Shut down");
     }
     
     private void sendToConsumerHandler(ConsumerInfo consumer, OutGoingMessage message, Deliverable deliverable) {
@@ -68,11 +78,11 @@ public class ParallelSender implements SendingStrategy {
         LightweightMsg lwm = new LightweightMsg(consumer, message.getTextMessage(),
                 message.getAdditionalMessageContent());
 
-        synchronized (activeConsumerHanders) {
-            ConsumerHandler handler = activeConsumerHanders.get(consumerUrl);
+        synchronized (activeConsumerHandlers) {
+            ConsumerHandler handler = activeConsumerHandlers.get(consumerUrl);
             if (handler == null) {
                 handler = new ParallelConsumerHandler(consumerUrl, deliverable);
-                activeConsumerHanders.put(consumerUrl, handler);
+                activeConsumerHandlers.put(consumerUrl, handler);
                 handler.submitMessage(lwm);
                 threadPool.submit(handler);
             } else {
@@ -113,9 +123,9 @@ public class ParallelSender implements SendingStrategy {
                     /*
                      * Stop this thread if and only if there is no message
                      */
-                    synchronized (activeConsumerHanders) {
+                    synchronized (activeConsumerHandlers) {
                         if (queue.size() == 0) {                             
-                            if (activeConsumerHanders.remove(getConsumerUrl()) != null) {
+                            if (activeConsumerHandlers.remove(getConsumerUrl()) != null) {
                                 log.debug(String.format("Consumer handler is already removed: %s", getConsumerUrl()));
                             }
                             log.debug(String.format("ParallelConsumerHandler done: %s,", getConsumerUrl()));

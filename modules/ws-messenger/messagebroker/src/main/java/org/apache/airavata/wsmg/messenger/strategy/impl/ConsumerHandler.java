@@ -23,7 +23,6 @@ package org.apache.airavata.wsmg.messenger.strategy.impl;
 
 import java.io.StringReader;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.airavata.wsmg.commons.CommonRoutines;

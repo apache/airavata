@@ -21,23 +21,15 @@
 
 package org.apache.airavata.wsmg.commons.storage;
 
-import java.util.List;
-
-import org.apache.airavata.wsmg.broker.subscription.SubscriptionEntry;
-import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
 
 public interface WsmgQueue {
-
-    List<SubscriptionEntry> getAllSubscription();
-
-    int insert(SubscriptionState subscription);
-
-    int delete(String subscriptionId);
 
     void cleanup();
 
     void enqueue(Object object, String trackId);
 
     Object blockingDequeue();
+    
+    void dispose();
     
 }

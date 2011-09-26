@@ -39,6 +39,12 @@ public class WsmgInMemoryStorage implements WsmgStorage, WsmgQueue {
 
     private Map<String, SubscriptionState> unexpirableSubscriptions = new ConcurrentHashMap<String, SubscriptionState>();
 
+    public void dispose() {
+        queue.clear();
+        expirableSubscriptions.clear();
+        unexpirableSubscriptions.clear();
+    }
+    
     public int insert(SubscriptionState subscription) {
         if (subscription.isNeverExpire()) {
             unexpirableSubscriptions.put(subscription.getId(), subscription);
