@@ -23,9 +23,11 @@ package org.apache.airavata.wsmg.messenger.strategy.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.airavata.wsmg.broker.ConsumerInfo;
 import org.apache.airavata.wsmg.commons.OutGoingMessage;
@@ -38,11 +40,18 @@ public class FixedParallelSender implements SendingStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(FixedParallelSender.class);
 
-    private HashMap<String, ConsumerHandler> activeConsumerHanders = new HashMap<String, ConsumerHandler>();
-
+    private static final long TIME_TO_WAIT_FOR_SHUTDOWN_SECOND = 30;
+    
+    private HashMap<String, ConsumerHandler> activeConsumerHandlers = new HashMap<String, ConsumerHandler>();
+    private HashMap<String, Boolean> submittedConsumerHandlers = new HashMap<String, Boolean>();
+   
     private int batchSize;
 
     private ExecutorService threadPool;
+
+    private boolean stop;
+
+    private Thread t;
 
     public FixedParallelSender(int poolsize, int batchsize) {
         this.threadPool = Executors.newFixedThreadPool(poolsize);
@@ -50,7 +59,8 @@ public class FixedParallelSender implements SendingStrategy {
     }
 
     public void init() {
-
+        this.t = new Thread(new ChooseHandlerToSubmit());
+        this.t.start();
     }
 
     public void addMessageToSend(OutGoingMessage outMessage, Deliverable deliverable) {
@@ -60,8 +70,24 @@ public class FixedParallelSender implements SendingStrategy {
         }
     }
 
-    public void shutdown() {
+    public void shutdown() {       
+        log.debug("Shutting down");
+        this.stop = true;
+
+        try {
+            this.t.join();
+        } catch (InterruptedException ie) {
+            log.error("Wait for ChooseHandlerToSubmit thread to finish (join) is interrupted");
+        }
+        
         threadPool.shutdown();
+        try{
+            threadPool.awaitTermination(TIME_TO_WAIT_FOR_SHUTDOWN_SECOND, TimeUnit.SECONDS);
+        }catch(InterruptedException ie){
+            log.error("Interrupted while waiting thread pool to shutdown");
+        }
+        
+        log.debug("Shut down");
     }
 
     private void sendToConsumerHandler(ConsumerInfo consumer, OutGoingMessage message, Deliverable deliverable) {
@@ -71,15 +97,49 @@ public class FixedParallelSender implements SendingStrategy {
         LightweightMsg lwm = new LightweightMsg(consumer, message.getTextMessage(),
                 message.getAdditionalMessageContent());
 
-        synchronized (activeConsumerHanders) {
-            ConsumerHandler handler = activeConsumerHanders.get(consumerUrl);
+        synchronized (activeConsumerHandlers) {
+            ConsumerHandler handler = activeConsumerHandlers.get(consumerUrl);
             if (handler == null) {
                 handler = new FixedParallelConsumerHandler(consumerUrl, deliverable);
-                activeConsumerHanders.put(consumerUrl, handler);
-                handler.submitMessage(lwm);
-                threadPool.submit(handler);
-            } else {
-                handler.submitMessage(lwm);
+                activeConsumerHandlers.put(consumerUrl, handler);
+                submittedConsumerHandlers.put(consumerUrl, Boolean.FALSE);
+            }
+            handler.submitMessage(lwm);
+        }
+    }
+
+    class ChooseHandlerToSubmit implements Runnable {
+        private static final int SLEEP_TIME_SECONDS = 1;
+
+        public void run() {
+            /*
+             * If stop is true, we will not get any message to send from addMessageToSend() method.
+             * So, activeConsumerHandlers size will not increase but decrease only.
+             * When shutdown() is invoked, we will have to send out all messages in our queue.
+             */
+            while (!stop || activeConsumerHandlers.size() > 0) {
+
+                synchronized (activeConsumerHandlers) {
+                    Iterator<String> it = activeConsumerHandlers.keySet().iterator();
+                    while (it.hasNext()) {
+                        String key = it.next();
+                        boolean submitted = submittedConsumerHandlers.get(key);
+                        
+                        /*
+                         * If consumer handlers is not scheduled to run, submit it to thread pool.
+                         */
+                        if (!submitted) {
+                            threadPool.submit(activeConsumerHandlers.get(key));
+                            submittedConsumerHandlers.put(key, Boolean.TRUE);
+                        }
+                    }
+                }
+
+                try {
+                    TimeUnit.SECONDS.sleep(SLEEP_TIME_SECONDS);
+                } catch (InterruptedException e) {
+                    log.error("interrupted while waiting", e);
+                }
             }
         }
     }
@@ -99,19 +159,27 @@ public class FixedParallelSender implements SendingStrategy {
             queue.drainTo(localList, batchSize);
 
             send(localList);
-            localList.clear();            
+            localList.clear();
 
             /*
              * Remove handler if and only if there is no message
              */
-            synchronized (activeConsumerHanders) {
+            synchronized (activeConsumerHandlers) {
+
+                /*
+                 * all message is sent or not, we will set it as not submitted.
+                 * So, it can be put back to thread pool.
+                 */
+                submittedConsumerHandlers.put(getConsumerUrl(), Boolean.FALSE);
+
                 if (queue.size() == 0) {
-                    if (activeConsumerHanders.remove(getConsumerUrl()) != null) {
-                        log.debug(String.format("Consumer handler is already removed: %s", getConsumerUrl()));
-                    }                    
+                    submittedConsumerHandlers.remove(getConsumerUrl());
+                    activeConsumerHandlers.remove(getConsumerUrl());
+                    
+                    log.debug(String.format("Consumer handler is already removed: %s", getConsumerUrl()));
                 }
             }
-            
+
             log.debug(String.format("FixedParallelConsumerHandler done: %s,", getConsumerUrl()));
         }
     }

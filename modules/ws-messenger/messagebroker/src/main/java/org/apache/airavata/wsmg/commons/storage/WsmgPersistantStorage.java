@@ -96,6 +96,12 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
         }
     }
 
+    public void dispose() {
+        if (db != null) {
+            db.closeAllConnections();
+        }        
+    }
+    
     /*
      * (non-Javadoc)
      * 
@@ -314,10 +320,6 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
 
             db.quietlyClose(connection, stmt, stmt2, stmt3);
         }
-    }
-
-    public int size() {
-        throw new UnsupportedOperationException();
     }
 
     private void initMessageQueueStorage() throws SQLException {
@@ -723,6 +725,5 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
 
         public static String SQL_MIN_ID_INCREMENT = "UPDATE " + TABLE_NAME_MINID + " SET minID = minID+1 WHERE minID =";
 
-    }
-
+    }  
 }
