@@ -16,15 +16,19 @@
  */
 package org.apache.airavata.registry.api.user;
 
+import java.security.Principal;
+import java.util.Iterator;
+
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
-import java.security.Principal;
-import java.util.Iterator;
+
+import org.apache.airavata.registry.api.impl.JCRRegistry;
 
 
 public interface UserManager {
 
+	
     /**
      * Filter flag indicating that only <code>User</code>s should be searched
      * and returned.
@@ -51,7 +55,7 @@ public interface UserManager {
      * @throws RepositoryException If an error occurs.
      * @see Authorizable#getID()
      */
-    Authorizable getAuthorizable(Session session, String id) throws RepositoryException;
+    Authorizable getAuthorizable(String id) throws RepositoryException;
 
     /**
      * Get the Authorizable by its main Principal.
@@ -60,7 +64,7 @@ public interface UserManager {
      * @return Authorizable or <code>null</code>, if not present.
      * @throws RepositoryException If an error occurs.
      */
-    Authorizable getAuthorizable(Session session, Principal principal)
+    Authorizable getAuthorizable(Principal principal)
             throws RepositoryException;
 
     /**
@@ -75,7 +79,7 @@ public interface UserManager {
      * @throws RepositoryException If an error occurs.
      * @see Authorizable#getProperty(String)
      */
-    Iterator<Authorizable> findAuthorizables(Session session, String propertyName,
+    Iterator<Authorizable> findAuthorizables(String propertyName,
             String value) throws RepositoryException;
 
     /**
@@ -96,7 +100,7 @@ public interface UserManager {
      * @return An iterator of <code>Authorizable</code>.
      * @throws RepositoryException If an error occurs.
      */
-    Iterator<Authorizable> findAuthorizables(Session session, String propertyName,
+    Iterator<Authorizable> findAuthorizables(String propertyName,
             String value, int searchType) throws RepositoryException;
 
     /**
@@ -113,7 +117,7 @@ public interface UserManager {
      * in use or another Authorizable with the same principal name exists.
      * @throws RepositoryException If another error occurs.
      */
-    User createUser(Session session, String userID, String password)
+    User createUser(String userID, String password)
             throws AuthorizableExistsException, RepositoryException;
 
     /**
@@ -133,7 +137,7 @@ public interface UserManager {
      * @throws RepositoryException If the current Session is
      * not allowed to create users or some another error occurs.
      */
-    User createUser(Session session, String userID, String password,
+    User createUser(String userID, String password,
             Principal principal, String intermediatePath)
             throws AuthorizableExistsException, RepositoryException;
 
@@ -149,7 +153,7 @@ public interface UserManager {
      * in use with another Authorizable.
      * @throws RepositoryException If another error occurs.
      */
-    Group createGroup(Session session, Principal principal)
+    Group createGroup(Principal principal)
             throws AuthorizableExistsException, RepositoryException;
 
     /**
@@ -165,7 +169,7 @@ public interface UserManager {
      * in use with another Authorizable.
      * @throws RepositoryException If another error occurs.
      */
-    Group createGroup(Session session, Principal principal, String intermediatePath)
+    Group createGroup(Principal principal, String intermediatePath)
             throws AuthorizableExistsException, RepositoryException;
 
     /**
@@ -183,7 +187,7 @@ public interface UserManager {
      * @throws RepositoryException 
      * @see #autoSave(boolean)
      */
-    boolean isAutoSave(Session session) throws RepositoryException;
+    boolean isAutoSave() throws RepositoryException;
 
     /**
      * Changes the auto save behavior of this <code>UserManager</code>.
@@ -198,7 +202,11 @@ public interface UserManager {
      * does not allow to change the auto save behavior.
      * @throws RepositoryException If some other error occurs.
      */
-    void autoSave(Session session, boolean enable)
+    void autoSave(boolean enable)
             throws UnsupportedRepositoryOperationException,
             RepositoryException;
+    
+    void setRepository(JCRRegistry repository);
+    
+    JCRRegistry getRepository();
 }

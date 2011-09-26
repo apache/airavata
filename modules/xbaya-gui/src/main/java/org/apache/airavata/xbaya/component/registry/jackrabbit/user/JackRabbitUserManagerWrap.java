@@ -8,6 +8,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
 
+import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.registry.api.user.Authorizable;
 import org.apache.airavata.registry.api.user.AuthorizableExistsException;
 import org.apache.airavata.registry.api.user.Group;
@@ -17,79 +18,123 @@ import org.apache.airavata.registry.api.user.UserManagerFactory;
 import org.apache.jackrabbit.api.JackrabbitSession;
 
 public class JackRabbitUserManagerWrap extends AbstractJackRabbitUMComponent implements UserManager {
-
+	private JCRRegistry repository;
+	private Session tempSession;
 	static{
-		UserManagerFactory.registerUserManager("org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", JackRabbitUserManagerWrap.class);
+		UserManagerFactory.registerUserManager("Jackrabbit", JackRabbitUserManagerWrap.class);
 	}
 	
 	@Override
-	public User createUser(Session session, String userID, String password)
+	public User createUser(String userID, String password)
 			throws AuthorizableExistsException, RepositoryException {
-		org.apache.jackrabbit.api.security.user.User user = getJackRabbitUserManager(session).createUser(userID, password);
+		createSession();
+		org.apache.jackrabbit.api.security.user.User user = getJackRabbitUserManager().createUser(userID, password);
+		closeSession();
 		return new JackRabbitUserWrap(user);
 	}
 
 	@Override
-	public User createUser(Session session, String userID, String password,
+	public User createUser(String userID, String password,
 			Principal principal, String intermediatePath)
 			throws AuthorizableExistsException, RepositoryException {
-		org.apache.jackrabbit.api.security.user.User user = getJackRabbitUserManager(session).createUser(userID, password,principal,intermediatePath);
+		createSession();
+		org.apache.jackrabbit.api.security.user.User user = getJackRabbitUserManager().createUser(userID, password,principal,intermediatePath);
+		closeSession();
 		return new JackRabbitUserWrap(user);
 	}
 
 	@Override
-	public Group createGroup(Session session, Principal principal)
+	public Group createGroup(Principal principal)
 			throws AuthorizableExistsException, RepositoryException {
-		org.apache.jackrabbit.api.security.user.Group group = getJackRabbitUserManager(session).createGroup(principal);
+		createSession();
+		org.apache.jackrabbit.api.security.user.Group group = getJackRabbitUserManager().createGroup(principal);
+		closeSession();
 		return new JackRabbitGroupWrap(group);
 	}
 
 	@Override
-	public Group createGroup(Session session, Principal principal,
+	public Group createGroup(Principal principal,
 			String intermediatePath) throws AuthorizableExistsException,
 			RepositoryException {
-		return new JackRabbitGroupWrap(getJackRabbitUserManager(session).createGroup(principal, intermediatePath));
+		createSession();
+		org.apache.jackrabbit.api.security.user.Group group = getJackRabbitUserManager().createGroup(principal, intermediatePath);
+		closeSession();
+		return new JackRabbitGroupWrap(group);
 	}
 
-	private org.apache.jackrabbit.api.security.user.UserManager getJackRabbitUserManager(Session session) throws AccessDeniedException, UnsupportedRepositoryOperationException, RepositoryException{
-		return ((JackrabbitSession) session).getUserManager(); 
+	private org.apache.jackrabbit.api.security.user.UserManager getJackRabbitUserManager() throws AccessDeniedException, UnsupportedRepositoryOperationException, RepositoryException{
+		return ((JackrabbitSession) tempSession).getUserManager(); 
 	}
 
 	@Override
-	public Authorizable getAuthorizable(Session session, String id)
+	public Authorizable getAuthorizable(String id)
 			throws RepositoryException {
-		return new JackRabbitAuthorizableWrap(getJackRabbitUserManager(session).getAuthorizable(id));
+		createSession();
+		org.apache.jackrabbit.api.security.user.Authorizable authorizable = getJackRabbitUserManager().getAuthorizable(id);
+		closeSession();
+		return new JackRabbitAuthorizableWrap(authorizable);
 	}
 
 	@Override
-	public Authorizable getAuthorizable(Session session, Principal principal)
+	public Authorizable getAuthorizable(Principal principal)
 			throws RepositoryException {
-		return new JackRabbitAuthorizableWrap(getJackRabbitUserManager(session).getAuthorizable(principal));
+		createSession();
+		org.apache.jackrabbit.api.security.user.Authorizable authorizable = getJackRabbitUserManager().getAuthorizable(principal);
+		closeSession();
+		return new JackRabbitAuthorizableWrap(authorizable);
 	}
 
 	@Override
-	public Iterator<Authorizable> findAuthorizables(Session session,
-			String propertyName, String value) throws RepositoryException {
-		Iterator<org.apache.jackrabbit.api.security.user.Authorizable> authorizables = getJackRabbitUserManager(session).findAuthorizables(propertyName, value);
+	public Iterator<Authorizable> findAuthorizables(String propertyName, String value) throws RepositoryException {
+		createSession();
+		Iterator<org.apache.jackrabbit.api.security.user.Authorizable> authorizables = getJackRabbitUserManager().findAuthorizables(propertyName, value);
+		closeSession();
 		return getAuthorizableList(authorizables).iterator();
 	}
 
 	@Override
-	public Iterator<Authorizable> findAuthorizables(Session session,
-			String propertyName, String value, int searchType)
+	public Iterator<Authorizable> findAuthorizables(String propertyName, String value, int searchType)
 			throws RepositoryException {
-		Iterator<org.apache.jackrabbit.api.security.user.Authorizable> authorizables = getJackRabbitUserManager(session).findAuthorizables(propertyName, value,searchType);
+		createSession();
+		Iterator<org.apache.jackrabbit.api.security.user.Authorizable> authorizables = getJackRabbitUserManager().findAuthorizables(propertyName, value,searchType);
+		closeSession();
 		return getAuthorizableList(authorizables).iterator();
 	}
 
 	@Override
-	public boolean isAutoSave(Session session) throws RepositoryException{
-		return getJackRabbitUserManager(session).isAutoSave();
+	public boolean isAutoSave() throws RepositoryException{
+		createSession();
+		boolean autoSave = getJackRabbitUserManager().isAutoSave();
+		closeSession();
+		return autoSave;
 	}
 
 	@Override
-	public void autoSave(Session session, boolean enable)
+	public void autoSave(boolean enable)
 			throws UnsupportedRepositoryOperationException, RepositoryException {
-		getJackRabbitUserManager(session).autoSave(enable);
+		createSession();
+		getJackRabbitUserManager().autoSave(enable);
+		closeSession();
+	}
+
+	@Override
+	public void setRepository(JCRRegistry repository) {
+		this.repository=repository;
+	}
+
+	@Override
+	public JCRRegistry getRepository() {
+		return repository;
+	}
+	
+	private Session createSession() throws RepositoryException{
+		tempSession = getRepository().getSession();
+		return tempSession;
+	}
+	
+	private void closeSession(){
+		if (tempSession != null && tempSession.isLive()) {
+			tempSession.logout();
+		}
 	}
 }

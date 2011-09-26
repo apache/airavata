@@ -22,8 +22,10 @@
 package org.apache.airavata.xbaya.component.gui;
 
 import java.awt.event.ActionEvent;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -56,6 +58,8 @@ public class JCRRegistryWindow {
     private JPasswordField passwordTextField;
 
 	private XBayaLinkButton newUserButton;
+
+	private NewJCRRegistryUserDialog newUserWindow;
 
     /**
      * @param engine
@@ -102,7 +106,24 @@ public class JCRRegistryWindow {
     }
 
     private void createNewUser(){
-    	
+		URL specifiedURL = null;
+		try {
+			specifiedURL = new URL(urlTextField.getText());
+		} catch (MalformedURLException e1) {
+			//the text box contains invalid url, we'll just ignore it
+		}
+    	if (newUserWindow == null) {
+			newUserWindow = new NewJCRRegistryUserDialog(engine);
+		}
+		newUserWindow.setUrl(specifiedURL);
+		newUserWindow.setUsername(usernameTextField.getText());
+		newUserWindow.updateControlData();
+		newUserWindow.show();
+		if (newUserWindow.isUserCreated()){
+			urlTextField.setText(newUserWindow.getUrl().toString());
+			usernameTextField.setText(newUserWindow.getUrl().toString());
+			passwordTextField.setText(newUserWindow.getPassword());
+		}
     }
     
     /**
