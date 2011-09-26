@@ -22,13 +22,11 @@
 package org.apache.airavata.wsmg.messenger.strategy.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.airavata.wsmg.broker.ConsumerInfo;
 import org.apache.airavata.wsmg.commons.OutGoingMessage;
@@ -45,10 +43,9 @@ public class ParallelSender implements SendingStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(ParallelSender.class);
 
-    private ConcurrentHashMap<String, ParallelConsumerHandler> activeConsumerHanders = new ConcurrentHashMap<String, ParallelConsumerHandler>();
+    private HashMap<String, ConsumerHandler> activeConsumerHanders = new HashMap<String, ConsumerHandler>();
 
     private ExecutorService threadPool;
-    private long consumerHandlerIdCounter;
 
     public void init() {
         this.threadPool = Executors.newCachedThreadPool();
@@ -75,78 +72,63 @@ public class ParallelSender implements SendingStrategy {
         LightweightMsg lwm = new LightweightMsg(consumer, message.getTextMessage(),
                 message.getAdditionalMessageContent());
 
-        ParallelConsumerHandler handler = activeConsumerHanders.get(consumerUrl);
-        if (handler == null || !handler.isActive()) {
-            handler = new ParallelConsumerHandler(consumerHandlerIdCounter++, consumerUrl, deliverable);
-            activeConsumerHanders.put(consumerUrl, handler);
-            handler.submitMessage(lwm);
-            threadPool.submit(handler);
-        } else {
-            handler.submitMessage(lwm);
+        synchronized (activeConsumerHanders) {
+            ConsumerHandler handler = activeConsumerHanders.get(consumerUrl);
+            if (handler == null) {
+                handler = new ParallelConsumerHandler(consumerUrl, deliverable);
+                activeConsumerHanders.put(consumerUrl, handler);
+                handler.submitMessage(lwm);
+                threadPool.submit(handler);
+            } else {
+                handler.submitMessage(lwm);
+            }
         }
     }
 
     public void removeFromList(ConsumerHandler h) {
-        if (!activeConsumerHanders.remove(h.getConsumerUrl(), h)) {
-            log.debug(String.format("inactive consumer handler " + "is already removed: id %d, url : %s", h.getId(),
-                    h.getConsumerUrl()));
+        synchronized (activeConsumerHanders) {
+            if (activeConsumerHanders.remove(h.getConsumerUrl()) != null) {
+                log.debug(String.format("inactive consumer handler is already removed: url : %s", h.getConsumerUrl()));
+            }
         }
     }
 
     class ParallelConsumerHandler extends ConsumerHandler {
 
-        private ReadWriteLock activeLock = new ReentrantReadWriteLock();
-
         private static final int MAX_UNSUCCESSFULL_DRAINS = 3;
         private static final int SLEEP_TIME_SECONDS = 1;
         private int numberOfUnsuccessfullDrainAttempts = 0;
 
-        private boolean active;
-
-        public ParallelConsumerHandler(long handlerId, String url, Deliverable deliverable) {
-            super(handlerId, url, deliverable);
-        }
-
-        public boolean isActive() {
-            boolean ret = false;
-            activeLock.readLock().lock();
-            try {
-                ret = active;
-            } finally {
-                activeLock.readLock().unlock();
-            }
-            return ret;
+        public ParallelConsumerHandler(String url, Deliverable deliverable) {
+            super(url, deliverable);
         }
 
         public void run() {
-            this.active = true;
-
-            log.debug(String.format("starting consumer handler: id :%d, url : %s", getId(), getConsumerUrl()));
+            log.debug(String.format("ParallelConsumerHandler starting: %s", getConsumerUrl()));
 
             ArrayList<LightweightMsg> localList = new ArrayList<LightweightMsg>();
-            while (active) {
+            while (true) {
 
-                int drainedMsgs = 0;
-                try {
-                    activeLock.writeLock().lock();
+                /*
+                 * Try to find more message to send out
+                 */
+                if (queue.drainTo(localList) <= 0) {
+                    numberOfUnsuccessfullDrainAttempts++;
+                } else {
+                    numberOfUnsuccessfullDrainAttempts = 0;
+                }
 
-                    drainedMsgs = queue.drainTo(localList);
+                /*
+                 * No new message for sometimes
+                 */
+                if (numberOfUnsuccessfullDrainAttempts >= MAX_UNSUCCESSFULL_DRAINS) {
+                    log.debug(String.format("ParallelConsumerHandler inactivating, %s", getConsumerUrl()));
+                    numberOfUnsuccessfullDrainAttempts = 0;
 
-                    if (drainedMsgs <= 0) {
-                        numberOfUnsuccessfullDrainAttempts++;
-                    } else {
-                        numberOfUnsuccessfullDrainAttempts = 0;
-                    }
-
-                    if (numberOfUnsuccessfullDrainAttempts >= MAX_UNSUCCESSFULL_DRAINS) {
-                        log.debug(String.format("inactivating, %d", getId()));
-                        active = false;
-                        numberOfUnsuccessfullDrainAttempts = 0;
-                        break;
-                    }
-
-                } finally {
-                    activeLock.writeLock().unlock();
+                    log.debug(String.format("ParallelConsumerHandler done: %s,",
+                            getConsumerUrl()));
+                    removeFromList(this);
+                    break;
                 }
 
                 send(localList);
@@ -156,11 +138,6 @@ public class ParallelSender implements SendingStrategy {
                     waitForMessages();
                 }
             }
-
-            log.debug(String.format("calling on completion from : %d,", getId()));
-
-            removeFromList(this);
-
         }
 
         private void waitForMessages() {
