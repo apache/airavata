@@ -54,19 +54,14 @@ public class FixedParallelSender implements SendingStrategy {
     }
 
     public void addMessageToSend(OutGoingMessage outMessage, Deliverable deliverable) {
-        distributeOverConsumerQueues(outMessage, deliverable);
+        List<ConsumerInfo> consumerInfoList = outMessage.getConsumerInfoList();
+        for (ConsumerInfo consumer : consumerInfoList) {
+            sendToConsumerHandler(consumer, outMessage, deliverable);
+        }
     }
 
     public void shutdown() {
         threadPool.shutdown();
-    }
-
-    public void distributeOverConsumerQueues(OutGoingMessage message, Deliverable deliverable) {
-        List<ConsumerInfo> consumerInfoList = message.getConsumerInfoList();
-
-        for (ConsumerInfo consumer : consumerInfoList) {
-            sendToConsumerHandler(consumer, message, deliverable);
-        }
     }
 
     private void sendToConsumerHandler(ConsumerInfo consumer, OutGoingMessage message, Deliverable deliverable) {
@@ -89,14 +84,6 @@ public class FixedParallelSender implements SendingStrategy {
         }
     }
 
-    public void removeFromList(ConsumerHandler h) {
-        synchronized (activeConsumerHanders) {
-            if (activeConsumerHanders.remove(h.getConsumerUrl()) != null) {
-                log.debug(String.format("inactive consumer handler is already removed: url : %s", h.getConsumerUrl()));
-            }
-        }
-    }
-
     class FixedParallelConsumerHandler extends ConsumerHandler {
 
         public FixedParallelConsumerHandler(String url, Deliverable deliverable) {
@@ -112,16 +99,20 @@ public class FixedParallelSender implements SendingStrategy {
             queue.drainTo(localList, batchSize);
 
             send(localList);
-            localList.clear();
-
-            log.debug(String.format("FixedParallelConsumerHandler done: %s,", getConsumerUrl()));
+            localList.clear();            
 
             /*
-             * Remove handler if there is no message
+             * Remove handler if and only if there is no message
              */
-            if (queue.size() == 0) {
-                removeFromList(this);
+            synchronized (activeConsumerHanders) {
+                if (queue.size() == 0) {
+                    if (activeConsumerHanders.remove(getConsumerUrl()) != null) {
+                        log.debug(String.format("Consumer handler is already removed: %s", getConsumerUrl()));
+                    }                    
+                }
             }
+            
+            log.debug(String.format("FixedParallelConsumerHandler done: %s,", getConsumerUrl()));
         }
     }
 }

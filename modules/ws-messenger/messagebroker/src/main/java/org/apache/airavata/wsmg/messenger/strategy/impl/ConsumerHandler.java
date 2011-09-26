@@ -38,35 +38,18 @@ public abstract class ConsumerHandler implements Runnable {
     
     protected LinkedBlockingQueue<LightweightMsg> queue = new LinkedBlockingQueue<LightweightMsg>();
 
-    private final String id;
-
     private String consumerUrl;
 
     private Deliverable deliverable;
 
     public ConsumerHandler(String url, Deliverable deliverable) {
-        this.id = UUID.randomUUID().toString();
         this.consumerUrl = url;
         this.deliverable = deliverable;
     }
     
     public String getConsumerUrl() {
         return consumerUrl;
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof ConsumerHandler) {
-            ConsumerHandler h = (ConsumerHandler) o;
-            return this.id.equals(h.id);            
-        }
-        return false;
-    }     
-
-    @Override
-    public int hashCode() {
-        return this.id.hashCode();        
-    }
+    }   
 
     public void submitMessage(LightweightMsg msg) {
         try {
