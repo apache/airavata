@@ -25,8 +25,9 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.registry.api.impl.JCRRegistry;
+import org.apache.airavata.registry.api.user.UserManager;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 
 public class JCRComponentRegistry extends ComponentRegistry {
@@ -38,15 +39,18 @@ public class JCRComponentRegistry extends ComponentRegistry {
     public JCRComponentRegistry(URI url, String username, String password) {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("org.apache.jackrabbit.repository.uri", url.toString());
-        registerUserManagers();
         this.registry = new JCRRegistry("org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", username,
                 password, map);
     }
 
+    static {
+        registerUserManagers();
+    }
+    
 	/**
 	 * to manually trigger user manager registrations
 	 */
-    private void registerUserManagers() {
+    private static void registerUserManagers() {
 		try {
 			Class.forName("org.apache.airavata.xbaya.component.registry.jackrabbit.user.JackRabbitUserManagerWrap");
 		} catch (ClassNotFoundException e) {
@@ -82,4 +86,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
         return this.registry.getGFacDescriptorList();
     }
 
+    public UserManager getUserManager(){
+    	return registry.getUserManager();
+    }
 }

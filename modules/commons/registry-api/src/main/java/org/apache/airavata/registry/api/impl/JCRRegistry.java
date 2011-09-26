@@ -71,7 +71,8 @@ public class JCRRegistry implements Axis2Registry {
 			repository = repositoryFactory.getRepository(map);
 			credentials = new SimpleCredentials(user,
 					new String(pass).toCharArray());
-			userManager = UserManagerFactory.getUserManager(className);
+			setUserManager(UserManagerFactory.getUserManager(repository.getDescriptor(Repository.REP_NAME_DESC)));
+			getUserManager().setRepository(this);
 		} catch (ClassNotFoundException e) {
 			log.error("Error class path settting", e);
 		} catch (RepositoryException e) {
@@ -86,7 +87,7 @@ public class JCRRegistry implements Axis2Registry {
         this.credentials = credentials;
     }
 
-	private Session getSession() throws RepositoryException {
+	public Session getSession() throws RepositoryException {
 		return repository.login(credentials);
 	}
 
@@ -495,6 +496,14 @@ public class JCRRegistry implements Axis2Registry {
         }
         return urlList;
     }
+
+	public UserManager getUserManager() {
+		return userManager;
+	}
+
+	public void setUserManager(UserManager userManager) {
+		this.userManager = userManager;
+	}
 
 
 }
