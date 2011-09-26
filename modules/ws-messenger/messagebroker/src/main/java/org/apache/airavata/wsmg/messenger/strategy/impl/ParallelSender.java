@@ -52,20 +52,16 @@ public class ParallelSender implements SendingStrategy {
     }
 
     public void addMessageToSend(OutGoingMessage outMessage, Deliverable deliverable) {
-        distributeOverConsumerQueues(outMessage, deliverable);
+        List<ConsumerInfo> consumerInfoList = outMessage.getConsumerInfoList();
+        for (ConsumerInfo consumer : consumerInfoList) {
+            sendToConsumerHandler(consumer, outMessage, deliverable);
+        }
     }
 
     public void shutdown() {
         threadPool.shutdown();
     }
-
-    public void distributeOverConsumerQueues(OutGoingMessage message, Deliverable deliverable) {
-        List<ConsumerInfo> consumerInfoList = message.getConsumerInfoList();
-        for (ConsumerInfo consumer : consumerInfoList) {
-            sendToConsumerHandler(consumer, message, deliverable);
-        }
-    }
-
+    
     private void sendToConsumerHandler(ConsumerInfo consumer, OutGoingMessage message, Deliverable deliverable) {
         String consumerUrl = consumer.getConsumerEprStr();
 
@@ -85,19 +81,11 @@ public class ParallelSender implements SendingStrategy {
         }
     }
 
-    public void removeFromList(ConsumerHandler h) {
-        synchronized (activeConsumerHanders) {
-            if (activeConsumerHanders.remove(h.getConsumerUrl()) != null) {
-                log.debug(String.format("inactive consumer handler is already removed: url : %s", h.getConsumerUrl()));
-            }
-        }
-    }
-
     class ParallelConsumerHandler extends ConsumerHandler {
 
-        private static final int MAX_UNSUCCESSFULL_DRAINS = 3;
+        private static final int MAX_UNSUCCESSFUL_DRAINS = 3;
         private static final int SLEEP_TIME_SECONDS = 1;
-        private int numberOfUnsuccessfullDrainAttempts = 0;
+        private int numberOfUnsuccessfulDrain = 0;
 
         public ParallelConsumerHandler(String url, Deliverable deliverable) {
             super(url, deliverable);
@@ -113,28 +101,33 @@ public class ParallelSender implements SendingStrategy {
                  * Try to find more message to send out
                  */
                 if (queue.drainTo(localList) <= 0) {
-                    numberOfUnsuccessfullDrainAttempts++;
+                    numberOfUnsuccessfulDrain++;
                 } else {
-                    numberOfUnsuccessfullDrainAttempts = 0;
+                    numberOfUnsuccessfulDrain = 0;
                 }
 
                 /*
                  * No new message for sometimes
                  */
-                if (numberOfUnsuccessfullDrainAttempts >= MAX_UNSUCCESSFULL_DRAINS) {
-                    log.debug(String.format("ParallelConsumerHandler inactivating, %s", getConsumerUrl()));
-                    numberOfUnsuccessfullDrainAttempts = 0;
-
-                    log.debug(String.format("ParallelConsumerHandler done: %s,",
-                            getConsumerUrl()));
-                    removeFromList(this);
-                    break;
+                if (numberOfUnsuccessfulDrain >= MAX_UNSUCCESSFUL_DRAINS) {
+                    /*
+                     * Stop this thread if and only if there is no message
+                     */
+                    synchronized (activeConsumerHanders) {
+                        if (queue.size() == 0) {                             
+                            if (activeConsumerHanders.remove(getConsumerUrl()) != null) {
+                                log.debug(String.format("Consumer handler is already removed: %s", getConsumerUrl()));
+                            }
+                            log.debug(String.format("ParallelConsumerHandler done: %s,", getConsumerUrl()));
+                            break;
+                        }
+                    }                    
                 }
 
                 send(localList);
                 localList.clear();
 
-                if (numberOfUnsuccessfullDrainAttempts > 0) {
+                if (numberOfUnsuccessfulDrain > 0) {
                     waitForMessages();
                 }
             }
