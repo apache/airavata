@@ -67,6 +67,12 @@ public class XBayaConfiguration {
 
     private URI xRegistryURL = XBayaConstants.DEFAULT_XREGISTRY_URL;
 
+    private URI registryURL = XBayaConstants.REGISTRY_URL;
+
+    private String regigstryUserName = XBayaConstants.REGISTRY_USERNAME;
+
+    private String registryPassphrase = XBayaConstants.REGISTRY_PASSPHRASE;
+
     private URI dscURL = XBayaConstants.DEFAULT_DSC_URL;
 
     // Monitor related
@@ -753,5 +759,17 @@ public class XBayaConfiguration {
 
     public void setJcrComponentRegistry(JCRComponentRegistry jcrComponentRegistry) {
         this.jcrComponentRegistry = jcrComponentRegistry;
+    }
+
+    public void setRegistryURL(URI registryURL) {
+        this.registryURL = registryURL;
+    }
+
+    public void setRegigstryUserName(String regigstryUserName) {
+        this.regigstryUserName = regigstryUserName;
+    }
+
+    public void setRegistryPassphrase(String registryPassphrase) {
+        this.registryPassphrase = registryPassphrase;
     }
 }
