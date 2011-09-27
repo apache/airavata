@@ -25,6 +25,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.registry.api.user.UserManager;
@@ -88,5 +89,10 @@ public class JCRComponentRegistry extends ComponentRegistry {
 
     public UserManager getUserManager(){
     	return registry.getUserManager();
+    }
+    
+    public String saveDeploymentDescription(String service, String host,
+			ApplicationDeploymentDescription app){
+    	return registry.saveDeploymentDescription(service, host, app);
     }
 }

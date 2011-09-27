@@ -23,16 +23,17 @@ package org.apache.airavata.xbaya.appwrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.NameValidator;
 import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaComboBox;
@@ -83,10 +84,6 @@ public class ApplicationDescriptionRegistrationWindow {
     private XBayaTextField tempDirTextField;
     private XBayaLabel workDirectoryLabel;
     private XBayaTextField workDirectoryTextField;
-
-    private boolean isEditing = false;
-
-    private ApplicationBean editingAppBean;
 
     private static ApplicationDescriptionRegistrationWindow window;
 
@@ -154,8 +151,6 @@ public class ApplicationDescriptionRegistrationWindow {
      * @param appBean
      */
     public void initTextField(ApplicationBean appBean) {
-        this.isEditing = true;
-        this.editingAppBean = appBean;
         this.applicationNameTextField.setText(appBean.getApplicationName());
         this.hostNameComboBox.setSelectedItem(appBean.getHostName());
         this.executableTextField.setText(appBean.getExecutable());
@@ -313,41 +308,41 @@ public class ApplicationDescriptionRegistrationWindow {
             }
 
             /* Generate Bean Object */
-            ApplicationBean appBean = new ApplicationBean();
-            appBean.setApplicationName(StringUtil.trimSpaceInString(this.applicationNameTextField.getText()));
-            appBean.setHostName(StringUtil.trimSpaceInString(this.hostNameComboBox.getText()));
-            appBean.setExecutable(StringUtil.trimSpaceInString(this.executableTextField.getText()));
-            appBean.setWorkDir(StringUtil.trimSpaceInString(this.workDirectoryTextField.getText()));
-            appBean.setTmpDir(StringUtil.trimSpaceInString(this.tempDirTextField.getText()));
+			String hostName = StringUtil.trimSpaceInString(this.hostNameComboBox.getText());
+			String projectName = StringUtil.trimSpaceInString(this.projectNameComboBox.getText());
+			String jobType = StringUtil.trimSpaceInString(this.jobTypeComboBox.getText());
+			String queue = StringUtil.trimSpaceInString(this.queueTextField.getText());
+			Integer maxWallTime = null;
+			if (!this.maxWallTimeTextField.getText().equals("")) {
+				maxWallTime = new Integer(
+						Integer.parseInt(this.maxWallTimeTextField.getText()));
+			}
+			Integer pCount = null;
+			if (!this.procsCountTextField.getText().equals("")) {
+				pCount = new Integer(Integer.parseInt(this.procsCountTextField
+						.getText()));
+			}
+            
+            ShellApplicationDeployment shellApplicationDeployment = new ShellApplicationDeployment();
+            shellApplicationDeployment.setName(StringUtil.trimSpaceInString(this.applicationNameTextField.getText()));
+            shellApplicationDeployment.setExecutable(StringUtil.trimSpaceInString(this.executableTextField.getText()));
+            shellApplicationDeployment.setWorkingDir(StringUtil.trimSpaceInString(this.workDirectoryTextField.getText()));
+            shellApplicationDeployment.setTmpDir(StringUtil.trimSpaceInString(this.tempDirTextField.getText()));
 
-            appBean.setProjectName(StringUtil.trimSpaceInString(this.projectNameComboBox.getText()));
-            appBean.setJobType(StringUtil.trimSpaceInString(this.jobTypeComboBox.getText()));
-            appBean.setQueue(StringUtil.trimSpaceInString(this.queueTextField.getText()));
-            if (!this.maxWallTimeTextField.getText().equals("")) {
-                appBean.setMaxWallTime(new Integer(Integer.parseInt(this.maxWallTimeTextField.getText())));
+            Map<String, String> env = shellApplicationDeployment.getEnv();
+            env.put("ProjectName",projectName);
+    		env.put("JobType",jobType);
+			env.put("Queue",queue);
+			env.put("HostName",hostName);
+            if (maxWallTime!=null) {
+            	env.put("MaxWallTime",maxWallTime.toString());
             }
-            if (!this.procsCountTextField.getText().equals("")) {
-                appBean.setPcount(new Integer(Integer.parseInt(this.procsCountTextField.getText())));
+            if (pCount!=null) {
+            	env.put("Pcount",pCount.toString());
             }
-
-            /* Register to XRegistry */
-            XRegistryAccesser xRegAccesser = new XRegistryAccesser(this.engine);
-
-            if (!this.isEditing) {
-                xRegAccesser.registerApplication(appBean);
-            } else {
-                /* Delete old application bean */
-                QName qName = new QName(this.editingAppBean.getObjectNamespace(),
-                        this.editingAppBean.getApplicationName());
-                xRegAccesser.deleteAppDescription(qName, this.editingAppBean.getHostName());
-
-                /* Register new application bean */
-                xRegAccesser.registerApplication(appBean);
-
-                this.isEditing = false;
-                this.addApplicationButton.setText("Add Application");
-            }
-
+            
+            /*--- save to registry ---*/
+            this.engine.getConfiguration().getJcrComponentRegistry().saveDeploymentDescription(projectName, hostName, shellApplicationDeployment);
         } catch (Exception e) {
             e.printStackTrace();
             this.hide();
@@ -363,7 +358,6 @@ public class ApplicationDescriptionRegistrationWindow {
     }// GEN-LAST:event_addApplicationButtonActionPerformed
 
     private void cancelButtonActionPerformed() {// GEN-FIRST:event_cancelButtonActionPerformed
-        this.isEditing = false;
         this.addApplicationButton.setText("Add Application");
         clearAllTextFields();
         this.hide();

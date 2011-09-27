@@ -33,6 +33,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
+import org.apache.airavata.xbaya.XBayaConfiguration;
+import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryLoader;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
@@ -99,7 +101,11 @@ public class JCRRegistryWindow {
         }
 
         JCRComponentRegistry registry = new JCRComponentRegistry(url, username, password);
-        this.engine.getConfiguration().setJcrComponentRegistry(registry);
+        XBayaConfiguration configuration = this.engine.getConfiguration();
+        configuration.setJcrComponentRegistry(registry);
+        configuration.setRegigstryUserName(username);
+        configuration.setRegistryPassphrase(password);
+        configuration.setRegistryURL(url);
         hide();
 
         this.loader.load(registry);
@@ -136,7 +142,9 @@ public class JCRRegistryWindow {
         XBayaLabel urlLabel = new XBayaLabel("URL", this.urlTextField);
         XBayaLabel nameLabel = new XBayaLabel("Username", this.usernameTextField);
         XBayaLabel passLabel = new XBayaLabel("Password", this.usernameTextField);
-        
+        urlLabel.setText(XBayaConstants.REGISTRY_URL.toASCIIString());
+        nameLabel.setText(XBayaConstants.REGISTRY_USERNAME);
+        passLabel.setText(XBayaConstants.REGISTRY_PASSPHRASE);
         this.newUserButton = new XBayaLinkButton("Create new user...");
         newUserButton.setHorizontalAlignment(XBayaLinkButton.RIGHT);
         JLabel emptyLabel = new JLabel("");
