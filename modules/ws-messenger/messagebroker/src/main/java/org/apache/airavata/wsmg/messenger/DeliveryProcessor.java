@@ -26,18 +26,18 @@ import org.apache.airavata.wsmg.messenger.strategy.SendingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeliveryProcessor{
+public class DeliveryProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(DeliveryProcessor.class);
-    
+
     private SendingStrategy strategy;
     private Deliverable deliverable;
-    
+
     private boolean running;
     private Thread t;
 
     public DeliveryProcessor(Deliverable deliverable, SendingStrategy strategy) {
-        this.strategy = strategy;       
+        this.strategy = strategy;
         this.deliverable = deliverable;
     }
 
@@ -49,15 +49,19 @@ public class DeliveryProcessor{
 
     public void stop() {
         this.running = false;
-        
-        try{
-            this.t.join();
-        }catch(InterruptedException ie){
-            logger.error("Wait for sending thread to finish (join) is interrupted");
+
+        if (this.t != null) {
+            this.t.interrupt();
+
+            try {
+                this.t.join();
+            } catch (InterruptedException ie) {
+                logger.error("Wait for sending thread to finish (join) is interrupted");
+            }
         }
-        
+
         WSMGParameter.OUT_GOING_QUEUE.dispose();
-    }        
+    }
 
     private class CheckingAndSending implements Runnable {
 
@@ -79,6 +83,7 @@ public class DeliveryProcessor{
                     logger.error("Unexpected_exception:", e);
                 }
             }
+            logger.debug("Shutdown Strategy");
             strategy.shutdown();
         }
     }

@@ -55,6 +55,7 @@ public class MessengerServlet extends HttpServlet {
     private static final long DEFAULT_SOCKET_TIME_OUT = 20000l;
 
     private DeliveryProcessor proc;
+    private ConsumerUrlManager urlManager;
 
     public void init(ServletConfig config) throws ServletException {
         logger.info("Starting messenger servlet");
@@ -112,7 +113,7 @@ public class MessengerServlet extends HttpServlet {
         /*
          * Create Deliverable
          */
-        ConsumerUrlManager urlManager = new ConsumerUrlManager(configMan);
+        urlManager = new ConsumerUrlManager(configMan);
         Deliverable senderUtils = new SenderUtils(urlManager);
         senderUtils.setProtocol(protocol);
 
@@ -126,6 +127,11 @@ public class MessengerServlet extends HttpServlet {
         if (proc != null) {
             proc.stop();
         }
+        if(urlManager != null){
+            urlManager.stop();
+            urlManager = null;
+        }
+        logger.info("wsmg-messenger shut down");
     }
 
     public ServletConfig getServletConfig() {

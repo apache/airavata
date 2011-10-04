@@ -285,6 +285,8 @@ public class ConnectionPool {
      * regarding when the connections are closed.
      */
     public synchronized void dispose() {
+        logger.info("Connection Pool Shutting down");
+        
         // stop clean up thread
         this.stop = true;
         this.clenupThread.interrupt();
@@ -299,12 +301,16 @@ public class ConnectionPool {
         busyConnections = new Stack<Connection>();
         lastAccessTimeRecord.clear();
 
+        logger.info("All connection is closed");
+        
         try {
             this.clenupThread.join();
             this.producerThread.join();
         } catch (Exception e) {
             logger.error("Cannot shutdown cleanup thread", e);
         }
+        
+        logger.info("Connection Pool Shutdown");
     }
 
     private void closeConnections(Stack<Connection> connections) {
