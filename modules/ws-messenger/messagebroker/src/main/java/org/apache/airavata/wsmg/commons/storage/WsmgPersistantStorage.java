@@ -246,7 +246,7 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
         }
     }
 
-    public Object blockingDequeue() {
+    public Object blockingDequeue() throws InterruptedException {
         while (true) {
             try {
                 return retrive();
@@ -254,9 +254,6 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
                 logger.error(e.getMessage(), e);
                 e.printStackTrace();
             } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-                e.printStackTrace();
-            } catch (InterruptedException e) {
                 logger.error(e.getMessage(), e);
                 e.printStackTrace();
             }
@@ -438,7 +435,7 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
                 logger.debug("Wait=" + wait);
                 Thread.sleep(wait);
             } catch (InterruptedException e) {
-                logger.error(e.getMessage(), e);
+                logger.error("Queue is interrupted to close");
                 throw e;
             }
         }

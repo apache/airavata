@@ -57,12 +57,19 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
     private static final long DEFAULT_SOCKET_TIME_OUT = 20000l;
     
     private DeliveryProcessor proc;
+    private ConsumerUrlManager urlManager;
 
     public void shutDown(ConfigurationContext arg, AxisService service) {
         log.info("broker shutting down");
         if (proc != null) {
             proc.stop();
+            proc = null;
         }
+        if(urlManager != null){
+            urlManager.stop();
+            urlManager = null;
+        }
+        log.info("broker shut down");
     }
 
     public void startUp(ConfigurationContext configContext, AxisService axisService) {
@@ -201,7 +208,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
         /*
          * Create Deliverable
          */
-        ConsumerUrlManager urlManager = new ConsumerUrlManager(configMan);
+        urlManager = new ConsumerUrlManager(configMan);
         Deliverable senderUtils = new SenderUtils(urlManager);
         senderUtils.setProtocol(protocol);
         

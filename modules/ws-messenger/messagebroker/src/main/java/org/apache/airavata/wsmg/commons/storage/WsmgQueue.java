@@ -28,7 +28,7 @@ public interface WsmgQueue {
 
     void enqueue(Object object, String trackId);
 
-    Object blockingDequeue();
+    Object blockingDequeue() throws InterruptedException;
     
     void dispose();
     

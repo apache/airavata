@@ -61,7 +61,14 @@ public class ConsumerUrlManager {
 
         cleanupTimer = new Timer("Failed consumer url handler", true);
         cleanupTimer.scheduleAtFixedRate(new URLCleanUpTask(), 0, timerThreadInterval);
-
+    }
+    
+    public void stop(){
+        logger.info("Stop ConsumerUrlManager");
+        if(this.cleanupTimer != null){
+            this.cleanupTimer.cancel();
+        }
+        logger.info("ConsumerUrlManager Stopped");
     }
 
     public void onFailedDelivery(EndpointReference consumerEndpointReference, long timeFinished, long timeTaken,
