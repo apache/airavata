@@ -26,13 +26,14 @@ import java.io.StringReader;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XBeansUtil {
 
-    org.apache.log4j.Logger logger = Logger.getLogger(XBeansUtil.class);
+    Logger logger = LoggerFactory.getLogger(XBeansUtil.class);
 
     public XBeansUtil() {
     }

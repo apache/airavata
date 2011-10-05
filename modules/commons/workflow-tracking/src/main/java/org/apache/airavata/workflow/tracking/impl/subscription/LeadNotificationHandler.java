@@ -34,10 +34,11 @@ import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPHeader;
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility for clients to subscribe and receive Lead notifications using new message schema. The agent implements the
@@ -48,7 +49,7 @@ import org.apache.xmlbeans.XmlObject;
  */
 public class LeadNotificationHandler implements ConsumerNotificationHandler {
 
-    private final static org.apache.log4j.Logger logger = Logger.getLogger(LeadNotificationHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(LeadNotificationHandler.class);
 
     private String topic;
 
@@ -135,7 +136,7 @@ public class LeadNotificationHandler implements ConsumerNotificationHandler {
 
                 xc.dispose();
             } catch (XmlException e) {
-                logger.fatal("error parsing message content: " + messageContent, e);
+                logger.error("error parsing message content: " + messageContent, e);
                 e.printStackTrace();
             }
             NotificationType type = MessageUtil.getType(messageObj);

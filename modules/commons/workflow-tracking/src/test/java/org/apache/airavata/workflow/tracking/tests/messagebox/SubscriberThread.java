@@ -28,11 +28,13 @@ import org.apache.airavata.workflow.tracking.client.LeadNotificationManager;
 import org.apache.airavata.workflow.tracking.client.NotificationType;
 import org.apache.airavata.workflow.tracking.client.Subscription;
 import org.apache.airavata.workflow.tracking.tests.ThreadMessagePassingCallback;
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SubscriberThread extends Thread {
 
+    private static final Logger logger = LoggerFactory.getLogger(SubscriberThread.class);
     private ThreadMessagePassingCallback callback;
 
     private int subCount = 0;
@@ -41,7 +43,6 @@ public class SubscriberThread extends Thread {
     private String topic;
     private String messageboxUrl;
     private String msgBoxId;
-    private org.apache.log4j.Logger logger = Logger.getLogger(SubscriberThread.class);
 
     public SubscriberThread(String messageboxUrl, String brokerURL, String topic,
             ThreadMessagePassingCallback callback, String msgBoxId) {

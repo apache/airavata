@@ -27,7 +27,6 @@ import java.util.Properties;
 import org.apache.airavata.workflow.tracking.common.InvocationContext;
 import org.apache.airavata.workflow.tracking.common.InvocationEntity;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
-import org.apache.axis2.addressing.EndpointReference;
 
 /**
  * Utility to create and send generic Lead notification messages. Common messages to send log, debug, information, and

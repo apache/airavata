@@ -36,16 +36,18 @@ import org.apache.airavata.workflow.tracking.tests.util.TestConfigKeys;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.tool.XSTCTester.TestCase;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MessagePullerTest extends TestCase {
 
+    private static final Logger logger = LoggerFactory.getLogger(MessagePullerTest.class);
     static Properties configs = new Properties();
     String BROKER_URL;
     String MESSAGEBOX_URL;
@@ -55,7 +57,7 @@ public class MessagePullerTest extends TestCase {
     public static int count = 0;
     public int messages = 10;
     public static Object mutex = new Object();
-    private org.apache.log4j.Logger logger = Logger.getLogger(MessagePullerTest.class);
+    
     Subscription sub;
     String AXIS_REPO;
 

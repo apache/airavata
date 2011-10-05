@@ -28,8 +28,14 @@ import org.apache.airavata.workflow.tracking.common.InvocationContext;
 import org.apache.airavata.workflow.tracking.common.InvocationEntity;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 import org.apache.airavata.workflow.tracking.impl.state.InvocationContextImpl;
-import org.apache.airavata.workflow.tracking.types.*;
-import org.apache.log4j.Logger;
+import org.apache.airavata.workflow.tracking.types.BaseNotificationType;
+import org.apache.airavata.workflow.tracking.types.LogDebugDocument;
+import org.apache.airavata.workflow.tracking.types.LogExceptionDocument;
+import org.apache.airavata.workflow.tracking.types.LogInfoDocument;
+import org.apache.airavata.workflow.tracking.types.LogWarningDocument;
+import org.apache.airavata.workflow.tracking.types.PublishURLDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DOES NOT SUPPORT MULTI_THREADING -- PUBLISHER QUEUE, DATA CONSUMED/PRODUCED BATCHING
@@ -41,7 +47,7 @@ public class GenericNotifierImpl extends AbstractNotifier implements GenericNoti
 
     // private AnnotationProps globalAnnotations;
 
-    protected static final org.apache.log4j.Logger logger = Logger.getLogger(GenericNotifierImpl.class);
+    protected static final Logger logger = LoggerFactory.getLogger(GenericNotifierImpl.class);
 
     public GenericNotifierImpl() throws WorkflowTrackingException {
         super();

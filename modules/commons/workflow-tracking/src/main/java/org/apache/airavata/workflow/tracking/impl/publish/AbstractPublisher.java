@@ -27,8 +27,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.airavata.workflow.tracking.util.LinkedMessageQueue;
 import org.apache.airavata.workflow.tracking.util.Timer;
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract method to publish messages in sync or async mode. In async mode, the messages are kept in an in-memory queue
@@ -37,7 +38,7 @@ import org.apache.xmlbeans.XmlObject;
  */
 public abstract class AbstractPublisher implements Runnable, NotificationPublisher {
 
-    protected static final org.apache.log4j.Logger logger = Logger.getLogger(AbstractPublisher.class);
+    protected static final Logger logger = LoggerFactory.getLogger(AbstractPublisher.class);
     protected static final boolean IS_LOG_FINEST = logger.isDebugEnabled();
     private final LinkedMessageQueue<BrokerEntry> messageQueue;
     protected static final boolean IS_TIMER = Boolean.getBoolean("ENABLE_TIMER");
@@ -190,10 +191,10 @@ public abstract class AbstractPublisher implements Runnable, NotificationPublish
                 if (deleted)
                     break;
                 else
-                    logger.fatal("Interrupted when queue size: " + messageQueue.size() + ". deleted == false", e);
+                    logger.error("Interrupted when queue size: " + messageQueue.size() + ". deleted == false", e);
             } catch (RuntimeException e) {
 
-                logger.fatal("Runtime Error: " + e.getMessage());
+                logger.error("Runtime Error: " + e.getMessage());
                 if (logger.isDebugEnabled()) {
                     logger.debug("Runtime Error at message: "
                             + (brokerEntry != null ? brokerEntry.getMessage() : "NULL") + "; queue size: "

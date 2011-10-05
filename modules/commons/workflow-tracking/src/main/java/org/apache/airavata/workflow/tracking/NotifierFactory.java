@@ -24,7 +24,8 @@ package org.apache.airavata.workflow.tracking;
 import org.apache.airavata.workflow.tracking.impl.GenericNotifierImpl;
 import org.apache.airavata.workflow.tracking.impl.NotifierImpl;
 import org.apache.airavata.workflow.tracking.impl.ProvenanceNotifierImpl;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Create a Notifier instance.
@@ -32,7 +33,7 @@ import org.apache.log4j.Logger;
  * This code was inspired by the listener agent factory in xmessages
  */
 public class NotifierFactory {
-    private final static org.apache.log4j.Logger logger = Logger.getLogger(NotifierFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(NotifierFactory.class);
 
     public static Notifier createNotifier() {
         return new NotifierImpl();

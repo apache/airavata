@@ -23,7 +23,6 @@ package org.apache.airavata.workflow.tracking.impl.publish;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URL;
 import java.util.Properties;
 
 import javax.xml.stream.XMLStreamException;
@@ -31,13 +30,13 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.airavata.commons.WorkFlowUtils;
 import org.apache.airavata.workflow.tracking.WorkflowTrackingException;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
-import org.apache.airavata.workflow.tracking.util.ConfigKeys;
 import org.apache.airavata.wsmg.client.MsgBrokerClientException;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.EndpointReferenceHelper;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Publish WS-Eventing messages using WS-Messenger client API
@@ -49,7 +48,7 @@ public class WSMPublisher extends AbstractPublisher implements NotificationPubli
     protected final EndpointReference brokerEpr;
     protected Properties configs = new Properties();
 
-    private Logger log = Logger.getLogger(WSMPublisher.class);
+    private Logger log = LoggerFactory.getLogger(WSMPublisher.class);
 
     public WSMPublisher(WorkflowTrackingContext context) {
         this(10, context.isEnableAsyncPublishing(), context.getBrokerEpr());

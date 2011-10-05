@@ -31,12 +31,18 @@ import org.apache.airavata.workflow.tracking.tests.util.CommonUtils;
 import org.apache.airavata.workflow.tracking.tests.util.TestConfigKeys;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axiom.om.OMElement;
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.impl.tool.XSTCTester.TestCase;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MultipleSubscriptionForMessageBoxTest extends TestCase implements ThreadMessagePassingCallback {
 
+    private static final Logger logger = LoggerFactory.getLogger(MultipleSubscriptionForMessageBoxTest.class);
     static Properties configs = new Properties();
     String BROKER_URL;
     String MESSAGEBOX_URL;
@@ -44,7 +50,6 @@ public class MultipleSubscriptionForMessageBoxTest extends TestCase implements T
     public static final String TEST_TOPIC = "3a9c7b20-0475-11db-ba88-b61b57d3be03";
     public static final int NOTIFICATIONS_PUBLISHED = 10;
     public static final int NUMBER_OF_SUBSCRIBERS = 1;
-    private org.apache.log4j.Logger logger = Logger.getLogger(MultipleSubscriptionForMessageBoxTest.class);
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
