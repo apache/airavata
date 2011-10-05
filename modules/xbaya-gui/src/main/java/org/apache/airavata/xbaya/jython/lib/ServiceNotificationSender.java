@@ -148,7 +148,7 @@ public class ServiceNotificationSender implements ServiceNotifiable {
             logger.warning("Failed to parse " + inputs.toString(), e);
             body = null; // Send notification anyway.
         }
-        this.invocationContext = this.notifier.invokingService(this.context,this.initiator, header, body, message);
+        this.invocationContext = this.notifier.invokingService(this.context,this.receiver, header, body, message);
     }
 
     /* (non-Javadoc)
