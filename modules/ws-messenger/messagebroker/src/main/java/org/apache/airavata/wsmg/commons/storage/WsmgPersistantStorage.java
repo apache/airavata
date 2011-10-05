@@ -435,7 +435,7 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
                 logger.debug("Wait=" + wait);
                 Thread.sleep(wait);
             } catch (InterruptedException e) {
-                logger.error("Queue is interrupted to close");
+                logger.warn("Queue is interrupted to close");
                 throw e;
             }
         }
