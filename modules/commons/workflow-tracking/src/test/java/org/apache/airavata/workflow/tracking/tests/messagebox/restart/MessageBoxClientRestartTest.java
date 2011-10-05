@@ -35,13 +35,19 @@ import org.apache.airavata.workflow.tracking.tests.util.TestConfigKeys;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.tool.XSTCTester.TestCase;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MessageBoxClientRestartTest extends TestCase {
 
+    private static final Logger logger = LoggerFactory.getLogger(MessageBoxClientRestartTest.class);
     private static final String TOPIC = "RestartclientTopic2";
     private boolean wait = true;
     static Properties configs = new Properties();
@@ -50,7 +56,6 @@ public class MessageBoxClientRestartTest extends TestCase {
     int consumerPort;
     public static final int NOTIFICATIONS_PUBLISHED = 4;
     public static final int NUMBER_OF_SUBSCRIBERS = 4;
-    private org.apache.log4j.Logger logger = Logger.getLogger(MessageBoxClientRestartTest.class);
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {

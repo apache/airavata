@@ -26,31 +26,10 @@ import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 
 public class XmlBeanUtils {
-    // public static void addNameValuePair(XmlObject parent, QName name, Object value)
-    // throws WorkflowTrackingException {
-    // XmlCursor c = parent.newCursor();
-    // // TODO may be we need to check we are not moving in to a namespace or a
-    // // attribute.
-    // c.toNextToken();
-    // XmlBeanUtils.addNameValuePair(c, name, value);
-    // c.dispose();
-    // }
-    //
-    //
-    // public static void createAFragment(QName name, Properties nameValuePairs)
-    // throws WorkflowTrackingException {
-    // XmlCursor c = XmlObject.Factory.newInstance();
-    // c.beginElement(name);
-    // for(String key: nameValuePairs.keySet()){
-    // XmlBeanUtils.addNameValuePair(c, new QName(key), nameValuePairs.get(key));
-    // }
-    // c.dispose();
-    // }
+    
     public static BaseNotificationType extractBaseNotificationType(XmlObject xmldata) {
         XmlCursor c = xmldata.newCursor();
         c.toNextToken();
-
-        // System.out.println(c.getObject().getClass());
         BaseNotificationType type = (BaseNotificationType) c.getObject();
         c.dispose();
         return type;

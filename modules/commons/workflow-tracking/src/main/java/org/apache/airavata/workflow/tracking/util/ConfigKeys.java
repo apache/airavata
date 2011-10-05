@@ -22,6 +22,6 @@
 package org.apache.airavata.workflow.tracking.util;
 
 public class ConfigKeys {
-    public final static String CONFIG_FILE_NAME = "workflow_tracking.properties";
-    public final static String AXIS2_REPOSITORY = "axis2.repository";
+    public static final String CONFIG_FILE_NAME = "workflow_tracking.properties";
+    public static final String AXIS2_REPOSITORY = "axis2.repository";
 }

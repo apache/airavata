@@ -38,14 +38,15 @@ import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.EndpointReferenceHelper;
-import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MessageBoxNotificationHandler implements NotificationHandler {
 
-    private final static org.apache.log4j.Logger logger = Logger.getLogger(MessageBoxNotificationHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageBoxNotificationHandler.class);
 
     private String messageBoxUrl;
 
@@ -61,12 +62,12 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
 
     public MessageBoxNotificationHandler(String messageBoxUrl, String brokerURL) {
         if (messageBoxUrl == null || "".equals(messageBoxUrl)) {
-            logger.fatal("Invalid messagebox Location :" + messageBoxUrl);
+            logger.error("Invalid messagebox Location :" + messageBoxUrl);
             throw new WorkflowTrackingException("BrokerLocation should be not null messaboxUrl:" + messageBoxUrl);
         }
 
         if (brokerURL == null || "".equals(brokerURL)) {
-            logger.fatal("Invalid broker Location :" + brokerURL);
+            logger.error("Invalid broker Location :" + brokerURL);
             throw new WorkflowTrackingException("BrokerLocation should be not null brokerurl:" + brokerURL);
         }
         this.messageBoxUrl = messageBoxUrl;
@@ -84,7 +85,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
 
             xc.dispose();
         } catch (XmlException e) {
-            logger.fatal("error parsing message content: " + message, e);
+            logger.error("error parsing message content: " + message, e);
             e.printStackTrace();
         }
         NotificationType type = MessageUtil.getType(messageObj);
@@ -113,7 +114,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
 
         } catch (MsgBrokerClientException e) {
 
-            logger.fatal("unable to unsubscribe", e);
+            logger.error("unable to unsubscribe", e);
             e.printStackTrace();
         }
 
