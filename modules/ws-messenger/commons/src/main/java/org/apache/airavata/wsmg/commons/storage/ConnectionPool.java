@@ -322,7 +322,7 @@ public class ConnectionPool {
                 }
             } catch (SQLException sqle) {
                 // Ignore errors; garbage collect anyhow
-                logger.warn(sqle.getMessage(), sqle);
+                logger.warn(sqle.getMessage());
             }
         }
     }
