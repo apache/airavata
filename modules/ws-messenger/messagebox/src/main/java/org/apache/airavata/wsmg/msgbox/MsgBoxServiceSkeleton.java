@@ -153,7 +153,7 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
             logger.debug("Destry MsgBox:" + msgBoxAddr);
             statusEl.setText(TRUE);
         } catch (Exception e) {
-            logger.error("Error while delete msgbx: " + msgBoxAddr, e);
+            logger.warn("Error while delete msgbx: " + msgBoxAddr, e);
             statusEl.setText(FALSE);
 
             // FIXME: Should we throw exception?? or client will read false
@@ -177,7 +177,7 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
                         storage.removeAncientMessages();
                     }
                 } catch (Exception e) {
-                    logger.error("Msgbox cleanup thread is interrupted to close");
+                    logger.warn("Msgbox cleanup thread is interrupted to close");
                 }
             }
         }
