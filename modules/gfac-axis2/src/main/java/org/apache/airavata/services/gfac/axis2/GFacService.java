@@ -123,6 +123,7 @@ public class GFacService extends Thread implements ServiceLifeCycle {
         Registry registry = (JCRRegistry) configctx.getProperty(CONFIGURATION_CONTEXT_REGISTRY);
         String gfacURL = (String) configctx.getProperty(GFAC_URL);
         registry.deleteGFacDescriptor(gfacURL);
+            this.interrupt();
         try {
             this.join();
         } catch (InterruptedException e) {
