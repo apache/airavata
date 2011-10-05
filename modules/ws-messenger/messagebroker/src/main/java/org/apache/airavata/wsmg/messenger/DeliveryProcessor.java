@@ -80,7 +80,7 @@ public class DeliveryProcessor {
                     strategy.addMessageToSend(outGoingMessage, deliverable);
 
                 } catch (Exception e) {
-                    logger.error("Unexpected_exception:", e);
+                    logger.warn("Unexpected_exception:");
                 }
             }
             logger.debug("Shutdown Strategy");
