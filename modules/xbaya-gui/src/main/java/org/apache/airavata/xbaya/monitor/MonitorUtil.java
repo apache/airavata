@@ -323,9 +323,6 @@ public class MonitorUtil {
                 return EventType.UNKNOWN;
             }
         } else if (WOR_NS.equals(ns)) {
-            if (GOT_RESULT_EVENT_TAG.equals(name)) {
-                return EventType.WORKFLOW_TERMINATED;
-            }
             for (EventType type : EventType.values()) {
                 if (type.name.equals(name)) {
                     return type;
