@@ -20,7 +20,8 @@ package org.apache.airavata.axis2.artifacts.dispatchers;
  *
  */
 
-import com.sun.corba.se.spi.activation.Server;
+import javax.xml.namespace.QName;
+
 import org.apache.airavata.axis2.artifacts.dispatchers.utils.GFacAxis2ArtifactsConstants;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
@@ -28,22 +29,17 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.HandlerDescription;
-import org.apache.axis2.description.WSDL2Constants;
 import org.apache.axis2.dispatchers.AbstractServiceDispatcher;
 import org.apache.axis2.engine.AxisConfiguration;
-import org.apache.axis2.engine.Handler.InvocationResponse;
-import org.apache.axis2.engine.Handler;
 import org.apache.axis2.util.LoggingControl;
 import org.apache.axis2.util.Utils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import javax.xml.namespace.QName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GFacURIBasedDispatcher extends AbstractServiceDispatcher {
 
     public static final String NAME = "GFacURIBasedDispatcher";
-    private static final Log log = LogFactory.getLog(GFacURIBasedDispatcher.class);
+    private static final Logger log = LoggerFactory.getLogger(GFacURIBasedDispatcher.class);
 
     /*
      *  (non-Javadoc)
