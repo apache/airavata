@@ -173,7 +173,7 @@ public class ConsumerUrlManager {
         @Override
         public void run() {
 
-            logger.info("starting to clean up black listed consumer urls");
+            logger.debug("starting to clean up black listed consumer urls");
             long currentTime = System.currentTimeMillis();
 
             synchronized (failedConsumerUrls) {
@@ -189,7 +189,7 @@ public class ConsumerUrlManager {
                 }
             }
 
-            logger.info("finished cleaning black listed consumer urls");
+            logger.debug("finished cleaning black listed consumer urls");
         }
     }
 }
