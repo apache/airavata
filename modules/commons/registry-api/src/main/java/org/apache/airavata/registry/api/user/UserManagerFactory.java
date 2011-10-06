@@ -3,12 +3,12 @@ package org.apache.airavata.registry.api.user;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserManagerFactory {
 	private static Map<String,String> userManagers=new HashMap<String, String>();
-	private static Log log = LogFactory.getLog(UserManagerFactory.class);
+	private static Logger log = LoggerFactory.getLogger(UserManagerFactory.class);
 
 	public static UserManager getUserManager(String userManagerKey) throws Exception{
 		if (userManagers.containsKey(userManagerKey)){

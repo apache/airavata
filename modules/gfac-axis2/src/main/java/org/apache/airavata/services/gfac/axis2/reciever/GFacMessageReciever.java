@@ -32,8 +32,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.airavata.core.gfac.notification.impl.WorkflowTrackingNotification;
-import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
@@ -43,7 +41,9 @@ import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationCo
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.factory.PropertyServiceFactory;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
+import org.apache.airavata.core.gfac.notification.impl.WorkflowTrackingNotification;
 import org.apache.airavata.core.gfac.services.GenericService;
+import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.services.gfac.axis2.GFacService;
 import org.apache.airavata.services.gfac.axis2.util.GFacServiceOperations;
 import org.apache.airavata.services.gfac.axis2.util.WSConstants;
@@ -64,8 +64,8 @@ import org.apache.axis2.engine.AxisEngine;
 import org.apache.axis2.engine.MessageReceiver;
 import org.apache.axis2.util.MessageContextBuilder;
 import org.apache.axis2.util.Utils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlDocument;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
 
@@ -73,7 +73,7 @@ import xsul.wsdl.WsdlDefinitions;
 
 public class GFacMessageReciever implements MessageReceiver {
 
-    private static final Log log = LogFactory.getLog(GFacMessageReciever.class);
+    private static final Logger log = LoggerFactory.getLogger(GFacMessageReciever.class);
     private GenericService service;
     private Axis2Registry registry;
 

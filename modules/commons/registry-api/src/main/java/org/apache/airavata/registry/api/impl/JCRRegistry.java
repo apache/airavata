@@ -24,19 +24,34 @@ package org.apache.airavata.registry.api.impl;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
-import javax.jcr.*;
+import javax.jcr.Credentials;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
+import javax.jcr.RepositoryFactory;
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
+import javax.jcr.Value;
 
-import org.apache.airavata.registry.api.Axis2Registry;
-import org.apache.airavata.registry.api.user.UserManager;
-import org.apache.airavata.registry.api.user.UserManagerFactory;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.util.SchemaUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.airavata.registry.api.Axis2Registry;
+import org.apache.airavata.registry.api.user.UserManager;
+import org.apache.airavata.registry.api.user.UserManagerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JCRRegistry implements Axis2Registry {
 
@@ -54,7 +69,7 @@ public class JCRRegistry implements Axis2Registry {
 	private Credentials credentials;
 	private UserManager userManager;
 	
-	private static Log log = LogFactory.getLog(JCRRegistry.class);
+	private static Logger log = LoggerFactory.getLogger(JCRRegistry.class);
 
 	public JCRRegistry(String className, String user, String pass,
 			Map<String, String> map) {
@@ -71,7 +86,9 @@ public class JCRRegistry implements Axis2Registry {
 			repository = repositoryFactory.getRepository(map);
 			credentials = new SimpleCredentials(user,
 					new String(pass).toCharArray());
+			System.out.println(repository.getDescriptor(Repository.REP_NAME_DESC));
 			setUserManager(UserManagerFactory.getUserManager(repository.getDescriptor(Repository.REP_NAME_DESC)));
+			System.out.println(getUserManager());
 			getUserManager().setRepository(this);
 		} catch (ClassNotFoundException e) {
 			log.error("Error class path settting", e);
@@ -485,6 +502,7 @@ public class JCRRegistry implements Axis2Registry {
             while (propertyIterator.hasNext()) {
                 Property property = propertyIterator.nextProperty();
                 if(!"nt:unstructured".equals(property.getString())){
+                    String x = property.getString();
                     Timestamp setTime = new Timestamp(new Long(property.getString().split(";")[1]));
                     if(GFAC_URL_UPDATE_INTERVAL > (timestamp.getTime() - setTime.getTime())){
                         urlList.add(property.getString().split(";")[0]);
