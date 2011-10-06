@@ -72,7 +72,7 @@ public class JCRRegistry implements Axis2Registry {
 	private static Logger log = LoggerFactory.getLogger(JCRRegistry.class);
 
 	public JCRRegistry(String className, String user, String pass,
-			Map<String, String> map) {
+                       Map<String, String> map) throws RepositoryException {
 		try {
 			/*
 			 * Load the configuration from properties file at this level and
@@ -94,12 +94,13 @@ public class JCRRegistry implements Axis2Registry {
 			log.error("Error class path settting", e);
 		} catch (RepositoryException e) {
 			log.error("Error connecting Remote Registry instance", e);
+            throw e;
 		} catch (Exception e) {
 			log.error("Error init", e);
 		}
 	}
 
-    public JCRRegistry(Repository repo,Credentials credentials){
+    public JCRRegistry(Repository repo, Credentials credentials){
         this.repository = repo;
         this.credentials = credentials;
     }
