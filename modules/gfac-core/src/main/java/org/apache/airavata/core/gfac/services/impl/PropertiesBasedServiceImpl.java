@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
@@ -41,6 +40,7 @@ import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.utils.LogUtils;
+import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -234,7 +234,11 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                 if (map.size() == 0)
                     map = null;
 
-                this.registryService = new JCRRegistry(jcrClass, userName, password, map);
+                try {
+                    this.registryService = new JCRRegistry(jcrClass, userName, password, map);
+                } catch (javax.jcr.RepositoryException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
 
                 log.info("Default registry service is created");
             }
