@@ -99,9 +99,9 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
     public void dispose() {
         if (db != null) {
             db.closeAllConnections();
-        }        
+        }
     }
-    
+
     /*
      * (non-Javadoc)
      * 
@@ -124,13 +124,55 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
             stmt = conn.prepareStatement(SubscriptionConstants.EXP_SELECT_QUERY);
             ResultSet rs = stmt.executeQuery();
             ret.ensureCapacity(size);
-
+                                            
             if (rs != null) {
+                
+                /*
+                 * Buffer data
+                 */
+                int nRead;
+                byte[] buffer = new byte[1024];
+                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                
                 while (rs.next()) {
                     SubscriptionEntry subscriptionEntry = new SubscriptionEntry();
                     subscriptionEntry.setSubscriptionId(rs.getString("SubscriptionId"));
-                    subscriptionEntry.setSubscribeXml(rs.getString("content"));
+
+                    /*
+                     * Read Binary Stream
+                     */
+                    InputStream inStream = null;
+                    
+                    try {                        
+                        inStream = rs.getBinaryStream("content");
+                        while ((nRead = inStream.read(buffer)) != -1) {
+                            outStream.write(buffer, 0, nRead);
+                        }
+                        outStream.flush();
+
+                        subscriptionEntry.setSubscribeXml(new String(outStream.toByteArray()));
+                        
+                    } catch (IOException ie) {
+                        logger.error("Unable to read XML from database", ie);
+                        
+                        //skip this subscription entry
+                        continue;
+                    } finally{
+                        //clear all data in outputStream
+                        outStream.reset();
+                        
+                        //close database stream
+                        if(inStream != null){
+                            try{
+                                inStream.close();
+                            }catch(Exception e){
+                                logger.error("Cannot close database stream", e);
+                            }
+                        }
+                    }
+
                     ret.add(subscriptionEntry);
+
                 }
             }
         } catch (SQLException ex) {
@@ -722,5 +764,5 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
 
         public static String SQL_MIN_ID_INCREMENT = "UPDATE " + TABLE_NAME_MINID + " SET minID = minID+1 WHERE minID =";
 
-    }  
+    }
 }
