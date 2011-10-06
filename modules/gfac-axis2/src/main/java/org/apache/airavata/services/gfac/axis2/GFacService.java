@@ -174,12 +174,13 @@ public class GFacService implements ServiceLifeCycle {
         try {
             Field field = obj.getClass().getDeclaredField(fieldName);
             field.setAccessible(true);
-            return field.get(obj);
+            obj = field.get(obj);
         } catch (NoSuchFieldException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (IllegalAccessException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+        return obj;
     }
     class GFacThread extends Thread{
         private ConfigurationContext context = null;
