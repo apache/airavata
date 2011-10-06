@@ -262,4 +262,5 @@ public interface ErrorMessages {
      * MORE_THAN_ONE_CONNECTIONS
      */
     public static final String MORE_THAN_ONE_CONNECTIONS = "Cannot connect more than one output ports to an input port.";
+    String CREDENTIALS_WRONG = "Please check credentials";
 }

@@ -99,8 +99,13 @@ public class JCRRegistryWindow {
             this.engine.getErrorWindow().error(ErrorMessages.URL_WRONG, e);
             return;
         }
-
-        JCRComponentRegistry registry = new JCRComponentRegistry(url, username, password);
+        JCRComponentRegistry registry = null;
+        try {
+            registry = new JCRComponentRegistry(url, username, password);
+        } catch (Exception e) {
+            this.engine.getErrorWindow().error(ErrorMessages.CREDENTIALS_WRONG,e);
+            return;
+        }
         XBayaConfiguration configuration = this.engine.getConfiguration();
         configuration.setJcrComponentRegistry(registry);
         configuration.setRegigstryUserName(username);

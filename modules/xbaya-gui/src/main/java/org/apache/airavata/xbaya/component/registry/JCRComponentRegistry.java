@@ -31,17 +31,23 @@ import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.registry.api.user.UserManager;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 
+import javax.jcr.RepositoryException;
+
 public class JCRComponentRegistry extends ComponentRegistry {
 
     private static final String NAME = "JCR Components";
     
     private JCRRegistry registry;
 
-    public JCRComponentRegistry(URI url, String username, String password) {
+    public JCRComponentRegistry(URI url, String username, String password) throws RepositoryException {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("org.apache.jackrabbit.repository.uri", url.toString());
-        this.registry = new JCRRegistry("org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", username,
-                password, map);
+        try {
+            this.registry = new JCRRegistry("org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", username,
+                    password, map);
+        } catch (RepositoryException e) {
+            throw e;
+        }
     }
 
     static {
