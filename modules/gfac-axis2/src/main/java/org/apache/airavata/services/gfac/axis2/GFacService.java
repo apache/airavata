@@ -110,10 +110,10 @@ public class GFacService implements ServiceLifeCycle {
             Registry registry = new JCRRegistry(repository, credentials);
             String localAddress = Utils.getIpAddress(context.getAxisConfiguration());
             TransportInDescription transportInDescription = context.getAxisConfiguration().getTransportsIn().get("http");
-            if(transportInDescription != null){
+            if(transportInDescription != null && transportInDescription.getParameter("port") != null){
                 port = (String)transportInDescription.getParameter("port").getValue();
             }else{
-                port = getTomcatPort(context);
+                port = map.get("port");
             }
             localAddress = "http://" + localAddress + ":" + port;
             localAddress = localAddress + "/" +
@@ -141,47 +141,51 @@ public class GFacService implements ServiceLifeCycle {
     }
 
 
-
-    private String getTomcatPort(ConfigurationContext context) {
-        String port = null;
-        try {
-            Object obj = getNextObject(getNextObject(getNextObject(context.getProperty("transport.http.servletContext").getClass(),"context"),"context"),"context");
-            Field field = obj.getClass().getSuperclass().getDeclaredField("listeners");
-            field.setAccessible(true);
-            ArrayList list = (ArrayList) field.get(obj);
-            for(int i=0;i<list.size();i++){
-                obj = list.get(i);
-                obj = getNextObject(obj,"connector");
-                field = obj.getClass().getDeclaredField("scheme");
-                field.setAccessible(true);
-                String scheme = (String)field.get(obj);
-                if("http".equals(scheme)){
-                    field = obj.getClass().getDeclaredField("port");
-                    field.setAccessible(true);
-                    port = Integer.toString(field.getInt(obj));
-                    break;
-                }
-            }
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        return port;
-    }
-
-    private Object getNextObject(Object obj,String fieldName){
-        try {
-            Field field = obj.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            obj = field.get(obj);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        return obj;
-    }
+//
+//    private String getTomcatPort(ConfigurationContext context) {
+//        String port = null;
+//        Object obj = context.getProperty("transport.http.servletContext");
+//        try {
+//            Field field = context.getProperty("transport.http.servletContext").getClass().getDeclaredField("context");
+//            field.setAccessible(true);
+//            obj = field.get(obj);
+//            field = obj.getClass().getDeclaredField("context");
+//            field.setAccessible(true);
+//            obj = field.get(obj);
+//            field = obj.getClass().getSuperclass().getDeclaredField("listeners");
+//            field.setAccessible(true);
+//            ArrayList list = (ArrayList) field.get(obj);
+//            for(int i=0;i<list.size();i++){
+//                obj = list.get(i);
+//                field = obj.getClass().getDeclaredField("connector");
+//                field.setAccessible(true);
+//                obj = field.get(obj);
+//                field = obj.getClass().getDeclaredField("scheme");
+//                field.setAccessible(true);
+//                String scheme = (String)field.get(obj);
+//                if("http".equals(scheme)){
+//                    field = obj.getClass().getDeclaredField("port");
+//                    field.setAccessible(true);
+//                    port = Integer.toString(field.getInt(obj));
+//                    break;
+//                }
+//            }
+//        } catch (NoSuchFieldException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
+//        return port;
+//    }
+//
+//    private Object getNextObject(Object obj,String fieldName){
+//        try {
+//            Field field = obj.getClass().getDeclaredField(fieldName);
+//            fi
+//        } catch (NoSuchFieldException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
+//    }
     class GFacThread extends Thread{
         private ConfigurationContext context = null;
 
