@@ -28,13 +28,14 @@ import java.util.List;
 
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul.lead.LeadDeploymentConfig;
-import xsul5.MLogger;
 
 public class XBayaConfiguration {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(XBayaConfiguration.class);
 
     private String title = XBayaConstants.APPLICATION_NAME;
 
@@ -135,7 +136,7 @@ public class XBayaConfiguration {
             }
         } catch (RuntimeException e) {
             String message = "Error while reading a configuration file, " + systemConfig;
-            logger.warning(message, e);
+            logger.warn(message, e);
         }
     }
 

@@ -26,12 +26,12 @@ import java.util.List;
 
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class EventProducer {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(EventProducer.class);
 
     private List<EventListener> listeners = new LinkedList<EventListener>();
 
@@ -58,7 +58,7 @@ public abstract class EventProducer {
             try {
                 listener.eventReceived(event);
             } catch (Throwable e) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
                 // Just remember the first one.
                 if (exception == null) {
                     exception = e;
@@ -86,7 +86,7 @@ public abstract class EventProducer {
             try {
                 listener.eventReceived(event);
             } catch (Throwable e) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
                 // Just remember the first one.
                 if (exception == null) {
                     exception = e;

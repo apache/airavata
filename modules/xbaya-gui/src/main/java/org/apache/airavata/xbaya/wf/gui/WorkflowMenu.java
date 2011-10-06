@@ -40,8 +40,8 @@ import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.gridchem.gui.GridChemRunnerWindow;
 import org.apache.airavata.xbaya.jython.gui.JythonRunnerWindow;
 import org.apache.airavata.xbaya.wf.Workflow;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WorkflowMenu {
 
@@ -73,7 +73,7 @@ public class WorkflowMenu {
 
     private JMenuItem partitionStreamflowItem;
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(WorkflowMenu.class);
 
     /**
      * Constructs a WorkflowMenu.
@@ -343,7 +343,7 @@ public class WorkflowMenu {
                 try {
                     WorkflowMenu.this.engine.dispose();
                 } catch (XBayaException e) {
-                    logger.caught(e);
+                    logger.error(e.getMessage(), e);
                 } finally {
                     WorkflowMenu.this.engine.getGUI().getFrame().dispose();
                 }

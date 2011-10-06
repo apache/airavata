@@ -35,15 +35,15 @@ import javax.swing.event.HyperlinkListener;
 import org.apache.airavata.common.utils.BrowserLauncher;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import xsul5.MLogger;
 import xsul5.XmlConstants;
 
 public class AboutWindow {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(AboutWindow.class);
 
     private XBayaEngine engine;
 
@@ -89,7 +89,7 @@ public class AboutWindow {
         editorPane.setBackground(buttonPanel.getBackground());
         editorPane.addHyperlinkListener(new HyperlinkListener() {
             public void hyperlinkUpdate(HyperlinkEvent event) {
-                logger.entering(new Object[] { event });
+                logger.debug("Event:" + event);
                 if (event.getEventType() == EventType.ACTIVATED) {
                     URL url = event.getURL();
                     try {

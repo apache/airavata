@@ -54,12 +54,12 @@ import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineManager;
 import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
 import org.apache.airavata.xbaya.xregistry.XRegistryComponent;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XBayaEngine {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(XBayaEngine.class);
 
     private XBayaConfiguration configuration;
 
@@ -224,7 +224,6 @@ public class XBayaEngine {
      * Initialization process. This method is called after the GUI is initialized.
      */
     private void initAfterGUI() {
-        logger.entering();
 
         // Initialize security at the beginning.
         initSecurity();
@@ -273,7 +272,6 @@ public class XBayaEngine {
      * Initializes registris.
      */
     private void initRegistry() {
-        logger.entering();
 
         final ComponentSelector componentTreeViewer = this.gui.getComponentSelector();
         try {

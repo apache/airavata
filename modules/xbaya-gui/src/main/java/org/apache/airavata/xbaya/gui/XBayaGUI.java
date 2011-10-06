@@ -75,12 +75,12 @@ import org.apache.airavata.xbaya.monitor.gui.MonitorPanel;
 import org.apache.airavata.xbaya.streaming.StreamTableModel;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.ogce.xregistry.utils.XRegistryClientException;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XBayaGUI implements EventListener {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(XBayaGUI.class);
 
     private static final int STATIC_MENU_ITEMS = 4;
 
@@ -440,7 +440,7 @@ public class XBayaGUI implements EventListener {
             public void stateChanged(ChangeEvent event) {
                 // Called when the active tab changed.
                 // Note that this is not called when a tab is removed.
-                logger.entering(event);
+                logger.debug(event.toString());
                 XBayaGUI.this.activeTabChanged();
             }
         });
@@ -590,7 +590,7 @@ public class XBayaGUI implements EventListener {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
             // OK. The default will be used.
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         }
 
         JFrame.setDefaultLookAndFeelDecorated(false);
@@ -618,16 +618,16 @@ public class XBayaGUI implements EventListener {
         this.frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent event) {
-                logger.entering(new Object[] { event });
+                logger.debug(event.toString());
                 XBayaGUI.this.frame.setVisible(false);
                 try {
                     XBayaGUI.this.engine.dispose();
                 } catch (XBayaException e) {
                     // Ignore the error.
-                    logger.caught(e);
+                    logger.error(e.getMessage(), e);
                 } catch (RuntimeException e) {
                     // Ignore the error.
-                    logger.caught(e);
+                    logger.error(e.getMessage(), e);
                 }
                 if (XBayaGUI.this.engine.getConfiguration().isCloseOnExit()) {
                     System.exit(0);
@@ -636,12 +636,12 @@ public class XBayaGUI implements EventListener {
 
             @Override
             public void windowClosed(WindowEvent e) {
-                logger.entering(new Object[] { e });
+                logger.debug(e.toString());
 
                 try {
                     XBayaGUI.this.engine.getMonitor().stop();
                 } catch (MonitorException e1) {
-                    logger.caught(e1);
+                    logger.error(e1.getMessage(), e1);
                 }
                 // Make sure to kill all threads.
                 // Dispose only when it can be disposed to prevent infinite loop

@@ -37,17 +37,17 @@ import javax.swing.text.html.HTML.Tag;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
 
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponentFactory;
-import org.apache.airavata.common.utils.IOUtil;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WebComponentRegistry extends ComponentRegistry {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(WebComponentRegistry.class);
 
     private URL url;
 
@@ -120,7 +120,7 @@ public class WebComponentRegistry extends ComponentRegistry {
             // TODO checking 3 is not enough
             while (String.valueOf(connection.getResponseCode()).startsWith("3")) {
                 String location = connection.getHeaderField("Location");
-                logger.finest("Redirecting to " + location);
+                logger.info("Redirecting to " + location);
                 connection.disconnect();
                 this.url = new URL(location);
                 connection = (HttpURLConnection) this.url.openConnection();
@@ -146,22 +146,22 @@ public class WebComponentRegistry extends ComponentRegistry {
     private void addComponents(String name) {
         try {
             URL wsdlUrl = new URL(this.url, name);
-            logger.finest("WSDL URL: " + wsdlUrl);
+            logger.info("WSDL URL: " + wsdlUrl);
             String wsdlString = IOUtil.readToString(wsdlUrl.openStream());
-            logger.finest("WSDL: " + wsdlString);
+            logger.info("WSDL: " + wsdlString);
             List<WSComponent> components = WSComponentFactory.createComponents(wsdlString);
             addComponents(name, components);
         } catch (MalformedURLException e) {
             // Ignore
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         } catch (IOException e) {
             // Ignore
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         } catch (ComponentException e) {
             // Malformed WSDL.
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         } catch (RuntimeException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -180,8 +180,6 @@ public class WebComponentRegistry extends ComponentRegistry {
          */
         @Override
         public void handleStartTag(Tag tag, MutableAttributeSet attrSet, int pos) {
-            logger.entering(new Object[] { tag, attrSet, new Integer(pos) });
-
             if (tag == HTML.Tag.A) {
                 String name = (String) attrSet.getAttribute(HTML.Attribute.HREF);
                 addComponents(name);

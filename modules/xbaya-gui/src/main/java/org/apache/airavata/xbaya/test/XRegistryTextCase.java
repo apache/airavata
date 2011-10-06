@@ -25,14 +25,15 @@ import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
 import org.ogce.xregistry.client.XRegistryClient;
 import org.ogce.xregistry.utils.XRegistryClientException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xregistry.generated.ServiceDescData;
 import xregistry.generated.WsdlData;
-import xsul5.MLogger;
 
 public class XRegistryTextCase extends XBayaTestCase {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(XRegistryTextCase.class);
 
     /**
      * @throws XregistryException

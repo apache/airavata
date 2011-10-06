@@ -37,12 +37,12 @@ import org.apache.airavata.xbaya.gui.XBayaGUI;
 import org.apache.airavata.xbaya.modifier.gui.WorkflowModifierGUI;
 import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MonitorMenu implements EventListener {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(MonitorMenu.class);
 
     private XBayaEngine engine;
 
@@ -86,7 +86,6 @@ public class MonitorMenu implements EventListener {
      * @see org.apache.airavata.xbaya.event.EventListener#eventReceived(org.apache.airavata.xbaya.event.Event)
      */
     public void eventReceived(Event event) {
-        logger.entering();
         Type type = event.getType();
         if (type.equals(Event.Type.MONITOR_CONFIGURATION_CHANGED)) {
             MonitorConfiguration configuration = this.engine.getMonitor().getConfiguration();

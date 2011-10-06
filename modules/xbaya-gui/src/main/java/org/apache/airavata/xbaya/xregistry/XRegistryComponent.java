@@ -40,10 +40,11 @@ import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.ietf.jgss.GSSCredential;
 import org.ogce.xregistry.client.XRegistryClient;
 import org.ogce.xregistry.utils.XRegistryClientException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xregistry.generated.ServiceDescData;
 import xregistry.generated.WsdlData;
-import xsul5.MLogger;
 
 public class XRegistryComponent extends ComponentRegistry {
 
@@ -62,7 +63,7 @@ public class XRegistryComponent extends ComponentRegistry {
         CONCRETE;
     }
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(XRegistryComponent.class);
 
     private URI url;
 
@@ -128,7 +129,7 @@ public class XRegistryComponent extends ComponentRegistry {
             Map<String, ComponentTreeNode> namespaceMap = new HashMap<String, ComponentTreeNode>();
 
             for (QName qname : qnames) {
-                logger.finest("qname: " + qname);
+                logger.info("qname: " + qname);
                 XRegistryComponentReference componentRef = new XRegistryComponentReference(this, qname);
                 String namespace = qname.getNamespaceURI();
                 ComponentTreeNode namespaceNode = namespaceMap.get(namespace);
@@ -173,7 +174,7 @@ public class XRegistryComponent extends ComponentRegistry {
             } else {
                 wsdl = this.xregistryClient.getAbstractWsdl(qname);
             }
-            logger.finest("concreateWSDL:" + wsdl);
+            logger.info("concreateWSDL:" + wsdl);
             List<WSComponent> components = WSComponentFactory.createComponents(wsdl);
             return components;
         } catch (XRegistryClientException e) {

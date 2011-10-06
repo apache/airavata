@@ -21,22 +21,26 @@
 
 package org.apache.airavata.xbaya.util;
 
-import java.io.InputStream;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul.lead.LeadContextHeader;
 import xsul.lead.LeadResourceMapping;
-import xsul5.MLogger;
 
 public class XBayaUtil {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(XBayaUtil.class);
 
     public static LeadContextHeader buildLeadContextHeader(final XBayaEngine engine,
             MonitorConfiguration monitorConfiguration, String nodeId, LeadResourceMapping resourceMapping)

@@ -38,10 +38,11 @@ import org.apache.airavata.xbaya.gpel.DSCUtil;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlCharacters;
 import org.xmlpull.infoset.XmlElement;
 
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlDefinitions;
 import xsul5.wsdl.WsdlDocumentation;
 import xsul5.wsdl.WsdlMessage;
@@ -53,7 +54,7 @@ import xsul5.wsdl.WsdlPortTypeOutput;
 
 public class WSComponent extends Component {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(WSComponent.class);
 
     protected WsdlDefinitions wsdl;
 

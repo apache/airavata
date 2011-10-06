@@ -37,13 +37,13 @@ import org.apache.airavata.xbaya.graph.ws.WSGraph;
 import org.apache.airavata.xbaya.graph.ws.WSGraphFactory;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-
-import xsul5.MLogger;
 
 public class WorkflowFiler {
 
-    private static MLogger logger = MLogger.getLogger();
+    private static Logger logger = LoggerFactory.getLogger(WorkflowFiler.class);
 
     private XBayaEngine engine;
 
@@ -106,7 +106,7 @@ public class WorkflowFiler {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.graphFileChooser.getSelectedFile();
-            logger.finest(file.getPath());
+            logger.info(file.getPath());
 
             try {
                 String path = file.getPath();
@@ -141,7 +141,7 @@ public class WorkflowFiler {
         int returnVal = this.graphFileChooser.showSaveDialog(this.engine.getGUI().getFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.graphFileChooser.getSelectedFile();
-            logger.finest(file.getPath());
+            logger.info(file.getPath());
 
             // Put ".xwf" at the end of the file name
             String path = file.getPath();

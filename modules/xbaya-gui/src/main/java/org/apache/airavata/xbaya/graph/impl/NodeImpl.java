@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.Component;
@@ -40,10 +41,9 @@ import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.Port.Kind;
 import org.apache.airavata.xbaya.streaming.StreamTableModel;
-import org.apache.airavata.common.utils.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-
-import xsul5.MLogger;
 
 /**
  * The abstract implementation of the Node interface. This class should be hidden from the outsize of the package.
@@ -51,7 +51,7 @@ import xsul5.MLogger;
  */
 public abstract class NodeImpl implements Node {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(NodeImpl.class);
 
     protected String id;
 
@@ -510,12 +510,12 @@ public abstract class NodeImpl implements Node {
     @SuppressWarnings("unused")
     @Deprecated
     protected void parseComponent(XmlElement componentElement) throws GraphException {
-        logger.entering(new Object[] { componentElement });
+        logger.debug("Entering:" + componentElement);
         // Do nothing by default.
     }
 
     protected void parseConfiguration(XmlElement configElement) {
-        logger.entering(new Object[] { configElement });
+        logger.debug("Entering:" + configElement);
         // Do nothing by default.
     }
 

@@ -30,6 +30,8 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.gpel.DSCUtil;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.lead.LeadContextHeader;
@@ -42,7 +44,6 @@ import xsul.xwsif_runtime.WSIFClient;
 import xsul.xwsif_runtime.WSIFRuntime;
 import xsul.xwsif_runtime_async.WSIFAsyncResponsesCorrelator;
 import xsul.xwsif_runtime_async_http.XsulSoapHttpWsaResponsesCorrelator;
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlDefinitions;
 import xsul5.wsdl.WsdlException;
 import xsul5.wsdl.WsdlResolver;
@@ -51,7 +52,7 @@ public class DSCTestCase extends XBayaTestCase {
 
     private static final String SAMPLE_AWSDL = XBayaPathConstants.WSDL_DIRECTORY + "/test/TestCMD_Example1_AWSDL.xml";
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(DSCTestCase.class);
 
     /**
      * @param args
@@ -84,7 +85,7 @@ public class DSCTestCase extends XBayaTestCase {
         int clientPort = 0;
         WSIFAsyncResponsesCorrelator correlator = new XsulSoapHttpWsaResponsesCorrelator(clientPort);
         String serverLoc = ((XsulSoapHttpWsaResponsesCorrelator) correlator).getServerLocation();
-        logger.finest("client is waiting at " + serverLoc);
+        logger.info("client is waiting at " + serverLoc);
 
         // LEAD Context Header
         // Create lead context.

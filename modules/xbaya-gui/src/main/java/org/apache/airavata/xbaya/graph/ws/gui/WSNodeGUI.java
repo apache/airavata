@@ -34,12 +34,12 @@ import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.interaction.gui.ServiceInteractionWindow;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WSNodeGUI extends NodeGUI {
 
-    private final static MLogger logger = MLogger.getLogger();
+    private final static Logger logger = LoggerFactory.getLogger(WSNodeGUI.class);
 
     private WSNode node;
 

@@ -52,16 +52,17 @@ import org.gpel.client.GcInstance;
 import org.gpel.client.GcSearchList;
 import org.gpel.client.GcSearchResult;
 import org.ietf.jgss.GSSCredential;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsif.WSIFMessage;
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlDefinitions;
 
 public class GPELClientTestCase extends XBayaTestCase {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(GPELClientTestCase.class);
 
     /**
      * @param args

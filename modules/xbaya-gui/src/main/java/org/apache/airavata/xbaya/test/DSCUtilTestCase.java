@@ -30,8 +30,9 @@ import org.apache.airavata.xbaya.gpel.DSCUtil;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlDefinitions;
 import xsul5.wsdl.WsdlException;
 import xsul5.wsdl.WsdlResolver;
@@ -43,7 +44,7 @@ public class DSCUtilTestCase extends XBayaTestCase {
     private static final String WSDL_WITH_MULTIPLE_PORT_TYPES = XBayaPathConstants.BPEL_SCRIPT_DIRECTORY
             + File.separator + "receive-test-wsdl.xml";
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(DSCUtilTestCase.class);
 
     /**
      * @throws WsdlException

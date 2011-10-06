@@ -33,7 +33,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ErrorWindow {
 
@@ -43,7 +44,7 @@ public class ErrorWindow {
 
     private static final String DEFAULT_INFORMATION_TITLE = "Information";
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(ErrorWindow.class);
 
     private Component defaultParent;
 
@@ -110,7 +111,7 @@ public class ErrorWindow {
      */
     public void error(Component parent, String title, String message, Throwable e) {
 
-        logger.caught(e);
+        logger.error(e.getMessage(), e);
 
         // If the parent component is not specified, set the frame the one.
         if (parent == null) {

@@ -27,12 +27,12 @@ import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.WaitDialog;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.globus.myproxy.MyProxyException;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MyProxyLoader implements Cancelable {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(MyProxyLoader.class);
 
     private XBayaEngine engine;
 
@@ -87,7 +87,7 @@ public class MyProxyLoader implements Cancelable {
             this.waitDialog.hide();
         } catch (MyProxyException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 String message = ErrorMessages.MYPROXY_LOAD_ERROR + "\n" + e.getMessage();
                 this.engine.getErrorWindow().error(message, e);
@@ -96,7 +96,7 @@ public class MyProxyLoader implements Cancelable {
 
         } catch (RuntimeException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 this.waitDialog.hide();

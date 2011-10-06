@@ -63,7 +63,7 @@ import org.xmlpull.infoset.XmlElement;
 
 public class GPELInvokeWindow {
 
-    // private static final MLogger logger = MLogger.getLogger();
+    // private static final Logger logger = LoggerFactory.getLogger();
 
     protected XBayaEngine engine;
 

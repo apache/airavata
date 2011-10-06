@@ -34,12 +34,12 @@ import javax.swing.WindowConstants;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WaitDialog {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(WaitDialog.class);
 
     private XBayaEngine engine;
 
@@ -100,7 +100,7 @@ public class WaitDialog {
                 // ComponentEvent because this.dialog.show() blocks.
                 wait();
             } catch (InterruptedException e) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             }
         }
         this.done = true;
@@ -134,7 +134,6 @@ public class WaitDialog {
     }
 
     private synchronized void shown() {
-        logger.entering();
         notifyAll();
     }
 }

@@ -85,8 +85,8 @@ import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.wf.Workflow;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A canvas to display a graph (workflow).
@@ -94,7 +94,7 @@ import xsul5.MLogger;
  */
 public class GraphCanvas {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(GraphCanvas.class);
 
     private XBayaEngine engine;
 
@@ -331,13 +331,13 @@ public class GraphCanvas {
             }
         } catch (GraphException e) {
             // Should not happen
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         } catch (RuntimeException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         } catch (Error e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
 
         }
@@ -369,13 +369,13 @@ public class GraphCanvas {
             this.panel.repaint();
         } catch (GraphException e) {
             // Should not happen
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         } catch (RuntimeException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         } catch (Error e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
 
         }
@@ -753,13 +753,13 @@ public class GraphCanvas {
                 removeSelected();
             } catch (GraphException e) {
                 // Should not happen
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
                 this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             } catch (RuntimeException e) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
                 this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             } catch (Error e) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
                 this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             }
         }
@@ -781,7 +781,7 @@ public class GraphCanvas {
     }
 
     private void drop(final DropTargetDropEvent event) {
-        logger.entering(new Object[] { event });
+        logger.debug("Event:" + event);
         Transferable transferable = event.getTransferable();
         try {
             // Cannot cast transferable.
@@ -803,10 +803,10 @@ public class GraphCanvas {
                     } catch (ComponentException e) {
                         // If there is any error, the component tree viewer
                         // shows the error dialog.
-                        logger.caught(e);
+                        logger.error(e.getMessage(), e);
                         event.dropComplete(false);
                     } catch (ComponentRegistryException e) {
-                        logger.caught(e);
+                        logger.error(e.getMessage(), e);
                         event.dropComplete(false);
                     }
                 }
@@ -814,10 +814,10 @@ public class GraphCanvas {
 
         } catch (UnsupportedFlavorException e) {
             // Should not happen.
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         } catch (IOException e) {
             // Should not happen.
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -851,10 +851,10 @@ public class GraphCanvas {
             Edge edge = this.graph.addEdge(fromPort, toPort);
             selectEdge(edge);
         } catch (GraphException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             this.engine.getErrorWindow().warning(e.getMessage());
         } catch (RuntimeException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR);
         }
     }
@@ -1157,13 +1157,13 @@ public class GraphCanvas {
                     removeSelectedNode();
                 } catch (GraphException e) {
                     // Should not happen
-                    logger.caught(e);
+                    logger.error(e.getMessage(), e);
                     GraphCanvas.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 } catch (RuntimeException e) {
-                    logger.caught(e);
+                    logger.error(e.getMessage(), e);
                     GraphCanvas.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 } catch (Error e) {
-                    logger.caught(e);
+                    logger.error(e.getMessage(), e);
                     GraphCanvas.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 }
 
@@ -1178,10 +1178,10 @@ public class GraphCanvas {
                 try {
                     rerunSelectedNode();
                 } catch (RuntimeException e) {
-                    logger.caught(e);
+                    logger.error(e.getMessage(), e);
                     GraphCanvas.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 } catch (Error e) {
-                    logger.caught(e);
+                    logger.error(e.getMessage(), e);
                     GraphCanvas.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 }
 
@@ -1194,10 +1194,10 @@ public class GraphCanvas {
                 try {
                     toggleBreakPointToNode();
                 } catch (RuntimeException e) {
-                    logger.caught(e);
+                    logger.error(e.getMessage(), e);
                     GraphCanvas.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 } catch (Error e) {
-                    logger.caught(e);
+                    logger.error(e.getMessage(), e);
                     GraphCanvas.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 }
 

@@ -45,15 +45,16 @@ import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
 import org.gpel.client.GcInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul.XmlConstants;
 import xsul.invoker.gsi.GsiInvoker;
 import xsul5.wsdl.WsdlDefinitions;
-import edu.indiana.extreme.util.mini_logger.MLogger;
 
 public class GPELWorkflowClient implements WorkflowClient {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(GPELWorkflowClient.class);
 
     private WorkflowContext context;
     private Workflow workflow;
@@ -106,7 +107,7 @@ public class GPELWorkflowClient implements WorkflowClient {
             String value = getWorkflowInputValue(inputs, componentPort.getName());
 
             if (value == null) {
-                logger.severe("EXCEPTION: Value for input component is not set");
+                logger.error("EXCEPTION: Value for input component is not set");
                 throw new RuntimeException("Value for input component is not set" + componentPort.getName());
             } else {
                 componentPort.setDefaultValue(value);

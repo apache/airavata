@@ -25,21 +25,22 @@ import java.util.Random;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.test.service.ServiceNotificationSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 import org.xmlpull.v1.builder.XmlNamespace;
 
 import xsul.XmlConstants;
-import xsul5.MLogger;
 
 public class AdderImpl implements Adder {
 
-    private final static MLogger logger = MLogger.getLogger();
+    private final static Logger logger = LoggerFactory.getLogger(AdderImpl.class);
 
     /**
      * @see org.apache.airavata.xbaya.test.service.adder.Adder#add(org.xmlpull.v1.builder.XmlElement)
      */
     public XmlElement add(XmlElement inputElement) {
-        logger.finest(XMLUtil.xmlElementToString(inputElement));
+        logger.info(XMLUtil.xmlElementToString(inputElement));
         ServiceNotificationSender notifier = ServiceNotificationSender.invoked(inputElement);
 
         XmlElement xElement = inputElement.requiredElement(null, "x");
@@ -58,7 +59,7 @@ public class AdderImpl implements Adder {
         try {
             Thread.sleep(msec);
         } catch (InterruptedException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         }
 
         String zString = "" + z;
@@ -72,7 +73,7 @@ public class AdderImpl implements Adder {
         if (notifier != null) {
             notifier.sendingResult(outputElement);
         }
-        logger.finest(XMLUtil.xmlElementToString(outputElement));
+        logger.info(XMLUtil.xmlElementToString(outputElement));
         return outputElement;
     }
 }

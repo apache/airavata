@@ -39,12 +39,12 @@ import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.gpel.model.GpelProcess;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BPELFiler {
 
-    private static MLogger logger = MLogger.getLogger();
+    private static Logger logger = LoggerFactory.getLogger(BPELFiler.class);
 
     private XBayaEngine engine;
 
@@ -106,7 +106,7 @@ public class BPELFiler {
         int returnVal = this.bpelFileChooser.showSaveDialog(this.engine.getGUI().getFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.bpelFileChooser.getSelectedFile();
-            logger.finest(file.getPath());
+            logger.info(file.getPath());
 
             String path = file.getPath();
 

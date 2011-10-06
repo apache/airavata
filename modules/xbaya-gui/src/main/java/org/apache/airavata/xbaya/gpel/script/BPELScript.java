@@ -30,6 +30,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
@@ -61,7 +62,6 @@ import org.apache.airavata.xbaya.graph.system.ReceiveNode;
 import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
-import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.gpel.GpelConstants;
 import org.gpel.model.GpelAssign;
@@ -80,12 +80,13 @@ import org.gpel.model.GpelReply;
 import org.gpel.model.GpelScope;
 import org.gpel.model.GpelSequence;
 import org.gpel.model.GpelVariable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlComment;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlInfosetBuilder;
 import org.xmlpull.infoset.XmlNamespace;
 
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlPortType;
 import xsul5.wsdl.plnk.PartnerLinkRole;
 import xsul5.wsdl.plnk.PartnerLinkType;
@@ -144,7 +145,7 @@ public class BPELScript {
 
     private static final String FOREACH_VALUE_SUFFIX = "Value";
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(BPELScript.class);
 
     private Workflow workflow;
 
@@ -349,7 +350,7 @@ public class BPELScript {
             // Validate
             this.process.xmlValidate();
 
-            logger.finest(this.process.xmlStringPretty());
+            logger.info(this.process.xmlStringPretty());
         } catch (RuntimeException e) {
             throw new GraphException(e);
         }
@@ -478,7 +479,7 @@ public class BPELScript {
 
     // TODO: Add xml to BPEL
     private void addSingle(Node node, Collection<Node> block, GpelSequence sequence) throws GraphException {
-        logger.finest("Processing + " + node.getID());
+        logger.info("Processing + " + node.getID());
         if (node instanceof WSNode) {
             addInvoke((WSNode) node, sequence);
         } else if (node instanceof ConstantNode) {

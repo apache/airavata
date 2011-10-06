@@ -28,6 +28,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.wsdl.WsdlDefinitions;
@@ -38,7 +40,6 @@ import xsul.wsif.WSIFPort;
 import xsul.wsif.WSIFService;
 import xsul.wsif.WSIFServiceFactory;
 import xsul.wsif.spi.WSIFProviderManager;
-import xsul5.MLogger;
 
 public class GFacServiceCreator {
 
@@ -54,7 +55,7 @@ public class GFacServiceCreator {
 
     private static final String SECURITY_NONE = "None";
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(GFacServiceCreator.class);
 
     private WSIFOperation gFacOperation;
 
@@ -110,7 +111,7 @@ public class GFacServiceCreator {
      * @throws XBayaException
      */
     public WsdlDefinitions createService(String serviceQName) throws XBayaException {
-        logger.entering(new Object[] { serviceQName });
+        logger.debug( serviceQName );
         try {
             WSIFMessage inputMessage = this.gFacOperation.createInputMessage();
             WSIFMessage outputMessage = this.gFacOperation.createOutputMessage();
@@ -119,7 +120,7 @@ public class GFacServiceCreator {
             inputMessage.setObjectPart(SERVICE_QNAME_PART, serviceQName);
             inputMessage.setObjectPart(SECURITY_PART, SECURITY_NONE);
 
-            logger.finest("inputMessage: " + inputMessage);
+            logger.info("inputMessage: " + inputMessage);
             boolean success = this.gFacOperation.executeRequestResponseOperation(inputMessage, outputMessage,
                     faultMessage);
             if (!success) {
@@ -130,7 +131,7 @@ public class GFacServiceCreator {
             }
 
             String wsdl = (String) outputMessage.getObjectPart(WSDL_PART);
-            logger.finest("WSDL: " + wsdl);
+            logger.info("WSDL: " + wsdl);
 
             XmlElement definitionsElement = XMLUtil.stringToXmlElement3(wsdl);
 

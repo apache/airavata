@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.Component;
 import org.apache.airavata.xbaya.component.system.S3InputComponent;
@@ -39,16 +40,15 @@ import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.system.gui.S3InputNodeGUI;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
-import org.apache.airavata.common.utils.WSConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-
-import xsul5.MLogger;
 
 public class S3InputNode extends InputNode {
 
     private static final String VALUE_TAG_NAME = "value";
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(S3InputNode.class);
 
     private Object defaultValue;
 
@@ -164,7 +164,7 @@ public class S3InputNode extends InputNode {
      * @return true if the user input is valid against the parameter type; false otherwise
      */
     public boolean isInputValid(String input) {
-        logger.entering(new Object[] { input });
+        logger.debug("Input:" + input);
         // TODO type checks
         return true;
     }

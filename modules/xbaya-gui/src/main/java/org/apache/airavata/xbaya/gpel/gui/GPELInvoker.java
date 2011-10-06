@@ -43,16 +43,17 @@ import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
 import org.gpel.client.GcInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul.XmlConstants;
 import xsul.invoker.gsi.GsiInvoker;
 import xsul.lead.LeadContextHeader;
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlDefinitions;
 
 public class GPELInvoker implements Cancelable {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(GPELInvoker.class);
 
     private XBayaEngine engine;
 
@@ -110,7 +111,7 @@ public class GPELInvoker implements Cancelable {
             client.deploy(workflow, redeploy);
         } catch (WorkflowEngineException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.GPEL_ERROR, e);
                 this.invokingDialog.hide();
@@ -118,7 +119,7 @@ public class GPELInvoker implements Cancelable {
             return;
         } catch (RuntimeException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 this.invokingDialog.hide();
@@ -126,7 +127,7 @@ public class GPELInvoker implements Cancelable {
             return;
         } catch (Error e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 this.invokingDialog.hide();
@@ -143,7 +144,7 @@ public class GPELInvoker implements Cancelable {
             wsdl = client.start(instance);
         } catch (WorkflowEngineException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.GPEL_ERROR, e);
                 this.invokingDialog.hide();
@@ -151,7 +152,7 @@ public class GPELInvoker implements Cancelable {
             return;
         } catch (ComponentException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.GPEL_ERROR, e);
                 this.invokingDialog.hide();
@@ -159,7 +160,7 @@ public class GPELInvoker implements Cancelable {
             return;
         } catch (GraphException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.GPEL_ERROR, e);
                 this.invokingDialog.hide();
@@ -167,7 +168,7 @@ public class GPELInvoker implements Cancelable {
             return;
         } catch (RuntimeException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 this.invokingDialog.hide();
@@ -203,7 +204,7 @@ public class GPELInvoker implements Cancelable {
             invoker = new LEADWorkflowInvoker(wsdl, leadContext, messageBoxURL, secureInvoker);
         } catch (ComponentException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
                 this.invokingDialog.hide();
@@ -211,7 +212,7 @@ public class GPELInvoker implements Cancelable {
             return;
         } catch (RuntimeException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 this.invokingDialog.hide();
@@ -230,7 +231,7 @@ public class GPELInvoker implements Cancelable {
             this.engine.getMonitor().start();
         } catch (MonitorException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
                 this.invokingDialog.hide();
@@ -238,7 +239,7 @@ public class GPELInvoker implements Cancelable {
             return;
         } catch (RuntimeException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
                 this.invokingDialog.hide();

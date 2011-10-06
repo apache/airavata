@@ -37,8 +37,9 @@ import org.gpel.client.GcInstance;
 import org.gpel.client.GcSearchList;
 import org.gpel.client.GpelClient;
 import org.gpel.client.security.GpelUserX509Credential;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlDefinitions;
 
 public abstract class WorkflowClient extends EventProducer {
@@ -65,7 +66,7 @@ public abstract class WorkflowClient extends EventProducer {
 
     protected static final String GRAPH_MIME_TYPE = "application/x-xbaya+xml";
 
-    protected final static MLogger logger = MLogger.getLogger();
+    protected final static Logger logger = LoggerFactory.getLogger(WorkflowClient.class);
 
     protected URI engineURL;
 
@@ -123,7 +124,7 @@ public abstract class WorkflowClient extends EventProducer {
      */
     public URI createScriptAndDeploy(Workflow workflow, boolean redeploy) throws GraphException,
             WorkflowEngineException {
-        logger.entering(new Object[] { workflow });
+        logger.debug("Entering: " + workflow.toString());
 
         // Generate a BPEL process.
         createScript(workflow);

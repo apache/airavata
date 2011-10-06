@@ -28,8 +28,7 @@ import junit.framework.TestCase;
 
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
 
 public abstract class XBayaTestCase extends TestCase {
 
@@ -47,8 +46,6 @@ public abstract class XBayaTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
-        MLogger.setCmdNames("org.apache.airavata.xbaya:ALL");
 
         this.configuration = new XBayaConfiguration();
 

@@ -63,8 +63,8 @@ import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
 import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.XBayaComponent;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The ComponentTreeViewer class shows the selectedComponent tree.
@@ -77,7 +77,7 @@ public class ComponentSelector implements XBayaComponent {
      */
     public static final String TITLE = "Component List";
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(ComponentSelector.class);
 
     private XBayaEngine engine;
 
@@ -236,15 +236,13 @@ public class ComponentSelector implements XBayaComponent {
 
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                logger.entering();
                 ComponentTreeNode root = ComponentSelector.this.treeModel.getRoot();
                 ComponentSelector.this.treeModel.removeChildren(root);
-                logger.finest("Removed all");
+                logger.info("Removed all");
                 for (ComponentTreeNode subTree : newSubTrees) {
                     ComponentSelector.this.treeModel.addNodeInto(subTree, root);
                 }
                 makeVisible((ComponentTreeNode) root.getFirstChild());
-                logger.exiting();
             }
         });
 
@@ -312,7 +310,6 @@ public class ComponentSelector implements XBayaComponent {
      *            The path of the selected selectedComponent.
      */
     private void select(TreePath treePath) {
-        logger.entering(treePath);
         final ComponentTreeNode selectedNode = (ComponentTreeNode) treePath.getLastPathComponent();
         final ComponentReference componentReference = selectedNode.getComponentReference();
         selectComponent(null);
@@ -353,7 +350,6 @@ public class ComponentSelector implements XBayaComponent {
             }.start();
 
         }
-        logger.exiting();
     }
 
     private void expandTreeLeaf(ComponentTreeNode selectedNode, List<? extends Component> components) {
@@ -426,7 +422,7 @@ public class ComponentSelector implements XBayaComponent {
             renderer.setClosedIcon(SwingUtil.createImageIcon("closed.gif"));
             renderer.setLeafIcon(SwingUtil.createImageIcon("leaf.gif"));
         } catch (RuntimeException e) {
-            logger.warning("Failed to load image icons.  " + "It will use the default icons instead.", e);
+            logger.warn("Failed to load image icons.  " + "It will use the default icons instead.", e);
         }
 
         this.tree.setCellRenderer(renderer);

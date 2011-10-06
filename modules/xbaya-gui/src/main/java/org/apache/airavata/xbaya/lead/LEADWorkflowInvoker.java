@@ -34,6 +34,8 @@ import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponentFactory;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.XmlConstants;
@@ -53,12 +55,11 @@ import xsul.xwsif_runtime.WSIFRuntime;
 import xsul.xwsif_runtime_async.WSIFAsyncResponsesCorrelator;
 import xsul.xwsif_runtime_async_http.XsulSoapHttpWsaResponsesCorrelator;
 import xsul.xwsif_runtime_async_msgbox.XsulMsgBoxWsaResponsesCorrelator;
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlDefinitions;
 
 public class LEADWorkflowInvoker {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(LEADWorkflowInvoker.class);
 
     private WsdlDefinitions definitions;
 
@@ -179,7 +180,7 @@ public class LEADWorkflowInvoker {
                     String[] result = pattern.split((String) value);
                     XmlElement arrayEl = XmlConstants.BUILDER.newFragment(name);
                     for (int i = 0; i < result.length; i++) {
-                        logger.finest("split=" + result[i]);
+                        logger.info("split=" + result[i]);
                         arrayEl.addElement("value").addChild(result[i]);
                     }
                     this.inputMessage.setObjectPart(name, arrayEl);
@@ -271,7 +272,7 @@ public class LEADWorkflowInvoker {
      * @throws ComponentException
      */
     private void init() throws ComponentException {
-        logger.finest("wsdl: " + this.definitions.xmlStringPretty());
+        logger.info("wsdl: " + this.definitions.xmlStringPretty());
         this.component = WSComponentFactory.createComponent(this.definitions);
 
         WSIFServiceFactory factory = WSIFServiceFactory.newInstance();
@@ -292,7 +293,7 @@ public class LEADWorkflowInvoker {
             logger.info("starting response correlator using local port " + clientPort);
             XsulSoapHttpWsaResponsesCorrelator wasCorrelator = new XsulSoapHttpWsaResponsesCorrelator(clientPort);
             String serverLoc = (wasCorrelator).getServerLocation();
-            logger.finest("client is waiting at " + serverLoc);
+            logger.info("client is waiting at " + serverLoc);
             correlator = wasCorrelator;
         } else {
             logger.info("starting reponse correlator using message box " + this.messageBoxURL);
@@ -312,7 +313,7 @@ public class LEADWorkflowInvoker {
         if (this.operationName == null) {
             this.operationName = this.component.getOperationName();
         }
-        logger.finest("operationName: " + operationName);
+        logger.info("operationName: " + operationName);
         this.operation = port.createOperation(operationName);
         this.inputMessage = this.operation.createInputMessage();
         this.outputMessage = this.operation.createOutputMessage();
