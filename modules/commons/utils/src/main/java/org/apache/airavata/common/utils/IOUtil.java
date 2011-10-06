@@ -33,11 +33,12 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IOUtil {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(IOUtil.class);
 
     /**
      * @param path
@@ -45,12 +46,10 @@ public class IOUtil {
      * @throws IOException
      */
     public static void writeToFile(String content, String path) throws IOException {
-        logger.entering(new Object[] { path, content });
+        logger.debug("Path:" + path + " Content:" + content );
 
         FileWriter fw = new FileWriter(path);
         writeToWriter(content, fw);
-
-        logger.exiting();
     }
 
     /**

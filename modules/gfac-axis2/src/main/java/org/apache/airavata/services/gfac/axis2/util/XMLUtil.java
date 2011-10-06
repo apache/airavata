@@ -21,9 +21,25 @@
 
 package org.apache.airavata.services.gfac.axis2.util;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
@@ -33,17 +49,6 @@ import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlNamespace;
 import org.xmlpull.mxp1.MXParserFactory;
 import org.xmlpull.mxp1_serializer.MXSerializer;
-import xsul5.MLogger;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 
 public class XMLUtil {
 
@@ -59,7 +64,7 @@ public class XMLUtil {
     public static final org.xmlpull.v1.builder.XmlInfosetBuilder BUILDER3 = org.xmlpull.v1.builder.XmlInfosetBuilder
             .newInstance(new MXParserFactory());
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(XMLUtil.class);
 
     private final static String PROPERTY_SERIALIZER_INDENTATION = "http://xmlpull.org/v1/doc/properties.html#serializer-indentation";
 
@@ -154,7 +159,7 @@ public class XMLUtil {
         Element domElement = document.createElement(xppElement.getName());
 
         for (XmlNamespace namespace : xppElement.namespaces()) {
-            logger.finest("namespace: " + namespace);
+            logger.info("namespace: " + namespace);
         }
 
         for (org.xmlpull.infoset.XmlAttribute attribute : xppElement.attributes()) {
@@ -168,7 +173,7 @@ public class XMLUtil {
                 Text text = document.createTextNode((String) object);
                 domElement.appendChild(text);
             } else {
-                logger.finest("object.getClass(): " + object.getClass());
+                logger.info("object.getClass(): " + object.getClass());
             }
         }
         return domElement;
@@ -205,7 +210,7 @@ public class XMLUtil {
         Iterator nsIt = xppElement.namespaces();
         while (nsIt.hasNext()) {
             org.xmlpull.v1.builder.XmlNamespace namespace = (org.xmlpull.v1.builder.XmlNamespace) nsIt.next();
-            logger.finest("namespace: " + namespace);
+            logger.info("namespace: " + namespace);
             // TODO
         }
 
@@ -225,7 +230,7 @@ public class XMLUtil {
                 Text text = document.createTextNode((String) object);
                 domElement.appendChild(text);
             } else {
-                logger.finest("object.getClass(): " + object.getClass());
+                logger.info("object.getClass(): " + object.getClass());
             }
         }
         return domElement;
@@ -258,7 +263,7 @@ public class XMLUtil {
             stringToXmlElement(string);
             return true;
         } catch (RuntimeException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             return false;
         }
     }
@@ -283,8 +288,8 @@ public class XMLUtil {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < errorList.size(); i++) {
             XmlError error = (XmlError) errorList.get(i);
-            logger.warning("Message: " + error.getMessage());
-            logger.warning("Location of invalid XML: " + error.getCursorLocation().xmlText());
+            logger.warn("Message: " + error.getMessage());
+            logger.warn("Location of invalid XML: " + error.getCursorLocation().xmlText());
             stringBuilder.append("Message:" + error.getMessage());
             stringBuilder.append("Location of invalid XML: " + error.getCursorLocation().xmlText());
         }

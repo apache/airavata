@@ -26,9 +26,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 
-
 import org.apache.airavata.common.exception.UtilsException;
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Opens URLs with the OS-specific browser.
@@ -37,7 +37,7 @@ public class BrowserLauncher {
 
     private static final String ERROR_MESSAGE = "Error while attempting to launch web browser";
 
-    private static MLogger logger = MLogger.getLogger();
+    private static Logger logger = LoggerFactory.getLogger(BrowserLauncher.class);
 
     /**
      * Opens a specified URL with the browser.
@@ -58,7 +58,7 @@ public class BrowserLauncher {
      * @throws UtilsException
      */
     public static void openURL(String url) throws UtilsException {
-        logger.entering(url);
+        logger.debug("Enter:" + url);
         String osName = System.getProperty("os.name");
         try {
             if (osName.startsWith("Mac OS")) {

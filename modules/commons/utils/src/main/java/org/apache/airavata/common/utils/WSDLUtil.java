@@ -32,13 +32,15 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.exception.UtilsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlAttribute;
 import org.xmlpull.infoset.XmlBuilderException;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlNamespace;
-import org.apache.airavata.common.exception.UtilsException;
+
 import xsul.XmlConstants;
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlBinding;
 import xsul5.wsdl.WsdlDefinitions;
 import xsul5.wsdl.WsdlPortType;
@@ -47,7 +49,7 @@ import xsul5.wsdl.WsdlUtil;
 
 public class WSDLUtil {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(WSDLUtil.class);
 
     /**
      * @param wsdlString
@@ -455,7 +457,7 @@ public class WSDLUtil {
      */
     public static URI appendWSDLQuary(URI uri) {
         if (uri.toString().endsWith("?wsdl")) {
-            logger.warning("URL already has ?wsdl at the end: " + uri.toString());
+            logger.warn("URL already has ?wsdl at the end: " + uri.toString());
             // Don't throw exception to be more error tolerant.
             return uri;
         }
