@@ -134,7 +134,7 @@ public class GPELClient extends WorkflowClient {
                     template = this.client.retrieveTemplate(templateID);
                 } catch (GcResourceNotFoundException e) {
                     // The workflow was not found in the engine.
-                    logger.caught(e);
+                    logger.error(e.getMessage(), e);
                     template = null;
                 } catch (RuntimeException e) {
                     throw new WorkflowEngineException(ErrorMessages.GPEL_ERROR, e);
@@ -159,7 +159,7 @@ public class GPELClient extends WorkflowClient {
             // Look for each resource.
             for (GcWebResource link : links) {
                 String rel = link.getRel();
-                logger.finest("rel: " + rel);
+                logger.info("rel: " + rel);
                 if (GpelConstants.REL_PROCESS.equals(rel)) {
                     processResource = (GcProcessResource) link;
                 } else if (GPELLinksFilter.REL_XWF.equals(rel)) {
@@ -169,7 +169,7 @@ public class GPELClient extends WorkflowClient {
                 } else if (GpelConstants.REL_WSDL.equals(rel)) {
                     GcWsdlResource wsdlResouece = (GcWsdlResource) link;
                     String wsdlTitle = wsdlResouece.getTitle();
-                    logger.finest("wsdlTitle: " + wsdlTitle);
+                    logger.info("wsdlTitle: " + wsdlTitle);
                     // XXX Can we rely on the title to do the matching?
                     wsdlResourceMap.put(wsdlTitle, wsdlResouece);
                 }
@@ -188,7 +188,7 @@ public class GPELClient extends WorkflowClient {
         // WSDL for the process
         workflowWSDLresource = wsdlResourceMap.remove(PROCESS_WSDL_TYTLE);
         WsdlDefinitions workflowWSDL = workflow.getWorkflowWSDL();
-        logger.finest(workflowWSDL.xmlString());
+        logger.info(workflowWSDL.xmlString());
         if (workflowWSDLresource == null) {
             workflowWSDLresource = new GcWsdlResource(PROCESS_WSDL_TYTLE, workflowWSDL);
             links.add(workflowWSDLresource);
@@ -216,12 +216,12 @@ public class GPELClient extends WorkflowClient {
         // Graph
         Graph graph = workflow.getGraph();
         if (graphResource == null) {
-            logger.finest("Creating a new graphResource");
+            logger.info("Creating a new graphResource");
             graphResource = new GcXmlWebResource("process.xgr", graph.toXML(), GRAPH_MIME_TYPE);
             graphResource.setRel(GPELLinksFilter.REL_XWF);
             links.add(graphResource);
         } else {
-            logger.finest("Updating the graphResource");
+            logger.info("Updating the graphResource");
             graphResource.setXmlContent(graph.toXML());
         }
 
@@ -241,10 +241,10 @@ public class GPELClient extends WorkflowClient {
             }
         } catch (IOException e) {
             // It's OK to not save the image for now.
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         } catch (IllegalArgumentException e) {
             // This happens only from junit tests.
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         }
 
         try {
@@ -254,7 +254,6 @@ public class GPELClient extends WorkflowClient {
             URI templateID = template.getTemplateId();
             workflow.setGPELTemplateID(templateID);
 
-            logger.exiting();
             return templateID;
         } catch (RuntimeException e) {
             throw new WorkflowEngineException(ErrorMessages.GPEL_ERROR, e);
@@ -271,7 +270,7 @@ public class GPELClient extends WorkflowClient {
      */
     public synchronized Workflow load(URI id, WorkflowType workflowType) throws GraphException,
             WorkflowEngineException, ComponentException {
-        logger.entering(new Object[] { id, workflowType });
+        logger.debug("ID: " + id.toString() + " Type:" + workflowType );
 
         if (!isConnected()) {
             throw new IllegalStateException("The BPEL Engine has not configured.");
@@ -344,11 +343,11 @@ public class GPELClient extends WorkflowClient {
         List<GcWebResource> links = workflowTemplate.getLinks();
         for (GcWebResource link : links) {
             String rel = link.getRel();
-            logger.finest("rel: " + rel);
+            logger.info("rel: " + rel);
             if (GpelConstants.REL_WSDL.equals(rel)) {
                 GcWsdlResource wsdlResouece = (GcWsdlResource) link;
                 String wsdlTitle = wsdlResouece.getTitle();
-                logger.finest("wsdlTitle: " + wsdlTitle);
+                logger.info("wsdlTitle: " + wsdlTitle);
                 // Use use title to do matching
                 wsdlResourceMap.put(wsdlTitle, wsdlResouece);
             }
@@ -382,11 +381,11 @@ public class GPELClient extends WorkflowClient {
         String name = null;
         if (workflowInstance != null) {
             name = workflowInstance.getTitle();
-            logger.finest("name from the instance: " + name);
+            logger.info("name from the instance: " + name);
         }
         if (name == null) {
             name = workflowTemplate.getTitle();
-            logger.finest("name from the template: " + name);
+            logger.info("name from the template: " + name);
         }
         workflow.setName(name);
 
@@ -398,7 +397,7 @@ public class GPELClient extends WorkflowClient {
                 workflow.setImage(image);
             } catch (IOException e) {
                 // Not crucial
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             }
         }
 
@@ -416,7 +415,7 @@ public class GPELClient extends WorkflowClient {
      */
     @SuppressWarnings("boxing")
     public synchronized GcSearchList list(int maxNum, WorkflowType type) throws WorkflowEngineException {
-        logger.entering(new Object[] { maxNum, type });
+        logger.debug("Maxnum: " + maxNum + " Type: " + type);
         if (!isConnected()) {
             throw new IllegalStateException("The BPEL Engine has not configured.");
         }
@@ -480,26 +479,26 @@ public class GPELClient extends WorkflowClient {
             if (name != null) {
                 String title = instance.getTitle();
                 title = title + " (" + name + ")";
-                logger.finest("new title: " + title);
+                logger.info("new title: " + title);
                 instance.setTitle(title);
             }
 
             Graph graph = workflow.getGraph();
             for (WSNode node : GraphUtil.getNodes(graph, WSNode.class)) {
                 String partnerLinkName = BPELScript.createPartnerLinkName(node.getID());
-                logger.finest("partnerLinkName: " + partnerLinkName);
+                logger.info("partnerLinkName: " + partnerLinkName);
                 WsdlDefinitions wsdl = node.getComponent().getWSDL();
-                logger.finest("WSDL QName: " + WSDLUtil.getWSDLQName(wsdl));
+                logger.info("WSDL QName: " + WSDLUtil.getWSDLQName(wsdl));
 
                 if (WSDLUtil.isAWSDL(wsdl)) {
                     URI subWorkflowTemplateID = WorkflowComponent.getWorkflowTemplateID(wsdl);
                     if (subWorkflowTemplateID == null) {
                         // It's a service AWSDL. Create a CWSDL that uses DSC.
-                        logger.finest("service");
+                        logger.info("service");
                         wsdl = DSCUtil.convertToCWSDL(WSDLUtil.deepClone(wsdl), dscURL);
                     } else {
                         // It's a workflow WSDL.
-                        logger.finest("workflow");
+                        logger.info("workflow");
                         // recursively instantiate and start sub-workflows.
                         Workflow subWorkflow = load(subWorkflowTemplateID, WorkflowType.TEMPLATE);
                         GcInstance subInstance = instantiate(subWorkflow, dscURL, name);
@@ -614,12 +613,12 @@ public class GPELClient extends WorkflowClient {
             return;
         }
 
-        logger.finest("Connecting a GPEL Engine at " + this.engineURL);
+        logger.info("Connecting a GPEL Engine at " + this.engineURL);
         try {
             Transport transport;
             if (isSecure()) {
                 if (this.gpelUserX509Credential == null) {
-                    logger.finest("Using ssl without any credential.");
+                    logger.info("Using ssl without any credential.");
                     this.gpelUserX509Credential = new GpelUserX509Credential(null,
                             XBayaSecurity.getTrustedCertificates());
                 }

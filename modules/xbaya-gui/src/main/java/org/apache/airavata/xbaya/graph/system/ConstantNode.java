@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.Component;
 import org.apache.airavata.xbaya.component.system.ConstantComponent;
@@ -37,10 +38,9 @@ import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.system.gui.ConstantNodeGUI;
-import org.apache.airavata.common.utils.WSConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-
-import xsul5.MLogger;
 
 public class ConstantNode extends SystemNode {
 
@@ -48,7 +48,7 @@ public class ConstantNode extends SystemNode {
 
     private static final String VALUE_TAG_NAME = "value";
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(ConstantNode.class);
 
     private QName type;
 
@@ -179,7 +179,7 @@ public class ConstantNode extends SystemNode {
      * @return true if the user input is valid against the parameter type; false otherwise
      */
     public boolean isInputValid(String input) {
-        logger.entering(new Object[] { input });
+        logger.debug("Input:" + input);
         // TODO now returning true because only string is used.
         return true;
     }

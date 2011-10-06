@@ -29,6 +29,8 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
 import org.apache.airavata.xbaya.lead.NotificationHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsdl.WsdlDefinitions;
@@ -36,11 +38,10 @@ import xsul.wsdl.WsdlResolver;
 import xsul.wsif.WSIFMessage;
 import xsul.xhandler_soap_sticky_header.StickySoapHeaderHandler;
 import xsul.xwsif_runtime.WSIFClient;
-import xsul5.MLogger;
 
 public class GFacInvoker implements Invoker {
 
-    private final static MLogger logger = MLogger.getLogger();
+    private final static Logger logger = LoggerFactory.getLogger(GFacInvoker.class);
 
     private String gfacURL;
 

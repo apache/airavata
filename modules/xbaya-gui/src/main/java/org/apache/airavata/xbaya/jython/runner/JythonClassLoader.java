@@ -47,8 +47,8 @@ import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.XBayaVersion;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 import org.python.util.PythonInterpreter;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class loader loads jython related classes without counting on parent class loader. This is because jython
@@ -57,7 +57,7 @@ import xsul5.MLogger;
  */
 public class JythonClassLoader extends SecureClassLoader {
 
-    private final static MLogger logger = MLogger.getLogger();
+    private final static Logger logger = LoggerFactory.getLogger(JythonClassLoader.class);
 
     private ClassLoader parent;
 
@@ -109,7 +109,7 @@ public class JythonClassLoader extends SecureClassLoader {
             try {
                 IOUtil.deleteDirectory(this.tmpJarDirectory);
             } catch (RuntimeException e) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             }
         }
     }
@@ -136,7 +136,7 @@ public class JythonClassLoader extends SecureClassLoader {
                 klass = super.loadClass(name, false);
             } catch (ClassNotFoundException e2) {
                 klass = this.parent.loadClass(name);
-                logger.finest("found from parent, klass: " + klass);
+                logger.info("found from parent, klass: " + klass);
             }
         }
 
@@ -188,7 +188,6 @@ public class JythonClassLoader extends SecureClassLoader {
      */
     @Override
     protected PermissionCollection getPermissions(CodeSource codesource) {
-        logger.entering(new Object[] { codesource });
         // Grant all perission. This could be avoided if code signers were
         // extracted correctly.
         Permissions permissions = new Permissions();
@@ -208,7 +207,7 @@ public class JythonClassLoader extends SecureClassLoader {
             String file = classURL.getFile();
             // file = file:/a/b/c.jar!d/e/f.class
             // or http://example.org/a/b/c.jar!d/e/f.class
-            logger.finest("file: " + file);
+            logger.info("file: " + file);
             jarURLString = file.substring(0, file.lastIndexOf('!'));
             // jarURLString = file:/a/b/c.jar
             // or http://example.org/a/b/c.jar
@@ -220,7 +219,6 @@ public class JythonClassLoader extends SecureClassLoader {
         }
         try {
             URL jarURL = new URL(jarURLString);
-            logger.exiting(jarURL);
             return jarURL;
         } catch (MalformedURLException e) {
             throw new XBayaRuntimeException(e);
@@ -234,7 +232,7 @@ public class JythonClassLoader extends SecureClassLoader {
         } catch (UnsupportedEncodingException e) {
             throw new XBayaRuntimeException(e);
         }
-        logger.finest("path: " + path);
+        logger.info("path: " + path);
         if (path.endsWith("/")) {
             // url = file:/a/b/c/
             // It's a local directory
@@ -264,7 +262,7 @@ public class JythonClassLoader extends SecureClassLoader {
 
                 int i = path.lastIndexOf('/');
                 File file = new File(this.tmpJarDirectory, path.substring(i + 1));
-                logger.finest("file: " + file);
+                logger.info("file: " + file);
                 InputStream stream = url.openStream();
                 IOUtil.writeToFile(stream, file);
                 JarFile jarFile = new JarFile(file);
@@ -279,7 +277,7 @@ public class JythonClassLoader extends SecureClassLoader {
         // logger.entering(new Object[] { name, url, jarFile });
 
         String classPath = name.replace('.', '/').concat(".class");
-        // logger.finest("classPath: " + classPath);
+        // logger.info("classPath: " + classPath);
 
         try {
             byte[] classBytes;
@@ -294,11 +292,11 @@ public class JythonClassLoader extends SecureClassLoader {
                 // A Jar file
                 JarEntry jarEntry = jarFile.getJarEntry(classPath);
                 CodeSigner[] codeSigners = jarEntry.getCodeSigners();
-                // logger.finest("codeSigners: " + codeSigners);
+                // logger.info("codeSigners: " + codeSigners);
                 if (codeSigners != null) {
                     // Somehow it's null.
                     for (CodeSigner signer : codeSigners) {
-                        logger.finest("signer: " + signer);
+                        logger.info("signer: " + signer);
                     }
                 }
                 codeSource = new CodeSource(this.xbayaURL, codeSigners);
@@ -310,7 +308,7 @@ public class JythonClassLoader extends SecureClassLoader {
             this.classes.put(name, klass);
             return klass;
         } catch (IOException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             throw new ClassNotFoundException();
         }
     }
@@ -320,7 +318,6 @@ public class JythonClassLoader extends SecureClassLoader {
      */
     @Override
     public synchronized void clearAssertionStatus() {
-        logger.entering();
         super.clearAssertionStatus();
     }
 
@@ -331,7 +328,6 @@ public class JythonClassLoader extends SecureClassLoader {
     @Override
     protected Package definePackage(String name, String specTitle, String specVersion, String specVendor,
             String implTitle, String implVersion, String implVendor, URL sealBase) throws IllegalArgumentException {
-        logger.entering();
         return super.definePackage(name, specTitle, specVersion, specVendor, implTitle, implVersion, implVendor,
                 sealBase);
     }
@@ -341,7 +337,6 @@ public class JythonClassLoader extends SecureClassLoader {
      */
     @Override
     protected String findLibrary(String libname) {
-        logger.entering();
         return super.findLibrary(libname);
     }
 
@@ -350,7 +345,6 @@ public class JythonClassLoader extends SecureClassLoader {
      */
     @Override
     protected URL findResource(String name) {
-        logger.entering();
         return super.findResource(name);
     }
 
@@ -359,7 +353,6 @@ public class JythonClassLoader extends SecureClassLoader {
      */
     @Override
     protected Enumeration<URL> findResources(String name) throws IOException {
-        logger.entering();
         return super.findResources(name);
     }
 
@@ -368,7 +361,6 @@ public class JythonClassLoader extends SecureClassLoader {
      */
     @Override
     protected Package getPackage(String name) {
-        logger.entering();
         return super.getPackage(name);
     }
 
@@ -377,7 +369,6 @@ public class JythonClassLoader extends SecureClassLoader {
      */
     @Override
     protected Package[] getPackages() {
-        logger.entering();
         return super.getPackages();
     }
 
@@ -386,7 +377,6 @@ public class JythonClassLoader extends SecureClassLoader {
      */
     @Override
     public URL getResource(String name) {
-        logger.entering();
         return super.getResource(name);
     }
 
@@ -395,7 +385,6 @@ public class JythonClassLoader extends SecureClassLoader {
      */
     @Override
     public InputStream getResourceAsStream(String name) {
-        logger.entering();
         return super.getResourceAsStream(name);
     }
 
@@ -404,7 +393,6 @@ public class JythonClassLoader extends SecureClassLoader {
      */
     @Override
     public Enumeration<URL> getResources(String name) throws IOException {
-        logger.entering();
         return super.getResources(name);
     }
 
@@ -413,7 +401,6 @@ public class JythonClassLoader extends SecureClassLoader {
      */
     @Override
     public synchronized void setClassAssertionStatus(String className, boolean enabled) {
-        logger.entering();
         super.setClassAssertionStatus(className, enabled);
     }
 
@@ -422,7 +409,6 @@ public class JythonClassLoader extends SecureClassLoader {
      */
     @Override
     public synchronized void setDefaultAssertionStatus(boolean enabled) {
-        logger.entering();
         super.setDefaultAssertionStatus(enabled);
     }
 
@@ -431,7 +417,6 @@ public class JythonClassLoader extends SecureClassLoader {
      */
     @Override
     public synchronized void setPackageAssertionStatus(String packageName, boolean enabled) {
-        logger.entering();
         super.setPackageAssertionStatus(packageName, enabled);
     }
 

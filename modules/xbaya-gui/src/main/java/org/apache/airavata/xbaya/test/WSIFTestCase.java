@@ -26,12 +26,12 @@ import junit.framework.TestSuite;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 import org.apache.airavata.xbaya.xregistry.XRegistryComponent;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WSIFTestCase extends XBayaTestCase {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(WSIFTestCase.class);
 
     private ComponentTreeNode resouceCatalogComponentTree;
 
@@ -66,7 +66,7 @@ public class WSIFTestCase extends XBayaTestCase {
                             XRegistryComponent.Type.ABSTRACT);
                     WSIFTestCase.this.xRegistryComponentTree = client.getComponentTree();
                 } catch (Exception e) {
-                    logger.caught(e);
+                    logger.error(e.getMessage(), e);
                 }
             }
         };
@@ -93,7 +93,7 @@ public class WSIFTestCase extends XBayaTestCase {
                     WSIFTestCase.this.xRegistryComponentTree = client.getComponentTree();
                     System.err.println("ALEK c=" + WSIFTestCase.this.xRegistryComponentTree);
                 } catch (Exception e) {
-                    logger.caught(e);
+                    logger.error(e.getMessage(), e);
                 }
             }
         };

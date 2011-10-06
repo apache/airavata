@@ -60,9 +60,9 @@ import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.WorkflowClient.WorkflowType;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-
-import xsul5.MLogger;
 
 public class MonitorEventHandler implements ChangeListener {
 
@@ -96,7 +96,7 @@ public class MonitorEventHandler implements ChangeListener {
         }
     }
 
-    private static MLogger logger = MLogger.getLogger();
+    private static Logger logger = LoggerFactory.getLogger(MonitorEventHandler.class);
 
     private XBayaEngine engine;
 
@@ -133,7 +133,7 @@ public class MonitorEventHandler implements ChangeListener {
         } catch (RuntimeException e) {
             // Don't want to pop up an error dialog every time XBaya received an
             // ill-formatted notification.
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -284,7 +284,7 @@ public class MonitorEventHandler implements ChangeListener {
             // correctly.
                     || type == EventType.SERVICE_INVOKED) {
                 if (node == null) {
-                    logger.warning("There is no node that has ID, " + nodeID);
+                    logger.warn("There is no node that has ID, " + nodeID);
                 } else {
                     node.getGUI().setToken(instanceName, NodeState.EXECUTING);
                 }
@@ -293,7 +293,7 @@ public class MonitorEventHandler implements ChangeListener {
             // correctly.
                     || type == EventType.SENDING_RESULT) {
                 if (node == null) {
-                    logger.warning("There is no node that has ID, " + nodeID);
+                    logger.warn("There is no node that has ID, " + nodeID);
                 } else {
                     node.getGUI().setToken(instanceName, NodeState.FINISHED);
                 }
@@ -301,13 +301,13 @@ public class MonitorEventHandler implements ChangeListener {
             // TODO
                     || type == EventType.SENDING_FAULT || type == EventType.SENDING_RESPONSE_FAILED) {
                 if (node == null) {
-                    logger.warning("There is no node that has ID, " + nodeID);
+                    logger.warn("There is no node that has ID, " + nodeID);
                 } else {
                     node.getGUI().setToken(instanceName, NodeState.FAILED);
                 }
             } else if (type == MonitorUtil.EventType.RESOURCE_MAPPING) {
                 if (node == null) {
-                    logger.warning("There is no node that has ID, " + nodeID);
+                    logger.warn("There is no node that has ID, " + nodeID);
                 } else {
                     // nodeResourceMapped(node, event.getEvent(), forward);
                 }
@@ -353,7 +353,7 @@ public class MonitorEventHandler implements ChangeListener {
         String nodeID = event.getNodeID();
         Node node = graph.getNode(nodeID);
 
-        // logger.finest("type: " + type);
+        // logger.info("type: " + type);
         if (type == MonitorUtil.EventType.WORKFLOW_INVOKED) {
             workflowStarted(graph, forward);
         } else if (type == MonitorUtil.EventType.WORKFLOW_TERMINATED) {
@@ -363,7 +363,7 @@ public class MonitorEventHandler implements ChangeListener {
         // correctly.
                 || type == EventType.SERVICE_INVOKED) {
             if (node == null) {
-                logger.warning("There is no node that has ID, " + nodeID);
+                logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeStarted(node, forward);
             }
@@ -372,7 +372,7 @@ public class MonitorEventHandler implements ChangeListener {
         // correctly.
                 || type == EventType.SENDING_RESULT) {
             if (node == null) {
-                logger.warning("There is no node that has ID, " + nodeID);
+                logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeFinished(node, forward);
             }
@@ -380,13 +380,13 @@ public class MonitorEventHandler implements ChangeListener {
         // TODO
                 || type == EventType.SENDING_FAULT || type == EventType.SENDING_RESPONSE_FAILED) {
             if (node == null) {
-                logger.warning("There is no node that has ID, " + nodeID);
+                logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeFailed(node, forward);
             }
         } else if (type == MonitorUtil.EventType.RESOURCE_MAPPING) {
             if (node == null) {
-                logger.warning("There is no node that has ID, " + nodeID);
+                logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeResourceMapped(node, event.getEvent(), forward);
             }
@@ -425,16 +425,16 @@ public class MonitorEventHandler implements ChangeListener {
             canvas.setWorkflow(loadedWorkflow);
         } catch (GraphException e) {
             this.incorrectWorkflowIDs.add(workflowInstanceID);
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         } catch (WorkflowEngineException e) {
             this.incorrectWorkflowIDs.add(workflowInstanceID);
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         } catch (ComponentException e) {
             this.incorrectWorkflowIDs.add(workflowInstanceID);
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         } catch (RuntimeException e) {
             this.incorrectWorkflowIDs.add(workflowInstanceID);
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         }
 
     }

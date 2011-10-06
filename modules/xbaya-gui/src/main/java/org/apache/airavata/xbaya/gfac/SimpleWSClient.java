@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
 
@@ -36,7 +38,6 @@ import xsul.wsif.WSIFPort;
 import xsul.wsif.impl.WSIFMessageElement;
 import xsul.xwsif_runtime.WSIFClient;
 import xsul.xwsif_runtime.WSIFRuntime;
-import xsul5.MLogger;
 
 /**
  * This is a Simple Web Service client for easy SOAP Messages creation
@@ -44,7 +45,7 @@ import xsul5.MLogger;
  */
 public class SimpleWSClient {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(SimpleWSClient.class);
 
     private static final XmlInfosetBuilder builder = XmlConstants.BUILDER;
 
@@ -88,7 +89,7 @@ public class SimpleWSClient {
 
         boolean success = operation.executeRequestResponseOperation(inputMessage, outputMessage, faultMessage);
         if (success) {
-            logger.finest("" + outputMessage);
+            logger.info("" + outputMessage);
             return outputMessage;
         } else {
             throw new ComponentRegistryException("Excpetion at server " + faultMessage);

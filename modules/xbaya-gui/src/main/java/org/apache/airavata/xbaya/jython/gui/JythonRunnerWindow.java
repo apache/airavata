@@ -36,6 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
@@ -55,16 +56,16 @@ import org.apache.airavata.xbaya.jython.runner.JythonRunner;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.gui.MonitorStarter;
-import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlDefinitions;
 
 public class JythonRunnerWindow {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(JythonRunnerWindow.class);
 
     private XBayaEngine engine;
 
@@ -374,7 +375,7 @@ public class JythonRunnerWindow {
                     // // Wait for all notification to arrive.
                     // Thread.sleep(10 * 1000); // 10 secs
                     // } catch (InterruptedException e) {
-                    // logger.caught(e);
+                    // logger.error(e.getMessage(), e);
                     // }
                 } catch (XBayaException e) {
                     JythonRunnerWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);

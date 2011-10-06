@@ -23,7 +23,7 @@ package org.apache.airavata.xbaya.graph.ws.gui;
 
 public class InteractionNodeGUI /* extends NodeGUI */{
 
-    // private final static MLogger logger = MLogger.getLogger();
+    // private final static Logger logger = LoggerFactory.getLogger();
     //
     // private InteractionNode node;
     //
@@ -45,7 +45,7 @@ public class InteractionNodeGUI /* extends NodeGUI */{
     // */
     // @Override
     // public void mouseClicked(MouseEvent event, XBayaEngine engine) {
-    // logger.finest(event.toString());
+    // logger.info(event.toString());
     // if (event.getClickCount() >= 2) {
     // showWindow(engine);
     // }

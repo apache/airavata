@@ -44,12 +44,12 @@ import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
 import org.ietf.jgss.GSSCredential;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GPELDeployWindow {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(GPELDeployWindow.class);
 
     protected XBayaEngine engine;
 
@@ -132,7 +132,7 @@ public class GPELDeployWindow {
             this.redeployButton.setEnabled(true);
         }
 
-        logger.finest("before show");
+        logger.info("before show");
         this.dialog.show();
     }
 

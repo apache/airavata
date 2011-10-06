@@ -24,24 +24,25 @@ package org.apache.airavata.xbaya.jython.lib;
 import java.net.URI;
 import java.util.Iterator;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.tracking.WorkflowNotifier;
 import org.apache.airavata.workflow.tracking.common.InvocationContext;
 import org.apache.airavata.workflow.tracking.common.InvocationEntity;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 import org.apache.airavata.workflow.tracking.impl.state.InvocationContextImpl;
-import org.apache.airavata.common.utils.StringUtil;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul.wsif.WSIFMessage;
-import xsul5.MLogger;
 
 public class ServiceNotificationSender implements ServiceNotifiable {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(ServiceNotificationSender.class);
 
     private WorkflowNotifier notifier;
 
@@ -95,7 +96,7 @@ public class ServiceNotificationSender implements ServiceNotifiable {
 	 */
     @Override
 	public void setServiceID(String serviceID) {
-        logger.entering(new Object[] { serviceID });
+        logger.debug("SerivceID:" + serviceID );
         this.serviceID = serviceID;
 
         URI receiverWorkflowID = this.workflowID;
@@ -145,7 +146,7 @@ public class ServiceNotificationSender implements ServiceNotifiable {
         try {
             body = XmlObject.Factory.parse(inputs.toString());
         } catch (XmlException e) {
-            logger.warning("Failed to parse " + inputs.toString(), e);
+            logger.warn("Failed to parse " + inputs.toString(), e);
             body = null; // Send notification anyway.
         }
         this.invocationContext = this.notifier.invokingService(this.context,this.receiver, header, body, message);
@@ -174,7 +175,7 @@ public class ServiceNotificationSender implements ServiceNotifiable {
         try {
             body = XmlObject.Factory.parse(outputs.toString());
         } catch (XmlException e) {
-            logger.warning("Failed to parse " + outputs.toString(), e);
+            logger.warn("Failed to parse " + outputs.toString(), e);
             body = null; // Send notification anyway.
         }
         this.notifier.receivedResult(this.context,this.invocationContext,header, body, message);
@@ -197,8 +198,7 @@ public class ServiceNotificationSender implements ServiceNotifiable {
             this.invocationContext = new InvocationContextImpl(this.initiator, this.receiver);
         }
 
-        logger.entering(new Object[] { message, e });
-        logger.caught(e);
+        logger.error(e.getMessage(), e);
         if (message == null || "".equals(message)) {
             message = "Error";
         }
@@ -251,7 +251,7 @@ public class ServiceNotificationSender implements ServiceNotifiable {
         try {
             body = XmlObject.Factory.parse(fault.toString());
         } catch (XmlException e) {
-            logger.warning("Failed to parse " + fault.toString(), e);
+            logger.warn("Failed to parse " + fault.toString(), e);
             body = null; // Send notification anyway.
         }
         this.notifier.receivedFault(this.context,this.invocationContext, header, body, message);

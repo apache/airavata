@@ -26,12 +26,12 @@ import junit.framework.TestSuite;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.globus.myproxy.MyProxyException;
 import org.ietf.jgss.GSSCredential;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MyProxyTestCase extends XBayaTestCase {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(MyProxyTestCase.class);
 
     private static String username = System.getProperty("username");
 

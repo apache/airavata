@@ -22,16 +22,17 @@
 package org.apache.airavata.xbaya.invoker;
 
 import org.apache.airavata.xbaya.XBayaException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul.wsdl.WsdlDefinitions;
 import xsul.xwsif_runtime_async.WSIFAsyncResponsesCorrelator;
 import xsul.xwsif_runtime_async_http.XsulSoapHttpWsaResponsesCorrelator;
 import xsul.xwsif_runtime_async_msgbox.XsulMsgBoxWsaResponsesCorrelator;
-import xsul5.MLogger;
 
 public class AsynchronousInvoker extends SimpleInvoker {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(AsynchronousInvoker.class);
 
     private String messageBoxURL;
 
@@ -66,10 +67,10 @@ public class AsynchronousInvoker extends SimpleInvoker {
         if (this.messageBoxURL == null || this.messageBoxURL.length() == 0) {
             correlator = new XsulSoapHttpWsaResponsesCorrelator();
             String serverLoc = ((XsulSoapHttpWsaResponsesCorrelator) correlator).getServerLocation();
-            logger.finest("using async correlator at " + serverLoc);
+            logger.info("using async correlator at " + serverLoc);
         } else {
             correlator = new XsulMsgBoxWsaResponsesCorrelator(this.messageBoxURL);
-            logger.finest("using message box at " + this.messageBoxURL);
+            logger.info("using message box at " + this.messageBoxURL);
         }
         this.client.useAsyncMessaging(correlator);
     }

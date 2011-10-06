@@ -26,12 +26,12 @@ import java.awt.event.MouseEvent;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.dynamic.DynamicNode;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-
-import xsul.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DynamicNodeGUI extends NodeGUI {
 
-    private final static MLogger logger = MLogger.getLogger();
+    private final static Logger logger = LoggerFactory.getLogger(DynamicNodeGUI.class);
 
     private DynamicNode node;
 
@@ -53,7 +53,7 @@ public class DynamicNodeGUI extends NodeGUI {
      */
     @Override
     public void mouseClicked(MouseEvent event, XBayaEngine engine) {
-        logger.finest(event.toString());
+        logger.info(event.toString());
         if (event.getClickCount() >= 2) {
             showWindow(engine);
         }

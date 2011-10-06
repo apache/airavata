@@ -24,20 +24,22 @@ package org.apache.airavata.xbaya.jython.lib;
 import java.net.URI;
 import java.util.Properties;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.tracking.NotifierFactory;
 import org.apache.airavata.workflow.tracking.WorkflowNotifier;
-import org.apache.airavata.workflow.tracking.common.*;
-import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.workflow.tracking.common.InvocationContext;
+import org.apache.airavata.workflow.tracking.common.InvocationEntity;
+import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 import org.apache.axis2.addressing.EndpointReference;
 import org.python.core.PyObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-
-import xsul5.MLogger;
 
 public class NotificationSender implements WorkflowNotifiable {
 
-    protected static final MLogger logger = MLogger.getLogger();
+    protected static final Logger logger = LoggerFactory.getLogger(NotificationSender.class);
 
     protected WorkflowNotifier notifier;
 
@@ -77,7 +79,7 @@ public class NotificationSender implements WorkflowNotifiable {
      *            The notification topic.
      */
     public NotificationSender(String brokerURL, String topic) {
-        logger.entering(new Object[] { brokerURL, topic });
+        logger.debug("brokerURL:" + brokerURL + "topic:" + topic );
         this.topic = topic;
         this.brokerURL = brokerURL;
         this.workflowID = URI.create(StringUtil.convertToJavaIdentifier(this.topic));
@@ -116,7 +118,6 @@ public class NotificationSender implements WorkflowNotifiable {
 	 */
     @Override
 	public void workflowStarted(PyObject[] args, String[] keywords) {
-        logger.entering(new Object[] { args, keywords });
         String message = "";
         for (int i = 0; i < args.length; i++) {
             if (i != 0) {
@@ -132,7 +133,6 @@ public class NotificationSender implements WorkflowNotifiable {
 	 */
     @Override
 	public void workflowStarted(Object[] args, String[] keywords) {
-        logger.entering(new Object[] { args, keywords });
         String message = "";
         for (int i = 0; i < args.length; i++) {
             if (i != 0) {
@@ -148,7 +148,6 @@ public class NotificationSender implements WorkflowNotifiable {
 	 */
     @Override
 	public void workflowFinished(Object[] args, String[] keywords) {
-        logger.entering(new Object[] { args, keywords });
         String message = "";
         for (int i = 0; i < args.length; i++) {
             if (i != 0) {
@@ -165,7 +164,6 @@ public class NotificationSender implements WorkflowNotifiable {
 	 */
     @Override
 	public void sendingPartialResults(Object[] args, String[] keywords) {
-        logger.entering(new Object[] { args, keywords });
         String message = "";
         for (int i = 0; i < args.length; i++) {
             if (i != 0) {
@@ -181,7 +179,6 @@ public class NotificationSender implements WorkflowNotifiable {
 	 */
     @Override
 	public void workflowFinished(PyObject[] args, String[] keywords) {
-        logger.entering(new Object[] { args, keywords });
         String message = "";
         for (int i = 0; i < args.length; i++) {
             if (i != 0) {
@@ -221,9 +218,8 @@ public class NotificationSender implements WorkflowNotifiable {
 	 * @see org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable#workflowFailed(java.lang.String, java.lang.Throwable)
 	 */
     @Override
-	public void workflowFailed(String message, Throwable e) {
-        logger.entering(new Object[] { message, e });
-        logger.caught(e);
+	public void workflowFailed(String message, Throwable e) {        
+        logger.error(e.getMessage(), e);
         if (message == null || "".equals(message)) {
             message = "Error";
         }

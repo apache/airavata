@@ -35,15 +35,16 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsif.WSIFMessage;
-import xsul5.MLogger;
 
 public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(WorkflowInvokerWrapperForGFacInvoker.class);
 
     private ServiceNotifiable notifier;
 
@@ -67,7 +68,7 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
 
         try {
             WSIFMessage inputMessage = super.getInputs();
-            logger.finest("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) inputMessage));
+            logger.info("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) inputMessage));
             this.notifier.invokingService(inputMessage);
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -82,26 +83,26 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
                             // An implementation of WSIFMessage,
                             // WSIFMessageElement, implements toString(), which
                             // serialize the message XML.
-                            logger.finest("outputMessage: " + outputMessage);
+                            logger.info("outputMessage: " + outputMessage);
                             WorkflowInvokerWrapperForGFacInvoker.this.notifier.serviceFinished(outputMessage);
                         } else {
                             WSIFMessage faultMessage = WorkflowInvokerWrapperForGFacInvoker.super.getFault();
                             // An implementation of WSIFMessage,
                             // WSIFMessageElement, implements toString(), which
                             // serialize the message XML.
-                            logger.finest("received fault: " + faultMessage);
+                            logger.info("received fault: " + faultMessage);
                             WorkflowInvokerWrapperForGFacInvoker.this.notifier.receivedFault(faultMessage);
                             WorkflowInvokerWrapperForGFacInvoker.this.failerSent = true;
                         }
                         return success;
                     } catch (XBayaException e) {
-                        logger.caught(e);
+                        logger.error(e.getMessage(), e);
                         // An appropriate message has been set in the exception.
                         WorkflowInvokerWrapperForGFacInvoker.this.notifier.invocationFailed(e.getMessage(), e);
                         WorkflowInvokerWrapperForGFacInvoker.this.failerSent = true;
                         throw new XBayaRuntimeException(e);
                     } catch (RuntimeException e) {
-                        logger.caught(e);
+                        logger.error(e.getMessage(), e);
                         String message = "Error in invoking a service: "
                                 + WorkflowInvokerWrapperForGFacInvoker.this.serviceInformation;
                         WorkflowInvokerWrapperForGFacInvoker.this.notifier.invocationFailed(message, e);
@@ -122,7 +123,7 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
             try {
                 this.result.get(100, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } catch (TimeoutException e) {
                 // The job is probably running fine.
                 // The normal case.
@@ -130,19 +131,17 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
             } catch (ExecutionException e) {
                 // The service-failed notification should have been sent
                 // already.
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
                 String message = "Error in invoking a service: " + this.serviceInformation;
                 throw new XBayaException(message, e);
             }
-
-            logger.exiting();
         } catch (RuntimeException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             String message = "Error in invoking a service: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
             throw new XBayaException(message, e);
         } catch (Error e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
             throw new XBayaException(message, e);
@@ -163,14 +162,13 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
     }
 
     public synchronized void waitToFinish() throws XBayaException {
-        logger.entering();
         try {
             while (this.result == null) {
                 // The job is not submitted yet.
                 try {
                     wait();
                 } catch (InterruptedException e) {
-                    logger.caught(e);
+                    logger.error(e.getMessage(), e);
                 }
             }
             // Wait for the job to finish.
@@ -184,21 +182,20 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
                 message += faultMessage.toString();
                 throw new XBayaException(message);
             }
-            logger.exiting();
         } catch (InterruptedException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         } catch (ExecutionException e) {
             // The service-failed notification should have been sent already.
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             String message = "Error in invoking a service: " + this.serviceInformation;
             throw new XBayaException(message, e);
         } catch (RuntimeException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             String message = "Error while waiting for a service to finish: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
             throw new XBayaException(message, e);
         } catch (Error e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
             throw new XBayaException(message, e);
@@ -206,29 +203,27 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
     }
 
     public Object getOutput(String name) throws XBayaException {
-        logger.entering(new Object[] { name });
         try {
             waitToFinish();
             Object output = super.getOutput(name);
             if (output instanceof XmlElement) {
-                logger.finest("output: " + XMLUtil.xmlElementToString((XmlElement) output));
+                logger.info("output: " + XMLUtil.xmlElementToString((XmlElement) output));
             }
-            logger.exiting(output);
             return output;
         } catch (XBayaException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             // An appropriate message has been set in the exception.
             if (!this.failerSent) {
                 this.notifier.invocationFailed(e.getMessage(), e);
             }
             throw e;
         } catch (RuntimeException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             String message = "Error while waiting for a output: " + name;
             this.notifier.invocationFailed(message, e);
             throw new XBayaException(message, e);
         } catch (Error e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
             throw new XBayaException(message, e);

@@ -26,13 +26,14 @@ import java.net.URI;
 import junit.framework.TestSuite;
 
 import org.apache.airavata.common.utils.WSDLUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul.wsdl.WsdlResolver;
-import xsul5.MLogger;
 
 public class XBayaSecurityTestCase extends XBayaTestCase {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(XBayaSecurityTestCase.class);
 
     /**
      * @param args

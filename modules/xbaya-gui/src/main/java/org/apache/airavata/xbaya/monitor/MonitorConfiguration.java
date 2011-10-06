@@ -31,7 +31,7 @@ import org.apache.airavata.common.utils.StringUtil;
 
 public class MonitorConfiguration extends EventProducer {
 
-    // private static final MLogger logger = MLogger.getLogger();
+    // private static final Logger logger = LoggerFactory.getLogger();
 
     private URI brokerURL;
 

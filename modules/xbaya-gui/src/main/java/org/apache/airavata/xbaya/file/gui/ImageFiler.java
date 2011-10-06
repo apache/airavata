@@ -32,12 +32,12 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ImageFiler {
 
-    private static MLogger logger = MLogger.getLogger();
+    private static Logger logger = LoggerFactory.getLogger(ImageFiler.class);
 
     private XBayaEngine engine;
 
@@ -81,7 +81,7 @@ public class ImageFiler {
         int returnVal = this.pngFileChooser.showSaveDialog(this.engine.getGUI().getFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.pngFileChooser.getSelectedFile();
-            logger.finest(file.getPath());
+            logger.info(file.getPath());
 
             // Put ".png" at the end of the file name
             String path = file.getPath();

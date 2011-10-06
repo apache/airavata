@@ -21,7 +21,6 @@
 
 package org.apache.airavata.xbaya.monitor;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,13 +31,13 @@ import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.event.Event;
 import org.apache.airavata.xbaya.event.Event.Type;
 import org.apache.airavata.xbaya.event.EventProducer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-
-import xsul5.MLogger;
 
 public class Monitor extends EventProducer {
 
-    protected static final MLogger logger = MLogger.getLogger();
+    protected static final Logger logger = LoggerFactory.getLogger(Monitor.class);
 
     protected MonitorConfiguration configuration;
 
@@ -131,7 +130,7 @@ public class Monitor extends EventProducer {
                         unsubscribe(client);
                     } catch (XBayaException e) {
                         // Ignore the error in unsubscription.
-                        logger.caught(e);
+                        logger.error(e.getMessage(), e);
                     }
                 }
             }.start();

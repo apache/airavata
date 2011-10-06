@@ -31,6 +31,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
@@ -45,7 +46,6 @@ import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.myproxy.gui.MyProxyChecker;
 import org.apache.airavata.xbaya.security.UserX509Credential;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
-import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
@@ -542,7 +542,6 @@ public class WorkflowProxyClient extends WorkflowClient {
 	@SuppressWarnings("boxing")
 	public synchronized GcSearchList list(int maxNum, WorkflowType type)
 			throws WorkflowProxyException {
-		logger.entering(new Object[] { maxNum });
 
 		try {
 			// TODO return the ones only related to the user.

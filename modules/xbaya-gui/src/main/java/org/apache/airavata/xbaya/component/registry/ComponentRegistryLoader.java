@@ -26,12 +26,12 @@ import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 import org.apache.airavata.xbaya.gui.Cancelable;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.WaitDialog;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ComponentRegistryLoader implements Cancelable {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(ComponentRegistryLoader.class);
 
     private XBayaEngine engine;
 
@@ -86,7 +86,6 @@ public class ComponentRegistryLoader implements Cancelable {
      * @param registry
      */
     private void runInThread(ComponentRegistry registry) {
-        logger.entering();
         try {
             ComponentTreeNode componentTree = registry.getComponentTree();
             if (this.canceled) {
@@ -96,14 +95,14 @@ public class ComponentRegistryLoader implements Cancelable {
             this.loadingDialog.hide();
         } catch (ComponentRegistryException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.COMPONENT_LIST_LOAD_ERROR, e);
                 this.loadingDialog.hide();
             }
         } catch (RuntimeException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.COMPONENT_LIST_LOAD_ERROR, e);
                 this.loadingDialog.hide();

@@ -24,12 +24,12 @@ package org.apache.airavata.xbaya.lead;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.WSConstants;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LEADTypes {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(LEADTypes.class);
 
     /**
      * http://www.extreme.indiana.edu/lead/xsd
@@ -138,7 +138,7 @@ public class LEADTypes {
             return true;
         } else if (DATA_ID_TYPE.getLocalPart().equals(type.getLocalPart())) {
             // XXX temporary hack.
-            logger.warning("The name space of " + type.getLocalPart() + " should be " + DATA_ID_TYPE.getNamespaceURI()
+            logger.warn("The name space of " + type.getLocalPart() + " should be " + DATA_ID_TYPE.getNamespaceURI()
                     + ", not " + type.getNamespaceURI() + ".");
             return true;
         } else {
@@ -173,7 +173,7 @@ public class LEADTypes {
         } else if (LEAD_FILE_ID_ARRAY_TYPE.getLocalPart().equals(type.getLocalPart())) {
             // TODO remove this.
             // for workflow input message created from workflow template
-            logger.warning("The name space of " + type.getLocalPart() + " should be "
+            logger.warn("The name space of " + type.getLocalPart() + " should be "
                     + LEAD_FILE_ID_ARRAY_TYPE.getNamespaceURI() + ", not " + type.getNamespaceURI() + ".");
             return true;
         } else {

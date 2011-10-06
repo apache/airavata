@@ -42,7 +42,7 @@ import xsul5.wsdl.WsdlDefinitions;
 
 public class BPELScriptTestCase extends XBayaTestCase {
 
-    // private static final MLogger logger = MLogger.getLogger();
+    // private static final Logger logger = LoggerFactory.getLogger();
 
     private WorkflowCreator workflowCreator;
 

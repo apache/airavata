@@ -26,6 +26,8 @@ import java.net.URI;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.XmlConstants;
@@ -37,11 +39,10 @@ import xsul.xhandler_soap_sticky_header.StickySoapHeaderHandler;
 import xsul.xwsif_runtime.WSIFClient;
 import xsul.xwsif_runtime.WSIFRuntime;
 import xsul.xwsif_runtime_async.WSIFAsyncResponsesCorrelator;
-import xsul5.MLogger;
 
 public class ArrayAdderClient {
 
-    private final static MLogger logger = MLogger.getLogger();
+    private final static Logger logger = LoggerFactory.getLogger(ArrayAdderClient.class);
 
     private ArrayAdderService service;
 

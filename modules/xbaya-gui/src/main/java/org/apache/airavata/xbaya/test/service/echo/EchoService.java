@@ -25,6 +25,8 @@ import java.io.File;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.test.service.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsdl.WsdlDefinitions;
@@ -32,11 +34,10 @@ import xsul.xhandler_soap_sticky_header.StickySoapHeaderHandler;
 import xsul.xservo.XService;
 import xsul.xservo_soap.XSoapDocLiteralService;
 import xsul.xservo_soap_http.HttpBasedServices;
-import xsul5.MLogger;
 
 public class EchoService implements Service {
 
-    private final static MLogger logger = MLogger.getLogger();
+    private final static Logger logger = LoggerFactory.getLogger(EchoService.class);
 
     private HttpBasedServices httpServices;
 
@@ -106,7 +107,7 @@ public class EchoService implements Service {
             File wsdlFile = new File(SAMPLE_WSDL_DIRECTORY, Echo.WSDL_NAME);
             XMLUtil.saveXML(wsdl, wsdlFile);
         } catch (Exception e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         }
     }
 }

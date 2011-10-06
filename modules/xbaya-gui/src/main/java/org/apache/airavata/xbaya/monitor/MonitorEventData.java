@@ -32,9 +32,9 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-
-import xsul5.MLogger;
 
 public class MonitorEventData implements TableModel, BoundedRangeModel {
 
@@ -73,7 +73,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
         }
     }
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(MonitorEventData.class);
 
     private List<TableModelListener> tableModelListeners;
 
@@ -236,7 +236,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
         } catch (RuntimeException e) {
             // This should not happen, but if it happens it blocks the UI.
             // That's why catching it.
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             value = "Error";
         }
         return value;

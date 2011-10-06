@@ -26,6 +26,8 @@ import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.commons.WorkFlowUtils;
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
@@ -53,11 +55,9 @@ import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.addressing.EndpointReference;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-import xsul5.MLogger;
-
-import javax.xml.stream.XMLStreamException;
 
 public class WorkflowInterpretorEventListener implements NotificationHandler,
 		ConsumerNotificationHandler {
@@ -71,7 +71,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler,
 	private String subscriptionID;
 	private MessagePuller messagePuller;
 
-	private static MLogger logger = MLogger.getLogger();
+	private static Logger logger = LoggerFactory.getLogger(WorkflowInterpretorEventListener.class);
 
 	public WorkflowInterpretorEventListener(Workflow workflow,
 			XBayaConfiguration configuration) {
@@ -155,10 +155,10 @@ public class WorkflowInterpretorEventListener implements NotificationHandler,
 		} catch (XMLStreamException e) {
 			// Just log them because they can be unrelated messages sent to
 			// this topic by accident.
-			logger.warning("Could not parse received notification: " + message,
+			logger.warn("Could not parse received notification: " + message,
 					e);
 		} catch (RuntimeException e) {
-			logger.warning("Failed to process notification: " + message, e);
+			logger.warn("Failed to process notification: " + message, e);
 		}
 	}
 
@@ -174,7 +174,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler,
 		} else if (type == EventType.INVOKING_SERVICE
 				|| type == EventType.SERVICE_INVOKED) {
 			if (node == null) {
-				logger.warning("There is no node that has ID, " + nodeID);
+				logger.warn("There is no node that has ID, " + nodeID);
 			} else {
 				nodeStarted(node, forward);
 			}
@@ -183,7 +183,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler,
 		// correctly.
 				|| type == EventType.SENDING_RESULT) {
 			if (node == null) {
-				logger.warning("There is no node that has ID, " + nodeID);
+				logger.warn("There is no node that has ID, " + nodeID);
 			} else {
 				nodeFinished(node, forward);
 			}
@@ -193,13 +193,13 @@ public class WorkflowInterpretorEventListener implements NotificationHandler,
 				|| type == EventType.SENDING_FAULT
 				|| type == EventType.SENDING_RESPONSE_FAILED) {
 			if (node == null) {
-				logger.warning("There is no node that has ID, " + nodeID);
+				logger.warn("There is no node that has ID, " + nodeID);
 			} else {
 				nodeFailed(node, forward);
 			}
 		} else if (type == MonitorUtil.EventType.RESOURCE_MAPPING) {
 			if (node == null) {
-				logger.warning("There is no node that has ID, " + nodeID);
+				logger.warn("There is no node that has ID, " + nodeID);
 			} else {
 				// nodeResourceMapped(node, event.getEvent(), forward);
 			}

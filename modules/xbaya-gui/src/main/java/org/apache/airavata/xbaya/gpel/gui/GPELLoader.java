@@ -32,12 +32,12 @@ import org.apache.airavata.xbaya.gui.WaitDialog;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GPELLoader implements Cancelable {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(GPELLoader.class);
 
     private XBayaEngine engine;
 
@@ -93,7 +93,7 @@ public class GPELLoader implements Cancelable {
             try {
                 this.loadThread.join();
             } catch (InterruptedException e) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             }
         }
     }
@@ -114,28 +114,28 @@ public class GPELLoader implements Cancelable {
             // TODO load notification in case of workflow instance
         } catch (WorkflowEngineException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(e.getMessage(), e);
                 this.loadingDialog.hide();
             }
         } catch (GraphException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
                 this.loadingDialog.hide();
             }
         } catch (ComponentException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
                 this.loadingDialog.hide();
             }
         } catch (RuntimeException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 this.loadingDialog.hide();

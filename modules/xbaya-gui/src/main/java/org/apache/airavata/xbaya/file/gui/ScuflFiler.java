@@ -28,20 +28,20 @@ import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.scufl.script.ScuflScript;
-import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ScuflFiler {
 
-    private static MLogger logger = MLogger.getLogger();
+    private static Logger logger = LoggerFactory.getLogger(ScuflFiler.class);
 
     private XBayaEngine engine;
 
@@ -99,7 +99,7 @@ public class ScuflFiler {
         int returnVal = this.scuflFileChooser.showSaveDialog(this.engine.getGUI().getFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.scuflFileChooser.getSelectedFile();
-            logger.finest(file.getPath());
+            logger.info(file.getPath());
 
             // Put ".py" at the end of the file name
             String path = file.getPath();

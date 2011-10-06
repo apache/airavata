@@ -32,13 +32,13 @@ import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.wsmg.client.msgbox.MessagePuller;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.addressing.EndpointReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-
-import xsul5.MLogger;
 
 public class WsmgClient implements ConsumerNotificationHandler, NotificationHandler{
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(WsmgClient.class);
 
     private Monitor monitor;
 
@@ -142,7 +142,7 @@ public class WsmgClient implements ConsumerNotificationHandler, NotificationHand
         } catch (Exception e) {
             // Just log them because they can be unrelated messages sent to
             // this topic by accident.
-            logger.warning("Could not parse received notification: " + message, e);
+            logger.warn("Could not parse received notification: " + message, e);
         }
     }
 

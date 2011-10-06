@@ -26,12 +26,12 @@ import org.apache.airavata.xbaya.gui.Cancelable;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.WaitDialog;
 import org.apache.airavata.xbaya.monitor.MonitorException;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MonitorStarter implements Cancelable {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(MonitorStarter.class);
 
     private XBayaEngine engine;
 
@@ -93,7 +93,7 @@ public class MonitorStarter implements Cancelable {
             try {
                 this.subscribingThread.join();
             } catch (InterruptedException e) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             }
         }
     }
@@ -105,14 +105,14 @@ public class MonitorStarter implements Cancelable {
         } catch (MonitorException e) {
             // Probably canceled by a user.
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
                 this.startingDialog.hide();
             }
         } catch (RuntimeException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
                 this.startingDialog.hide();

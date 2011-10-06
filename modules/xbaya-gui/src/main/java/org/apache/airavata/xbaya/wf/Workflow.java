@@ -41,6 +41,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
@@ -75,13 +76,12 @@ import org.apache.airavata.xbaya.streaming.StreamTransformer;
 import org.apache.commons.codec.binary.Base64;
 import org.gpel.GpelConstants;
 import org.gpel.model.GpelProcess;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlInfosetBuilder;
 import org.xmlpull.infoset.XmlNamespace;
-import org.apache.airavata.common.utils.WSDLUtil;
 
-
-import xsul5.MLogger;
 import xsul5.XmlConstants;
 import xsul5.wsdl.WsdlDefinitions;
 
@@ -121,7 +121,7 @@ public class Workflow {
 
     private static final String ID_ATTRIBUTE = "id";
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(Workflow.class);
 
     private WSGraph graph;
 
@@ -472,7 +472,7 @@ public class Workflow {
      * @param wsdl
      */
     public void addWSDL(String id, WsdlDefinitions wsdl) {
-        logger.finest("id: " + id);
+        logger.info("id: " + id);
         this.wsdlMap.put(id, wsdl);
     }
 
@@ -589,7 +589,7 @@ public class Workflow {
                 imageElement.setText(new String(base64));
             } catch (IOException e) {
                 // No image
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             }
         }
 
@@ -619,7 +619,7 @@ public class Workflow {
         Map<WSComponentKey, WSComponent> components = new HashMap<WSComponentKey, WSComponent>();
         for (WSNode node : GraphUtil.getWSNodes(this.graph)) {
             String id = node.getWSDLID();
-            logger.finest("id: " + id);
+            logger.info("id: " + id);
             WsdlDefinitions wsdl = this.wsdlMap.get(id);
 
             if (wsdl == null) {
@@ -663,7 +663,7 @@ public class Workflow {
             }
             node.setComponent(component);
             }catch (UtilsException e){
-                logger.throwing(e);
+                logger.error(e.getMessage(), e);
             }
         }
 
@@ -722,7 +722,7 @@ public class Workflow {
             try {
                 wsdl = WSDLUtil.stringToWSDL(wsdlText);
             } catch (UtilsException e) {
-                logger.throwing(e);
+                logger.error(e.getMessage(), e);
             }
             String id = wsdlElement.attributeValue(NS_XWF, ID_ATTRIBUTE);
             if (id == null || id.length() == 0) {
@@ -744,7 +744,7 @@ public class Workflow {
             } catch (IOException e) {
                 // This should not happen and it's OK that image is broken. We
                 // can reproduce it anytime.
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             }
         }
 
@@ -911,7 +911,7 @@ public class Workflow {
                 this.odeWsdlMap.put(id, wsdl);
             }
         } catch (Exception e) {
-            logger.throwing(e);
+            logger.error(e.getMessage(), e);
         }
         new ODEBPELTransformer()
                 .generateODEBPEL(this.odeProcess, this.getName(), this.odeWorkflowWSDL, this.odeWsdlMap);

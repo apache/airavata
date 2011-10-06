@@ -35,6 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
@@ -55,17 +56,17 @@ import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ode.ODEClient;
-import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
 
 import xsul.XmlConstants;
-import xsul5.MLogger;
 
 public class WorkflowInterpreterLaunchWindow {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(WorkflowInterpreterLaunchWindow.class);
 
     private XBayaEngine engine;
 

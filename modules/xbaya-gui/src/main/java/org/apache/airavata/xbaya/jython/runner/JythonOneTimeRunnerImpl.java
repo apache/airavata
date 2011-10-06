@@ -30,12 +30,12 @@ import java.util.jar.JarFile;
 import org.apache.airavata.xbaya.XBayaException;
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JythonOneTimeRunnerImpl implements JythonOneTimeRunner {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(JythonOneTimeRunnerImpl.class);
 
     /**
      * @throws XBayaException
@@ -57,12 +57,12 @@ public class JythonOneTimeRunnerImpl implements JythonOneTimeRunner {
                         JarFile xbayaJarFile = jythonLoader.getXBayaJarFile();
                         if (xbayaJarFile != null) {
                             String jarPath = xbayaJarFile.getName();
-                            logger.finest("jarPath: " + jarPath);
+                            logger.info("jarPath: " + jarPath);
                             // String jarDir = jarPath.substring(0,
                             // jarPath.lastIndexOf());
                             File jarFile = new File(jarPath);
                             String jarDir = jarFile.getParent();
-                            logger.finest("jarDir: " + jarDir);
+                            logger.info("jarDir: " + jarDir);
 
                             // This is for the Jython interpreter to
                             // solve import statements.
@@ -76,7 +76,7 @@ public class JythonOneTimeRunnerImpl implements JythonOneTimeRunner {
                 }
             });
         } catch (PrivilegedActionException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             throw new XBayaException(e.getCause());
         }
 

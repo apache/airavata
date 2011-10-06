@@ -131,11 +131,11 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
             boolean move = false;
 
             Rectangle visibleRect = this.table.getVisibleRect();
-            // logger.finest("visibleRect: " + visibleRect);
+            // logger.info("visibleRect: " + visibleRect);
             Rectangle bottomCellRect = this.table.getCellRect(firstRow - 1, 0, true);
-            // logger.finest("bottomCellRect: " + bottomCellRect);
+            // logger.info("bottomCellRect: " + bottomCellRect);
             move = bottomCellRect.intersects(visibleRect);
-            // logger.finest("move: " + move);
+            // logger.info("move: " + move);
 
             if (move) {
                 // When the scroll bar is at the bottom and the slider is at the
@@ -143,7 +143,7 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
                 // If the slider is not at the right, this method won't be
                 // called.
                 Rectangle newBottomCellRect = this.table.getCellRect(this.table.getRowCount() - 1, 0, true);
-                // logger.finest("cellRect: " + newBottomCellRect);
+                // logger.info("cellRect: " + newBottomCellRect);
                 this.table.scrollRectToVisible(newBottomCellRect);
             }
 

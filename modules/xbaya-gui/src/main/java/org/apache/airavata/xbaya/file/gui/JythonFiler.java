@@ -36,12 +36,12 @@ import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.wf.Workflow;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JythonFiler {
 
-    private static MLogger logger = MLogger.getLogger();
+    private static Logger logger = LoggerFactory.getLogger(JythonFiler.class);
 
     private XBayaEngine engine;
 
@@ -100,7 +100,7 @@ public class JythonFiler {
         int returnVal = this.jythonFileChooser.showSaveDialog(this.engine.getGUI().getFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.jythonFileChooser.getSelectedFile();
-            logger.finest(file.getPath());
+            logger.info(file.getPath());
 
             // Put ".py" at the end of the file name
             String path = file.getPath();

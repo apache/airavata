@@ -69,6 +69,8 @@ import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.view.XmlValidationException;
 import org.xmlpull.v1.builder.XmlElement;
 
@@ -81,7 +83,6 @@ import xsul.wsif.WSIFServiceFactory;
 import xsul.xbeans_util.XBeansUtil;
 import xsul.xwsif_runtime.WSIFClient;
 import xsul.xwsif_runtime.WSIFRuntime;
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlDefinitions;
 import xsul5.wsdl.WsdlResolver;
 
@@ -89,7 +90,7 @@ import xsul5.wsdl.WsdlResolver;
 
 public class WorkflowModificationTestCase extends XBayaTestCase {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(WorkflowModificationTestCase.class);
 
     private boolean gui = false;
 
@@ -328,7 +329,7 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
             try {
                 Thread.sleep(second * 1000);
             } catch (InterruptedException e) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             }
         }
     }

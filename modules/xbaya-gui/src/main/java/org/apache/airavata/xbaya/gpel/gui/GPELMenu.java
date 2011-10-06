@@ -35,12 +35,12 @@ import org.apache.airavata.xbaya.gpel.component.gui.GPELRegistryWindow;
 import org.apache.airavata.xbaya.modifier.gui.WorkflowModifierGUI;
 import org.apache.airavata.xbaya.ode.ODEInvokerWindow;
 import org.apache.airavata.xbaya.ode.gui.ODEDeploymentWindow;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GPELMenu implements EventListener {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(GPELMenu.class);
 
     private XBayaEngine engine;
 
@@ -86,8 +86,7 @@ public class GPELMenu implements EventListener {
      * @see org.apache.airavata.xbaya.event.EventListener#eventReceived(org.apache.airavata.xbaya.event.Event)
      */
     public void eventReceived(Event event) {
-        logger.entering();
-
+        
         boolean connected;
         if (event.getType() == Event.Type.GPEL_ENGINE_CONNECTED) {
             connected = true;

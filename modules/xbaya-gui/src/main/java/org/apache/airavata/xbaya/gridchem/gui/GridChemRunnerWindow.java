@@ -37,6 +37,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
@@ -56,20 +57,20 @@ import org.apache.airavata.xbaya.jython.runner.JythonRunner;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.gui.MonitorStarter;
-import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlDefinitions;
 
 public class GridChemRunnerWindow {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(GridChemRunnerWindow.class);
 
     private XBayaEngine engine;
 
@@ -406,7 +407,7 @@ public class GridChemRunnerWindow {
                     // // Wait for all notification to arrive.
                     // Thread.sleep(10 * 1000); // 10 secs
                     // } catch (InterruptedException e) {
-                    // logger.caught(e);
+                    // logger.error(e.getMessage(), e);
                     // }
                 } catch (XBayaException e) {
                     GridChemRunnerWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);

@@ -24,6 +24,7 @@ package org.apache.airavata.xbaya.ode;
 import java.net.URI;
 import java.util.List;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
@@ -37,22 +38,22 @@ import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
-import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul.XmlConstants;
 import xsul.invoker.gsi.GsiInvoker;
 import xsul.lead.LeadContextHeader;
 import xsul.lead.LeadResourceMapping;
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlDefinitions;
 
 public class ODEInvoker implements Cancelable {
 
     private XBayaEngine engine;
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(ODEInvoker.class);
 
     private Thread invokeThread;
 
@@ -138,7 +139,7 @@ public class ODEInvoker implements Cancelable {
             invoker = new LEADWorkflowInvoker(wsdl, leadContext, messageBoxURL, secureInvoker);
         } catch (ComponentException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
                 this.invokingDialog.hide();
@@ -146,7 +147,7 @@ public class ODEInvoker implements Cancelable {
             return;
         } catch (RuntimeException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 this.invokingDialog.hide();
@@ -165,7 +166,7 @@ public class ODEInvoker implements Cancelable {
             this.engine.getMonitor().start();
         } catch (MonitorException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
                 this.invokingDialog.hide();
@@ -173,7 +174,7 @@ public class ODEInvoker implements Cancelable {
             return;
         } catch (RuntimeException e) {
             if (this.canceled) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             } else {
                 this.engine.getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
                 this.invokingDialog.hide();

@@ -23,15 +23,14 @@ package org.apache.airavata.xbaya;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Vector;
 
 import org.apache.airavata.xbaya.gui.ErrorMessages;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XBaya {
 
-    private static MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(XBaya.class);
 
     private XBayaConfiguration config;
 
@@ -50,14 +49,14 @@ public class XBaya {
             this.engine = new XBayaEngine(this.config);
 
         } catch (RuntimeException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             try {
                 this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             } catch (Throwable t) {
                 // Cannot do anything
             }
         } catch (Error e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             try {
                 this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             } catch (Throwable t) {
@@ -108,7 +107,7 @@ public class XBaya {
                         this.config.loadConfiguration(configPath);
                     } catch (RuntimeException e) {
                         String message = "Error while reading config file, " + configPath;
-                        logger.warning(message, e);
+                        logger.warn(message, e);
                         this.config.addError(new XBayaException(message, e));
                     }
                 } else if ("-title".equalsIgnoreCase(arg)) {
@@ -124,7 +123,7 @@ public class XBaya {
                         this.config.setXRegistryURL(parseURL(url));
                     } catch (URISyntaxException e) {
                         String message = "The XRegistry URL is in wrong format: " + url;
-                        logger.warning(message, e);
+                        logger.warn(message, e);
                         this.config.addError(new XBayaException(message, e));
                     }
                 } else if ("-gfacURL".equalsIgnoreCase(arg)) {
@@ -134,7 +133,7 @@ public class XBaya {
                         this.config.setGFacURL(parseURL(url));
                     } catch (URISyntaxException e) {
                         String message = "The GFac URL is in wrong format: " + url;
-                        logger.warning(message, e);
+                        logger.warn(message, e);
                         this.config.addError(new XBayaException(message, e));
                     }
                 } else if ("-dscURL".equalsIgnoreCase(arg)) {
@@ -144,7 +143,7 @@ public class XBaya {
                         this.config.setDSCURL(parseURL(url));
                     } catch (URISyntaxException e) {
                         String message = "The DSC URL is in wrong format: " + url;
-                        logger.warning(message, e);
+                        logger.warn(message, e);
                         this.config.addError(new XBayaException(message, e));
                     }
                 } else if ("-startMonitor".equalsIgnoreCase(arg)) {
@@ -156,7 +155,7 @@ public class XBaya {
                         this.config.setBrokerURL(parseURL(brokerURL));
                     } catch (URISyntaxException e) {
                         String message = "The broker URL is in wrong format: " + brokerURL;
-                        logger.warning(message, e);
+                        logger.warn(message, e);
                         this.config.addError(new XBayaException(message, e));
                     }
                 } else if ("-odeEngine".equalsIgnoreCase(arg)) {
@@ -184,7 +183,7 @@ public class XBaya {
                             this.config.setPullMode(false);
                         } else {
                             String message = "-pullMode has to be either true or false, not " + nextArg;
-                            logger.warning(message);
+                            logger.warn(message);
                             this.config.addError(new XBayaException(message));
                         }
                     } else {
@@ -198,7 +197,7 @@ public class XBaya {
                         this.config.setMessageBoxURL(parseURL(messageBoxURL));
                     } catch (URISyntaxException e) {
                         String message = "The message box URL is in wrong format: " + messageBoxURL;
-                        logger.warning(message, e);
+                        logger.warn(message, e);
                         this.config.addError(new XBayaException(message, e));
                     }
                 }  else if ("-registryURL".equalsIgnoreCase(arg)) {
@@ -208,7 +207,7 @@ public class XBaya {
                         this.config.setRegistryURL(parseURL(registryURL));
                     } catch (URISyntaxException e) {
                         String message = "The message box URL is in wrong format: " + registryURL;
-                        logger.warning(message, e);
+                        logger.warn(message, e);
                         this.config.addError(new XBayaException(message, e));
                     }
                 } else if ("-registryUserName".equalsIgnoreCase(arg)) {
@@ -236,7 +235,7 @@ public class XBaya {
 //                        this.config.setMyProxyPort(Integer.parseInt(port));
 //                    } catch (NumberFormatException e) {
 //                        String message = "The myProxyPort must be an integer: " + port;
-//                        logger.warning(message, e);
+//                        logger.warn(message, e);
 //                        this.config.addError(new XBayaException(message, e));
 //                    }
 //                } else if ("-myProxyUsername".equalsIgnoreCase(arg)) {
@@ -252,7 +251,7 @@ public class XBaya {
 //                        this.config.setMyProxyLifetime(Integer.parseInt(lifetime));
 //                    } catch (NumberFormatException e) {
 //                        String message = "The myProxyLifetime must be an integer: " + lifetime;
-//                        logger.warning(message, e);
+//                        logger.warn(message, e);
 //                        this.config.addError(new XBayaException(message, e));
 //                    }
 //                } else if ("-loadMyProxy".equalsIgnoreCase(arg)) {
@@ -264,7 +263,7 @@ public class XBaya {
 //                        this.config.setLoadMyProxy(false);
 //                    } else {
 //                        String message = "-loadMyProxy has to be either true or false, not " + load;
-//                        logger.warning(message);
+//                        logger.warn(message);
 //                        this.config.addError(new XBayaException(message));
 //                    }
 //                }
@@ -275,7 +274,7 @@ public class XBaya {
                         this.config.setWidth(Integer.parseInt(width));
                     } catch (NumberFormatException e) {
                         String message = "The width must be an integer: " + width;
-                        logger.warning(message, e);
+                        logger.warn(message, e);
                         this.config.addError(new XBayaException(message, e));
                     }
                 } else if ("-height".equalsIgnoreCase(arg)) {
@@ -285,7 +284,7 @@ public class XBaya {
                         this.config.setHeight(Integer.parseInt(height));
                     } catch (NumberFormatException e) {
                         String message = "The height must be an integer: " + height;
-                        logger.warning(message, e);
+                        logger.warn(message, e);
                         this.config.addError(new XBayaException(message, e));
                     }
                 } else if ("-exitOnClose".equalsIgnoreCase(arg)) {
@@ -296,17 +295,17 @@ public class XBaya {
                     }
                 } else {
                     String message = "Unknown option: " + arg;
-                    logger.severe(message);
+                    logger.error(message);
                     this.config.addError(new XBayaException(message));
                 }
                 index++;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             String message = "Argument is missing after " + args[args.length - 1];
-            logger.severe(message, e);
+            logger.error(message, e);
             this.config.addError(new XBayaException(message));
         } catch (Throwable e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             String message = "Unknown error while parsing the arguments";
             this.config.addError(new XBayaException(message, e));
         }

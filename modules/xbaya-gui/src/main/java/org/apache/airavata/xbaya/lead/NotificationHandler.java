@@ -34,6 +34,8 @@ import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.XmlConstants;
@@ -42,12 +44,11 @@ import xsul.lead.LeadContextHeader;
 import xsul.message_router.MessageContext;
 import xsul.xbeans_util.XBeansUtil;
 import xsul.xhandler.BaseHandler;
-import xsul5.MLogger;
 
 
 public class NotificationHandler extends BaseHandler {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(NotificationHandler.class);
 
     private static final String INVOKING_MESSAGE = "Invoking a workflow";
 
@@ -82,7 +83,7 @@ public class NotificationHandler extends BaseHandler {
             try {
                 myServiceID = new URI(null, null, serviceIDAsString, null);
             } catch (URISyntaxException e) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             }
         }
         String myNodeID = null;
@@ -100,7 +101,7 @@ public class NotificationHandler extends BaseHandler {
     @Override
     public boolean processOutgoingXml(XmlElement soapEnvelope, MessageContext context)
             throws DynamicInfosetInvokerException {
-        logger.finest("soapEnvelope: " + XMLUtil.xmlElementToString(soapEnvelope));
+        logger.info("soapEnvelope: " + XMLUtil.xmlElementToString(soapEnvelope));
 
 
 
@@ -116,7 +117,7 @@ public class NotificationHandler extends BaseHandler {
             try {
                 serviceTimestep = new Integer(this.leadContext.getTimeStep());
             } catch (NumberFormatException e) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             }
         }
         XmlElement soapHeader = soapEnvelope.element(null, XmlConstants.S_HEADER);
@@ -139,7 +140,7 @@ public class NotificationHandler extends BaseHandler {
     @Override
     public boolean processIncomingXml(XmlElement soapEnvelope, MessageContext context)
             throws DynamicInfosetInvokerException {
-        logger.finest("soapEnvelope: " + XMLUtil.xmlElementToString(soapEnvelope));
+        logger.info("soapEnvelope: " + XMLUtil.xmlElementToString(soapEnvelope));
 
         XmlElement soapHeader = soapEnvelope.element(null, XmlConstants.S_HEADER);
         XmlObject headerObject = null;

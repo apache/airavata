@@ -32,7 +32,6 @@ import java.util.Set;
 import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.system.InputComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.graph.GraphException;
@@ -51,15 +50,16 @@ import org.apache.airavata.xbaya.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.monitor.MonitorUtil.EventType;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul.XmlConstants;
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlPortTypeOperation;
 
 public class WorkflowModifier {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(WorkflowModifier.class);
 
     private Workflow modifiedWorkflow;
 
@@ -157,7 +157,7 @@ public class WorkflowModifier {
             if (fromPort == null) {
                 // This input port is not connected.
                 String inputPortID = inputPort.getID();
-                logger.finest("id: " + inputPortID);
+                logger.info("id: " + inputPortID);
                 Port originalInputPort = originalGraph.getPort(inputPortID);
                 // No duplicate in set.
                 Port originalFromPort = originalInputPort.getFromPort();
@@ -193,7 +193,7 @@ public class WorkflowModifier {
     }
 
     private String getWorkflowInput(String nodeID) throws MonitorException {
-        logger.entering(nodeID);
+        logger.debug("Node:" + nodeID);
         List<MonitorEvent> events = this.eventData.getEvents();
         for (MonitorEvent event : events) {
             EventType type = event.getType();
@@ -228,7 +228,6 @@ public class WorkflowModifier {
     }
 
     private String getOutput(String nodeID, String messageName, String parameterName) throws MonitorException {
-        logger.entering(new Object[] { nodeID, messageName, parameterName });
         List<MonitorEvent> events = this.eventData.getEvents();
         for (MonitorEvent event : events) {
             // We need to find the notification that contains the output of the

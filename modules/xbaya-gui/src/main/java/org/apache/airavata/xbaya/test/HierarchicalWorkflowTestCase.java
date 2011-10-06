@@ -60,15 +60,16 @@ import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineManager;
 import org.gpel.client.GcInstance;
 import org.ietf.jgss.GSSCredential;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsif.WSIFMessage;
-import xsul5.MLogger;
 import xsul5.wsdl.WsdlDefinitions;
 
 public class HierarchicalWorkflowTestCase extends XBayaTestCase {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(HierarchicalWorkflowTestCase.class);
 
     private WorkflowClient workflowClient;
 

@@ -27,10 +27,11 @@ import java.util.Date;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlNamespace;
 
-import xsul5.MLogger;
 import atomixmiser.DcDate;
 
 /**
@@ -38,7 +39,7 @@ import atomixmiser.DcDate;
  */
 public class MonitorUtil {
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(MonitorUtil.class);
 
     /**
      * Workflow tracking namespace
@@ -399,7 +400,7 @@ public class MonitorUtil {
         try {
             return new URI(workflowID);
         } catch (URISyntaxException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             return null;
         }
     }

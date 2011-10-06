@@ -32,12 +32,12 @@ import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SubWorkflowNodeGUI extends NodeGUI {
 
-    private final static MLogger logger = MLogger.getLogger();
+    private final static Logger logger = LoggerFactory.getLogger(SubWorkflowNodeGUI.class);
 
     private SubWorkflowNode node;
 
@@ -60,7 +60,7 @@ public class SubWorkflowNodeGUI extends NodeGUI {
      */
     @Override
     public void mouseClicked(MouseEvent event, XBayaEngine engine) {
-        logger.finest(event.toString());
+        logger.info(event.toString());
         if (event.getClickCount() >= 2) {
             openWorkflowTab(engine);
         }

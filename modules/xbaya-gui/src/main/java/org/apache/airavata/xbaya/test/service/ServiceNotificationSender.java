@@ -32,6 +32,8 @@ import org.apache.airavata.workflow.tracking.common.InvocationEntity;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlDocument;
 import org.xmlpull.v1.builder.XmlElement;
 
@@ -41,13 +43,12 @@ import xsul.soap.SoapUtil;
 import xsul.soap11_util.Soap11Util;
 import xsul.soap12_util.Soap12Util;
 import xsul.xbeans_util.XBeansUtil;
-import xsul5.MLogger;
 
 
 
 public class ServiceNotificationSender {
 
-    private final static MLogger logger = MLogger.getLogger();
+    private final static Logger logger = LoggerFactory.getLogger(ServiceNotificationSender.class);
 
     private final static String INVOKED_MESSAGE = "Service is invoked";
 
@@ -78,7 +79,7 @@ public class ServiceNotificationSender {
                     new SoapUtil[] { Soap11Util.getInstance(), Soap12Util.getInstance() });
             XmlElement soapHeader = soapEnvelope.element(null, XmlConstants.S_HEADER);
             XmlElement leadHeader = soapHeader.element(LeadContextHeader.NS, LeadContextHeader.TYPE.getLocalPart());
-            logger.finest("leadHeader: " + XMLUtil.xmlElementToString(leadHeader));
+            logger.info("leadHeader: " + XMLUtil.xmlElementToString(leadHeader));
             if (leadHeader == null) {
                 return null;
             }
@@ -88,7 +89,7 @@ public class ServiceNotificationSender {
 
             return sender;
         } catch (RuntimeException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
             return null;
         }
     }
@@ -116,7 +117,7 @@ public class ServiceNotificationSender {
             try {
                 timeStep = new Integer(timeStepString);
             } catch (NumberFormatException e) {
-                logger.caught(e);
+                logger.error(e.getMessage(), e);
             }
         }
         this.initiator = this.notifier.createEntity(workflowID, serviceID, nodeID, timeStep);
@@ -154,7 +155,7 @@ public class ServiceNotificationSender {
             XmlObject bodyObject = XBeansUtil.xmlElementToXmlObject(soapBody);
             this.notifier.sendingResult(this.context,this.invocationContext, headerObject, bodyObject, SENDING_RESULT_MESSAGE);
         } catch (RuntimeException e) {
-            logger.caught(e);
+            logger.error(e.getMessage(), e);
         }
     }
 }
