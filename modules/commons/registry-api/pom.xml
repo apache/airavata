@@ -23,7 +23,7 @@
     <groupId>airavata</groupId>
     <artifactId>airavata-registry-api</artifactId>
     <packaging>jar</packaging>
-    <name>Airavata Common Utilities</name>
+    <name>Airavata Registry API</name>
     <url>http://incubator.apache.org/airavata/</url>
 
     <dependencies>
