@@ -67,14 +67,14 @@ public class XRegistryConfigurationWindow {
      */
     public void show() {
 
-        if (this.uriField.getText().length() == 0) {
+//        if (this.uriField.getText().length() == 0) {
             // Show the default value.
-            URI url = this.engine.getConfiguration().getXRegistryURL();
-            if (url == null) {
-                url = XBayaConstants.DEFAULT_XREGISTRY_URL;
-            }
-            this.uriField.setText(url);
-        }
+//            URI url = this.engine.getConfiguration().getXRegistryURL();
+//            if (url == null) {
+//                url = XBayaConstants.DEFAULT_XREGISTRY_URL;
+//            }
+//            this.uriField.setText(url);
+//        }
         this.dialog.show();
     }
 
@@ -113,7 +113,7 @@ public class XRegistryConfigurationWindow {
             // Error
             return;
         }
-        this.engine.setXRegistryURL(uri);
+//        this.engine.setXRegistryURL(uri);
 
     }
 

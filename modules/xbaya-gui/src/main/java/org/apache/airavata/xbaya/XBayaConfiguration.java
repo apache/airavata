@@ -66,7 +66,7 @@ public class XBayaConfiguration {
 
     private URI gfacURL = XBayaConstants.DEFAULT_GFAC_URL;
 
-    private URI xRegistryURL = XBayaConstants.DEFAULT_XREGISTRY_URL;
+//    private URI xRegistryURL = XBayaConstants.DEFAULT_XREGISTRY_URL;
 
     private URI registryURL = XBayaConstants.REGISTRY_URL;
 
@@ -323,9 +323,9 @@ public class XBayaConfiguration {
      * 
      * @return The xRegistryURL
      */
-    public URI getXRegistryURL() {
-        return this.xRegistryURL;
-    }
+//    public URI getXRegistryURL() {
+//        return this.xRegistryURL;
+//    }
 
     /**
      * Sets registryURL.
@@ -333,9 +333,9 @@ public class XBayaConfiguration {
      * @param registryURL
      *            The xRegistryURL to set.
      */
-    public void setXRegistryURL(URI registryURL) {
-        this.xRegistryURL = registryURL;
-    }
+//    public void setXRegistryURL(URI registryURL) {
+//        this.xRegistryURL = registryURL;
+//    }
 
     /**
      * @return The DSC URL

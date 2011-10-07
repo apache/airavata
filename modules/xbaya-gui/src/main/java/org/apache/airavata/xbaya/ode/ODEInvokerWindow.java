@@ -77,7 +77,7 @@ public class ODEInvokerWindow {
     private MyProxyChecker myProxyChecker;
     private GridPanel parameterPanel;
     private XBayaTextField topicTextField;
-    private XBayaTextField xRegistryTextField;
+//    private XBayaTextField xRegistryTextField;
     private XBayaTextField gfacTextField;
     private JButton invokeButton;
     private XBayaDialog dialog;
@@ -113,8 +113,8 @@ public class ODEInvokerWindow {
         this.topicTextField = new XBayaTextField();
         XBayaLabel topicLabel = new XBayaLabel("Notification Topic", this.topicTextField);
 
-        this.xRegistryTextField = new XBayaTextField();
-        XBayaLabel xRegistryLabel = new XBayaLabel("XRegistry URL", this.xRegistryTextField);
+//        this.xRegistryTextField = new XBayaTextField();
+//        XBayaLabel xRegistryLabel = new XBayaLabel("XRegistry URL", this.xRegistryTextField);
 
         this.gfacTextField = new XBayaTextField();
         XBayaLabel gfacLabel = new XBayaLabel("GFac URL", this.gfacTextField);
@@ -131,8 +131,8 @@ public class ODEInvokerWindow {
         GridPanel infoPanel = new GridPanel();
         infoPanel.add(topicLabel);
         infoPanel.add(this.topicTextField);
-        infoPanel.add(xRegistryLabel);
-        infoPanel.add(this.xRegistryTextField);
+//        infoPanel.add(xRegistryLabel);
+//        infoPanel.add(this.xRegistryTextField);
         infoPanel.add(gfacLabel);
         infoPanel.add(this.gfacTextField);
         infoPanel.add(resourceMappingLabel);
@@ -234,20 +234,20 @@ public class ODEInvokerWindow {
         this.workflow.setGPELInstanceID(workfowInstanceID);
 
         // XRegistry
-        String xRegistry = this.xRegistryTextField.getText();
-        URI xRegistryURL;
-        if (xRegistry.length() == 0) {
-            this.engine.getErrorWindow().error("X-registry url is required");
-            return;
-        } else {
-            try {
-                xRegistryURL = new URI(xRegistry).parseServerAuthority();
-
-            } catch (URISyntaxException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.XREGISTRY_URL_WRONG, e);
-                return;
-            }
-        }
+//        String xRegistry = this.xRegistryTextField.getText();
+//        URI xRegistryURL;
+//        if (xRegistry.length() == 0) {
+//            this.engine.getErrorWindow().error("X-registry url is required");
+//            return;
+//        } else {
+//            try {
+//                xRegistryURL = new URI(xRegistry).parseServerAuthority();
+//
+//            } catch (URISyntaxException e) {
+//                this.engine.getErrorWindow().error(ErrorMessages.XREGISTRY_URL_WRONG, e);
+//                return;
+//            }
+//        }
 
         // GFac
         String gfac = this.gfacTextField.getText();
@@ -267,7 +267,7 @@ public class ODEInvokerWindow {
         MonitorConfiguration monitorConfig = this.engine.getMonitor().getConfiguration();
         monitorConfig.setTopic(topic);
         XBayaConfiguration config = this.engine.getConfiguration();
-        config.setXRegistryURL(xRegistryURL);
+//        config.setXRegistryURL(xRegistryURL);
         config.setGFacURL(gfacURL);
 
         // Deal with the Lead resource mapping
@@ -464,11 +464,11 @@ public class ODEInvokerWindow {
         }
 
         // XRegistry
-        if (null != configuration.getXRegistryURL()) {
-            this.xRegistryTextField.setText(configuration.getXRegistryURL());
-        } else {
-            this.xRegistryTextField.setText(XBayaConstants.DEFAULT_XREGISTRY_URL);
-        }
+//        if (null != configuration.getXRegistryURL()) {
+//            this.xRegistryTextField.setText(configuration.getXRegistryURL());
+//        } else {
+//            this.xRegistryTextField.setText(XBayaConstants.DEFAULT_XREGISTRY_URL);
+//        }
 
         // GFac URL
         this.gfacTextField.setText(configuration.getGFacURL());

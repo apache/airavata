@@ -89,7 +89,7 @@ public class XRegistryAccesser {
     public XRegistryAccesser(XBayaEngine engine) {
         this.engine = engine;
         this.gssCredential = this.engine.getMyProxyClient().getProxy();
-        this.xregistryURL = this.engine.getConfiguration().getXRegistryURL();
+//        this.xregistryURL = this.engine.getConfiguration().getXRegistryURL();
     }
 
     /**
@@ -121,7 +121,7 @@ public class XRegistryAccesser {
      */
     private void connectToXRegistry() throws XRegistryClientException {
         if (null == this.gssCredential) {
-            new MyProxyDialog(this.engine).show(true);
+//            new MyProxyDialog(this.engine).show(true);
             this.gssCredential = this.engine.getMyProxyClient().getProxy();
             // if its still null => user cancelled
             if (null == this.gssCredential) {

@@ -80,7 +80,7 @@ public class ODEDeploymentWindow implements Cancelable {
 
     private JCheckBox makePublicChkBox;
 
-    private XBayaTextField xRegistryTextField;
+//    private XBayaTextField xRegistryTextField;
 
     private XBayaTextField proxyTextField;
 
@@ -143,11 +143,11 @@ public class ODEDeploymentWindow implements Cancelable {
         this.odeUriField.setText(uriString);
 
         XBayaConfiguration configuration = this.engine.getConfiguration();
-        URI xregistryURL = configuration.getXRegistryURL();
-        if (xregistryURL == null) {
-            xregistryURL = XBayaConstants.DEFAULT_XREGISTRY_URL;
-        }
-        this.xRegistryTextField.setText(xregistryURL);
+//        URI xregistryURL = configuration.getXRegistryURL();
+//        if (xregistryURL == null) {
+//            xregistryURL = XBayaConstants.DEFAULT_XREGISTRY_URL;
+//        }
+//        this.xRegistryTextField.setText(xregistryURL);
 
         URI proxyURI = configuration.getProxyURI();
         if (null != proxyURI) {
@@ -157,7 +157,7 @@ public class ODEDeploymentWindow implements Cancelable {
         }
         if (this.configMode) {
             this.proxyTextField.setEnabled(false);
-            this.xRegistryTextField.setEnabled(false);
+//            this.xRegistryTextField.setEnabled(false);
             this.makePublicChkBox.setVisible(false);
             this.deploy.setText("OK");
         }
@@ -184,14 +184,14 @@ public class ODEDeploymentWindow implements Cancelable {
      */
     public void deploy() throws WorkflowEngineException, GraphException {
 
-        String xregistryUrl = this.xRegistryTextField.getText();
-        if (null != xregistryUrl && !"".equals(xregistryUrl)) {
-            try {
-                this.engine.getConfiguration().setXRegistryURL(new URI(xregistryUrl));
-            } catch (URISyntaxException e) {
-                this.engine.getErrorWindow().error(e);
-            }
-        }
+//        String xregistryUrl = this.xRegistryTextField.getText();
+//        if (null != xregistryUrl && !"".equals(xregistryUrl)) {
+//            try {
+//                this.engine.getConfiguration().setXRegistryURL(new URI(xregistryUrl));
+//            } catch (URISyntaxException e) {
+//                this.engine.getErrorWindow().error(e);
+//            }
+//        }
 
         String odeUrl = this.odeUriField.getText();
         if (null != odeUrl && !"".equals(odeUrl)) {
@@ -228,7 +228,7 @@ public class ODEDeploymentWindow implements Cancelable {
         }
 
         final WorkflowProxyClient client = new WorkflowProxyClient();
-        client.setXRegistryUrl(this.engine.getConfiguration().getXRegistryURL());
+//        client.setXRegistryUrl(this.engine.getConfiguration().getXRegistryURL());
         client.setEngineURL(this.engine.getConfiguration().getProxyURI());
         client.setXBayaEngine(this.engine);
         GSSCredential proxy = null;
@@ -280,8 +280,8 @@ public class ODEDeploymentWindow implements Cancelable {
         this.odeUriField = new XBayaTextField();
         XBayaLabel uriLabel = new XBayaLabel("ODE URL", this.odeUriField);
 
-        this.xRegistryTextField = new XBayaTextField();
-        XBayaLabel xRegistryLabel = new XBayaLabel("XRegistry URL", this.xRegistryTextField);
+//        this.xRegistryTextField = new XBayaTextField();
+//        XBayaLabel xRegistryLabel = new XBayaLabel("XRegistry URL", this.xRegistryTextField);
 
         this.proxyTextField = new XBayaTextField();
         XBayaLabel proxyLable = new XBayaLabel("ODE proxy URL", this.proxyTextField);
@@ -292,8 +292,8 @@ public class ODEDeploymentWindow implements Cancelable {
         mainPanel.add(uriLabel);
         mainPanel.add(this.odeUriField);
 
-        mainPanel.add(xRegistryLabel);
-        mainPanel.add(this.xRegistryTextField);
+//        mainPanel.add(xRegistryLabel);
+//        mainPanel.add(this.xRegistryTextField);
 
         mainPanel.add(proxyLable);
         mainPanel.add(this.proxyTextField);
