@@ -152,12 +152,12 @@ public class WorkflowInterpreterLaunchWindow {
             this.workflowInterpreterTextField.setText(XBayaConstants.DEFAULT_WORKFLOW_INTERPRETER_URL);
         }
 
-        URI registryURL = config.getXRegistryURL();
-        if (null != registryURL) {
-            this.xRegistryTextField.setText(registryURL.toString());
-        } else {
-            this.xRegistryTextField.setText(XBayaConstants.DEFAULT_XREGISTRY_URL);
-        }
+//        URI registryURL = config.getXRegistryURL();
+//        if (null != registryURL) {
+//            this.xRegistryTextField.setText(registryURL.toString());
+//        } else {
+//            this.xRegistryTextField.setText(XBayaConstants.DEFAULT_XREGISTRY_URL);
+//        }
 
         this.dialog.show();
     }
@@ -269,14 +269,14 @@ public class WorkflowInterpreterLaunchWindow {
             }
         }
 
-        final String xregistryUrl = this.xRegistryTextField.getText();
-        if (null != xregistryUrl && !"".equals(xregistryUrl)) {
-            try {
-                this.engine.getConfiguration().setXRegistryURL(new URI(xregistryUrl));
-            } catch (URISyntaxException e) {
-                this.engine.getErrorWindow().error(e);
-            }
-        }
+//        final String xregistryUrl = this.xRegistryTextField.getText();
+//        if (null != xregistryUrl && !"".equals(xregistryUrl)) {
+//            try {
+////                this.engine.getConfiguration().setXRegistryURL(new URI(xregistryUrl));
+//            } catch (URISyntaxException e) {
+//                this.engine.getErrorWindow().error(e);
+//            }
+//        }
 
         final String gFacUrl = this.gfacTextField.getText();
         if (null != gFacUrl && !"".equals(gFacUrl)) {
@@ -313,11 +313,11 @@ public class WorkflowInterpreterLaunchWindow {
                     configurations[0].setValue(engine.getConfiguration().getGFacURL().toString());
                     configurations[1] = new NameValue();
                     configurations[1].setName(HeaderConstants.HEADER_ELEMENT_XREGISTRY);
-                    if (null == engine.getConfiguration().getXRegistryURL()) {
-                        configurations[1].setValue(XBayaConstants.DEFAULT_XREGISTRY_URL.toString());
-                    } else {
-                        configurations[1].setValue(engine.getConfiguration().getXRegistryURL().toString());
-                    }
+//                    if (null == engine.getConfiguration().getXRegistryURL()) {
+//                        configurations[1].setValue(XBayaConstants.DEFAULT_XREGISTRY_URL.toString());
+//                    } else {
+//                        configurations[1].setValue(engine.getConfiguration().getXRegistryURL().toString());
+//                    }
                     configurations[2] = new NameValue();
                     configurations[2].setName(HeaderConstants.HEADER_ELEMENT_PROXYSERVER);
                     configurations[2].setValue(engine.getConfiguration().getMyProxyServer());

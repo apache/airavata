@@ -44,6 +44,7 @@ import org.apache.airavata.xbaya.myproxy.gui.MyProxyChecker;
 import org.apache.airavata.xbaya.xregistry.XRegistryComponent;
 import org.apache.airavata.xbaya.xregistry.XRegistryComponent.Type;
 import org.ietf.jgss.GSSCredential;
+import sun.net.util.URLUtil;
 
 public class XRegistryWindow {
 
@@ -81,7 +82,9 @@ public class XRegistryWindow {
     public void show() {
         if (this.urlTextField.getText().length() == 0) {
             // Show the default value.
-            URI url = this.engine.getConfiguration().getXRegistryURL();
+//            URI url = this.engine.getConfiguration().getXRegistryURL();
+
+            URI url = null;
             if (url == null) {
                 url = XBayaConstants.DEFAULT_XREGISTRY_URL;
             }
@@ -139,7 +142,7 @@ public class XRegistryWindow {
         }
 
         XRegistryComponent registry = new XRegistryComponent(url, type, proxy);
-        this.engine.setXRegistryURL(url);
+//        this.engine.setXRegistryURL(url);
         this.loader.load(registry);
     }
 

@@ -549,11 +549,11 @@ public class WorkflowProxyClient extends WorkflowClient {
 			// retrieve the workflow from xregistry
 			checkAndLoadCredentials();
 
-			URI xregistryURL = this.xbayaEngine.getConfiguration()
-					.getXRegistryURL();
-			if (xregistryURL == null) {
-				xregistryURL = XBayaConstants.DEFAULT_XREGISTRY_URL;
-			}
+//			URI xregistryURL = this.xbayaEngine.getConfiguration()
+//					.getXRegistryURL();
+//			if (xregistryURL == null) {
+//				xregistryURL = XBayaConstants.DEFAULT_XREGISTRY_URL;
+//			}
 			XRegistryClient xregistryClient = new XRegistryClient(
 					gssCredential, XBayaSecurity.getTrustedCertificates(),
 					xregistryURL.toString());

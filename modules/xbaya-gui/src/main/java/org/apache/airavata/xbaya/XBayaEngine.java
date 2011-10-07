@@ -45,7 +45,6 @@ import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.gui.MonitorStarter;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;
-import org.apache.airavata.xbaya.myproxy.gui.MyProxyDialog;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.streaming.StreamTableModel;
 import org.apache.airavata.xbaya.wf.Workflow;
@@ -229,7 +228,7 @@ public class XBayaEngine {
         initSecurity();
 
         // load myProxy before loading components from registries.
-        loadMyProxy();
+//        loadMyProxy();
 
         initRegistry();
 
@@ -237,7 +236,7 @@ public class XBayaEngine {
         // initGPEL();
 
         // This has to be after gpel initialization.
-        loadDefaultGraph();
+//        loadDefaultGraph();
 
         // This has to be after loading a graph.
         initMonitor();
@@ -253,20 +252,20 @@ public class XBayaEngine {
         }
     }
 
-    private void loadMyProxy() {
-        if (this.configuration.isLoadMyProxy()) {
-            if (this.configuration.getMyProxyUsername() == null) {
-                this.getErrorWindow().error("Trying to load the proxy, but the myproxy usernameis not set.");
-            } else if (this.configuration.getXRegistryURL() == null) {
-                this.getErrorWindow().error(
-                        "Trying to load the XRegistry default services, but Xregistry url is not set");
-            } else {
-                MyProxyDialog dialog = new MyProxyDialog(this);
-                dialog.show(true); // blocking
-            }
-
-        }
-    }
+//    private void loadyProxy() {
+//        if (this.configuration.isLoadMyProxy()) {
+//            if (this.configuration.getMyProxyUsername() == null) {
+//                this.getErrorWindow().error("Trying to load the proxy, but the myproxy usernameis not set.");
+//            } else if (this.configuration.getXRegistryURL() == null) {
+//                this.getErrorWindow().error(
+//                        "Trying to load the XRegistry default services, but Xregistry url is not set");
+//            } else {
+//                MyProxyDialog dialog = new MyProxyDialog(this);
+//                dialog.show(true); // blocking
+//            }
+//
+//        }
+//    }
 
     /**
      * Initializes registris.
@@ -307,51 +306,49 @@ public class XBayaEngine {
         }
 
         // load xRegistry only when myProxy is loaded and xRegistryURL is presented
-        if (this.configuration.getXRegistryURL() != null && this.configuration.isLoadMyProxy()) {
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        XRegistryComponent client = new XRegistryComponent(
-                                XBayaEngine.this.configuration.getXRegistryURL(), XRegistryComponent.Type.ABSTRACT,
-                                XBayaEngine.this.myProxyClient.getProxy());
-                        XBayaEngine.this.setXRegistryURL(XBayaEngine.this.configuration.getXRegistryURL());
-                        ComponentTreeNode componentTree = client.getComponentTree();
-                        componentTreeViewer.addComponentTree(componentTree);
-
-                    } catch (ComponentRegistryException e) {
-                        getErrorWindow().error(ErrorMessages.COMPONENT_LIST_LOAD_ERROR, e);
-                    } catch (RuntimeException e) {
-                        getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-                    }
-                }
-            }.start();
-        }
+//            new Thread() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        XRegistryComponent client = new XRegistryComponent(
+//                                XBayaEngine.this.configuration.getXRegistryURL(), XRegistryComponent.Type.ABSTRACT,
+//                                XBayaEngine.this.myProxyClient.getProxy());
+//                        XBayaEngine.this.setXRegistryURL(XBayaEngine.this.configuration.getXRegistryURL());
+//                        ComponentTreeNode componentTree = client.getComponentTree();
+//                        componentTreeViewer.addComponentTree(componentTree);
+//
+//                    } catch (ComponentRegistryException e) {
+//                        getErrorWindow().error(ErrorMessages.COMPONENT_LIST_LOAD_ERROR, e);
+//                    } catch (RuntimeException e) {
+//                        getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+//                    }
+//                }
+//            }.start();
     }
 
-    public void setXRegistryURL(URI xregistryURL) {
-        this.configuration.setXRegistryURL(xregistryURL);
-    }
-
-    public URI getXRegistryClient() {
-        return this.configuration.getXRegistryURL();
-    }
+//    public void setXRegistryURL(URI xregistryURL) {
+//        this.configuration.setXRegistryURL(xregistryURL);
+//    }
+//
+//    public URI getXRegistryClient() {
+//        return this.configuration.getXRegistryURL();
+//    }
 
     /**
      * Loads a default graph if needed either from myLead or the server.
      */
-    private void loadDefaultGraph() {
-        this.configuration.getGPELTemplateID();
-        String localWorkflow = this.configuration.getWorkflow();
-        if (null != localWorkflow && !"".equals(localWorkflow)) {
-            XRegistryAccesser xregistryAccesser = new XRegistryAccesser(this.configuration.getMyProxyUsername(),
-                    this.configuration.getMyProxyPassphrase(), this.configuration.getMyProxyServer(),
-                    this.configuration.getXRegistryURL());
-            Workflow workflow = xregistryAccesser.getWorkflow(localWorkflow);
-            this.setWorkflow(workflow);
-        }
-
-    }
+//    private void loadDefaultGraph() {
+//        this.configuration.getGPELTemplateID();
+//        String localWorkflow = this.configuration.getWorkflow();
+//        if (null != localWorkflow && !"".equals(localWorkflow)) {
+//            XRegistryAccesser xregistryAccesser = new XRegistryAccesser(this.configuration.getMyProxyUsername(),
+//                    this.configuration.getMyProxyPassphrase(), this.configuration.getMyProxyServer(),
+//                    this.configuration.getXRegistryURL());
+//            Workflow workflow = xregistryAccesser.getWorkflow(localWorkflow);
+//            this.setWorkflow(workflow);
+//        }
+//
+//    }
 
     private void loadLocalGraph(String graphFilePath) {
         try {

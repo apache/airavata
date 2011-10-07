@@ -116,16 +116,16 @@ public class XBaya {
                 } else if ("-workflow".equalsIgnoreCase(arg)) {
                     index++;
                     this.config.setWorkflow(args[index]);
-                } else if ("-RegistryCredentials".equalsIgnoreCase(arg)) {
-                    index++;
-                    String url = args[index];
-                    try {
-                        this.config.setXRegistryURL(parseURL(url));
-                    } catch (URISyntaxException e) {
-                        String message = "The XRegistry URL is in wrong format: " + url;
-                        logger.warn(message, e);
-                        this.config.addError(new XBayaException(message, e));
-                    }
+//                } else if ("-RegistryCredentials".equalsIgnoreCase(arg)) {
+//                    index++;
+//                    String url = args[index];
+//                    try {
+//                        this.config.setXRegistryURL(parseURL(url));
+//                    } catch (URISyntaxException e) {
+//                        String message = "The XRegistry URL is in wrong format: " + url;
+//                        logger.warn(message, e);
+//                        this.config.addError(new XBayaException(message, e));
+//                    }
                 } else if ("-gfacURL".equalsIgnoreCase(arg)) {
                     index++;
                     String url = args[index];

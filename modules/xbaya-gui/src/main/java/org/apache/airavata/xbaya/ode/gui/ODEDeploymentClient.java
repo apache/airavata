@@ -87,10 +87,10 @@ public class ODEDeploymentClient {
 
             org.xmlpull.infoset.XmlElement workflowXml = workflow.toXML();
             XMLUtil.xmlElementToString(workflowXml);
-            URI xRegistryURL = this.engine.getConfiguration().getXRegistryURL();
-            if (xRegistryURL == null) {
-                xRegistryURL = XBayaConstants.DEFAULT_XREGISTRY_URL;
-            }
+//            URI xRegistryURL = this.engine.getConfiguration().getXRegistryURL();
+//            if (xRegistryURL == null) {
+//                xRegistryURL = XBayaConstants.DEFAULT_XREGISTRY_URL;
+//            }
             wfClient.deploy(workflow, false);
             hideUI();
             String oldWorkflowName = workflow.getName();
@@ -108,7 +108,7 @@ public class ODEDeploymentClient {
                 deployStreamControlWorkflowIfNecessary(this.engine.getWorkflow());
 
                 WorkflowProxyClient wpClient = new WorkflowProxyClient();
-                wpClient.setXRegistryUrl(this.engine.getConfiguration().getXRegistryURL());
+//                wpClient.setXRegistryUrl(this.engine.getConfiguration().getXRegistryURL());
                 wpClient.setEngineURL(this.engine.getConfiguration().getProxyURI());
                 wpClient.setXBayaEngine(this.engine);
                 GSSCredential proxy = null;
