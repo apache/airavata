@@ -13,39 +13,39 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-   <parent>
-		<artifactId>airavata-commons</artifactId>
-		<groupId>airavata</groupId>
-		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>airavata</groupId>
-	<artifactId>airavata-common-utils</artifactId>
-	<packaging>jar</packaging>
-	<name>Airavata Common  Utilities</name>
-	<url>http://incubator.apache.org/airavata/</url>
+    <parent>
+        <artifactId>airavata-commons</artifactId>
+        <groupId>airavata</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>airavata</groupId>
+    <artifactId>airavata-common-utils</artifactId>
+    <packaging>jar</packaging>
+    <name>Airavata Common Utilities</name>
+    <url>http://incubator.apache.org/airavata/</url>
 
-	<dependencies>
-		<dependency>
-			<groupId>xpp3</groupId>
-			<artifactId>xpp3</artifactId>
-		</dependency>
-        	<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk</artifactId>
-			<version>1.1.8</version>
-		</dependency>
-		<dependency>
-			<groupId>amazon</groupId>
-			<artifactId>MapReduce.Service.Client</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>net.java.dev.jets3t</groupId>
-			<artifactId>jets3t</artifactId>
-			<version>0.8.0</version>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>xpp3</groupId>
+            <artifactId>xpp3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>1.1.8</version>
+        </dependency>
+        <dependency>
+            <groupId>amazon</groupId>
+            <artifactId>MapReduce.Service.Client</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jets3t</groupId>
+            <artifactId>jets3t</artifactId>
+            <version>0.8.0</version>
+        </dependency>
         <dependency>
             <groupId>airavata</groupId>
             <artifactId>airavata-messagebroker</artifactId>
@@ -57,40 +57,38 @@
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
-			<groupId>xsul5-ogce</groupId>
-			<artifactId>xsul5-2007-02-27</artifactId>
-			<version>1</version>
-		</dependency>
-       		 <dependency>
-			<groupId>xpp5</groupId>
-  			<artifactId>xpp5</artifactId>
-  			<version>1.2.6</version>
-		</dependency>
+            <groupId>xsul5-ogce</groupId>
+            <artifactId>xsul5-2007-02-27</artifactId>
+            <version>1</version>
+        </dependency>
         <dependency>
-			<groupId>xsul</groupId>
-			<artifactId>xsul</artifactId>
-			<version>2.10.5_b</version>
-		</dependency>
+            <groupId>xpp5</groupId>
+            <artifactId>xpp5</artifactId>
+            <version>1.2.6</version>
+        </dependency>
         <dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-		</dependency>
-	</dependencies>
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.3.2</version>
-					<configuration>
-						<source>1.5</source>
-						<target>1.5</target>
-					</configuration>
-				</plugin>
-			
-
-			</plugins>
-		</pluginManagement>
-	</build>
+            <groupId>xsul</groupId>
+            <artifactId>xsul</artifactId>
+            <version>2.10.5_b</version>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.3.2</version>
+                    <configuration>
+                        <source>1.5</source>
+                        <target>1.5</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
