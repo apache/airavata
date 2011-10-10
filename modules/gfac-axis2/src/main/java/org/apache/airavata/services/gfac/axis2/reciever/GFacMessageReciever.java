@@ -39,6 +39,7 @@ import org.apache.airavata.commons.gfac.type.util.SchemaUtil;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
+import org.apache.airavata.core.gfac.context.message.impl.WorkflowContextImpl;
 import org.apache.airavata.core.gfac.factory.PropertyServiceFactory;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.notification.impl.WorkflowTrackingNotification;
@@ -152,6 +153,9 @@ public class GFacMessageReciever implements MessageReceiver {
         String topic = getTopic(messageContext);
         OMElement outputElement = null;
         try {
+            /*
+             * Add notifiable object
+             */
             WorkflowTrackingNotification workflowNotification = new WorkflowTrackingNotification(brokerURL,topic);
             LoggingNotification loggingNotification = new LoggingNotification();
             DefaultInvocationContext invocationContext = new DefaultInvocationContext();
@@ -160,6 +164,13 @@ public class GFacMessageReciever implements MessageReceiver {
             invocationContext.getExecutionContext().setRegistryService(getRegistry(context));
             invocationContext.getExecutionContext().addNotifiable(workflowNotification);
             invocationContext.getExecutionContext().addNotifiable(loggingNotification);
+            
+            /*
+             * Add workflow context
+             */
+            WorkflowContextImpl workflowContext = new WorkflowContextImpl();
+            workflowContext.setValue(WorkflowContextImpl.WORKFLOW_ID, URI.create(topic).toString());
+            invocationContext.addMessageContext(WorkflowContextImpl.WORKFLOW_CONTEXT_NAME, workflowContext);            
 
             /*
              * read from registry and set the correct parameters
