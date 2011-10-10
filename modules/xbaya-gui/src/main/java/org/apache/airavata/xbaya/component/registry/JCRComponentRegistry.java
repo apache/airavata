@@ -101,4 +101,8 @@ public class JCRComponentRegistry extends ComponentRegistry {
 			ApplicationDeploymentDescription app){
     	return registry.saveDeploymentDescription(service, host, app);
     }
+
+    public JCRRegistry getRegistry() {
+        return registry;
+    }
 }

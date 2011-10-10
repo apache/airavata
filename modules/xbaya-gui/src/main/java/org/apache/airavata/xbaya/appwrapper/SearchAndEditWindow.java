@@ -458,7 +458,8 @@ public class SearchAndEditWindow {
                             } else {
                                 Vector<OGCEXRegistrySearchResult> results = new Vector<OGCEXRegistrySearchResult>();
                                 for (QName key : keys) {
-                                    results.add(new OGCEXRegistrySearchResult(resultList.get(key)));
+                                    //todo fix this search
+//                                    results.add(new OGCEXRegistrySearchResult(resultList.get(key)));
                                 }
                                 SearchAndEditWindow.this.list.setListData(results);
                                 SearchAndEditWindow.this.list.setEnabled(true);

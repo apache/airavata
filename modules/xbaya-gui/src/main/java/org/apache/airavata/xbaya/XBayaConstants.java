@@ -189,6 +189,10 @@ public class XBayaConstants {
     public static final URI REGISTRY_URL = URI.create("http://localhost:8081/rmi");
     public static final String REGISTRY_USERNAME = "admin";
     public static final String REGISTRY_PASSPHRASE = "admin";
+    public static final String REGISTRY_TYPE_HOST_DESC = "HostDesc";
+    public static final String REGISTRY_TYPE_APPLICATION_DESC = "ApplicationDesc";
+    public static final String REGISTRY_TYPE_SERVICE_DESC = "ServiceDesc";
+    public static final String REGISTRY_TYPE_WORKFLOW = "workflow";
 
     /**
      * XRegistry Resource Types for OGCE Resource

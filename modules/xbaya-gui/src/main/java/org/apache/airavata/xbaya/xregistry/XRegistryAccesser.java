@@ -29,15 +29,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.utils.XmlFormatter;
+import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentException;
+import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.experiment.gui.OGCEXRegistryWorkflowPublisherWindow;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
@@ -88,8 +93,6 @@ public class XRegistryAccesser {
      */
     public XRegistryAccesser(XBayaEngine engine) {
         this.engine = engine;
-        this.gssCredential = this.engine.getMyProxyClient().getProxy();
-//        this.xregistryURL = this.engine.getConfiguration().getXRegistryURL();
     }
 
     /**
@@ -143,6 +146,10 @@ public class XRegistryAccesser {
         }
     }
 
+    private Registry connectToRegistry(){
+        JCRComponentRegistry jcrComponentRegistry = this.engine.getConfiguration().getJcrComponentRegistry();
+        return jcrComponentRegistry.getRegistry();
+    }
     private XRegistryClientException convertXRegistryClientException(Throwable th) {
         String message = th.getMessage();
         BufferedReader br = null;
@@ -177,17 +184,9 @@ public class XRegistryAccesser {
      * @return workflow templates
      * @throws XregistryException
      */
-    public Map<QName, OGCEResourceData> getOGCEWorkflowTemplateList() throws XRegistryClientException {
-        if (this.xregistryClient == null) {
-            connectToXRegistry();
-        }
-        Map<QName, OGCEResourceData> val = new HashMap<QName, OGCEResourceData>();
-        OGCEResourceData[] resources = this.xregistryClient.findOGCEResource("",
-                XRegClientConstants.ResourceType.WorkflowTemplate.toString(), null);
-        for (OGCEResourceData resource : resources) {
-            val.put(resource.getResourceID(), resource);
-        }
-        return val;
+    public Map<QName,Node> getOGCEWorkflowTemplateList() throws XRegistryClientException {
+        Registry registry = connectToRegistry();
+        return registry.getAvailableWorkflows(this.engine.getConfiguration().getRegigstryUserName());
     }
 
     /**
@@ -257,13 +256,9 @@ public class XRegistryAccesser {
      */
     public Workflow getOGCEWorkflow(QName workflowTemplateId) throws XRegistryClientException, GraphException,
             ComponentException, Exception {
-        if (this.xregistryClient == null) {
-            connectToXRegistry();
-        }
-        String workflowString = this.xregistryClient.getOGCEResource(workflowTemplateId,
-                XRegClientConstants.ResourceType.WorkflowTemplate.toString(), null);
-
-        XmlElement xwf = XMLUtil.stringToXmlElement(workflowString);
+        Registry registry = connectToRegistry();
+        Node node = registry.getWorkflow(workflowTemplateId,this.engine.getConfiguration().getRegigstryUserName());
+        XmlElement xwf = XMLUtil.stringToXmlElement(node.getProperty("workflow").getString());
         Workflow workflow = new Workflow(xwf);
         return workflow;
     }
@@ -273,12 +268,8 @@ public class XRegistryAccesser {
      */
     public void saveWorkflow() {
 
-        boolean makePublic = false;
-
         try {
-            if (this.xregistryClient == null) {
-                connectToXRegistry();
-            }
+
             Workflow workflow = this.engine.getWorkflow();
             JythonScript script = new JythonScript(workflow, this.engine.getConfiguration());
 
@@ -326,17 +317,10 @@ public class XRegistryAccesser {
             // client.removeResource(workflowQName);
             // }
             String workflowAsString = XMLUtil.xmlElementToString(workflow.toXML());
-            String owner = this.engine.getMyProxyClient().getProxy().getName().toString();
+            String owner = this.engine.getConfiguration().getRegigstryUserName();
 
-            this.xregistryClient.registerOGCEResource(workflowQName, workflow.getName(),
-                    XBayaConstants.XR_Resource_Types.WorkflowTemplate.toString(), workflow.getDescription(),
-                    workflowAsString, null, owner);
-
-            makePublic = registryPublishingWindow.isMakePublic();
-            if (makePublic) {
-                this.xregistryClient.addCapability(workflowQName.toString(), PUBLIC_ACTOR, false,
-                        XRegClientConstants.Action.Read.toString());
-            }
+            Registry registry = this.connectToRegistry();
+            registry.saveWorkflow(workflowQName,workflow.getName(),workflow.getDescription(),workflowAsString,owner,registryPublishingWindow.isMakePublic());
             registryPublishingWindow.hide();
 
         } catch (Exception e) {
@@ -412,17 +396,20 @@ public class XRegistryAccesser {
      * @return Workflow
      */
     public Workflow getWorkflow(QName qname) {
+        Registry registry = connectToRegistry();
+        Node node = registry.getWorkflow(qname, this.engine.getConfiguration().getRegigstryUserName());
+        Workflow workflow = null;
         try {
-            if (this.xregistryClient == null) {
-                connectToXRegistry();
-            }
-            String resource = this.xregistryClient.getResource(qname);
-            XmlElement xwf = XMLUtil.stringToXmlElement(resource);
-            Workflow workflow = new Workflow(xwf);
-            return workflow;
-        } catch (Exception e) {
-            throw new XBayaRuntimeException(e);
+            XmlElement xwf = XMLUtil.stringToXmlElement(node.getProperty("workflow").getString());
+            workflow = new Workflow(xwf);
+        } catch (GraphException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (ComponentException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (RepositoryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+        return workflow;
     }
 
     /**

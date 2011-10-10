@@ -54,6 +54,7 @@ public class XBaya {
                 this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             } catch (Throwable t) {
                 // Cannot do anything
+                e.printStackTrace();
             }
         } catch (Error e) {
             logger.error(e.getMessage(), e);
@@ -61,6 +62,8 @@ public class XBaya {
                 this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             } catch (Throwable t) {
                 // Cannot do anything
+                System.out.println(e);
+
             }
         }
     }
