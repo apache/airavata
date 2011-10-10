@@ -150,6 +150,12 @@
       			<version>${org.slf4j.version}</version>
     		</dependency>
 		<dependency>
+                        <groupId>gpel</groupId>
+                        <artifactId>gpel_client</artifactId>
+                        <version>1.0.7-BETA</version>
+                </dependency>
+
+		<dependency>
       			<groupId>ch.qos.logback</groupId>
       			<artifactId>logback-classic</artifactId>
 			<version>${logback.version}</version>
@@ -163,7 +169,120 @@
       			<groupId>javax.jcr</groupId>
       			<artifactId>jcr</artifactId>
     		</dependency>
-
+		<dependency>
+                        <groupId>xpp5</groupId>
+                        <artifactId>xpp5</artifactId>
+                        <version>1.2.6</version>
+                </dependency>
+		<dependency>
+                        <groupId>xpp3</groupId>
+                        <artifactId>xpp3_xpath</artifactId>
+                        <version>1.1.4c</version>
+                </dependency>
+                <dependency>
+                        <groupId>xpp3</groupId>
+                        <artifactId>xpp3</artifactId>
+                        <version>1.1.4c</version>
+                </dependency>
+		 <dependency>
+                        <groupId>xregistry</groupId>
+                        <artifactId>xregistry-client</artifactId>
+                        <version>1.1</version>
+                </dependency>
+                <dependency>
+                        <groupId>xregistry</groupId>
+                        <artifactId>xregistry-generated</artifactId>
+                        <version>0.8.3</version>
+                </dependency>
+		<dependency>
+                        <groupId>gfac</groupId>
+                        <artifactId>gfac-schema-utils</artifactId>
+                        <version>0.4.3</version>
+                </dependency>
+ 		<dependency>
+                        <groupId>lead-security</groupId>
+                        <artifactId>cryptix32</artifactId>
+                        <version>versionless</version>
+                </dependency>
+		<dependency>
+                        <groupId>lead-security</groupId>
+                        <artifactId>cryptix32</artifactId>
+                        <version>versionless</version>
+                </dependency>
+                <dependency>
+                        <groupId>lead-security</groupId>
+                        <artifactId>jce</artifactId>
+                        <version>jdk13-131</version>
+                </dependency>
+                <dependency>
+                        <groupId>lead-security</groupId>
+                        <artifactId>cryptix-asn1</artifactId>
+                        <version>versionless</version>
+                </dependency>
+                <dependency>
+                        <groupId>lead-security</groupId>
+                        <artifactId>puretls</artifactId>
+                        <version>0.9b4-1</version>
+                </dependency>
+                <dependency>
+                        <groupId>xutil</groupId>
+                        <artifactId>xutil</artifactId>
+                        <version>0.2</version>
+                </dependency>
+                <dependency>
+                        <groupId>jython</groupId>
+                        <artifactId>jython</artifactId>
+                        <version>2.5.1</version>
+                </dependency>
+                <dependency>
+                        <groupId>lead-security</groupId>
+                        <artifactId>cog-jglobus</artifactId>
+                        <version>1.4</version>
+                </dependency>
+                <dependency>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                </dependency>
+                <dependency>
+                        <groupId>xsul</groupId>
+                        <artifactId>xsul</artifactId>
+                        <version>2.10.5_d</version>
+                </dependency>
+                <dependency>
+                        <groupId>xmlbeans</groupId>
+                        <artifactId>xbean</artifactId>
+                        <version>2.5.0</version>
+                </dependency>
+                <dependency>
+                        <groupId>xmlbeans-ogce</groupId>
+                        <artifactId>jsr173_api</artifactId>
+                        <version>1.0</version>
+                </dependency>
+                <dependency>
+                        <groupId>xbaya</groupId>
+                        <artifactId>pegasuswebservice</artifactId>
+                        <version>1.0</version>
+                </dependency>
+ 		<dependency>
+                        <groupId>swing</groupId>
+                        <artifactId>layout</artifactId>
+                        <version>1.0.4</version>
+                </dependency>
+ 		<dependency>
+                        <groupId>com.amazonaws</groupId>
+                        <artifactId>aws-java-sdk</artifactId>
+                        <version>1.1.8</version>
+                </dependency>
+                <dependency>
+                        <groupId>amazon</groupId>
+                        <artifactId>MapReduce.Service.Client</artifactId>
+                        <version>1.0</version>
+                </dependency>
+                <dependency>
+                        <groupId>net.java.dev.jets3t</groupId>
+                        <artifactId>jets3t</artifactId>
+                        <version>0.8.0</version>
+                </dependency>
 		</dependencies>
 <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
