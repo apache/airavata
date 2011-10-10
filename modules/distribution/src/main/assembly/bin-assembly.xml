@@ -15,359 +15,375 @@
         <!ELEMENT dependencySet (outputDirectory|includes)*>
         ]>
 <assembly>
-	<id>bin</id>
-	<includeBaseDirectory>true</includeBaseDirectory>
-	<baseDirectory>${archieve.name}-${version}</baseDirectory>
-	<formats>
-		<!--<format>tar.gz</format>  //uncomment,if tar.gz archive needed-->
-		<format>zip</format>
-	</formats>
+    <id>bin</id>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>${archieve.name}-${version}</baseDirectory>
+    <formats>
+        <!--<format>tar.gz</format>  //uncomment,if tar.gz archive needed-->
+        <format>zip</format>
+    </formats>
 
 
-	<fileSets>
-		<!--
-			********************** copy axis2 distribution from messenger folder **********************
-		-->
-
-		<fileSet>
-			<directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
-			<outputDirectory>standalone-server/lib</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
+    <fileSets>
+        <!--
+              ********************** copy axis2 distribution from messenger folder **********************
+          -->
 
         <fileSet>
-			<directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
-			<outputDirectory>standalone-server/repository</outputDirectory>
-			<includes>
+            <directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
+            <outputDirectory>standalone-server/lib</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
+            <outputDirectory>standalone-server/repository</outputDirectory>
+            <includes>
                 <include>services/*</include>
                 <include>modules/*</include>
-			</includes>
-		</fileSet>
+            </includes>
+        </fileSet>
 
         <fileSet>
-			<directory>target/axis2-${used.axis2.release}/WEB-INF/classes</directory>
-			<outputDirectory>standalone-server/conf</outputDirectory>
-			<includes>
+            <directory>target/axis2-${used.axis2.release}/WEB-INF/classes</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
                 <include>log4j.properties</include>
                 <include>commons-logging.properties</include>
-			</includes>
-		</fileSet>
-
-              
-		<!--
-			********************** copymessagebrokeraar **********************
-		-->
-
-		<fileSet>
-			<directory>../ws-messenger/messagebroker/target</directory>
-			<outputDirectory>standalone-server/repository/services
-			</outputDirectory>
-			<includes>
-				<include>airavata-messagebroker*.aar</include>
-			</includes>
-		</fileSet>
-
-		<!--
-			********************** copy messagebox aar **********************
-		-->
-
-		<fileSet>
-			<directory>../ws-messenger/messagebox/target</directory>
-			<outputDirectory>standalone-server/repository/services
-			</outputDirectory>
-			<includes>
-				<include>airavata-messagebox*.aar</include>
-			</includes>
-		</fileSet>
+            </includes>
+        </fileSet>
 
 
-		<!--
-			********************** copy wsmg.broker and messagebox property files
-			**********************
-		-->
+        <!--
+              ********************** copymessagebrokeraar **********************
+          -->
 
-		<fileSet>
-			<directory>../ws-messenger/distribution/resources</directory>
-			<outputDirectory>standalone-server/conf</outputDirectory>
-			<includes>
-				<include>*properties*</include>
-			</includes>
-		</fileSet>
+        <fileSet>
+            <directory>../ws-messenger/messagebroker/target</directory>
+            <outputDirectory>standalone-server/repository/services
+            </outputDirectory>
+            <includes>
+                <include>airavata-messagebroker*.aar</include>
+            </includes>
+        </fileSet>
+
+        <!--
+              ********************** copy messagebox aar **********************
+          -->
+
+        <fileSet>
+            <directory>../ws-messenger/messagebox/target</directory>
+            <outputDirectory>standalone-server/repository/services
+            </outputDirectory>
+            <includes>
+                <include>airavata-messagebox*.aar</include>
+            </includes>
+        </fileSet>
 
 
+        <!--
+              ********************** copy wsmg.broker and messagebox property files
+              **********************
+          -->
+
+        <fileSet>
+            <directory>../ws-messenger/distribution/resources</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
+                <include>*properties*</include>
+            </includes>
+        </fileSet>
 
 
-        	<!--
-			********************** replace bin directory
-			**********************
-		-->
+        <!--
+              ********************** replace bin directory
+              **********************
+          -->
 
-		<fileSet>
-			<directory>../ws-messenger/distribution/resources/bin</directory>
-			<outputDirectory>standalone-server/bin</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
+        <fileSet>
+            <directory>../ws-messenger/distribution/resources/bin</directory>
+            <outputDirectory>standalone-server/bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
 
-		<!--
-			********************** copymessagebrokerjar **********************
-		-->
+        <!--
+              ********************** copymessagebrokerjar **********************
+          -->
 
-		<fileSet>
-			<directory>../ws-messenger/messagebroker/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>airavata-messagebroker*.jar</include>
-			</includes>
-		</fileSet>
+        <fileSet>
+            <directory>../ws-messenger/messagebroker/target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>airavata-messagebroker*.jar</include>
+            </includes>
+        </fileSet>
 
-		<!--
-			********************** copy messagebox jar **********************
-		-->
+        <!--
+              ********************** copy messagebox jar **********************
+          -->
 
-		<fileSet>
-			<directory>../ws-messenger/messagebox/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>airavata-messagebox*.jar</include>
-			</includes>
-		</fileSet>
+        <fileSet>
+            <directory>../ws-messenger/messagebox/target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>airavata-messagebox*.jar</include>
+            </includes>
+        </fileSet>
 
         <!--
 			********************** copy commons and client jar **********************
 		-->
 
-		<fileSet>
-			<directory>../ws-messenger/commons/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>airavata-messenger-commons*.jar</include>
-			</includes>
-		</fileSet>
+        <fileSet>
+            <directory>../ws-messenger/commons/target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>airavata-messenger-commons*.jar</include>
+            </includes>
+        </fileSet>
 
         <fileSet>
-			<directory>../ws-messenger/client/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>airavata-messenger-client*.jar</include>
-			</includes>
-		</fileSet>
+            <directory>../ws-messenger/client/target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>airavata-messenger-client*.jar</include>
+            </includes>
+        </fileSet>
 
-		<!--
-			********************** copy messagebroker+ messagebox samples **********************
-		-->
+        <!--
+              ********************** copy messagebroker+ messagebox samples **********************
+          -->
 
-		<fileSet>
-			<directory>../ws-messenger/samples</directory>
-			<outputDirectory>samples</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
-
-
+        <fileSet>
+            <directory>../ws-messenger/samples</directory>
+            <outputDirectory>samples</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
 
 
-		<!--
-			********************** copy gui start up script **********************
-		-->
+        <!--
+              ********************** copy gui start up script **********************
+          -->
 
-		<fileSet>
-			<directory>../ws-messenger/distribution/resources</directory>
-			<outputDirectory>gui</outputDirectory>
-			<includes>
-				<include>*sh</include>
-			</includes>
-		</fileSet>
-
-
-
-		<!--
-			********************** copy messenger servlet **********************
-		-->
-
-		<fileSet>
-			<directory>../ws-messenger/messenger/target</directory>
-			<outputDirectory>messenger</outputDirectory>
-			<includes>
-				<include>airavata-messenger*.war</include>
-			</includes>
-		</fileSet>
+        <fileSet>
+            <directory>../ws-messenger/distribution/resources</directory>
+            <outputDirectory>gui</outputDirectory>
+            <includes>
+                <include>*sh</include>
+            </includes>
+        </fileSet>
 
 
-		<!--
-			********************** copy licenses **********************
-		-->
+        <!--
+              ********************** copy messenger servlet **********************
+          -->
 
-		<fileSet>
-			<directory>../../</directory>
-			<outputDirectory>.</outputDirectory>
-			<includes>
-				<include>LICENSE*</include>
-				<include>NOTICE*</include>
-			</includes>
-		</fileSet>
-
+        <fileSet>
+            <directory>../ws-messenger/messenger/target</directory>
+            <outputDirectory>messenger</outputDirectory>
+            <includes>
+                <include>airavata-messenger*.war</include>
+            </includes>
+        </fileSet>
 
 
-		<!--
-			********************** copy database scripts **********************
-		-->
+        <!--
+              ********************** copy licenses **********************
+          -->
 
-		<fileSet>
-			<directory>../ws-messenger/messagebroker/src/main/resources/database_scripts</directory>
-			<outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
+        <fileSet>
+            <directory>../../</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>LICENSE*</include>
+                <include>NOTICE*</include>
+            </includes>
+        </fileSet>
 
-		<fileSet>
-			<directory>../ws-messenger/messagebox/src/main/resources/database_scripts</directory>
-			<outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../xbaya-gui/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
 
-		<fileSet>
-			<directory>../commons/workflow-tracking/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>resources/bin</directory>
-			<outputDirectory>bin</outputDirectory>
-			<includes>
-				<include>*.sh</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../gfac-axis2/target</directory>
-			<outputDirectory>standalone-server/repository/services</outputDirectory>
-			<includes>
-				<include>*.aar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../xbaya-gui/target</directory>
-			<outputDirectory>standalone-server/repository/services</outputDirectory>
-			<includes>
-				<include>*.aar</include>
-			</includes>
-		</fileSet>
+        <!--
+              ********************** copy database scripts **********************
+          -->
 
-		<fileSet>
-			<directory>../gfac-axis2-artifacts/target</directory>
-			<outputDirectory>standalone-server/lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../commons/gfac-schema/target</directory>
-			<outputDirectory>standalone-server/lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../commons/gfac-schema/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../commons/registry-api/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../commons/utils/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
+        <fileSet>
+            <directory>../ws-messenger/messagebroker/src/main/resources/database_scripts</directory>
+            <outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
+            <includes>
+                <include>*sql*</include>
+            </includes>
+        </fileSet>
 
-		<fileSet>
-			<directory>../gfac-axis2/src/main/resources/</directory>
-			<outputDirectory>standalone-server/conf</outputDirectory>
-			<includes>
-				<include>repository.properties</include>
-			</includes>
-		</fileSet>
+        <fileSet>
+            <directory>../ws-messenger/messagebox/src/main/resources/database_scripts</directory>
+            <outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
+            <includes>
+                <include>*sql*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../xbaya-gui/target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
 
-		<fileSet>
-			<directory>../gfac-core/src/main/resources</directory>
-			<outputDirectory>standalone-server/conf</outputDirectory>
-			<includes>
-				<include>service.properties</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../../samples</directory>
-			<outputDirectory>samples</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
-		 <fileSet>
-			<directory>resources/conf</directory>
-			<outputDirectory>standalone-server/conf</outputDirectory>
-			<includes>
+        <fileSet>
+            <directory>../commons/workflow-tracking/target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>resources/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../gfac-axis2/target</directory>
+            <outputDirectory>standalone-server/repository/services</outputDirectory>
+            <includes>
+                <include>*.aar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../xbaya-gui/target</directory>
+            <outputDirectory>standalone-server/repository/services</outputDirectory>
+            <includes>
+                <include>*.aar</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>../gfac-axis2-artifacts/target</directory>
+            <outputDirectory>standalone-server/lib</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../commons/gfac-schema/target</directory>
+            <outputDirectory>standalone-server/lib</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../commons/gfac-schema/target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../commons/registry-api/target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../commons/utils/target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>../gfac-axis2/src/main/resources/</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
+                <include>repository.properties</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>../gfac-core/src/main/resources</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
+                <include>service.properties</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../../samples</directory>
+            <outputDirectory>samples</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>resources/conf</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
                 <include>axis2.xml</include>
-			</includes>
-		</fileSet>
-	</fileSets>
+            </includes>
+        </fileSet>
+    </fileSets>
 
     <dependencySets>
 
-            <dependencySet>
-                <outputDirectory>standalone-server/lib</outputDirectory>
-                <includes>
-                    <include>org.apache.derby:derby:jar</include>
-                    <include>org.apache.derby:derbytools:jar</include>
-		    <include>org.apache.jackrabbit:jackrabbit-api:jar</include>
-		    <include>org.apache.jackrabbit:jackrabbit-core:jar</include>
-		    <include>org.apache.jackrabbit:jackrabbit-jcr-commons:jar</include>
-		    <include>org.apache.jackrabbit:jackrabbit-jcr-rmi:jar</include>
-		    <include>org.apache.jackrabbit:jackrabbit-jcr-server:jar</include>
-		    <include>org.apache.jackrabbit:jackrabbit-jcr-servlet:jar</include>
-		    <include>org.apache.jackrabbit:jackrabbit-spi:jar</include>
-		    <include>org.apache.jackrabbit:jackrabbit-spi-commons:jar</include>
-		    <include>org.apache.jackrabbit:jackrabbit-webdav:jar</include>
-		    <include>org.slf4j:log4j-over-slf4j:jar</include>
-		    <include>org.slf4j:slf4j-api:jar</include>
-		    <include>ch.qos.logback:logback-classic:jar</include>
-		    <include>ch.qos.logback:logback-core:jar</include>
-		    <include>javax.jcr:jcr:jar</include>
-                </includes>
-                    </dependencySet>
+        <dependencySet>
+            <outputDirectory>standalone-server/lib</outputDirectory>
+            <includes>
+                <include>org.apache.derby:derby:jar</include>
+                <include>org.apache.derby:derbytools:jar</include>
+                <include>org.apache.jackrabbit:jackrabbit-api:jar</include>
+                <include>org.apache.jackrabbit:jackrabbit-core:jar</include>
+                <include>org.apache.jackrabbit:jackrabbit-jcr-commons:jar</include>
+                <include>org.apache.jackrabbit:jackrabbit-jcr-rmi:jar</include>
+                <include>org.apache.jackrabbit:jackrabbit-jcr-server:jar</include>
+                <include>org.apache.jackrabbit:jackrabbit-jcr-servlet:jar</include>
+                <include>org.apache.jackrabbit:jackrabbit-spi:jar</include>
+                <include>org.apache.jackrabbit:jackrabbit-spi-commons:jar</include>
+                <include>org.apache.jackrabbit:jackrabbit-webdav:jar</include>
+                <include>org.slf4j:log4j-over-slf4j:jar</include>
+                <include>org.slf4j:slf4j-api:jar</include>
+                <include>ch.qos.logback:logback-classic:jar</include>
+                <include>ch.qos.logback:logback-core:jar</include>
+                <include>javax.jcr:jcr:jar</include>
+            </includes>
+        </dependencySet>
 
-            <dependencySet>
-                <outputDirectory>lib</outputDirectory>
-                <includes>
-                    <include>org.apache.jackrabbit:jackrabbit-standalone:jar</include>
-		    <include>xsul:xsul:jar</include>
-		    <include>xsul5-ogce:xsul5-2007-02-27:jar</include>
-                </includes>
-                    </dependencySet>
-        </dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>gpel:gpel_client</include>
+                <include>xpp5:xpp5</include>
+                <include>xpp3:xpp3</include>
+                <include>xpp3:xpp3_xpath</include>
+                <include>org.apache.jackrabbit:jackrabbit-standalone:jar</include>
+                <include>xsul:xsul:jar</include>
+                <include>xsul5-ogce:xsul5-2007-02-27:jar</include>
+                <include>xregistry:xregistry-client</include>
+                <include>xregistry:xregistry-generated</include>
+                <include>gfac:gfac-schema-utils</include>
+                <include>lead-security:cryptix32</include>
+                <include>lead-security:jce</include>
+                <include>lead-security:cryptix-asn1</include>
+                <include>lead-security:puretls</include>
+                <include>xutil:xutil</include>
+                <include>jython:jython</include>
+                <include>lead-security:cog-jglobus</include>
+                <include>xmlbeans:xbean</include>
+                <include>xmlbeans-ogce:jsr173_api</include>
+                <include>xbaya:pegasuswebservice</include>
+                <include>swing:layout</include>
+                <include>com.amazonaws:aws-java-sdk</include>
+                <include>amazon:MapReduce.Service.Client</include>
+                <include>net.java.dev.jets3t:jets3t</include>
+            </includes>
+
+        </dependencySet>
+    </dependencySets>
 
 </assembly>
