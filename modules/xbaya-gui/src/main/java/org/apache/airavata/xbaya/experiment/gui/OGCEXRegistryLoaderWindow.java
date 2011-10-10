@@ -28,6 +28,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -88,7 +91,7 @@ public class OGCEXRegistryLoaderWindow {
                 try {
                     XRegistryAccesser xregistryAccesser = new XRegistryAccesser(OGCEXRegistryLoaderWindow.this.engine);
 
-                    final Map<QName, OGCEResourceData> resultList = xregistryAccesser.getOGCEWorkflowTemplateList();
+                    final Map<QName, Node> resultList = xregistryAccesser.getOGCEWorkflowTemplateList();
                     final Set<QName> keys = resultList.keySet();
 
                     SwingUtilities.invokeLater(new Runnable() {
@@ -100,9 +103,19 @@ public class OGCEXRegistryLoaderWindow {
                                  */
                             } else {
                                 Vector<OGCEXRegistrySearchResult> results = new Vector<OGCEXRegistrySearchResult>();
+                                Node val = null;
                                 for (QName key : keys) {
-                                    OGCEResourceData val = resultList.get(key);
+                                    val = resultList.get(key);
                                     results.add(new OGCEXRegistrySearchResult(val));
+                                }
+                                Session session = null;
+                                try {
+                                    session = val.getSession();
+                                } catch (RepositoryException e) {
+                                    OGCEXRegistryLoaderWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                                }
+                                if (session != null && session.isLive()) {
+                                    session.logout();
                                 }
                                 OGCEXRegistryLoaderWindow.this.list.setListData(results);
                                 OGCEXRegistryLoaderWindow.this.list.setEnabled(true);
@@ -139,7 +152,7 @@ public class OGCEXRegistryLoaderWindow {
         hide();
 
         try {
-            Workflow workflow = new XRegistryAccesser(this.engine).getOGCEWorkflow(result.getData().getResourceID());
+            Workflow workflow = new XRegistryAccesser(this.engine).getWorkflow(result.getResourceName());
             OGCEXRegistryLoaderWindow.this.engine.setWorkflow(workflow);
         } catch (Exception e) {
             OGCEXRegistryLoaderWindow.this.engine.getErrorWindow().error(e);

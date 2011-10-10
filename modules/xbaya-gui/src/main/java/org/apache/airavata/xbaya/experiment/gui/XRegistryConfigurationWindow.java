@@ -25,12 +25,13 @@ import java.awt.event.ActionEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JPanel;
+import javax.swing.*;
 
+import org.apache.airavata.xbaya.XBaya;
+import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
@@ -48,6 +49,10 @@ public class XRegistryConfigurationWindow {
     private JButton okButton;
 
     private XBayaTextField uriField;
+
+    private XBayaTextField userName;
+
+    private JPasswordField password;
 
     private MyProxyChecker myProxyChecker;
 
@@ -89,7 +94,28 @@ public class XRegistryConfigurationWindow {
 
         // Set the name and description to the graph.
         String uriString = this.uriField.getText();
+        String userName = this.userName.getText();
+        String password = this.password.getPassword().toString();
+        JCRComponentRegistry registry = null;
+        URI url;
 
+        try {
+            url = new URI(uriString);
+        } catch (URISyntaxException e) {
+            this.engine.getErrorWindow().error(ErrorMessages.URL_WRONG, e);
+            return;
+        }
+        try {
+            registry = new JCRComponentRegistry(url, userName, password);
+        } catch (Exception e) {
+            this.engine.getErrorWindow().error(ErrorMessages.CREDENTIALS_WRONG, e);
+            return;
+        }
+        XBayaConfiguration configuration = this.engine.getConfiguration();
+        configuration.setJcrComponentRegistry(registry);
+        configuration.setRegigstryUserName(userName);
+        configuration.setRegistryPassphrase(password);
+        configuration.setRegistryURL(url);
         if (uriString.length() == 0) {
             this.engine.getErrorWindow().error(ErrorMessages.XREGISTRY_URL_EMPTY);
             return;
@@ -105,14 +131,6 @@ public class XRegistryConfigurationWindow {
 
         hide();
 
-        boolean loaded = this.myProxyChecker.loadIfNecessary();
-        if (loaded) {
-            MyProxyClient myProxyClient = this.engine.getMyProxyClient();
-            myProxyClient.getProxy();
-        } else {
-            // Error
-            return;
-        }
 //        this.engine.setXRegistryURL(uri);
 
     }
@@ -122,12 +140,22 @@ public class XRegistryConfigurationWindow {
      */
     private void initGUI() {
         this.uriField = new XBayaTextField();
+        this.userName = new XBayaTextField();
+        this.password =  new JPasswordField();
+
         XBayaLabel uriLabel = new XBayaLabel("URL", this.uriField);
+        XBayaLabel userNameLabel = new XBayaLabel("Username", this.userName);
+        XBayaLabel passwordLabel = new XBayaLabel("Password", this.password);
 
         GridPanel mainPanel = new GridPanel();
         mainPanel.add(uriLabel);
         mainPanel.add(this.uriField);
-        mainPanel.layout(1, 2, GridPanel.WEIGHT_NONE, 1);
+        mainPanel.add(userNameLabel);
+        mainPanel.add(this.userName);
+        mainPanel.add(passwordLabel);
+        mainPanel.add(this.password);
+
+        mainPanel.layout(3, 2, GridPanel.WEIGHT_NONE, 1);
 
         this.okButton = new JButton("OK");
         this.okButton.addActionListener(new AbstractAction() {
@@ -147,7 +175,7 @@ public class XRegistryConfigurationWindow {
         buttonPanel.add(this.okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Configure the XRegistry Service", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine, "Configure the Registry Service", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(this.okButton);
     }
 }

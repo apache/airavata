@@ -30,6 +30,7 @@ import javax.swing.JMenuItem;
 
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
+import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
 import org.apache.airavata.xbaya.ode.ODEDeploymentDescriptor;
 import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
 import org.ogce.xregistry.utils.XRegistryClientException;
@@ -42,13 +43,13 @@ public class ExperimentMenu {
 
     protected XRegistryAccesser xregistryAccesser;
 
-    private JMenuItem configureXRegistryItem;
+    private JMenuItem configureRegistryItem;
 
-    private JMenuItem loadWorkflowfromXRegistryItem;
+    private JMenuItem loadWorkflowfromRegistryItem;
 
-    private JMenuItem saveWorkflowtoXRegistryItem;
+    private JMenuItem saveWorkflowtoRegistryItem;
 
-    private JMenuItem deleteWorkflowfromXRegistryItem;
+    private JMenuItem deleteWorkflowfromRegistryItem;
 
     private JMenuItem deployWorkflowtoODEItem;
 
@@ -86,11 +87,11 @@ public class ExperimentMenu {
         this.experimentMenu = new JMenu("Experiment");
         this.experimentMenu.setMnemonic(KeyEvent.VK_F);
 
-        this.experimentMenu.add(this.configureXRegistryItem);
+        this.experimentMenu.add(this.configureRegistryItem);
         this.experimentMenu.addSeparator();
-        this.experimentMenu.add(this.loadWorkflowfromXRegistryItem);
-        this.experimentMenu.add(this.saveWorkflowtoXRegistryItem);
-        this.experimentMenu.add(this.deleteWorkflowfromXRegistryItem);
+        this.experimentMenu.add(this.loadWorkflowfromRegistryItem);
+        this.experimentMenu.add(this.saveWorkflowtoRegistryItem);
+        this.experimentMenu.add(this.deleteWorkflowfromRegistryItem);
         this.experimentMenu.addSeparator();
         this.experimentMenu.add(this.launchXBayaInterpreterItem);
         this.experimentMenu.addSeparator();
@@ -105,14 +106,14 @@ public class ExperimentMenu {
     }
 
     private void createConfigureXRegistryItem() {
-        this.configureXRegistryItem = new JMenuItem("Configure XRegistry");
-        configureXRegistryItem.setMnemonic(KeyEvent.VK_C);
-        configureXRegistryItem.addActionListener(new AbstractAction() {
-            private XRegistryConfigurationWindow window;
+        this.configureRegistryItem = new JMenuItem("Configure Registry");
+        configureRegistryItem.setMnemonic(KeyEvent.VK_C);
+        configureRegistryItem.addActionListener(new AbstractAction() {
+            private JCRRegistryWindow window;
 
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
-                    this.window = new XRegistryConfigurationWindow(ExperimentMenu.this.engine);
+                    this.window = new JCRRegistryWindow(ExperimentMenu.this.engine);
                 }
                 this.window.show();
             }
@@ -120,8 +121,8 @@ public class ExperimentMenu {
     }
 
     private void createLoadWorkflowfromXRegistryItem() {
-        this.loadWorkflowfromXRegistryItem = new JMenuItem("Load Workflow from XRegistry");
-        this.loadWorkflowfromXRegistryItem.addActionListener(new AbstractAction() {
+        this.loadWorkflowfromRegistryItem = new JMenuItem("Load Workflow from Registry");
+        this.loadWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 new OGCEXRegistryLoaderWindow(ExperimentMenu.this.engine).show();
 
@@ -130,9 +131,9 @@ public class ExperimentMenu {
     }
 
     private void createSaveWorkflowtoXRegistryItem() {
-        this.saveWorkflowtoXRegistryItem = new JMenuItem("Save Workflow to XRegistry");
-        this.saveWorkflowtoXRegistryItem.setMnemonic(KeyEvent.VK_C);
-        this.saveWorkflowtoXRegistryItem.addActionListener(new AbstractAction() {
+        this.saveWorkflowtoRegistryItem = new JMenuItem("Save Workflow to Registry");
+        this.saveWorkflowtoRegistryItem.setMnemonic(KeyEvent.VK_C);
+        this.saveWorkflowtoRegistryItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 ExperimentMenu.this.xregistryAccesser.saveWorkflow();
             }
@@ -140,8 +141,8 @@ public class ExperimentMenu {
     }
 
     private void createDeleteWorkflowtoXRegistryItem() {
-        this.deleteWorkflowfromXRegistryItem = new JMenuItem("Delete Workflows in XRegistry");
-        this.deleteWorkflowfromXRegistryItem.addActionListener(new AbstractAction() {
+        this.deleteWorkflowfromRegistryItem = new JMenuItem("Delete Workflows in Registry");
+        this.deleteWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 try {
                     ExperimentMenu.this.xregistryAccesser.deleteOGCEWorkflow(ExperimentMenu.this.engine.getWorkflow()

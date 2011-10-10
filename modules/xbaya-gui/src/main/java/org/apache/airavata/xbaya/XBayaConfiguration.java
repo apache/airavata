@@ -773,4 +773,12 @@ public class XBayaConfiguration {
     public void setRegistryPassphrase(String registryPassphrase) {
         this.registryPassphrase = registryPassphrase;
     }
+
+    public String getRegigstryUserName() {
+        return regigstryUserName;
+    }
+
+    public String getRegistryPassphrase() {
+        return registryPassphrase;
+    }
 }

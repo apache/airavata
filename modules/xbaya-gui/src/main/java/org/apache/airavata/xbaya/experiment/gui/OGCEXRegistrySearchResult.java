@@ -21,14 +21,14 @@
 
 package org.apache.airavata.xbaya.experiment.gui;
 
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.commons.gfac.type.util.SchemaUtil;
+import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.gui.TableRenderable;
-
-import xregistry.generated.FindAppDescResponseDocument.FindAppDescResponse.AppData;
-import xregistry.generated.HostDescData;
-import xregistry.generated.OGCEResourceData;
-import xregistry.generated.ServiceDescData;
 
 public class OGCEXRegistrySearchResult implements TableRenderable {
 
@@ -42,45 +42,33 @@ public class OGCEXRegistrySearchResult implements TableRenderable {
 
     private String description;
 
-    private OGCEResourceData data;
-
-    /**
-     * Constructs a XRSearchResult.
-     * 
-     * @param resourceID
-     * @param description
-     * @param val
-     */
-    public OGCEXRegistrySearchResult(OGCEResourceData val) {
-        this.qname = val.getName();
-        this.resourceID = val.getResourceID();
-        this.resourceName = val.getResourceName();
-        this.description = val.getResourceDesc();
-        this.data = val;
-    }
+    private Node data;
 
     /**
      * Constructs a OGCEXRegistrySearchResult.
-     * 
-     * @param val
+     *
+     * @param node
      */
 
-    public OGCEXRegistrySearchResult(Object val) {
-        if (val instanceof HostDescData) {
-            this.qname = ((HostDescData) val).getName();
-            this.resourceID = new QName(((HostDescData) val).getResourceID());
-            this.description = ((HostDescData) val).getOwner();
-            this.resourceName = ((HostDescData) val).getName().toString();
-        } else if (val instanceof AppData) {
-            this.qname = ((AppData) val).getName();
-            this.resourceID = new QName(((AppData) val).getResourceID());
-            this.description = ((AppData) val).getHostName();
-            this.resourceName = ((AppData) val).getName().getLocalPart().toString();
-        } else if (val instanceof ServiceDescData) {
-            this.qname = ((ServiceDescData) val).getName();
-            this.resourceID = new QName(((ServiceDescData) val).getResourceID());
-            this.description = ((ServiceDescData) val).getOwner();
-            this.resourceName = ((ServiceDescData) val).getName().getLocalPart().toString();
+    public OGCEXRegistrySearchResult(Node node) {
+        try {
+            String property = node.getProperty("Type").getString();
+            if (property.equals(XBayaConstants.REGISTRY_TYPE_HOST_DESC)) {
+                //todo
+            } else if (property.equals(XBayaConstants.REGISTRY_TYPE_APPLICATION_DESC)) {
+                //todo
+            } else if (property.equals(XBayaConstants.REGISTRY_TYPE_SERVICE_DESC)) {
+                //todo
+            } else if (property.equals(XBayaConstants.REGISTRY_TYPE_WORKFLOW)) {
+//                this.qname = new ;
+                this.resourceID = new QName(node.getProperty("NamespaceURI").getString(),node.getProperty("LocalPart").getString(),node.getProperty("Prefix").getString());
+                this.description = node.getProperty("Description").getString();
+                this.resourceName = node.getName();
+            }
+
+
+        } catch (RepositoryException e) {
+            e.printStackTrace();
         }
     }
 
@@ -122,10 +110,10 @@ public class OGCEXRegistrySearchResult implements TableRenderable {
 
     /**
      * Returns the data.
-     * 
+     *
      * @return The data
      */
-    public OGCEResourceData getData() {
+    public Node getData() {
         return this.data;
     }
 
