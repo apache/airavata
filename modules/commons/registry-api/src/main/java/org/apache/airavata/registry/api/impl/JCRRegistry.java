@@ -46,15 +46,18 @@ import javax.jcr.Value;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.commons.gfac.type.util.SchemaUtil;
 import org.apache.airavata.registry.api.Axis2Registry;
+import org.apache.airavata.registry.api.DataRegistry;
 import org.apache.airavata.registry.api.user.UserManager;
 import org.apache.airavata.registry.api.user.UserManagerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JCRRegistry implements Axis2Registry {
+public class JCRRegistry implements Axis2Registry, DataRegistry {
 
+    private static final String OUTPUT_NODE_NAME = "OUTPUTS";
 	private static final String SERVICE_NODE_NAME = "SERVICE_HOST";
     private static final String GFAC_INSTANCE_DATA = "GFAC_INSTANCE_DATA";
 	private static final String DEPLOY_NODE_NAME = "APP_HOST";
@@ -112,8 +115,6 @@ public class JCRRegistry implements Axis2Registry {
 	private Node getServiceNode(Session session) throws RepositoryException {
 		return getOrAddNode(session.getRootNode(), SERVICE_NODE_NAME);
 	}
-
-
 
 	private Node getDeploymentNode(Session session) throws RepositoryException {
 		return getOrAddNode(session.getRootNode(), DEPLOY_NODE_NAME);
@@ -523,6 +524,55 @@ public class JCRRegistry implements Axis2Registry {
 	public void setUserManager(UserManager userManager) {
 		this.userManager = userManager;
 	}
+	
+    public String saveOutput(String workflowId, List<AbstractParameter> parameters) {
+        Session session = null;
+        String result = null;
+        try {
+            session = getSession();
+            Node outputNode = getOrAddNode(session.getRootNode(), OUTPUT_NODE_NAME);
+            Node node = getOrAddNode(outputNode, workflowId);
+            for (int i = 0; i < parameters.size(); i++) {
+                node.setProperty(String.valueOf(i), SchemaUtil.toXML(parameters.get(i)));                
+            }
+            
+            session.save();
 
-
+            result = node.getIdentifier();
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            // TODO propagate
+        } finally {
+            if (session != null && session.isLive()) {
+                session.logout();
+            }
+        }
+        return result;
+    }
+    
+    public List<AbstractParameter> loadOutput(String workflowId){
+        Session session = null;
+        ArrayList<AbstractParameter> result = new ArrayList<AbstractParameter>();
+        try {
+            session = getSession();
+            Node outputNode = getOrAddNode(session.getRootNode(), OUTPUT_NODE_NAME);
+            Node node = outputNode.getNode(workflowId);
+            
+            PropertyIterator it = node.getProperties();
+            while(it.hasNext()){
+                Property prop = (Property)it.next();
+                result.add((AbstractParameter) SchemaUtil.parseFromXML(prop.getString()));
+            }            
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            // TODO propagate
+        } finally {
+            if (session != null && session.isLive()) {
+                session.logout();
+            }
+        }
+        return result;
+    }
 }
