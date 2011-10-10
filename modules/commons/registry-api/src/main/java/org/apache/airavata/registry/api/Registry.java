@@ -22,10 +22,14 @@
 package org.apache.airavata.registry.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+
+import javax.jcr.Node;
+import javax.xml.namespace.QName;
 
 public interface Registry {
 	/**
@@ -138,5 +142,11 @@ public interface Registry {
     public boolean deleteGFacDescriptor(String gfacURL);
 
     public List<String> getGFacDescriptorList();
+
+    public boolean saveWorkflow(QName ResourceID, String workflowName, String resourceDesc, String workflowAsaString, String owner, boolean isMakePublic);
+
+    public Map<QName,Node> getAvailableWorkflows(String userName);
+
+    public Node getWorkflow(QName templateID,String userName);
 
 }

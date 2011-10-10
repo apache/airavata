@@ -24,11 +24,7 @@ package org.apache.airavata.registry.api.impl;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 import javax.jcr.Credentials;
 import javax.jcr.Node;
@@ -42,6 +38,7 @@ import javax.jcr.RepositoryFactory;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.Value;
+import javax.xml.namespace.QName;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -66,6 +63,9 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
 	private static final String WSDL_PROPERTY_NAME = "WSDL";
     private static final String GFAC_URL_PROPERTY_NAME = "GFAC_URL_LIST";
     private static final String LINK_NAME = "LINK";
+    public static final String WORKFLOWS = "WORKFLOWS";
+    public static final String PUBLIC = "PUBLIC";
+    public static final String REGISTRY_TYPE_WORKFLOW = "workflow";
     public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 
     private Repository repository;
@@ -575,4 +575,73 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
         }
         return result;
     }
+
+
+
+
+
+    public Map<QName, Node> getAvailableWorkflows(String userName) {
+        Session session = null;
+        Map<QName,Node> workflowList = new HashMap<QName, Node>();
+        try {
+            session = getSession();
+            Node workflowListNode = getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOWS), PUBLIC);
+            NodeIterator iterator = workflowListNode.getNodes();
+            while (iterator.hasNext()) {
+                Node nextNode = iterator.nextNode();
+                workflowList.put(new QName(nextNode.getName()),nextNode);
+            }
+            workflowListNode = getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOWS), userName);
+            iterator = workflowListNode.getNodes();
+            while (iterator.hasNext()) {
+                Node nextNode = iterator.nextNode();
+                workflowList.put(new QName(nextNode.getName()), nextNode);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            return workflowList;
+    }
+
+    public Node getWorkflow(QName templateID, String userName) {
+        Session session = null;
+        Node result = null;
+        try {
+            session = getSession();
+            Node workflowListNode = getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOWS), userName);
+            result = getOrAddNode(workflowListNode, templateID.getLocalPart());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            return result;
+    }
+        public boolean saveWorkflow(QName ResourceID, String workflowName, String resourceDesc, String workflowAsaString, String owner, boolean isMakePublic) {
+              Session session = null;
+              try {
+                  session = getSession();
+                  Node workflowListNode = getOrAddNode(session.getRootNode(), WORKFLOWS);
+                  Node workflowNode = null;
+                  if(isMakePublic){
+                       workflowNode = getOrAddNode(getOrAddNode(workflowListNode, PUBLIC), workflowName);
+                  }else{
+                       workflowNode = getOrAddNode(getOrAddNode(workflowListNode, owner),workflowName);
+                  }
+                  workflowNode.setProperty("workflow",workflowAsaString);
+                  workflowNode.setProperty("Prefix",ResourceID.getPrefix());
+                  workflowNode.setProperty("LocalPart",ResourceID.getLocalPart());
+                  workflowNode.setProperty("NamespaceURI",ResourceID.getNamespaceURI());
+                  workflowNode.setProperty("public",isMakePublic);
+                  workflowNode.setProperty("Description",resourceDesc);
+                  workflowNode.setProperty("Type",REGISTRY_TYPE_WORKFLOW);
+                  session.save();
+              } catch (Exception e) {
+                  e.printStackTrace();
+              } finally {
+                  if (session != null && session.isLive()) {
+                      session.logout();
+                  }
+                  return true;
+              }
+          }
 }
