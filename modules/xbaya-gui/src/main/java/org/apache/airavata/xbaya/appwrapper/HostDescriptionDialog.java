@@ -9,6 +9,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.regex.Pattern;
 
 import javax.jcr.PathNotFoundException;
 import javax.swing.GroupLayout;
@@ -234,7 +235,7 @@ public class HostDescriptionDialog extends JDialog {
 		
 		HostDescription hostDescription2=null;
 		try {
-			hostDescription2 = getJCRComponentRegistry().getHostDescription(getHostName());
+			hostDescription2 = getJCRComponentRegistry().getHostDescription(Pattern.quote(getHostName()));
 		} catch (PathNotFoundException e) {
 			//what we want
 		} catch (Exception e){

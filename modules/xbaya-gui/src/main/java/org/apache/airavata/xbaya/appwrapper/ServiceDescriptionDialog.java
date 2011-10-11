@@ -43,6 +43,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class ServiceDescriptionDialog extends JDialog {
 
@@ -336,7 +337,7 @@ public class ServiceDescriptionDialog extends JDialog {
 		
 		ServiceDescription serviceDescription2=null;
 		try {
-			serviceDescription2 = getJCRComponentRegistry().getServiceDescription(getServiceName());
+			serviceDescription2 = getJCRComponentRegistry().getServiceDescription(Pattern.quote(getServiceName()));
 		} catch (PathNotFoundException e) {
 			//what we want
 		} catch (Exception e){

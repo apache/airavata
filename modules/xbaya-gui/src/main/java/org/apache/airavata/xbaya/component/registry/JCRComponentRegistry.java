@@ -128,7 +128,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
 		return registry.getHostDescription(nameRegEx);
 	}
 	
-	public List<ApplicationDeploymentDescription> searchApplicationDescription(String serviceName, String host) throws HostDescriptionRetrieveException {
+	public List<ApplicationDeploymentDescription> searchApplicationDescription(String serviceName, String host) throws HostDescriptionRetrieveException, PathNotFoundException, DeploymentDescriptionRetrieveException {
 		return registry.searchDeploymentDescription(serviceName, host);
 	}
 	

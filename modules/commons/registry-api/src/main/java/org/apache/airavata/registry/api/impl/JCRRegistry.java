@@ -423,10 +423,98 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
 		return result;
 	}
 
+	public Map<ApplicationDeploymentDescription,String> searchDeploymentDescription() throws PathNotFoundException, DeploymentDescriptionRetrieveException {
+		Session session = null;
+		Map<ApplicationDeploymentDescription,String> result = new HashMap<ApplicationDeploymentDescription,String>();
+        try {
+            session = getSession();
+            Node deploymentNode = getDeploymentNode(session);
+			NodeIterator serviceNodes = deploymentNode.getNodes();
+
+            for (; serviceNodes.hasNext();) {
+				Node serviceNode = serviceNodes.nextNode();
+				NodeIterator hostNodes = serviceNode.getNodes();
+
+            	for (; hostNodes.hasNext();) {
+            		Node hostNode = hostNodes.nextNode();
+    				NodeIterator nodes = hostNode.getNodes();
+                	for (; nodes.hasNext();) {
+						Node app = nodes.nextNode();
+						Property prop = app.getProperty(XML_PROPERTY_NAME);
+						result.put((ApplicationDeploymentDescription) SchemaUtil
+								.parseFromXML(prop.getString()),serviceNode.getName()+"$"+hostNode.getName());
+                	}
+            	}
+			}
+		}catch(PathNotFoundException e){
+			throw e;
+        } catch (Exception e) {
+            throw new DeploymentDescriptionRetrieveException(e);
+        } finally {
+            if (session != null && session.isLive()) {
+                session.logout();
+            }
+        }	   
+		return result;
+	}
+	
 	public List<ApplicationDeploymentDescription> searchDeploymentDescription(
-			String serviceName, String hostName) {
-		// TODO implementation
-		return null;
+			String serviceName, String hostName, String applicationName) throws PathNotFoundException, DeploymentDescriptionRetrieveException {
+	    Session session = null;
+        List<ApplicationDeploymentDescription> result = new ArrayList<ApplicationDeploymentDescription>();
+        try {
+            session = getSession();
+            Node deploymentNode = getDeploymentNode(session);
+			Node serviceNode = deploymentNode.getNode(serviceName);
+			Node hostNode = serviceNode.getNode(hostName);
+			NodeIterator nodes = hostNode.getNodes();
+			for (; nodes.hasNext();) {
+				Node app = nodes.nextNode();
+				Property prop = app.getProperty(XML_PROPERTY_NAME);
+				ApplicationDeploymentDescription appDesc = (ApplicationDeploymentDescription) SchemaUtil
+						.parseFromXML(prop.getString());
+				if (appDesc.getName().matches(applicationName)){
+					result.add(appDesc);
+				}
+			}
+		}catch(PathNotFoundException e){
+			throw e;
+        } catch (Exception e) {
+            throw new DeploymentDescriptionRetrieveException(e);
+        } finally {
+            if (session != null && session.isLive()) {
+                session.logout();
+            }
+        }	   
+		return result;
+	}
+	
+	public List<ApplicationDeploymentDescription> searchDeploymentDescription(
+			String serviceName, String hostName) throws PathNotFoundException, DeploymentDescriptionRetrieveException {
+	    Session session = null;
+        List<ApplicationDeploymentDescription> result = new ArrayList<ApplicationDeploymentDescription>();
+        try {
+            session = getSession();
+            Node deploymentNode = getDeploymentNode(session);
+			Node serviceNode = deploymentNode.getNode(serviceName);
+			Node hostNode = serviceNode.getNode(hostName);
+			NodeIterator nodes = hostNode.getNodes();
+			for (; nodes.hasNext();) {
+				Node app = nodes.nextNode();
+				Property prop = app.getProperty(XML_PROPERTY_NAME);
+				result.add((ApplicationDeploymentDescription) SchemaUtil
+						.parseFromXML(prop.getString()));
+			}
+		}catch(PathNotFoundException e){
+			throw e;
+        } catch (Exception e) {
+            throw new DeploymentDescriptionRetrieveException(e);
+        } finally {
+            if (session != null && session.isLive()) {
+                session.logout();
+            }
+        }	   
+		return result;
 	}
 
     public String saveWSDL(String name, String WSDL) {

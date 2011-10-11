@@ -1,7 +1,19 @@
 package org.apache.airavata.xbaya.appwrapper;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.jcr.PathNotFoundException;
 import javax.swing.GroupLayout;
@@ -14,27 +26,15 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.SwingConstants;
 
+import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
-import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
-
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.Color;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import org.apache.airavata.xbaya.gui.XBayaLinkButton;
-import javax.swing.SwingConstants;
-import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.List;
 
 public class ApplicationDescriptionDialog extends JDialog {
 	/**
@@ -80,7 +80,18 @@ public class ApplicationDescriptionDialog extends JDialog {
 				int i=1;
 				String defaultName=baseName+i;
 				try {
-					while(getJCRComponentRegistry().getHostDescription(defaultName)!=null){
+					List<ApplicationDeploymentDescription> applicationDescriptions = getJCRComponentRegistry().getRegistry().searchDeploymentDescription(getServiceName(), getHostName());
+					while(true){
+						boolean notFound=true;
+						for (ApplicationDeploymentDescription deploymentDescription : applicationDescriptions) {
+							if (deploymentDescription.getName().equals(defaultName)){
+								notFound=false;
+								break;
+							}
+						}
+						if (notFound){
+							break;
+						}
 						defaultName=baseName+(++i);
 					}
 				} catch (Exception e) {
@@ -348,6 +359,7 @@ public class ApplicationDescriptionDialog extends JDialog {
 		} catch (Exception e) {
 			setError(e.getLocalizedMessage());
 		}
+		updateServiceName();
 	}
 	
 	private void loadHostDescriptions(){
@@ -361,6 +373,7 @@ public class ApplicationDescriptionDialog extends JDialog {
 		} catch (Exception e) {
 			setError(e.getLocalizedMessage());
 		}
+		updateHostName();
 	}
 	
 	public XBayaEngine getEngine() {
@@ -464,6 +477,18 @@ public class ApplicationDescriptionDialog extends JDialog {
 	
 		if (getHostName()==null || getHostName().trim().equals("")){
 			throw new Exception("Please select/create host to bind to this deployment description");
+		}
+		
+		List<ApplicationDeploymentDescription> deploymentDescriptions=null;
+		try {
+			deploymentDescriptions = getJCRComponentRegistry().getRegistry().searchDeploymentDescription(getServiceName(), getHostName(), Pattern.quote(getApplicationName()));
+		} catch (PathNotFoundException e) {
+			//what we want
+		} catch (Exception e){
+			throw e;
+		}
+		if (deploymentDescriptions.size()>0){
+			throw new Exception("Application descriptor with the given name already exists!!!");
 		}
 	}
 

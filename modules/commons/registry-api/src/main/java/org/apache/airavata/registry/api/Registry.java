@@ -141,7 +141,27 @@ public interface Registry {
 	 * @throws DeploymentDescriptionRetrieveException 
 	 */
 	public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName) throws DeploymentDescriptionRetrieveException, PathNotFoundException;
+	
+	/**
+	 * Search deployment description from a service and/or a hostname
+	 *
+	 * @param serviceName 
+	 * @param hostName
+	 * @param applicationName
+	 * @return the deployment descriptions with matched service name, host name & reg-ex supported application name
+	 * @throws PathNotFoundException 
+	 * @throws DeploymentDescriptionRetrieveException 
+	 */
+	public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName, String applicationName) throws PathNotFoundException, DeploymentDescriptionRetrieveException;
 
+	/**
+	 * Return all deployment descriptions
+	 *
+	 * @return all deployment descriptions on a map with their values containing the service & host as a string separated by "$"
+	 * @throws PathNotFoundException 
+	 * @throws DeploymentDescriptionRetrieveException 
+	 */
+	public Map<ApplicationDeploymentDescription,String> searchDeploymentDescription() throws PathNotFoundException, DeploymentDescriptionRetrieveException;
     /**
      * This method can be used to save the gfacURL in to registry
      * @param gfacURL
