@@ -24,7 +24,12 @@ package org.apache.airavata.registry.api.impl;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 import javax.jcr.Credentials;
 import javax.jcr.Node;
@@ -53,6 +58,7 @@ import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveExcepti
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.registry.api.user.UserManager;
 import org.apache.airavata.registry.api.user.UserManagerFactory;
+import org.apache.airavata.registry.api.util.Axis2Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -493,13 +499,13 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
         return result;
     }
 
-    public String saveWSDL(String name, String WSDL) {
+    public String saveWSDL(ServiceDescription service, String WSDL) {
         Session session = null;
         String result = null;
         try {
             session = getSession();
             Node serviceNode = getServiceNode(session);
-            Node node = getOrAddNode(serviceNode, name);
+            Node node = getOrAddNode(serviceNode, service.getId());
             node.setProperty(WSDL_PROPERTY_NAME, WSDL);
             session.save();
 
@@ -514,9 +520,8 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
         return result;
     }
 
-    public String saveWSDL(String serviceName, ServiceDescription service) {
-        // TODO Auto-generated method stub
-        return null;
+    public String saveWSDL(ServiceDescription service) {
+        return saveWSDL(service, Axis2Util.generateWSDL(service));
     }
 
     public String getWSDL(String serviceName) {
