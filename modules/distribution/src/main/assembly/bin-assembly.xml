@@ -262,14 +262,6 @@
                 <include>*.aar</include>
             </includes>
         </fileSet>
-
-        <fileSet>
-            <directory>../gfac-axis2-artifacts/target</directory>
-            <outputDirectory>standalone-server/lib</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
         <fileSet>
             <directory>../commons/gfac-schema/target</directory>
             <outputDirectory>standalone-server/lib</outputDirectory>
