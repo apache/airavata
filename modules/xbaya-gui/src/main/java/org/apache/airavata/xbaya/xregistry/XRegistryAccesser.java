@@ -338,11 +338,8 @@ public class XRegistryAccesser {
      * @throws XregistryException
      */
     public void deleteOGCEWorkflow(QName workflowTemplateId) throws XRegistryClientException {
-        if (this.xregistryClient == null) {
-            connectToXRegistry();
-        }
-        this.xregistryClient.removeOGCEResource(workflowTemplateId,
-                XBayaConstants.XR_Resource_Types.WorkflowTemplate.toString());
+        Registry registry = connectToRegistry();
+        registry.deleteWorkflow(workflowTemplateId,this.engine.getConfiguration().getRegigstryUserName());
     }
 
     /**
