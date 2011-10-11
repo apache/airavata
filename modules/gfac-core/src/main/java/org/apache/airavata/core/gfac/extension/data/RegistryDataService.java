@@ -62,7 +62,7 @@ public class RegistryDataService extends DataServiceChain {
                 date = date.replaceAll(" ", "_");
                 date = date.replaceAll(":", "_");
 
-                String tmpDir = appDesc.getTmpDir() + File.separator + appDesc.getName() + "_" + date + "_"
+                String tmpDir = appDesc.getTmpDir() + File.separator + appDesc.getId() + "_" + date + "_"
                         + UUID.randomUUID();
 
                 appDesc.setWorkingDir(tmpDir);
@@ -84,10 +84,10 @@ public class RegistryDataService extends DataServiceChain {
             if (appDesc.getClass().isAssignableFrom(ShellApplicationDeployment.class)) {
                 ShellApplicationDeployment shell = (ShellApplicationDeployment) appDesc;
                 if (shell.getStdOut() == null) {
-                    shell.setStdOut(appDesc.getWorkingDir() + File.separator + appDesc.getName() + ".stdout");
+                    shell.setStdOut(appDesc.getWorkingDir() + File.separator + appDesc.getId() + ".stdout");
                 }
                 if (shell.getStdErr() == null) {
-                    shell.setStdOut(appDesc.getWorkingDir() + File.separator + appDesc.getName() + ".stderr");
+                    shell.setStdOut(appDesc.getWorkingDir() + File.separator + appDesc.getId() + ".stderr");
                 }
             }
 

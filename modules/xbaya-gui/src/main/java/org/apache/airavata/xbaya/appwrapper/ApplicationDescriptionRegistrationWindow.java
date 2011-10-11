@@ -324,7 +324,7 @@ public class ApplicationDescriptionRegistrationWindow {
 			}
             
             ShellApplicationDeployment shellApplicationDeployment = new ShellApplicationDeployment();
-            shellApplicationDeployment.setName(StringUtil.trimSpaceInString(this.applicationNameTextField.getText()));
+            shellApplicationDeployment.setId(StringUtil.trimSpaceInString(this.applicationNameTextField.getText()));
             shellApplicationDeployment.setExecutable(StringUtil.trimSpaceInString(this.executableTextField.getText()));
             shellApplicationDeployment.setWorkingDir(StringUtil.trimSpaceInString(this.workDirectoryTextField.getText()));
             shellApplicationDeployment.setTmpDir(StringUtil.trimSpaceInString(this.tempDirTextField.getText()));

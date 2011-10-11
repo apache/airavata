@@ -59,12 +59,12 @@ import org.slf4j.LoggerFactory;
 public class JCRRegistry implements Axis2Registry, DataRegistry {
 
     private static final String OUTPUT_NODE_NAME = "OUTPUTS";
-	private static final String SERVICE_NODE_NAME = "SERVICE_HOST";
+    private static final String SERVICE_NODE_NAME = "SERVICE_HOST";
     private static final String GFAC_INSTANCE_DATA = "GFAC_INSTANCE_DATA";
-	private static final String DEPLOY_NODE_NAME = "APP_HOST";
-	private static final String HOST_NODE_NAME = "GFAC_HOST";
-	private static final String XML_PROPERTY_NAME = "XML";
-	private static final String WSDL_PROPERTY_NAME = "WSDL";
+    private static final String DEPLOY_NODE_NAME = "APP_HOST";
+    private static final String HOST_NODE_NAME = "GFAC_HOST";
+    private static final String XML_PROPERTY_NAME = "XML";
+    private static final String WSDL_PROPERTY_NAME = "WSDL";
     private static final String GFAC_URL_PROPERTY_NAME = "GFAC_URL_LIST";
     private static final String LINK_NAME = "LINK";
     public static final String WORKFLOWS = "WORKFLOWS";
@@ -73,304 +73,286 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
     public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 
     private Repository repository;
-	private Credentials credentials;
-	private UserManager userManager;
-	
-	private static Logger log = LoggerFactory.getLogger(JCRRegistry.class);
+    private Credentials credentials;
+    private UserManager userManager;
 
-	public JCRRegistry(String className, String user, String pass,
-                       Map<String, String> map) throws RepositoryException {
-		try {
-			/*
-			 * Load the configuration from properties file at this level and
-			 * create the object
-			 */
-			Class registryRepositoryFactory = Class.forName(className);
-			Constructor c = registryRepositoryFactory.getConstructor();
-			RepositoryFactory repositoryFactory = (RepositoryFactory) c
-					.newInstance();
+    private static Logger log = LoggerFactory.getLogger(JCRRegistry.class);
 
-			repository = repositoryFactory.getRepository(map);
-			credentials = new SimpleCredentials(user,
-					new String(pass).toCharArray());
-			System.out.println(repository.getDescriptor(Repository.REP_NAME_DESC));
-			setUserManager(UserManagerFactory.getUserManager(repository.getDescriptor(Repository.REP_NAME_DESC)));
-			System.out.println(getUserManager());
-			getUserManager().setRepository(this);
-		} catch (ClassNotFoundException e) {
-			log.error("Error class path settting", e);
-		} catch (RepositoryException e) {
-			log.error("Error connecting Remote Registry instance", e);
+    public JCRRegistry(String className, String user, String pass, Map<String, String> map) throws RepositoryException {
+        try {
+            /*
+             * Load the configuration from properties file at this level and
+             * create the object
+             */
+            Class registryRepositoryFactory = Class.forName(className);
+            Constructor c = registryRepositoryFactory.getConstructor();
+            RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
+
+            repository = repositoryFactory.getRepository(map);
+            credentials = new SimpleCredentials(user, new String(pass).toCharArray());
+            System.out.println(repository.getDescriptor(Repository.REP_NAME_DESC));
+            setUserManager(UserManagerFactory.getUserManager(repository.getDescriptor(Repository.REP_NAME_DESC)));
+            System.out.println(getUserManager());
+            getUserManager().setRepository(this);
+        } catch (ClassNotFoundException e) {
+            log.error("Error class path settting", e);
+        } catch (RepositoryException e) {
+            log.error("Error connecting Remote Registry instance", e);
             throw e;
-		} catch (Exception e) {
-			log.error("Error init", e);
-		}
-	}
+        } catch (Exception e) {
+            log.error("Error init", e);
+        }
+    }
 
-    public JCRRegistry(Repository repo, Credentials credentials){
+    public JCRRegistry(Repository repo, Credentials credentials) {
         this.repository = repo;
         this.credentials = credentials;
     }
 
-	public Session getSession() throws RepositoryException {
-		return repository.login(credentials);
-	}
+    public Session getSession() throws RepositoryException {
+        return repository.login(credentials);
+    }
 
-	private Node getServiceNode(Session session) throws RepositoryException {
-		return getOrAddNode(session.getRootNode(), SERVICE_NODE_NAME);
-	}
+    private Node getServiceNode(Session session) throws RepositoryException {
+        return getOrAddNode(session.getRootNode(), SERVICE_NODE_NAME);
+    }
 
-	private Node getDeploymentNode(Session session) throws RepositoryException {
-		return getOrAddNode(session.getRootNode(), DEPLOY_NODE_NAME);
-	}
+    private Node getDeploymentNode(Session session) throws RepositoryException {
+        return getOrAddNode(session.getRootNode(), DEPLOY_NODE_NAME);
+    }
 
-	private Node getHostNode(Session session) throws RepositoryException {
-		return getOrAddNode(session.getRootNode(), HOST_NODE_NAME);
-	}
+    private Node getHostNode(Session session) throws RepositoryException {
+        return getOrAddNode(session.getRootNode(), HOST_NODE_NAME);
+    }
 
-	private Node getOrAddNode(Node node, String name)
-			throws RepositoryException {
-		Node node1 = null;
-		try {
-			node1 = node.getNode(name);
-		} catch (PathNotFoundException pnfe) {
-			node1 = node.addNode(name);
-		} catch (RepositoryException e) {
-			String msg = "failed to resolve the path of the given node ";
-			log.debug(msg);
-			throw new RepositoryException(msg, e);
-		}
-		return node1;
-	}
+    private Node getOrAddNode(Node node, String name) throws RepositoryException {
+        Node node1 = null;
+        try {
+            node1 = node.getNode(name);
+        } catch (PathNotFoundException pnfe) {
+            node1 = node.addNode(name);
+        } catch (RepositoryException e) {
+            String msg = "failed to resolve the path of the given node ";
+            log.debug(msg);
+            throw new RepositoryException(msg, e);
+        }
+        return node1;
+    }
 
-	public List<HostDescription> getServiceLocation(String serviceName) {
-		Session session = null;
-		ArrayList<HostDescription> result = new ArrayList<HostDescription>();
-		try {
-			session = getSession();
-			Node node = getServiceNode(session);
-			Node serviceNode = node.getNode(serviceName);
-			if (serviceNode.hasProperty(LINK_NAME)) {
-				Property prop = serviceNode.getProperty(LINK_NAME);
-				Value[] vals = prop.getValues();
-				for (Value val : vals) {					
-					Node host = session.getNodeByIdentifier(val.getString());
-					Property hostProp = host.getProperty(XML_PROPERTY_NAME);
-					result.add((HostDescription) SchemaUtil
-							.parseFromXML(hostProp.getString()));
-				}
-			}
-		} catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
-			// TODO propagate
-		} finally {
-			if (session != null && session.isLive()) {
-				session.logout();
-			}
-		}
-		return result;
-	}
+    private void closeSession(Session session) {
+        if (session != null && session.isLive()) {
+            session.logout();
+        }
+    }
 
-	public ServiceDescription getServiceDescription(String serviceName) throws ServiceDescriptionRetrieveException, PathNotFoundException{
-		Session session = null;
-		ServiceDescription result = null;
-		try {
-			session = getSession();
-			Node serviceNode = getServiceNode(session);
-			Node node = serviceNode.getNode(serviceName);
-			Property prop = node.getProperty(XML_PROPERTY_NAME);
-			result = (ServiceDescription) SchemaUtil.parseFromXML(prop
-					.getString());
-		} catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
-			// TODO propagate
-		} finally {
-			if (session != null && session.isLive()) {
-				session.logout();
-			}
-		}
-		return result;
-	}
+    public List<HostDescription> getServiceLocation(String serviceId) {
+        Session session = null;
+        ArrayList<HostDescription> result = new ArrayList<HostDescription>();
+        try {
+            session = getSession();
+            Node node = getServiceNode(session);
+            Node serviceNode = node.getNode(serviceId);
+            if (serviceNode.hasProperty(LINK_NAME)) {
+                Property prop = serviceNode.getProperty(LINK_NAME);
+                Value[] vals = prop.getValues();
+                for (Value val : vals) {
+                    Node host = session.getNodeByIdentifier(val.getString());
+                    Property hostProp = host.getProperty(XML_PROPERTY_NAME);
+                    result.add((HostDescription) SchemaUtil.parseFromXML(hostProp.getString()));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            // TODO propagate
+        } finally {
+            closeSession(session);
+        }
+        return result;
+    }
 
-	public ApplicationDeploymentDescription getDeploymentDescription(
-			String serviceName, String host) throws DeploymentDescriptionRetrieveException, PathNotFoundException {
-		Session session = null;
-		ApplicationDeploymentDescription result = null;
-		try {
-			session = getSession();
-			Node deploymentNode = getDeploymentNode(session);
-			Node serviceNode = deploymentNode.getNode(serviceName);
-			Node hostNode = serviceNode.getNode(host);
-			NodeIterator nodes = hostNode.getNodes();
-			for (; nodes.hasNext();) {
-				Node app = nodes.nextNode();
-				Property prop = app.getProperty(XML_PROPERTY_NAME);
-				result = (ApplicationDeploymentDescription) SchemaUtil
-						.parseFromXML(prop.getString());
-			}
-		} catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
-			// TODO propagate
-		} finally {
-			if (session != null && session.isLive()) {
-				session.logout();
-			}
-		}
-		return result;
-	}
+    public ServiceDescription getServiceDescription(String serviceId) throws ServiceDescriptionRetrieveException,
+            PathNotFoundException {
+        Session session = null;
+        ServiceDescription result = null;
+        try {
+            session = getSession();
+            Node serviceNode = getServiceNode(session);
+            Node node = serviceNode.getNode(serviceId);
+            Property prop = node.getProperty(XML_PROPERTY_NAME);
+            result = (ServiceDescription) SchemaUtil.parseFromXML(prop.getString());
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            // TODO propagate
+        } finally {
+            closeSession(session);
+        }
+        return result;
+    }
 
-	public HostDescription getHostDescription(String name) throws HostDescriptionRetrieveException, PathNotFoundException {
-		Session session = null;
-		HostDescription result = null;
-		try {
-			session = getSession();
-			Node hostNode = getHostNode(session);
-			Node node = hostNode.getNode(name);
-			if (node!=null) {
-				result = getHostDescriptor(node);
-			}
-		}catch(PathNotFoundException e){
-			throw e;
-		}catch (Exception e) {
-			throw new HostDescriptionRetrieveException(e);
-		} finally {
-			if (session != null && session.isLive()) {
-				session.logout();
-			}
-		}
-		return result;
-	}
+    public ApplicationDeploymentDescription getDeploymentDescription(String serviceId, String hostId)
+            throws DeploymentDescriptionRetrieveException, PathNotFoundException {
+        Session session = null;
+        ApplicationDeploymentDescription result = null;
+        try {
+            session = getSession();
+            Node deploymentNode = getDeploymentNode(session);
+            Node serviceNode = deploymentNode.getNode(serviceId);
+            Node hostNode = serviceNode.getNode(hostId);
+            NodeIterator nodes = hostNode.getNodes();
+            for (; nodes.hasNext();) {
+                Node app = nodes.nextNode();
+                Property prop = app.getProperty(XML_PROPERTY_NAME);
+                result = (ApplicationDeploymentDescription) SchemaUtil.parseFromXML(prop.getString());
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            // TODO propagate
+        } finally {
+            closeSession(session);
+        }
+        return result;
+    }
 
-	private HostDescription getHostDescriptor(Node node)
-			throws PathNotFoundException, RepositoryException,
-			ValueFormatException {
-		HostDescription result;
-		Property prop = node.getProperty(XML_PROPERTY_NAME);
-		result = (HostDescription) SchemaUtil
-				.parseFromXML(prop.getString());
-		return result;
-	}
+    public HostDescription getHostDescription(String hostId) throws HostDescriptionRetrieveException,
+            PathNotFoundException {
+        Session session = null;
+        HostDescription result = null;
+        try {
+            session = getSession();
+            Node hostNode = getHostNode(session);
+            Node node = hostNode.getNode(hostId);
+            if (node != null) {
+                result = getHostDescriptor(node);
+            }
+        } catch (PathNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new HostDescriptionRetrieveException(e);
+        } finally {
+            closeSession(session);
+        }
+        return result;
+    }
 
-	public String saveHostDescription(String name, HostDescription host) {
-		Session session = null;
-		String result = null;
-		try {
-			session = getSession();
-			Node hostNode = getHostNode(session);
-			Node node = getOrAddNode(hostNode, name);
-			node.setProperty(XML_PROPERTY_NAME, SchemaUtil.toXML(host));
-			session.save();
+    private HostDescription getHostDescriptor(Node node) throws PathNotFoundException, RepositoryException,
+            ValueFormatException {
+        HostDescription result;
+        Property prop = node.getProperty(XML_PROPERTY_NAME);
+        result = (HostDescription) SchemaUtil.parseFromXML(prop.getString());
+        return result;
+    }
 
-			result = node.getIdentifier();
-		} catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
-			// TODO propagate
-		} finally {
-			if (session != null && session.isLive()) {
-				session.logout();
-			}
-		}
-		return result;
-	}
+    public String saveHostDescription(HostDescription host) {
+        Session session = null;
+        String result = null;
+        try {
+            session = getSession();
+            Node hostNode = getHostNode(session);
+            Node node = getOrAddNode(hostNode, host.getId());
+            node.setProperty(XML_PROPERTY_NAME, SchemaUtil.toXML(host));
+            session.save();
 
-	public String saveServiceDescription(String name, ServiceDescription service) {
-		Session session = null;
-		String result = null;
-		try {
-			session = getSession();
-			Node serviceNode = getServiceNode(session);
-			Node node = getOrAddNode(serviceNode, name);
-			node.setProperty(XML_PROPERTY_NAME, SchemaUtil.toXML(service));
-			session.save();
+            result = node.getIdentifier();
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            // TODO propagate
+        } finally {
+            closeSession(session);
+        }
+        return result;
+    }
 
-			result = node.getIdentifier();
-		} catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
-			// TODO propagate
-		} finally {
-			if (session != null && session.isLive()) {
-				session.logout();
-			}
-		}
-		return result;
-	}
+    public String saveServiceDescription(ServiceDescription service) {
+        Session session = null;
+        String result = null;
+        try {
+            session = getSession();
+            Node serviceNode = getServiceNode(session);
+            Node node = getOrAddNode(serviceNode, service.getId());
+            node.setProperty(XML_PROPERTY_NAME, SchemaUtil.toXML(service));
+            session.save();
 
-	public String saveDeploymentDescription(String service, String host,
-			ApplicationDeploymentDescription app) {
-		Session session = null;
-		String result = null;
-		try {
-			session = getSession();
-			Node deployNode = getDeploymentNode(session);
-			Node serviceNode = getOrAddNode(deployNode, service);
-			Node hostNode = getOrAddNode(serviceNode, host);
-			Node appName = getOrAddNode(hostNode, app.getName());
-			appName.setProperty(XML_PROPERTY_NAME, SchemaUtil.toXML(app));
-			session.save();
+            result = node.getIdentifier();
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            // TODO propagate
+        } finally {
+            closeSession(session);
+        }
+        return result;
+    }
 
-			result = appName.getIdentifier();
-		} catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
-			// TODO propagate
-		} finally {
-			if (session != null && session.isLive()) {
-				session.logout();
-			}
-		}
-		return result;
-	}
+    public String saveDeploymentDescription(String serviceId, String hostId, ApplicationDeploymentDescription app) {
+        Session session = null;
+        String result = null;
+        try {
+            session = getSession();
+            Node deployNode = getDeploymentNode(session);
+            Node serviceNode = getOrAddNode(deployNode, serviceId);
+            Node hostNode = getOrAddNode(serviceNode, hostId);
+            Node appName = getOrAddNode(hostNode, app.getId());
+            appName.setProperty(XML_PROPERTY_NAME, SchemaUtil.toXML(app));
+            session.save();
 
-	public boolean deployServiceOnHost(String serviceName, String hostName) {
-		Session session = null;
-		try {
-			session = getSession();
-			Node serviceRoot = getServiceNode(session);
-			Node hostRoot = getHostNode(session);
+            result = appName.getIdentifier();
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            // TODO propagate
+        } finally {
+            closeSession(session);
+        }
+        return result;
+    }
 
-			Node serviceNode = serviceRoot.getNode(serviceName);
-			Node hostNode = hostRoot.getNode(hostName);
-						
-			if (!serviceNode.hasProperty(LINK_NAME)) {				
-				serviceNode.setProperty(LINK_NAME,
-						new String[] { hostNode.getIdentifier() });
-			} else {
-				Property prop = serviceNode.getProperty(LINK_NAME);
-				Value[] vals = prop.getValues();
-				ArrayList<String> s = new ArrayList<String>();
-				for (Value val : vals) {
-					s.add(val.getString());
-				}
+    public boolean deployServiceOnHost(String serviceId, String hostId) {
+        Session session = null;
+        try {
+            session = getSession();
+            Node serviceRoot = getServiceNode(session);
+            Node hostRoot = getHostNode(session);
 
-				if (s.contains(hostNode.getIdentifier())) {
-					return false;
-				}
-				
-				s.add(hostNode.getIdentifier());
-				serviceNode.setProperty(LINK_NAME, s.toArray(new String[0]));
-			}
-			
-			session.save();
-			return true;
-		} catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
-			// TODO propagate
-		} finally {
-			if (session != null && session.isLive()) {
-				session.logout();
-			}
-		}
-		return false;
-	}
+            Node serviceNode = serviceRoot.getNode(serviceId);
+            Node hostNode = hostRoot.getNode(hostId);
 
-	public List<ServiceDescription> searchServiceDescription(String name) throws ServiceDescriptionRetrieveException, PathNotFoundException{
-	    Session session = null;
+            if (!serviceNode.hasProperty(LINK_NAME)) {
+                serviceNode.setProperty(LINK_NAME, new String[] { hostNode.getIdentifier() });
+            } else {
+                Property prop = serviceNode.getProperty(LINK_NAME);
+                Value[] vals = prop.getValues();
+                ArrayList<String> s = new ArrayList<String>();
+                for (Value val : vals) {
+                    s.add(val.getString());
+                }
+
+                if (s.contains(hostNode.getIdentifier())) {
+                    return false;
+                }
+
+                s.add(hostNode.getIdentifier());
+                serviceNode.setProperty(LINK_NAME, s.toArray(new String[0]));
+            }
+
+            session.save();
+            return true;
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            // TODO propagate
+        } finally {
+            closeSession(session);
+        }
+        return false;
+    }
+
+    public List<ServiceDescription> searchServiceDescription(String name) throws ServiceDescriptionRetrieveException,
+            PathNotFoundException {
+        Session session = null;
         ArrayList<ServiceDescription> result = new ArrayList<ServiceDescription>();
         try {
             session = getSession();
@@ -386,15 +368,14 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             e.printStackTrace();
             // TODO propagate
         } finally {
-            if (session != null && session.isLive()) {
-                session.logout();
-            }
-        }	   
-		return result;
-	}
-	
-	public List<HostDescription> searchHostDescription(String nameRegEx) throws HostDescriptionRetrieveException, PathNotFoundException {
-	    Session session = null;
+            closeSession(session);
+        }
+        return result;
+    }
+
+    public List<HostDescription> searchHostDescription(String nameRegEx) throws HostDescriptionRetrieveException,
+            PathNotFoundException {
+        Session session = null;
         List<HostDescription> result = new ArrayList<HostDescription>();
         try {
             session = getSession();
@@ -402,120 +383,112 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             NodeIterator nodes = node.getNodes();
             for (; nodes.hasNext();) {
                 Node host = nodes.nextNode();
-                if (host!=null && host.getName().matches(nameRegEx)){
+                if (host != null && host.getName().matches(nameRegEx)) {
                     HostDescription hostDescriptor = getHostDescriptor(host);
-                	result.add(hostDescriptor);
+                    result.add(hostDescriptor);
                 }
             }
-		}catch(PathNotFoundException e){
-			System.out.println(e);
-			e.printStackTrace();
-			throw e;
+        } catch (PathNotFoundException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            throw e;
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
             throw new HostDescriptionRetrieveException(e);
         } finally {
-            if (session != null && session.isLive()) {
-                session.logout();
-            }
-        }	   
-		return result;
-	}
+            closeSession(session);
+        }
+        return result;
+    }
 
-	public Map<ApplicationDeploymentDescription,String> searchDeploymentDescription() throws PathNotFoundException, DeploymentDescriptionRetrieveException {
-		Session session = null;
-		Map<ApplicationDeploymentDescription,String> result = new HashMap<ApplicationDeploymentDescription,String>();
+    public Map<ApplicationDeploymentDescription, String> searchDeploymentDescription() throws PathNotFoundException,
+            DeploymentDescriptionRetrieveException {
+        Session session = null;
+        Map<ApplicationDeploymentDescription, String> result = new HashMap<ApplicationDeploymentDescription, String>();
         try {
             session = getSession();
             Node deploymentNode = getDeploymentNode(session);
-			NodeIterator serviceNodes = deploymentNode.getNodes();
+            NodeIterator serviceNodes = deploymentNode.getNodes();
 
             for (; serviceNodes.hasNext();) {
-				Node serviceNode = serviceNodes.nextNode();
-				NodeIterator hostNodes = serviceNode.getNodes();
+                Node serviceNode = serviceNodes.nextNode();
+                NodeIterator hostNodes = serviceNode.getNodes();
 
-            	for (; hostNodes.hasNext();) {
-            		Node hostNode = hostNodes.nextNode();
-    				NodeIterator nodes = hostNode.getNodes();
-                	for (; nodes.hasNext();) {
-						Node app = nodes.nextNode();
-						Property prop = app.getProperty(XML_PROPERTY_NAME);
-						result.put((ApplicationDeploymentDescription) SchemaUtil
-								.parseFromXML(prop.getString()),serviceNode.getName()+"$"+hostNode.getName());
-                	}
-            	}
-			}
-		}catch(PathNotFoundException e){
-			throw e;
+                for (; hostNodes.hasNext();) {
+                    Node hostNode = hostNodes.nextNode();
+                    NodeIterator nodes = hostNode.getNodes();
+                    for (; nodes.hasNext();) {
+                        Node app = nodes.nextNode();
+                        Property prop = app.getProperty(XML_PROPERTY_NAME);
+                        result.put((ApplicationDeploymentDescription) SchemaUtil.parseFromXML(prop.getString()),
+                                serviceNode.getName() + "$" + hostNode.getName());
+                    }
+                }
+            }
+        } catch (PathNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new DeploymentDescriptionRetrieveException(e);
         } finally {
-            if (session != null && session.isLive()) {
-                session.logout();
-            }
-        }	   
-		return result;
-	}
-	
-	public List<ApplicationDeploymentDescription> searchDeploymentDescription(
-			String serviceName, String hostName, String applicationName) throws PathNotFoundException, DeploymentDescriptionRetrieveException {
-	    Session session = null;
+            closeSession(session);
+        }
+        return result;
+    }
+
+    public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName,
+            String applicationName) throws PathNotFoundException, DeploymentDescriptionRetrieveException {
+        Session session = null;
         List<ApplicationDeploymentDescription> result = new ArrayList<ApplicationDeploymentDescription>();
         try {
             session = getSession();
             Node deploymentNode = getDeploymentNode(session);
-			Node serviceNode = deploymentNode.getNode(serviceName);
-			Node hostNode = serviceNode.getNode(hostName);
-			NodeIterator nodes = hostNode.getNodes();
-			for (; nodes.hasNext();) {
-				Node app = nodes.nextNode();
-				Property prop = app.getProperty(XML_PROPERTY_NAME);
-				ApplicationDeploymentDescription appDesc = (ApplicationDeploymentDescription) SchemaUtil
-						.parseFromXML(prop.getString());
-				if (appDesc.getName().matches(applicationName)){
-					result.add(appDesc);
-				}
-			}
-		}catch(PathNotFoundException e){
-			throw e;
+            Node serviceNode = deploymentNode.getNode(serviceName);
+            Node hostNode = serviceNode.getNode(hostName);
+            NodeIterator nodes = hostNode.getNodes();
+            for (; nodes.hasNext();) {
+                Node app = nodes.nextNode();
+                Property prop = app.getProperty(XML_PROPERTY_NAME);
+                ApplicationDeploymentDescription appDesc = (ApplicationDeploymentDescription) SchemaUtil
+                        .parseFromXML(prop.getString());
+                if (appDesc.getId().matches(applicationName)) {
+                    result.add(appDesc);
+                }
+            }
+        } catch (PathNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new DeploymentDescriptionRetrieveException(e);
         } finally {
-            if (session != null && session.isLive()) {
-                session.logout();
-            }
-        }	   
-		return result;
-	}
-	
-	public List<ApplicationDeploymentDescription> searchDeploymentDescription(
-			String serviceName, String hostName) throws PathNotFoundException, DeploymentDescriptionRetrieveException {
-	    Session session = null;
+            closeSession(session);
+        }
+        return result;
+    }
+
+    public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName)
+            throws PathNotFoundException, DeploymentDescriptionRetrieveException {
+        Session session = null;
         List<ApplicationDeploymentDescription> result = new ArrayList<ApplicationDeploymentDescription>();
         try {
             session = getSession();
             Node deploymentNode = getDeploymentNode(session);
-			Node serviceNode = deploymentNode.getNode(serviceName);
-			Node hostNode = serviceNode.getNode(hostName);
-			NodeIterator nodes = hostNode.getNodes();
-			for (; nodes.hasNext();) {
-				Node app = nodes.nextNode();
-				Property prop = app.getProperty(XML_PROPERTY_NAME);
-				result.add((ApplicationDeploymentDescription) SchemaUtil
-						.parseFromXML(prop.getString()));
-			}
-		}catch(PathNotFoundException e){
-			throw e;
+            Node serviceNode = deploymentNode.getNode(serviceName);
+            Node hostNode = serviceNode.getNode(hostName);
+            NodeIterator nodes = hostNode.getNodes();
+            for (; nodes.hasNext();) {
+                Node app = nodes.nextNode();
+                Property prop = app.getProperty(XML_PROPERTY_NAME);
+                result.add((ApplicationDeploymentDescription) SchemaUtil.parseFromXML(prop.getString()));
+            }
+        } catch (PathNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new DeploymentDescriptionRetrieveException(e);
         } finally {
-            if (session != null && session.isLive()) {
-                session.logout();
-            }
-        }	   
-		return result;
-	}
+            closeSession(session);
+        }
+        return result;
+    }
 
     public String saveWSDL(String name, String WSDL) {
         Session session = null;
@@ -533,11 +506,9 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             e.printStackTrace();
             // TODO propagate
         } finally {
-            if (session != null && session.isLive()) {
-                session.logout();
-            }
+            closeSession(session);
         }
-        return result;        
+        return result;
     }
 
     public String saveWSDL(String serviceName, ServiceDescription service) {
@@ -559,9 +530,7 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             e.printStackTrace();
             // TODO propagate
         } finally {
-            if (session != null && session.isLive()) {
-                session.logout();
-            }
+            closeSession(session);
         }
         return result;
     }
@@ -589,11 +558,9 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             return false;
             // TODO propagate
         } finally {
-            if (session != null && session.isLive()) {
-                session.logout();
-            }
-            return true;
+            closeSession(session);            
         }
+        return true;
     }
 
     public boolean deleteGFacDescriptor(String gfacURL) {
@@ -612,11 +579,9 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             return false;
             // TODO propagate
         } finally {
-            if (session != null && session.isLive()) {
-                session.logout();
-            }
-            return true;
+            closeSession(session);            
         }
+        return true;
     }
 
     public List<String> getGFacDescriptorList() {
@@ -630,10 +595,10 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             PropertyIterator propertyIterator = gfacNode.getProperties();
             while (propertyIterator.hasNext()) {
                 Property property = propertyIterator.nextProperty();
-                if(!"nt:unstructured".equals(property.getString())){
+                if (!"nt:unstructured".equals(property.getString())) {
                     String x = property.getString();
                     Timestamp setTime = new Timestamp(new Long(property.getString().split(";")[1]));
-                    if(GFAC_URL_UPDATE_INTERVAL > (timestamp.getTime() - setTime.getTime())){
+                    if (GFAC_URL_UPDATE_INTERVAL > (timestamp.getTime() - setTime.getTime())) {
                         urlList.add(property.getString().split(";")[0]);
                     }
                 }
@@ -644,14 +609,14 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
         return urlList;
     }
 
-	public UserManager getUserManager() {
-		return userManager;
-	}
+    public UserManager getUserManager() {
+        return userManager;
+    }
 
-	public void setUserManager(UserManager userManager) {
-		this.userManager = userManager;
-	}
-	
+    public void setUserManager(UserManager userManager) {
+        this.userManager = userManager;
+    }
+
     public String saveOutput(String workflowId, List<AbstractParameter> parameters) {
         Session session = null;
         String result = null;
@@ -660,9 +625,9 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             Node outputNode = getOrAddNode(session.getRootNode(), OUTPUT_NODE_NAME);
             Node node = getOrAddNode(outputNode, workflowId);
             for (int i = 0; i < parameters.size(); i++) {
-                node.setProperty(String.valueOf(i), SchemaUtil.toXML(parameters.get(i)));                
+                node.setProperty(String.valueOf(i), SchemaUtil.toXML(parameters.get(i)));
             }
-            
+
             session.save();
 
             result = node.getIdentifier();
@@ -671,52 +636,44 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             e.printStackTrace();
             // TODO propagate
         } finally {
-            if (session != null && session.isLive()) {
-                session.logout();
-            }
+            closeSession(session);
         }
         return result;
     }
-    
-    public List<AbstractParameter> loadOutput(String workflowId){
+
+    public List<AbstractParameter> loadOutput(String workflowId) {
         Session session = null;
         ArrayList<AbstractParameter> result = new ArrayList<AbstractParameter>();
         try {
             session = getSession();
             Node outputNode = getOrAddNode(session.getRootNode(), OUTPUT_NODE_NAME);
             Node node = outputNode.getNode(workflowId);
-            
+
             PropertyIterator it = node.getProperties();
-            while(it.hasNext()){
-                Property prop = (Property)it.next();
+            while (it.hasNext()) {
+                Property prop = (Property) it.next();
                 result.add((AbstractParameter) SchemaUtil.parseFromXML(prop.getString()));
-            }            
+            }
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
             // TODO propagate
         } finally {
-            if (session != null && session.isLive()) {
-                session.logout();
-            }
+            closeSession(session);
         }
         return result;
     }
 
-
-
-
-
     public Map<QName, Node> getAvailableWorkflows(String userName) {
         Session session = null;
-        Map<QName,Node> workflowList = new HashMap<QName, Node>();
+        Map<QName, Node> workflowList = new HashMap<QName, Node>();
         try {
             session = getSession();
             Node workflowListNode = getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOWS), PUBLIC);
             NodeIterator iterator = workflowListNode.getNodes();
             while (iterator.hasNext()) {
                 Node nextNode = iterator.nextNode();
-                workflowList.put(new QName(nextNode.getName()),nextNode);
+                workflowList.put(new QName(nextNode.getName()), nextNode);
             }
             workflowListNode = getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOWS), userName);
             iterator = workflowListNode.getNodes();
@@ -728,7 +685,7 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
         } catch (Exception e) {
             e.printStackTrace();
         }
-            return workflowList;
+        return workflowList;
     }
 
     public Node getWorkflow(QName templateID, String userName) {
@@ -744,7 +701,8 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
         return result;
     }
 
-    public boolean saveWorkflow(QName ResourceID, String workflowName, String resourceDesc, String workflowAsaString, String owner, boolean isMakePublic) {
+    public boolean saveWorkflow(QName ResourceID, String workflowName, String resourceDesc, String workflowAsaString,
+            String owner, boolean isMakePublic) {
         Session session = null;
         try {
             session = getSession();
@@ -766,15 +724,13 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (session != null && session.isLive()) {
-                session.logout();
-            }
+            closeSession(session);
             return true;
         }
     }
 
     public boolean deleteWorkflow(QName resourceID, String userName) {
-         Session session = null;
+        Session session = null;
         try {
             session = getSession();
             Node workflowListNode = getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOWS), userName);
@@ -783,11 +739,9 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             session.save();
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
-            if(session.isLive() || session != null){
-                session.logout();
-            }
+        } finally {
+            closeSession(session);
         }
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false; 
     }
 }

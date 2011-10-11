@@ -40,39 +40,39 @@ public interface Registry {
 	/**
 	 * Find locations where the service is deployed
 	 * 
-	 * @param serviceName
+	 * @param serviceId
 	 * @return List of HostDescription having the service
 	 */
-	public List<HostDescription> getServiceLocation(String serviceName);	
+	public List<HostDescription> getServiceLocation(String serviceId);	
 	
 	/**
 	 * Retrieve a service description i.e. name, description, parameters 
 	 * 
-	 * @param serviceName
+	 * @param serviceId
 	 * @return a service description or null if a description is not found
 	 * @throws PathNotFoundException 
 	 * @throws ServiceDescriptionRetrieveException 
 	 */
-	public ServiceDescription getServiceDescription(String serviceName) throws ServiceDescriptionRetrieveException, PathNotFoundException;
+	public ServiceDescription getServiceDescription(String serviceId) throws ServiceDescriptionRetrieveException, PathNotFoundException;
 	
 	/**
 	 * Retrieve a deployment description for a service from the specific host
 	 * 
-	 * @param serviceName
-	 * @param hostName
+	 * @param serviceId
+	 * @param hostId
 	 * @return a deployment description or null if a description is not found
 	 * @throws PathNotFoundException 
 	 * @throws DeploymentDescriptionRetrieveException 
 	 */
-	public ApplicationDeploymentDescription getDeploymentDescription(String serviceName, String hostName) throws DeploymentDescriptionRetrieveException, PathNotFoundException;
+	public ApplicationDeploymentDescription getDeploymentDescription(String serviceId, String hostId) throws DeploymentDescriptionRetrieveException, PathNotFoundException;
 	
 	/**
 	 * Retrieve a host description
 	 * 
-	 * @param name
+	 * @param hostId
 	 * @return a host description or null if a description is not found
 	 */
-	public HostDescription getHostDescription(String name) throws HostDescriptionRetrieveException, PathNotFoundException;
+	public HostDescription getHostDescription(String hostId) throws HostDescriptionRetrieveException, PathNotFoundException;
 	
 	/**
 	 * Save a host description with the specific name.
@@ -81,7 +81,7 @@ public interface Registry {
 	 * @param host
 	 * @return identifier
 	 */
-	public String saveHostDescription(String name, HostDescription host);
+	public String saveHostDescription(HostDescription host);
 	
 	/**
 	 * Save a service description with the specific name.
@@ -90,24 +90,24 @@ public interface Registry {
 	 * @param host
 	 * @return identifier
 	 */
-	public String saveServiceDescription(String name, ServiceDescription service);
+	public String saveServiceDescription(ServiceDescription service);
 	
 	/**
 	 * Save a deployment description according to the service and host
 	 * 
-	 * @param service
-	 * @param host
+	 * @param serviceId
+	 * @param hostId
 	 * @param app
 	 * @return identifier
 	 */
-	public String saveDeploymentDescription(String service, String host, ApplicationDeploymentDescription app);
+	public String saveDeploymentDescription(String serviceId, String hostId, ApplicationDeploymentDescription app);
 	
 	/**
 	 * Deploy a service on a host
 	 * 
 	 * @param serviceName
 	 * @param hostName
-	 * @return true if service can be deploy on the hsot, otherwise false
+	 * @return true if service can be deploy on the host, otherwise false
 	 */
 	public boolean deployServiceOnHost(String serviceName, String hostName);
 		

@@ -22,19 +22,19 @@
 package org.apache.airavata.commons.gfac.type;
 
 public class ApplicationDeploymentDescription implements Type {
-
-	private String name;
+    
+    protected String id;
 	private String tmpDir;
 	private String workingDir;
 	private String inputDir;
 	private String outputDir;
 	
-	public String getName() {
-        return name;
+	public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTmpDir() {

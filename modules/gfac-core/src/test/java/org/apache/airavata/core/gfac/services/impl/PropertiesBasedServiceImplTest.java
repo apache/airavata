@@ -57,13 +57,14 @@ public class PropertiesBasedServiceImplTest {
 		 * Host
 		 */
 		HostDescription host = new HostDescription();
-		host.setName("localhost");
+		host.setId("localhost");
+		host.setAddress("localhost");
 
 		/*
 		 * App
 		 */
 		ShellApplicationDeployment app = new ShellApplicationDeployment();
-		app.setName("EchoLocal");
+		app.setId("EchoLocal");
 		app.setExecutable("/bin/echo");
 		app.setTmpDir("/tmp");
 		app.setWorkingDir("/tmp");
@@ -77,7 +78,7 @@ public class PropertiesBasedServiceImplTest {
 		 * Service
 		 */
 		ServiceDescription serv = new ServiceDescription();
-		serv.setName("SimpleEcho");
+		serv.setId("SimpleEcho");
 
 		Parameter input = new Parameter();
 		input.setName("echo_input");
@@ -97,11 +98,11 @@ public class PropertiesBasedServiceImplTest {
 		/*
 		 * Save to registry
 		 */
-		jcrRegistry.saveHostDescription(host.getName(), host);
-		jcrRegistry.saveDeploymentDescription(serv.getName(), host.getName(),
+		jcrRegistry.saveHostDescription(host);
+		jcrRegistry.saveDeploymentDescription(serv.getId(), host.getId(),
 				app);
-		jcrRegistry.saveServiceDescription(serv.getName(), serv);
-		jcrRegistry.deployServiceOnHost(serv.getName(), host.getName());
+		jcrRegistry.saveServiceDescription(serv);
+		jcrRegistry.deployServiceOnHost(serv.getId(), host.getId());
 	}
 
 	@Test

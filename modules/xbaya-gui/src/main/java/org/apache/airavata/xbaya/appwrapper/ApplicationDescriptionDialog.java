@@ -84,7 +84,7 @@ public class ApplicationDescriptionDialog extends JDialog {
 					while(true){
 						boolean notFound=true;
 						for (ApplicationDeploymentDescription deploymentDescription : applicationDescriptions) {
-							if (deploymentDescription.getName().equals(defaultName)){
+							if (deploymentDescription.getId().equals(defaultName)){
 								notFound=false;
 								break;
 							}
@@ -354,7 +354,7 @@ public class ApplicationDescriptionDialog extends JDialog {
 		try {
 			List<ServiceDescription> serviceDescriptions = getJCRComponentRegistry().searchServiceDescription("");
 			for (ServiceDescription serviceDescription : serviceDescriptions) {
-				cmbServiceName.addItem(serviceDescription.getName());
+				cmbServiceName.addItem(serviceDescription.getId());
 			}
 		} catch (Exception e) {
 			setError(e.getLocalizedMessage());
@@ -368,7 +368,7 @@ public class ApplicationDescriptionDialog extends JDialog {
 		try {
 			List<HostDescription> hostDescriptions = getJCRComponentRegistry().searchHostDescription(".*");
 			for (HostDescription hostDescription : hostDescriptions) {
-				cmbHostName.addItem(hostDescription.getName());
+				cmbHostName.addItem(hostDescription.getId());
 			}
 		} catch (Exception e) {
 			setError(e.getLocalizedMessage());
@@ -392,11 +392,11 @@ public class ApplicationDescriptionDialog extends JDialog {
 	}
 
 	public String getApplicationName() {
-		return getShellApplicationDescription().getName();
+		return getShellApplicationDescription().getId();
 	}
 
 	public void setApplicationName(String applicationName) {
-		getShellApplicationDescription().setName(applicationName);
+		getShellApplicationDescription().setId(applicationName);
 		updateDialogStatus();
 	}
 

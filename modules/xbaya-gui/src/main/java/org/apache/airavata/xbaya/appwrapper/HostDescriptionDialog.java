@@ -220,11 +220,11 @@ public class HostDescriptionDialog extends JDialog {
 	}
 
 	public String getHostLocation() {
-		return getHostDescription().getName();
+		return getHostDescription().getAddress();
 	}
 
 	public void setHostLocation(String hostLocation) {
-		getHostDescription().setName(hostLocation);
+		getHostDescription().setAddress(hostLocation);
 		updateDialogStatus();
 	}
 

@@ -88,7 +88,7 @@ public class SchedulerImpl implements Scheduler {
         ApplicationDeploymentDescription app=null;
 		try {
 			app = registryService.getDeploymentDescription(context.getServiceName(),
-			        host.getName());
+			        host.getId());
 		} catch (PathNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -115,7 +115,7 @@ public class SchedulerImpl implements Scheduler {
         /*
          * Determine provider
          */
-        String hostName = host.getName();
+        String hostName = host.getAddress();
         try {
             if (GfacUtils.isLocalHost(hostName)) {
                 return new LocalProvider();
@@ -137,7 +137,7 @@ public class SchedulerImpl implements Scheduler {
             for (Iterator<HostDescription> iterator = hosts.iterator(); iterator.hasNext();) {
                 result = iterator.next();
 
-                log.info("Found service on: " + result.getName());
+                log.info("Found service on: " + result.getAddress());
             }
             return result;
         } else {
