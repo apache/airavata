@@ -63,15 +63,9 @@ public class WorkflowMenu {
 
     private JMenuItem runJythonWorkflowItem;
 
-    private JMenuItem exitItem;
-
     private JMenuItem launchDynamicWorkflowItem;
 
     private JMenuItem launchGridChemWorkflowItem;
-
-    private JMenuItem generateDataDrivenSubWorkflow;
-
-    private JMenuItem partitionStreamflowItem;
 
     private static final Logger logger = LoggerFactory.getLogger(WorkflowMenu.class);
 
@@ -107,10 +101,6 @@ public class WorkflowMenu {
         this.launchDynamicWorkflowItem = createLaunchDynamicWorkflowItem();
         this.launchGridChemWorkflowItem = createLaunchGridChemWorkflowItem();
 
-        this.generateDataDrivenSubWorkflow = createGenerateDataDrivenSubWorkflow();
-        this.partitionStreamflowItem = createPartitionStreamflow();
-        this.exitItem = createExitItem();
-
         this.workflowMenu = new JMenu("Workflow");
         this.workflowMenu.setMnemonic(KeyEvent.VK_W);
 
@@ -129,63 +119,8 @@ public class WorkflowMenu {
         this.workflowMenu.add(this.launchDynamicWorkflowItem);
         this.workflowMenu.addSeparator();
         this.workflowMenu.add(this.launchGridChemWorkflowItem);
-        this.workflowMenu.addSeparator();
-        this.workflowMenu.add(this.generateDataDrivenSubWorkflow);
-        this.workflowMenu.addSeparator();
-        this.workflowMenu.add(this.partitionStreamflowItem);
-        this.workflowMenu.addSeparator();
-        this.workflowMenu.add(this.exitItem);
     }
 
-    /**
-     * @return
-     */
-    private JMenuItem createPartitionStreamflow() {
-        JMenuItem menuItem = new JMenuItem("Partition Streamflow");
-        menuItem.addActionListener(new AbstractAction() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                GraphCanvas canvas = WorkflowMenu.this.engine.getGUI().getGraphCanvas();
-                try {
-                    canvas.partition();
-                } catch (XBayaException e1) {
-                    WorkflowMenu.this.engine.getErrorWindow().error(e1);
-                }
-            }
-        });
-        return menuItem;
-    }
-
-    /**
-     * @return
-     */
-    private JMenuItem createGenerateDataDrivenSubWorkflow() {
-        JMenuItem menuItem = new JMenuItem("Harvest Datadriven workflow");
-        menuItem.setMnemonic(KeyEvent.VK_H);
-        menuItem.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                QName dataType = null;// new QName(WSConstants.XSD_NS_URI, "string");
-
-                XBayaEngine engineRef = WorkflowMenu.this.engine;
-                String ns = JOptionPane.showInputDialog(null, "Namespace", "http://www.extreme.indiana.edu/lead/xsd");// "Namespace for the type",
-                                                                                                                      // JOptionPane.QUESTION_MESSAGE);
-                String type = JOptionPane.showInputDialog(null, "Local name", "LEADFileIDArrayType");// "Type name",
-                                                                                                     // JOptionPane.QUESTION_MESSAGE);
-                if (ns == null || "".equals(ns)) {
-                    dataType = new QName(WSConstants.XSD_NS_URI, type);
-                } else {
-                    dataType = new QName(ns, type);
-                }
-                Workflow[] newWorkflows = new WorkflowHarvester().harvest(engineRef.getWorkflow(), dataType);
-                for (Workflow workflow : newWorkflows) {
-                    GraphCanvas canvas = engineRef.getGUI().newGraphCanvas(true);
-                    canvas.setWorkflow(workflow);
-                }
-            }
-        });
-        return menuItem;
-    }
 
     private JMenuItem createNewWorkflowItem() {
         JMenuItem menuItem = new JMenuItem("New Workflow");
@@ -334,21 +269,4 @@ public class WorkflowMenu {
     // return item;
     // }
 
-    private JMenuItem createExitItem() {
-        JMenuItem menuItem = new JMenuItem("Exit");
-        menuItem.setMnemonic(KeyEvent.VK_X);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
-        menuItem.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent event) {
-                try {
-                    WorkflowMenu.this.engine.dispose();
-                } catch (XBayaException e) {
-                    logger.error(e.getMessage(), e);
-                } finally {
-                    WorkflowMenu.this.engine.getGUI().getFrame().dispose();
-                }
-            }
-        });
-        return menuItem;
-    }
 }

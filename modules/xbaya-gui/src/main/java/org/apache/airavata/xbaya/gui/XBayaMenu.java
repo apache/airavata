@@ -77,8 +77,8 @@ public class XBayaMenu implements XBayaComponent {
     public XBayaMenu(XBayaEngine engine) {
         this.engine = engine;
 
-        this.workflowMenu = new WorkflowMenu(this.engine);
         this.fileMenu = new FileMenu(this.engine);
+        this.workflowMenu = new WorkflowMenu(this.engine);
         this.experimentMenu = new ExperimentMenu(this.engine);
         this.gpelMenu = new GPELMenu(this.engine);
         this.pegasusMenu = new PegasusMenu(this.engine);
@@ -107,8 +107,8 @@ public class XBayaMenu implements XBayaComponent {
 
         this.menuBar = new JMenuBar();
 
-        this.menuBar.add(this.workflowMenu.getMenu());
         this.menuBar.add(this.fileMenu.getMenu());
+        this.menuBar.add(this.workflowMenu.getMenu());
         this.menuBar.add(this.componentMenu.getMenu());
         this.menuBar.add(this.experimentMenu.getMenu());
         this.menuBar.add(this.gpelMenu.getMenu());

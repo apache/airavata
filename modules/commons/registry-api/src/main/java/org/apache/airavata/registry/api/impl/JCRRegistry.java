@@ -38,6 +38,7 @@ import javax.jcr.RepositoryFactory;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.Value;
+import javax.jcr.ValueFormatException;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
@@ -47,6 +48,9 @@ import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.commons.gfac.type.util.SchemaUtil;
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.DataRegistry;
+import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
+import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
+import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.registry.api.user.UserManager;
 import org.apache.airavata.registry.api.user.UserManagerFactory;
 import org.slf4j.Logger;
@@ -168,7 +172,7 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
 		return result;
 	}
 
-	public ServiceDescription getServiceDescription(String serviceName) {
+	public ServiceDescription getServiceDescription(String serviceName) throws ServiceDescriptionRetrieveException, PathNotFoundException{
 		Session session = null;
 		ServiceDescription result = null;
 		try {
@@ -191,7 +195,7 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
 	}
 
 	public ApplicationDeploymentDescription getDeploymentDescription(
-			String serviceName, String host) {
+			String serviceName, String host) throws DeploymentDescriptionRetrieveException, PathNotFoundException {
 		Session session = null;
 		ApplicationDeploymentDescription result = null;
 		try {
@@ -218,25 +222,35 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
 		return result;
 	}
 
-	public HostDescription getHostDescription(String name) {
+	public HostDescription getHostDescription(String name) throws HostDescriptionRetrieveException, PathNotFoundException {
 		Session session = null;
 		HostDescription result = null;
 		try {
 			session = getSession();
 			Node hostNode = getHostNode(session);
 			Node node = hostNode.getNode(name);
-			Property prop = node.getProperty(XML_PROPERTY_NAME);
-			result = (HostDescription) SchemaUtil
-					.parseFromXML(prop.getString());
-		} catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
-			// TODO propagate
+			if (node!=null) {
+				result = getHostDescriptor(node);
+			}
+		}catch(PathNotFoundException e){
+			throw e;
+		}catch (Exception e) {
+			throw new HostDescriptionRetrieveException(e);
 		} finally {
 			if (session != null && session.isLive()) {
 				session.logout();
 			}
 		}
+		return result;
+	}
+
+	private HostDescription getHostDescriptor(Node node)
+			throws PathNotFoundException, RepositoryException,
+			ValueFormatException {
+		HostDescription result;
+		Property prop = node.getProperty(XML_PROPERTY_NAME);
+		result = (HostDescription) SchemaUtil
+				.parseFromXML(prop.getString());
 		return result;
 	}
 
@@ -355,12 +369,7 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
 		return false;
 	}
 
-	public List<HostDescription> searchHostDescription(String name) {
-		// TODO implementation
-		return null;
-	}
-
-	public List<ServiceDescription> searchServiceDescription(String name) {
+	public List<ServiceDescription> searchServiceDescription(String name) throws ServiceDescriptionRetrieveException, PathNotFoundException{
 	    Session session = null;
         ArrayList<ServiceDescription> result = new ArrayList<ServiceDescription>();
         try {
@@ -376,6 +385,36 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             System.out.println(e);
             e.printStackTrace();
             // TODO propagate
+        } finally {
+            if (session != null && session.isLive()) {
+                session.logout();
+            }
+        }	   
+		return result;
+	}
+	
+	public List<HostDescription> searchHostDescription(String nameRegEx) throws HostDescriptionRetrieveException, PathNotFoundException {
+	    Session session = null;
+        List<HostDescription> result = new ArrayList<HostDescription>();
+        try {
+            session = getSession();
+            Node node = getHostNode(session);
+            NodeIterator nodes = node.getNodes();
+            for (; nodes.hasNext();) {
+                Node host = nodes.nextNode();
+                if (host!=null && host.getName().matches(nameRegEx)){
+                    HostDescription hostDescriptor = getHostDescriptor(host);
+                	result.add(hostDescriptor);
+                }
+            }
+		}catch(PathNotFoundException e){
+			System.out.println(e);
+			e.printStackTrace();
+			throw e;
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+            throw new HostDescriptionRetrieveException(e);
         } finally {
             if (session != null && session.isLive()) {
                 session.logout();
