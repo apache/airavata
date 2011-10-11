@@ -58,7 +58,7 @@ import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveExcepti
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.registry.api.user.UserManager;
 import org.apache.airavata.registry.api.user.UserManagerFactory;
-import org.apache.airavata.registry.api.util.Axis2Util;
+import org.apache.airavata.registry.api.util.WebServiceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -521,7 +521,7 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
     }
 
     public String saveWSDL(ServiceDescription service) {
-        return saveWSDL(service, Axis2Util.generateWSDL(service));
+        return saveWSDL(service, WebServiceUtil.generateWSDL(service));
     }
 
     public String getWSDL(String serviceName) {
