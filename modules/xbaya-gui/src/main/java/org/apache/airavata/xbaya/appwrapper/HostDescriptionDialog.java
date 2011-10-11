@@ -36,7 +36,6 @@ public class HostDescriptionDialog extends JDialog {
 	private XBayaEngine engine;
 	private HostDescription hostDescription;
 	
-	private String hostName;
 	private JButton okButton;
 	private boolean hostCreated=false;
 	private JLabel lblError;
@@ -79,7 +78,7 @@ public class HostDescriptionDialog extends JDialog {
 				} catch (PathNotFoundException e) {
 				}
 				txtHostName.setText(defaultName);
-				setHostName(txtHostName.getText());
+				setHostId(txtHostName.getText());
 			}
 		});
 		setEngine(engine);
@@ -90,6 +89,7 @@ public class HostDescriptionDialog extends JDialog {
 		setTitle("New Host Description");
 		setBounds(100, 100, 448, 129);
 		setModal(true);
+		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		{
 			JPanel buttonPane = new JPanel();
@@ -131,8 +131,8 @@ public class HostDescriptionDialog extends JDialog {
 			label.setVisible(false);
 			JComboBox comboBox = new JComboBox();
 			comboBox.setVisible(false);
-			JLabel lblHostName = new JLabel("Host name");
-			JLabel lblHostLocationip = new JLabel("Host location/ip");
+			JLabel lblHostName = new JLabel("Host id");
+			JLabel lblHostLocationip = new JLabel("Host address");
 			txtHostLocation = new JTextField();
 			txtHostLocation.addKeyListener(new KeyAdapter() {
 				@Override
@@ -145,7 +145,7 @@ public class HostDescriptionDialog extends JDialog {
 			txtHostName.addKeyListener(new KeyAdapter() {
 				@Override
 				public void keyReleased(KeyEvent e) {
-					setHostName(txtHostName.getText());
+					setHostId(txtHostName.getText());
 				}
 			});
 			txtHostName.setColumns(10);
@@ -210,12 +210,12 @@ public class HostDescriptionDialog extends JDialog {
 		this.engine = engine;
 	}
 
-	public String getHostName() {
-		return hostName;
+	public String getHostId() {
+		return getHostDescription().getId();
 	}
 
-	public void setHostName(String hostName) {
-		this.hostName = hostName;
+	public void setHostId(String hostId) {
+		getHostDescription().setId(hostId);
 		updateDialogStatus();
 	}
 
@@ -229,20 +229,20 @@ public class HostDescriptionDialog extends JDialog {
 	}
 
 	private void validateDialog() throws Exception{
-		if (getHostName()==null || getHostName().trim().equals("")){
-			throw new Exception("Name of the host cannot be empty!!!");
+		if (getHostId()==null || getHostId().trim().equals("")){
+			throw new Exception("Id of the host cannot be empty!!!");
 		}
 		
 		HostDescription hostDescription2=null;
 		try {
-			hostDescription2 = getJCRComponentRegistry().getHostDescription(Pattern.quote(getHostName()));
+			hostDescription2 = getJCRComponentRegistry().getHostDescription(Pattern.quote(getHostId()));
 		} catch (PathNotFoundException e) {
 			//what we want
 		} catch (Exception e){
 			throw e;
 		}
 		if (hostDescription2!=null){
-			throw new Exception("Host descriptor with the given name already exists!!!");
+			throw new Exception("Host descriptor with the given id already exists!!!");
 		}
 		
 		if (getHostLocation()==null || getHostLocation().trim().equals("")){
@@ -280,7 +280,7 @@ public class HostDescriptionDialog extends JDialog {
 	}
 
 	public void saveHostDescription() {
-		getJCRComponentRegistry().saveHostDescription(getHostName(), getHostDescription());
+		getJCRComponentRegistry().saveHostDescription(getHostId(), getHostDescription());
 		setHostCreated(true);
 	}
 

@@ -29,6 +29,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
 import org.apache.airavata.xbaya.myproxy.gui.MyProxyChecker;
 
 public class RegisterApplicationsMenu {
@@ -68,23 +69,31 @@ public class RegisterApplicationsMenu {
 
     private void createRegsiterApplicationsMenu() {
 
+        createRegisterHostDesc();
         createRegisterServiceDesc();
         createRegisterApplicationDesc();
-        createRegisterHostDesc();
         createRegisterThroughFile();
         createSearchAndEdit();
 
         this.registerApplicationsMenu = new JMenu("Register Applications");
         this.registerApplicationsMenu.setMnemonic(KeyEvent.VK_P);
 
+        this.registerApplicationsMenu.add(this.registerHostDesc);
         this.registerApplicationsMenu.add(this.registerServiceDesc);
         this.registerApplicationsMenu.add(this.registerApplicationDesc);
-        this.registerApplicationsMenu.add(this.registerHostDesc);
         this.registerApplicationsMenu.add(this.registerThroughFile);
         this.registerApplicationsMenu.addSeparator();
         this.registerApplicationsMenu.add(this.searchAndEdit);
     }
 
+    private boolean acquireJCRRegistry(){
+    	if (engine.getConfiguration().getJcrComponentRegistry()==null){
+	    	JCRRegistryWindow window = new JCRRegistryWindow(this.engine);
+			window.show();
+    	}
+    	return engine.getConfiguration().getJcrComponentRegistry()!=null;
+    }
+    
     private void createRegisterThroughFile() {
         this.registerThroughFile = new JMenuItem("Register Description Through File");
 
@@ -125,12 +134,16 @@ public class RegisterApplicationsMenu {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                	ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(RegisterApplicationsMenu.this.engine);
-                	serviceDescriptionDialog.open();
-                } catch (Exception e1) {
-                    RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
-                }
+                if (acquireJCRRegistry()) {
+					try {
+						ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(
+								RegisterApplicationsMenu.this.engine);
+						serviceDescriptionDialog.open();
+					} catch (Exception e1) {
+						RegisterApplicationsMenu.this.engine.getErrorWindow()
+								.error(e1);
+					}
+				}
             }
         });
 
@@ -144,12 +157,16 @@ public class RegisterApplicationsMenu {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-            	 try {
-            		 ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(RegisterApplicationsMenu.this.engine);
-            		 applicationDescriptionDialog.open();
-                 } catch (Exception e1) {
-                     RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
-                 }
+            	 if (acquireJCRRegistry()) {
+					try {
+						ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(
+								RegisterApplicationsMenu.this.engine);
+						applicationDescriptionDialog.open();
+					} catch (Exception e1) {
+						RegisterApplicationsMenu.this.engine.getErrorWindow()
+								.error(e1);
+					}
+				}
             }
         });
 
@@ -163,12 +180,16 @@ public class RegisterApplicationsMenu {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                	HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(RegisterApplicationsMenu.this.engine);
-                	hostDescriptionDialog.open();
-                } catch (Exception e1) {
-                    RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
-                }
+                if (acquireJCRRegistry()) {
+					try {
+						HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(
+								RegisterApplicationsMenu.this.engine);
+						hostDescriptionDialog.open();
+					} catch (Exception e1) {
+						RegisterApplicationsMenu.this.engine.getErrorWindow()
+								.error(e1);
+					}
+				}
             }
         });
 
