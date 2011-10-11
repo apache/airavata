@@ -2,13 +2,18 @@ package org.apache.airavata.xbaya.appwrapper;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import javax.jcr.PathNotFoundException;
 import javax.swing.DefaultCellEditor;
@@ -28,22 +33,13 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
 
 import org.apache.airavata.commons.gfac.type.DataType;
 import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
 
 public class ServiceDescriptionDialog extends JDialog {
 
@@ -112,6 +108,7 @@ public class ServiceDescriptionDialog extends JDialog {
 		setTitle("New Service Description");
 		setBounds(100, 100, 463, 369);
 		setModal(true);
+		setLocationRelativeTo(null);
 		BorderLayout borderLayout = new BorderLayout();
 		borderLayout.setVgap(5);
 		borderLayout.setHgap(5);
@@ -216,12 +213,10 @@ public class ServiceDescriptionDialog extends JDialog {
 		TableColumn ioColumn = tblParameters.getColumnModel().getColumn(0);
 		String[] ioStringList = getIOStringList();
 		ioColumn.setCellEditor(new StringArrayComboBoxEditor(ioStringList));
-//		ioColumn.setCellRenderer(new StringArrayComboBoxRenderer(ioStringList));
 		
 		TableColumn datatypeColumn = tblParameters.getColumnModel().getColumn(2);
 		DataType[] dataTypeStringList = getDataTypes();
 		datatypeColumn.setCellEditor(new StringArrayComboBoxEditor(dataTypeStringList));
-//		datatypeColumn.setCellRenderer(new StringArrayComboBoxRenderer(dataTypeStringList));
 		
 		tblParameters.getColumnModel().getColumn(1).setPreferredWidth(190);
 		scrollPane.setViewportView(tblParameters);
@@ -383,6 +378,7 @@ public class ServiceDescriptionDialog extends JDialog {
 		}
 		
 		getJCRComponentRegistry().saveServiceDescription(getServiceName(), getServiceDescription());
+		
 		setServiceCreated(true);
 	}
 
@@ -413,29 +409,6 @@ public class ServiceDescriptionDialog extends JDialog {
 		if (parameterName!=null && !parameterName.equals("")){
 			defaultTableModel.addRow(new Object[]{null,null,null,null});
 		}
-	}
-
-	private class StringArrayComboBoxRenderer extends JComboBox implements TableCellRenderer {
-		private static final long serialVersionUID = 8634257755770934231L;
-
-		public StringArrayComboBoxRenderer(String[] items) {
-	        super(items);
-	    }
-
-	    public Component getTableCellRendererComponent(JTable table, Object value,
-	            boolean isSelected, boolean hasFocus, int row, int column) {
-	        if (isSelected) {
-	            setForeground(table.getSelectionForeground());
-	            super.setBackground(table.getSelectionBackground());
-	        } else {
-	            setForeground(table.getForeground());
-	            setBackground(table.getBackground());
-	        }
-
-	        // Select the current value
-	        setSelectedItem(value);
-	        return this;
-	    }
 	}
 
 	private class StringArrayComboBoxEditor extends DefaultCellEditor {
