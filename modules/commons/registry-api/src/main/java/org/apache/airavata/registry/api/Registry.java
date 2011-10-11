@@ -149,4 +149,6 @@ public interface Registry {
 
     public Node getWorkflow(QName templateID,String userName);
 
+    public boolean deleteWorkflow(QName resourceID,String userName);
+
 }

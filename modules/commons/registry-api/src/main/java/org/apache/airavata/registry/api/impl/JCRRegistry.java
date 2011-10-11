@@ -614,34 +614,53 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
         } catch (Exception e) {
             e.printStackTrace();
         }
-            return result;
+        return result;
     }
-        public boolean saveWorkflow(QName ResourceID, String workflowName, String resourceDesc, String workflowAsaString, String owner, boolean isMakePublic) {
-              Session session = null;
-              try {
-                  session = getSession();
-                  Node workflowListNode = getOrAddNode(session.getRootNode(), WORKFLOWS);
-                  Node workflowNode = null;
-                  if(isMakePublic){
-                       workflowNode = getOrAddNode(getOrAddNode(workflowListNode, PUBLIC), workflowName);
-                  }else{
-                       workflowNode = getOrAddNode(getOrAddNode(workflowListNode, owner),workflowName);
-                  }
-                  workflowNode.setProperty("workflow",workflowAsaString);
-                  workflowNode.setProperty("Prefix",ResourceID.getPrefix());
-                  workflowNode.setProperty("LocalPart",ResourceID.getLocalPart());
-                  workflowNode.setProperty("NamespaceURI",ResourceID.getNamespaceURI());
-                  workflowNode.setProperty("public",isMakePublic);
-                  workflowNode.setProperty("Description",resourceDesc);
-                  workflowNode.setProperty("Type",REGISTRY_TYPE_WORKFLOW);
-                  session.save();
-              } catch (Exception e) {
-                  e.printStackTrace();
-              } finally {
-                  if (session != null && session.isLive()) {
-                      session.logout();
-                  }
-                  return true;
-              }
-          }
+
+    public boolean saveWorkflow(QName ResourceID, String workflowName, String resourceDesc, String workflowAsaString, String owner, boolean isMakePublic) {
+        Session session = null;
+        try {
+            session = getSession();
+            Node workflowListNode = getOrAddNode(session.getRootNode(), WORKFLOWS);
+            Node workflowNode = null;
+            if (isMakePublic) {
+                workflowNode = getOrAddNode(getOrAddNode(workflowListNode, PUBLIC), workflowName);
+            } else {
+                workflowNode = getOrAddNode(getOrAddNode(workflowListNode, owner), workflowName);
+            }
+            workflowNode.setProperty("workflow", workflowAsaString);
+            workflowNode.setProperty("Prefix", ResourceID.getPrefix());
+            workflowNode.setProperty("LocalPart", ResourceID.getLocalPart());
+            workflowNode.setProperty("NamespaceURI", ResourceID.getNamespaceURI());
+            workflowNode.setProperty("public", isMakePublic);
+            workflowNode.setProperty("Description", resourceDesc);
+            workflowNode.setProperty("Type", REGISTRY_TYPE_WORKFLOW);
+            session.save();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (session != null && session.isLive()) {
+                session.logout();
+            }
+            return true;
+        }
+    }
+
+    public boolean deleteWorkflow(QName resourceID, String userName) {
+         Session session = null;
+        try {
+            session = getSession();
+            Node workflowListNode = getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOWS), userName);
+            Node result = getOrAddNode(workflowListNode, resourceID.getLocalPart());
+            result.remove();
+            session.save();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            if(session.isLive() || session != null){
+                session.logout();
+            }
+        }
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }
