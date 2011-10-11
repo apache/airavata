@@ -12,7 +12,7 @@
     language governing permissions and limitations under the License. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>airavata</artifactId>
     <groupId>airavata</groupId>
@@ -35,11 +35,6 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>1.1.1</version>
-            </dependency>
-            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${org.slf4j.version}</version>
@@ -49,11 +44,11 @@
                 <artifactId>axis2</artifactId>
                 <version>${axis2.version}</version>
             </dependency>
-           		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
-		    </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
             <dependency>
                 <groupId>javax.jcr</groupId>
                 <artifactId>jcr</artifactId>
@@ -168,7 +163,6 @@
             <modules>
                 <module>modules/gfac-core</module>
                 <module>modules/gfac-axis2</module>
-                <module>modules/gfac-axis2-artifacts</module>
                 <module>modules/commons</module>
             </modules>
         </profile>
@@ -234,7 +228,6 @@
             <modules>
                 <module>modules/gfac-core</module>
                 <module>modules/gfac-axis2</module>
-                <module>modules/gfac-axis2-artifacts</module>
                 <module>modules/ws-messenger</module>
                 <module>modules/xbaya-gui</module>
                 <module>modules/commons</module>
