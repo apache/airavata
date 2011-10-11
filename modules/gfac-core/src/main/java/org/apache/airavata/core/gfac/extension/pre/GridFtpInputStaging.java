@@ -88,7 +88,7 @@ public class GridFtpInputStaging extends PreExecuteChain {
 
                             if (hostDescription instanceof GlobusHost) {
                                 gridFTPTransfer(context, uri, destFilePath);
-                            } else if (GfacUtils.isLocalHost(hostDescription.getName())) {
+                            } else if (GfacUtils.isLocalHost(hostDescription.getAddress())) {
                                 downloadFile(context, uri, destFilePath);
                             }
 

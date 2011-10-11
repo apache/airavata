@@ -73,7 +73,7 @@ public class GramProvider extends AbstractProvider {
 
             String hostgridFTP = host.getGridFTPEndPoint();
             if (host.getGridFTPEndPoint() == null) {
-                hostgridFTP = host.getName();
+                hostgridFTP = host.getAddress();
             }
 
             URI tmpdirURI = GfacUtils.createGsiftpURI(hostgridFTP, app.getTmpDir());
@@ -105,7 +105,7 @@ public class GramProvider extends AbstractProvider {
         log.info("Searching for Gate Keeper");
         gateKeeper = host.getGlobusGateKeeperEndPoint();
         if (gateKeeper == null) {
-            gateKeeper = host.getName();
+            gateKeeper = host.getAddress();
         }
         log.info("Using Globus GateKeeper " + gateKeeper);
 
@@ -141,7 +141,7 @@ public class GramProvider extends AbstractProvider {
             log.info("Request to contact:" + gateKeeper);
 
             buf.append("Finished launching job, Host = ")
-                    .append(host.getName()).append(" RSL = ")
+                    .append(host.getAddress()).append(" RSL = ")
                     .append(job.getRSL())
                     .append(" working directory = ")
                     .append(app.getWorkingDir()).append(" tempDirectory = ")
@@ -184,7 +184,7 @@ public class GramProvider extends AbstractProvider {
             int jobStatus = listener.getStatus();
             if (jobStatus == GramJob.STATUS_FAILED) {
                 int errCode = listener.getError();
-                String errorMsg = "Job " + job.getID() + " on host " + host.getName() + " Error Code = " + errCode;
+                String errorMsg = "Job " + job.getID() + " on host " + host.getAddress() + " Error Code = " + errCode;
                 JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
                         gateKeeper, job.getRSL());
                 if (errCode == 8) {
@@ -196,7 +196,7 @@ public class GramProvider extends AbstractProvider {
             }
 
         } catch (GramException e) {
-            JobSubmissionFault error = new JobSubmissionFault(this, e, host.getName(), gateKeeper, job.getRSL());
+            JobSubmissionFault error = new JobSubmissionFault(this, e, host.getAddress(), gateKeeper, job.getRSL());
             if (listener.getError() == 8) {
                 error.setReason(JobSubmissionFault.JOB_CANCEL);
             } else {
@@ -233,7 +233,7 @@ public class GramProvider extends AbstractProvider {
 
             String hostgridFTP = host.getGridFTPEndPoint();
             if (host.getGridFTPEndPoint() == null) {
-                hostgridFTP = host.getName();
+                hostgridFTP = host.getAddress();
             }
 
             URI stdoutURI = GfacUtils.createGsiftpURI(hostgridFTP, app.getStdOut());

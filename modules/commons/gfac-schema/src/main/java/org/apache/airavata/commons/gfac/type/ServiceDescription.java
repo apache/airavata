@@ -25,17 +25,17 @@ import java.util.List;
 
 public class ServiceDescription implements Type {
 
-	private String name;
+    protected String id;
 	private List<Parameter> inputParameters;
 	private List<Parameter> outputParameters;	
 	
-	public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    
+    public void setId(String id) {
+        this.id = id;
+    }   
 
     public List<Parameter> getInputParameters() {
         return inputParameters;

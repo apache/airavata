@@ -85,7 +85,7 @@ public class SSHProvider extends AbstractProvider {
             ssh.loadKnownHosts();
             ssh.authPublickey(sshContext.getUsername(), pkey);
 
-            ssh.connect(context.getExecutionDescription().getHost().getName());            
+            ssh.connect(context.getExecutionDescription().getHost().getAddress());            
             return ssh.startSession();
 
         } catch (NullPointerException ne) {

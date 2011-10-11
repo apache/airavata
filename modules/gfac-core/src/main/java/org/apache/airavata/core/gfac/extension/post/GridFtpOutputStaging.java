@@ -87,7 +87,7 @@ public class GridFtpOutputStaging extends PostExecuteChain {
 
                             if (hostDescription instanceof GlobusHost) {
                                 gridFTPTransfer(context, uri, srcFilePath);
-                            } else if (GfacUtils.isLocalHost(hostDescription.getName())) {
+                            } else if (GfacUtils.isLocalHost(hostDescription.getAddress())) {
                                 updateFile(context, uri, srcFilePath);
                             }
                         }

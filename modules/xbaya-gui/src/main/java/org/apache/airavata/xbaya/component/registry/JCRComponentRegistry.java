@@ -80,7 +80,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
         try {
 			List<ServiceDescription> services = this.registry.searchServiceDescription("");
 			for (ServiceDescription serviceDescription : services) {
-			    String serviceName = serviceDescription.getName();
+			    String serviceName = serviceDescription.getId();
 			    JCRComponentReference jcr = new JCRComponentReference(serviceName, registry.getWSDL(serviceName));
 			    tree.add(new ComponentTreeNode(jcr));    
 			}
@@ -117,7 +117,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
     }
     
 	public String saveHostDescription(String name, HostDescription host) {
-    	return registry.saveHostDescription(name, host);
+    	return registry.saveHostDescription(host);
 	}
 	
 	public List<HostDescription> searchHostDescription(String nameRegEx) throws HostDescriptionRetrieveException, PathNotFoundException {
@@ -137,7 +137,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
 	}
 	
 	public String saveServiceDescription(String name, ServiceDescription service) {
-		return registry.saveServiceDescription(name, service);
+		return registry.saveServiceDescription(service);
 	}
 	
 	public ServiceDescription getServiceDescription(String serviceName) throws PathNotFoundException, ServiceDescriptionRetrieveException {

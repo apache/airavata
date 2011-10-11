@@ -322,11 +322,11 @@ public class ServiceDescriptionDialog extends JDialog {
 	}
 
 	public String getServiceName() {
-		return getServiceDescription().getName();
+		return getServiceDescription().getId();
 	}
 
 	public void setServiceName(String serviceName) {
-		getServiceDescription().setName(serviceName);
+		getServiceDescription().setId(serviceName);
 		updateDialogStatus();
 	}
 	

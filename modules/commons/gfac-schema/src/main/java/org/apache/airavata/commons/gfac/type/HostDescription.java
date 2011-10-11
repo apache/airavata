@@ -23,12 +23,20 @@ package org.apache.airavata.commons.gfac.type;
 
 public class HostDescription implements Type {
 
-    private String name;
+    protected String id;
+    private String address;
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
+    public String getAddress() {
+        return address;
+    }
+    public void setAddress(String address) {
+        this.address = address;
+    }
+    
 }
