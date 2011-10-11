@@ -25,13 +25,19 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
+import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
+import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.registry.api.user.UserManager;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
-
-import javax.jcr.RepositoryException;
 
 public class JCRComponentRegistry extends ComponentRegistry {
 
@@ -71,12 +77,20 @@ public class JCRComponentRegistry extends ComponentRegistry {
     @Override
     public ComponentTreeNode getComponentTree() {
         ComponentTreeNode tree = new ComponentTreeNode(this);
-        List<ServiceDescription> services = this.registry.searchServiceDescription("");
-        for (ServiceDescription serviceDescription : services) {
-            String serviceName = serviceDescription.getName();
-            JCRComponentReference jcr = new JCRComponentReference(serviceName, registry.getWSDL(serviceName));
-            tree.add(new ComponentTreeNode(jcr));    
-        }
+        try {
+			List<ServiceDescription> services = this.registry.searchServiceDescription("");
+			for (ServiceDescription serviceDescription : services) {
+			    String serviceName = serviceDescription.getName();
+			    JCRComponentReference jcr = new JCRComponentReference(serviceName, registry.getWSDL(serviceName));
+			    tree.add(new ComponentTreeNode(jcr));    
+			}
+		} catch (PathNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ServiceDescriptionRetrieveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         
         return tree;
     }
@@ -101,8 +115,41 @@ public class JCRComponentRegistry extends ComponentRegistry {
 			ApplicationDeploymentDescription app){
     	return registry.saveDeploymentDescription(service, host, app);
     }
+    
+	public String saveHostDescription(String name, HostDescription host) {
+    	return registry.saveHostDescription(name, host);
+	}
+	
+	public List<HostDescription> searchHostDescription(String nameRegEx) throws HostDescriptionRetrieveException, PathNotFoundException {
+		return registry.searchHostDescription(nameRegEx);
+	}
+	
+	public HostDescription getHostDescription(String nameRegEx) throws HostDescriptionRetrieveException, PathNotFoundException {
+		return registry.getHostDescription(nameRegEx);
+	}
+	
+	public List<ApplicationDeploymentDescription> searchApplicationDescription(String serviceName, String host) throws HostDescriptionRetrieveException {
+		return registry.searchDeploymentDescription(serviceName, host);
+	}
+	
+	public ApplicationDeploymentDescription getApplicationDescription(String serviceName, String host) throws PathNotFoundException, DeploymentDescriptionRetrieveException {
+		return registry.getDeploymentDescription(serviceName, host);
+	}
+	
+	public String saveServiceDescription(String name, ServiceDescription service) {
+		return registry.saveServiceDescription(name, service);
+	}
+	
+	public ServiceDescription getServiceDescription(String serviceName) throws PathNotFoundException, ServiceDescriptionRetrieveException {
+		return registry.getServiceDescription(serviceName);
+	}
 
-    public JCRRegistry getRegistry() {
-        return registry;
-    }
+	public List<ServiceDescription> searchServiceDescription(String serviceName) throws ServiceDescriptionRetrieveException, PathNotFoundException{
+		return registry.searchServiceDescription(serviceName);
+	}
+
+	public Registry getRegistry() {
+		return registry;
+	}
+
 }

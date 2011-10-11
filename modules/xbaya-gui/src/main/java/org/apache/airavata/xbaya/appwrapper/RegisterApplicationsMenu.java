@@ -125,23 +125,9 @@ public class RegisterApplicationsMenu {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    RegisterApplicationsMenu.this.myProxyChecker = new MyProxyChecker(
-                            RegisterApplicationsMenu.this.engine);
-                    boolean loaded = RegisterApplicationsMenu.this.myProxyChecker.loadIfNecessary();
-                    if (loaded) {
-                        // intended to be blank
-                    } else {
-                        return; // error
-                    }
-
-                    this.window = ServiceDescriptionRegistrationWindow.getInstance();
-                }
-                if (!this.window.isEngineSet()) {
-                    this.window.setXBayaEngine(RegisterApplicationsMenu.this.engine);
-                }
                 try {
-                    this.window.show();
+                	ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(RegisterApplicationsMenu.this.engine);
+                	serviceDescriptionDialog.open();
                 } catch (Exception e1) {
                     RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
                 }
@@ -158,26 +144,12 @@ public class RegisterApplicationsMenu {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    RegisterApplicationsMenu.this.myProxyChecker = new MyProxyChecker(
-                            RegisterApplicationsMenu.this.engine);
-                    boolean loaded = RegisterApplicationsMenu.this.myProxyChecker.loadIfNecessary();
-                    if (loaded) {
-                        // intended to be blank
-                    } else {
-                        return; // error
-                    }
-
-                    this.window = ApplicationDescriptionRegistrationWindow.getInstance();
-                }
-                if (!this.window.isEngineSet()) {
-                    this.window.setXBayaEngine(RegisterApplicationsMenu.this.engine);
-                }
-                try {
-                    this.window.show();
-                } catch (Exception e1) {
-                    RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
-                }
+            	 try {
+            		 ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(RegisterApplicationsMenu.this.engine);
+            		 applicationDescriptionDialog.open();
+                 } catch (Exception e1) {
+                     RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
+                 }
             }
         });
 
@@ -191,23 +163,9 @@ public class RegisterApplicationsMenu {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    RegisterApplicationsMenu.this.myProxyChecker = new MyProxyChecker(
-                            RegisterApplicationsMenu.this.engine);
-                    boolean loaded = RegisterApplicationsMenu.this.myProxyChecker.loadIfNecessary();
-                    if (loaded) {
-                        // intended to be blank
-                    } else {
-                        return; // error
-                    }
-
-                    this.window = HostDescriptionRegistrationWindow.getInstance();
-                }
-                if (!this.window.isEngineSet()) {
-                    this.window.setXBayaEngine(RegisterApplicationsMenu.this.engine);
-                }
                 try {
-                    this.window.show();
+                	HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(RegisterApplicationsMenu.this.engine);
+                	hostDescriptionDialog.open();
                 } catch (Exception e1) {
                     RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
                 }

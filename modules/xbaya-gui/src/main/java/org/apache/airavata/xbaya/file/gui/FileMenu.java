@@ -27,12 +27,19 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.ode.ODEDeploymentDescriptor;
+import org.apache.airavata.xbaya.wf.gui.WorkflowMenu;
 import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FileMenu {
+
+	private static final Logger logger = LoggerFactory.getLogger(FileMenu.class);
 
     private JMenu fileMenu;
 
@@ -64,6 +71,8 @@ public class FileMenu {
 
     private JMenuItem exportODEScriptsItem;
 
+    private JMenuItem exitItem;
+
     private XBayaEngine engine;
 
     /**
@@ -81,6 +90,8 @@ public class FileMenu {
         this.scuflFiler = new ScuflFiler(engine);
         this.odeDeploymentDescription = new ODEDeploymentDescriptor();
         this.xregistryAccesser = new XRegistryAccesser(engine);
+
+        this.exitItem = createExitItem();
 
         createFileMenu();
     }
@@ -109,6 +120,8 @@ public class FileMenu {
         this.fileMenu.add(this.exportODEScriptsItem);
         this.fileMenu.addSeparator();
         this.fileMenu.add(this.saveImageItem);
+        this.fileMenu.addSeparator();
+        this.fileMenu.add(this.exitItem);
     }
 
     /**
@@ -149,7 +162,7 @@ public class FileMenu {
     }
 
     private void createExportJythonScriptItem() {
-        this.exportJythonItem = new JMenuItem("Export WS Jython Script");
+        this.exportJythonItem = new JMenuItem("Save as WS Jython Script");
         this.exportJythonItem.setMnemonic(KeyEvent.VK_J);
         this.exportJythonItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -159,7 +172,7 @@ public class FileMenu {
     }
 
     private void createExportBpelScriptItem() {
-        this.exportBpelItem = new JMenuItem("Export BPEL2 Script");
+        this.exportBpelItem = new JMenuItem("Save as BPEL2 Script");
         this.exportBpelItem.setMnemonic(KeyEvent.VK_B);
         this.exportBpelItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -189,7 +202,7 @@ public class FileMenu {
     // }
 
     private void createExportODEScriptsItem() {
-        this.exportODEScriptsItem = new JMenuItem("Export ODE Scripts");
+        this.exportODEScriptsItem = new JMenuItem("Save as ODE Scripts");
         this.exportODEScriptsItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 new ODEScriptFiler(FileMenu.this.engine).save();
@@ -198,4 +211,21 @@ public class FileMenu {
         });
     }
 
+    private JMenuItem createExitItem() {
+        JMenuItem menuItem = new JMenuItem("Exit");
+        menuItem.setMnemonic(KeyEvent.VK_X);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
+        menuItem.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent event) {
+                try {
+                    FileMenu.this.engine.dispose();
+                } catch (XBayaException e) {
+                    logger.error(e.getMessage(), e);
+                } finally {
+                	FileMenu.this.engine.getGUI().getFrame().dispose();
+                }
+            }
+        });
+        return menuItem;
+    }
 }
