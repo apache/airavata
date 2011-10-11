@@ -33,7 +33,7 @@ public interface Axis2Registry extends Registry {
      * @param service
      * @param WSDL
      */
-    public String saveWSDL(String serviceName, String WSDL);
+    public String saveWSDL(ServiceDescription service, String WSDL);
     
     /**
      * Save WSDL for Axis2
@@ -41,14 +41,14 @@ public interface Axis2Registry extends Registry {
      * @param serviceName
      * @param service
      */
-    public String saveWSDL(String serviceName, ServiceDescription service);
+    public String saveWSDL(ServiceDescription service);
     
     
     /**
      * Load WSDL for Axis2
      * 
-     * @param serviceName
+     * @param serviceId
      * @return WSDL
      */
-    public String getWSDL(String serviceName);
+    public String getWSDL(String serviceId);
 }
