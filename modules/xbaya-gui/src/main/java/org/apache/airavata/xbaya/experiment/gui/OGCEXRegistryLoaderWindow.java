@@ -163,7 +163,7 @@ public class OGCEXRegistryLoaderWindow {
         XRegistryAccesser xregistryAccesser = new XRegistryAccesser(OGCEXRegistryLoaderWindow.this.engine);
         for (OGCEXRegistrySearchResult i : this.list.getSelectedValues()) {
             try {
-                xregistryAccesser.deleteOGCEWorkflow(i.getQname());
+                xregistryAccesser.deleteOGCEWorkflow(i.getResourceId());
             } catch (XRegistryClientException e) {
                 e.printStackTrace();
             }
