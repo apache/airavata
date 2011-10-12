@@ -21,7 +21,6 @@ package org.apache.airavata.services.gfac.axis2.reciever;
  *
  */
 
-import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.Iterator;
@@ -67,10 +66,6 @@ import org.apache.axis2.util.MessageContextBuilder;
 import org.apache.axis2.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.v1.builder.XmlDocument;
-import org.xmlpull.v1.builder.XmlInfosetBuilder;
-
-import xsul.wsdl.WsdlDefinitions;
 
 public class GFacMessageReciever implements MessageReceiver {
 
@@ -82,34 +77,34 @@ public class GFacMessageReciever implements MessageReceiver {
         GFacServiceOperations operation = GFacServiceOperations.valueFrom(axisRequestMsgCtx.getOperationContext()
                 .getOperationName());
         switch (operation) {
-            case GETABSTRACTWSDL:
-                try {
-                    log.debug("invoking getAbstractWSDL operation");
-                    processgetAbstractWSDLOperation(axisRequestMsgCtx);
-                    log.debug("getAbstractWSDL operation invoked");
-                } catch (Exception e) {
-                    throw new AxisFault("Error retrieving the WSDL", e);
-                }
+        case GETABSTRACTWSDL:
+            try {
+                log.debug("invoking getAbstractWSDL operation");
+                processgetAbstractWSDLOperation(axisRequestMsgCtx);
+                log.debug("getAbstractWSDL operation invoked");
+            } catch (Exception e) {
+                throw new AxisFault("Error retrieving the WSDL", e);
+            }
 
-                break;
-            case INVOKE:
-                try {
-                    log.debug("invoking Invoke operation");
-                    processInvokeOperation(axisRequestMsgCtx);
-                    log.info("Invoke operation invoked !!");
-                } catch (Exception e) {
-                    throw new AxisFault("Error Invoking the service", e);
-                }
-                break;
-            case GETWSDL:
-                try {
-                    log.debug("invoking getAbstractWSDL operation");
-                    processgetWSDLOperation(axisRequestMsgCtx);
-                    log.info("getWSDL operation invoked !!");
-                } catch (Exception e) {
-                    throw new AxisFault("Error retrieving the WSDL", e);
-                }
-                break;
+            break;
+        case INVOKE:
+            try {
+                log.debug("invoking Invoke operation");
+                processInvokeOperation(axisRequestMsgCtx);
+                log.info("Invoke operation invoked !!");
+            } catch (Exception e) {
+                throw new AxisFault("Error Invoking the service", e);
+            }
+            break;
+        case GETWSDL:
+            try {
+                log.debug("invoking getAbstractWSDL operation");
+                processgetWSDLOperation(axisRequestMsgCtx);
+                log.info("getWSDL operation invoked !!");
+            } catch (Exception e) {
+                throw new AxisFault("Error retrieving the WSDL", e);
+            }
+            break;
         }
     }
 
@@ -156,7 +151,7 @@ public class GFacMessageReciever implements MessageReceiver {
             /*
              * Add notifiable object
              */
-            WorkflowTrackingNotification workflowNotification = new WorkflowTrackingNotification(brokerURL,topic);
+            WorkflowTrackingNotification workflowNotification = new WorkflowTrackingNotification(brokerURL, topic);
             LoggingNotification loggingNotification = new LoggingNotification();
             DefaultInvocationContext invocationContext = new DefaultInvocationContext();
             invocationContext.setExecutionContext(new DefaultExecutionContext());
@@ -164,13 +159,13 @@ public class GFacMessageReciever implements MessageReceiver {
             invocationContext.getExecutionContext().setRegistryService(getRegistry(context));
             invocationContext.getExecutionContext().addNotifiable(workflowNotification);
             invocationContext.getExecutionContext().addNotifiable(loggingNotification);
-            
+
             /*
              * Add workflow context
              */
             WorkflowContextImpl workflowContext = new WorkflowContextImpl();
             workflowContext.setValue(WorkflowContextImpl.WORKFLOW_ID, URI.create(topic).toString());
-            invocationContext.addMessageContext(WorkflowContextImpl.WORKFLOW_CONTEXT_NAME, workflowContext);            
+            invocationContext.addMessageContext(WorkflowContextImpl.WORKFLOW_CONTEXT_NAME, workflowContext);
 
             /*
              * read from registry and set the correct parameters
@@ -220,8 +215,8 @@ public class GFacMessageReciever implements MessageReceiver {
             outputElement = fac.createOMElement("invokeResponse", omNs);
 
             ParameterContextImpl paramContext = (ParameterContextImpl) invocationContext
-                    .<AbstractParameter>getMessageContext("output");
-            for (Iterator<String> iterator = paramContext.getNames(); iterator.hasNext(); ) {
+                    .<AbstractParameter> getMessageContext("output");
+            for (Iterator<String> iterator = paramContext.getNames(); iterator.hasNext();) {
                 String name = iterator.next();
                 OMElement ele = fac.createOMElement(name, omNs);
                 ele.addAttribute("type", paramContext.getValue(name).getType().toString(), omNs);
@@ -238,128 +233,27 @@ public class GFacMessageReciever implements MessageReceiver {
 
     private void processgetWSDLOperation(MessageContext messageContext) throws Exception {
         MessageContext response = null;
-        EndpointReference gfacUrl = messageContext.getConfigurationContext().getListenerManager()
-                .getEPRforService(WSConstants.GFAC_SERVICE_NAME, WSConstants.GFAC_INVOKE_METHOD, WSConstants.GFAC_TRANSPORT);
+        EndpointReference gfacUrl = messageContext
+                .getConfigurationContext()
+                .getListenerManager()
+                .getEPRforService(WSConstants.GFAC_SERVICE_NAME, WSConstants.GFAC_INVOKE_METHOD,
+                        WSConstants.GFAC_TRANSPORT);
         String serviceName = getOriginalServiceName(messageContext);
         String serviceEpr = gfacUrl.getAddress().split(WSConstants.GFAC_SERVICE_NAME)[0] + serviceName;
         ConfigurationContext context = messageContext.getConfigurationContext();
-        // TODO this logic has to change based on the logic we are storing data
-        // into repository
+        
         try {
             OMElement wsdlElement = getWSDL(context, serviceName);
-            XmlInfosetBuilder xmlInfosetBuilder = xsul.XmlConstants.BUILDER;
-            XmlDocument document = xmlInfosetBuilder.parseInputStream(new ByteArrayInputStream(wsdlElement.toString()
-                    .getBytes()));
-            WsdlDefinitions definitions = new WsdlDefinitions(document.getDocumentElement());
-            xsul5.wsdl.WsdlDefinitions definition5 = WSDLUtil.wsdlDefinitions3ToWsdlDefintions5(definitions);
-            definition5 = xsul5.wsdl.WsdlUtil.createCWSDL(definition5, new URI(serviceEpr));
-            definitions = WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(definition5);
-            // WSDLReader wsdlReader =
-            // WSDLFactory.newInstance().newWSDLReader();
-            // ByteArrayInputStream byteArrayInputStream = new
-            // ByteArrayInputStream(wsdlElement.toString().getBytes());
-            // InputSource source = new InputSource(byteArrayInputStream);
-            // Definition wsdlDefinition = wsdlReader.readWSDL(null, source);
-            //
-            //
-            // Map portTypes = wsdlDefinition.getPortTypes();
-            // Iterator portIt = portTypes.keySet().iterator();
-            // while(portIt.hasNext()){
-            // PortType portType = (PortType)portTypes.get(portIt.next());
-            // List operations = portType.getOperations();
-            // Iterator opIt = operations.iterator();
-            // String namespace = portType.getQName().getNamespaceURI();
-            //
-            // Binding soap11binding = wsdlDefinition.createBinding();
-            // soap11binding.setQName(new QName(namespace,serviceName +
-            // "Soap11Binding"));
-            // soap11binding.setPortType(portType);
-            // while(opIt.hasNext()){
-            // Operation operation = (Operation)opIt.next();
-            // BindingOperation boperation =
-            // wsdlDefinition.createBindingOperation();
-            // boperation.setName(operation.getName());
-            // boperation.setOperation(operation);
-            // soap11binding.addBindingOperation(boperation);
-            // }
-            //
-            // opIt = operations.iterator();
-            // Binding soap12binding = wsdlDefinition.createBinding();
-            // soap12binding.setQName(new QName(namespace,serviceName +
-            // "Soap12Binding"));
-            // soap12binding.setPortType(portType);
-            // while(opIt.hasNext()){
-            // Operation operation = (Operation)opIt.next();
-            // BindingOperation boperation =
-            // wsdlDefinition.createBindingOperation();
-            // boperation.setOperation(operation);
-            // BindingInput input = wsdlDefinition.createBindingInput();
-            // BindingOutput outpout = wsdlDefinition.createBindingOutput();
-            // ExtensibilityElement element = new UnknownExtensibilityElement();
-            // element.setElementType(new
-            // QName("http://schemas.xmlsoap.org/wsdl/soap12/","body"));
-            // SOAP12BodyImpl body = new SOAP12BodyImpl()
-            // input.addExtensibilityElement();
-            // boperation.setBindingInput();
-            // boperation.setName(operation.getName());
-            // soap12binding.addBindingOperation(boperation);
-            // }
-            //
-            // opIt = operations.iterator();
-            // Binding httpBinding = wsdlDefinition.create;
-            // httpBinding.setQName(new QName(namespace, serviceName +
-            // "httpBinding"));
-            // httpBinding.setPortType(portType);
-            // while(opIt.hasNext()){
-            // Operation operation = (Operation)opIt.next();
-            // BindingOperation boperation =
-            // wsdlDefinition.createBindingOperation();
-            // boperation.setOperation(operation);
-            // boperation.setName(operation.getName());
-            // httpBinding.addBindingOperation(boperation);
-            // }
-            // wsdlDefinition.addBinding(soap11binding);
-            // wsdlDefinition.addBinding(soap12binding);
-            // wsdlDefinition.addBinding(httpBinding);
-            //
-            // Port soap11port = wsdlDefinition.createPort();
-            // Port soap12port = wsdlDefinition.createPort();
-            // Port httpPort = wsdlDefinition.createPort();
-            //
-            //
-            // soap11port.setName(serviceName + "HttpSoap11Endpoint");
-            // soap12port.setName(serviceName + "HttpSoap12Endpoint");
-            // httpPort.setName(serviceName + "HttpEndpoint");
-            //
-            // soap11port.setBinding(soap11binding);
-            // soap12port.setBinding(soap12binding);
-            // httpPort.setBinding(httpBinding);
-            //
-            // Service service = wsdlDefinition.createService();
-            // service.setQName(new QName(namespace,serviceName));
-            // service.addPort(soap11port);
-            // service.addPort(soap12port);
-            // service.addPort(httpPort);
-            //
-            // wsdlDefinition.addService(service);
-            // break;
-            // }
-            //
-            // ByteArrayOutputStream out = new ByteArrayOutputStream();
-            // WSDLWriter writer = WSDLFactory.newInstance().newWSDLWriter();
-            // writer.writeWSDL(wsdlDefinition,out);
-            // out.toString();
-            // reader = XMLInputFactory.newInstance().createXMLStreamReader(
-            // new StringReader(out.toString()));
-            // builder = new StAXOMBuilder(reader);
-            // wsdlElement = builder.getDocumentElement();
-            // TODO based on the abstact wsdl content fill up the required
-            // information using wsdl4j api
+            
+            //create Concrete WSDL
+            String cWSDL = WSDLUtil.createCWSDL(wsdlElement.toString(), serviceEpr);
+
             SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
             SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
             sf.createSOAPBody(responseEnv);
-
-            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(definitions.toString()));
+            
+            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(
+                    new StringReader(cWSDL.toString()));
             StAXOMBuilder builder = new StAXOMBuilder(reader);
             responseEnv.getBody().addChild(builder.getDocumentElement());
             response = MessageContextBuilder.createOutMessageContext(messageContext);
@@ -396,7 +290,7 @@ public class GFacMessageReciever implements MessageReceiver {
 
     /**
      * Get Abstract WSDL and build it as OMElement
-     *
+     * 
      * @param context
      * @param serviceName
      * @return
@@ -412,7 +306,7 @@ public class GFacMessageReciever implements MessageReceiver {
 
     /**
      * Get Registry Object in the configuration context
-     *
+     * 
      * @param context
      * @return
      */
@@ -432,20 +326,24 @@ public class GFacMessageReciever implements MessageReceiver {
 
     private String getEventBrokerURL(MessageContext context) {
         SOAPHeader header = context.getEnvelope().getHeader();
-        OMElement contextHeader = header.getFirstChildWithName(new QName("http://lead.extreme.indiana.edu/namespaces/2005/10/lead-context-header", "context"));
-        OMElement eventSink = contextHeader.getFirstChildWithName(new QName("http://lead.extreme.indiana.edu/namespaces/2005/10/lead-context-header", "event-sink-epr"));
-        String address = eventSink.getFirstChildWithName(new QName("http://www.w3.org/2005/08/addressing","Address")).getText();
+        OMElement contextHeader = header.getFirstChildWithName(new QName(
+                "http://lead.extreme.indiana.edu/namespaces/2005/10/lead-context-header", "context"));
+        OMElement eventSink = contextHeader.getFirstChildWithName(new QName(
+                "http://lead.extreme.indiana.edu/namespaces/2005/10/lead-context-header", "event-sink-epr"));
+        String address = eventSink.getFirstChildWithName(new QName("http://www.w3.org/2005/08/addressing", "Address"))
+                .getText();
         return address;
     }
 
-
     private String getTopic(MessageContext context) {
         SOAPHeader header = context.getEnvelope().getHeader();
-        OMElement contextHeader = header.getFirstChildWithName(new QName("http://lead.extreme.indiana.edu/namespaces/2005/10/lead-context-header", "context"));
-        OMElement workflowId = contextHeader.getFirstChildWithName(new QName("http://lead.extreme.indiana.edu/namespaces/2005/10/lead-context-header", "workflow-instance-id"));
-        String topic =  workflowId.getText();
+        OMElement contextHeader = header.getFirstChildWithName(new QName(
+                "http://lead.extreme.indiana.edu/namespaces/2005/10/lead-context-header", "context"));
+        OMElement workflowId = contextHeader.getFirstChildWithName(new QName(
+                "http://lead.extreme.indiana.edu/namespaces/2005/10/lead-context-header", "workflow-instance-id"));
+        String topic = workflowId.getText();
         topic = topic.substring(1);
-        return topic.replaceAll("_","-");
+        return topic.replaceAll("_", "-");
     }
 
 }
