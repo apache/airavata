@@ -27,18 +27,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.airavata.registry.api.impl.JCRRegistry;
-import org.apache.airavata.commons.gfac.type.DataType;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
 import org.apache.airavata.commons.gfac.type.parameter.StringParameter;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
+import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -82,13 +82,13 @@ public class PropertiesBasedServiceImplTest {
 
 		Parameter input = new Parameter();
 		input.setName("echo_input");
-		input.setType(DataType.String);
+		input.setType(ParameterFactory.getInstance().getType("String"));
 		List<Parameter> inputList = new ArrayList<Parameter>();
 		inputList.add(input);
 
 		Parameter output = new Parameter();
 		output.setName("echo_output");
-		output.setType(DataType.String);
+		output.setType(ParameterFactory.getInstance().getType("String"));
 		List<Parameter> outputList = new ArrayList<Parameter>();
 		outputList.add(output);
 
