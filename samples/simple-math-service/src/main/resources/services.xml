@@ -7,6 +7,6 @@
 		<messageReceiver  mep="http://www.w3.org/2004/08/wsdl/in-out"  class="org.apache.axis2.rpc.receivers.RPCMessageReceiver"/>
 	</messageReceivers>
 	<parameter name="ServiceClass" locked="false">org.apache.airavata.samples.SimpleMathService</parameter>
-<!--parameter name="useOriginalwsdl">false</parameter>
-        <parameter name="modifyUserWSDLPortAddress">false</parameter-->
+   <parameter name="useOriginalwsdl">false</parameter>
+   <parameter name="modifyUserWSDLPortAddress">false</parameter>
 </service>

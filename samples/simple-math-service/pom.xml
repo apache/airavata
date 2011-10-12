@@ -25,7 +25,7 @@
 	<url>http://incubator.apache.org/airavata/index.html</url>
 
 	<properties>
-		<axis2.version>1.5.4</axis2.version>
+		<axis2.version>1.5.1</axis2.version>
 	</properties>
 
 	<dependencies>	
