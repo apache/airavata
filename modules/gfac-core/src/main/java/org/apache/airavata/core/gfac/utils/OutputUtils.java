@@ -32,6 +32,9 @@ import org.apache.airavata.core.gfac.context.message.MessageContext;
 
 public class OutputUtils {   
     
+    private OutputUtils(){        
+    }
+    
     public static Map<String, ?> fillOutputFromStdout(MessageContext<AbstractParameter> outMessage, String stdout) {
 
         Map<String, AbstractParameter> result = new HashMap<String, AbstractParameter>();

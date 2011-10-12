@@ -132,7 +132,7 @@ public class WSDLUtil {
                  * Create SOAP Operation for BindingOperation
                  */
                 SOAPOperation soapoperation = new SOAPOperationImpl();
-                soapoperation.setSoapActionURI(namespace + "invoke");
+                soapoperation.setSoapActionURI(namespace + "/invoke");
                 soapoperation.setStyle("document");
                 
                 boperation.setBindingInput(input);

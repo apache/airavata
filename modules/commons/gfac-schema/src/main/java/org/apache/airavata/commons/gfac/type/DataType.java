@@ -21,11 +21,26 @@
 
 package org.apache.airavata.commons.gfac.type;
 
-public enum DataType{
-	String,
-	Double,
-	Integer,
-	Float,
-	Boolean,
-	File
+public class DataType implements Type{
+    
+    private String type;
+    
+    public DataType(){        
+    }
+    
+    public DataType(String type){
+        this.type = type;
+    }
+        
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getType(){
+        return this.type;
+    }
+    
+    public String toString(){
+        return this.type;
+    }
 }

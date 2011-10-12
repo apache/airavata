@@ -67,15 +67,9 @@ public class WebServiceUtil {
     }
 
     private static void generateElementFromType(Parameter parameter, StringBuilder builder) {
-        switch (parameter.getType()) {
-        case String:
-            builder.append("<xs:element minOccurs=\"0\" name=\"");
-            builder.append(parameter.getName());
-            builder.append("\" nillable=\"true\" type=\"xs:string\"/>");
-            break;
-        default:
-            break;
-        }
+        builder.append("<xs:element minOccurs=\"0\" name=\"");
+        builder.append(parameter.getName());
+        builder.append("\" nillable=\"true\" type=\"xs:string\"/>");
 
     }
 

@@ -27,6 +27,9 @@ public class InputUtils {
     
     private static final String SPACE = " ";
     
+    private InputUtils(){       
+    }
+    
     public static String buildCommand(List<String> cmdList) {
         StringBuffer buff = new StringBuffer();
         for (String string : cmdList) {

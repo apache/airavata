@@ -39,6 +39,8 @@ import org.slf4j.LoggerFactory;
 public class GfacUtils {
     private final static Logger log = LoggerFactory.getLogger(GfacUtils.class);
 
+    private GfacUtils(){       
+    }
     
     /**
      * Read data from inputStream and convert it to String.

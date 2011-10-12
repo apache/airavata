@@ -21,11 +21,9 @@
 
 package org.apache.airavata.commons.gfac.type.parameter;
 
-import org.apache.airavata.commons.gfac.type.DataType;
 import org.apache.airavata.commons.gfac.type.Parameter;
 
 public abstract class AbstractParameter extends Parameter {
-	public abstract DataType getType();
 	public abstract void parseStringVal(String val);
 	public abstract String toStringVal();
 }

@@ -23,8 +23,6 @@ package org.apache.airavata.commons.gfac.type.parameter;
 
 import java.net.URI;
 
-import org.apache.airavata.commons.gfac.type.DataType;
-
 public class FileParameter extends AbstractParameter {
 
     private URI value;
@@ -36,8 +34,4 @@ public class FileParameter extends AbstractParameter {
 	public String toStringVal(){
 	    return (value == null)?null:this.value.toString();
 	}
-	
-	public DataType getType() {
-		return DataType.File;
-	}			
 }

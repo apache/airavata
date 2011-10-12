@@ -34,6 +34,7 @@ import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.host.GlobusHost;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.commons.gfac.type.parameter.FileParameter;
+import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
@@ -65,7 +66,7 @@ public class GridFtpInputStaging extends PreExecuteChain {
 
                 for (Iterator<String> iterator = inputContext.getNames(); iterator.hasNext();) {
                     String key = iterator.next();
-                    if (inputContext.getValue(key).getType() == DataType.File) {
+                    if (ParameterFactory.getInstance().hasType(inputContext.getValue(key).getType(), "File")) {
                         FileParameter fileParameter = (FileParameter) inputContext.getValue(key);
 
                         /*

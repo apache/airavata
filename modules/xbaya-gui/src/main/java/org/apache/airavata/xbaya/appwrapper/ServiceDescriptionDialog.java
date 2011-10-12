@@ -38,6 +38,7 @@ import javax.swing.table.TableColumn;
 import org.apache.airavata.commons.gfac.type.DataType;
 import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 
@@ -290,7 +291,7 @@ public class ServiceDescriptionDialog extends JDialog {
 	}
 
 	private DataType[] getDataTypes() {
-		return DataType.values();
+		return ParameterFactory.getInstance().listDataTypes().toArray(new DataType[]{});
 	}
 
 	public boolean isServiceCreated() {
