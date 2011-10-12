@@ -14,7 +14,8 @@ public class WebServiceUtil {
         builder.append("<wsdl:types>");
         builder.append("<xs:schema attributeFormDefault=\"qualified\" elementFormDefault=\"unqualified\" targetNamespace=\"http://www.wso2.org/types\">");
 
-        if (service.getInputParameters() != null && service.getInputParameters().size() > 0) {
+        boolean isInputParametersPresent = service.getInputParameters() != null && service.getInputParameters().size() > 0;
+		if (isInputParametersPresent) {
             builder.append("<xs:element name=\"invoke\">");
             builder.append("<xs:complexType>");
             builder.append("<xs:sequence>");
@@ -28,7 +29,8 @@ public class WebServiceUtil {
             builder.append("</xs:element>");
         }
 
-        if (service.getOutputParameters() != null && service.getOutputParameters().size() > 0) {
+		boolean isOutputParametersPresent = service.getOutputParameters() != null && service.getOutputParameters().size() > 0;
+		if (isOutputParametersPresent) {
             builder.append("<xs:element name=\"invokeResponse\">");
             builder.append("<xs:complexType>");
             builder.append("<xs:sequence>");
@@ -46,18 +48,24 @@ public class WebServiceUtil {
         builder.append("</wsdl:types>");
 
         builder.append("<wsdl:message name=\"invokeRequest\">");
-        builder.append("<wsdl:part name=\"parameters\" element=\"ns:invoke\"/>");
-        builder.append("</wsdl:message>");
-        builder.append("<wsdl:message name=\"invokeResponse\">");
-        builder.append("<wsdl:part name=\"parameters\" element=\"ns:invokeResponse\"/>");
-        builder.append("</wsdl:message>");
+        if (isInputParametersPresent) {
+			builder.append("<wsdl:part name=\"parameters\" element=\"ns:invoke\"/>");
+		}
+		builder.append("</wsdl:message>");
+        if (isOutputParametersPresent) {
+        	builder.append("<wsdl:message name=\"invokeResponse\">");
+			builder.append("<wsdl:part name=\"parameters\" element=\"ns:invokeResponse\"/>");
+			builder.append("</wsdl:message>");
+        }
 
         builder.append("<wsdl:portType name=\"");
         builder.append(service.getId());
         builder.append("\">");
         builder.append("<wsdl:operation name=\"invoke\">");
         builder.append("<wsdl:input message=\"ns:invokeRequest\" wsaw:Action=\"urn:invoke\"/>");
-        builder.append("<wsdl:output message=\"ns:invokeResponse\" wsaw:Action=\"urn:invokeResponse\"/>");
+        if (isOutputParametersPresent) {
+			builder.append("<wsdl:output message=\"ns:invokeResponse\" wsaw:Action=\"urn:invokeResponse\"/>");
+		}
         builder.append("</wsdl:operation>");
         builder.append("</wsdl:portType>");
 
@@ -67,9 +75,42 @@ public class WebServiceUtil {
     }
 
     private static void generateElementFromType(Parameter parameter, StringBuilder builder) {
-        builder.append("<xs:element minOccurs=\"0\" name=\"");
-        builder.append(parameter.getName());
-        builder.append("\" nillable=\"true\" type=\"xs:string\"/>");
+        switch (parameter.getType()) {
+	        case String:
+	            builder.append("<xs:element minOccurs=\"0\" name=\"");
+	            builder.append(parameter.getName());
+	            builder.append("\" nillable=\"true\" type=\"xs:string\"/>");
+	            break;
+	        case Integer:
+	        	builder.append("<xs:element minOccurs=\"0\" name=\"");
+	            builder.append(parameter.getName());
+	            builder.append("\" type=\"xs:int\"/>");
+	            break;
+	        case Boolean:
+	        	builder.append("<xs:element minOccurs=\"0\" name=\"");
+	            builder.append(parameter.getName());
+	            builder.append("\" type=\"xs:boolean\"/>");
+	            break;
+	        case Double:
+	        	builder.append("<xs:element minOccurs=\"0\" name=\"");
+	            builder.append(parameter.getName());
+	            builder.append("\" type=\"xs:double\"/>");
+	            break;
+	        case Float:
+	        	builder.append("<xs:element minOccurs=\"0\" name=\"");
+	            builder.append(parameter.getName());
+	            builder.append("\" type=\"xs:float\"/>");
+	            break;
+	        case File:
+	        	//TODO adding this means adding a new complex type for File type
+//	        	builder.append("<xs:element minOccurs=\"0\" name=\"");
+//	            builder.append(parameter.getName());
+//	            builder.append("\"  nillable=\"true\" type=\"ax22:File\"/>");
+//	            break;
+	        
+	        default:
+	            break;
+        }
 
     }
 
