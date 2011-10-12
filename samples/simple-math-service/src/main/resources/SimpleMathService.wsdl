@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://samples.airavata.apache.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://samples.airavata.apache.org">
+    <wsdl:documentation>
+		Provide Simple Service for Testing Purpose including addition, subtraction, multiplication, array-generator
+	</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://samples.airavata.apache.org">
+            <xs:element name="test">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="input" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="testResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="subtract">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="x" type="xs:int"/>
+                        <xs:element minOccurs="0" name="y" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="subtractResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="stringArrayGenerate">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="x" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="size" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="stringArrayGenerateResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="multiply">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="x" type="xs:int"/>
+                        <xs:element minOccurs="0" name="y" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="multiplyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="intArrayGenerate">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="x" type="xs:int"/>
+                        <xs:element minOccurs="0" name="size" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="intArrayGenerateResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="greet">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="echo" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="greetResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="add">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="x" type="xs:int"/>
+                        <xs:element minOccurs="0" name="y" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="addRequest">
+        <wsdl:part name="parameters" element="ns:add"/>
+    </wsdl:message>
+    <wsdl:message name="addResponse">
+        <wsdl:part name="parameters" element="ns:addResponse"/>
+    </wsdl:message>
+    <wsdl:message name="testRequest">
+        <wsdl:part name="parameters" element="ns:test"/>
+    </wsdl:message>
+    <wsdl:message name="testResponse">
+        <wsdl:part name="parameters" element="ns:testResponse"/>
+    </wsdl:message>
+    <wsdl:message name="intArrayGenerateRequest">
+        <wsdl:part name="parameters" element="ns:intArrayGenerate"/>
+    </wsdl:message>
+    <wsdl:message name="intArrayGenerateResponse">
+        <wsdl:part name="parameters" element="ns:intArrayGenerateResponse"/>
+    </wsdl:message>
+    <wsdl:message name="stringArrayGenerateRequest">
+        <wsdl:part name="parameters" element="ns:stringArrayGenerate"/>
+    </wsdl:message>
+    <wsdl:message name="stringArrayGenerateResponse">
+        <wsdl:part name="parameters" element="ns:stringArrayGenerateResponse"/>
+    </wsdl:message>
+    <wsdl:message name="greetRequest">
+        <wsdl:part name="parameters" element="ns:greet"/>
+    </wsdl:message>
+    <wsdl:message name="greetResponse">
+        <wsdl:part name="parameters" element="ns:greetResponse"/>
+    </wsdl:message>
+    <wsdl:message name="multiplyRequest">
+        <wsdl:part name="parameters" element="ns:multiply"/>
+    </wsdl:message>
+    <wsdl:message name="multiplyResponse">
+        <wsdl:part name="parameters" element="ns:multiplyResponse"/>
+    </wsdl:message>
+    <wsdl:message name="subtractRequest">
+        <wsdl:part name="parameters" element="ns:subtract"/>
+    </wsdl:message>
+    <wsdl:message name="subtractResponse">
+        <wsdl:part name="parameters" element="ns:subtractResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="SimpleMathServicePortType">
+	<wsdl:operation name="greet">
+            <wsdl:input message="ns:greetRequest" wsaw:Action="urn:greet"/>
+            <wsdl:output message="ns:greetResponse" wsaw:Action="urn:greetResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="add">
+            <wsdl:input message="ns:addRequest" wsaw:Action="urn:add"/>
+            <wsdl:output message="ns:addResponse" wsaw:Action="urn:addResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="test">
+            <wsdl:input message="ns:testRequest" wsaw:Action="urn:test"/>
+            <wsdl:output message="ns:testResponse" wsaw:Action="urn:testResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="intArrayGenerate">
+            <wsdl:input message="ns:intArrayGenerateRequest" wsaw:Action="urn:intArrayGenerate"/>
+            <wsdl:output message="ns:intArrayGenerateResponse" wsaw:Action="urn:intArrayGenerateResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="stringArrayGenerate">
+            <wsdl:input message="ns:stringArrayGenerateRequest" wsaw:Action="urn:stringArrayGenerate"/>
+            <wsdl:output message="ns:stringArrayGenerateResponse" wsaw:Action="urn:stringArrayGenerateResponse"/>
+        </wsdl:operation>
+                <wsdl:operation name="multiply">
+            <wsdl:input message="ns:multiplyRequest" wsaw:Action="urn:multiply"/>
+            <wsdl:output message="ns:multiplyResponse" wsaw:Action="urn:multiplyResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="subtract">
+            <wsdl:input message="ns:subtractRequest" wsaw:Action="urn:subtract"/>
+            <wsdl:output message="ns:subtractResponse" wsaw:Action="urn:subtractResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="SimpleMathServiceSoap11Binding" type="ns:SimpleMathServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+<wsdl:operation name="greet">
+            <soap:operation soapAction="urn:greet" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="add">
+            <soap:operation soapAction="urn:add" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="test">
+            <soap:operation soapAction="urn:test" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="intArrayGenerate">
+            <soap:operation soapAction="urn:intArrayGenerate" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="stringArrayGenerate">
+            <soap:operation soapAction="urn:stringArrayGenerate" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+                <wsdl:operation name="multiply">
+            <soap:operation soapAction="urn:multiply" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="subtract">
+            <soap:operation soapAction="urn:subtract" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="SimpleMathServiceSoap12Binding" type="ns:SimpleMathServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="greet">
+            <soap12:operation soapAction="urn:greet" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="add">
+            <soap12:operation soapAction="urn:add" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="test">
+            <soap12:operation soapAction="urn:test" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="intArrayGenerate">
+            <soap12:operation soapAction="urn:intArrayGenerate" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="stringArrayGenerate">
+            <soap12:operation soapAction="urn:stringArrayGenerate" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="multiply">
+            <soap12:operation soapAction="urn:multiply" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="subtract">
+            <soap12:operation soapAction="urn:subtract" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="SimpleMathServiceHttpBinding" type="ns:SimpleMathServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="greet">
+            <http:operation location="SimpleMathService/greet"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="greet"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="greet"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="add">
+            <http:operation location="SimpleMathService/add"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="add"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="add"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="test">
+            <http:operation location="SimpleMathService/test"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="test"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="test"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="intArrayGenerate">
+            <http:operation location="SimpleMathService/intArrayGenerate"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="intArrayGenerate"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="intArrayGenerate"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="stringArrayGenerate">
+            <http:operation location="SimpleMathService/stringArrayGenerate"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="stringArrayGenerate"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="stringArrayGenerate"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="multiply">
+            <http:operation location="SimpleMathService/multiply"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="multiply"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="multiply"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="subtract">
+            <http:operation location="SimpleMathService/subtract"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="subtract"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="subtract"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="SimpleMathService">
+        <wsdl:port name="SimpleMathServiceHttpSoap11Endpoint" binding="ns:SimpleMathServiceSoap11Binding">
+            <soap:address location="http://localhost:8080/axis2/services/SimpleMathService"/>
+        </wsdl:port>
+        <wsdl:port name="SimpleMathServiceHttpSoap12Endpoint" binding="ns:SimpleMathServiceSoap12Binding">
+            <soap12:address location="http://localhost:8080/axis2/services/SimpleMathService"/>
+        </wsdl:port>
+        <wsdl:port name="SimpleMathServiceHttpEndpoint" binding="ns:SimpleMathServiceHttpBinding">
+            <http:address location="http://localhost:8080/axis2/services/SimpleMathService"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

@@ -15,7 +15,7 @@ Apache Axis2 1.5 or later
 Steps:
 ======
 
-1) configure and run wsmg-msgbox. please refer wsmg-msgbox user guide to know how to run the wsmg-msgbox.
+1) Start Airavata server by running AIRAVATA_HOME/bin/airavata-server.sh. 
 
 2) configure 'build.properties' located in the sample directory.
 
