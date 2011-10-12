@@ -31,6 +31,7 @@ import javax.swing.JMenuItem;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
 import org.apache.airavata.xbaya.myproxy.gui.MyProxyChecker;
+import org.apache.airavata.xbaya.registrybrowser.JCRBrowserDialog;
 
 public class RegisterApplicationsMenu {
 
@@ -95,6 +96,7 @@ public class RegisterApplicationsMenu {
     }
     
     private void createRegisterThroughFile() {
+    	
         this.registerThroughFile = new JMenuItem("Register Description Through File");
 
         this.registerThroughFile.addActionListener(new AbstractAction() {
@@ -102,26 +104,27 @@ public class RegisterApplicationsMenu {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    RegisterApplicationsMenu.this.myProxyChecker = new MyProxyChecker(
-                            RegisterApplicationsMenu.this.engine);
-                    boolean loaded = RegisterApplicationsMenu.this.myProxyChecker.loadIfNecessary();
-                    if (loaded) {
-                        // intended to be blank
-                    } else {
-                        return; // error
-                    }
-
-                    this.window = RegisterThroughFileWindow.getInstance();
-                }
-                if (!this.window.isEngineSet()) {
-                    this.window.setXBayaEngine(RegisterApplicationsMenu.this.engine);
-                }
-                try {
-                    this.window.show();
-                } catch (Exception e1) {
-                    RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
-                }
+            	new JCRBrowserDialog(engine).open();
+//                if (this.window == null) {
+//                    RegisterApplicationsMenu.this.myProxyChecker = new MyProxyChecker(
+//                            RegisterApplicationsMenu.this.engine);
+//                    boolean loaded = RegisterApplicationsMenu.this.myProxyChecker.loadIfNecessary();
+//                    if (loaded) {
+//                        // intended to be blank
+//                    } else {
+//                        return; // error
+//                    }
+//
+//                    this.window = RegisterThroughFileWindow.getInstance();
+//                }
+//                if (!this.window.isEngineSet()) {
+//                    this.window.setXBayaEngine(RegisterApplicationsMenu.this.engine);
+//                }
+//                try {
+//                    this.window.show();
+//                } catch (Exception e1) {
+//                    RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
+//                }
             }
         });
     }

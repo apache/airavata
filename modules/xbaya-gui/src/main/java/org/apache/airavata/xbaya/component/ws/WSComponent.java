@@ -304,7 +304,10 @@ public class WSComponent extends Component {
         for (WSComponentPort port : ports) {
             buf.append("<dt><strong>" + port.getName() + "</strong></dt>\n");
             buf.append("<dd>Type: " + port.getType().getLocalPart() + "</dd>\n");
-            buf.append("<dd>Description: " + port.getDescription() + "</dd>\n");
+            if (port.getDescription()!=null && !port.getDescription().equals("")) {
+				buf.append("<dd>Description: " + port.getDescription()
+						+ "</dd>\n");
+			}
         }
         buf.append("</dl>\n");
     }

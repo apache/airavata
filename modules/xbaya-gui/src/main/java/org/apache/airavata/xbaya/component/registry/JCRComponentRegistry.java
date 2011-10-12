@@ -152,4 +152,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
 		return registry;
 	}
 
+	public String saveWSDL(ServiceDescription service) {
+		return registry.saveWSDL(service);
+	}
 }

@@ -41,6 +41,9 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
+import javax.swing.JCheckBox;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 public class ServiceDescriptionDialog extends JDialog {
 
@@ -56,6 +59,8 @@ public class ServiceDescriptionDialog extends JDialog {
 	private JButton okButton;
 	private JButton btnDeleteParameter;
 	private DefaultTableModel defaultTableModel;
+	private JCheckBox chckbxAutoGenerateWsdl;
+	private JButton btnWSDL;
 	
 	/**
 	 * Launch the application.
@@ -107,7 +112,7 @@ public class ServiceDescriptionDialog extends JDialog {
 	
 	private void initGUI() {
 		setTitle("New Service Description");
-		setBounds(100, 100, 463, 369);
+		setBounds(100, 100, 463, 386);
 		setModal(true);
 		setLocationRelativeTo(null);
 		BorderLayout borderLayout = new BorderLayout();
@@ -143,29 +148,44 @@ public class ServiceDescriptionDialog extends JDialog {
 			}
 		});
 		btnDeleteParameter.setEnabled(false);
+		
+		chckbxAutoGenerateWsdl = new JCheckBox("Auto generate WSDL");
+		chckbxAutoGenerateWsdl.setSelected(true);
+		
+		btnWSDL = new JButton("Specify WSDL...");
+		btnWSDL.setEnabled(false);
+		chckbxAutoGenerateWsdl.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+//				btnWSDL.setEnabled(!chckbxAutoGenerateWsdl.isSelected());
+			}
+		});
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGap(177)
-					.addComponent(lblInputParameters)
-					.addContainerGap(313, Short.MAX_VALUE))
-				.addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup()
-					.addContainerGap(171, Short.MAX_VALUE)
+					.addContainerGap(196, Short.MAX_VALUE)
 					.addComponent(lblServiceName)
 					.addGap(18)
 					.addComponent(txtServiceName, GroupLayout.PREFERRED_SIZE, 309, GroupLayout.PREFERRED_SIZE)
 					.addGap(30))
-				.addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup()
+				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(181)
-					.addComponent(separator)
+					.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
-				.addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup()
-					.addContainerGap(195, Short.MAX_VALUE)
+				.addGroup(gl_contentPanel.createSequentialGroup()
+					.addContainerGap(210, Short.MAX_VALUE)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(btnDeleteParameter)
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE))
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(btnWSDL, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(btnDeleteParameter, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
 					.addGap(27))
+				.addGroup(gl_contentPanel.createSequentialGroup()
+					.addGap(177)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addComponent(chckbxAutoGenerateWsdl)
+						.addComponent(lblInputParameters))
+					.addContainerGap(313, Short.MAX_VALUE))
 		);
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -182,7 +202,11 @@ public class ServiceDescriptionDialog extends JDialog {
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(btnDeleteParameter)
-					.addGap(74))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(chckbxAutoGenerateWsdl)
+						.addComponent(btnWSDL))
+					.addGap(44))
 		);
 		
 		tblParameters = new JTable();
@@ -366,20 +390,28 @@ public class ServiceDescriptionDialog extends JDialog {
 		for(int i=0;i<defaultTableModel.getRowCount();i++){
 			Parameter parameter = new Parameter();
 			String parameterName = (String)defaultTableModel.getValueAt(i, 1);
-			DataType parameterDataType = (DataType)defaultTableModel.getValueAt(i, 2);
-			String parameterDescription = (String)defaultTableModel.getValueAt(i, 3);
-			parameter.setName(parameterName);
-			parameter.setDescription(parameterDescription);
-			parameter.setType(parameterDataType);
-			if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i, 0))){
-				getServiceDescription().getInputParameters().add(parameter);
-			}else{
-				getServiceDescription().getOutputParameters().add(parameter);
+			if (parameterName!=null) {
+				DataType parameterDataType = (DataType) defaultTableModel
+						.getValueAt(i, 2);
+				String parameterDescription = (String) defaultTableModel
+						.getValueAt(i, 3);
+				parameter.setName(parameterName);
+				parameter.setDescription(parameterDescription);
+				parameter.setType(parameterDataType);
+				if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i,
+						0))) {
+					getServiceDescription().getInputParameters().add(parameter);
+				} else {
+					getServiceDescription().getOutputParameters()
+							.add(parameter);
+				}
 			}
 		}
 		
 		getJCRComponentRegistry().saveServiceDescription(getServiceName(), getServiceDescription());
-		
+		if (chckbxAutoGenerateWsdl.isSelected()){
+			getJCRComponentRegistry().saveWSDL(getServiceDescription());
+		}
 		setServiceCreated(true);
 	}
 

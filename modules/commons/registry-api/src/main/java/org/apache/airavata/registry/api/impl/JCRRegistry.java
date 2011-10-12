@@ -283,8 +283,6 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             session.save();
 
             result = node.getIdentifier();
-            
-    		//TODO save the wsdl for this service as well
 
         } catch (Exception e) {
             System.out.println(e);
