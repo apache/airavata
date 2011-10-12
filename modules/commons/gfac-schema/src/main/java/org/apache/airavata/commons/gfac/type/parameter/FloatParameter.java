@@ -21,7 +21,6 @@
 
 package org.apache.airavata.commons.gfac.type.parameter;
 
-import org.apache.airavata.commons.gfac.type.DataType;
 
 public class FloatParameter extends AbstractParameter {   
 	
@@ -34,8 +33,4 @@ public class FloatParameter extends AbstractParameter {
 	public String toStringVal(){
 	    return (value == null)?null:this.value.toString();
 	}
-	
-	public DataType getType() {
-		return DataType.Float;
-	}	
 }

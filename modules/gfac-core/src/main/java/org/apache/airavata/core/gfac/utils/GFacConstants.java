@@ -35,4 +35,7 @@ public class GFacConstants {
 
     public static final String LOCALHOST = "localhost";
     
+    private GFacConstants(){       
+    }
+    
 }

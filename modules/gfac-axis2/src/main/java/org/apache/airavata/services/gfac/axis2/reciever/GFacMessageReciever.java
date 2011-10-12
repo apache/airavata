@@ -34,7 +34,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
-import org.apache.airavata.commons.gfac.type.util.SchemaUtil;
+import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
@@ -184,7 +184,7 @@ public class GFacMessageReciever implements MessageReceiver {
                     throw new Exception("Parameter is not found in the message");
                 }
 
-                AbstractParameter param = SchemaUtil.mapFromType(parameter.getType());
+                AbstractParameter param = ParameterFactory.getInstance().createActualParameter(parameter.getType());
                 param.parseStringVal(element.getText());
                 inputParam.add(parameter.getName(), param);
             }
@@ -195,7 +195,7 @@ public class GFacMessageReciever implements MessageReceiver {
             ParameterContextImpl outputParam = new ParameterContextImpl();
             List<Parameter> outputs = serviceDescription.getOutputParameters();
             for (Parameter parameter : outputs) {
-                outputParam.add(parameter.getName(), SchemaUtil.mapFromType(parameter.getType()));
+                outputParam.add(parameter.getName(), ParameterFactory.getInstance().createActualParameter(parameter.getType()));
             }
 
             invocationContext.setInput(inputParam);
