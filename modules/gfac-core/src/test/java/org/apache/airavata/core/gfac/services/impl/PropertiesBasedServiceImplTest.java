@@ -120,7 +120,7 @@ public class PropertiesBasedServiceImplTest {
 			 * Input
 			 */
 			ParameterContextImpl input = new ParameterContextImpl();
-			StringParameter echo_input = new StringParameter();
+			AbstractParameter echo_input = ParameterFactory.getInstance().createActualParameter("String");
 			echo_input.parseStringVal("echo_output=hello");
 			input.add("echo_input", echo_input);
 
@@ -128,7 +128,7 @@ public class PropertiesBasedServiceImplTest {
 			 * Output
 			 */
 			ParameterContextImpl output = new ParameterContextImpl();
-			StringParameter echo_output = new StringParameter();
+			AbstractParameter echo_output = ParameterFactory.getInstance().createActualParameter("String");
 			output.add("echo_output", echo_output);
 
 			// parameter

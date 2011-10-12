@@ -74,9 +74,9 @@ public class ParameterFactory {
                     Class<? extends AbstractParameter> cl = Class.forName(config.getString(key)).asSubclass(
                             AbstractParameter.class);
 
-                    map.put(key, cl);
+                    map.put(key.toLowerCase(), cl);
                     DataType type = new DataType(key);
-                    typeMap.put(key, type);
+                    typeMap.put(key.toLowerCase(), type);
                     types.add(type);
 
                 } catch (Exception e) {
@@ -106,18 +106,20 @@ public class ParameterFactory {
     }
     
     public AbstractParameter createActualParameter(String type) throws Exception{
-        if (!map.containsKey(type))
+        String lower = type.toLowerCase();
+        if (!map.containsKey(lower))
             throw new RuntimeException("Type is not supprted: " + type);
-        Class<? extends AbstractParameter> cl = map.get(type);
+        Class<? extends AbstractParameter> cl = map.get(lower);
         AbstractParameter result = cl.newInstance();
-        result.setType(getType(type));
+        result.setType(getType(lower));
         return result;
     }
     
     public DataType getType(String type){
-        if (!typeMap.containsKey(type))
+        String lower = type.toLowerCase();
+        if (!typeMap.containsKey(lower))
             throw new RuntimeException("Type is not supprted: " + type);
-        return typeMap.get(type);
+        return typeMap.get(lower);
     }
 
     public boolean hasType(DataType dataType, String type){
