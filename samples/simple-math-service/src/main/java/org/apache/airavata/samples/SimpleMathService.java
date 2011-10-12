@@ -23,7 +23,6 @@ package org.apache.airavata.samples;
 
 public class SimpleMathService {
     /**
-     * 
      * @param x
      * @param y
      * @return x plus y
@@ -33,7 +32,6 @@ public class SimpleMathService {
     }
 
     /**
-     * 
      * @param x
      * @param y
      * @return x minus y
@@ -43,7 +41,6 @@ public class SimpleMathService {
     }
 
     /**
-     * 
      * @param x
      * @param y
      * @return x multiply y
@@ -53,7 +50,6 @@ public class SimpleMathService {
     }
 
     /**
-     * 
      * @param x
      * @param size
      * @return a string array with size contains x
@@ -67,7 +63,6 @@ public class SimpleMathService {
     }
 
     /**
-     * 
      * @param x
      * @param size
      * @return an integer array with size contains x
@@ -79,4 +74,14 @@ public class SimpleMathService {
         }
         return result;
     }
+
+
+
+    public String greet(String echo) {
+        return "Hello World" + echo;
+    }
 }
+
+
+
+
