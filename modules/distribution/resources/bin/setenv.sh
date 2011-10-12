@@ -31,6 +31,13 @@ do
 done
 XBAYA_CLASSPATH="$XBAYA_HOME":"$XBAYA_HOME/conf":"$JAVA_HOME/lib/tools.jar":"$XBAYA_CLASSPATH":"$CLASSPATH"
 
+for f in "$AIRAVATA_HOME"/standalone-server/lib/*.jar
+do
+  XBAYA_CLASSPATH="$XBAYA_CLASSPATH":$f
+done
+XBAYA_CLASSPATH="$XBAYA_HOME":"$XBAYA_HOME/conf":"$JAVA_HOME/lib/tools.jar":"$XBAYA_CLASSPATH":"$CLASSPATH"
+
+
 
 export AIRAVATA_HOME
 export XBAYA_CLASSPATH

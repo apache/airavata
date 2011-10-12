@@ -283,6 +283,22 @@
             <artifactId>jets3t</artifactId>
             <version>0.8.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>wsmg</groupId>
+            <artifactId>wsmg</artifactId>
+            <version>1.76.7</version>
+        </dependency>
+        <dependency>
+            <groupId>ode-proxy</groupId>
+            <artifactId>weps-beans</artifactId>
+            <version>0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>atomixmiser</groupId>
+            <artifactId>atomixmiser</artifactId>
+            <version>0.9.4</version>
+        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
