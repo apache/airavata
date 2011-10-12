@@ -75,43 +75,8 @@ public class WebServiceUtil {
     }
 
     private static void generateElementFromType(Parameter parameter, StringBuilder builder) {
-        switch (parameter.getType()) {
-	        case String:
-	            builder.append("<xs:element minOccurs=\"0\" name=\"");
-	            builder.append(parameter.getName());
-	            builder.append("\" nillable=\"true\" type=\"xs:string\"/>");
-	            break;
-	        case Integer:
-	        	builder.append("<xs:element minOccurs=\"0\" name=\"");
-	            builder.append(parameter.getName());
-	            builder.append("\" type=\"xs:int\"/>");
-	            break;
-	        case Boolean:
-	        	builder.append("<xs:element minOccurs=\"0\" name=\"");
-	            builder.append(parameter.getName());
-	            builder.append("\" type=\"xs:boolean\"/>");
-	            break;
-	        case Double:
-	        	builder.append("<xs:element minOccurs=\"0\" name=\"");
-	            builder.append(parameter.getName());
-	            builder.append("\" type=\"xs:double\"/>");
-	            break;
-	        case Float:
-	        	builder.append("<xs:element minOccurs=\"0\" name=\"");
-	            builder.append(parameter.getName());
-	            builder.append("\" type=\"xs:float\"/>");
-	            break;
-	        case File:
-	        	//TODO adding this means adding a new complex type for File type
-//	        	builder.append("<xs:element minOccurs=\"0\" name=\"");
-//	            builder.append(parameter.getName());
-//	            builder.append("\"  nillable=\"true\" type=\"ax22:File\"/>");
-//	            break;
-	        
-	        default:
-	            break;
-        }
-
+        builder.append("<xs:element minOccurs=\"0\" maxOccurs=\"1\" name=\"");
+        builder.append(parameter.getName());
+        builder.append("\" nillable=\"true\" type=\"xs:string\"/>");        
     }
-
 }
