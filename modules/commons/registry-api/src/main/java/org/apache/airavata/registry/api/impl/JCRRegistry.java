@@ -93,13 +93,8 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             Class registryRepositoryFactory = Class.forName(className);
             Constructor c = registryRepositoryFactory.getConstructor();
             RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
-
             repository = repositoryFactory.getRepository(map);
             credentials = new SimpleCredentials(user, new String(pass).toCharArray());
-            System.out.println(repository.getDescriptor(Repository.REP_NAME_DESC));
-            setUserManager(UserManagerFactory.getUserManager(repository.getDescriptor(Repository.REP_NAME_DESC)));
-            System.out.println(getUserManager());
-            getUserManager().setRepository(this);
         } catch (ClassNotFoundException e) {
             log.error("Error class path settting", e);
         } catch (RepositoryException e) {

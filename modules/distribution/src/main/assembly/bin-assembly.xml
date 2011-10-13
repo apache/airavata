@@ -350,6 +350,9 @@
                 <include>ch.qos.logback:logback-classic:jar</include>
                 <include>ch.qos.logback:logback-core:jar</include>
                 <include>javax.jcr:jcr:jar</include>
+                <include>commons-collections:commons-collections</include>
+                <include>commons-configuration:commons-configuration</include>
+                <include>commons-lang:commons-lang</include>
             </includes>
         </dependencySet>
 
