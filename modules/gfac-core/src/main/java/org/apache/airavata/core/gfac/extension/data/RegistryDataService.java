@@ -87,7 +87,7 @@ public class RegistryDataService extends DataServiceChain {
                     shell.setStdOut(appDesc.getWorkingDir() + File.separator + appDesc.getId() + ".stdout");
                 }
                 if (shell.getStdErr() == null) {
-                    shell.setStdOut(appDesc.getWorkingDir() + File.separator + appDesc.getId() + ".stderr");
+                    shell.setStdErr(appDesc.getWorkingDir() + File.separator + appDesc.getId() + ".stderr");
                 }
             }
 
