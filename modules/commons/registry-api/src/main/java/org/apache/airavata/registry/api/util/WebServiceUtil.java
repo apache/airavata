@@ -75,8 +75,35 @@ public class WebServiceUtil {
     }
 
     private static void generateElementFromType(Parameter parameter, StringBuilder builder) {
-        builder.append("<xs:element minOccurs=\"0\" maxOccurs=\"1\" name=\"");
-        builder.append(parameter.getName());
-        builder.append("\" nillable=\"true\" type=\"xs:string\"/>");        
+        String type = parameter.getType().getType();
+        if (type.equals("String")){
+            builder.append("<xs:element minOccurs=\"0\" name=\"");
+            builder.append(parameter.getName());
+            builder.append("\" nillable=\"true\" type=\"xs:string\"/>");
+        } else if (type.equals("Integer")){
+        	builder.append("<xs:element minOccurs=\"0\" name=\"");
+            builder.append(parameter.getName());
+            builder.append("\" type=\"xs:int\"/>");
+        } else if (type.equals("Boolean")){
+        	builder.append("<xs:element minOccurs=\"0\" name=\"");
+            builder.append(parameter.getName());
+            builder.append("\" type=\"xs:boolean\"/>");
+        } else if (type.equals("Double")){
+        	builder.append("<xs:element minOccurs=\"0\" name=\"");
+            builder.append(parameter.getName());
+            builder.append("\" type=\"xs:double\"/>");
+        } else if (type.equals("Float")){
+        	builder.append("<xs:element minOccurs=\"0\" name=\"");
+            builder.append(parameter.getName());
+            builder.append("\" type=\"xs:float\"/>");
+        } else if (type.equals("File")){
+        	//TODO adding this means adding a new complex type for File type
+//	        	builder.append("<xs:element minOccurs=\"0\" name=\"");
+//	            builder.append(parameter.getName());
+//	            builder.append("\"  nillable=\"true\" type=\"ax22:File\"/>");
+        } 
+	        
+
     }
+
 }

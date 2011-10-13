@@ -150,6 +150,7 @@ public class ServiceDescriptionDialog extends JDialog {
 		btnDeleteParameter.setEnabled(false);
 		
 		chckbxAutoGenerateWsdl = new JCheckBox("Auto generate WSDL");
+		chckbxAutoGenerateWsdl.setEnabled(false);
 		chckbxAutoGenerateWsdl.setSelected(true);
 		
 		btnWSDL = new JButton("Specify WSDL...");
