@@ -135,7 +135,9 @@ public class LocalProvider extends AbstractProvider {
 
         // get the env of the host and the application
         Map<String, String> nv = app.getEnv();
-        builder.environment().putAll(nv);
+        if(app.getEnv() != null){
+            builder.environment().putAll(nv);
+        }
 
         // extra env's
         builder.environment().put(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());
