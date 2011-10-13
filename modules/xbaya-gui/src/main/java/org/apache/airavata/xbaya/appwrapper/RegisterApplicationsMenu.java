@@ -31,7 +31,6 @@ import javax.swing.JMenuItem;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
 import org.apache.airavata.xbaya.myproxy.gui.MyProxyChecker;
-import org.apache.airavata.xbaya.registrybrowser.JCRBrowserDialog;
 
 public class RegisterApplicationsMenu {
 

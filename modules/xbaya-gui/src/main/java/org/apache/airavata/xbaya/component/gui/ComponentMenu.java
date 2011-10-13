@@ -92,7 +92,6 @@ public class ComponentMenu {
 	private void createComponentMenu() {
 		this.fileRegistryItem = createFileRegistryMenuItem();
 		this.jcrRegistryItem = createJCRRegistryItem();
-		this.xregistryItem = createXRegistryItem();
 		this.webItem = createWebRegistryItem();
 		this.urlItem = createURLRegistryItem();
 		this.workflowItem = createWorkflowItem();
@@ -100,11 +99,9 @@ public class ComponentMenu {
 		this.refreshSelectedItem = createRefreshSelectedRegistryItem();
 		this.refreshAllItem = createRefreshAllRegistriesItem();
 		this.streamSourceItem = createStreamSourceItem();
-
 		this.componentMenu = new JMenu("Component");
 		this.componentMenu.setMnemonic(KeyEvent.VK_C);
 		this.componentMenu.add(this.fileRegistryItem);
-		this.componentMenu.add(this.xregistryItem);
 		this.componentMenu.add(this.jcrRegistryItem);
 		this.componentMenu.add(this.webItem);
 		this.componentMenu.add(this.urlItem);
@@ -293,24 +290,10 @@ public class ComponentMenu {
 		return item;
 	}
 
-	private JMenuItem createXRegistryItem() {
-		JMenuItem item = new JMenuItem("Add XRegistry");
-		item.setMnemonic(KeyEvent.VK_X);
-		item.addActionListener(new AbstractAction() {
-			private XRegistryWindow window;
 
-			public void actionPerformed(ActionEvent e) {
-				if (this.window == null) {
-					this.window = new XRegistryWindow(ComponentMenu.this.engine);
-				}
-				this.window.show();
-			}
-		});
-		return item;
-	}
 
 	private JMenuItem createJCRRegistryItem() {
-		JMenuItem item = new JMenuItem("Add JCR Registry");
+		JMenuItem item = new JMenuItem("Add Registry");
 		item.setMnemonic(KeyEvent.VK_J);
 		item.addActionListener(new AbstractAction() {
 			private JCRRegistryWindow window;
