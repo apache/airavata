@@ -37,7 +37,7 @@
         </dependency>
         <dependency>
             <groupId>airavata</groupId>
-            <artifactId>gfac-core</artifactId>
+            <artifactId>airavata-gfac-core</artifactId>
             <version>${airavata.version}</version>
         </dependency>
 
