@@ -104,7 +104,7 @@ public class RegisterApplicationsMenu {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-            	new JCRBrowserDialog(engine).open();
+//            	new JCRBrowserDialog(engine).open();
 //                if (this.window == null) {
 //                    RegisterApplicationsMenu.this.myProxyChecker = new MyProxyChecker(
 //                            RegisterApplicationsMenu.this.engine);
