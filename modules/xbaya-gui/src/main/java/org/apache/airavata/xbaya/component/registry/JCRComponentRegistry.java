@@ -113,6 +113,10 @@ public class JCRComponentRegistry extends ComponentRegistry {
     
     public String saveDeploymentDescription(String service, String host,
 			ApplicationDeploymentDescription app){
+        // deploy the service on host
+        registry.deployServiceOnHost(service, host);
+        
+        // save deployment description
     	return registry.saveDeploymentDescription(service, host, app);
     }
     
