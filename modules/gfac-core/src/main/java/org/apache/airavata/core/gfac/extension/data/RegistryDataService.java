@@ -75,7 +75,7 @@ public class RegistryDataService extends DataServiceChain {
                 appDesc.setInputDir(appDesc.getWorkingDir() + File.separator + "inputData");
             }
             if (appDesc.getOutputDir() == null) {
-                appDesc.setInputDir(appDesc.getWorkingDir() + File.separator + "outputData");
+                appDesc.setOutputDir(appDesc.getWorkingDir() + File.separator + "outputData");
             }
 
             /*
