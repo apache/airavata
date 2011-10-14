@@ -5,9 +5,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,14 +25,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
-import org.apache.airavata.commons.gfac.type.DataType;
-import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.xbaya.XBayaEngine;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 	private static final long serialVersionUID = 3920479739097405014L;
@@ -48,6 +45,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 	private ShellApplicationDeployment shellApplicationDescription;
 	private DefaultTableModel defaultTableModel;
 	private JButton btnDeleteVariable;
+	private JButton okButton;
 	
 	/**
 	 * Launch the application.
@@ -92,7 +90,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 	private void initGUI() {
 		setTitle("Application Description Advance Options");
 		setModal(true);
-		setBounds(100, 100, 601, 284);
+		setBounds(100, 100, 654, 417);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
 		{
@@ -100,7 +98,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("Update");
+				okButton = new JButton("Update");
 				okButton.setActionCommand("OK");
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -184,11 +182,8 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 						.addContainerGap()
 						.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
 							.addGroup(gl_panel.createSequentialGroup()
-								.addComponent(lblLocations, GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+								.addComponent(lblLocations, GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
 								.addGap(135))
-							.addGroup(gl_panel.createSequentialGroup()
-								.addComponent(label, GroupLayout.PREFERRED_SIZE, 78, GroupLayout.PREFERRED_SIZE)
-								.addGap(215))
 							.addGroup(gl_panel.createSequentialGroup()
 								.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
 									.addGroup(gl_panel.createSequentialGroup()
@@ -219,7 +214,8 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 								.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
 									.addComponent(txtOutputDir)
 									.addComponent(txtInputDir)
-									.addComponent(txtWorkingDir, GroupLayout.PREFERRED_SIZE, 179, GroupLayout.PREFERRED_SIZE))))
+									.addComponent(txtWorkingDir, GroupLayout.PREFERRED_SIZE, 179, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(label, GroupLayout.PREFERRED_SIZE, 227, GroupLayout.PREFERRED_SIZE))
 						.addGap(2)
 						.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addPreferredGap(ComponentPlacement.UNRELATED)
@@ -277,12 +273,6 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 			);
 			
 			tblEnv = new JTable();
-			tblEnv.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyReleased(KeyEvent arg0) {
-					addNewRowIfLastIsNotEmpty();
-				}
-			});
 			tblEnv.setFillsViewportHeight(true);
 			scrollPane.setViewportView(tblEnv);
 			tblEnv.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -302,6 +292,13 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 				}
 			};
 			tblEnv.setModel(defaultTableModel);
+			defaultTableModel.addTableModelListener(new TableModelListener(){
+				@Override
+				public void tableChanged(TableModelEvent arg0) {
+					addNewRowIfLastIsNotEmpty();
+				}
+				
+			});
 			tblEnv.getColumnModel().getColumn(0).setPreferredWidth(67);
 			tblEnv.getColumnModel().getColumn(1).setPreferredWidth(158);
 			ListSelectionModel selectionModel = tblEnv.getSelectionModel();
@@ -317,6 +314,8 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 			gl_panel.setAutoCreateContainerGaps(true);
 			panel.setLayout(gl_panel);
 		}
+		setResizable(false);
+		getRootPane().setDefaultButton(okButton);
 	}
 	
 	private void deleteSelectedRows() {

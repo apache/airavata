@@ -87,7 +87,7 @@ public class HostDescriptionDialog extends JDialog {
 
 	private void initGUI() {
 		setTitle("New Host Description");
-		setBounds(100, 100, 448, 129);
+		setBounds(100, 100, 455, 182);
 		setModal(true);
 		setLocationRelativeTo(null);
 		getContentPane().setLayout(new BorderLayout());
@@ -127,10 +127,6 @@ public class HostDescriptionDialog extends JDialog {
 		{
 			JPanel panel = new JPanel();
 			getContentPane().add(panel, BorderLayout.CENTER);
-			JLabel label = new JLabel("Registry");
-			label.setVisible(false);
-			JComboBox comboBox = new JComboBox();
-			comboBox.setVisible(false);
 			JLabel lblHostName = new JLabel("Host id");
 			JLabel lblHostLocationip = new JLabel("Host address");
 			txtHostLocation = new JTextField();
@@ -149,44 +145,24 @@ public class HostDescriptionDialog extends JDialog {
 				}
 			});
 			txtHostName.setColumns(10);
-			JSeparator separator = new JSeparator();
-			separator.setVisible(false);
 			GroupLayout gl_panel = new GroupLayout(panel);
 			gl_panel.setHorizontalGroup(
-				gl_panel.createParallelGroup(Alignment.TRAILING)
+				gl_panel.createParallelGroup(Alignment.LEADING)
 					.addGroup(gl_panel.createSequentialGroup()
 						.addGap(22)
 						.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
-							.addGroup(gl_panel.createSequentialGroup()
-								.addComponent(label, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
-								.addPreferredGap(ComponentPlacement.UNRELATED)
-								.addComponent(comboBox, 0, 341, Short.MAX_VALUE)
-								.addGap(15))
-							.addGroup(Alignment.LEADING, gl_panel.createSequentialGroup()
-								.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
-									.addComponent(lblHostName)
-									.addComponent(lblHostLocationip))
-								.addGap(18)
-								.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
-									.addComponent(txtHostLocation)
-									.addComponent(txtHostName, GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE))
-								.addGap(19)))
-						.addGap(18))
-					.addGroup(Alignment.LEADING, gl_panel.createSequentialGroup()
-						.addContainerGap()
-						.addComponent(separator, GroupLayout.PREFERRED_SIZE, 425, GroupLayout.PREFERRED_SIZE)
-						.addContainerGap(36, Short.MAX_VALUE))
+							.addComponent(lblHostName)
+							.addComponent(lblHostLocationip))
+						.addGap(18)
+						.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(txtHostLocation)
+							.addComponent(txtHostName, GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE))
+						.addGap(37))
 			);
 			gl_panel.setVerticalGroup(
 				gl_panel.createParallelGroup(Alignment.LEADING)
-					.addGap(0, 180, Short.MAX_VALUE)
 					.addGroup(gl_panel.createSequentialGroup()
-						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-							.addComponent(label)
-							.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addGap(8)
+						.addGap(31)
 						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 							.addComponent(txtHostName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addComponent(lblHostName))
@@ -200,6 +176,8 @@ public class HostDescriptionDialog extends JDialog {
 			gl_panel.setAutoCreateContainerGaps(true);
 			panel.setLayout(gl_panel);
 		}
+		setResizable(false);
+		getRootPane().setDefaultButton(okButton);
 	}
 
 	public XBayaEngine getEngine() {
