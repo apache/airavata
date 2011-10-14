@@ -20,6 +20,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -30,8 +31,13 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
@@ -41,9 +47,6 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
-import javax.swing.JCheckBox;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
 
 public class ServiceDescriptionDialog extends JDialog {
 
@@ -112,7 +115,7 @@ public class ServiceDescriptionDialog extends JDialog {
 	
 	private void initGUI() {
 		setTitle("New Service Description");
-		setBounds(100, 100, 463, 386);
+		setBounds(100, 100, 463, 459);
 		setModal(true);
 		setLocationRelativeTo(null);
 		BorderLayout borderLayout = new BorderLayout();
@@ -162,31 +165,32 @@ public class ServiceDescriptionDialog extends JDialog {
 		});
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addContainerGap(196, Short.MAX_VALUE)
-					.addComponent(lblServiceName)
-					.addGap(18)
-					.addComponent(txtServiceName, GroupLayout.PREFERRED_SIZE, 309, GroupLayout.PREFERRED_SIZE)
-					.addGap(30))
+			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(181)
 					.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
 				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addContainerGap(210, Short.MAX_VALUE)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE)
-						.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
-							.addComponent(btnWSDL, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(btnDeleteParameter, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-					.addGap(27))
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGap(177)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(chckbxAutoGenerateWsdl)
-						.addComponent(lblInputParameters))
-					.addContainerGap(313, Short.MAX_VALUE))
+					.addContainerGap(212, Short.MAX_VALUE)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE)
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addComponent(chckbxAutoGenerateWsdl)
+									.addPreferredGap(ComponentPlacement.RELATED, 91, Short.MAX_VALUE)
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
+										.addComponent(btnWSDL, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(btnDeleteParameter, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+							.addGap(27))
+						.addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup()
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblInputParameters)
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addComponent(lblServiceName)
+									.addGap(18)
+									.addComponent(txtServiceName, GroupLayout.PREFERRED_SIZE, 309, GroupLayout.PREFERRED_SIZE)))
+							.addGap(30))))
 		);
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -197,7 +201,7 @@ public class ServiceDescriptionDialog extends JDialog {
 						.addComponent(txtServiceName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGap(12)
 					.addComponent(lblInputParameters)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
@@ -205,27 +209,12 @@ public class ServiceDescriptionDialog extends JDialog {
 					.addComponent(btnDeleteParameter)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(chckbxAutoGenerateWsdl)
-						.addComponent(btnWSDL))
+						.addComponent(btnWSDL)
+						.addComponent(chckbxAutoGenerateWsdl))
 					.addGap(44))
 		);
 		
 		tblParameters = new JTable();
-		tblParameters.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent arg0) {
-				int selectedRow = tblParameters.getSelectedRow();
-				Object parameterIOType = defaultTableModel.getValueAt(selectedRow, 0);
-				Object parameterDataType = defaultTableModel.getValueAt(selectedRow, 2);
-				if (parameterIOType==null || parameterIOType.equals("")){
-					defaultTableModel.setValueAt(getIOStringList()[0],selectedRow, 0);
-				}
-				if (parameterDataType==null || parameterDataType.equals("")){
-					defaultTableModel.setValueAt(getDataTypes()[0],selectedRow, 2);
-				}
-				addNewRowIfLastIsNotEmpty();
-			}
-		});
 		tblParameters.setFillsViewportHeight(true);
 		defaultTableModel = new DefaultTableModel(
 			new Object[][] {
@@ -236,6 +225,30 @@ public class ServiceDescriptionDialog extends JDialog {
 			}
 		);
 		tblParameters.setModel(defaultTableModel);
+		defaultTableModel.addTableModelListener(new TableModelListener(){
+
+			@Override
+			public void tableChanged(TableModelEvent arg0) {
+				int selectedRow = tblParameters.getSelectedRow();
+				if (selectedRow!=-1) {
+					Object parameterIOType = defaultTableModel.getValueAt(
+							selectedRow, 0);
+					Object parameterDataType = defaultTableModel.getValueAt(
+							selectedRow, 2);
+					if (parameterIOType == null || parameterIOType.equals("")) {
+						defaultTableModel.setValueAt(getIOStringList()[0],
+								selectedRow, 0);
+					}
+					if (parameterDataType == null
+							|| parameterDataType.equals("")) {
+						defaultTableModel.setValueAt(getDataTypes()[0],
+								selectedRow, 2);
+					}
+				}
+				addNewRowIfLastIsNotEmpty();
+			}
+			
+		});
 		TableColumn ioColumn = tblParameters.getColumnModel().getColumn(0);
 		String[] ioStringList = getIOStringList();
 		ioColumn.setCellEditor(new StringArrayComboBoxEditor(ioStringList));
@@ -244,9 +257,9 @@ public class ServiceDescriptionDialog extends JDialog {
 		DataType[] dataTypeStringList = getDataTypes();
 		datatypeColumn.setCellEditor(new StringArrayComboBoxEditor(dataTypeStringList));
 		
-		tblParameters.getColumnModel().getColumn(1).setPreferredWidth(190);
+		TableColumn parameterNameCol = tblParameters.getColumnModel().getColumn(1);
+		parameterNameCol.setPreferredWidth(190);
 		scrollPane.setViewportView(tblParameters);
-		
 		ListSelectionModel selectionModel = tblParameters.getSelectionModel();
 		selectionModel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
@@ -308,6 +321,8 @@ public class ServiceDescriptionDialog extends JDialog {
 				cancelButton.setActionCommand("Cancel");
 			}
 		}
+		setResizable(false);
+		getRootPane().setDefaultButton(okButton);
 	}
 
 	private String[] getIOStringList() {
