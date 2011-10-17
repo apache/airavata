@@ -14,7 +14,7 @@
     xmlns="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified">
 
-	<include schemaLocation="gfac-simple-types.xsd"/>
+	<include schemaLocation="gfac-parameter.xsd"/>
 
     <element name="serviceDescription" type="gfac:serviceDescription"/>
     
