@@ -13,6 +13,9 @@
 	targetNamespace="http://schemas.airavata.apache.org/gfac/type" xmlns="http://www.w3.org/2001/XMLSchema"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gfac="http://schemas.airavata.apache.org/gfac/type">
 
+
+	<element name="GFacParameter" type="gfac:ParameterType"/>
+
 	<simpleType name="DataType">
 		<restriction base="string">
 			<enumeration value="String" />
@@ -65,7 +68,7 @@
 		<complexContent>
 			<extension base="gfac:ParameterType">
 				<sequence>
-					<element name="Float" nillable="true" type="xsd:float" />
+					<element name="value" nillable="true" type="xsd:float" />
 				</sequence>
 				<attribute name="type" fixed="Float"/>
 			</extension>
