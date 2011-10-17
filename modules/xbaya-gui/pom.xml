@@ -47,9 +47,6 @@
                 <jnlpFileName>xbaya.jnlp</jnlpFileName>
 
                 <myproxyServer>myproxy.teragrid.org</myproxyServer>
-                <xregistryEPR>
-                    https://ogceportal.iu.teragrid.org:19443/xregistry?wsdl
-                </xregistryEPR>
                 <gfacEPR>
                     https://ogceportal.iu.teragrid.org:19442/
                 </gfacEPR>
@@ -196,16 +193,6 @@
             <groupId>ode-proxy</groupId>
             <artifactId>weps-beans</artifactId>
             <version>0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>xregistry</groupId>
-            <artifactId>xregistry-client</artifactId>
-            <version>1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>xregistry</groupId>
-            <artifactId>xregistry-generated</artifactId>
-            <version>0.8.3</version>
         </dependency>
         <dependency>
             <groupId>xpp5</groupId>

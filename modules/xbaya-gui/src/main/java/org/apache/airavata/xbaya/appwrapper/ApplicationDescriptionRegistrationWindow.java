@@ -40,10 +40,7 @@ import org.apache.airavata.xbaya.gui.XBayaComboBox;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
-import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
 import org.ogce.schemas.gfac.beans.ApplicationBean;
-
-import xregistry.generated.HostDescData;
 
 public class ApplicationDescriptionRegistrationWindow {
     private XBayaDialog dialog;
@@ -112,22 +109,23 @@ public class ApplicationDescriptionRegistrationWindow {
         return window;
     }
 
-    private Object[] initHostNameList() {
-        XRegistryAccesser xRegAccesser = new XRegistryAccesser(this.engine);
-        HostDescData[] hostDataList = xRegAccesser.searchHostByName("");
-        List<String> nameList = new ArrayList<String>();
-        for (HostDescData hostData : hostDataList) {
-            nameList.add(hostData.getName().toString());
-        }
-        return nameList.toArray();
-    }
+    //FIXME: Update this to get the documents from JCR Registry
+//    private Object[] initHostNameList() {
+//        XRegistryAccesser xRegAccesser = new XRegistryAccesser(this.engine);
+//        HostDescData[] hostDataList = xRegAccesser.searchHostByName("");
+//        List<String> nameList = new ArrayList<String>();
+//        for (HostDescData hostData : hostDataList) {
+//            nameList.add(hostData.getName().toString());
+//        }
+//        return nameList.toArray();
+//    }
 
-    /**
-     * ReInit Host Name ComboBox
-     */
-    public void reinitHostComboBox() {
-        this.hostNameComboBox.setModel(new DefaultComboBoxModel(initHostNameList()));
-    }
+//    /**
+//     * ReInit Host Name ComboBox
+//     */
+//    public void reinitHostComboBox() {
+//        this.hostNameComboBox.setModel(new DefaultComboBoxModel(initHostNameList()));
+//    }
 
     /**
      * Clear All the TextFields
@@ -171,7 +169,7 @@ public class ApplicationDescriptionRegistrationWindow {
         this.applicationNameTextField = new XBayaTextField();
         this.applicationNameLabel = new XBayaLabel("Application Name", this.applicationNameTextField);
 
-        this.hostNameComboBox = new XBayaComboBox(new DefaultComboBoxModel(initHostNameList()));
+//        this.hostNameComboBox = new XBayaComboBox(new DefaultComboBoxModel(initHostNameList()));
         this.hostNameComboBox.setEditable(false);
         this.hostNameLabel = new XBayaLabel("Host Name", this.hostNameComboBox);
 
@@ -392,7 +390,7 @@ public class ApplicationDescriptionRegistrationWindow {
      * show the dialog
      */
     public void show() {
-        this.reinitHostComboBox();
+//        this.reinitHostComboBox();
         this.dialog.show();
     }
 

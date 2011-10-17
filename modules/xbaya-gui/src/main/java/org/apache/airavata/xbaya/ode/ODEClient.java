@@ -46,12 +46,8 @@ import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
 import org.ietf.jgss.GSSCredential;
-import org.ogce.xregistry.client.XRegistryClient;
-import org.ogce.xregistry.utils.XRegistryClientException;
 
-import xregistry.generated.ResourceData;
 import xsul.XmlConstants;
 import xsul.invoker.gsi.GsiInvoker;
 import xsul.lead.LeadContextHeader;
@@ -116,20 +112,20 @@ public class ODEClient {
      *            Something that look like https://kili.extreme.indiana.edu:17433
      * @return
      */
-    public WsdlDefinitions getWorkflowWSDL(URI xRegistryURI, GSSCredential gssCredential, QName qname,
-            String odeEprEndingWithPort) {
-        try {
-            XRegistryAccesser xregistryAccesser = new XRegistryAccesser(gssCredential, xRegistryURI);
-            Workflow workflow = xregistryAccesser.getWorkflow(qname);
-            // The REsulting WSDL is not affected by the DSCURL this is
-            // necessary to create the other scripts
-            // So send in some dummy URI for DSC
-            URI dscUrl = XBayaConstants.DEFAULT_DSC_URL;
-            return workflow.getOdeInvokableWSDL(dscUrl, odeEprEndingWithPort);
-        } catch (Exception e) {
-            throw new XBayaRuntimeException(e);
-        }
-    }
+//    public WsdlDefinitions getWorkflowWSDL(URI xRegistryURI, GSSCredential gssCredential, QName qname,
+//            String odeEprEndingWithPort) {
+//        try {
+//            XRegistryAccesser xregistryAccesser = new XRegistryAccesser(gssCredential, xRegistryURI);
+//            Workflow workflow = xregistryAccesser.getWorkflow(qname);
+//            // The REsulting WSDL is not affected by the DSCURL this is
+//            // necessary to create the other scripts
+//            // So send in some dummy URI for DSC
+//            URI dscUrl = XBayaConstants.DEFAULT_DSC_URL;
+//            return workflow.getOdeInvokableWSDL(dscUrl, odeEprEndingWithPort);
+//        } catch (Exception e) {
+//            throw new XBayaRuntimeException(e);
+//        }
+//    }
 
     public Object parseValue(WSComponentPort input, String valueString) {
         String name = input.getName();
@@ -276,18 +272,18 @@ public class ODEClient {
 
 
 
-    public ResourceData[] getStreamResources(XRegistryClient client) throws XRegistryClientException {
-        ResourceData[] result = client.findResource(STREAM_SOURCE_NS);
-        return result;
-    }
-
-    public void deployStreamSource(XRegistryClient client, String name, String wsdlURL) throws XRegistryClientException {
-        QName qname = new QName(STREAM_SOURCE_NS, name);
-        if (isResourceExist(client, qname)) {
-            throw new XRegistryClientException("Resource Already exist by qname:" + qname);
-        }
-        client.registerResource(qname, wsdlURL);
-    }
+//    public ResourceData[] getStreamResources(XRegistryClient client) throws XRegistryClientException {
+//        ResourceData[] result = client.findResource(STREAM_SOURCE_NS);
+//        return result;
+//    }
+//
+//    public void deployStreamSource(XRegistryClient client, String name, String wsdlURL) throws XRegistryClientException {
+//        QName qname = new QName(STREAM_SOURCE_NS, name);
+//        if (isResourceExist(client, qname)) {
+//            throw new XRegistryClientException("Resource Already exist by qname:" + qname);
+//        }
+//        client.registerResource(qname, wsdlURL);
+//    }
 
     /**
      * @param client
@@ -295,13 +291,13 @@ public class ODEClient {
      * @return
      * @throws XregistryException
      */
-    private boolean isResourceExist(XRegistryClient client, QName qname) throws XRegistryClientException {
-        String resource = client.getResource(qname);
-        if (resource != null && !"".equals(resource)) {
-            return true;
-        }
-        return false;
-    }
+//    private boolean isResourceExist(XRegistryClient client, QName qname) throws XRegistryClientException {
+//        String resource = client.getResource(qname);
+//        if (resource != null && !"".equals(resource)) {
+//            return true;
+//        }
+//        return false;
+//    }
 
     /**
      * @param workflow

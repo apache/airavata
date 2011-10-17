@@ -51,8 +51,6 @@ import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.wf.gui.WorkflowPropertyWindow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineManager;
-import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
-import org.apache.airavata.xbaya.xregistry.XRegistryComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,13 +96,13 @@ public class XBayaEngine {
         this.monitor = new Monitor(monitorConfiguration);
 
         // MyProxy
-        this.myProxyClient = new MyProxyClient(this.configuration.getMyProxyServer(),
-                this.configuration.getMyProxyPort(), this.configuration.getMyProxyUsername(),
-                this.configuration.getMyProxyPassphrase(), this.configuration.getMyProxyLifetime());
-
-        // These have to be before the GUI setup.
-        this.workflowClient = WorkflowEngineManager.getWorkflowClient();
-        this.workflowClient.setXBayaEngine(this);
+//        this.myProxyClient = new MyProxyClient(this.configuration.getMyProxyServer(),
+//                this.configuration.getMyProxyPort(), this.configuration.getMyProxyUsername(),
+//                this.configuration.getMyProxyPassphrase(), this.configuration.getMyProxyLifetime());
+//
+//        // These have to be before the GUI setup.
+//        this.workflowClient = WorkflowEngineManager.getWorkflowClient();
+//        this.workflowClient.setXBayaEngine(this);
 
         this.subWorkflowUpdater = new SubWorkflowUpdater(this);
 

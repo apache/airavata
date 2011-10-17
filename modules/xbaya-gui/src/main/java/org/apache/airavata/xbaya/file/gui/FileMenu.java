@@ -33,7 +33,6 @@ import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.ode.ODEDeploymentDescriptor;
 import org.apache.airavata.xbaya.wf.gui.WorkflowMenu;
-import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +53,6 @@ public class FileMenu {
     private ScuflFiler scuflFiler;
 
     private ODEDeploymentDescriptor odeDeploymentDescription;
-
-    protected XRegistryAccesser xregistryAccesser;
 
     private JMenuItem openWorkflowItem;
 
@@ -89,7 +86,6 @@ public class FileMenu {
         this.bpelFiler = new BPELFiler(engine);
         this.scuflFiler = new ScuflFiler(engine);
         this.odeDeploymentDescription = new ODEDeploymentDescriptor();
-        this.xregistryAccesser = new XRegistryAccesser(engine);
 
         this.exitItem = createExitItem();
 

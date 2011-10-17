@@ -29,29 +29,29 @@ import org.apache.airavata.xbaya.workflow.proxy.WorkflowProxyClient;
 
 public class WorkflowEngineManager {
 
-    public static final String WORKFLOW_CLIENT_PROXY = "WorkflowProxy";
-    public static final String WORKFLOW_CLIENT_GPEL = "GPELClient";
-
-
-    private WorkflowEngineManager() {
-    }
-
-    public static WorkflowClient getWorkflowClient() {
-        String workflowClientName = System.getProperty("org.apache.airavata.xbaya.workflow.ClientType");
-        if (WORKFLOW_CLIENT_PROXY.equals(workflowClientName)) {
-            return new WorkflowProxyClient();
-        } else {
-            return new GPELClient();
-        }
-    }
-
-    public static WorkflowClient getWorkflowClient(URI engineURL, UserX509Credential gpelUserX509Credential)
-            throws WorkflowEngineException {
-        String workflowClientName = System.getProperty("org.apache.airavata.xbaya.workflow.ClientType");
-        if (WORKFLOW_CLIENT_PROXY.equals(workflowClientName)) {
-            return new WorkflowProxyClient(engineURL, "", gpelUserX509Credential);
-        } else {
-            return new GPELClient(engineURL, gpelUserX509Credential);
-        }
-    }
+//    public static final String WORKFLOW_CLIENT_PROXY = "WorkflowProxy";
+//    public static final String WORKFLOW_CLIENT_GPEL = "GPELClient";
+//
+//
+//    private WorkflowEngineManager() {
+//    }
+//
+//    public static WorkflowClient getWorkflowClient() {
+//        String workflowClientName = System.getProperty("org.apache.airavata.xbaya.workflow.ClientType");
+//        if (WORKFLOW_CLIENT_PROXY.equals(workflowClientName)) {
+//            return new WorkflowProxyClient();
+//        } else {
+//            return new GPELClient();
+//        }
+//    }
+//
+//    public static WorkflowClient getWorkflowClient(URI engineURL, UserX509Credential gpelUserX509Credential)
+//            throws WorkflowEngineException {
+//        String workflowClientName = System.getProperty("org.apache.airavata.xbaya.workflow.ClientType");
+//        if (WORKFLOW_CLIENT_PROXY.equals(workflowClientName)) {
+//            return new WorkflowProxyClient(engineURL, "", gpelUserX509Credential);
+//        } else {
+//            return new GPELClient(engineURL, gpelUserX509Credential);
+//        }
+//    }
 }

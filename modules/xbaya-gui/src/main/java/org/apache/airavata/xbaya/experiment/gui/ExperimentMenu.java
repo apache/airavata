@@ -24,6 +24,7 @@ package org.apache.airavata.xbaya.experiment.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
+import javax.jcr.RepositoryException;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -32,8 +33,7 @@ import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
 import org.apache.airavata.xbaya.ode.ODEDeploymentDescriptor;
-import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
-import org.ogce.xregistry.utils.XRegistryClientException;
+import org.apache.airavata.xbaya.registry.RegistryAccesser;
 
 public class ExperimentMenu {
 
@@ -41,7 +41,7 @@ public class ExperimentMenu {
 
     private ODEDeploymentDescriptor odeDeploymentDescription;
 
-    protected XRegistryAccesser xregistryAccesser;
+    protected RegistryAccesser registryAccesser;
 
     private JMenuItem configureRegistryItem;
 
@@ -70,7 +70,7 @@ public class ExperimentMenu {
     public ExperimentMenu(XBayaEngine engine) {
         this.engine = engine;
         this.odeDeploymentDescription = new ODEDeploymentDescriptor();
-        this.xregistryAccesser = new XRegistryAccesser(engine);
+        this.registryAccesser = new RegistryAccesser(engine);
 
         createExperimentMenu();
     }
@@ -122,12 +122,12 @@ public class ExperimentMenu {
 
     private void createLoadWorkflowfromXRegistryItem() {
         this.loadWorkflowfromRegistryItem = new JMenuItem("Load Workflow from Registry");
-        this.loadWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                new OGCEXRegistryLoaderWindow(ExperimentMenu.this.engine).show();
-
-            }
-        });
+       // this.loadWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
+//            public void actionPerformed(ActionEvent e) {
+//                new OGCEXRegistryLoaderWindow(ExperimentMenu.this.engine).show();
+//
+//            }
+       // });
     }
 
     private void createSaveWorkflowtoXRegistryItem() {
@@ -135,7 +135,7 @@ public class ExperimentMenu {
         this.saveWorkflowtoRegistryItem.setMnemonic(KeyEvent.VK_C);
         this.saveWorkflowtoRegistryItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                ExperimentMenu.this.xregistryAccesser.saveWorkflow();
+                ExperimentMenu.this.registryAccesser.saveWorkflow();
             }
         });
     }
@@ -145,9 +145,9 @@ public class ExperimentMenu {
         this.deleteWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    ExperimentMenu.this.xregistryAccesser.deleteOGCEWorkflow(ExperimentMenu.this.engine.getWorkflow()
+                    ExperimentMenu.this.registryAccesser.deleteOGCEWorkflow(ExperimentMenu.this.engine.getWorkflow()
                             .getQname());
-                } catch (XRegistryClientException e1) {
+                } catch (RepositoryException e1) {
                     throw new XBayaRuntimeException(e1);
                 }
             }

@@ -42,8 +42,6 @@ import org.apache.airavata.xbaya.file.gui.WorkflowFiler;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.streaming.StreamTableModel;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.airavata.xbaya.xregistry.gui.XRegistryWindow;
-import org.ogce.xregistry.utils.XRegistryClientException;
 
 public class ComponentMenu {
 
@@ -168,8 +166,6 @@ public class ComponentMenu {
 							ComponentMenu.this.streamSourceItem
 									.setEnabled(false);
 						} catch (MalformedURLException e) {
-							ComponentMenu.this.engine.getErrorWindow().error(e);
-						} catch (XRegistryClientException e) {
 							ComponentMenu.this.engine.getErrorWindow().error(e);
 						}
 					}

@@ -38,7 +38,7 @@ import org.apache.airavata.xbaya.gui.XBayaComboBox;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
-import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
+import org.apache.airavata.xbaya.registry.RegistryAccesser;
 
 public class RegisterThroughFileWindow {
     private XBayaDialog dialog;
@@ -153,7 +153,7 @@ public class RegisterThroughFileWindow {
 	 */
     protected void register() {
         try {
-            XRegistryAccesser xregistryAccesser = new XRegistryAccesser(this.engine);
+            RegistryAccesser xregistryAccesser = new RegistryAccesser(this.engine);
             StringBuffer fileData = new StringBuffer(1000);
             BufferedReader reader = new BufferedReader(new FileReader(this.fileLocationField.getText()));
             char[] buf = new char[1024];
@@ -165,13 +165,13 @@ public class RegisterThroughFileWindow {
             }
             reader.close();
 
-            if (this.docTypeComboBox.getText().equals("Host")) {
-                xregistryAccesser.registerHost(fileData.toString());
-            } else if (this.docTypeComboBox.getText().equals("Application")) {
-                xregistryAccesser.registerApplication(fileData.toString());
-            } else {
-                xregistryAccesser.registerService(fileData.toString());
-            }
+//            if (this.docTypeComboBox.getText().equals("Host")) {
+//                xregistryAccesser.registerHost(fileData.toString());
+//            } else if (this.docTypeComboBox.getText().equals("Application")) {
+//                xregistryAccesser.registerApplication(fileData.toString());
+//            } else {
+//                xregistryAccesser.registerService(fileData.toString());
+//            }
 
             JOptionPane.showMessageDialog(RegisterThroughFileWindow.this.dialog.getDialog(),
                     this.docTypeComboBox.getText() + " description registered successfully", "Successfully",
