@@ -58,6 +58,7 @@
             </extension>
         </complexContent>
     </complexType>
+    
     <complexType name="applicationDeploymentDescription">
         <sequence>
             <element minOccurs="0" name="inputDir" type="string"/>
