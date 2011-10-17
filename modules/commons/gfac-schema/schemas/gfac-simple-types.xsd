@@ -8,68 +8,89 @@
 	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
 	OF ANY ~ KIND, either express or implied. See the License for the specific 
 	language governing permissions and limitations under the License. -->
-	
- <xsd:schema elementFormDefault="unqualified" targetNamespace="http://schemas.airavata.apache.org/gfac" 
- 	xmlns="http://www.w3.org/2001/XMLSchema" 
- 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
- 	xmlns:gfac="http://schemas.airavata.apache.org/gfac">
-      <xsd:simpleType name="LEADFileIDType">
-        <xsd:restriction base="xsd:anyURI" />
-      </xsd:simpleType>
-      <xsd:simpleType name="LEADNameListFileType">
-        <xsd:restriction base="xsd:anyURI" />
-      </xsd:simpleType>
-      <xsd:simpleType name="LEADNameListPropertiesFileType">
-        <xsd:restriction base="xsd:anyURI" />
-      </xsd:simpleType>
-      <xsd:simpleType name="HostNameType">
-        <xsd:restriction base="xsd:string" />
-      </xsd:simpleType>
-      <xsd:complexType name="DataIDType">
-        <xsd:simpleContent>
-          <xsd:extension base="xsd:anyURI">
-            <xsd:attribute name="location" type="xsd:string" use="optional" />
-          </xsd:extension>
-        </xsd:simpleContent>
-      </xsd:complexType>
-      <xsd:complexType name="LEADFileIDArrayType">
-        <xsd:sequence>
-          <xsd:element maxOccurs="unbounded" minOccurs="0" name="value" type="xsd:anyURI" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:complexType name="StringArrayType">
-        <xsd:sequence>
-          <xsd:element maxOccurs="unbounded" minOccurs="0" name="value" type="xsd:string" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:complexType name="IntegerArrayType">
-        <xsd:sequence>
-          <xsd:element maxOccurs="unbounded" minOccurs="0" name="value" type="xsd:int" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:complexType name="FloatArrayType">
-        <xsd:sequence>
-          <xsd:element maxOccurs="unbounded" minOccurs="0" name="value" type="xsd:float" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:complexType name="DoubleArrayType">
-        <xsd:sequence>
-          <xsd:element maxOccurs="unbounded" minOccurs="0" name="value" type="xsd:double" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:complexType name="BooleanArrayType">
-        <xsd:sequence>
-          <xsd:element maxOccurs="unbounded" minOccurs="0" name="value" type="xsd:boolean" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:complexType name="URIArrayType">
-        <xsd:sequence>
-          <xsd:element maxOccurs="unbounded" minOccurs="0" name="value" type="xsd:anyURI" />
-        </xsd:sequence>
-      </xsd:complexType>
-      <xsd:complexType name="DataIDArrayType">
-        <xsd:sequence>
-          <xsd:element maxOccurs="unbounded" minOccurs="0" name="value" type="gfac:DataIDType" />
-        </xsd:sequence>
-      </xsd:complexType>
-    </xsd:schema>
+
+<schema elementFormDefault="unqualified"
+	targetNamespace="http://schemas.airavata.apache.org/gfac/type" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gfac="http://schemas.airavata.apache.org/gfac/type">
+
+	<simpleType name="DataType">
+		<restriction base="string">
+			<enumeration value="String" />
+			<enumeration value="Double" />
+			<enumeration value="Integer" />
+			<enumeration value="Float" />
+			<enumeration value="Boolean" />
+			<enumeration value="File" />
+		</restriction>
+	</simpleType>
+
+	<complexType abstract="true" name="ParameterType">
+		<attribute name="type" type="gfac:DataType" use="required"/>
+	</complexType>
+
+	<complexType name="StringParameter">
+		<complexContent>			
+			<extension base="gfac:ParameterType">				
+				<sequence>				
+					<element name="value" nillable="true" type="xsd:string" />
+				</sequence>
+				<attribute name="type" fixed="String"/>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="DoubleParameter">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" type="xsd:double" />
+				</sequence>
+				<attribute name="type" fixed="Double"/>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="IntegerParameter">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" type="xsd:int" />
+				</sequence>
+				<attribute name="type" fixed="Integer"/>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="FloatParameter">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="Float" nillable="true" type="xsd:float" />
+				</sequence>
+				<attribute name="type" fixed="Float"/>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="BooleanParameter">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" type="xsd:boolean" />
+				</sequence>
+				<attribute name="type" fixed="Boolean"/>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="FileParameter">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" type="xsd:anyURI" />
+				</sequence>
+				<attribute name="type" fixed="File"/>
+			</extension>
+		</complexContent>
+	</complexType>
+</schema>

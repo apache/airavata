@@ -10,10 +10,14 @@
 	language governing permissions and limitations under the License. -->
 	
 <schema targetNamespace="http://schemas.airavata.apache.org/gfac/type"
-    xmlns:gfac="http://schemas.airavata.apache.org/gfac/type" xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:gfac="http://schemas.airavata.apache.org/gfac/type" 
+    xmlns="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified">
 
+	<include schemaLocation="gfac-simple-types.xsd"/>
+
     <element name="serviceDescription" type="gfac:serviceDescription"/>
+    
     <complexType name="serviceDescription">
         <sequence>
             <element minOccurs="0" name="name" type="string"/>
@@ -21,21 +25,12 @@
             <element maxOccurs="unbounded" minOccurs="0" name="outputParameters" nillable="true" type="gfac:parameter"/>
         </sequence>
     </complexType>
+    
     <complexType name="parameter">
         <sequence>
             <element minOccurs="0" name="description" type="string"/>
             <element minOccurs="0" name="name" type="string"/>
-            <element minOccurs="0" name="type" type="gfac:dataType"/>
+            <element minOccurs="0" name="type" type="gfac:ParameterType"/>
         </sequence>
     </complexType>
-    <simpleType name="dataType">
-        <restriction base="string">
-            <enumeration value="String"/>
-            <enumeration value="Double"/>
-            <enumeration value="Integer"/>
-            <enumeration value="Float"/>
-            <enumeration value="Boolean"/>
-            <enumeration value="File"/>
-        </restriction>
-    </simpleType>
 </schema>
