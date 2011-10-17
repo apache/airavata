@@ -74,7 +74,6 @@ import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.gui.MonitorPanel;
 import org.apache.airavata.xbaya.streaming.StreamTableModel;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.ogce.xregistry.utils.XRegistryClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -488,7 +487,7 @@ public class XBayaGUI implements EventListener {
      * @throws XregistryException
      * @throws MalformedURLException
      */
-    public void addStreamSources(final StreamTableModel model) throws MalformedURLException, XRegistryClientException {
+    public void addStreamSources(final StreamTableModel model) throws MalformedURLException {
         this.streamModel = model;
         this.engine.getWorkflow().getGraph().setStreamModel(model);
         if (this.componentTabbedPane == null) {

@@ -1,0 +1,253 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
+package org.apache.airavata.xbaya.registry;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.xml.namespace.QName;
+
+import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.common.utils.XmlFormatter;
+import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.impl.JCRRegistry;
+import org.apache.airavata.xbaya.XBayaConfiguration;
+import org.apache.airavata.xbaya.XBayaConstants;
+import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.XBayaRuntimeException;
+import org.apache.airavata.xbaya.component.ComponentException;
+import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
+import org.apache.airavata.xbaya.experiment.gui.OGCEXRegistryWorkflowPublisherWindow;
+import org.apache.airavata.xbaya.graph.GraphException;
+import org.apache.airavata.xbaya.jython.script.JythonScript;
+import org.apache.airavata.xbaya.myproxy.gui.MyProxyDialog;
+import org.apache.airavata.xbaya.security.SecurityUtil;
+import org.apache.airavata.xbaya.security.XBayaSecurity;
+import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.xmlbeans.XmlException;
+import org.ietf.jgss.GSSCredential;
+import org.ogce.schemas.gfac.beans.ApplicationBean;
+import org.ogce.schemas.gfac.beans.HostBean;
+import org.ogce.schemas.gfac.beans.ServiceBean;
+import org.ogce.schemas.gfac.beans.utils.ApplicationUtils;
+import org.ogce.schemas.gfac.beans.utils.GFacSchemaException;
+import org.ogce.schemas.gfac.beans.utils.HostUtils;
+import org.ogce.schemas.gfac.beans.utils.ServiceUtils;
+import org.xmlpull.infoset.XmlElement;
+
+
+public class RegistryAccesser {
+
+    /**
+     * PUBLIC_ACTOR
+     */
+    public static final String PUBLIC_ACTOR = "public";
+
+    private XBayaEngine engine;
+
+    private GSSCredential gssCredential;
+
+    private URI xregistryURL;
+
+    /**
+     * Constructs a XRegistryAccesser.
+     * 
+     * @param engine
+     */
+    public RegistryAccesser(XBayaEngine engine) {
+        this.engine = engine;
+    }
+ 
+    private Registry connectToRegistry(){
+        JCRComponentRegistry jcrComponentRegistry = this.engine.getConfiguration().getJcrComponentRegistry();
+        return jcrComponentRegistry.getRegistry();
+    }
+ 
+    /**
+     * Fetch all workflow templates from Registry
+     * 
+     * @return workflow templates
+     * @throws XregistryException
+     */
+    public Map<QName,Node> getOGCEWorkflowTemplateList() throws RepositoryException {
+        Registry registry = connectToRegistry();
+        return registry.getAvailableWorkflows(this.engine.getConfiguration().getRegigstryUserName());
+    }
+
+
+    /**
+     * Retrieves workflow from xregistry.
+     * 
+     * @param workflowTemplateId
+     * @return workflow
+     * @throws RepositoryException
+     * @throws XregistryException
+     * @throws GraphException
+     * @throws ComponentException
+     * @throws Exception
+     */
+    public Workflow getOGCEWorkflow(QName workflowTemplateId) throws RepositoryException, GraphException,
+            ComponentException, Exception {
+        Registry registry = connectToRegistry();
+        Node node = registry.getWorkflow(workflowTemplateId,this.engine.getConfiguration().getRegigstryUserName());
+        XmlElement xwf = XMLUtil.stringToXmlElement(node.getProperty("workflow").getString());
+        Workflow workflow = new Workflow(xwf);
+        return workflow;
+    }
+
+    /**
+     * Save the current workflow to the XRegistry
+     */
+    public void saveWorkflow() {
+
+        try {
+
+            Workflow workflow = this.engine.getWorkflow();
+            JythonScript script = new JythonScript(workflow, this.engine.getConfiguration());
+
+            // Check if there is any errors in the workflow first.
+            ArrayList<String> warnings = new ArrayList<String>();
+            if (!script.validate(warnings)) {
+                StringBuilder buf = new StringBuilder();
+                for (String warning : warnings) {
+                    buf.append("- ");
+                    buf.append(warning);
+                    buf.append("\n");
+                }
+                this.engine.getErrorWindow().warning(buf.toString());
+                return;
+            }
+            OGCEXRegistryWorkflowPublisherWindow registryPublishingWindow = new OGCEXRegistryWorkflowPublisherWindow(
+                    this.engine);
+            registryPublishingWindow.show();
+
+            String workflowId = workflow.getName();
+
+            workflowId = StringUtil.convertToJavaIdentifier(workflowId);
+
+            // FIXME::Commenting the workflow UUID. It is debatable if the
+            // workflow template id should be unique or not.
+            // workflowId = workflowId + UUID.randomUUID();
+
+            QName workflowQName = new QName(XBayaConstants.OGCE_WORKFLOW_NS, workflowId);
+
+            // first find whether this resource is already in xregistry
+            // TODO: Add the check back
+            // DocData[] resource =
+            // client.findOGCEResource(workflowQName.toString(), "Workflow",
+            // null);
+            // if (resource != null && !"".equals(resource)) {
+            // // if already there then remove
+            //
+            // int result =
+            // JOptionPane.showConfirmDialog(this.engine.getGUI().getGraphCanvas().getSwingComponent(),
+            // "Workflow Already Exist in Xregistry. Do you want to overwrite",
+            // "Workflow already exist", JOptionPane.YES_NO_OPTION);
+            // if(result != JOptionPane.YES_OPTION){
+            // return;
+            // }
+            // client.removeResource(workflowQName);
+            // }
+            String workflowAsString = XMLUtil.xmlElementToString(workflow.toXML());
+            String owner = this.engine.getConfiguration().getRegigstryUserName();
+
+            Registry registry = this.connectToRegistry();
+            registry.saveWorkflow(workflowQName,workflow.getName(),workflow.getDescription(),workflowAsString,owner,registryPublishingWindow.isMakePublic());
+            registryPublishingWindow.hide();
+
+        } catch (Exception e) {
+            this.engine.getErrorWindow().error(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Deletes a workflow from the XRegistry given the resource QName
+     * 
+     * @param workflowTemplateId
+     * @param xRegistryURL
+     * @param context
+     * @throws RepositoryException
+     * @throws XregistryException
+     */
+    public void deleteOGCEWorkflow(QName workflowTemplateId) throws RepositoryException {
+        Registry registry = connectToRegistry();
+        registry.deleteWorkflow(workflowTemplateId,this.engine.getConfiguration().getRegigstryUserName());
+    }
+
+    /**
+     * Returns a Workflow object with the Template IDs properly set and ready to be loaded into XBaya
+     * 
+     * @param xRegistryURI
+     * @param gssCredential
+     *            Proxy credential
+     * @param qname
+     *            Qname of the Workflow that is used to store in XRegistry
+     * @return Workflow
+     */
+    public Workflow getWorkflow(QName qname) {
+        Registry registry = connectToRegistry();
+        Node node = registry.getWorkflow(qname, this.engine.getConfiguration().getRegigstryUserName());
+        Workflow workflow = null;
+        try {
+            XmlElement xwf = XMLUtil.stringToXmlElement(node.getProperty("workflow").getString());
+            workflow = new Workflow(xwf);
+        } catch (GraphException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (ComponentException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (RepositoryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return workflow;
+    }
+
+    /**
+     * Returns the workflow object fetched from Xregistry.
+     * 
+     * @param xRegistryURI
+     * @param gssCredential
+     *            Proxy credential
+     * @param name
+     * @return
+     */
+    public Workflow getWorkflow(String name) {
+        return getWorkflow(new QName(XBayaConstants.LEAD_NS, name));
+    }
+
+    public void main() {
+
+        XBayaConfiguration config = null;
+        config.setMyProxyServer("myproxy.teragrid.org");
+        config.setMyProxyUsername("USER");
+        config.setMyProxyPassphrase("PASSWORD");
+
+        new XBayaEngine(config);
+    }
+}

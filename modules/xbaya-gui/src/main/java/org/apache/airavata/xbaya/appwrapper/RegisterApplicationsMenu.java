@@ -200,33 +200,33 @@ public class RegisterApplicationsMenu {
     private void createSearchAndEdit() {
         this.searchAndEdit = new JMenuItem("Search and Edit Description");
 
-        this.searchAndEdit.addActionListener(new AbstractAction() {
-            private SearchAndEditWindow window;
+//        this.searchAndEdit.addActionListener(new AbstractAction() {
+//            private SearchAndEditWindow window;
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    RegisterApplicationsMenu.this.myProxyChecker = new MyProxyChecker(
-                            RegisterApplicationsMenu.this.engine);
-                    boolean loaded = RegisterApplicationsMenu.this.myProxyChecker.loadIfNecessary();
-                    if (loaded) {
-                        // intended to be blank
-                    } else {
-                        return; // error
-                    }
-
-                    this.window = SearchAndEditWindow.getInstance();
-                }
-                if (!this.window.isEngineSet()) {
-                    this.window.setXBayaEngine(RegisterApplicationsMenu.this.engine);
-                }
-                try {
-                    this.window.show();
-                } catch (Exception e1) {
-                    RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
-                }
-            }
-        });
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (this.window == null) {
+//                    RegisterApplicationsMenu.this.myProxyChecker = new MyProxyChecker(
+//                            RegisterApplicationsMenu.this.engine);
+//                    boolean loaded = RegisterApplicationsMenu.this.myProxyChecker.loadIfNecessary();
+//                    if (loaded) {
+//                        // intended to be blank
+//                    } else {
+//                        return; // error
+//                    }
+//
+//                    this.window = SearchAndEditWindow.getInstance();
+//                }
+//                if (!this.window.isEngineSet()) {
+//                    this.window.setXBayaEngine(RegisterApplicationsMenu.this.engine);
+//                }
+//                try {
+//                    this.window.show();
+//                } catch (Exception e1) {
+//                    RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
+//                }
+//            }
+  //      });
 
     }
 

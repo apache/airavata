@@ -38,8 +38,6 @@ import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.security.SecurityUtil;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.airavata.xbaya.workflow.proxy.GPELWorkflowClient;
-import org.apache.airavata.xbaya.workflow.proxy.GPELWorkflowContext;
 import org.apache.airavata.xbaya.workflow.proxy.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.proxy.WorkflowContext;
 import org.ietf.jgss.GSSException;
@@ -158,16 +156,16 @@ public class TestWorkflowInterpreter {
         WorkflowContext context = null;
         String topic = UUID.randomUUID().toString();
 
-        context = new GPELWorkflowContext(topic, userName, password);
-        wfClient = new GPELWorkflowClient(context, workflow);
-        wfClient.init();
-        try {
-            context.prepare(wfClient, workflow);
-        } catch (GSSException e) {
-            throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+//        context = new GPELWorkflowContext(topic, userName, password);
+//        wfClient = new GPELWorkflowClient(context, workflow);
+//        wfClient.init();
+//        try {
+//            context.prepare(wfClient, workflow);
+//        } catch (GSSException e) {
+//            throw new RuntimeException(e);
+//        } catch (URISyntaxException e) {
+//            throw new RuntimeException(e);
+//        }
 
         return wfClient.invoke(inputs);
 

@@ -89,18 +89,18 @@ public class HierarchicalWorkflowTestCase extends XBayaTestCase {
         this.workflowCreator = new WorkflowCreator();
 
         // GPEL Setup
-        X509Certificate[] trustedCertificates = XBayaSecurity.getTrustedCertificates();
-        MyProxyClient client = new MyProxyClient(this.configuration.getMyProxyServer(),
-                this.configuration.getMyProxyPort(), this.configuration.getMyProxyUsername(),
-                this.configuration.getMyProxyPassphrase(), this.configuration.getMyProxyLifetime());
-        client.load();
-        GSSCredential proxy = client.getProxy();
-        UserX509Credential credential = new UserX509Credential(proxy, trustedCertificates);
-        this.workflowClient = WorkflowEngineManager.getWorkflowClient(XBayaConstants.DEFAULT_GPEL_ENGINE_URL,
-                credential);
-
-        this.gpelComponentRegistry = new GPELRegistry(null, WorkflowClient.WorkflowType.TEMPLATE, 100);
-        this.componentRegistry = new LocalComponentRegistry(XBayaPathConstants.WSDL_DIRECTORY);
+//        X509Certificate[] trustedCertificates = XBayaSecurity.getTrustedCertificates();
+//        MyProxyClient client = new MyProxyClient(this.configuration.getMyProxyServer(),
+//                this.configuration.getMyProxyPort(), this.configuration.getMyProxyUsername(),
+//                this.configuration.getMyProxyPassphrase(), this.configuration.getMyProxyLifetime());
+//        client.load();
+//        GSSCredential proxy = client.getProxy();
+//        UserX509Credential credential = new UserX509Credential(proxy, trustedCertificates);
+//        this.workflowClient = WorkflowEngineManager.getWorkflowClient(XBayaConstants.DEFAULT_GPEL_ENGINE_URL,
+//                credential);
+//
+//        this.gpelComponentRegistry = new GPELRegistry(null, WorkflowClient.WorkflowType.TEMPLATE, 100);
+//        this.componentRegistry = new LocalComponentRegistry(XBayaPathConstants.WSDL_DIRECTORY);
     }
 
     /**

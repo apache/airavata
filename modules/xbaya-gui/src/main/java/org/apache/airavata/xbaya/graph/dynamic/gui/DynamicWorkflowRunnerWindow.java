@@ -64,14 +64,12 @@ import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
 import org.ogce.schemas.gfac.beans.HostBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
 
-import xregistry.generated.HostDescData;
 import xsul.XmlConstants;
 import xsul.lead.LeadResourceMapping;
 
@@ -198,16 +196,17 @@ public class DynamicWorkflowRunnerWindow {
         this.parameterTextFields.clear();
     }
 
-    private Object[] initHostNameList() {
-        XRegistryAccesser xRegAccesser = new XRegistryAccesser(this.engine);
-        HostDescData[] hostDataList = xRegAccesser.searchHostByName("");
-        List<String> nameList = new ArrayList<String>();
-        nameList.add("");
-        for (HostDescData hostData : hostDataList) {
-            nameList.add(hostData.getName().toString());
-        }
-        return nameList.toArray();
-    }
+    //FIXME: Change this to use JCR registry
+//    private Object[] initHostNameList() {
+//        XRegistryAccesser xRegAccesser = new XRegistryAccesser(this.engine);
+//        HostDescData[] hostDataList = xRegAccesser.searchHostByName("");
+//        List<String> nameList = new ArrayList<String>();
+//        nameList.add("");
+//        for (HostDescData hostData : hostDataList) {
+//            nameList.add(hostData.getName().toString());
+//        }
+//        return nameList.toArray();
+//    }
 
     /**
      * ReInit Host Name ComboBox

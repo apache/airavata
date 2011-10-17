@@ -29,115 +29,112 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.experiment.gui.OGCEXRegistryLoaderWindow;
-import org.apache.airavata.xbaya.experiment.gui.XRegistryConfigurationWindow;
-import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
 
 public class PegasusMenu {
 
-    private JMenu pegasusMenu;
-
-    protected XRegistryAccesser xregistry;
-
-    private JMenuItem configureXRegistryItem;
-
-    private JMenuItem saveWorkflowtoXRegistryItem;
-
-    private JMenuItem loadWorkflowfromXRegistryItem;
-
-    private JMenuItem launchPegasusWorkflowItem;
-
-    private XBayaEngine engine;
-
-    /**
-     * Constructs a FileMenu.
-     * 
-     * @param engine
-     * 
-     */
-    public PegasusMenu(XBayaEngine engine) {
-        this.engine = engine;
-        this.xregistry = new XRegistryAccesser(engine);
-
-        createExperimentMenu();
-    }
-
-    private void createExperimentMenu() {
-
-        createConfigureXRegistryItem();
-        createSaveWorkflowtoXRegistryItem();
-        createLoadWorkflowfromXRegistryItem();
-        createLaunchPegasusWorkflowItem();
-
-        this.pegasusMenu = new JMenu("Pegasus");
-        this.pegasusMenu.setMnemonic(KeyEvent.VK_F);
-
-        this.pegasusMenu.add(this.configureXRegistryItem);
-        this.pegasusMenu.addSeparator();
-        this.pegasusMenu.add(this.saveWorkflowtoXRegistryItem);
-        this.pegasusMenu.add(this.loadWorkflowfromXRegistryItem);
-        this.pegasusMenu.addSeparator();
-        this.pegasusMenu.add(this.launchPegasusWorkflowItem);
-    }
-
-    /**
-     * @return The Experiment menu.
-     */
-    public JMenu getMenu() {
-        return this.pegasusMenu;
-    }
-
-    private void createConfigureXRegistryItem() {
-        this.configureXRegistryItem = new JMenuItem("Configure XRegistry");
-        this.configureXRegistryItem.setMnemonic(KeyEvent.VK_C);
-        this.configureXRegistryItem.addActionListener(new AbstractAction() {
-            private XRegistryConfigurationWindow window;
-
-            public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    this.window = new XRegistryConfigurationWindow(PegasusMenu.this.engine);
-                }
-                this.window.show();
-            }
-        });
-    }
-
-    private void createSaveWorkflowtoXRegistryItem() {
-        this.saveWorkflowtoXRegistryItem = new JMenuItem("Save Workflow to XRegistry");
-        this.saveWorkflowtoXRegistryItem.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                PegasusMenu.this.xregistry.saveWorkflow();
-            }
-        });
-    }
-
-    private void createLoadWorkflowfromXRegistryItem() {
-        this.loadWorkflowfromXRegistryItem = new JMenuItem("Load Workflow from XRegistry");
-        this.loadWorkflowfromXRegistryItem.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                new OGCEXRegistryLoaderWindow(PegasusMenu.this.engine).show();
-            }
-        });
-    }
-
-    private void createLaunchPegasusWorkflowItem() {
-        this.launchPegasusWorkflowItem = new JMenuItem("Launch Workflow to Pegasys Engine");
-        this.launchPegasusWorkflowItem.addActionListener(new AbstractAction() {
-            private PegasusInvokerWindow window;
-
-            public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    this.window = new PegasusInvokerWindow(PegasusMenu.this.engine);
-                }
-                try {
-                    this.window.show();
-                } catch (Exception e1) {
-                    PegasusMenu.this.engine.getErrorWindow().error(e1);
-                }
-
-            }
-        });
-
-    }
+//    private JMenu pegasusMenu;
+//
+//    protected XRegistryAccesser xregistry;
+//
+//    private JMenuItem configureXRegistryItem;
+//
+//    private JMenuItem saveWorkflowtoXRegistryItem;
+//
+//    private JMenuItem loadWorkflowfromXRegistryItem;
+//
+//    private JMenuItem launchPegasusWorkflowItem;
+//
+//    private XBayaEngine engine;
+//
+//    /**
+//     * Constructs a FileMenu.
+//     * 
+//     * @param engine
+//     * 
+//     */
+//    public PegasusMenu(XBayaEngine engine) {
+//        this.engine = engine;
+//        this.xregistry = new XRegistryAccesser(engine);
+//
+//        createExperimentMenu();
+//    }
+//
+//    private void createExperimentMenu() {
+//
+//        createConfigureXRegistryItem();
+//        createSaveWorkflowtoXRegistryItem();
+//        createLoadWorkflowfromXRegistryItem();
+//        createLaunchPegasusWorkflowItem();
+//
+//        this.pegasusMenu = new JMenu("Pegasus");
+//        this.pegasusMenu.setMnemonic(KeyEvent.VK_F);
+//
+//        this.pegasusMenu.add(this.configureXRegistryItem);
+//        this.pegasusMenu.addSeparator();
+//        this.pegasusMenu.add(this.saveWorkflowtoXRegistryItem);
+//        this.pegasusMenu.add(this.loadWorkflowfromXRegistryItem);
+//        this.pegasusMenu.addSeparator();
+//        this.pegasusMenu.add(this.launchPegasusWorkflowItem);
+//    }
+//
+//    /**
+//     * @return The Experiment menu.
+//     */
+//    public JMenu getMenu() {
+//        return this.pegasusMenu;
+//    }
+//
+//    private void createConfigureXRegistryItem() {
+//        this.configureXRegistryItem = new JMenuItem("Configure XRegistry");
+//        this.configureXRegistryItem.setMnemonic(KeyEvent.VK_C);
+//        this.configureXRegistryItem.addActionListener(new AbstractAction() {
+//            private XRegistryConfigurationWindow window;
+//
+//            public void actionPerformed(ActionEvent e) {
+//                if (this.window == null) {
+//                    this.window = new XRegistryConfigurationWindow(PegasusMenu.this.engine);
+//                }
+//                this.window.show();
+//            }
+//        });
+//    }
+//
+//    private void createSaveWorkflowtoXRegistryItem() {
+//        this.saveWorkflowtoXRegistryItem = new JMenuItem("Save Workflow to XRegistry");
+//        this.saveWorkflowtoXRegistryItem.addActionListener(new AbstractAction() {
+//            public void actionPerformed(ActionEvent e) {
+//                PegasusMenu.this.xregistry.saveWorkflow();
+//            }
+//        });
+//    }
+//
+//    private void createLoadWorkflowfromXRegistryItem() {
+//        this.loadWorkflowfromXRegistryItem = new JMenuItem("Load Workflow from XRegistry");
+//        this.loadWorkflowfromXRegistryItem.addActionListener(new AbstractAction() {
+//            public void actionPerformed(ActionEvent e) {
+//                new OGCEXRegistryLoaderWindow(PegasusMenu.this.engine).show();
+//            }
+//        });
+//    }
+//
+//    private void createLaunchPegasusWorkflowItem() {
+//        this.launchPegasusWorkflowItem = new JMenuItem("Launch Workflow to Pegasys Engine");
+//        this.launchPegasusWorkflowItem.addActionListener(new AbstractAction() {
+//            private PegasusInvokerWindow window;
+//
+//            public void actionPerformed(ActionEvent e) {
+//                if (this.window == null) {
+//                    this.window = new PegasusInvokerWindow(PegasusMenu.this.engine);
+//                }
+//                try {
+//                    this.window.show();
+//                } catch (Exception e1) {
+//                    PegasusMenu.this.engine.getErrorWindow().error(e1);
+//                }
+//
+//            }
+//        });
+//
+//    }
 
 }

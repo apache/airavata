@@ -48,7 +48,7 @@ import org.apache.airavata.xbaya.gui.XBayaComboBox;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
-import org.apache.airavata.xbaya.xregistry.XRegistryAccesser;
+import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.ogce.schemas.gfac.beans.HostBean;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -411,20 +411,20 @@ public class HostDescriptionRegistrationWindow {
             }
 
             /* Register to XRegistry */
-            XRegistryAccesser xRegAccesser = new XRegistryAccesser(this.engine);
+            RegistryAccesser xRegAccesser = new RegistryAccesser(this.engine);
 
-            if (!this.isEditing) {
-                xRegAccesser.registerHost(hostBean);
-            } else {
-                /* Delete old host bean */
-                xRegAccesser.deleteHostDescription(this.editingHostBean.getHostName());
-
-                /* Register new host bean */
-                xRegAccesser.registerHost(hostBean);
-
-                this.isEditing = false;
-                this.addHostButton.setText("Add Host");
-            }
+//            if (!this.isEditing) {
+//                xRegAccesser.registerHost(hostBean);
+//            } else {
+//                /* Delete old host bean */
+//                xRegAccesser.deleteHostDescription(this.editingHostBean.getHostName());
+//
+//                /* Register new host bean */
+//                xRegAccesser.registerHost(hostBean);
+//
+//                this.isEditing = false;
+//                this.addHostButton.setText("Add Host");
+//            }
 
         } catch (Exception e) {
             e.printStackTrace();

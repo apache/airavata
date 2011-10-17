@@ -25,7 +25,6 @@ import junit.framework.TestSuite;
 
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
-import org.apache.airavata.xbaya.xregistry.XRegistryComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,62 +53,4 @@ public class WSIFTestCase extends XBayaTestCase {
         this.xRegistryComponentTree = null;
     }
 
-    /**
-     * @throws InterruptedException
-     */
-    public void ttestXRegistry() throws InterruptedException {
-        Thread xRegistryThread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    XRegistryComponent client = new XRegistryComponent(XBayaConstants.DEFAULT_XREGISTRY_URL,
-                            XRegistryComponent.Type.ABSTRACT);
-                    WSIFTestCase.this.xRegistryComponentTree = client.getComponentTree();
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-        };
-
-        xRegistryThread.start();
-
-        // Join them otherwise the test finishes.
-        xRegistryThread.join();
-
-        assertNotNull(this.xRegistryComponentTree);
-    }
-
-    /**
-     * @throws InterruptedException
-     */
-    public void testSynchronization() throws InterruptedException {
-
-        Thread xRegistryThread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    XRegistryComponent client = new XRegistryComponent(XBayaConstants.DEFAULT_XREGISTRY_URL,
-                            XRegistryComponent.Type.ABSTRACT);
-                    WSIFTestCase.this.xRegistryComponentTree = client.getComponentTree();
-                    System.err.println("ALEK c=" + WSIFTestCase.this.xRegistryComponentTree);
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
-        };
-
-        xRegistryThread.start();
-
-        System.err.println("ALEK2 c=" + WSIFTestCase.this.xRegistryComponentTree);
-        System.err.println("ALEK2 r=" + WSIFTestCase.this.resouceCatalogComponentTree);
-
-        // Join them otherwise the test finishes.
-        xRegistryThread.join();
-
-        System.err.println("ALEK3 c=" + WSIFTestCase.this.xRegistryComponentTree);
-        System.err.println("ALEK3 r=" + WSIFTestCase.this.resouceCatalogComponentTree);
-
-        assertNotNull(this.resouceCatalogComponentTree);
-        assertNotNull(this.xRegistryComponentTree);
-    }
 }
