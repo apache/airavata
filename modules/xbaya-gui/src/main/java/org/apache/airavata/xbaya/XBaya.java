@@ -81,7 +81,7 @@ public class XBaya {
         System.err.println("Usage: java " + XBaya.class.getName() + " [-help]" + "[-config file]" + " [-title title]"
                 + " [-workflow workflow]" + " [-enableLocalRegistry]" + " [-localRegistry dir]"
                 + " [-gpelEngineURL url]" + " [-templateID templateID]" + " [-instanceID instanceID]"
-                + " [-xRegistryURL url]" + " [-gfacURL url]" + " [-dscURL url" + " [-startMonitor {true,false}]"
+                + " [-gfacURL url]" + " [-dscURL url" + " [-startMonitor {true,false}]"
                 + " [-brokerURL url]" + " [-topic topic]" + " [-pullMode {true,false}]" + " [-myProxyServer host]"
                 + " [-karmaURL url]" + " [-karmaWorkflowInstanceID]" + " [-myProxyPort port]"
                 + " [-myProxyUsername username]" + " [-myProxyLifetime sec]" + " [-loadMyProxy {true,false}]"
@@ -119,16 +119,6 @@ public class XBaya {
                 } else if ("-workflow".equalsIgnoreCase(arg)) {
                     index++;
                     this.config.setWorkflow(args[index]);
-//                } else if ("-RegistryCredentials".equalsIgnoreCase(arg)) {
-//                    index++;
-//                    String url = args[index];
-//                    try {
-//                        this.config.setXRegistryURL(parseURL(url));
-//                    } catch (URISyntaxException e) {
-//                        String message = "The XRegistry URL is in wrong format: " + url;
-//                        logger.warn(message, e);
-//                        this.config.addError(new XBayaException(message, e));
-//                    }
                 } else if ("-gfacURL".equalsIgnoreCase(arg)) {
                     index++;
                     String url = args[index];
@@ -222,54 +212,6 @@ public class XBaya {
                     index++;
                     this.config.setRegistryPassphrase(args[index]);
                 }
-// else if ("-myProxyServer".equalsIgnoreCase(arg)) {
-//                    index++;
-//                    String server = args[index];
-//                    if ("null".equalsIgnoreCase(server)) {
-//                        // This is a workaround that JNLP doesn't take empty
-//                        // string as an argument.
-//                        server = null;
-//                    }
-//                    this.config.setMyProxyServer(server);
-//                } else if ("-myProxyPort".equalsIgnoreCase(arg)) {
-//                    index++;
-//                    String port = args[index];
-//                    try {
-//                        this.config.setMyProxyPort(Integer.parseInt(port));
-//                    } catch (NumberFormatException e) {
-//                        String message = "The myProxyPort must be an integer: " + port;
-//                        logger.warn(message, e);
-//                        this.config.addError(new XBayaException(message, e));
-//                    }
-//                } else if ("-myProxyUsername".equalsIgnoreCase(arg)) {
-//                    index++;
-//                    this.config.setMyProxyUsername(args[index]);
-//                } else if ("-myProxyPassphrase".equalsIgnoreCase(arg)) {
-//                    index++;
-//                    this.config.setMyProxyPassphrase(args[index]);
-//                } else if ("-myProxyLifetime".equalsIgnoreCase(arg)) {
-//                    index++;
-//                    String lifetime = args[index];
-//                    try {
-//                        this.config.setMyProxyLifetime(Integer.parseInt(lifetime));
-//                    } catch (NumberFormatException e) {
-//                        String message = "The myProxyLifetime must be an integer: " + lifetime;
-//                        logger.warn(message, e);
-//                        this.config.addError(new XBayaException(message, e));
-//                    }
-//                } else if ("-loadMyProxy".equalsIgnoreCase(arg)) {
-//                    index++;
-//                    String load = args[index];
-//                    if ("true".equalsIgnoreCase(load)) {
-//                        this.config.setLoadMyProxy(true);
-//                    } else if ("false".equalsIgnoreCase(load)) {
-//                        this.config.setLoadMyProxy(false);
-//                    } else {
-//                        String message = "-loadMyProxy has to be either true or false, not " + load;
-//                        logger.warn(message);
-//                        this.config.addError(new XBayaException(message));
-//                    }
-//                }
                 else if ("-width".equalsIgnoreCase(arg)) {
                     index++;
                     String width = args[index];
