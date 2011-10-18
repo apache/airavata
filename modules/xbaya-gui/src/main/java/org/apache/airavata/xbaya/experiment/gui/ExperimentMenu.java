@@ -122,12 +122,12 @@ public class ExperimentMenu {
 
     private void createLoadWorkflowfromXRegistryItem() {
         this.loadWorkflowfromRegistryItem = new JMenuItem("Load Workflow from Registry");
-       // this.loadWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
-//            public void actionPerformed(ActionEvent e) {
-//                new OGCEXRegistryLoaderWindow(ExperimentMenu.this.engine).show();
-//
-//            }
-       // });
+       this.loadWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                new RegistryLoaderWindow(ExperimentMenu.this.engine).show();
+
+            }
+       });
     }
 
     private void createSaveWorkflowtoXRegistryItem() {
