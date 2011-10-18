@@ -109,15 +109,6 @@ public class LeadContextHeaderHelper {
     }
 
     /**
-     * @param xRegistryURL
-     */
-    public void setXRegistryURL(URI xRegistryURL) {
-        if (xRegistryURL != null) {
-            this.leadContextHeader.setXRegistryUrl(WSDLUtil.appendWSDLQuary(xRegistryURL));
-        }
-    }
-
-    /**
      * @param gFacURL
      */
     public void setGFacURL(URI gFacURL) {

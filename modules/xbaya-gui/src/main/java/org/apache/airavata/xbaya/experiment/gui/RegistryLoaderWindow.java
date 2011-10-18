@@ -58,7 +58,7 @@ public class RegistryLoaderWindow {
 
     private JButton deleteButton;
 
-    private XbayaEnhancedList<OGCEXRegistrySearchResult> list;
+    private XbayaEnhancedList<RegistrySearchResult> list;
 
     /**
      * Constructs a XRegistryLoaderWindow.
@@ -100,11 +100,11 @@ public class RegistryLoaderWindow {
                                  * String[]{"No workflow"});
                                  */
                             } else {
-                                Vector<OGCEXRegistrySearchResult> results = new Vector<OGCEXRegistrySearchResult>();
+                                Vector<RegistrySearchResult> results = new Vector<RegistrySearchResult>();
                                 Node val = null;
                                 for (QName key : keys) {
                                     val = resultList.get(key);
-                                    results.add(new OGCEXRegistrySearchResult(val));
+                                    results.add(new RegistrySearchResult(val));
                                 }
                                 Session session = null;
                                 try {
@@ -146,7 +146,7 @@ public class RegistryLoaderWindow {
     }
 
     private void ok() {
-        OGCEXRegistrySearchResult result = this.list.getSelectedValue();
+        RegistrySearchResult result = this.list.getSelectedValue();
         hide();
 
         try {
@@ -159,7 +159,7 @@ public class RegistryLoaderWindow {
 
     private void delete() {
         RegistryAccesser registryAccesser = new RegistryAccesser(RegistryLoaderWindow.this.engine);
-        for (OGCEXRegistrySearchResult i : this.list.getSelectedValues()) {
+        for (RegistrySearchResult i : this.list.getSelectedValues()) {
             try {
                 registryAccesser.deleteOGCEWorkflow(i.getResourceId());
             } catch (RepositoryException e) {
@@ -175,7 +175,7 @@ public class RegistryLoaderWindow {
      */
     private void initGUI() {
 
-        this.list = new XbayaEnhancedList<OGCEXRegistrySearchResult>();
+        this.list = new XbayaEnhancedList<RegistrySearchResult>();
 
         this.list.addMouseListener(new MouseAdapter() {
             @Override
