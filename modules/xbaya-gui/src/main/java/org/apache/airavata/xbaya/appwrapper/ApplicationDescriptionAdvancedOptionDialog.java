@@ -44,6 +44,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 	private XBayaEngine engine;
 	private ShellApplicationDeployment shellApplicationDescription;
 	private DefaultTableModel defaultTableModel;
+	private boolean tableModelChanging=false;
 	private JButton btnDeleteVariable;
 	private JButton okButton;
 	
@@ -295,7 +296,9 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 			defaultTableModel.addTableModelListener(new TableModelListener(){
 				@Override
 				public void tableChanged(TableModelEvent arg0) {
-					addNewRowIfLastIsNotEmpty();
+					if (!tableModelChanging) {
+						addNewRowIfLastIsNotEmpty();
+					}
 				}
 				
 			});
@@ -382,7 +385,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 		txtSTDIN.setText(getShellApplicationDescription().getStdIn());
 		txtSTDOUT.setText(getShellApplicationDescription().getStdOut());
 		txtSTDERR.setText(getShellApplicationDescription().getStdErr());
-		
+		tableModelChanging=true;
 		Map<String, String> env = getShellApplicationDescription().getEnv();
 		while(defaultTableModel.getRowCount()>0){
 			defaultTableModel.removeRow(0);
@@ -394,6 +397,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 			}
 		}
 		addNewRowIfLastIsNotEmpty();
+		tableModelChanging=false;
 	}
 	
 	private String getNotNullValue(String value){
