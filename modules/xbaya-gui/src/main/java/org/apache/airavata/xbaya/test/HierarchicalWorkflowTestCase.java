@@ -25,13 +25,11 @@ import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.security.cert.X509Certificate;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.component.Component;
 import org.apache.airavata.xbaya.component.ComponentException;
@@ -41,7 +39,6 @@ import org.apache.airavata.xbaya.component.system.InputComponent;
 import org.apache.airavata.xbaya.component.system.OutputComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.component.ws.WorkflowComponent;
-import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.gpel.component.GPELRegistry;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
@@ -50,16 +47,11 @@ import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
 import org.apache.airavata.xbaya.lead.LEADWorkflowInvoker;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
-import org.apache.airavata.xbaya.myproxy.MyProxyClient;
-import org.apache.airavata.xbaya.security.UserX509Credential;
-import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.test.service.adder.Adder;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
-import org.apache.airavata.xbaya.workflow.WorkflowEngineManager;
 import org.gpel.client.GcInstance;
-import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
