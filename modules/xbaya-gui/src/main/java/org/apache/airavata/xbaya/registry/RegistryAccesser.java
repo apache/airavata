@@ -21,12 +21,8 @@
 
 package org.apache.airavata.xbaya.registry;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.jcr.Node;
@@ -34,32 +30,18 @@ import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.common.utils.XmlFormatter;
 import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
-import org.apache.airavata.xbaya.experiment.gui.OGCEXRegistryWorkflowPublisherWindow;
+import org.apache.airavata.xbaya.experiment.gui.RegistryWorkflowPublisherWindow;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
-import org.apache.airavata.xbaya.myproxy.gui.MyProxyDialog;
-import org.apache.airavata.xbaya.security.SecurityUtil;
-import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.xmlbeans.XmlException;
 import org.ietf.jgss.GSSCredential;
-import org.ogce.schemas.gfac.beans.ApplicationBean;
-import org.ogce.schemas.gfac.beans.HostBean;
-import org.ogce.schemas.gfac.beans.ServiceBean;
-import org.ogce.schemas.gfac.beans.utils.ApplicationUtils;
-import org.ogce.schemas.gfac.beans.utils.GFacSchemaException;
-import org.ogce.schemas.gfac.beans.utils.HostUtils;
-import org.ogce.schemas.gfac.beans.utils.ServiceUtils;
 import org.xmlpull.infoset.XmlElement;
 
 
@@ -144,7 +126,7 @@ public class RegistryAccesser {
                 this.engine.getErrorWindow().warning(buf.toString());
                 return;
             }
-            OGCEXRegistryWorkflowPublisherWindow registryPublishingWindow = new OGCEXRegistryWorkflowPublisherWindow(
+            RegistryWorkflowPublisherWindow registryPublishingWindow = new RegistryWorkflowPublisherWindow(
                     this.engine);
             registryPublishingWindow.show();
 
