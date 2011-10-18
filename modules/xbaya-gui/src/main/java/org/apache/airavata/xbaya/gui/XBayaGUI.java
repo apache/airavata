@@ -72,6 +72,7 @@ import org.apache.airavata.xbaya.graph.gui.GraphCanvasListener;
 import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.gui.MonitorPanel;
+import org.apache.airavata.xbaya.registrybrowser.JCRBrowserPanel;
 import org.apache.airavata.xbaya.streaming.StreamTableModel;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
@@ -453,8 +454,18 @@ public class XBayaGUI implements EventListener {
         this.rightSplitPane.setOneTouchExpandable(true);
         this.mainSplitPane.setOneTouchExpandable(true);
 
-        this.leftSplitPane.setTopComponent(compTreeXBayapanel.getSwingComponent());
-
+//        this.leftSplitPane.setTopComponent(compTreeXBayapanel.getSwingComponent());
+//        this.leftSplitPane.setTopComponent(new JCRBrowserPanel(engine));
+        		
+        this.componentTabbedPane = new JTabbedPane();
+        this.componentTabbedPane.setMinimumSize(SwingUtil.MINIMUM_SIZE);
+        this.leftSplitPane.setTopComponent(this.componentTabbedPane);
+        this.componentTabbedPane.add(this.compTreeXBayapanel.getSwingComponent());
+        this.componentTabbedPane.setTitleAt(0, "Component");
+        
+        this.componentTabbedPane.add(new JCRBrowserPanel(engine));
+        this.componentTabbedPane.setTitleAt(1, "JCR Registry Browser");
+        
         this.leftSplitPane.setBottomComponent(compViewXBayaPanel.getSwingComponent());
         this.rightSplitPane.setTopComponent(this.graphTabbedPane);
         this.rightSplitPane.setBottomComponent(this.rightBottomTabbedPane);

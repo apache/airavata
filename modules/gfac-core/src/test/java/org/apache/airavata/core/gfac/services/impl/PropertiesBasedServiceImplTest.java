@@ -49,7 +49,7 @@ public class PropertiesBasedServiceImplTest {
 		/*
 		 * Create database
 		 */
-		JCRRegistry jcrRegistry = new JCRRegistry(
+		JCRRegistry jcrRegistry = new JCRRegistry(null,
 				"org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
 				"admin", null);
 

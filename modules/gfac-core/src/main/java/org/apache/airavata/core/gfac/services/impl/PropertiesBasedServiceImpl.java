@@ -235,7 +235,8 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                     map = null;
 
                 try {
-                    this.registryService = new JCRRegistry(jcrClass, userName, password, map);
+                	//TODO pass the url of the registry as the first parameter
+                    this.registryService = new JCRRegistry(null,jcrClass, userName, password, map);
                 } catch (javax.jcr.RepositoryException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }

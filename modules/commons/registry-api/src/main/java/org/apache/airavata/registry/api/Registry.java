@@ -21,10 +21,13 @@
 
 package org.apache.airavata.registry.api;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
+import javax.xml.namespace.QName;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -32,9 +35,6 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
-
-import javax.jcr.Node;
-import javax.xml.namespace.QName;
 
 public interface Registry {
 	/**
@@ -186,4 +186,15 @@ public interface Registry {
 
     public boolean deleteWorkflow(QName resourceID,String userName);
 
+    /**
+     * Returns the default username that is specified to connect to the repository
+     * @return
+     */
+    public String getUsername();
+
+	/**
+	 * Repository uri
+	 * @return
+	 */
+    public URI getRepositoryURI();
 }
