@@ -184,7 +184,7 @@
             <artifactId>xpp3</artifactId>
             <version>1.1.4c</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>xregistry</groupId>
             <artifactId>xregistry-client</artifactId>
             <version>1.1</version>
@@ -193,7 +193,7 @@
             <groupId>xregistry</groupId>
             <artifactId>xregistry-generated</artifactId>
             <version>0.8.3</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>gfac</groupId>
             <artifactId>gfac-schema-utils</artifactId>
@@ -314,6 +314,12 @@
             <artifactId>commons-lang</artifactId>
             <version>2.4</version>
         </dependency>
+        <dependency>
+            <groupId>globus</groupId>
+            <artifactId>transfer-api-client</artifactId>
+            <version>0.10</version>
+        </dependency>
+
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
