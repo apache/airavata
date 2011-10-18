@@ -34,7 +34,6 @@ import org.apache.airavata.xbaya.event.EventListener;
 import org.apache.airavata.xbaya.gpel.component.gui.GPELRegistryWindow;
 import org.apache.airavata.xbaya.modifier.gui.WorkflowModifierGUI;
 import org.apache.airavata.xbaya.ode.ODEInvokerWindow;
-import org.apache.airavata.xbaya.ode.gui.ODEDeploymentWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,8 +58,6 @@ public class GPELMenu implements EventListener {
     private JMenuItem invokeModifiedWorkflowItem;
 
     private JMenuItem subWorkflowItem;
-
-    private JMenuItem odeDeploymentItem;
 
     private JMenuItem odeInvokeItem;
 
@@ -111,7 +108,6 @@ public class GPELMenu implements EventListener {
         this.invokePrecompiledItem = createInvokePrecompiledItem();
         this.invokeModifiedWorkflowItem = createModifyItem();
         this.subWorkflowItem = createSubWorkflowItem();
-        this.odeDeploymentItem = createOdeDeploymentItem();
         this.odeInvokeItem = createOdeInvokeItem();
 
         this.bpelMenu = new JMenu("GPEL");
@@ -130,7 +126,6 @@ public class GPELMenu implements EventListener {
         this.bpelMenu.add(this.subWorkflowItem);
 
         this.bpelMenu.addSeparator();
-        this.bpelMenu.add(this.odeDeploymentItem);
         this.bpelMenu.add(this.odeInvokeItem);
 
     }
@@ -162,32 +157,7 @@ public class GPELMenu implements EventListener {
         return item;
     }
 
-    /**
-     * @return
-     */
-    private JMenuItem createOdeDeploymentItem() {
-        JMenuItem item = new JMenuItem("Deploy to ODE");
-        item.addActionListener(new AbstractAction() {
-            private ODEDeploymentWindow window;
-
-            /**
-             * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-             */
-            public void actionPerformed(ActionEvent e) {
-
-                if (this.window == null) {
-                    this.window = new ODEDeploymentWindow(GPELMenu.this.engine);
-                }
-                try {
-                    this.window.show();
-                } catch (Exception e1) {
-                    GPELMenu.this.engine.getErrorWindow().error(e1);
-                }
-
-            }
-        });
-        return item;
-    }
+   
 
     private JMenuItem createConfigurationItem() {
         JMenuItem item = new JMenuItem("Configure GPEL Setting");
