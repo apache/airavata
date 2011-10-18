@@ -168,30 +168,13 @@ public interface ErrorMessages {
      */
     public static final String BROKER_URL_NOT_SET_ERROR = "Broker URL is not set.";
 
-    /**
-     * XREGISTRY_URL_EMPTY
-     */
-    public static final String XREGISTRY_URL_EMPTY = "XRegistry URL cannot be empty.";
-
-    /**
-     * XREGISTRY_URL_WRONG
-     */
-    public static final String XREGISTRY_URL_WRONG = "XRegistry URL is in wrong format.";
 
     /**
      * Error while loading a list of workflows from XRegistry.
      */
     public static final String XREGISTRY_WORKFLOW_LIST_LOAD_ERROR = "Failed to get list of workflows from XRegistry.";
 
-    /**
-     * XREGISTRY_WORKFLOW_NOT_FOUND_ERROR
-     */
-    public static final String XREGISTRY_WORKFLOW_NOT_FOUND_ERROR = "The specified workflow doesn't exist in the XRegistry.";
 
-    /**
-     * GFAC_URL_URL_EMPTY
-     */
-    public static final String GFAC_URL_URL_EMPTY = "GFac URL cannot be empty.";
 
     /**
      * GFAC_URL_WRONG

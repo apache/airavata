@@ -30,7 +30,7 @@ import org.apache.airavata.commons.gfac.type.util.SchemaUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.gui.TableRenderable;
 
-public class OGCEXRegistrySearchResult implements TableRenderable {
+public class RegistrySearchResult implements TableRenderable {
 
     private static String[] columnName = { "Name", "Description" };
 
@@ -45,12 +45,12 @@ public class OGCEXRegistrySearchResult implements TableRenderable {
     private Node data;
 
     /**
-     * Constructs a OGCEXRegistrySearchResult.
+     * Constructs a RegistrySearchResult.
      *
      * @param node
      */
 
-    public OGCEXRegistrySearchResult(Node node) {
+    public RegistrySearchResult(Node node) {
         try {
             String property = node.getProperty("Type").getString();
             if (property.equals(XBayaConstants.REGISTRY_TYPE_HOST_DESC)) {

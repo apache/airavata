@@ -216,59 +216,7 @@ public class ODEClient {
         throw new XBayaRuntimeException(e);
     }
 
-    /**
-     * 
-     * @param workflow
-     *            workflow object
-     * @param topic
-     *            notification topic
-     * @param usedDN
-     *            eg
-     *            "/O=LEAD Project/OU=portal.leadproject.org/OU=cs.indiana.edu/CN=sshirasu/EMAIL=sshirasu@cs.indiana.edu"
-     * @param instanceID
-     *            workflowinstance id
-     * @param resourceMapping
-     *            resource mapping
-     * @param scmsURL
-     *            eg https://tyr12.cs.indiana.edu:60443/SCMS?wsdl
-     * @return
-     */
-    public LeadContextHeader getDefaultLeadHeader(Workflow workflow, String topic, String usedDN, URI instanceID,
-            LeadResourceMapping resourceMapping, URI scmsURL) {
-        LeadContextHeaderHelper leadContextHelper = new LeadContextHeaderHelper();
 
-        leadContextHelper.setXRegistryURL(XBayaConstants.DEFAULT_XREGISTRY_URL);
-        leadContextHelper.setGFacURL(XBayaConstants.DEFAULT_GFAC_URL);
-
-        leadContextHelper.setUser(usedDN);
-        leadContextHelper.setWorkflowInstanceID(instanceID);
-        leadContextHelper.setWorkflowTemplateID(workflow.getUniqueWorkflowName());
-
-        MonitorConfiguration monitorConfiguration = new MonitorConfiguration(XBayaConstants.DEFAULT_BROKER_URL, topic,
-                true, XBayaConstants.DEFAULT_MESSAGE_BOX_URL);
-        leadContextHelper.setMonitorConfiguration(monitorConfiguration);
-
-        LeadContextHeader leadContext = leadContextHelper.getLeadContextHeader();
-
-        leadContext.setNodeId(workflow.getName());
-
-        leadContext.setTimeStep("1");
-        try {
-            leadContext.setXRegistryUrl(new URI(XBayaConstants.DEFAULT_XREGISTRY_URL.toString() + "?wsdl"));
-        } catch (URISyntaxException e) {
-            throw new XBayaRuntimeException(e);
-        }
-
-        if (resourceMapping != null) {
-            leadContext.setResourceMapping(resourceMapping);
-        }
-        if (scmsURL != null) {
-            leadContext.setScmsUrl(scmsURL);
-        }
-
-        return leadContext;
-
-    }
 
 
 

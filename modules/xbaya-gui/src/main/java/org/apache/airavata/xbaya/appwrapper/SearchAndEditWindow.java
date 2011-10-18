@@ -21,43 +21,6 @@
 
 package org.apache.airavata.xbaya.appwrapper;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.border.EtchedBorder;
-import javax.swing.border.TitledBorder;
-import javax.xml.namespace.QName;
-
-import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.experiment.gui.OGCEXRegistrySearchResult;
-import org.apache.airavata.xbaya.gui.ErrorMessages;
-import org.apache.airavata.xbaya.gui.GridPanel;
-import org.apache.airavata.xbaya.gui.XBayaComboBox;
-import org.apache.airavata.xbaya.gui.XBayaDialog;
-import org.apache.airavata.xbaya.gui.XBayaLabel;
-import org.apache.airavata.xbaya.gui.XBayaTextField;
-import org.apache.airavata.xbaya.gui.XbayaEnhancedList;
-import org.apache.airavata.xbaya.registry.RegistryAccesser;
-import org.ogce.schemas.gfac.beans.ApplicationBean;
-import org.ogce.schemas.gfac.beans.HostBean;
-import org.ogce.schemas.gfac.beans.ServiceBean;
-
 public class SearchAndEditWindow {
 //    private XBayaDialog dialog;
 //
