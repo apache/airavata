@@ -366,8 +366,8 @@
                 <include>org.apache.jackrabbit:jackrabbit-standalone:jar</include>
                 <include>xsul:xsul:jar</include>
                 <include>xsul5-ogce:xsul5-2007-02-27:jar</include>
-                <include>xregistry:xregistry-client</include>
-                <include>xregistry:xregistry-generated</include>
+                <!--include>xregistry:xregistry-client</include>
+                <include>xregistry:xregistry-generated</include-->
                 <include>gfac:gfac-schema-utils</include>
                 <include>lead-security:cryptix32</include>
                 <include>lead-security:jce</include>
@@ -386,6 +386,7 @@
                 <include>wsmg:wsmg</include>
                 <include>ode-proxy:weps-beans</include>
                 <include>atomixmiser:atomixmiser</include>
+                <include>globus:tranfer-api-client</include>
             </includes>
 
         </dependencySet>
