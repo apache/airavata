@@ -36,7 +36,6 @@ import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.dynamic.CepNode;
 import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
-import org.apache.airavata.xbaya.streaming.StreamReceiveNode;
 
 public class EdgeGUI implements GraphPieceGUI {
 
@@ -132,9 +131,7 @@ public class EdgeGUI implements GraphPieceGUI {
     }
 
     private boolean isStream() {
-        return this.edge.getFromPort().getNode() instanceof StreamReceiveNode
-                || this.edge.getToPort().getNode() instanceof StreamReceiveNode
-                || this.edge.getFromPort().getNode() instanceof StreamSourceNode
+        return  this.edge.getFromPort().getNode() instanceof StreamSourceNode
                 || this.edge.getFromPort().getNode() instanceof CepNode;
     }
 
