@@ -23,7 +23,6 @@ package org.apache.airavata.xbaya;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 
 import org.apache.airavata.common.utils.XMLUtil;
@@ -50,7 +49,6 @@ import org.apache.airavata.xbaya.streaming.StreamTableModel;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.wf.gui.WorkflowPropertyWindow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
-import org.apache.airavata.xbaya.workflow.WorkflowEngineManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
