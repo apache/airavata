@@ -190,11 +190,6 @@
             <version>1.76.7</version>
         </dependency>
         <dependency>
-            <groupId>ode-proxy</groupId>
-            <artifactId>weps-beans</artifactId>
-            <version>0.1</version>
-        </dependency>
-        <dependency>
             <groupId>xpp5</groupId>
             <artifactId>xpp5</artifactId>
             <version>1.2.6</version>
