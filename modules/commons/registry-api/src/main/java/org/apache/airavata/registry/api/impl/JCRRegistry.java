@@ -23,12 +23,14 @@ package org.apache.airavata.registry.api.impl;
 
 import java.lang.reflect.Constructor;
 import java.net.URI;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 import java.util.TimeZone;
 
 import javax.jcr.Credentials;
@@ -62,7 +64,7 @@ import org.apache.airavata.registry.api.util.WebServiceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JCRRegistry implements Axis2Registry, DataRegistry {
+public class JCRRegistry extends Observable implements Axis2Registry, DataRegistry {
 
     private static final String OUTPUT_NODE_NAME = "OUTPUTS";
     private static final String SERVICE_NODE_NAME = "SERVICE_HOST";
@@ -81,10 +83,12 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
     private Repository repository;
     private Credentials credentials;
     private UserManager userManager;
-
+    private String username;
+    private URI repositoryURI;
+    
     private static Logger log = LoggerFactory.getLogger(JCRRegistry.class);
 
-    public JCRRegistry(String className, String user, String pass, Map<String, String> map) throws RepositoryException {
+    public JCRRegistry(URI repositoryURI, String className, String user, String pass, Map<String, String> map) throws RepositoryException {
         try {
             /*
              * Load the configuration from properties file at this level and
@@ -93,8 +97,10 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             Class registryRepositoryFactory = Class.forName(className);
             Constructor c = registryRepositoryFactory.getConstructor();
             RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
+            setRepositoryURI(repositoryURI);
             repository = repositoryFactory.getRepository(map);
-            credentials = new SimpleCredentials(user, new String(pass).toCharArray());
+            setUsername(user);
+            credentials = new SimpleCredentials(getUsername(), new String(pass).toCharArray());
         } catch (ClassNotFoundException e) {
             log.error("Error class path settting", e);
         } catch (RepositoryException e) {
@@ -257,6 +263,7 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             session.save();
 
             result = node.getIdentifier();
+            triggerObservers(this);
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
@@ -278,7 +285,7 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             session.save();
 
             result = node.getIdentifier();
-
+            triggerObservers(this);
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
@@ -302,6 +309,7 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             session.save();
 
             result = appName.getIdentifier();
+            triggerObservers(this);
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
@@ -503,6 +511,7 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             session.save();
 
             result = node.getIdentifier();
+            triggerObservers(this);
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
@@ -553,6 +562,7 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
                 gfacDataNode.setProperty(propertyName, gfacURL + ";" + timestamp.getTime());
                 session.save();
             }
+            triggerObservers(this);
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
@@ -632,6 +642,7 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             session.save();
 
             result = node.getIdentifier();
+            triggerObservers(this);
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
@@ -722,6 +733,7 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             workflowNode.setProperty("Description", resourceDesc);
             workflowNode.setProperty("Type", REGISTRY_TYPE_WORKFLOW);
             session.save();
+            triggerObservers(this);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -744,5 +756,26 @@ public class JCRRegistry implements Axis2Registry, DataRegistry {
             closeSession(session);
         }
         return false; 
+    }
+    
+    public String getUsername(){
+    	return username;
+    }
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public URI getRepositoryURI() {
+		return repositoryURI;
+	}
+
+	private void setRepositoryURI(URI repositoryURI) {
+		this.repositoryURI = repositoryURI;
+	}
+	
+    protected void triggerObservers(Object o){
+    	setChanged();
+    	notifyObservers(o);
     }
 }

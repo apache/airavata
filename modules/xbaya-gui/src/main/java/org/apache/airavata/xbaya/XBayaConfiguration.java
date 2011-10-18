@@ -25,6 +25,8 @@ import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
@@ -33,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import xsul.lead.LeadDeploymentConfig;
 
-public class XBayaConfiguration {
+public class XBayaConfiguration extends Observable implements Observer{
 
     private static final Logger logger = LoggerFactory.getLogger(XBayaConfiguration.class);
 
@@ -759,7 +761,14 @@ public class XBayaConfiguration {
     }
 
     public void setJcrComponentRegistry(JCRComponentRegistry jcrComponentRegistry) {
+        if (this.jcrComponentRegistry!=null && this.jcrComponentRegistry.getRegistry() instanceof Observable){
+        	((Observable)this.jcrComponentRegistry.getRegistry()).deleteObserver(this);
+        }
         this.jcrComponentRegistry = jcrComponentRegistry;
+        triggerObservers(jcrComponentRegistry);
+        if (jcrComponentRegistry!=null && jcrComponentRegistry.getRegistry() instanceof Observable){
+        	((Observable)jcrComponentRegistry.getRegistry()).addObserver(this);
+        }
     }
 
     public void setRegistryURL(URI registryURL) {
@@ -781,4 +790,14 @@ public class XBayaConfiguration {
     public String getRegistryPassphrase() {
         return registryPassphrase;
     }
+    
+    protected void triggerObservers(Object o){
+    	setChanged();
+    	notifyObservers(o);
+    }
+
+	@Override
+	public void update(Observable observable, Object o) {
+		triggerObservers(observable);
+	}
 }

@@ -49,7 +49,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("org.apache.jackrabbit.repository.uri", url.toString());
         try {
-            this.registry = new JCRRegistry("org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", username,
+            this.registry = new JCRRegistry(url,"org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", username,
                     password, map);
         } catch (RepositoryException e) {
             throw e;
