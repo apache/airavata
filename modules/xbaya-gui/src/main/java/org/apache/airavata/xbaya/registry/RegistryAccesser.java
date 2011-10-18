@@ -71,12 +71,11 @@ public class RegistryAccesser {
         JCRComponentRegistry jcrComponentRegistry = this.engine.getConfiguration().getJcrComponentRegistry();
         return jcrComponentRegistry.getRegistry();
     }
- 
+
     /**
-     * Fetch all workflow templates from Registry
-     * 
-     * @return workflow templates
-     * @throws XregistryException
+     *
+     * @return
+     * @throws RepositoryException
      */
     public Map<QName,Node> getOGCEWorkflowTemplateList() throws RepositoryException {
         Registry registry = connectToRegistry();
@@ -85,12 +84,10 @@ public class RegistryAccesser {
 
 
     /**
-     * Retrieves workflow from xregistry.
-     * 
+     *
      * @param workflowTemplateId
-     * @return workflow
+     * @return
      * @throws RepositoryException
-     * @throws XregistryException
      * @throws GraphException
      * @throws ComponentException
      * @throws Exception
@@ -105,7 +102,7 @@ public class RegistryAccesser {
     }
 
     /**
-     * Save the current workflow to the XRegistry
+     * Save workflow in to Registry
      */
     public void saveWorkflow() {
 
@@ -170,13 +167,9 @@ public class RegistryAccesser {
     }
 
     /**
-     * Deletes a workflow from the XRegistry given the resource QName
-     * 
+     *
      * @param workflowTemplateId
-     * @param xRegistryURL
-     * @param context
      * @throws RepositoryException
-     * @throws XregistryException
      */
     public void deleteOGCEWorkflow(QName workflowTemplateId) throws RepositoryException {
         Registry registry = connectToRegistry();
@@ -184,14 +177,9 @@ public class RegistryAccesser {
     }
 
     /**
-     * Returns a Workflow object with the Template IDs properly set and ready to be loaded into XBaya
-     * 
-     * @param xRegistryURI
-     * @param gssCredential
-     *            Proxy credential
+     *
      * @param qname
-     *            Qname of the Workflow that is used to store in XRegistry
-     * @return Workflow
+     * @return
      */
     public Workflow getWorkflow(QName qname) {
         Registry registry = connectToRegistry();
@@ -211,11 +199,7 @@ public class RegistryAccesser {
     }
 
     /**
-     * Returns the workflow object fetched from Xregistry.
-     * 
-     * @param xRegistryURI
-     * @param gssCredential
-     *            Proxy credential
+     *
      * @param name
      * @return
      */
