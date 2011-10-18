@@ -39,7 +39,7 @@ import org.apache.airavata.xbaya.gui.XBayaTextArea;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
 import org.apache.airavata.xbaya.wf.Workflow;
 
-public class OGCEXRegistryWorkflowPublisherWindow {
+public class RegistryWorkflowPublisherWindow {
 
     private XBayaEngine engine;
 
@@ -62,7 +62,7 @@ public class OGCEXRegistryWorkflowPublisherWindow {
      * 
      * @param engine
      */
-    public OGCEXRegistryWorkflowPublisherWindow(XBayaEngine engine) {
+    public RegistryWorkflowPublisherWindow(XBayaEngine engine) {
         this.engine = engine;
         initGUI();
     }
