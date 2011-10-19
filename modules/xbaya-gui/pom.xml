@@ -422,10 +422,10 @@
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-rmi</artifactId>
         </dependency>
-		<dependency>
-			<groupId>globus</groupId>
-			<artifactId>transfer-api-client</artifactId>
-			<version>0.10</version>
-		</dependency>
-    </dependencies>
+        <dependency>
+            <groupId>globus</groupId>
+            <artifactId>transfer-api-client</artifactId>
+            <version>0.10</version>
+        </dependency>
+	</dependencies>
 </project>
