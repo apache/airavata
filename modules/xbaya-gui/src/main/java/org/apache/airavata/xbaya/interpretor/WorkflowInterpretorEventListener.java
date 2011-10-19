@@ -148,16 +148,17 @@ public class WorkflowInterpretorEventListener implements NotificationHandler,
 	 */
 	public void handleNotification(String message) {
 		try {
-			String soapBody = WorkFlowUtils.getSoapBodyContent(message);
-			XmlElement event = XMLUtil.stringToXmlElement(soapBody);
+//			String soapBody = WorkFlowUtils.getSoapBodyContent(message);
+			XmlElement event = XMLUtil.stringToXmlElement(message);
 			handleEvent(new MonitorEvent(event), true, this.workflow.getGraph());
 
-		} catch (XMLStreamException e) {
-			// Just log them because they can be unrelated messages sent to
-			// this topic by accident.
-			logger.warn("Could not parse received notification: " + message,
-					e);
-		} catch (RuntimeException e) {
+//		} catch (XMLStreamException e) {
+//			// Just log them because they can be unrelated messages sent to
+//			// this topic by accident.
+//			logger.warn("Could not parse received notification: " + message,
+//					e);
+//		}
+        }catch (RuntimeException e) {
 			logger.warn("Failed to process notification: " + message, e);
 		}
 	}
