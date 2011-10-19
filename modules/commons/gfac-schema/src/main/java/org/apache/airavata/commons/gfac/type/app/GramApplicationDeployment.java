@@ -28,41 +28,52 @@ public class GramApplicationDeployment extends ShellApplicationDeployment {
     private int nodeCount;
     private int cpuCount;
     private String jobType;
-        
-	public String getProjectName() {
+
+    public String getProjectName() {
         return projectName;
     }
+
     public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
+
     public String getQueueName() {
         return queueName;
     }
+
     public void setQueueName(String queueName) {
         this.queueName = queueName;
     }
+
     public int getWallTime() {
         return wallTime;
     }
+
     public void setWallTime(int wallTime) {
         this.wallTime = wallTime;
     }
+
     public int getNodeCount() {
         return nodeCount;
     }
+
     public void setNodeCount(int nodeCount) {
         this.nodeCount = nodeCount;
     }
+
     public int getCpuCount() {
         return cpuCount;
     }
+
     public void setCpuCount(int cpuCount) {
         this.cpuCount = cpuCount;
     }
+
     public String getJobType() {
-		return jobType;
-	}
-	public void setJobType(String jobType) {
-		this.jobType = jobType;
-	}
+        return jobType;
+    }
+
+    public void setJobType(String jobType) {
+        this.jobType = jobType;
+    }
 }

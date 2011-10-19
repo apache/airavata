@@ -19,29 +19,25 @@
  *
  */
 
-package org.apache.airavata.commons.gfac.type.util;
+package org.apache.airavata.commons.gfac.util;
 
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+public class GFacSchemaException extends Exception {
 
-import org.apache.airavata.commons.gfac.type.Type;
+    /**
+     * serialVersionUID
+     */
+    private static final long serialVersionUID = 3146697337237463348L;
 
-public class SchemaUtil {
-	public static Type parseFromXML(String xml) {
-		ByteArrayInputStream bs = new ByteArrayInputStream(xml.getBytes());
-		XMLDecoder d = new XMLDecoder(bs);
-		Object result = d.readObject();
-		d.close();
-		return (Type) result;
-	}
+    public GFacSchemaException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public static String toXML(Type type) {
-		ByteArrayOutputStream x = new ByteArrayOutputStream();
-		XMLEncoder e = new XMLEncoder(x);
-		e.writeObject(type);
-		e.close();
-		return x.toString();
-	}
+    public GFacSchemaException(String message) {
+        super(message);
+    }
+
+    public GFacSchemaException(Throwable cause) {
+        super(cause);
+    }
+
 }

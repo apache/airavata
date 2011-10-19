@@ -26,12 +26,12 @@ import java.net.URI;
 public class FileParameter extends AbstractParameter {
 
     private URI value;
-    
-	public void parseStringVal(String val){
-	    this.value = URI.create(val);
-	}
-	
-	public String toStringVal(){
-	    return (value == null)?null:this.value.toString();
-	}
+
+    public void parseStringVal(String val) {
+        this.value = URI.create(val);
+    }
+
+    public String toStringVal() {
+        return (value == null) ? null : this.value.toString();
+    }
 }

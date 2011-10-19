@@ -21,16 +21,15 @@
 
 package org.apache.airavata.commons.gfac.type.parameter;
 
-
 public class BooleanParameter extends AbstractParameter {
 
     private Boolean value;
-    
-	public void parseStringVal(String val){
-		this.value = Boolean.parseBoolean(val);
-	}
-	
-	public String toStringVal(){
-	    return (value == null)?null:this.value.toString();
-	}
+
+    public void parseStringVal(String val) {
+        this.value = Boolean.parseBoolean(val);
+    }
+
+    public String toStringVal() {
+        return (value == null) ? null : this.value.toString();
+    }
 }

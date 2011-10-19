@@ -25,13 +25,13 @@ import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 
-public class ShellApplicationDeployment extends ApplicationDeploymentDescription {    
+public class ShellApplicationDeployment extends ApplicationDeploymentDescription {
     private String executable;
     private String stdOut;
     private String stdErr;
     private String stdIn;
     private Map<String, String> env;
-    
+
     public String getExecutable() {
         return executable;
     }
@@ -70,5 +70,5 @@ public class ShellApplicationDeployment extends ApplicationDeploymentDescription
 
     public void setStdIn(String stdIn) {
         this.stdIn = stdIn;
-    }    
+    }
 }

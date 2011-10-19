@@ -21,26 +21,26 @@
 
 package org.apache.airavata.commons.gfac.type;
 
-public class DataType implements Type{
-    
+public class DataType implements Type {
+
     private String type;
-    
-    public DataType(){        
+
+    public DataType() {
     }
-    
-    public DataType(String type){
+
+    public DataType(String type) {
         this.type = type;
     }
-        
+
     public void setType(String type) {
         this.type = type;
     }
 
-    public String getType(){
+    public String getType() {
         return this.type;
     }
-    
-    public String toString(){
+
+    public String toString() {
         return this.type;
     }
 }
