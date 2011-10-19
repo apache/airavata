@@ -179,8 +179,7 @@ private boolean isoffline = false;
 		if (this.isoffline) {
 			this.notifier = new StandaloneNotificationSender(topic, this.workflow);
 		} else {
-			this.notifier = new NotificationSender(this.engine.getMonitor()
-					.getConfiguration().getBrokerURL(), topic);
+			this.notifier = new NotificationSender(this.configuration.getBrokerURL(), topic);
 		}
 		this.mode = SERVER_MODE;
 		this.retryFailed = false;
