@@ -50,7 +50,7 @@ public class ParameterFactory {
         try {
             types = new ArrayList<DataType>();
             map = new HashMap<String, Class<? extends AbstractParameter>>();
-            typeMap = new HashMap<String, DataType>(); 
+            typeMap = new HashMap<String, DataType>();
             /*
              * Load properties only it is not loaded
              */
@@ -104,8 +104,8 @@ public class ParameterFactory {
     public AbstractParameter createActualParameter(DataType dataType) throws Exception {
         return createActualParameter(dataType.getType());
     }
-    
-    public AbstractParameter createActualParameter(String type) throws Exception{
+
+    public AbstractParameter createActualParameter(String type) throws Exception {
         String lower = type.toLowerCase();
         if (!map.containsKey(lower))
             throw new RuntimeException("Type is not supprted: " + type);
@@ -114,15 +114,15 @@ public class ParameterFactory {
         result.setType(getType(lower));
         return result;
     }
-    
-    public DataType getType(String type){
+
+    public DataType getType(String type) {
         String lower = type.toLowerCase();
         if (!typeMap.containsKey(lower))
             throw new RuntimeException("Type is not supprted: " + type);
         return typeMap.get(lower);
     }
 
-    public boolean hasType(DataType dataType, String type){
+    public boolean hasType(DataType dataType, String type) {
         return dataType.getType().equalsIgnoreCase(type);
     }
 }

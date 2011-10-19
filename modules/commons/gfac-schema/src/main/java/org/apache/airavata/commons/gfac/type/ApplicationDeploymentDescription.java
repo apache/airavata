@@ -22,14 +22,14 @@
 package org.apache.airavata.commons.gfac.type;
 
 public class ApplicationDeploymentDescription implements Type {
-    
+
     protected String id;
-	private String tmpDir;
-	private String workingDir;
-	private String inputDir;
-	private String outputDir;
-	
-	public String getId() {
+    private String tmpDir;
+    private String workingDir;
+    private String inputDir;
+    private String outputDir;
+
+    public String getId() {
         return id;
     }
 
@@ -67,5 +67,5 @@ public class ApplicationDeploymentDescription implements Type {
 
     public void setOutputDir(String outputDir) {
         this.outputDir = outputDir;
-    }    
+    }
 }

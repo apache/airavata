@@ -21,16 +21,15 @@
 
 package org.apache.airavata.commons.gfac.type.parameter;
 
+public class FloatParameter extends AbstractParameter {
 
-public class FloatParameter extends AbstractParameter {   
-	
     private Float value;
-    
-	public void parseStringVal(String val){
-		this.value = Float.parseFloat(val);
-	}
-	
-	public String toStringVal(){
-	    return (value == null)?null:this.value.toString();
-	}
+
+    public void parseStringVal(String val) {
+        this.value = Float.parseFloat(val);
+    }
+
+    public String toStringVal() {
+        return (value == null) ? null : this.value.toString();
+    }
 }

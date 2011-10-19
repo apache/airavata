@@ -21,16 +21,15 @@
 
 package org.apache.airavata.commons.gfac.type.parameter;
 
-
 public class IntegerParameter extends AbstractParameter {
-	
+
     private Integer value;
-    
-	public void parseStringVal(String val){
-		this.value = Integer.parseInt(val);
-	}
-	
-	public String toStringVal(){
-	    return (value == null)?null:this.value.toString();
-	}
+
+    public void parseStringVal(String val) {
+        this.value = Integer.parseInt(val);
+    }
+
+    public String toStringVal() {
+        return (value == null) ? null : this.value.toString();
+    }
 }

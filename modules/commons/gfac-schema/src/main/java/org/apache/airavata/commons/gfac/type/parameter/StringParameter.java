@@ -21,17 +21,15 @@
 
 package org.apache.airavata.commons.gfac.type.parameter;
 
-
-
 public class StringParameter extends AbstractParameter {
-	
+
     private String value;
 
-    public void parseStringVal(String val){
-		this.value = val;
-	}
-	
-	public String toStringVal(){
-	    return (value == null)?null:this.value.toString();
-	}
+    public void parseStringVal(String val) {
+        this.value = val;
+    }
+
+    public String toStringVal() {
+        return (value == null) ? null : this.value.toString();
+    }
 }

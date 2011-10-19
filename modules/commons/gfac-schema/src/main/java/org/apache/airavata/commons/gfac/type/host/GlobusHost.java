@@ -27,19 +27,19 @@ public class GlobusHost extends HostDescription {
     private String gridFTPEndPoint;
     private String globusGateKeeperEndPoint;
 
-	public String getGridFTPEndPoint() {
+    public String getGridFTPEndPoint() {
         return gridFTPEndPoint;
     }
 
     public void setGridFTPEndPoint(String gridFTPEndPoint) {
         this.gridFTPEndPoint = gridFTPEndPoint;
     }
-    
-    public String getGlobusGateKeeperEndPoint() {
-		return globusGateKeeperEndPoint;
-	}
 
-	public void setGlobusGateKeeperEndPoint(String globusGateKeeperEndPoint) {
-		this.globusGateKeeperEndPoint = globusGateKeeperEndPoint;
-	}    
+    public String getGlobusGateKeeperEndPoint() {
+        return globusGateKeeperEndPoint;
+    }
+
+    public void setGlobusGateKeeperEndPoint(String globusGateKeeperEndPoint) {
+        this.globusGateKeeperEndPoint = globusGateKeeperEndPoint;
+    }
 }

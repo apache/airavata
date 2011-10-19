@@ -21,16 +21,15 @@
 
 package org.apache.airavata.commons.gfac.type.parameter;
 
-
 public class DoubleParameter extends AbstractParameter {
-	
+
     private Double value;
-    
-	public void parseStringVal(String val){
-		this.value = Double.parseDouble(val);
-	}
-	
-	public String toStringVal(){
-	    return (value == null)?null:this.value.toString();
-	}
+
+    public void parseStringVal(String val) {
+        this.value = Double.parseDouble(val);
+    }
+
+    public String toStringVal() {
+        return (value == null) ? null : this.value.toString();
+    }
 }

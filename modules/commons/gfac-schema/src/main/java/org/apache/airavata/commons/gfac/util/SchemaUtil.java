@@ -19,34 +19,29 @@
  *
  */
 
-package org.apache.airavata.commons.gfac.type;
+package org.apache.airavata.commons.gfac.util;
 
-public class Parameter implements Type {
-    private String name;
-    private String description;
-    private DataType type;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
-    public String getName() {
-        return name;
+import org.apache.airavata.commons.gfac.type.Type;
+
+public class SchemaUtil {
+    public static Type parseFromXML(String xml) {
+        ByteArrayInputStream bs = new ByteArrayInputStream(xml.getBytes());
+        XMLDecoder d = new XMLDecoder(bs);
+        Object result = d.readObject();
+        d.close();
+        return (Type) result;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public DataType getType() {
-        return type;
-    }
-
-    public void setType(DataType type) {
-        this.type = type;
+    public static String toXML(Type type) {
+        ByteArrayOutputStream x = new ByteArrayOutputStream();
+        XMLEncoder e = new XMLEncoder(x);
+        e.writeObject(type);
+        e.close();
+        return x.toString();
     }
 }
