@@ -57,10 +57,6 @@ public class XBayaConstants {
      */
     public static final URI DEFAULT_GFAC_URL = URI.create("http://localhost:8080/axis2/services/GFacService");
 
-    /**
-     * DEFAULT_XREGISTRY_URL
-     */
-    public static final URI DEFAULT_XREGISTRY_URL = URI.create("https://gw56.quarry.iu.teragrid.org:19443/xregistry");
 
     /**
      * DEFAULT_TOPIC
@@ -163,7 +159,7 @@ public class XBayaConstants {
      * WorkflowInterpreter URL
      */
     public static final URI DEFAULT_WORKFLOW_INTERPRETER_URL = URI
-            .create("http://ogceportal.iu.teragrid.org:19444/axis2/services/WorkflowInterpretor?wsdl");
+            .create("http://localhost:8080/axis2/services/XBayaService?wsdl");
 
     /**
      * 

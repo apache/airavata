@@ -24,7 +24,7 @@ package org.apache.airavata.xbaya.interpretor;
 public interface HeaderConstants {
 
     public static final String HEADER_ELEMENT_GFAC = "gfac";
-    public static final String HEADER_ELEMENT_XREGISTRY = "xregistry";
+    public static final String HEADER_ELEMENT_REGISTRY = "registry";
     public static final String HEADER_ELEMENT_PROXYSERVER = "proxyserver";
     public static final String HEADER_ELEMENT_MSGBOX = "msgbox";
     public static final String HEADER_ELEMENT_DSC = "dsc";

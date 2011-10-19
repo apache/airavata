@@ -28,9 +28,11 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
 import org.apache.airavata.xbaya.myproxy.gui.MyProxyChecker;
+import org.apache.airavata.xbaya.util.XBayaUtil;
 
 public class RegisterApplicationsMenu {
 
@@ -86,13 +88,7 @@ public class RegisterApplicationsMenu {
         this.registerApplicationsMenu.add(this.searchAndEdit);
     }
 
-    private boolean acquireJCRRegistry(){
-    	if (engine.getConfiguration().getJcrComponentRegistry()==null){
-	    	JCRRegistryWindow window = new JCRRegistryWindow(this.engine);
-			window.show();
-    	}
-    	return engine.getConfiguration().getJcrComponentRegistry()!=null;
-    }
+
     
     private void createRegisterThroughFile() {
     	
@@ -136,7 +132,7 @@ public class RegisterApplicationsMenu {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (acquireJCRRegistry()) {
+                if (XBayaUtil.acquireJCRRegistry(engine)) {
 					try {
 						ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(
 								RegisterApplicationsMenu.this.engine);
@@ -159,7 +155,7 @@ public class RegisterApplicationsMenu {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-            	 if (acquireJCRRegistry()) {
+            	 if (XBayaUtil.acquireJCRRegistry(engine)) {
 					try {
 						ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(
 								RegisterApplicationsMenu.this.engine);
@@ -182,7 +178,7 @@ public class RegisterApplicationsMenu {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (acquireJCRRegistry()) {
+                if (XBayaUtil.acquireJCRRegistry(engine)) {
 					try {
 						HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(
 								RegisterApplicationsMenu.this.engine);

@@ -40,6 +40,7 @@ import org.apache.airavata.xbaya.experiment.gui.RegistryWorkflowPublisherWindow;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.ietf.jgss.GSSCredential;
 import org.xmlpull.infoset.XmlElement;
@@ -105,7 +106,7 @@ public class RegistryAccesser {
      * Save workflow in to Registry
      */
     public void saveWorkflow() {
-
+         if(XBayaUtil.acquireJCRRegistry(this.engine)){
         try {
 
             Workflow workflow = this.engine.getWorkflow();
@@ -164,6 +165,7 @@ public class RegistryAccesser {
         } catch (Exception e) {
             this.engine.getErrorWindow().error(e.getMessage(), e);
         }
+         }
     }
 
     /**
@@ -172,8 +174,10 @@ public class RegistryAccesser {
      * @throws RepositoryException
      */
     public void deleteOGCEWorkflow(QName workflowTemplateId) throws RepositoryException {
+        if(XBayaUtil.acquireJCRRegistry(this.engine)){
         Registry registry = connectToRegistry();
         registry.deleteWorkflow(workflowTemplateId,this.engine.getConfiguration().getRegigstryUserName());
+        }
     }
 
     /**

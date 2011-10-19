@@ -771,6 +771,10 @@ public class XBayaConfiguration extends Observable implements Observer{
         }
     }
 
+    public URI getRegistryURL() {
+        return registryURL;
+    }
+
     public void setRegistryURL(URI registryURL) {
         this.registryURL = registryURL;
     }

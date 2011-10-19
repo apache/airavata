@@ -56,6 +56,7 @@ import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ode.ODEClient;
+import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,7 @@ public class WorkflowInterpreterLaunchWindow {
 
     private XBayaTextField workflowInterpreterTextField;
 
-    private XBayaTextField xRegistryTextField;
+    private XBayaTextField RegistryTextField;
 
     private XBayaTextField gfacTextField;
 
@@ -96,7 +97,9 @@ public class WorkflowInterpreterLaunchWindow {
      */
     public WorkflowInterpreterLaunchWindow(XBayaEngine engine) {
         this.engine = engine;
-        initGUI();
+          if (XBayaUtil.acquireJCRRegistry(engine)) {
+                initGUI();
+          }
     }
 
     /**
@@ -152,12 +155,12 @@ public class WorkflowInterpreterLaunchWindow {
             this.workflowInterpreterTextField.setText(XBayaConstants.DEFAULT_WORKFLOW_INTERPRETER_URL);
         }
 
-//        URI registryURL = config.getXRegistryURL();
-//        if (null != registryURL) {
-//            this.xRegistryTextField.setText(registryURL.toString());
-//        } else {
-//            this.xRegistryTextField.setText(XBayaConstants.DEFAULT_XREGISTRY_URL);
-//        }
+        org.apache.airavata.registry.api.Registry registryURL = config.getJcrComponentRegistry().getRegistry();
+        if (null != registryURL) {
+            this.RegistryTextField.setText(config.getRegistryURL());
+        } else {
+            this.RegistryTextField.setText(XBayaConstants.REGISTRY_URL.toASCIIString());
+        }
 
         this.dialog.show();
     }
@@ -180,8 +183,8 @@ public class WorkflowInterpreterLaunchWindow {
         this.workflowInterpreterTextField = new XBayaTextField();
         XBayaLabel workflowInterpreterLabel = new XBayaLabel("Workflow Interpreter URL",
                 this.workflowInterpreterTextField);
-        this.xRegistryTextField = new XBayaTextField();
-        XBayaLabel xRegistryLabel = new XBayaLabel("XRegistry URL", this.xRegistryTextField);
+        this.RegistryTextField = new XBayaTextField();
+        XBayaLabel RegistryLabel = new XBayaLabel("Registry URL", this.RegistryTextField);
         this.gfacTextField = new XBayaTextField();
         XBayaLabel gfacLabel = new XBayaLabel("GFac URL", this.gfacTextField);
 
@@ -190,8 +193,8 @@ public class WorkflowInterpreterLaunchWindow {
         infoPanel.add(this.topicTextField);
         infoPanel.add(workflowInterpreterLabel);
         infoPanel.add(this.workflowInterpreterTextField);
-        infoPanel.add(xRegistryLabel);
-        infoPanel.add(this.xRegistryTextField);
+        infoPanel.add(RegistryLabel);
+        infoPanel.add(this.RegistryTextField);
         infoPanel.add(gfacLabel);
         infoPanel.add(this.gfacTextField);
 
@@ -269,15 +272,6 @@ public class WorkflowInterpreterLaunchWindow {
             }
         }
 
-//        final String xregistryUrl = this.xRegistryTextField.getText();
-//        if (null != xregistryUrl && !"".equals(xregistryUrl)) {
-//            try {
-////                this.engine.getConfiguration().setXRegistryURL(new URI(xregistryUrl));
-//            } catch (URISyntaxException e) {
-//                this.engine.getErrorWindow().error(e);
-//            }
-//        }
-
         final String gFacUrl = this.gfacTextField.getText();
         if (null != gFacUrl && !"".equals(gFacUrl)) {
             try {
@@ -312,12 +306,12 @@ public class WorkflowInterpreterLaunchWindow {
                     configurations[0].setName(HeaderConstants.HEADER_ELEMENT_GFAC);
                     configurations[0].setValue(engine.getConfiguration().getGFacURL().toString());
                     configurations[1] = new NameValue();
-                    configurations[1].setName(HeaderConstants.HEADER_ELEMENT_XREGISTRY);
-//                    if (null == engine.getConfiguration().getXRegistryURL()) {
-//                        configurations[1].setValue(XBayaConstants.DEFAULT_XREGISTRY_URL.toString());
-//                    } else {
-//                        configurations[1].setValue(engine.getConfiguration().getXRegistryURL().toString());
-//                    }
+                    configurations[1].setName(HeaderConstants.HEADER_ELEMENT_REGISTRY);
+                    if (null == engine.getConfiguration().getRegistryURL()) {
+                        configurations[1].setValue(XBayaConstants.REGISTRY_URL.toString());
+                    } else {
+                        configurations[1].setValue(engine.getConfiguration().getRegistryURL().toString());
+                    }
                     configurations[2] = new NameValue();
                     configurations[2].setName(HeaderConstants.HEADER_ELEMENT_PROXYSERVER);
                     configurations[2].setValue(engine.getConfiguration().getMyProxyServer());
@@ -344,8 +338,8 @@ public class WorkflowInterpreterLaunchWindow {
                         inputNameVals[i].setValue(value);
                     }
 
-                    String myProxyUsername = engine.getMyProxyClient().getUsername();
-                    String myProxyPass = engine.getMyProxyClient().getPassphrase();
+                    String myProxyUsername = engine.getConfiguration().getRegigstryUserName();
+                    String myProxyPass = engine.getConfiguration().getRegistryPassphrase();
 
                     stub.launchWorkflow(workflow.toXMLText(), topicString, myProxyPass, myProxyUsername, inputNameVals,
                             configurations);

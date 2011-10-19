@@ -29,6 +29,7 @@ import java.net.URL;
 
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.wf.Workflow;
@@ -112,6 +113,15 @@ public class XBayaUtil {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static boolean acquireJCRRegistry(XBayaEngine engine){
+        XBayaConfiguration configuration = engine.getConfiguration();
+        if (configuration.getJcrComponentRegistry()==null){
+	    	JCRRegistryWindow window = new JCRRegistryWindow(engine);
+			window.show();
+    	}
+    	return engine.getConfiguration().getJcrComponentRegistry()!=null;
     }
 
 }

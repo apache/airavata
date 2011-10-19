@@ -28,7 +28,7 @@ public abstract class ComponentRegistry {
     /**
      * Returns a ComponentTree. This method should refresh the tree even if subclass uses the cache.
      * 
-     * @return The ComponentTree
+     * @return The ComponentTreeR
      * @throws ComponentRegistryException
      */
     public abstract ComponentTreeNode getComponentTree() throws ComponentRegistryException;

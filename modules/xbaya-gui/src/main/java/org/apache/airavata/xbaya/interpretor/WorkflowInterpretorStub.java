@@ -57,7 +57,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
         __operation = new org.apache.axis2.description.OutInAxisOperation();
 
-        __operation.setName(new javax.xml.namespace.QName("http://xbaya.extreme.indiana.edu", "launchWorkflow"));
+        __operation.setName(new javax.xml.namespace.QName("http://interpretor.xbaya.airavata.apache.org", "launchWorkflow"));
         _service.addOperation(__operation);
 
         _operations[0] = __operation;
@@ -163,7 +163,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
                     inputs5,
                     configurations6,
                     dummyWrappedType,
-                    optimizeContent(new javax.xml.namespace.QName("http://xbaya.extreme.indiana.edu", "launchWorkflow")));
+                    optimizeContent(new javax.xml.namespace.QName("http://interpretor.xbaya.airavata.apache.org", "launchWorkflow")));
 
             // adding SOAP soap_headers
             _serviceClient.addHeadersToEnvelope(env);
@@ -273,7 +273,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
         WorkflowInterpretorStub.LaunchWorkflow dummyWrappedType = null;
         env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()), workflowAsString1, topic2,
                 password3, username4, inputs5, configurations6, dummyWrappedType,
-                optimizeContent(new javax.xml.namespace.QName("http://xbaya.extreme.indiana.edu", "launchWorkflow")));
+                optimizeContent(new javax.xml.namespace.QName("http://interpretor.xbaya.airavata.apache.org", "launchWorkflow")));
 
         // adding SOAP soap_headers
         _serviceClient.addHeadersToEnvelope(env);
@@ -417,11 +417,11 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
     public static class NameValue implements org.apache.axis2.databinding.ADBBean {
         /*
          * This type was generated from the piece of schema that had name = NameValue Namespace URI =
-         * http://xbaya.extreme.indiana.edu Namespace Prefix = ns1
+         * http://interpretor.xbaya.airavata.apache.org Namespace Prefix = ns1
          */
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if (namespace.equals("http://xbaya.extreme.indiana.edu")) {
+            if (namespace.equals("http://interpretor.xbaya.airavata.apache.org")) {
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -582,7 +582,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
             if (serializeType) {
 
-                java.lang.String namespacePrefix = registerPrefix(xmlWriter, "http://xbaya.extreme.indiana.edu");
+                java.lang.String namespacePrefix = registerPrefix(xmlWriter, "http://interpretor.xbaya.airavata.apache.org");
                 if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)) {
                     writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
                             + ":NameValue", xmlWriter);
@@ -961,7 +961,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
         public static java.lang.Object getTypeObject(java.lang.String namespaceURI, java.lang.String typeName,
                 javax.xml.stream.XMLStreamReader reader) throws java.lang.Exception {
 
-            if ("http://xbaya.extreme.indiana.edu".equals(namespaceURI) && "NameValue".equals(typeName)) {
+            if ("http://interpretor.xbaya.airavata.apache.org".equals(namespaceURI) && "NameValue".equals(typeName)) {
 
                 return NameValue.Factory.parse(reader);
 
@@ -975,10 +975,10 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
     public static class LaunchWorkflowResponse implements org.apache.axis2.databinding.ADBBean {
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://xbaya.extreme.indiana.edu", "launchWorkflowResponse", "ns1");
+                "http://interpretor.xbaya.airavata.apache.org", "launchWorkflowResponse", "ns1");
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if (namespace.equals("http://xbaya.extreme.indiana.edu")) {
+            if (namespace.equals("http://interpretor.xbaya.airavata.apache.org")) {
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -1097,7 +1097,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
             if (serializeType) {
 
-                java.lang.String namespacePrefix = registerPrefix(xmlWriter, "http://xbaya.extreme.indiana.edu");
+                java.lang.String namespacePrefix = registerPrefix(xmlWriter, "http://interpretor.xbaya.airavata.apache.org");
                 if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)) {
                     writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
                             + ":launchWorkflowResponse", xmlWriter);
@@ -1411,10 +1411,10 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
     public static class LaunchWorkflow implements org.apache.axis2.databinding.ADBBean {
 
         public static final javax.xml.namespace.QName MY_QNAME = new javax.xml.namespace.QName(
-                "http://xbaya.extreme.indiana.edu", "launchWorkflow", "ns1");
+                "http://interpretor.xbaya.airavata.apache.org", "launchWorkflow", "ns1");
 
         private static java.lang.String generatePrefix(java.lang.String namespace) {
-            if (namespace.equals("http://xbaya.extreme.indiana.edu")) {
+            if (namespace.equals("http://interpretor.xbaya.airavata.apache.org")) {
                 return "ns1";
             }
             return org.apache.axis2.databinding.utils.BeanUtil.getUniquePrefix();
@@ -1794,7 +1794,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
             if (serializeType) {
 
-                java.lang.String namespacePrefix = registerPrefix(xmlWriter, "http://xbaya.extreme.indiana.edu");
+                java.lang.String namespacePrefix = registerPrefix(xmlWriter, "http://interpretor.xbaya.airavata.apache.org");
                 if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)) {
                     writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
                             + ":launchWorkflow", xmlWriter);

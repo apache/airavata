@@ -15,6 +15,10 @@
 <serviceGroup>
     <service name="XBayaService">
         <Description>XBaya Service</Description>
+        <messageReceivers>
+		<messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-only" class="org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver" />
+		<messageReceiver  mep="http://www.w3.org/2004/08/wsdl/in-out"  class="org.apache.axis2.rpc.receivers.RPCMessageReceiver"/>
+	</messageReceivers>
 	<parameter locked="true" name="ServiceClass">org.apache.airavata.xbaya.interpretor.WorkflowInterpretorSkeleton</parameter>
     </service>
 </serviceGroup>
