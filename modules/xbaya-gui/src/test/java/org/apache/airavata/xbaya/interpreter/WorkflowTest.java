@@ -46,8 +46,8 @@ public class WorkflowTest implements HeaderConstants {
         configurations[0].setName(HEADER_ELEMENT_GFAC);
         configurations[0].setValue(XBayaConstants.DEFAULT_GFAC_URL.toString());
         configurations[1] = new NameValue();
-        configurations[1].setName(HEADER_ELEMENT_XREGISTRY);
-        configurations[1].setValue(XBayaConstants.DEFAULT_XREGISTRY_URL.toString());
+        configurations[1].setName(HEADER_ELEMENT_REGISTRY);
+        configurations[1].setValue(XBayaConstants.REGISTRY_URL.toASCIIString());
         configurations[2] = new NameValue();
         configurations[2].setName(HEADER_ELEMENT_PROXYSERVER);
         configurations[2].setValue(XBayaConstants.DEFAULT_MYPROXY_SERVER);

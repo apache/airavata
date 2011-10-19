@@ -44,6 +44,7 @@ import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XbayaEnhancedList;
+import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
 
@@ -67,7 +68,9 @@ public class RegistryLoaderWindow {
      */
     public RegistryLoaderWindow(XBayaEngine engine) {
         this.engine = engine;
-        initGUI();
+        if(XBayaUtil.acquireJCRRegistry(this.engine)){
+            initGUI();
+        }
     }
 
     /**

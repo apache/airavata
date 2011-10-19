@@ -109,7 +109,9 @@ public class DynamicWorkflowRunnerWindow {
      */
     public DynamicWorkflowRunnerWindow(XBayaEngine engine) {
         this.engine = engine;
-        initGUI();
+        if(XBayaUtil.acquireJCRRegistry(this.engine)){
+            initGUI();
+        }
     }
 
     /**
