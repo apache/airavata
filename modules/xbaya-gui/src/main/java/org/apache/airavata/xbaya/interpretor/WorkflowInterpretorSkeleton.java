@@ -32,7 +32,6 @@ import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorStub.NameValue;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.wf.Workflow;
@@ -97,6 +96,7 @@ public class WorkflowInterpretorSkeleton {
         } catch (URISyntaxException e1) {
             throw new XBayaRuntimeException(e1);
         }
+        conf.setTopic(topic);
         WorkflowInterpretorEventListener listener = new WorkflowInterpretorEventListener(workflow, conf);
         try {
             listener.start();
