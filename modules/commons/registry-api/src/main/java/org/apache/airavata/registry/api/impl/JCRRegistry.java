@@ -778,4 +778,8 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
     	setChanged();
     	notifyObservers(o);
     }
+
+	public String getName() {
+		return repository.getDescriptor(Repository.REP_NAME_DESC);
+	}
 }

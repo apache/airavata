@@ -48,7 +48,7 @@ public class RegistryNode  extends AbstractAiravataTreeNode{
 	@Override
 	public String getCaption(boolean selected, boolean expanded, boolean leaf,
 			boolean hasFocus) {
-		return getRegistry().getUsername()+"@"+getRegistry().getRepositoryURI().toString();
+		return getRegistry().getName()+" - "+getRegistry().getUsername()+"@"+getRegistry().getRepositoryURI().toString();
 	}
 
 	@Override

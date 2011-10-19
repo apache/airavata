@@ -197,4 +197,10 @@ public interface Registry {
 	 * @return
 	 */
     public URI getRepositoryURI();
+    
+    /**
+     * Returns the repository name
+     * @return
+     */
+    public String getName();
 }
