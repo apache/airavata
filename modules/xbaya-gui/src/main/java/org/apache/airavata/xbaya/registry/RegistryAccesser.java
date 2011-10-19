@@ -80,7 +80,7 @@ public class RegistryAccesser {
      */
     public Map<QName,Node> getOGCEWorkflowTemplateList() throws RepositoryException {
         Registry registry = connectToRegistry();
-        return registry.getAvailableWorkflows(this.engine.getConfiguration().getRegigstryUserName());
+        return registry.getWorkflows(this.engine.getConfiguration().getRegigstryUserName());
     }
 
 

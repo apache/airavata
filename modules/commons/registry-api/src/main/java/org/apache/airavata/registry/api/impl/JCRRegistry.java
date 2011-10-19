@@ -676,7 +676,7 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         return result;
     }
 
-    public Map<QName, Node> getAvailableWorkflows(String userName) {
+    public Map<QName, Node> getWorkflows(String userName) {
         Session session = null;
         Map<QName, Node> workflowList = new HashMap<QName, Node>();
         try {

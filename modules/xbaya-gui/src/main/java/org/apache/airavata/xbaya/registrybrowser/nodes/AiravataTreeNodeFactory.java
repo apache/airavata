@@ -12,6 +12,8 @@ import org.apache.airavata.xbaya.registrybrowser.model.GFacURL;
 import org.apache.airavata.xbaya.registrybrowser.model.GFacURLs;
 import org.apache.airavata.xbaya.registrybrowser.model.HostDescriptions;
 import org.apache.airavata.xbaya.registrybrowser.model.ServiceDescriptions;
+import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflow;
+import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflows;
 
 public class AiravataTreeNodeFactory {
 	public static TreeNode getTreeNode(Object o,TreeNode parent){
@@ -33,6 +35,10 @@ public class AiravataTreeNodeFactory {
 			return new ApplicationDeploymentDescriptionsNode((ApplicationDeploymentDescriptions)o,parent);
 		}else if (o instanceof ApplicationDeploymentDescriptionWrap){
 			return new ApplicationDeploymentDescriptionNode((ApplicationDeploymentDescriptionWrap)o,parent);
+		}else if (o instanceof XBayaWorkflows){
+			return new XBayaWorkflowsNode((XBayaWorkflows)o,parent);
+		}else if (o instanceof XBayaWorkflow){
+			return new XBayaWorkflowNode((XBayaWorkflow)o,parent);
 		}else{
 			return new DefaultMutableTreeNode(o);
 		}

@@ -180,7 +180,7 @@ public interface Registry {
 
     public boolean saveWorkflow(QName ResourceID, String workflowName, String resourceDesc, String workflowAsaString, String owner, boolean isMakePublic);
 
-    public Map<QName,Node> getAvailableWorkflows(String userName);
+    public Map<QName,Node> getWorkflows(String userName);
 
     public Node getWorkflow(QName templateID,String userName);
 
