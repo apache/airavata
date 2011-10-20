@@ -1,342 +1,516 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema targetNamespace="http://schemas.airavata.apache.org/workflow-execution-context"
-    xmlns="http://www.w3.org/2001/XMLSchema"
-    xmlns:wec="http://schemas.airavata.apache.org/workflow-execution-context"
-    attributeFormDefault="qualified" elementFormDefault="qualified">
+	xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wec="http://schemas.airavata.apache.org/workflow-execution-context"
+	attributeFormDefault="qualified" elementFormDefault="qualified">
 
-    <element name="security-context">
-        <annotation>
-            <documentation xml:lang="en"> Security context for execution of the workflow
-            </documentation>
-        </annotation>
-        <complexType>
-            <sequence>
-                <element name="grid-proxy" type="base64Binary">
-                    <annotation>
-                        <documentation xml:lang="en"> Security context for Grid Security
-                            Infrastructure X509 Proxy with trusted chain. </documentation>
-                    </annotation>
-                </element>
-                <element name="grid-myproxy-repository">
-                    <annotation>
-                        <documentation xml:lang="en"> Security context for Grid Security MyProxy
-                            Service </documentation>
-                    </annotation>
-                    <complexType>
-                        <sequence>
-                            <element name="myproxy-server" type="string">
-                                <annotation>
-                                    <documentation xml:lang="en"> MyProxy Server. </documentation>
-                                </annotation>
-                            </element>
-                            <element name="username" type="string">
-                                <annotation>
-                                    <documentation xml:lang="en"> MyProxy User Name.
-                                    </documentation>
-                                </annotation>
-                            </element>
-                            <element name="password" type="string">
-                                <annotation>
-                                    <documentation xml:lang="en"> MyProxy Password. </documentation>
-                                </annotation>
-                            </element>
-                            <element name="life-time-inhours" type="int">
-                                <annotation>
-                                    <documentation xml:lang="en"> MyProxy Proxy Life time.
-                                    </documentation>
-                                </annotation>
-                            </element>
-                        </sequence>
-                    </complexType>
-                </element>
-                <element name="ssh-authentication">                
-                    <annotation>
-                        <documentation xml:lang="en"> Security context for execution of the workflow
-                            on SSH accessed resources. 
-                        </documentation>
-                    </annotation>
-                    <complexType>
-                        <sequence>
-                            <element name="access-key-id" type="string">
-                                <annotation>
-                                    <documentation xml:lang="en"> Amazon Web Services Public Access
-                                        Key ID used to contact the AWS API's. </documentation>
-                                </annotation>
-                            </element>
-                            <element name="secret-access-key" type="string">
-                                <annotation>
-                                    <documentation xml:lang="en"> Amazon Web Services AWS Private
-                                        Secret Access Key. </documentation>
-                                </annotation>
-                            </element>
-                        </sequence>
-                    </complexType>
-                </element>
-                <element name="credential-management-service">
-                    <annotation>
-                        <documentation xml:lang="en"> Security context for execution of the workflow
-                        </documentation>
-                    </annotation>
-                    <complexType>
-                        <sequence>
-                            <element name="scms-url" type="anyURI">
-                                <annotation>
-                                    <documentation xml:lang="en"> Location of the SCMS (Session
-                                        Credential Management Service). </documentation>
-                                </annotation>
-                            </element>
-                            <element name="execution-session-id" type="string">
-                                <annotation>
-                                    <documentation xml:lang="en"> The ID of the session credential
-                                        to be used for executing grid operations as needed by the
-                                        workflow. </documentation>
-                                </annotation>
-                            </element>
-                        </sequence>
-                    </complexType>
-                </element>
-                <element name="amazon-webservices">                
-                    <annotation>
-                        <documentation xml:lang="en"> Security context for execution of the workflow
-                        </documentation>
-                    </annotation>
-                    <complexType>
-                        <sequence>
-                            <element name="access-key-id" type="string">
-                                <annotation>
-                                    <documentation xml:lang="en"> Amazon Web Services Public Access
-                                        Key ID used to contact the AWS API's. </documentation>
-                                </annotation>
-                            </element>
-                            <element name="secret-access-key" type="string">
-                                <annotation>
-                                    <documentation xml:lang="en"> Amazon Web Services AWS Private
-                                        Secret Access Key. </documentation>
-                                </annotation>
-                            </element>
-                        </sequence>
-                    </complexType>
-                </element>
-            </sequence>
-        </complexType>
-    </element>
+	<element name='context-header'>
+		<annotation>
+			<documentation xml:lang='en'>
+				Element that contains Airavata
+				specific context information sent as a SOAP
+				header in a SOAP message.
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element minOccurs='0' maxOccurs='1' ref='wec:user-identifier' />
+				<element minOccurs='1' maxOccurs='1' ref='wec:soa-service-eprs' />
+				<element minOccurs='1' maxOccurs='1'
+					ref='wec:workflow-monitoring-context' />
+				<element minOccurs='0' maxOccurs='1'
+					ref='wec:workflow-scheduling-context' />
+				<element minOccurs='0' maxOccurs='1'
+					ref='wec:workflow-output-data-handling' />
+				<element minOccurs='0' maxOccurs='1' ref='wec:security-context' />
+			</sequence>
+		</complexType>
+	</element>
 
-    <element name="workflow-monitoring-context">
-        <annotation>
-            <documentation xml:lang="en">Workflow context for execution of a instance used to 
-                relate the specific activity in the context of workflow and used for monitoring 
-                and illustarting the workflow progress. 
-            </documentation>
-        </annotation>
-        <complexType>
-            <sequence>
-                <element name="experiment-id" type="string">
-                    <annotation>
-                        <documentation xml:lang="en"> Experiment ID (REQUIRED in context), Defines
-                            the context of the workflow. </documentation>
-                    </annotation>
-                </element>
-                <element name="workflow-instance-id" type="anyURI">
-                    <annotation>
-                        <documentation xml:lang="en"> URI that identifies workflow instance that
-                            originated the message. (optional) </documentation>
-                    </annotation>
-                </element>
-                <element name="workflow-template-id" type="anyURI">
-                    <annotation>
-                        <documentation xml:lang="en"> URI that identifies workflow template that was
-                            used to create the workflow instance. (optional) </documentation>
-                    </annotation>
-                </element>
-                <element name="workflow-node-id" type="string">
-                    <annotation>
-                        <documentation xml:lang="en"> String that identifies uniqueley a node in
-                            workflow graph that originated that message. (optional) </documentation>
-                    </annotation>
-                </element>
-                <element name="workflow-time-step" type="int">
-                    <annotation>
-                        <documentation xml:lang="en"> Increasing integer representing time in the
-                            workflow execution when the message originated. (optional)
-                        </documentation>
-                    </annotation>
-                </element>
+	<element name="user-identifier" type="string">
+		<annotation>
+			<documentation xml:lang="en"> User that the workflow is
+				executed on behalf of,
+				user id is used to catalog data and for
+				monitoring purposes
+			</documentation>
+		</annotation>
+	</element>
 
-                <element name="service-instance-id" type="anyURI">
-                    <annotation>
-                        <documentation xml:lang="en"> URI that identifies service instance that
-                            originated that message. (optional) </documentation>
-                    </annotation>
-                </element>
+	<element name="soa-service-eprs">
+		<annotation>
+			<documentation xml:lang="en">
+				Element that contains
+				persistant service end points within the system.
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="gfac-url" type="anyURI" minOccurs='1'
+					maxOccurs='1'>
+					<annotation>
+						<documentation xml:lang="en"> Location of GFac factory
+							service to use. (optional)
+						</documentation>
+					</annotation>
+				</element>
+				<element name="registry-url" type="anyURI" minOccurs='1'
+					maxOccurs='1'>
+					<annotation>
+						<documentation xml:lang="en"> Location of Registry
+							service
+							to use. (optional)
+						</documentation>
+					</annotation>
+				</element>
 
-                <element name="service-replica-id" type="anyURI">
-                    <annotation>
-                        <documentation xml:lang="en"> URI that identifies the replica of service
-                            instance that originated that message, primarly used by Fault Tolerance
-                            service to overprovision. (optional) </documentation>
-                    </annotation>
-                </element>
-                
-                <element name="event-publish-epr" type="anyURI" minOccurs="1" maxOccurs="1">
-                    <annotation>
-                        <documentation xml:lang="en"> EPR for WS-Eventing sink where to send event. (optional)
-                            NOTE: currently any XML is accepted as there are many versions of WS-Addressing.
-                        </documentation>
-                    </annotation>
-                </element>
-                
-                
-                <element name="error-publish-epr" type="anyURI">
-                    <annotation>
-                        <documentation xml:lang="en"> EPR for WS-Eventing sink where to send errors (optional)
-                            NOTE: designed good for debugging and system level warnings, errors, etc
-                        </documentation>
-                    </annotation>
-                </element>
-            </sequence>
-        </complexType>
-    </element>
+				<element name="resource-scheduler-url" type="string"
+					minOccurs='0' maxOccurs='1'>
+					<annotation>
+						<documentation xml:lang="en"> Resource Scheduler to use
+						</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
 
-    <element name="scheduling-context">
-        <complexType>
-            <simpleContent>
-                <extension base="string">                  
-                    <annotation><documentation xml:lang="en">
-                        Element text contains host name for the resource.
-                    </documentation></annotation>
-                    
-                    <attribute name="workflow-node-id" type="string">
-                        <annotation><documentation xml:lang="en">
-                            This is workflow node ID that is mapped to a resource.
-                        </documentation></annotation>
-                    </attribute>
-                    
-                    <attribute name="service-id" type="anyURI" use="optional">
-                        <annotation><documentation xml:lang="en">
-                            This is service ID.
-                        </documentation></annotation>
-                    </attribute>
-                    
-                    <attribute name="host-name" type="anyURI" use="optional">
-                        <annotation><documentation xml:lang="en">
-                            head node of the resource
-                        </documentation></annotation>
-                    </attribute>
-                    
-                    <attribute name="wsgram-preferred" type="boolean" use="optional">
-                        <annotation><documentation xml:lang="en">
-                            If true then wsgram will be used, false pre-wsgram will be used.
-                        </documentation></annotation>
-                    </attribute>
-                    
-                    <attribute name="gatekeeper-epr" type="anyURI" use="optional">
-                        <annotation><documentation xml:lang="en">
-                            GRAM EPR of the resource
-                        </documentation></annotation>
-                    </attribute>
-                    
-                    <attribute name="job-manager" type="string">
-                        <annotation><documentation xml:lang="en">
-                            LRM job manager on the resource, ex: PBS, LSF.
-                        </documentation></annotation>
-                    </attribute>
-                    
-                    <attribute name="cpu-count" type="int" use="optional">
-                        <annotation><documentation xml:lang="en">
-                            number of CPU's allocated on the compute cluster
-                        </documentation></annotation>
-                    </attribute>
-                    
-                    <attribute name="node-count" type="int" use="optional">
-                        <annotation><documentation xml:lang="en">
-                            number of nodes allocated on the compute cluster
-                        </documentation></annotation>
-                    </attribute>
-                    
-                    <attribute name="queue-name" type="string">
-                        <annotation><documentation xml:lang="en">
-                            Job queue name if any.
-                        </documentation></annotation>
-                    </attribute>
-                    
-                    <attribute name="max-wall-time" type="int" use="optional">
-                        <annotation><documentation xml:lang="en">
-                            number of CPU's allocated on the compute cluster
-                        </documentation></annotation>
-                    </attribute>
-                </extension>
-            </simpleContent>
-        </complexType>
-    </element>
-    
-    <element name="workflow-scheduling">
-        <annotation><documentation xml:lang="en">
-            Element that contains service specific resource scheduling information sent
-            inside workflow context. The purpose of this context is to schedule individual
-            activities on a different resource. 
-        </documentation></annotation>
-        <complexType>
-            <sequence>
-                <element minOccurs="1" maxOccurs="unbounded" ref="wec:scheduling-context"/>
-            </sequence>
-        </complexType>
-    </element>
+	<element name="workflow-monitoring-context">
+		<annotation>
+			<documentation xml:lang="en">Workflow context for execution
+				of a instance used to
+				relate the specific activity in the context of
+				workflow and used for
+				monitoring
+				and illustarting the workflow
+				progress.
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="experiment-id" type="string" minOccurs="1"
+					maxOccurs="1">
+					<annotation>
+						<documentation xml:lang="en"> Experiment ID (REQUIRED in
+							context), Defines
+							the context of the workflow.
+						</documentation>
+					</annotation>
+				</element>
+				<element name="workflow-instance-id" type="anyURI"
+					minOccurs="1" maxOccurs="1">
+					<annotation>
+						<documentation xml:lang="en"> URI that identifies
+							workflow instance that
+							originated the message. (optional)
+						</documentation>
+					</annotation>
+				</element>
+				<element name="workflow-template-id" type="anyURI">
+					<annotation>
+						<documentation xml:lang="en"> URI that identifies
+							workflow template that was
+							used to create the workflow instance.
+							(optional)
+						</documentation>
+					</annotation>
+				</element>
+				<element name="workflow-node-id" type="string">
+					<annotation>
+						<documentation xml:lang="en"> String that identifies
+							uniqueley a node in
+							workflow graph that originated that message.
+							(optional)
+						</documentation>
+					</annotation>
+				</element>
+				<element name="workflow-time-step" type="int">
+					<annotation>
+						<documentation xml:lang="en"> Increasing integer
+							representing time in the
+							workflow execution when the message
+							originated. (optional)
+						</documentation>
+					</annotation>
+				</element>
 
-    <element name="gfac-url" type="anyURI">
-        <annotation>
-            <documentation xml:lang="en"> Location of GFac factory service to use. (optional)
-            </documentation>
-        </annotation>
-    </element>
-    <element name="registry-url" type="anyURI">
-        <annotation>
-            <documentation xml:lang="en"> Location of Registry service to use. (optional)
-            </documentation>
-        </annotation>
-    </element>
+				<element name="service-instance-id" type="anyURI">
+					<annotation>
+						<documentation xml:lang="en"> URI that identifies service
+							instance that
+							originated that message. (optional)
+						</documentation>
+					</annotation>
+				</element>
 
-    <element name="resource-scheduler-url" type="string">
-        <annotation>
-            <documentation xml:lang="en"> Resource Scheduler to use</documentation>
-        </annotation>
-    </element>
+				<element name="service-replica-id" type="anyURI">
+					<annotation>
+						<documentation xml:lang="en"> URI that identifies the
+							replica of service
+							instance that originated that message, primarly
+							used by Fault Tolerance
+							service to overprovision. (optional)
+						</documentation>
+					</annotation>
+				</element>
 
-    <element name="data-registry-url" type="anyURI">
-        <annotation>
-            <documentation xml:lang="en"> (Optional) If a seperate Data Registry is used for catlogging data, the associated location of the Data registry </documentation>
-        </annotation>
-    </element>
+				<element name="event-publish-epr" type="anyURI" minOccurs="1"
+					maxOccurs="1">
+					<annotation>
+						<documentation xml:lang="en"> EPR for WS-Eventing sink
+							where to send event. (optional)
+							NOTE: currently any XML is
+							accepted as there are many versions of
+							WS-Addressing.
+						</documentation>
+					</annotation>
+				</element>
 
-    <element name="user-name" type="string">
-        <annotation>
-            <documentation xml:lang="en"> User that the workflow is executed on behalf of.</documentation>
-        </annotation>
-    </element>
+				<element name="notification-topic" type="string" minOccurs="0"
+					maxOccurs="1">
+					<annotation>
+						<documentation xml:lang="en"> A Unique String to set as
+							the topic for
+							events sent on an experiment. The topic may be
+							embedded with the
+							event-publish-epr. An experiment id being unique
+							may be chosen as
+							topic.
+						</documentation>
+					</annotation>
+				</element>
 
-    <element name="output-data-directory" type="anyURI">
-        <annotation>
-            <documentation xml:lang="en">(Optional) If the workflow outputs are to be staged to a pre-specified location, then the output data staging directory should be provided.
-            </documentation>
-        </annotation>
-    </element>
+				<element name="error-publish-epr" type="anyURI">
+					<annotation>
+						<documentation xml:lang="en"> EPR for WS-Eventing sink
+							where to send errors (optional)
+							NOTE: designed good for debugging
+							and system level warnings, errors,
+							etc
+						</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
 
-      <element name='context'>
-      <annotation><documentation xml:lang='en'>
-        Element that contains LEAD specific context information sent as a SOAP header in a SOAP message.
-      </documentation></annotation>
-      <complexType>
-        <sequence>
-          <element minOccurs='1' maxOccurs='1' ref='wec:workflow-monitoring-context'/>
-            <element minOccurs='1' maxOccurs='1' ref='wec:gfac-url'/>
-            <element minOccurs='1' maxOccurs='1' ref='wec:registry-url'/>
-          <element minOccurs='0' maxOccurs='1' ref='wec:security-context'/>
-          <element minOccurs='0' maxOccurs='1' ref='wec:scheduling-context'/>
-          <element minOccurs='0' maxOccurs='1' ref='wec:resource-scheduler-url'/>
-            <element minOccurs='0' maxOccurs='1' ref='wec:data-registry-url'/>
-            <element minOccurs='0' maxOccurs='1' ref='wec:user-name'/>
-            <element minOccurs='0' maxOccurs='1' ref='wec:output-data-directory'/>
-            <element minOccurs="0" maxOccurs="1" ref="wec:workflow-scheduling"/>
-         </sequence>
-      </complexType>
-   </element>
+	<element name="workflow-scheduling-context">
+		<annotation>
+			<documentation xml:lang="en">
+				Element that contains service
+				specific resource scheduling information sent
+				inside workflow
+				context. The purpose of this context is to schedule
+				individual
+				activities on a different resource.
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element minOccurs="1" maxOccurs="unbounded"
+					ref="wec:application-scheduling-context" />
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="application-scheduling-context">
+		<complexType>
+			<simpleContent>
+				<extension base="string">
+					<annotation>
+						<documentation xml:lang="en">
+							Element text contains host
+							name for the resource.
+						</documentation>
+					</annotation>
+
+					<attribute name="workflow-node-id" type="string">
+						<annotation>
+							<documentation xml:lang="en">
+								This is workflow node ID
+								that is mapped to a resource.
+							</documentation>
+						</annotation>
+					</attribute>
+
+					<attribute name="service-id" type="anyURI" use="optional">
+						<annotation>
+							<documentation xml:lang="en">
+								This is service ID.
+							</documentation>
+						</annotation>
+					</attribute>
+
+					<attribute name="host-name" type="anyURI" use="optional">
+						<annotation>
+							<documentation xml:lang="en">
+								head node of the resource
+							</documentation>
+						</annotation>
+					</attribute>
+
+					<attribute name="wsgram-preferred" type="boolean" use="optional">
+						<annotation>
+							<documentation xml:lang="en">
+								If true then wsgram will be
+								used, false pre-wsgram will be used.
+							</documentation>
+						</annotation>
+					</attribute>
+
+					<attribute name="gatekeeper-epr" type="anyURI" use="optional">
+						<annotation>
+							<documentation xml:lang="en">
+								GRAM EPR of the resource
+							</documentation>
+						</annotation>
+					</attribute>
+
+					<attribute name="job-manager" type="string">
+						<annotation>
+							<documentation xml:lang="en">
+								LRM job manager on the
+								resource, ex: PBS, LSF.
+							</documentation>
+						</annotation>
+					</attribute>
+
+					<attribute name="cpu-count" type="int" use="optional">
+						<annotation>
+							<documentation xml:lang="en">
+								number of CPU's allocated
+								on the compute cluster
+							</documentation>
+						</annotation>
+					</attribute>
+
+					<attribute name="node-count" type="int" use="optional">
+						<annotation>
+							<documentation xml:lang="en">
+								number of nodes allocated
+								on the compute cluster
+							</documentation>
+						</annotation>
+					</attribute>
+
+					<attribute name="queue-name" type="string">
+						<annotation>
+							<documentation xml:lang="en">
+								Job queue name if any.
+							</documentation>
+						</annotation>
+					</attribute>
+
+					<attribute name="max-wall-time" type="int" use="optional">
+						<annotation>
+							<documentation xml:lang="en">
+								number of CPU's allocated
+								on the compute cluster
+							</documentation>
+						</annotation>
+					</attribute>
+				</extension>
+			</simpleContent>
+		</complexType>
+	</element>
+
+	<element name="workflow-output-data-handling">
+		<annotation>
+			<documentation xml:lang="en">
+				Element that contains
+				application specific resource scheduling information sent
+				inside
+				workflow context. The purpose of this context is to handle
+				individual
+				activities with different needs like intermediate data
+				need not be persisted.
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element minOccurs="1" maxOccurs="unbounded"
+					ref="wec:application-output-data-handling" />
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="application-output-data-handling">
+		<complexType>
+			<sequence>
+				<element name="data-registry-url" type="anyURI">
+					<annotation>
+						<documentation xml:lang="en"> (Optional) If a seperate
+							Data
+							Registry is used for catlogging data, the associated location
+							of the
+							Data registry
+						</documentation>
+					</annotation>
+				</element>
+
+				<element name="output-data-directory" type="anyURI">
+					<annotation>
+						<documentation xml:lang="en">(Optional) If the workflow
+							outputs are to be staged to a pre-specified location, then the
+							output data staging directory should be provided.
+						</documentation>
+					</annotation>
+				</element>
+
+				<element name="data-persistance" type="boolean">
+					<annotation>
+						<documentation xml:lang="en">(Optional) If the
+							intermediate workflow
+							outputs are to be discarded after execution,
+							this flag should be set to
+							false. By defualt this flag should be
+							true assuming all data will
+							be persisted.
+						</documentation>
+					</annotation>
+				</element>
+
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="security-context">
+		<annotation>
+			<documentation xml:lang="en"> Security context for execution
+				of the workflow
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element name="grid-proxy" type="base64Binary">
+					<annotation>
+						<documentation xml:lang="en"> Security context for Grid
+							Security
+							Infrastructure X509 Proxy with trusted chain.
+						</documentation>
+					</annotation>
+				</element>
+				<element name="grid-myproxy-repository">
+					<annotation>
+						<documentation xml:lang="en"> Security context for Grid
+							Security MyProxy
+							Service
+						</documentation>
+					</annotation>
+					<complexType>
+						<sequence>
+							<element name="myproxy-server" type="string">
+								<annotation>
+									<documentation xml:lang="en"> MyProxy Server.
+									</documentation>
+								</annotation>
+							</element>
+							<element name="username" type="string">
+								<annotation>
+									<documentation xml:lang="en"> MyProxy User Name.
+									</documentation>
+								</annotation>
+							</element>
+							<element name="password" type="string">
+								<annotation>
+									<documentation xml:lang="en"> MyProxy Password.
+									</documentation>
+								</annotation>
+							</element>
+							<element name="life-time-inhours" type="int">
+								<annotation>
+									<documentation xml:lang="en"> MyProxy Proxy Life time.
+									</documentation>
+								</annotation>
+							</element>
+						</sequence>
+					</complexType>
+				</element>
+				<element name="ssh-authentication">
+					<annotation>
+						<documentation xml:lang="en"> Security context for
+							execution of the workflow
+							on SSH accessed resources.
+						</documentation>
+					</annotation>
+					<complexType>
+						<sequence>
+							<element name="access-key-id" type="string">
+								<annotation>
+									<documentation xml:lang="en"> Amazon Web Services
+										Public Access
+										Key ID used to contact the AWS API's.
+									</documentation>
+								</annotation>
+							</element>
+							<element name="secret-access-key" type="string">
+								<annotation>
+									<documentation xml:lang="en"> Amazon Web Services AWS
+										Private
+										Secret Access Key.
+									</documentation>
+								</annotation>
+							</element>
+						</sequence>
+					</complexType>
+				</element>
+				<element name="credential-management-service">
+					<annotation>
+						<documentation xml:lang="en"> Security context for
+							execution of the workflow
+						</documentation>
+					</annotation>
+					<complexType>
+						<sequence>
+							<element name="scms-url" type="anyURI">
+								<annotation>
+									<documentation xml:lang="en"> Location of the SCMS
+										(Session
+										Credential Management Service).
+									</documentation>
+								</annotation>
+							</element>
+							<element name="execution-session-id" type="string">
+								<annotation>
+									<documentation xml:lang="en"> The ID of the session
+										credential
+										to be used for executing grid operations as needed
+										by the
+										workflow.
+									</documentation>
+								</annotation>
+							</element>
+						</sequence>
+					</complexType>
+				</element>
+				<element name="amazon-webservices">
+					<annotation>
+						<documentation xml:lang="en"> Security context for
+							execution of the workflow
+						</documentation>
+					</annotation>
+					<complexType>
+						<sequence>
+							<element name="access-key-id" type="string">
+								<annotation>
+									<documentation xml:lang="en"> Amazon Web Services
+										Public Access
+										Key ID used to contact the AWS API's.
+									</documentation>
+								</annotation>
+							</element>
+							<element name="secret-access-key" type="string">
+								<annotation>
+									<documentation xml:lang="en"> Amazon Web Services AWS
+										Private
+										Secret Access Key.
+									</documentation>
+								</annotation>
+							</element>
+						</sequence>
+					</complexType>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+
 </schema>
