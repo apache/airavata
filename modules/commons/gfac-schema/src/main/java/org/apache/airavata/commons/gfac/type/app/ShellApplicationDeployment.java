@@ -24,16 +24,15 @@ package org.apache.airavata.commons.gfac.type.app;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 
-import java.util.Map;
-
 public class ShellApplicationDeployment extends ApplicationDeploymentDescription {
 
     private ShellApplicationDeploymentType shellApplicationDeploymentType;
-    // TODO
-    private Map<String, String> env;
 
     public ShellApplicationDeployment() {
         shellApplicationDeploymentType = ShellApplicationDeploymentType.Factory.newInstance();
+        ShellApplicationDeploymentType.Env env =
+                ShellApplicationDeploymentType.Factory.newInstance().getEnv();
+        shellApplicationDeploymentType.setEnv(env);
     }
 
     public ShellApplicationDeployment(ShellApplicationDeploymentType sadt) {
@@ -48,12 +47,12 @@ public class ShellApplicationDeployment extends ApplicationDeploymentDescription
         this.shellApplicationDeploymentType.setExecutable(executable);
     }
 
-    public Map<String, String> getEnv() {
-        return env;
+    public ShellApplicationDeploymentType.Env getEnv() {
+        return this.shellApplicationDeploymentType.getEnv();
     }
 
-    public void setEnv(Map<String, String> env) {
-        this.env = env;
+    public void setEnv(ShellApplicationDeploymentType.Env entries) {
+        this.shellApplicationDeploymentType.setEnv(entries);
     }
 
     public String getStdOut() {

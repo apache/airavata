@@ -43,4 +43,29 @@ public class DataType implements Type {
     public String toString() {
         return this.type;
     }
+
+    /*  TODO:
+        private org.apache.airavata.schemas.gfac.DataType dataType;
+
+    public DataType() {
+        dataType = org.apache.airavata.schemas.gfac.DataType.Factory.newInstance();
+    }
+
+    public DataType(String type) {
+        this.dataType.set(type);
+        //this.dataType.set(org.apache.airavata.schemas.gfac.DataType.DOUBLE);
+    }
+
+    public void setType(String type) {
+        this.dataType.set(type);
+    }
+
+    public String getType() {
+        return this.dataType.getStringValue();
+    }
+
+    public String toString() {
+        return this.dataType.toString();
+    }
+     */
 }

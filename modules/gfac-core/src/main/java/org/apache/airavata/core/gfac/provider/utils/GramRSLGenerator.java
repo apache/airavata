@@ -21,17 +21,18 @@
 
 package org.apache.airavata.core.gfac.provider.utils;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.airavata.commons.gfac.type.app.GramApplicationDeployment;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
+import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.globus.gram.GramAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Utilities for generating GRAM RSL
@@ -57,7 +58,15 @@ public class GramRSLGenerator {
          * the env specified in the host description and application description
          * documents
          */
-        Map<String, String> nv = app.getEnv();
+        ShellApplicationDeploymentType.Env.Entry[] env = app.getEnv().getEntryArray();
+
+        Map<String, String> nv = null;
+        for (int i=0; i<env.length; i++) {
+            String key = app.getEnv().getEntryArray(i).getKey();
+            String value = app.getEnv().getEntryArray(i).getValue();
+            nv.put(key,value);
+        }
+
         for (Entry<String, String> entry : nv.entrySet()) {
             jobAttr.addEnvVariable(entry.getKey(), entry.getValue());
         }

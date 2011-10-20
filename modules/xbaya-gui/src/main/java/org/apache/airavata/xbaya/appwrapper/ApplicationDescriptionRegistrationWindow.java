@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import org.apache.airavata.common.utils.NameValidator;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
+import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaComboBox;
@@ -327,16 +328,24 @@ public class ApplicationDescriptionRegistrationWindow {
             shellApplicationDeployment.setWorkingDir(StringUtil.trimSpaceInString(this.workDirectoryTextField.getText()));
             shellApplicationDeployment.setTmpDir(StringUtil.trimSpaceInString(this.tempDirTextField.getText()));
 
-            Map<String, String> env = shellApplicationDeployment.getEnv();
+            ShellApplicationDeploymentType.Env.Entry[] entries = shellApplicationDeployment.getEnv().getEntryArray();
+
+            Map<String, String> env = null;
+            for (int i=0; i<entries.length; i++) {
+                String key = shellApplicationDeployment.getEnv().getEntryArray(i).getKey();
+                String value = shellApplicationDeployment.getEnv().getEntryArray(i).getValue();
+                env.put(key, value);
+            }
+
             env.put("ProjectName",projectName);
     		env.put("JobType",jobType);
-			env.put("Queue",queue);
-			env.put("HostName",hostName);
+			env.put("Queue", queue);
+			env.put("HostName", hostName);
             if (maxWallTime!=null) {
-            	env.put("MaxWallTime",maxWallTime.toString());
+            	env.put("MaxWallTime", maxWallTime.toString());
             }
             if (pCount!=null) {
-            	env.put("Pcount",pCount.toString());
+            	env.put("Pcount", pCount.toString());
             }
             
             /*--- save to registry ---*/
