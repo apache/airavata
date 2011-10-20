@@ -21,18 +21,6 @@
 
 package org.apache.airavata.core.gfac.provider.impl;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
@@ -43,6 +31,13 @@ import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.InputUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
+import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * {@link LocalProvider} will execute jobs (application) on local machine.
@@ -134,7 +129,15 @@ public class LocalProvider extends AbstractProvider {
         this.builder = new ProcessBuilder(cmdList);
 
         // get the env of the host and the application
-        Map<String, String> nv = app.getEnv();
+        ShellApplicationDeploymentType.Env.Entry[] env = app.getEnv().getEntryArray();
+
+        Map<String, String> nv = null;
+        for (int i=0; i<env.length; i++) {
+            String key = app.getEnv().getEntryArray(i).getKey();
+            String value = app.getEnv().getEntryArray(i).getValue();
+            nv.put(key,value);
+        }
+
         if(app.getEnv() != null){
             builder.environment().putAll(nv);
         }

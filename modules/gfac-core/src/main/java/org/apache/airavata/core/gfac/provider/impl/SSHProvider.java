@@ -21,15 +21,6 @@
 
 package org.apache.airavata.core.gfac.provider.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
-
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
@@ -37,7 +28,6 @@ import net.schmizz.sshj.connection.channel.direct.Session.Command;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
-
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
@@ -49,6 +39,16 @@ import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.InputUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
+import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Execute application using remote SSH
@@ -179,7 +179,14 @@ public class SSHProvider extends AbstractProvider {
             session.exec("cd " + app.getWorkingDir());
 
             // get the env of the host and the application
-            Map<String, String> nv = app.getEnv();
+            ShellApplicationDeploymentType.Env.Entry[] env = app.getEnv().getEntryArray();
+
+            Map<String, String> nv = null;
+            for (int i=0; i<env.length; i++) {
+                String key = app.getEnv().getEntryArray(i).getKey();
+                String value = app.getEnv().getEntryArray(i).getValue();
+                nv.put(key,value);
+            }
 
             // extra env's
             nv.put(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());

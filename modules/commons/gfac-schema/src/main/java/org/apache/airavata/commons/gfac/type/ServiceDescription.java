@@ -28,7 +28,7 @@ import java.util.List;
 public class ServiceDescription implements Type {
 
     private ServiceDescriptionType serviceDescriptionType;
-    private List<Parameter> inputParameters;
+    private List<org.apache.airavata.commons.gfac.type.Parameter> inputParameters;
     private List<Parameter> outputParameters;
 
     public ServiceDescription() {
@@ -62,5 +62,6 @@ public class ServiceDescription implements Type {
 
     public void setOutputParameters(List<Parameter> outputParameters) {
         this.outputParameters = outputParameters;
+        //this.serviceDescriptionType.setOutputParametersArray(outputParameters);
     }
 }

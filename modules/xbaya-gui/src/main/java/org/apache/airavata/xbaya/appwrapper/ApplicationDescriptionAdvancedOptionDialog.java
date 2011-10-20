@@ -30,6 +30,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
+import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.apache.airavata.xbaya.XBayaEngine;
 
 public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
@@ -367,13 +368,13 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 		getShellApplicationDescription().setStdOut(txtSTDOUT.getText());
 		getShellApplicationDescription().setStdErr(txtSTDERR.getText());
 		
-		getShellApplicationDescription().setEnv(new HashMap<String, String>());
+		getShellApplicationDescription().setEnv(ShellApplicationDeploymentType.Factory.newInstance().getEnv());
 		for(int i=0;i<defaultTableModel.getRowCount();i++){
 			String varName = (String)defaultTableModel.getValueAt(i, 0);
 			if (varName!=null && !varName.equals("")) {
 				String varValue = (String) defaultTableModel.getValueAt(i, 1);
-				getShellApplicationDescription().getEnv()
-						.put(varName, varValue);
+				getShellApplicationDescription().getEnv().addNewEntry().setKey(varName);
+                getShellApplicationDescription().getEnv().addNewEntry().setValue(varValue);
 			}
 		}
 	}
@@ -386,7 +387,16 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 		txtSTDOUT.setText(getShellApplicationDescription().getStdOut());
 		txtSTDERR.setText(getShellApplicationDescription().getStdErr());
 		tableModelChanging=true;
-		Map<String, String> env = getShellApplicationDescription().getEnv();
+
+        ShellApplicationDeploymentType.Env.Entry[] entry = getShellApplicationDescription().getEnv().getEntryArray();
+
+        Map<String, String> env = null;
+        for (int i=0; i<entry.length; i++) {
+            String key = getShellApplicationDescription().getEnv().getEntryArray(i).getKey();
+            String value = getShellApplicationDescription().getEnv().getEntryArray(i).getValue();
+            env.put(key,value);
+        }
+
 		while(defaultTableModel.getRowCount()>0){
 			defaultTableModel.removeRow(0);
 		}
