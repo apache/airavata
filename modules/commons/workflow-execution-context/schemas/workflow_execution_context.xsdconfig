@@ -1,7 +1,0 @@
-<xb:config  xmlns:xb="http://www.bea.com/2002/09/xbean/config">
-
-    <xb:namespace uri="http://schemas.airavata.apache.org/workflow-execution-context">
-        <xb:package>org.apache.airavata.schemas.wec</xb:package>
-    </xb:namespace>
-    
-</xb:config>
