@@ -21,59 +21,65 @@
 
 package org.apache.airavata.commons.gfac.type.app;
 
+import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
+
 public class GramApplicationDeployment extends ShellApplicationDeployment {
-    private String projectName;
-    private String queueName;
-    private int wallTime;
-    private int nodeCount;
-    private int cpuCount;
-    private String jobType;
+
+    private GramApplicationDeploymentType gramApplicationDeploymentType;
+
+    private GramApplicationDeployment() {
+        this.gramApplicationDeploymentType = GramApplicationDeploymentType.Factory.newInstance();
+    }
+
+    private GramApplicationDeployment(GramApplicationDeploymentType gadt) {
+        this.gramApplicationDeploymentType = gadt;
+    }
 
     public String getProjectName() {
-        return projectName;
+        return gramApplicationDeploymentType.getProjectName();
     }
 
     public void setProjectName(String projectName) {
-        this.projectName = projectName;
+        this.gramApplicationDeploymentType.setProjectName(projectName);
     }
 
     public String getQueueName() {
-        return queueName;
+        return gramApplicationDeploymentType.getQueueName();
     }
 
     public void setQueueName(String queueName) {
-        this.queueName = queueName;
+        this.gramApplicationDeploymentType.setQueueName(queueName);
     }
 
     public int getWallTime() {
-        return wallTime;
+        return gramApplicationDeploymentType.getWallTime();
     }
 
     public void setWallTime(int wallTime) {
-        this.wallTime = wallTime;
+        this.gramApplicationDeploymentType.setWallTime(wallTime);
     }
 
     public int getNodeCount() {
-        return nodeCount;
+        return gramApplicationDeploymentType.getNodeCount();
     }
 
     public void setNodeCount(int nodeCount) {
-        this.nodeCount = nodeCount;
+        this.gramApplicationDeploymentType.setNodeCount(nodeCount);
     }
 
     public int getCpuCount() {
-        return cpuCount;
+        return gramApplicationDeploymentType.getCpuCount();
     }
 
     public void setCpuCount(int cpuCount) {
-        this.cpuCount = cpuCount;
+        this.gramApplicationDeploymentType.setCpuCount(cpuCount);
     }
 
     public String getJobType() {
-        return jobType;
+        return gramApplicationDeploymentType.getJobType();
     }
 
     public void setJobType(String jobType) {
-        this.jobType = jobType;
+        this.gramApplicationDeploymentType.setJobType(jobType);
     }
 }

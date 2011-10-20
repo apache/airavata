@@ -21,27 +21,37 @@
 
 package org.apache.airavata.commons.gfac.type;
 
+import org.apache.airavata.schemas.gfac.ParameterType;
+
 public class Parameter implements Type {
-    private String name;
-    private String description;
+    private ParameterType parameterType;
     private DataType type;
 
+    public Parameter() {
+        this.parameterType = ParameterType.Factory.newInstance();
+    }
+
+    public Parameter(ParameterType pt) {
+        this.parameterType = pt;
+    }
+
     public String getName() {
-        return name;
+        return parameterType.getName();
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.parameterType.setName(name);
     }
 
     public String getDescription() {
-        return description;
+        return parameterType.getDescription();
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.parameterType.setDescription(description);
     }
 
+    // TODO
     public DataType getType() {
         return type;
     }

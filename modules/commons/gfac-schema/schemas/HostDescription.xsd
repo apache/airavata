@@ -13,13 +13,13 @@
     xmlns:gfac="http://schemas.airavata.apache.org/gfac/type" xmlns="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified">
 
-        <element name="globusHost" type="gfac:globusHost" />
-        <element name="hostDescription" type="gfac:hostDescription" />
+        <element name="globusHost" type="gfac:globusHostType" />
+        <element name="hostDescription" type="gfac:hostDescriptionType" />
         
         <!-- Globus Host Description -->
-        <complexType name="globusHost">
+        <complexType name="globusHostType">
             <complexContent>
-                <extension base="gfac:hostDescription">
+                <extension base="gfac:hostDescriptionType">
                     <sequence>
                         <element minOccurs="0" name="globusGateKeeperEndPoint" type="string" />
                         <element minOccurs="0" name="gridFTPEndPoint" type="string" />
@@ -29,9 +29,10 @@
         </complexType>
         
         <!-- Host Description -->
-        <complexType name="hostDescription">
+        <complexType name="hostDescriptionType">
             <sequence>
                 <element minOccurs="0" name="name" type="string" />
+                <element minOccurs="0" name="address" type="string" />
             </sequence>
         </complexType>
 

@@ -13,13 +13,13 @@
     xmlns:gfac="http://schemas.airavata.apache.org/gfac/type" xmlns="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified">
        
-    <element name="shellApplicationDeployment" type="gfac:shellApplicationDeployment"/>
-    <element name="applicationDeploymentDescription" type="gfac:applicationDeploymentDescription"/>
-    <element name="gramApplicationDeployment" type="gfac:gramApplicationDeployment"/>
+    <element name="shellApplicationDeployment" type="gfac:shellApplicationDeploymentType"/>
+    <element name="applicationDeploymentDescription" type="gfac:applicationDeploymentDescriptionType"/>
+    <element name="gramApplicationDeployment" type="gfac:gramApplicationDeploymentType"/>
     
-    <complexType name="gramApplicationDeployment">
+    <complexType name="gramApplicationDeploymentType">
         <complexContent>
-            <extension base="gfac:shellApplicationDeployment">
+            <extension base="gfac:shellApplicationDeploymentType">
                 <sequence>
                     <element name="cpuCount" type="int"/>
                     <element minOccurs="0" name="jobType" type="string"/>
@@ -32,9 +32,9 @@
         </complexContent>
     </complexType>        
     
-    <complexType name="shellApplicationDeployment">
+    <complexType name="shellApplicationDeploymentType">
         <complexContent>
-            <extension base="gfac:applicationDeploymentDescription">
+            <extension base="gfac:applicationDeploymentDescriptionType">
                 <sequence>
                     <element name="env">
                         <complexType>
@@ -59,7 +59,7 @@
         </complexContent>
     </complexType>
     
-    <complexType name="applicationDeploymentDescription">
+    <complexType name="applicationDeploymentDescriptionType">
         <sequence>
             <element minOccurs="0" name="inputDir" type="string"/>
             <element minOccurs="0" name="name" type="string"/>
