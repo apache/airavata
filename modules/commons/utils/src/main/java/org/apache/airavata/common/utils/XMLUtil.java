@@ -491,4 +491,75 @@ public class XMLUtil {
         return null;
     }
 
+    /**
+     * Check two XmlElements are equal with the Xml content or not
+     * @param elem1
+     * @param elem2
+     * @return
+     */
+    public static boolean isEqual(XmlElement elem1, XmlElement elem2) throws Exception{
+
+               if (elem1 == null && elem2 == null) {
+                       return true;
+               } else if (elem1 == null) {
+                       return false;
+               } else if (elem2 == null) {
+                       return false;
+               }
+
+               if (!elem1.getName().equals(elem2.getName())) {
+                       return false;
+               } else {
+                       // now check if children are the same
+                       Iterator children1 = elem1.children().iterator();
+                       Iterator children2 = elem2.children().iterator();
+                       while (children1.hasNext()) {
+                               Object child = children1.next();
+
+                               if (child instanceof String) {
+                                       //check whether this is the only string
+                                       //if yes this is text val otherwise its a text
+                                       //among the elements so ignore
+                                       if(children1.hasNext()){
+                                               continue;
+                                       }else{
+                                               //this is a text node
+                                               if (children2.hasNext()) {
+                                                       Object child2Obj = children2.next();
+                                                       if (child2Obj instanceof String) {
+                                                               return child.equals(child2Obj);
+                                                       }
+                                               }
+                                               return false;
+                                       }
+
+                               } else if (child instanceof XmlElement) {
+                                       if (children2.hasNext()) {
+                                               Object child2Obj = children2.next();
+                                           if (child2Obj instanceof String) {
+                                               child2Obj = children2.next();
+                                           }
+                                               if (child2Obj instanceof XmlElement) {
+                                                       if (!isEqual((XmlElement) child,
+                                                                       (XmlElement) child2Obj)) {
+                                                               return false;
+                                                       }
+                                               } else {
+                                                       return false;
+                                               }
+                                       } else {
+                                               // childrens2 ran out of elements
+                                               return false;
+                                       }
+
+                               } else {
+                                       throw new Exception(
+                                                       "Unhandled element type found" + child);
+                               }
+                       }
+                       return true;
+               }
+
+       }
+
 }
