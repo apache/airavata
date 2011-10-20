@@ -35,21 +35,21 @@ public class Parameter implements Type {
         this.parameterType = pt;
     }
 
-    public String getName() {
-        return parameterType.getName();
-    }
-
-    public void setName(String name) {
-        this.parameterType.setName(name);
-    }
-
-    public String getDescription() {
-        return parameterType.getDescription();
-    }
-
-    public void setDescription(String description) {
-        this.parameterType.setDescription(description);
-    }
+//    public String getName() {
+//        return parameterType.getName();
+//    }
+//
+//    public void setName(String name) {
+//        this.parameterType.setName(name);
+//    }
+//
+//    public String getDescription() {
+//        return parameterType.getDescription();
+//    }
+//
+//    public void setDescription(String description) {
+//        this.parameterType.setDescription(description);
+//    }
 
     // TODO
     public DataType getType() {
