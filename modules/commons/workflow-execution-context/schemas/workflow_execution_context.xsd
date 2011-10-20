@@ -154,7 +154,6 @@
                             workflow graph that originated that message. (optional) </documentation>
                     </annotation>
                 </element>
-
                 <element name="workflow-time-step" type="int">
                     <annotation>
                         <documentation xml:lang="en"> Increasing integer representing time in the
@@ -178,31 +177,21 @@
                     </annotation>
                 </element>
                 
-                <element name="event-sink-epr">
+                <element name="event-publish-epr" type="anyURI" minOccurs="1" maxOccurs="1">
                     <annotation>
                         <documentation xml:lang="en"> EPR for WS-Eventing sink where to send event. (optional)
                             NOTE: currently any XML is accepted as there are many versions of WS-Addressing.
                         </documentation>
                     </annotation>
-                    <complexType>
-                        <sequence>
-                            <any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-                        </sequence>
-                    </complexType>
                 </element>
                 
                 
-                <element name="error-sink-epr">
+                <element name="error-publish-epr" type="anyURI">
                     <annotation>
                         <documentation xml:lang="en"> EPR for WS-Eventing sink where to send errors (optional)
                             NOTE: designed good for debugging and system level warnings, errors, etc
                         </documentation>
                     </annotation>
-                    <complexType>
-                        <sequence>
-                            <any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-                        </sequence>
-                    </complexType>
                 </element>
             </sequence>
         </complexType>
@@ -299,7 +288,6 @@
             </documentation>
         </annotation>
     </element>
-
     <element name="registry-url" type="anyURI">
         <annotation>
             <documentation xml:lang="en"> Location of Registry service to use. (optional)
@@ -331,4 +319,24 @@
             </documentation>
         </annotation>
     </element>
+
+      <element name='context'>
+      <annotation><documentation xml:lang='en'>
+        Element that contains LEAD specific context information sent as a SOAP header in a SOAP message.
+      </documentation></annotation>
+      <complexType>
+        <sequence>
+          <element minOccurs='1' maxOccurs='1' ref='wec:workflow-monitoring-context'/>
+            <element minOccurs='1' maxOccurs='1' ref='wec:gfac-url'/>
+            <element minOccurs='1' maxOccurs='1' ref='wec:registry-url'/>
+          <element minOccurs='0' maxOccurs='1' ref='wec:security-context'/>
+          <element minOccurs='0' maxOccurs='1' ref='wec:scheduling-context'/>
+          <element minOccurs='0' maxOccurs='1' ref='wec:resource-scheduler-url'/>
+            <element minOccurs='0' maxOccurs='1' ref='wec:data-registry-url'/>
+            <element minOccurs='0' maxOccurs='1' ref='wec:user-name'/>
+            <element minOccurs='0' maxOccurs='1' ref='wec:output-data-directory'/>
+            <element minOccurs="0" maxOccurs="1" ref="wec:workflow-scheduling"/>
+         </sequence>
+      </complexType>
+   </element>
 </schema>
