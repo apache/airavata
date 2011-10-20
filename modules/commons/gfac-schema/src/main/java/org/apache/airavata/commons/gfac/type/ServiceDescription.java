@@ -21,22 +21,33 @@
 
 package org.apache.airavata.commons.gfac.type;
 
+import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
+
 import java.util.List;
 
 public class ServiceDescription implements Type {
 
-    protected String id;
+    private ServiceDescriptionType serviceDescriptionType;
     private List<Parameter> inputParameters;
     private List<Parameter> outputParameters;
 
+    public ServiceDescription() {
+        this.serviceDescriptionType = ServiceDescriptionType.Factory.newInstance();
+    }
+
+    public ServiceDescription(ServiceDescriptionType sdt) {
+        this.serviceDescriptionType = sdt;
+    }
+
     public String getId() {
-        return id;
+        return serviceDescriptionType.getName();
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.serviceDescriptionType.setName(id);
     }
 
+    // TODO
     public List<Parameter> getInputParameters() {
         return inputParameters;
     }

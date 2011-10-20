@@ -21,51 +21,57 @@
 
 package org.apache.airavata.commons.gfac.type;
 
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+
 public class ApplicationDeploymentDescription implements Type {
 
-    protected String id;
-    private String tmpDir;
-    private String workingDir;
-    private String inputDir;
-    private String outputDir;
+    private ApplicationDeploymentDescriptionType appDeploymentDescType;
+
+    public ApplicationDeploymentDescription() {
+        this.appDeploymentDescType = ApplicationDeploymentDescriptionType.Factory.newInstance();
+    }
+
+    public ApplicationDeploymentDescription(ApplicationDeploymentDescriptionType addt) {
+        this.appDeploymentDescType = addt;
+    }
 
     public String getId() {
-        return id;
+        return appDeploymentDescType.getName();
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.appDeploymentDescType.setName(id);
     }
 
     public String getTmpDir() {
-        return tmpDir;
+        return appDeploymentDescType.getTmpDir();
     }
 
     public void setTmpDir(String tmpDir) {
-        this.tmpDir = tmpDir;
+        this.appDeploymentDescType.setTmpDir(tmpDir);
     }
 
     public String getWorkingDir() {
-        return workingDir;
+        return appDeploymentDescType.getWorkingDir();
     }
 
     public void setWorkingDir(String workingDir) {
-        this.workingDir = workingDir;
+        this.appDeploymentDescType.setWorkingDir(workingDir);
     }
 
     public String getInputDir() {
-        return inputDir;
+        return appDeploymentDescType.getInputDir();
     }
 
     public void setInputDir(String inputDir) {
-        this.inputDir = inputDir;
+        this.appDeploymentDescType.setInputDir(inputDir);
     }
 
     public String getOutputDir() {
-        return outputDir;
+        return appDeploymentDescType.getOutputDir();
     }
 
     public void setOutputDir(String outputDir) {
-        this.outputDir = outputDir;
+        this.appDeploymentDescType.setOutputDir(outputDir);
     }
 }

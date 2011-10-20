@@ -22,24 +22,33 @@
 package org.apache.airavata.commons.gfac.type.host;
 
 import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
 
 public class GlobusHost extends HostDescription {
-    private String gridFTPEndPoint;
-    private String globusGateKeeperEndPoint;
+
+    private GlobusHostType globusHostType;
+
+    private GlobusHost() {
+        this.globusHostType = GlobusHostType.Factory.newInstance();
+    }
+
+    private GlobusHost(GlobusHostType ght) {
+        this.globusHostType = ght;
+    }
 
     public String getGridFTPEndPoint() {
-        return gridFTPEndPoint;
+        return globusHostType.getGridFTPEndPoint();
     }
 
     public void setGridFTPEndPoint(String gridFTPEndPoint) {
-        this.gridFTPEndPoint = gridFTPEndPoint;
+        this.globusHostType.setGridFTPEndPoint(gridFTPEndPoint);
     }
 
     public String getGlobusGateKeeperEndPoint() {
-        return globusGateKeeperEndPoint;
+        return globusHostType.getGlobusGateKeeperEndPoint();
     }
 
     public void setGlobusGateKeeperEndPoint(String globusGateKeeperEndPoint) {
-        this.globusGateKeeperEndPoint = globusGateKeeperEndPoint;
+        this.globusHostType.setGlobusGateKeeperEndPoint(globusGateKeeperEndPoint);
     }
 }

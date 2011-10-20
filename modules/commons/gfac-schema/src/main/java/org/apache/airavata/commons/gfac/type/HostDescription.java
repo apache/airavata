@@ -21,25 +21,34 @@
 
 package org.apache.airavata.commons.gfac.type;
 
+import org.apache.airavata.schemas.gfac.HostDescriptionType;
+
 public class HostDescription implements Type {
 
-    protected String id;
-    private String address;
+    private HostDescriptionType hostDescriptionType;
+
+    public HostDescription() {
+        this.hostDescriptionType = HostDescriptionType.Factory.newInstance();
+    }
+
+    public HostDescription(HostDescriptionType hdt) {
+        this.hostDescriptionType = hdt;
+    }
 
     public String getId() {
-        return id;
+        return hostDescriptionType.getName();
     }
 
     public void setId(String id) {
-        this.id = id;
+        this.hostDescriptionType.setName(id);
     }
 
     public String getAddress() {
-        return address;
+        return hostDescriptionType.getAddress();
     }
 
     public void setAddress(String address) {
-        this.address = address;
+        this.hostDescriptionType.setAddress(address);
     }
 
 }

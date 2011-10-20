@@ -16,17 +16,17 @@
 
 	<include schemaLocation="gfac-parameter.xsd"/>
 
-    <element name="serviceDescription" type="gfac:serviceDescription"/>
+    <element name="serviceDescription" type="gfac:serviceDescriptionType"/>
     
-    <complexType name="serviceDescription">
+    <complexType name="serviceDescriptionType">
         <sequence>
             <element minOccurs="0" name="name" type="string"/>
-            <element maxOccurs="unbounded" minOccurs="0" name="inputParameters" nillable="true" type="gfac:parameter"/>            
-            <element maxOccurs="unbounded" minOccurs="0" name="outputParameters" nillable="true" type="gfac:parameter"/>
+            <element maxOccurs="unbounded" minOccurs="0" name="inputParameters" nillable="true" type="gfac:parameterType"/>
+            <element maxOccurs="unbounded" minOccurs="0" name="outputParameters" nillable="true" type="gfac:parameterType"/>
         </sequence>
     </complexType>
     
-    <complexType name="parameter">
+    <complexType name="parameterType">
         <sequence>
             <element minOccurs="0" name="description" type="string"/>
             <element minOccurs="0" name="name" type="string"/>

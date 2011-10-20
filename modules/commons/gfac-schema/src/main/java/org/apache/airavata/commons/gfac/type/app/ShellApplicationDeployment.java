@@ -21,23 +21,31 @@
 
 package org.apache.airavata.commons.gfac.type.app;
 
+import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
+
 import java.util.Map;
 
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-
 public class ShellApplicationDeployment extends ApplicationDeploymentDescription {
-    private String executable;
-    private String stdOut;
-    private String stdErr;
-    private String stdIn;
+
+    private ShellApplicationDeploymentType shellApplicationDeploymentType;
+    // TODO
     private Map<String, String> env;
 
+    public ShellApplicationDeployment() {
+        shellApplicationDeploymentType = ShellApplicationDeploymentType.Factory.newInstance();
+    }
+
+    public ShellApplicationDeployment(ShellApplicationDeploymentType sadt) {
+        shellApplicationDeploymentType = sadt;
+    }
+
     public String getExecutable() {
-        return executable;
+        return shellApplicationDeploymentType.getExecutable();
     }
 
     public void setExecutable(String executable) {
-        this.executable = executable;
+        this.shellApplicationDeploymentType.setExecutable(executable);
     }
 
     public Map<String, String> getEnv() {
@@ -49,26 +57,26 @@ public class ShellApplicationDeployment extends ApplicationDeploymentDescription
     }
 
     public String getStdOut() {
-        return stdOut;
+        return shellApplicationDeploymentType.getStdOut();
     }
 
     public void setStdOut(String stdOut) {
-        this.stdOut = stdOut;
+        this.shellApplicationDeploymentType.setStdOut(stdOut);
     }
 
     public String getStdErr() {
-        return stdErr;
+        return shellApplicationDeploymentType.getStdErr();
     }
 
     public void setStdErr(String stderr) {
-        this.stdErr = stderr;
+        this.shellApplicationDeploymentType.setStdErr(stderr);
     }
 
     public String getStdIn() {
-        return stdIn;
+        return shellApplicationDeploymentType.getStdIn();
     }
 
     public void setStdIn(String stdIn) {
-        this.stdIn = stdIn;
+        this.shellApplicationDeploymentType.setStdIn(stdIn);
     }
 }
