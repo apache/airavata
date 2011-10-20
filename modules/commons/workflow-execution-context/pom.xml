@@ -26,13 +26,23 @@
 	<name>Airavata Workflow Execution Context</name>
 	<url>http://incubator.apache.org/airavata/</url>
 
-	<dependencies>	
-		<dependency>
-			<groupId>org.apache.xmlbeans</groupId>
-			<artifactId>xmlbeans</artifactId>
-			<version>2.4.0</version>
-		</dependency>
-	</dependencies>
+	<dependencies>
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>xpp3</groupId>
+            <artifactId>xpp3</artifactId>
+            <version>1.1.4c</version>
+        </dependency>
+        <dependency>
+            <groupId>airavata</groupId>
+            <artifactId>airavata-common-utils</artifactId>
+            <version>${airavata.version}</version>
+        </dependency>
+    </dependencies>
 	<build>
 		<pluginManagement>
 			<plugins>
