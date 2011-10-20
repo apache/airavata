@@ -122,13 +122,15 @@ public class WorkflowContextHeaderBuilder {
     }
 
     public XmlElement getXml() {
+        ContextHeaderDocument document = ContextHeaderDocument.Factory.newInstance();
         this.contextHeader.setWorkflowMonitoringContext(this.workflowMonitoringContext);
         this.contextHeader.setSoaServiceEprs(this.soaServiceEprs);
         this.contextHeader.setSecurityContext(this.securityContext);
         this.contextHeader.setWorkflowSchedulingContext(this.workflowSchedulingContext);
         this.contextHeader.setUserIdentifier(this.userIdentifier);
         this.contextHeader.setWorkflowOutputDataHandling(this.workflowOutputDataHandling);
-        return XMLUtil.stringToXmlElement3(this.contextHeader.toString());
+        document.setContextHeader(this.contextHeader);
+        return XMLUtil.stringToXmlElement3(document.xmlText());
     }
 
     public WorkflowContextHeaderBuilder setResourceSchedularUrl(String resourceSchedular) {
