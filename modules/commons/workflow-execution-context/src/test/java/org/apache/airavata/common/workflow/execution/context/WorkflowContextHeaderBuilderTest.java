@@ -20,14 +20,9 @@
 */
 package org.apache.airavata.common.workflow.execution.context;
 
-import com.sun.xml.internal.ws.util.xml.XmlUtil;
-import org.apaceh.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.woden.wsdl20.validation.Assertion;
 import org.junit.Test;
-import sun.jvm.hotspot.utilities.Assert;
 
-import javax.xml.bind.annotation.XmlElement;
 import java.io.File;
 
 public class WorkflowContextHeaderBuilderTest {
