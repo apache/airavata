@@ -427,5 +427,10 @@
             <artifactId>transfer-api-client</artifactId>
             <version>0.10</version>
         </dependency>
+        <dependency>
+            <groupId>airavata</groupId>
+       	<artifactId>airavata-workflow-execution-context</artifactId>
+            <version>${airavata.version}</version>
+        </dependency>
 	</dependencies>
 </project>
