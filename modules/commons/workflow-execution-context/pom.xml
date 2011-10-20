@@ -72,9 +72,9 @@
 				</executions>
 				<inherited>true</inherited>
 				<configuration>
-					<schemaDirectory>schemas</schemaDirectory>
+					<schemaDirectory>src/main/resources</schemaDirectory>
 					<xmlConfigs>
-						<xmlConfig implementation="java.io.File">schemas/workflow_execution_context.xsdconfig</xmlConfig>
+						<xmlConfig implementation="java.io.File">src/main/resources/workflow_execution_context.xsdconfig</xmlConfig>
 					</xmlConfigs>
 					<outputJar>target/generated/${artifactId}-${version}.jar</outputJar>
 				</configuration>
