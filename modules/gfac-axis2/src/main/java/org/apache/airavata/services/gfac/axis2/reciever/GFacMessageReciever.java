@@ -31,6 +31,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
@@ -44,6 +45,7 @@ import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.notification.impl.WorkflowTrackingNotification;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.registry.api.Axis2Registry;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.services.gfac.axis2.GFacService;
 import org.apache.airavata.services.gfac.axis2.util.GFacServiceOperations;
 import org.apache.airavata.services.gfac.axis2.util.WSConstants;
@@ -64,6 +66,7 @@ import org.apache.axis2.engine.AxisEngine;
 import org.apache.axis2.engine.MessageReceiver;
 import org.apache.axis2.util.MessageContextBuilder;
 import org.apache.axis2.util.Utils;
+import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -309,6 +312,7 @@ public class GFacMessageReciever implements MessageReceiver {
      * 
      * @param context
      * @return
+     *
      */
     private Axis2Registry getRegistry(ConfigurationContext context) {
         if (this.registry == null) {
@@ -326,22 +330,31 @@ public class GFacMessageReciever implements MessageReceiver {
 
     private String getEventBrokerURL(MessageContext context) {
         SOAPHeader header = context.getEnvelope().getHeader();
-        OMElement contextHeader = header.getFirstChildWithName(new QName(
-                "http://lead.extreme.indiana.edu/namespaces/2005/10/lead-context-header", "context"));
-        OMElement eventSink = contextHeader.getFirstChildWithName(new QName(
-                "http://lead.extreme.indiana.edu/namespaces/2005/10/lead-context-header", "event-sink-epr"));
-        String address = eventSink.getFirstChildWithName(new QName("http://www.w3.org/2005/08/addressing", "Address"))
-                .getText();
+        OMElement contextHeader = header.getFirstChildWithName(new QName("http://schemas.airavata.apache.org/workflow-execution-context", "context-header"));
+        String address = null;
+        try {
+            ContextHeaderDocument document = ContextHeaderDocument.Factory.parse(contextHeader.toStringWithConsume());
+            address = document.getContextHeader().getWorkflowMonitoringContext().getEventPublishEpr();
+        } catch (XmlException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (XMLStreamException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         return address;
     }
 
     private String getTopic(MessageContext context) {
         SOAPHeader header = context.getEnvelope().getHeader();
-        OMElement contextHeader = header.getFirstChildWithName(new QName(
-                "http://lead.extreme.indiana.edu/namespaces/2005/10/lead-context-header", "context"));
-        OMElement workflowId = contextHeader.getFirstChildWithName(new QName(
-                "http://lead.extreme.indiana.edu/namespaces/2005/10/lead-context-header", "workflow-instance-id"));
-        String topic = workflowId.getText();
+        OMElement contextHeader = header.getFirstChildWithName(new QName("http://schemas.airavata.apache.org/workflow-execution-context", "context-header"));
+         String topic = null;
+        try {
+            ContextHeaderDocument document = ContextHeaderDocument.Factory.parse(contextHeader.toStringWithConsume());
+            topic = document.getContextHeader().getWorkflowMonitoringContext().getWorkflowInstanceId();
+        } catch (XmlException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (XMLStreamException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         topic = topic.substring(1);
         return topic.replaceAll("_", "-");
     }

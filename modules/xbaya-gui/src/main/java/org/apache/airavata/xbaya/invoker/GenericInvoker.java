@@ -36,19 +36,17 @@ import java.util.concurrent.TimeoutException;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
-import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
-import xsul.lead.LeadContextHeader;
-import xsul.ws_addressing.WsaEndpointReference;
 import xsul.wsdl.WsdlDefinitions;
 import xsul.wsdl.WsdlException;
 import xsul.wsdl.WsdlResolver;
@@ -229,23 +227,20 @@ public class GenericInvoker implements Invoker {
     private void setup(WsdlDefinitions definitions) throws XBayaException {
 
         // Set LEAD context header.
-        LeadContextHeaderHelper leadContextHelper = new LeadContextHeaderHelper();
-        LeadContextHeader leadContext = leadContextHelper.getLeadContextHeader();
-        try {
-            leadContext.setEventSink(new WsaEndpointReference(new URI(this.notifier.getEventSink().getAddress())));
-            leadContext.setServiceId(this.nodeID);
-            leadContext.setNodeId(this.nodeID);
-            leadContext.setWorkflowId(this.notifier.getWorkflowID());
-            leadContext.setTimeStep("1");
-        } catch (URISyntaxException e) {
+        WorkflowContextHeaderBuilder builder = new WorkflowContextHeaderBuilder(this.notifier.getEventSink().getAddress(), this.gfacURL, null, this.notifier.getWorkflowID().toASCIIString(), "xbaya-experiment");
+        builder.getWorkflowMonitoringContext().setServiceInstanceId(this.nodeID);
+        builder.getWorkflowMonitoringContext().setWorkflowNodeId(this.nodeID);
+        builder.getWorkflowMonitoringContext().setWorkflowInstanceId(this.notifier.getWorkflowID().toASCIIString());
+        builder.getWorkflowMonitoringContext().setWorkflowTimeStep(1);
+        builder.setUserIdentifier("xbaya-user");
+        StickySoapHeaderHandler handler = new StickySoapHeaderHandler("use-workflowcontext-header", builder.getXml());
 
-        }
-        StickySoapHeaderHandler handler = new StickySoapHeaderHandler("use-lead-header", leadContext);
 
         // Create Invoker
         this.invoker = InvokerFactory.createInvoker(this.portTypeQName, definitions, this.gfacURL, this.messageBoxURL,
-                leadContext);
+                builder,true);
         this.invoker.setup();
+
         WSIFClient client = this.invoker.getClient();
         client.addHandler(handler);
 
