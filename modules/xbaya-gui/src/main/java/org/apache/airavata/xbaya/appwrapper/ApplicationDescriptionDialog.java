@@ -6,6 +6,8 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -19,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
@@ -29,11 +32,8 @@ import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
-import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
+import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.xbaya.gui.XBayaLinkButton;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class ApplicationDescriptionDialog extends JDialog implements ActionListener{
 	/**
@@ -44,7 +44,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 	private JTextField txtAppName;
 	private JTextField txtTempDir;
 	
-	private XBayaEngine engine;
+	private Registry registry;
 	private ShellApplicationDeployment shellApplicationDescription;
 	private JLabel lblError;
 	private boolean applcationDescCreated=false;
@@ -71,7 +71,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 	/**
 	 * Create the dialog.
 	 */
-	public ApplicationDescriptionDialog(XBayaEngine engine) {
+	public ApplicationDescriptionDialog(Registry registry) {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent arg0) {
@@ -79,7 +79,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 				int i=1;
 				String defaultName=baseName+i;
 				try {
-					List<ApplicationDeploymentDescription> applicationDescriptions = getJCRComponentRegistry().getRegistry().searchDeploymentDescription(getServiceName(), getHostName());
+					List<ApplicationDeploymentDescription> applicationDescriptions = getRegistry().searchDeploymentDescription(getServiceName(), getHostName());
 					while(true){
 						boolean notFound=true;
 						for (ApplicationDeploymentDescription deploymentDescription : applicationDescriptions) {
@@ -99,7 +99,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 				setApplicationName(txtAppName.getText());
 			}
 		});
-		setEngine(engine);
+		setRegistry(registry);
 		iniGUI();
 	}
 	
@@ -185,10 +185,11 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 			btnAdvance.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
-						ApplicationDescriptionAdvancedOptionDialog serviceDescriptionDialog = new ApplicationDescriptionAdvancedOptionDialog(getEngine(),getShellApplicationDescription());
+						ApplicationDescriptionAdvancedOptionDialog serviceDescriptionDialog = new ApplicationDescriptionAdvancedOptionDialog(getRegistry(),getShellApplicationDescription());
 	                	serviceDescriptionDialog.open();
 	                } catch (Exception e1) {
-	                    getEngine().getErrorWindow().error(e1);
+	                	e1.printStackTrace();
+	                	JOptionPane.showMessageDialog(null, e1.getLocalizedMessage());
 	                }
 				}
 			});
@@ -199,14 +200,15 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 			blnkbtnCreateNewService.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					try {
-	                	ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getEngine());
+	                	ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry());
 	                	serviceDescriptionDialog.open();
 	                	if (serviceDescriptionDialog.isServiceCreated()){
 	                		loadServiceDescriptions();
 	                		cmbServiceName.setSelectedItem(serviceDescriptionDialog.getServiceName());
 	                	}
 	                } catch (Exception e1) {
-	                    getEngine().getErrorWindow().error(e1);
+	                    e1.printStackTrace();
+	                    JOptionPane.showMessageDialog(null, e1.getLocalizedMessage());
 	                }
 				}
 			});
@@ -225,14 +227,15 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 			bayaLinkButton_1.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					try {
-						HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getEngine());
+						HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getRegistry());
 	                	hostDescriptionDialog.open();
 	                	if (hostDescriptionDialog.isHostCreated()){
 	                		loadHostDescriptions();
 	                		cmbHostName.setSelectedItem(hostDescriptionDialog.getHostLocation());
 	                	}
 	                } catch (Exception e1) {
-	                    getEngine().getErrorWindow().error(e1);
+	                	e1.printStackTrace();
+	                    JOptionPane.showMessageDialog(null, e1.getLocalizedMessage());
 	                }
 				}
 			});
@@ -340,7 +343,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 		cmbServiceName.removeAllItems();
 		setServiceName(null);
 		try {
-			List<ServiceDescription> serviceDescriptions = getJCRComponentRegistry().searchServiceDescription("");
+			List<ServiceDescription> serviceDescriptions = getRegistry().searchServiceDescription("");
 			for (ServiceDescription serviceDescription : serviceDescriptions) {
 				cmbServiceName.addItem(serviceDescription.getId());
 			}
@@ -354,7 +357,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 		cmbHostName.removeAllItems();
 		setHostName(null);
 		try {
-			List<HostDescription> hostDescriptions = getJCRComponentRegistry().searchHostDescription(".*");
+			List<HostDescription> hostDescriptions = getRegistry().searchHostDescription(".*");
 			for (HostDescription hostDescription : hostDescriptions) {
 				if (hostDescription.getId()==null){
 					cmbHostName.addItem(hostDescription.getAddress());
@@ -366,14 +369,6 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 			setError(e.getLocalizedMessage());
 		}
 		updateHostName();
-	}
-	
-	public XBayaEngine getEngine() {
-		return engine;
-	}
-
-	public void setEngine(XBayaEngine engine) {
-		this.engine = engine;
 	}
 
 	public ShellApplicationDeployment getShellApplicationDescription() {
@@ -415,7 +410,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 	}
 	
 	public void saveApplicationDescription() {
-		getJCRComponentRegistry().saveDeploymentDescription(getServiceName(), getHostName(), getShellApplicationDescription());
+		getRegistry().saveDeploymentDescription(getServiceName(), getHostName(), getShellApplicationDescription());
 		setApplicationDescCreated(true);
 	}
 	
@@ -427,10 +422,6 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 		this.applcationDescCreated = applicationDescCreated;
 	}
 
-	private JCRComponentRegistry getJCRComponentRegistry() {
-		return getEngine().getConfiguration().getJcrComponentRegistry();
-	}
-	
 	private void setError(String errorMessage){
 		if (errorMessage==null || errorMessage.trim().equals("")){
 			lblError.setText("");
@@ -457,7 +448,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 		
 		List<ApplicationDeploymentDescription> deploymentDescriptions=null;
 		try {
-			deploymentDescriptions = getJCRComponentRegistry().getRegistry().searchDeploymentDescription(getServiceName(), getHostName(), Pattern.quote(getApplicationName()));
+			deploymentDescriptions = getRegistry().searchDeploymentDescription(getServiceName(), getHostName(), Pattern.quote(getApplicationName()));
 		} catch (PathNotFoundException e) {
 			//what we want
 		} catch (Exception e){
@@ -532,5 +523,13 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 		if(e.getSource()==txtTempDir){
 			setTempDir(txtTempDir.getText());
 		}
+	}
+
+	public Registry getRegistry() {
+		return registry;
+	}
+
+	public void setRegistry(Registry registry) {
+		this.registry = registry;
 	}
 }

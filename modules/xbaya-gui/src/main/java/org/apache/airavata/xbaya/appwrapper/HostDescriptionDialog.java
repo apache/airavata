@@ -15,27 +15,23 @@ import javax.jcr.PathNotFoundException;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
-import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 
 public class HostDescriptionDialog extends JDialog {
 
 	private static final long serialVersionUID = 1423293834766468324L;
 	private JTextField txtHostLocation;
 	private JTextField txtHostName;
-	private XBayaEngine engine;
 	private HostDescription hostDescription;
-	
+	private Registry registry;
 	private JButton okButton;
 	private boolean hostCreated=false;
 	private JLabel lblError;
@@ -63,7 +59,7 @@ public class HostDescriptionDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public HostDescriptionDialog(XBayaEngine engine) {
+	public HostDescriptionDialog(Registry registry) {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent arg0) {
@@ -71,7 +67,7 @@ public class HostDescriptionDialog extends JDialog {
 				int i=1;
 				String defaultName=baseName+i;
 				try {
-					while(getJCRComponentRegistry().getHostDescription(defaultName)!=null){
+					while(getRegistry().getHostDescription(defaultName)!=null){
 						defaultName=baseName+(++i);
 					}
 				} catch (HostDescriptionRetrieveException e) {
@@ -81,7 +77,7 @@ public class HostDescriptionDialog extends JDialog {
 				setHostId(txtHostName.getText());
 			}
 		});
-		setEngine(engine);
+		setRegistry(registry);
 		initGUI();
 	}
 
@@ -180,14 +176,6 @@ public class HostDescriptionDialog extends JDialog {
 		getRootPane().setDefaultButton(okButton);
 	}
 
-	public XBayaEngine getEngine() {
-		return engine;
-	}
-
-	public void setEngine(XBayaEngine engine) {
-		this.engine = engine;
-	}
-
 	public String getHostId() {
 		return getHostDescription().getId();
 	}
@@ -213,7 +201,7 @@ public class HostDescriptionDialog extends JDialog {
 		
 		HostDescription hostDescription2=null;
 		try {
-			hostDescription2 = getJCRComponentRegistry().getHostDescription(Pattern.quote(getHostId()));
+			hostDescription2 = getRegistry().getHostDescription(Pattern.quote(getHostId()));
 		} catch (PathNotFoundException e) {
 			//what we want
 		} catch (Exception e){
@@ -258,19 +246,23 @@ public class HostDescriptionDialog extends JDialog {
 	}
 
 	public void saveHostDescription() {
-		getJCRComponentRegistry().saveHostDescription(getHostId(), getHostDescription());
+		getRegistry().saveHostDescription(getHostDescription());
 		setHostCreated(true);
 	}
 
-	private JCRComponentRegistry getJCRComponentRegistry() {
-		return getEngine().getConfiguration().getJcrComponentRegistry();
-	}
-	
 	private void setError(String errorMessage){
 		if (errorMessage==null || errorMessage.trim().equals("")){
 			lblError.setText("");
 		}else{
 			lblError.setText(errorMessage.trim());
 		}
+	}
+
+	public Registry getRegistry() {
+		return registry;
+	}
+
+	public void setRegistry(Registry registry) {
+		this.registry = registry;
 	}
 }

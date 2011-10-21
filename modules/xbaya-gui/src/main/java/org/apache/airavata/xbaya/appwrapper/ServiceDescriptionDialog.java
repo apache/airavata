@@ -12,7 +12,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import javax.jcr.PathNotFoundException;
@@ -31,7 +30,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -42,14 +40,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import org.apache.airavata.commons.gfac.type.DataType;
-//import org.apache.airavata.commons.gfac.type.Parameter;
-import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
-import org.apache.airavata.schemas.gfac.ParameterType;
+import org.apache.airavata.registry.api.Axis2Registry;
+import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
-import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 
 public class ServiceDescriptionDialog extends JDialog {
 
@@ -60,7 +56,6 @@ public class ServiceDescriptionDialog extends JDialog {
 	private JTable tblParameters;
 	private boolean serviceCreated=false;
 	private JLabel lblError;
-	private XBayaEngine engine;
 	private ServiceDescription serviceDescription;
     private ServiceDescriptionType serviceDescriptionType;
 	private JButton okButton;
@@ -68,6 +63,7 @@ public class ServiceDescriptionDialog extends JDialog {
 	private DefaultTableModel defaultTableModel;
 	private JCheckBox chckbxAutoGenerateWsdl;
 	private JButton btnWSDL;
+	private Registry registry;
 	
 	/**
 	 * Launch the application.
@@ -85,7 +81,7 @@ public class ServiceDescriptionDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public ServiceDescriptionDialog(XBayaEngine engine) {
+	public ServiceDescriptionDialog(Registry registry) {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent arg0) {
@@ -93,7 +89,7 @@ public class ServiceDescriptionDialog extends JDialog {
 				int i=1;
 				String defaultName=baseName+i;
 				try {
-					while(getJCRComponentRegistry().getServiceDescription(defaultName)!=null){
+					while(getRegistry().getServiceDescription(defaultName)!=null){
 						defaultName=baseName+(++i);
 					}
 				} catch (Exception e) {
@@ -102,7 +98,7 @@ public class ServiceDescriptionDialog extends JDialog {
 				setServiceName(txtServiceName.getText());
 			}
 		});		
-		setEngine(engine);
+		setRegistry(registry);
 		initGUI();
 		
 		
@@ -360,14 +356,6 @@ public class ServiceDescriptionDialog extends JDialog {
         return serviceDescriptionType;
     }
 
-	public XBayaEngine getEngine() {
-		return engine;
-	}
-
-	public void setEngine(XBayaEngine engine) {
-		this.engine = engine;
-	}
-
 	public String getServiceName() {
 		return getServiceDescription().getId();
 	}
@@ -384,7 +372,7 @@ public class ServiceDescriptionDialog extends JDialog {
 		
 		ServiceDescription serviceDescription2=null;
 		try {
-			serviceDescription2 = getJCRComponentRegistry().getServiceDescription(Pattern.quote(getServiceName()));
+			serviceDescription2 = getRegistry().getServiceDescription(Pattern.quote(getServiceName()));
 		} catch (PathNotFoundException e) {
 			//what we want
 		} catch (Exception e){
@@ -437,17 +425,16 @@ public class ServiceDescriptionDialog extends JDialog {
 			}
 		}
 		
-		getJCRComponentRegistry().saveServiceDescription(getServiceName(), getServiceDescription());
+		getRegistry().saveServiceDescription(getServiceDescription());
 		if (chckbxAutoGenerateWsdl.isSelected()){
-			getJCRComponentRegistry().saveWSDL(getServiceDescription());
+			
+			if (getRegistry() instanceof Axis2Registry) {
+				((Axis2Registry)getRegistry()).saveWSDL(getServiceDescription());
+			}
 		}
 		setServiceCreated(true);
 	}
 
-	private JCRComponentRegistry getJCRComponentRegistry() {
-		return getEngine().getConfiguration().getJcrComponentRegistry();
-	}
-	
 	private void setError(String errorMessage){
 		if (errorMessage==null || errorMessage.trim().equals("")){
 			lblError.setText("");
@@ -471,6 +458,14 @@ public class ServiceDescriptionDialog extends JDialog {
 		if (parameterName!=null && !parameterName.equals("")){
 			defaultTableModel.addRow(new Object[]{null,null,null,null});
 		}
+	}
+
+	public Registry getRegistry() {
+		return registry;
+	}
+
+	public void setRegistry(Registry registry) {
+		this.registry = registry;
 	}
 
 	private class StringArrayComboBoxEditor extends DefaultCellEditor {

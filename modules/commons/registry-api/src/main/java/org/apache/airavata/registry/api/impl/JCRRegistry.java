@@ -177,6 +177,26 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         }
         return result;
     }
+    
+    public void deleteServiceDescription(String serviceId) throws ServiceDescriptionRetrieveException,
+    		PathNotFoundException {
+		Session session = null;
+		try {
+		    session = getSession();
+		    Node serviceNode = getServiceNode(session);
+		    Node node = serviceNode.getNode(serviceId);
+		    if (node!=null) {
+				node.remove();
+				session.save();
+			}
+		} catch (PathNotFoundException e) {
+			throw e;
+		} catch (Exception e){
+		    throw new ServiceDescriptionRetrieveException(e);
+		} finally {
+		    closeSession(session);
+		}
+	}
 
     public ServiceDescription getServiceDescription(String serviceId) throws ServiceDescriptionRetrieveException,
             PathNotFoundException {
@@ -188,10 +208,10 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
             Node node = serviceNode.getNode(serviceId);
             Property prop = node.getProperty(XML_PROPERTY_NAME);
             result = (ServiceDescription) SchemaUtil.parseFromXML(prop.getString());
-        } catch (Exception e) {
-            System.out.println(e);
-            e.printStackTrace();
-            // TODO propagate
+        } catch (PathNotFoundException e) {
+        	throw e;
+        } catch (Exception e){
+            throw new ServiceDescriptionRetrieveException(e);
         } finally {
             closeSession(session);
         }
@@ -223,6 +243,25 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         return result;
     }
 
+    public void deleteHostDescription(String hostId) throws HostDescriptionRetrieveException,
+		    PathNotFoundException {
+		Session session = null;
+		try {
+		    session = getSession();
+		    Node hostNode = getHostNode(session);
+		    Node node = hostNode.getNode(hostId);
+		    if (node != null) {
+		        node.remove();
+		        session.save();
+		    }
+		} catch (PathNotFoundException e) {
+		    throw e;
+		} catch (Exception e) {
+		    throw new HostDescriptionRetrieveException(e);
+		} finally {
+		    closeSession(session);
+		}
+	}
     public HostDescription getHostDescription(String hostId) throws HostDescriptionRetrieveException,
             PathNotFoundException {
         Session session = null;
@@ -360,6 +399,8 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         return false;
     }
 
+    
+    
     public List<ServiceDescription> searchServiceDescription(String name) throws ServiceDescriptionRetrieveException,
             PathNotFoundException {
         Session session = null;
@@ -446,6 +487,35 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         return result;
     }
 
+    public void deleteDeploymentDescription(String serviceName, String hostName,
+            String applicationName) throws PathNotFoundException, DeploymentDescriptionRetrieveException {
+        Session session = null;
+        try {
+            session = getSession();
+            Node deploymentNode = getDeploymentNode(session);
+            Node serviceNode = deploymentNode.getNode(serviceName);
+            Node hostNode = serviceNode.getNode(hostName);
+            NodeIterator nodes = hostNode.getNodes();
+            for (; nodes.hasNext();) {
+                Node app = nodes.nextNode();
+                Property prop = app.getProperty(XML_PROPERTY_NAME);
+                ApplicationDeploymentDescription appDesc = (ApplicationDeploymentDescription) SchemaUtil
+                        .parseFromXML(prop.getString());
+                if (appDesc.getId().matches(applicationName)) {
+                    app.remove();
+                }
+            }
+            session.save();
+        } catch (PathNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new DeploymentDescriptionRetrieveException(e);
+        } finally {
+            closeSession(session);
+        }
+    }
+
+    
     public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName,
             String applicationName) throws PathNotFoundException, DeploymentDescriptionRetrieveException {
         Session session = null;

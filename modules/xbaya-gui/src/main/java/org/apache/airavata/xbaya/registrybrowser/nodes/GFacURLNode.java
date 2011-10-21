@@ -1,11 +1,13 @@
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.utils.SwingUtil;
+import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.model.GFacURL;
 
 public class GFacURLNode extends AbstractAiravataTreeNode {
@@ -41,4 +43,23 @@ public class GFacURLNode extends AbstractAiravataTreeNode {
 		this.gfacURL = gfacURL;
 	}
 
+	@Override
+	public List<String> getSupportedActions() {
+		return Arrays.asList();
+	}
+
+	@Override
+	public String getActionCaption(AbstractBrowserActionItem action) {
+		return null;
+	}
+
+	@Override
+	public Icon getActionIcon(AbstractBrowserActionItem action) {
+		return null;
+	}
+
+	@Override
+	public String getActionDescription(AbstractBrowserActionItem action) {
+		return null;
+	}
 }

@@ -4,31 +4,45 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
+import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.registrybrowser.menu.AddAction;
+import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
+import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
+import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 import org.apache.airavata.xbaya.registrybrowser.nodes.AbstractAiravataTreeNode;
 import org.apache.airavata.xbaya.registrybrowser.nodes.AiravataTreeNodeFactory;
 import org.apache.airavata.xbaya.registrybrowser.nodes.RegistryTreeCellRenderer;
 
 public class JCRBrowserPanel extends JPanel implements Observer{
-
+	private List<AbstractBrowserActionItem> browserActions=new ArrayList<AbstractBrowserActionItem>();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4490110894914580271L;
 	private XBayaEngine engine;
 	private JTree tree;
 	private JPopupMenu popupMenu;
+	private AbstractBrowserActionItem actionDelete;
 	
 	/**
 	 * Create the dialog.
@@ -47,17 +61,14 @@ public class JCRBrowserPanel extends JPanel implements Observer{
 			this.add(scrollPane, BorderLayout.CENTER);
 			{
 				tree = new JTree(AiravataTreeNodeFactory.getTreeNode(getJCRRegistry()==null?"No registry specified":getJCRRegistry(),null));
-//				tree.addMouseListener(new MouseAdapter() {
-//					@Override
-//					public void mousePressed(MouseEvent e) {
-//						int selRow = tree.getRowForLocation(e.getX(), e.getY());
-//						
-//				         if(selRow != -1 && e.isPopupTrigger()) {
-//				        	 tree.setSelectionRow(selRow);
-//				        	 popupMenu.show((Component)e.getSource(),e.getX(), e.getY());
-//				         }
-//					}
-//				});
+				tree.addKeyListener(new KeyAdapter() {
+					@Override
+					public void keyPressed(KeyEvent e) {
+						if (e.getKeyCode()==KeyEvent.VK_F5){
+							triggerNodeAction(RefreshAction.ID);
+						}
+					}
+				});
 				tree.setCellRenderer(new RegistryTreeCellRenderer());
 				scrollPane.setViewportView(tree);
 				
@@ -65,19 +76,41 @@ public class JCRBrowserPanel extends JPanel implements Observer{
 				popupMenu.setLabel("");
 				addPopup(tree, popupMenu);
 				
-				JMenuItem mntmRefresh = new JMenuItem("Refresh");
-				mntmRefresh.addActionListener(new ActionListener() {
+				AbstractBrowserActionItem actionRefresh = new RefreshAction();
+				browserActions.add(actionRefresh);
+				actionRefresh.getMenuItem().setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+				actionRefresh.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						Object o = tree.getLastSelectedPathComponent();
-						if (o instanceof AbstractAiravataTreeNode){
-							AbstractAiravataTreeNode node=((AbstractAiravataTreeNode)o);
-							node.refresh();
-//							((DefaultTreeModel)tree.getModel()).nodeChanged(node);
-							((DefaultTreeModel)tree.getModel()).reload(node);
-						}
+						triggerNodeAction(RefreshAction.ID);
 					}
 				});
-				popupMenu.add(mntmRefresh);
+				
+				actionDelete = new DeleteAction();
+				browserActions.add(actionDelete);
+				actionDelete.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						triggerNodeAction(DeleteAction.ID);
+					}
+				});
+				AddAction actionAdd = new AddAction();
+				browserActions.add(actionAdd);
+				actionAdd.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						triggerNodeAction(AddAction.ID);
+					}
+				});
+				
+				AddAction actionEdit = new AddAction();
+				browserActions.add(actionEdit);
+				actionEdit.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						triggerNodeAction(EditAction.ID);
+					}
+				});
+
+				popupMenu.add(actionAdd.getMenuItem());
+				popupMenu.add(actionDelete.getMenuItem());
+				popupMenu.add(actionRefresh.getMenuItem());
 			}
 		}
 	}
@@ -144,9 +177,36 @@ public class JCRBrowserPanel extends JPanel implements Observer{
 				int selRow = tree.getRowForLocation(e.getX(), e.getY());
 				if(selRow != -1 && e.isPopupTrigger()) {
 					tree.setSelectionRow(selRow);
+					Object o = tree.getLastSelectedPathComponent();
+					if (o instanceof AbstractAiravataTreeNode){
+						AbstractAiravataTreeNode node=((AbstractAiravataTreeNode)o);
+						for (AbstractBrowserActionItem action : browserActions) {
+							boolean actionSupported = node.isActionSupported(action);
+							action.setVisible(actionSupported);
+							if (actionSupported){
+								action.setCaption(node.getActionCaption(action));
+								action.setIcon(node.getActionIcon(action));
+								action.setDescription(node.getActionDescription(action));
+							}
+						}
+					}
+					
 					popup.show(e.getComponent(), e.getX(), e.getY());
 				}
 			}
 		});
+	}
+
+	private void triggerNodeAction(String action) {
+		Object o = tree.getLastSelectedPathComponent();
+		if (o instanceof AbstractAiravataTreeNode){
+			AbstractAiravataTreeNode node=((AbstractAiravataTreeNode)o);
+			try {
+				node.triggerAction(tree, action);
+			} catch (Exception e) {
+				e.printStackTrace();
+				getEngine().getErrorWindow().error(e);
+			}
+		}
 	}
 }
