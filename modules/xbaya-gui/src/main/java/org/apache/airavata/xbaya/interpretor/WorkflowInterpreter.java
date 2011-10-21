@@ -644,7 +644,7 @@ private boolean isoffline = false;
 
                 } else {
                     invoker = new GenericInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
-                            .getComponent().getWSDL()), node.getID(), this.engine.getMonitor().getConfiguration().getMessageBoxURL().toString(),
+                            .getComponent().getWSDL()), node.getID(), this.configuration.getMessageBoxURL().toString(),
                             gfacURLString, this.notifier);
                 }
 
