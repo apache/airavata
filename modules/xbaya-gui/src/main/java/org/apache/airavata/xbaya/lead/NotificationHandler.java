@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.util.Properties;
 
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.workflow.tracking.NotifierFactory;
 import org.apache.airavata.workflow.tracking.WorkflowNotifier;
 import org.apache.airavata.workflow.tracking.common.InvocationContext;
@@ -66,6 +67,8 @@ public class NotificationHandler extends BaseHandler {
 
     private InvocationEntity invocationEntity;
 
+    private WorkflowContextHeaderBuilder builder;
+
     /**
      * Constructs a NotificationHandler.
      * 
@@ -94,6 +97,29 @@ public class NotificationHandler extends BaseHandler {
                 myServiceID,myNodeID,myTimestep);
     }
 
+    public NotificationHandler(WorkflowContextHeaderBuilder builder) {
+        super(NotificationHandler.class.getName());
+        this.builder = builder;
+        this.notifier = NotifierFactory.createNotifier();
+        URI myWorkflowID = null;
+        URI myServiceID = URI.create(XBayaConstants.APPLICATION_SHORT_NAME);
+        String userDN = this.builder.getUserIdentifier();
+        if (userDN != null || userDN.trim().length() == 0) {
+            String serviceIDAsString = XBayaConstants.APPLICATION_SHORT_NAME + ":" + userDN.trim();
+            try {
+                myServiceID = new URI(null, null, serviceIDAsString, null);
+            } catch (URISyntaxException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+        String myNodeID = null;
+        Integer myTimestep = null;
+        EndpointReference epr = new EndpointReference(builder.getWorkflowMonitoringContext().getEventPublishEpr());
+        this.invocationEntity = this.notifier.createEntity(myWorkflowID, myServiceID, myNodeID, myTimestep);
+        this.context = this.notifier.createTrackingContext(new Properties(), epr.getAddress().toString(), myWorkflowID,
+                myServiceID, myNodeID, myTimestep);
+    }
+
     /**
      * @see xsul.xhandler.BaseHandler#processOutgoingXml(org.xmlpull.v1.builder.XmlElement,
      *      xsul.message_router.MessageContext)
@@ -106,16 +132,16 @@ public class NotificationHandler extends BaseHandler {
 
 
         URI serviceWorkflowID = null;
-        URI serviceServiceID = this.leadContext.getWorkflowId();
+        URI serviceServiceID = URI.create(this.builder.getWorkflowMonitoringContext().getServiceInstanceId());
         if (serviceServiceID == null) {
             serviceServiceID = URI.create("NoWorkflowIDSet");
         }
-        String serviceNodeID = this.leadContext.getNodeId();
+        String serviceNodeID = this.builder.getWorkflowMonitoringContext().getWorkflowNodeId();
         Integer serviceTimestep = null;
-        String timeStep = this.leadContext.getTimeStep();
+        String timeStep = Integer.toString(this.builder.getWorkflowMonitoringContext().getWorkflowTimeStep());
         if (timeStep != null) {
             try {
-                serviceTimestep = new Integer(this.leadContext.getTimeStep());
+                serviceTimestep = new Integer(this.builder.getWorkflowMonitoringContext().getWorkflowTimeStep());
             } catch (NumberFormatException e) {
                 logger.error(e.getMessage(), e);
             }

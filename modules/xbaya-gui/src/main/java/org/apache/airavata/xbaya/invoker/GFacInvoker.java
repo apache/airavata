@@ -26,6 +26,7 @@ import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
 import org.apache.airavata.xbaya.lead.NotificationHandler;
@@ -53,6 +54,8 @@ public class GFacInvoker implements Invoker {
 
     private LeadContextHeader leadContext;
 
+    private WorkflowContextHeaderBuilder builder;
+
     /**
      * Constructs a GFacInvoker.
      * 
@@ -66,6 +69,13 @@ public class GFacInvoker implements Invoker {
         this.gfacURL = gfacURL;
         this.messageBoxURL = messageBoxURL;
         this.leadContext = context;
+    }
+
+    public GFacInvoker(QName portTypeQName, String gfacURL, String messageBoxURL, WorkflowContextHeaderBuilder context) {
+        this.portTypeQName = portTypeQName;
+        this.gfacURL = gfacURL;
+        this.messageBoxURL = messageBoxURL;
+        this.builder = context;
     }
 
     /**
@@ -102,7 +112,7 @@ public class GFacInvoker implements Invoker {
             WsdlDefinitions concreteWSDL = WsdlResolver.getInstance().loadWsdl(getWsdlURI);                        
             
             this.invoker = InvokerFactory
-                    .createInvoker(this.portTypeQName, concreteWSDL, null, this.messageBoxURL, null);
+                    .createInvoker(this.portTypeQName, concreteWSDL, null, this.messageBoxURL,null,true);
             this.invoker.setup();
         } catch (XBayaException xe) {
             throw xe;
@@ -151,15 +161,15 @@ public class GFacInvoker implements Invoker {
 
         WSIFClient client = invoker.getClient();
         // FIXME: Temporary fix
-        if (this.leadContext == null) {
-            LeadContextHeader lh = new LeadContextHeader(UUID.randomUUID().toString(), "XBaya-User");
-            this.leadContext = lh;
-        }
-        StickySoapHeaderHandler handler = new StickySoapHeaderHandler("use-lead-header", this.leadContext);
-        client.addHandler(handler);
+//        if (this.leadContext == null) {
+//            LeadContextHeader lh = new LeadContextHeader(UUID.randomUUID().toString(), "XBaya-User");
+//            this.leadContext = lh;
+//        }
+//        StickySoapHeaderHandler handler = new StickySoapHeaderHandler("use-lead-header", this.leadContext);
+//        client.addHandler(handler);
 
         // This handler has to be end to get the entire soap message.
-        NotificationHandler notificationHandler = new NotificationHandler(this.leadContext);
+        NotificationHandler notificationHandler = new NotificationHandler(this.builder);
         client.addHandler(notificationHandler);
         return this.invoker.invoke();
     }

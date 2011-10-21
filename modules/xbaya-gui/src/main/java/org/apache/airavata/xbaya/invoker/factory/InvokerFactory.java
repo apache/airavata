@@ -23,6 +23,7 @@ package org.apache.airavata.xbaya.invoker.factory;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.invoker.AsynchronousInvoker;
@@ -56,6 +57,27 @@ public class InvokerFactory {
             }
         } else if (gfacURL != null && gfacURL.length() != 0) {
             invoker = new GFacInvoker(portTypeQName, gfacURL, messageBoxURL, leadContext);
+        }
+
+        if (invoker == null) {
+            String message = "Cannot find an appropriate way to invoke the service";
+            throw new XBayaException(message);
+        }
+        return invoker;
+    }
+       public static Invoker createInvoker(QName portTypeQName, WsdlDefinitions definitions, String gfacURL,
+            String messageBoxURL, WorkflowContextHeaderBuilder builder,boolean differ) throws XBayaException {
+        Invoker invoker = null;
+
+        if (definitions != null && definitions.getServices().iterator().hasNext()) {
+            // check if this web service supports asynchronous invocation
+            if (WSDLUtil.isAsynchronousSupported(WSDLUtil.wsdlDefinitions3ToWsdlDefintions5(definitions))) {
+                invoker = new AsynchronousInvoker(definitions, messageBoxURL);
+            } else {
+                invoker = new SimpleInvoker(definitions);
+            }
+        } else if (gfacURL != null && gfacURL.length() != 0) {
+            invoker = new GFacInvoker(portTypeQName, gfacURL, messageBoxURL, builder);
         }
 
         if (invoker == null) {

@@ -30,6 +30,15 @@
             <artifactId>airavata-registry-api</artifactId>
             <version>${airavata.version}</version>
         </dependency>
+<dependency>
+            <groupId>airavata</groupId>
+            <artifactId>airavata-workflow-execution-context</artifactId>
+            <version>${airavata.version}</version>
+        </dependency>
+
+
+
+
         <dependency>
             <groupId>airavata</groupId>
             <artifactId>airavata-workflowtracking</artifactId>
