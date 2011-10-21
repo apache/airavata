@@ -109,7 +109,6 @@ public class ParameterFactory {
         AbstractParameter result = cl.newInstance();
         DataType dataType = new DataType(type);
         result.setType(dataType);
-        /*result.setType(getType(lower));*/
         return result;
     }
 

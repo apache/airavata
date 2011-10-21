@@ -26,7 +26,7 @@ public class DataType implements Type {
     private org.apache.airavata.schemas.gfac.DataType.Enum dataType;
 
     public DataType() {
-        dataType = null;
+        dataType = org.apache.airavata.schemas.gfac.DataType.Enum.forString("String");
     }
 
     public DataType(String type) {
