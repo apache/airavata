@@ -23,13 +23,9 @@ package org.apache.airavata.commons.gfac.type;
 
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 
-import java.util.List;
-
 public class ServiceDescription implements Type {
 
     private ServiceDescriptionType serviceDescriptionType;
-    private List<org.apache.airavata.commons.gfac.type.Parameter> inputParameters;
-    private List<Parameter> outputParameters;
 
     public ServiceDescription() {
         this.serviceDescriptionType = ServiceDescriptionType.Factory.newInstance();
@@ -51,7 +47,6 @@ public class ServiceDescription implements Type {
         return serviceDescriptionType;
     }
 
-    // TODO
     public org.apache.airavata.schemas.gfac.Parameter[] getInputParameters() {
         return this.serviceDescriptionType.getInputParametersArray();
     }

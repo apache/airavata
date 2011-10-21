@@ -21,18 +21,14 @@
 
 package org.apache.airavata.commons.gfac.type.parameter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.airavata.commons.gfac.type.DataType;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 public class ParameterFactory {
 
@@ -111,7 +107,9 @@ public class ParameterFactory {
             throw new RuntimeException("Type is not supprted: " + type);
         Class<? extends AbstractParameter> cl = map.get(lower);
         AbstractParameter result = cl.newInstance();
-        result.setType(getType(lower));
+        DataType dataType = new DataType(type);
+        result.setType(dataType);
+        /*result.setType(getType(lower));*/
         return result;
     }
 

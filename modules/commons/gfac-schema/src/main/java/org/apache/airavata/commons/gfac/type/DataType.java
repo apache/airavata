@@ -23,49 +23,25 @@ package org.apache.airavata.commons.gfac.type;
 
 public class DataType implements Type {
 
-    private String type;
+    private org.apache.airavata.schemas.gfac.DataType.Enum dataType;
 
     public DataType() {
+        dataType = null;
     }
 
     public DataType(String type) {
-        this.type = type;
+        dataType = org.apache.airavata.schemas.gfac.DataType.Enum.forString(type);
     }
 
     public void setType(String type) {
-        this.type = type;
+        dataType = org.apache.airavata.schemas.gfac.DataType.Enum.forString(type);
     }
 
     public String getType() {
-        return this.type;
+        return dataType.toString();
     }
 
     public String toString() {
-        return this.type;
+        return dataType.toString();
     }
-
-    /*  TODO:
-        private org.apache.airavata.schemas.gfac.DataType dataType;
-
-    public DataType() {
-        dataType = org.apache.airavata.schemas.gfac.DataType.Factory.newInstance();
-    }
-
-    public DataType(String type) {
-        this.dataType.set(type);
-        //this.dataType.set(org.apache.airavata.schemas.gfac.DataType.DOUBLE);
-    }
-
-    public void setType(String type) {
-        this.dataType.set(type);
-    }
-
-    public String getType() {
-        return this.dataType.getStringValue();
-    }
-
-    public String toString() {
-        return this.dataType.toString();
-    }
-     */
 }
