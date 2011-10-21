@@ -47,21 +47,24 @@ public class ServiceDescription implements Type {
         this.serviceDescriptionType.setName(id);
     }
 
+    public ServiceDescriptionType getServiceDescriptionType() {
+        return serviceDescriptionType;
+    }
+
     // TODO
-    public List<Parameter> getInputParameters() {
-        return inputParameters;
+    public org.apache.airavata.schemas.gfac.Parameter[] getInputParameters() {
+        return this.serviceDescriptionType.getInputParametersArray();
     }
 
-    public void setInputParameters(List<Parameter> inputParameters) {
-        this.inputParameters = inputParameters;
+    public void setInputParameters(org.apache.airavata.schemas.gfac.Parameter[] inputParameters) {
+        this.serviceDescriptionType.setInputParametersArray(inputParameters);
     }
 
-    public List<Parameter> getOutputParameters() {
-        return outputParameters;
+    public org.apache.airavata.schemas.gfac.Parameter[] getOutputParameters() {
+        return this.serviceDescriptionType.getOutputParametersArray();
     }
 
-    public void setOutputParameters(List<Parameter> outputParameters) {
-        this.outputParameters = outputParameters;
-        //this.serviceDescriptionType.setOutputParametersArray(outputParameters);
+    public void setOutputParameters(org.apache.airavata.schemas.gfac.Parameter[] outputParameters) {
+        this.serviceDescriptionType.setOutputParametersArray(outputParameters);
     }
 }

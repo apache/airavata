@@ -42,9 +42,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import org.apache.airavata.commons.gfac.type.DataType;
-import org.apache.airavata.commons.gfac.type.Parameter;
+//import org.apache.airavata.commons.gfac.type.Parameter;
+import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
+import org.apache.airavata.schemas.gfac.ParameterType;
+import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 
@@ -59,6 +62,7 @@ public class ServiceDescriptionDialog extends JDialog {
 	private JLabel lblError;
 	private XBayaEngine engine;
 	private ServiceDescription serviceDescription;
+    private ServiceDescriptionType serviceDescriptionType;
 	private JButton okButton;
 	private JButton btnDeleteParameter;
 	private DefaultTableModel defaultTableModel;
@@ -349,6 +353,13 @@ public class ServiceDescriptionDialog extends JDialog {
 		return serviceDescription;
 	}
 
+    public ServiceDescriptionType getServiceDescriptionType() {
+        if (serviceDescriptionType==null){
+            serviceDescriptionType = new ServiceDescription().getServiceDescriptionType();
+        }
+        return serviceDescriptionType;
+    }
+
 	public XBayaEngine getEngine() {
 		return engine;
 	}
@@ -401,10 +412,10 @@ public class ServiceDescriptionDialog extends JDialog {
 	}
 
 	public void saveServiceDescription() {
-		getServiceDescription().setInputParameters(new ArrayList<Parameter>());
-		getServiceDescription().setOutputParameters(new ArrayList<Parameter>());
+		getServiceDescription().setInputParameters(ServiceDescriptionType.Factory.newInstance().getInputParametersArray());
+		getServiceDescription().setOutputParameters(ServiceDescriptionType.Factory.newInstance().getOutputParametersArray());
 		for(int i=0;i<defaultTableModel.getRowCount();i++){
-			Parameter parameter = new Parameter();
+			Parameter parameter = Parameter.Factory.newInstance();
 			String parameterName = (String)defaultTableModel.getValueAt(i, 1);
 			if (parameterName!=null) {
 				DataType parameterDataType = (DataType) defaultTableModel
@@ -413,13 +424,15 @@ public class ServiceDescriptionDialog extends JDialog {
 						.getValueAt(i, 3);
 				parameter.setName(parameterName);
 				parameter.setDescription(parameterDescription);
-				parameter.setType(parameterDataType);
+
+				parameter.addNewType().setType(org.apache.airavata.schemas.gfac.DataType.Enum.forString(parameterDataType.toString()));
 				if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i,
 						0))) {
-					getServiceDescription().getInputParameters().add(parameter);
+                    getServiceDescriptionType().setInputParametersArray(0,parameter);
+					//getServiceDescription().getInputParameters().add(parameter);
 				} else {
-					getServiceDescription().getOutputParameters()
-							.add(parameter);
+					getServiceDescriptionType().setOutputParametersArray(0,parameter);
+					//getServiceDescription().getOutputParameters().add(parameter);
 				}
 			}
 		}
