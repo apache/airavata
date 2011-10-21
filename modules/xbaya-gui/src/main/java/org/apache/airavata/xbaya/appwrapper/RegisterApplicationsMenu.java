@@ -135,7 +135,7 @@ public class RegisterApplicationsMenu {
                 if (XBayaUtil.acquireJCRRegistry(engine)) {
 					try {
 						ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(
-								RegisterApplicationsMenu.this.engine);
+								RegisterApplicationsMenu.this.engine.getConfiguration().getJcrComponentRegistry().getRegistry());
 						serviceDescriptionDialog.open();
 					} catch (Exception e1) {
 						RegisterApplicationsMenu.this.engine.getErrorWindow()
@@ -158,7 +158,7 @@ public class RegisterApplicationsMenu {
             	 if (XBayaUtil.acquireJCRRegistry(engine)) {
 					try {
 						ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(
-								RegisterApplicationsMenu.this.engine);
+								RegisterApplicationsMenu.this.engine.getConfiguration().getJcrComponentRegistry().getRegistry());
 						applicationDescriptionDialog.open();
 					} catch (Exception e1) {
 						RegisterApplicationsMenu.this.engine.getErrorWindow()
@@ -181,7 +181,7 @@ public class RegisterApplicationsMenu {
                 if (XBayaUtil.acquireJCRRegistry(engine)) {
 					try {
 						HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(
-								RegisterApplicationsMenu.this.engine);
+								RegisterApplicationsMenu.this.engine.getConfiguration().getJcrComponentRegistry().getRegistry());
 						hostDescriptionDialog.open();
 					} catch (Exception e1) {
 						RegisterApplicationsMenu.this.engine.getErrorWindow()

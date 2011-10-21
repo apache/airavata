@@ -9,9 +9,16 @@ import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
+import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 
 public abstract class AbstractAiravataTreeNode implements TreeNode {
 
@@ -122,4 +129,56 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
 	public void refresh(){
 		this.children=null;
 	}
+	
+	public abstract List<String> getSupportedActions();
+	
+	public boolean isActionSupported(AbstractBrowserActionItem action){
+		return getSupportedActions().contains(action.getID());
+	}
+	
+	public boolean triggerAction(JTree tree,String action) throws Exception{
+		return triggerAction(tree, action, false);
+	}
+	
+	public boolean triggerAction(JTree tree,String action, boolean force) throws Exception{
+		if (action.equals(RefreshAction.ID)){
+			refresh();
+			((DefaultTreeModel)tree.getModel()).reload(this);
+			return true;
+		}
+		return false;
+	}
+
+	protected TreeNode getRootNode(){
+		TreeNode rootNode=this;
+		while(rootNode.getParent()!=null){
+			rootNode=rootNode.getParent();
+		}
+		return rootNode;
+	}
+	
+	public Registry getRegistry(){
+		TreeNode rootNode = getRootNode();
+		if (rootNode instanceof RegistryNode){
+			return ((RegistryNode)rootNode).getRegistry();
+		}
+		return null;
+	}
+	
+	protected boolean askQuestion(String title, String question){
+		return JOptionPane.showConfirmDialog(null, question, title, JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION;
+	}
+	
+	protected void reloadTreeNode(JTree tree, TreeNode node) {
+		TreePath selectionPath = tree.getSelectionPath();
+		((DefaultTreeModel) tree.getModel()).nodeChanged(node);
+		((DefaultTreeModel) tree.getModel()).reload(node);
+		tree.expandPath(selectionPath);
+	}
+	
+	public abstract String getActionCaption(AbstractBrowserActionItem action);
+	
+	public abstract Icon getActionIcon(AbstractBrowserActionItem action);
+	
+	public abstract String getActionDescription(AbstractBrowserActionItem action);
 }

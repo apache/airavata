@@ -30,6 +30,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
+import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.apache.airavata.xbaya.XBayaEngine;
 
@@ -42,13 +43,13 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 	private JTextField txtSTDOUT;
 	private JTextField txtSTDERR;
 	private JTable tblEnv;
-	private XBayaEngine engine;
 	private ShellApplicationDeployment shellApplicationDescription;
 	private DefaultTableModel defaultTableModel;
 	private boolean tableModelChanging=false;
 	private JButton btnDeleteVariable;
 	private JButton okButton;
-	
+	private Registry registry;
+
 	/**
 	 * Launch the application.
 	 */
@@ -65,14 +66,14 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public ApplicationDescriptionAdvancedOptionDialog(XBayaEngine engine, ShellApplicationDeployment descriptor) {
+	public ApplicationDescriptionAdvancedOptionDialog(Registry registry, ShellApplicationDeployment descriptor) {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent arg0) {
 				loadApplicationDescriptionAdvancedOptions();
 			}
 		});
-		setEngine(engine);
+		setRegistry(registry);
 		setShellApplicationDescription(descriptor);
 		initGUI();
 	}
@@ -341,10 +342,6 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 		this.shellApplicationDescription = shellApplicationDescription;
 	}
 
-	public XBayaEngine getEngine() {
-		return engine;
-	}
-
 	private void addNewRowIfLastIsNotEmpty() {
 		Object varName=null;
 		if (defaultTableModel.getRowCount()>0) {
@@ -354,10 +351,6 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 		if (defaultTableModel.getRowCount()==0 || (varName!=null && !varName.equals(""))){
 			defaultTableModel.addRow(new Object[]{null,null});
 		}
-	}
-	
-	public void setEngine(XBayaEngine engine) {
-		this.engine = engine;
 	}
 	
 	private void saveApplicationDescriptionAdvancedOptions() {
@@ -420,6 +413,14 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 //			lblError.setText(errorMessage.trim());
 //		}
 //	}
+
+	public Registry getRegistry() {
+		return registry;
+	}
+
+	public void setRegistry(Registry registry) {
+		this.registry = registry;
+	}
 	
 //	private void updateDialogStatus(){
 //		String message=null;

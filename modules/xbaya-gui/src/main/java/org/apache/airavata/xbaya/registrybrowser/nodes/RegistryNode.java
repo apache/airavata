@@ -1,6 +1,7 @@
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Icon;
@@ -8,6 +9,8 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 import org.apache.airavata.xbaya.registrybrowser.model.ApplicationDeploymentDescriptions;
 import org.apache.airavata.xbaya.registrybrowser.model.GFacURLs;
 import org.apache.airavata.xbaya.registrybrowser.model.HostDescriptions;
@@ -66,5 +69,23 @@ public class RegistryNode  extends AbstractAiravataTreeNode{
 //			}
 //		}
 //	}
+	@Override
+	public List<String> getSupportedActions() {
+		return Arrays.asList(RefreshAction.ID);
+	}
 
+	@Override
+	public String getActionCaption(AbstractBrowserActionItem action) {
+		return action.getDefaultCaption();
+	}
+
+	@Override
+	public Icon getActionIcon(AbstractBrowserActionItem action) {
+		return null;
+	}
+
+	@Override
+	public String getActionDescription(AbstractBrowserActionItem action) {
+		return null;
+	}
 }

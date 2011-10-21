@@ -185,7 +185,13 @@ public interface Registry {
     public Node getWorkflow(QName templateID,String userName);
 
     public boolean deleteWorkflow(QName resourceID,String userName);
+    
+    public void deleteServiceDescription(String serviceId) throws ServiceDescriptionRetrieveException, PathNotFoundException;
+    
+    public void deleteDeploymentDescription(String serviceName, String hostName, String applicationName) throws PathNotFoundException, DeploymentDescriptionRetrieveException;
 
+    public void deleteHostDescription(String hostId) throws HostDescriptionRetrieveException, PathNotFoundException;
+    
     /**
      * Returns the default username that is specified to connect to the repository
      * @return

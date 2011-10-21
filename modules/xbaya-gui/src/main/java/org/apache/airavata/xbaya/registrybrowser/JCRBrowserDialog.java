@@ -8,18 +8,15 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
-import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.registrybrowser.nodes.AiravataTreeNodeFactory;
-import org.apache.airavata.xbaya.registrybrowser.nodes.RegistryTreeCellRenderer;
-
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
 
 public class JCRBrowserDialog extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2866874255829295553L;
 	private JPanel contentPanel = new JPanel();
 	private XBayaEngine engine;
 	
@@ -95,8 +92,4 @@ public class JCRBrowserDialog extends JDialog {
 		this.engine = engine;
 	}
 
-	private Registry getJCRRegistry(){
-		return getEngine().getConfiguration().getJcrComponentRegistry().getRegistry();
-	}
-	
 }
