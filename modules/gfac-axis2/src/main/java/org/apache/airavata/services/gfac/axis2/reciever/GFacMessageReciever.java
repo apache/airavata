@@ -32,6 +32,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
+import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
@@ -69,6 +70,15 @@ import org.apache.axis2.util.Utils;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.StringReader;
+import java.net.URI;
+import java.util.Iterator;
+import java.util.List;
 
 public class GFacMessageReciever implements MessageReceiver {
 
@@ -179,15 +189,21 @@ public class GFacMessageReciever implements MessageReceiver {
              * Input
              */
             ParameterContextImpl inputParam = new ParameterContextImpl();
-            List<Parameter> inputs = serviceDescription.getInputParameters();
-            for (Parameter parameter : inputs) {
+            ServiceDescriptionType serviceDescriptionType = serviceDescription.getServiceDescriptionType();
+
+            List<org.apache.airavata.schemas.gfac.Parameter> newInputs = null;
+            for (int i=0; i<serviceDescriptionType.getInputParametersArray().length; i++) {
+                  newInputs.add(serviceDescriptionType.getInputParametersArray(i));
+            }
+
+            for (org.apache.airavata.schemas.gfac.Parameter parameter : newInputs) {
                 OMElement element = input.getFirstChildWithName(new QName(parameter.getName()));
 
                 if (element == null) {
                     throw new Exception("Parameter is not found in the message");
                 }
 
-                AbstractParameter param = ParameterFactory.getInstance().createActualParameter(parameter.getType());
+                AbstractParameter param = ParameterFactory.getInstance().createActualParameter(parameter.getType().getType().toString());
                 param.parseStringVal(element.getText());
                 inputParam.add(parameter.getName(), param);
             }
@@ -196,9 +212,15 @@ public class GFacMessageReciever implements MessageReceiver {
              * Output
              */
             ParameterContextImpl outputParam = new ParameterContextImpl();
-            List<Parameter> outputs = serviceDescription.getOutputParameters();
-            for (Parameter parameter : outputs) {
-                outputParam.add(parameter.getName(), ParameterFactory.getInstance().createActualParameter(parameter.getType()));
+
+            List<org.apache.airavata.schemas.gfac.Parameter> newOutputs = null;
+            for (int i=0; i<serviceDescriptionType.getOutputParametersArray().length; i++) {
+                  newOutputs.add(serviceDescriptionType.getOutputParametersArray(i));
+            }
+
+            //List<Parameter> outputs = serviceDescription.getOutputParameters();
+            for (org.apache.airavata.schemas.gfac.Parameter parameter : newOutputs) {
+                outputParam.add(parameter.getName(), ParameterFactory.getInstance().createActualParameter(parameter.getType().getType().toString()));
             }
 
             invocationContext.setInput(inputParam);

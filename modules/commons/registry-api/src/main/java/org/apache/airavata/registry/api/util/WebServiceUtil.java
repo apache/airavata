@@ -1,7 +1,8 @@
 package org.apache.airavata.registry.api.util;
 
-import org.apache.airavata.commons.gfac.type.Parameter;
+import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 
 public class WebServiceUtil {
 
@@ -14,14 +15,16 @@ public class WebServiceUtil {
         builder.append("<wsdl:types>");
         builder.append("<xs:schema attributeFormDefault=\"qualified\" elementFormDefault=\"unqualified\" targetNamespace=\"http://www.wso2.org/types\">");
 
-        boolean isInputParametersPresent = service.getInputParameters() != null && service.getInputParameters().size() > 0;
+        boolean isInputParametersPresent = service.getInputParameters() != null && service.getInputParameters().length > 0;
 		if (isInputParametersPresent) {
             builder.append("<xs:element name=\"invoke\">");
             builder.append("<xs:complexType>");
             builder.append("<xs:sequence>");
 
-            for (Parameter parameter : service.getInputParameters()) {
-                generateElementFromType(parameter, builder);
+            ServiceDescriptionType p = service.getServiceDescriptionType();
+
+            for (int i=0; i<p.getInputParametersArray().length; i++) {
+                generateElementFromType(p.getInputParametersArray(i), builder);
             }
 
             builder.append("</xs:sequence>");
@@ -29,14 +32,16 @@ public class WebServiceUtil {
             builder.append("</xs:element>");
         }
 
-		boolean isOutputParametersPresent = service.getOutputParameters() != null && service.getOutputParameters().size() > 0;
+		boolean isOutputParametersPresent = service.getOutputParameters() != null && service.getOutputParameters().length > 0;
 		if (isOutputParametersPresent) {
             builder.append("<xs:element name=\"invokeResponse\">");
             builder.append("<xs:complexType>");
             builder.append("<xs:sequence>");
 
-            for (Parameter parameter : service.getOutputParameters()) {
-                generateElementFromType(parameter, builder);
+            ServiceDescriptionType p = service.getServiceDescriptionType();
+
+            for (int i=0; i<p.getOutputParametersArray().length; i++) {
+                generateElementFromType(p.getOutputParametersArray(i), builder);
             }
 
             builder.append("</xs:sequence>");
@@ -75,7 +80,7 @@ public class WebServiceUtil {
     }
 
     private static void generateElementFromType(Parameter parameter, StringBuilder builder) {
-        String type = parameter.getType().getType();
+        String type = parameter.getType().getType().toString();
         if (type.equals("String")){
             builder.append("<xs:element minOccurs=\"0\" name=\"");
             builder.append(parameter.getName());

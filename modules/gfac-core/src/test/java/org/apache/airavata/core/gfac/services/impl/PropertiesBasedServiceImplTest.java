@@ -22,7 +22,6 @@
 package org.apache.airavata.core.gfac.services.impl;
 
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
@@ -32,6 +31,8 @@ import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationCo
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.registry.api.impl.JCRRegistry;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.junit.Assert;
 import org.junit.Before;
@@ -79,20 +80,23 @@ public class PropertiesBasedServiceImplTest {
 		ServiceDescription serv = new ServiceDescription();
 		serv.setId("SimpleEcho");
 
-		Parameter input = new Parameter();
+		Parameter input = Parameter.Factory.newInstance();
 		input.setName("echo_input");
-		input.setType(ParameterFactory.getInstance().getType("String"));
+        input.addNewType().setType(DataType.STRING);
 		List<Parameter> inputList = new ArrayList<Parameter>();
 		inputList.add(input);
+        org.apache.airavata.schemas.gfac.Parameter[] inputParamList =
+                inputList.toArray(new org.apache.airavata.schemas.gfac.Parameter[inputList.size()]);
 
-		Parameter output = new Parameter();
+		Parameter output = Parameter.Factory.newInstance();
 		output.setName("echo_output");
-		output.setType(ParameterFactory.getInstance().getType("String"));
+		output.addNewType().setType(DataType.STRING);
 		List<Parameter> outputList = new ArrayList<Parameter>();
 		outputList.add(output);
-
-		serv.setInputParameters(inputList);
-		serv.setOutputParameters(outputList);
+        org.apache.airavata.schemas.gfac.Parameter[] outputParamList =
+                outputList.toArray(new org.apache.airavata.schemas.gfac.Parameter[outputList.size()]);
+		serv.setInputParameters(inputParamList);
+		serv.setOutputParameters(outputParamList);
 
 		/*
 		 * Save to registry
