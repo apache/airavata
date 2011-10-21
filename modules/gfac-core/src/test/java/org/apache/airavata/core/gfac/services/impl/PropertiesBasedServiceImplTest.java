@@ -21,27 +21,26 @@
 
 package org.apache.airavata.core.gfac.services.impl;
 
-import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
-import org.apache.airavata.commons.gfac.type.parameter.StringParameter;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.registry.api.impl.JCRRegistry;
+import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.fail;
 
 public class PropertiesBasedServiceImplTest {
 	@Before
@@ -72,7 +71,7 @@ public class PropertiesBasedServiceImplTest {
 		app.setOutputDir("/tmp/output");
 		app.setStdOut("/tmp/echo.stdout");
 		app.setStdErr("/tmp/echo.stdout");
-		app.setEnv(new HashMap<String, String>());
+		app.setEnv(ShellApplicationDeploymentType.Factory.newInstance().getEnv());
 
 		/*
 		 * Service

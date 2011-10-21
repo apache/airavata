@@ -138,7 +138,7 @@ public class LocalProvider extends AbstractProvider {
             nv.put(key,value);
         }
 
-        if(app.getEnv() != null){
+        if((app.getEnv() != null) && (app.getEnv().getEntryArray().length != 0)){
             builder.environment().putAll(nv);
         }
 
