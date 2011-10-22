@@ -126,18 +126,15 @@ public class GFacMessageReciever implements MessageReceiver {
         String serviceName = getOriginalServiceName(messageContext);
         try {
             /*
-             * We assume that input likes <invoke>
-             * <input_param_name1>value</input_param_name1>
-             * <input_param_name2>value</input_param_name2>
-             * <input_param_name3>value</input_param_name3> </invoke>
+             * We assume that input likes <invoke> <input_param_name1>value</input_param_name1>
+             * <input_param_name2>value</input_param_name2> <input_param_name3>value</input_param_name3> </invoke>
              */
             OMElement invoke = messageContext.getEnvelope().getBody().getFirstElement();
 
             /*
-             * We assume that output likes <invokeResponse>
-             * <output_param_name1>value</output_param_name1>
-             * <output_param_name2>value</output_param_name2>
-             * <output_param_name3>value</output_param_name3> </invokeResponse>
+             * We assume that output likes <invokeResponse> <output_param_name1>value</output_param_name1>
+             * <output_param_name2>value</output_param_name2> <output_param_name3>value</output_param_name3>
+             * </invokeResponse>
              */
             OMElement output = invokeApplication(serviceName, invoke, messageContext);
 
@@ -192,8 +189,8 @@ public class GFacMessageReciever implements MessageReceiver {
             ServiceDescriptionType serviceDescriptionType = serviceDescription.getServiceDescriptionType();
 
             List<org.apache.airavata.schemas.gfac.Parameter> newInputs = null;
-            for (int i=0; i<serviceDescriptionType.getInputParametersArray().length; i++) {
-                  newInputs.add(serviceDescriptionType.getInputParametersArray(i));
+            for (int i = 0; i < serviceDescriptionType.getInputParametersArray().length; i++) {
+                newInputs.add(serviceDescriptionType.getInputParametersArray(i));
             }
 
             for (org.apache.airavata.schemas.gfac.Parameter parameter : newInputs) {
@@ -203,7 +200,8 @@ public class GFacMessageReciever implements MessageReceiver {
                     throw new Exception("Parameter is not found in the message");
                 }
 
-                AbstractParameter param = ParameterFactory.getInstance().createActualParameter(parameter.getType().getType().toString());
+                AbstractParameter param = ParameterFactory.getInstance().createActualParameter(
+                        parameter.getType().getType().toString());
                 param.parseStringVal(element.getText());
                 inputParam.add(parameter.getName(), param);
             }
@@ -214,13 +212,14 @@ public class GFacMessageReciever implements MessageReceiver {
             ParameterContextImpl outputParam = new ParameterContextImpl();
 
             List<org.apache.airavata.schemas.gfac.Parameter> newOutputs = null;
-            for (int i=0; i<serviceDescriptionType.getOutputParametersArray().length; i++) {
-                  newOutputs.add(serviceDescriptionType.getOutputParametersArray(i));
+            for (int i = 0; i < serviceDescriptionType.getOutputParametersArray().length; i++) {
+                newOutputs.add(serviceDescriptionType.getOutputParametersArray(i));
             }
 
-            //List<Parameter> outputs = serviceDescription.getOutputParameters();
+            // List<Parameter> outputs = serviceDescription.getOutputParameters();
             for (org.apache.airavata.schemas.gfac.Parameter parameter : newOutputs) {
-                outputParam.add(parameter.getName(), ParameterFactory.getInstance().createActualParameter(parameter.getType().getType().toString()));
+                outputParam.add(parameter.getName(),
+                        ParameterFactory.getInstance().createActualParameter(parameter.getType().getType().toString()));
             }
 
             invocationContext.setInput(inputParam);
@@ -266,17 +265,17 @@ public class GFacMessageReciever implements MessageReceiver {
         String serviceName = getOriginalServiceName(messageContext);
         String serviceEpr = gfacUrl.getAddress().split(WSConstants.GFAC_SERVICE_NAME)[0] + serviceName;
         ConfigurationContext context = messageContext.getConfigurationContext();
-        
+
         try {
             OMElement wsdlElement = getWSDL(context, serviceName);
-            
-            //create Concrete WSDL
+
+            // create Concrete WSDL
             String cWSDL = WSDLUtil.createCWSDL(wsdlElement.toString(), serviceEpr);
 
             SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
             SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
             sf.createSOAPBody(responseEnv);
-            
+
             XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(
                     new StringReader(cWSDL.toString()));
             StAXOMBuilder builder = new StAXOMBuilder(reader);
@@ -334,7 +333,7 @@ public class GFacMessageReciever implements MessageReceiver {
      * 
      * @param context
      * @return
-     *
+     * 
      */
     private Axis2Registry getRegistry(ConfigurationContext context) {
         if (this.registry == null) {
@@ -352,30 +351,32 @@ public class GFacMessageReciever implements MessageReceiver {
 
     private String getEventBrokerURL(MessageContext context) {
         SOAPHeader header = context.getEnvelope().getHeader();
-        OMElement contextHeader = header.getFirstChildWithName(new QName("http://schemas.airavata.apache.org/workflow-execution-context", "context-header"));
+        OMElement contextHeader = header.getFirstChildWithName(new QName(
+                "http://schemas.airavata.apache.org/workflow-execution-context", "context-header"));
         String address = null;
         try {
             ContextHeaderDocument document = ContextHeaderDocument.Factory.parse(contextHeader.toStringWithConsume());
             address = document.getContextHeader().getWorkflowMonitoringContext().getEventPublishEpr();
         } catch (XmlException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         } catch (XMLStreamException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         }
         return address;
     }
 
     private String getTopic(MessageContext context) {
         SOAPHeader header = context.getEnvelope().getHeader();
-        OMElement contextHeader = header.getFirstChildWithName(new QName("http://schemas.airavata.apache.org/workflow-execution-context", "context-header"));
-         String topic = null;
+        OMElement contextHeader = header.getFirstChildWithName(new QName(
+                "http://schemas.airavata.apache.org/workflow-execution-context", "context-header"));
+        String topic = null;
         try {
             ContextHeaderDocument document = ContextHeaderDocument.Factory.parse(contextHeader.toStringWithConsume());
             topic = document.getContextHeader().getWorkflowMonitoringContext().getWorkflowInstanceId();
         } catch (XmlException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         } catch (XMLStreamException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         }
         topic = topic.substring(1);
         return topic.replaceAll("_", "-");

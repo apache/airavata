@@ -31,7 +31,8 @@ import org.apache.axis2.engine.Phase;
 
 public class Axis2Utils {
 
-    public static void overrideAddressingPhaseHander(ConfigurationContext configContext, AddressingBasedDispatcher dispatcher) {
+    public static void overrideAddressingPhaseHander(ConfigurationContext configContext,
+            AddressingBasedDispatcher dispatcher) {
 
         List<Phase> inflowPhases = configContext.getAxisConfiguration().getPhasesInfo().getINPhases();
         boolean foundFlag = false;

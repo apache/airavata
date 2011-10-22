@@ -105,23 +105,23 @@ public class ServiceDescriptionRegistrationWindow {
         return window;
     }
 
-//    private Object[] initApplicationNameList() {
-//        XRegistryAccesser xRegAccesser = new XRegistryAccesser(this.engine);
-//        AppData[] appDataList = xRegAccesser.searchApplicationByName("");
-//        List<String> nameList = new ArrayList<String>();
-//        nameList.add("Select Application");
-//        for (AppData appData : appDataList) {
-//            nameList.add(appData.getName().getLocalPart());
-//        }
-//        return nameList.toArray();
-//    }
+    // private Object[] initApplicationNameList() {
+    // XRegistryAccesser xRegAccesser = new XRegistryAccesser(this.engine);
+    // AppData[] appDataList = xRegAccesser.searchApplicationByName("");
+    // List<String> nameList = new ArrayList<String>();
+    // nameList.add("Select Application");
+    // for (AppData appData : appDataList) {
+    // nameList.add(appData.getName().getLocalPart());
+    // }
+    // return nameList.toArray();
+    // }
 
-//    /**
-//     * ReInit Application Name ComboBox
-//     */
-//    public void reinitApplicationComboBox() {
-//        this.appNameComboBox.setModel(new javax.swing.DefaultComboBoxModel(initApplicationNameList()));
-//    }
+    // /**
+    // * ReInit Application Name ComboBox
+    // */
+    // public void reinitApplicationComboBox() {
+    // this.appNameComboBox.setModel(new javax.swing.DefaultComboBoxModel(initApplicationNameList()));
+    // }
 
     /**
      * Clear ALl the TextFields
@@ -173,7 +173,7 @@ public class ServiceDescriptionRegistrationWindow {
         this.methodDescTextField = new XBayaTextField();
         this.methodDescLabel = new XBayaLabel("Method Description", this.methodDescTextField);
 
-//        this.appNameComboBox = new XBayaComboBox(new DefaultComboBoxModel(initApplicationNameList()));
+        // this.appNameComboBox = new XBayaComboBox(new DefaultComboBoxModel(initApplicationNameList()));
         this.appNameLabel = new XBayaLabel("Application Name", this.appNameComboBox);
 
         this.inputNumSpinner = new JSpinner(new SpinnerNumberModel(0, 0, Integer.MAX_VALUE, 1));
@@ -289,20 +289,20 @@ public class ServiceDescriptionRegistrationWindow {
             /* Register to XRegistry */
             RegistryAccesser xRegAccesser = new RegistryAccesser(this.engine);
 
-//            if (!this.isEditing) {
-//                xRegAccesser.registerService(serviceBean);
-//            } else {
-//                /* Delete old Service Bean */
-//                QName qName = new QName(this.editingServiceBean.getObjectNamespace(),
-//                        this.editingServiceBean.getServiceName());
-//                xRegAccesser.deleteServiceDescrption(qName);
-//
-//                /* Register updated Service Bean */
-//                xRegAccesser.registerService(serviceBean);
-//
-//                this.isEditing = false;
-//                this.addServiceButton.setText("Add Service");
-//            }
+            // if (!this.isEditing) {
+            // xRegAccesser.registerService(serviceBean);
+            // } else {
+            // /* Delete old Service Bean */
+            // QName qName = new QName(this.editingServiceBean.getObjectNamespace(),
+            // this.editingServiceBean.getServiceName());
+            // xRegAccesser.deleteServiceDescrption(qName);
+            //
+            // /* Register updated Service Bean */
+            // xRegAccesser.registerService(serviceBean);
+            //
+            // this.isEditing = false;
+            // this.addServiceButton.setText("Add Service");
+            // }
 
         } catch (Exception e) {
             this.engine.getErrorWindow().error(this.dialog.getDialog(), e.getMessage(), e);
@@ -386,7 +386,7 @@ public class ServiceDescriptionRegistrationWindow {
      * show the dialog
      */
     public void show() {
-       // this.reinitApplicationComboBox();
+        // this.reinitApplicationComboBox();
         this.dialog.show();
     }
 

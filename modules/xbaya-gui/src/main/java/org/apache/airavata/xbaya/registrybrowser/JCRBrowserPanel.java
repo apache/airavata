@@ -33,180 +33,184 @@ import org.apache.airavata.xbaya.registrybrowser.nodes.AbstractAiravataTreeNode;
 import org.apache.airavata.xbaya.registrybrowser.nodes.AiravataTreeNodeFactory;
 import org.apache.airavata.xbaya.registrybrowser.nodes.RegistryTreeCellRenderer;
 
-public class JCRBrowserPanel extends JPanel implements Observer{
-	private List<AbstractBrowserActionItem> browserActions=new ArrayList<AbstractBrowserActionItem>();
-	/**
+public class JCRBrowserPanel extends JPanel implements Observer {
+    private List<AbstractBrowserActionItem> browserActions = new ArrayList<AbstractBrowserActionItem>();
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = -4490110894914580271L;
-	private XBayaEngine engine;
-	private JTree tree;
-	private JPopupMenu popupMenu;
-	private AbstractBrowserActionItem actionDelete;
-	
-	/**
-	 * Create the dialog.
-	 */
-	public JCRBrowserPanel(XBayaEngine engine) {
-		setEngine(engine);
-		initGUI();
-	}
+    private static final long serialVersionUID = -4490110894914580271L;
+    private XBayaEngine engine;
+    private JTree tree;
+    private JPopupMenu popupMenu;
+    private AbstractBrowserActionItem actionDelete;
 
-	private void initGUI() {
-		setBounds(100, 100, 450, 300);
-		this.setBorder(new EmptyBorder(5, 5, 5, 5));
-		this.setLayout(new BorderLayout(0, 0));
-		{
-			JScrollPane scrollPane = new JScrollPane();
-			this.add(scrollPane, BorderLayout.CENTER);
-			{
-				tree = new JTree(AiravataTreeNodeFactory.getTreeNode(getJCRRegistry()==null?"No registry specified":getJCRRegistry(),null));
-				tree.addKeyListener(new KeyAdapter() {
-					@Override
-					public void keyPressed(KeyEvent e) {
-						if (e.getKeyCode()==KeyEvent.VK_F5){
-							triggerNodeAction(RefreshAction.ID);
-						}
-					}
-				});
-				tree.setCellRenderer(new RegistryTreeCellRenderer());
-				scrollPane.setViewportView(tree);
-				
-				popupMenu = new JPopupMenu();
-				popupMenu.setLabel("");
-				addPopup(tree, popupMenu);
-				
-				AbstractBrowserActionItem actionRefresh = new RefreshAction();
-				browserActions.add(actionRefresh);
-				actionRefresh.getMenuItem().setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
-				actionRefresh.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						triggerNodeAction(RefreshAction.ID);
-					}
-				});
-				
-				actionDelete = new DeleteAction();
-				browserActions.add(actionDelete);
-				actionDelete.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						triggerNodeAction(DeleteAction.ID);
-					}
-				});
-				AddAction actionAdd = new AddAction();
-				browserActions.add(actionAdd);
-				actionAdd.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						triggerNodeAction(AddAction.ID);
-					}
-				});
-				
-				AddAction actionEdit = new AddAction();
-				browserActions.add(actionEdit);
-				actionEdit.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						triggerNodeAction(EditAction.ID);
-					}
-				});
+    /**
+     * Create the dialog.
+     */
+    public JCRBrowserPanel(XBayaEngine engine) {
+        setEngine(engine);
+        initGUI();
+    }
 
-				popupMenu.add(actionAdd.getMenuItem());
-				popupMenu.add(actionDelete.getMenuItem());
-				popupMenu.add(actionRefresh.getMenuItem());
-			}
-		}
-	}
+    private void initGUI() {
+        setBounds(100, 100, 450, 300);
+        this.setBorder(new EmptyBorder(5, 5, 5, 5));
+        this.setLayout(new BorderLayout(0, 0));
+        {
+            JScrollPane scrollPane = new JScrollPane();
+            this.add(scrollPane, BorderLayout.CENTER);
+            {
+                tree = new JTree(AiravataTreeNodeFactory.getTreeNode(getJCRRegistry() == null ? "No registry specified"
+                        : getJCRRegistry(), null));
+                tree.addKeyListener(new KeyAdapter() {
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                        if (e.getKeyCode() == KeyEvent.VK_F5) {
+                            triggerNodeAction(RefreshAction.ID);
+                        }
+                    }
+                });
+                tree.setCellRenderer(new RegistryTreeCellRenderer());
+                scrollPane.setViewportView(tree);
 
-	public void close() {
-		setVisible(false);
-	}
+                popupMenu = new JPopupMenu();
+                popupMenu.setLabel("");
+                addPopup(tree, popupMenu);
 
-	public void open() {
-		setVisible(true);
-	}
-	
-	public XBayaEngine getEngine() {
-		return engine;
-	}
+                AbstractBrowserActionItem actionRefresh = new RefreshAction();
+                browserActions.add(actionRefresh);
+                actionRefresh.getMenuItem().setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+                actionRefresh.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        triggerNodeAction(RefreshAction.ID);
+                    }
+                });
 
-	public void setEngine(XBayaEngine engine) {
-		if (this.engine!=null) {
-			this.engine.getConfiguration().deleteObserver(this);
-		}
-		this.engine = engine;
-		if (this.engine!=null) {
-			this.engine.getConfiguration().addObserver(this);
-		}
-	}
+                actionDelete = new DeleteAction();
+                browserActions.add(actionDelete);
+                actionDelete.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        triggerNodeAction(DeleteAction.ID);
+                    }
+                });
+                AddAction actionAdd = new AddAction();
+                browserActions.add(actionAdd);
+                actionAdd.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        triggerNodeAction(AddAction.ID);
+                    }
+                });
 
-	private Registry getJCRRegistry(){
-		try {
-			return getEngine().getConfiguration().getJcrComponentRegistry().getRegistry();
-		} catch (Exception e) {
-			//JCR registry not specified yet
-			return null;
-		}
-	}
+                AddAction actionEdit = new AddAction();
+                browserActions.add(actionEdit);
+                actionEdit.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        triggerNodeAction(EditAction.ID);
+                    }
+                });
 
-	@Override
-	public void update(Observable observable, Object o) {
-		if (getEngine().getConfiguration()==observable){
-			if (o instanceof JCRComponentRegistry){
-				resetModel();
-			} else if (o instanceof Registry){
-				resetModel();
-			}
-		}
-	}
+                popupMenu.add(actionAdd.getMenuItem());
+                popupMenu.add(actionDelete.getMenuItem());
+                popupMenu.add(actionRefresh.getMenuItem());
+            }
+        }
+    }
 
-	private void resetModel() {
-		tree.setModel(new DefaultTreeModel(AiravataTreeNodeFactory.getTreeNode(getJCRRegistry()==null?"No registry specified":getJCRRegistry(),null)));
-	}
-	
-	private void addPopup(Component component, final JPopupMenu popup) {
-		component.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			public void mouseReleased(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					showMenu(e);
-				}
-			}
-			private void showMenu(MouseEvent e) {
-				int selRow = tree.getRowForLocation(e.getX(), e.getY());
-				if(selRow != -1 && e.isPopupTrigger()) {
-					tree.setSelectionRow(selRow);
-					Object o = tree.getLastSelectedPathComponent();
-					if (o instanceof AbstractAiravataTreeNode){
-						AbstractAiravataTreeNode node=((AbstractAiravataTreeNode)o);
-						for (AbstractBrowserActionItem action : browserActions) {
-							boolean actionSupported = node.isActionSupported(action);
-							action.setVisible(actionSupported);
-							if (actionSupported){
-								action.setCaption(node.getActionCaption(action));
-								action.setIcon(node.getActionIcon(action));
-								action.setDescription(node.getActionDescription(action));
-							}
-						}
-					}
-					
-					popup.show(e.getComponent(), e.getX(), e.getY());
-				}
-			}
-		});
-	}
+    public void close() {
+        setVisible(false);
+    }
 
-	private void triggerNodeAction(String action) {
-		Object o = tree.getLastSelectedPathComponent();
-		if (o instanceof AbstractAiravataTreeNode){
-			AbstractAiravataTreeNode node=((AbstractAiravataTreeNode)o);
-			try {
-				node.triggerAction(tree, action);
-			} catch (Exception e) {
-				e.printStackTrace();
-				getEngine().getErrorWindow().error(e);
-			}
-		}
-	}
+    public void open() {
+        setVisible(true);
+    }
+
+    public XBayaEngine getEngine() {
+        return engine;
+    }
+
+    public void setEngine(XBayaEngine engine) {
+        if (this.engine != null) {
+            this.engine.getConfiguration().deleteObserver(this);
+        }
+        this.engine = engine;
+        if (this.engine != null) {
+            this.engine.getConfiguration().addObserver(this);
+        }
+    }
+
+    private Registry getJCRRegistry() {
+        try {
+            return getEngine().getConfiguration().getJcrComponentRegistry().getRegistry();
+        } catch (Exception e) {
+            // JCR registry not specified yet
+            return null;
+        }
+    }
+
+    @Override
+    public void update(Observable observable, Object o) {
+        if (getEngine().getConfiguration() == observable) {
+            if (o instanceof JCRComponentRegistry) {
+                resetModel();
+            } else if (o instanceof Registry) {
+                resetModel();
+            }
+        }
+    }
+
+    private void resetModel() {
+        tree.setModel(new DefaultTreeModel(AiravataTreeNodeFactory.getTreeNode(
+                getJCRRegistry() == null ? "No registry specified" : getJCRRegistry(), null)));
+    }
+
+    private void addPopup(Component component, final JPopupMenu popup) {
+        component.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showMenu(e);
+                }
+            }
+
+            public void mouseReleased(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    showMenu(e);
+                }
+            }
+
+            private void showMenu(MouseEvent e) {
+                int selRow = tree.getRowForLocation(e.getX(), e.getY());
+                if (selRow != -1 && e.isPopupTrigger()) {
+                    tree.setSelectionRow(selRow);
+                    Object o = tree.getLastSelectedPathComponent();
+                    if (o instanceof AbstractAiravataTreeNode) {
+                        AbstractAiravataTreeNode node = ((AbstractAiravataTreeNode) o);
+                        for (AbstractBrowserActionItem action : browserActions) {
+                            boolean actionSupported = node.isActionSupported(action);
+                            action.setVisible(actionSupported);
+                            if (actionSupported) {
+                                action.setCaption(node.getActionCaption(action));
+                                action.setIcon(node.getActionIcon(action));
+                                action.setDescription(node.getActionDescription(action));
+                            }
+                        }
+                    }
+
+                    popup.show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+        });
+    }
+
+    private void triggerNodeAction(String action) {
+        Object o = tree.getLastSelectedPathComponent();
+        if (o instanceof AbstractAiravataTreeNode) {
+            AbstractAiravataTreeNode node = ((AbstractAiravataTreeNode) o);
+            try {
+                node.triggerAction(tree, action);
+            } catch (Exception e) {
+                e.printStackTrace();
+                getEngine().getErrorWindow().error(e);
+            }
+        }
+    }
 }

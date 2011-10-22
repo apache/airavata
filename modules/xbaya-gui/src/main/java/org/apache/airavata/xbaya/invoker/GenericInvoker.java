@@ -194,8 +194,8 @@ public class GenericInvoker implements Invoker {
                 definitions = this.wsdlDefinitionObject;
             }
 
-            setup(definitions);                        
-            
+            setup(definitions);
+
         } catch (XBayaException e) {
             logger.error(e.getMessage(), e);
             // An appropriate message has been set in the exception.
@@ -227,7 +227,8 @@ public class GenericInvoker implements Invoker {
     private void setup(WsdlDefinitions definitions) throws XBayaException {
 
         // Set LEAD context header.
-        WorkflowContextHeaderBuilder builder = new WorkflowContextHeaderBuilder(this.notifier.getEventSink().getAddress(), this.gfacURL, null, this.notifier.getWorkflowID().toASCIIString(), "xbaya-experiment");
+        WorkflowContextHeaderBuilder builder = new WorkflowContextHeaderBuilder(this.notifier.getEventSink()
+                .getAddress(), this.gfacURL, null, this.notifier.getWorkflowID().toASCIIString(), "xbaya-experiment");
         builder.getWorkflowMonitoringContext().setServiceInstanceId(this.nodeID);
         builder.getWorkflowMonitoringContext().setWorkflowNodeId(this.nodeID);
         builder.getWorkflowMonitoringContext().setWorkflowInstanceId(this.notifier.getWorkflowID().toASCIIString());
@@ -235,10 +236,9 @@ public class GenericInvoker implements Invoker {
         builder.setUserIdentifier("xbaya-user");
         StickySoapHeaderHandler handler = new StickySoapHeaderHandler("use-workflowcontext-header", builder.getXml());
 
-
         // Create Invoker
         this.invoker = InvokerFactory.createInvoker(this.portTypeQName, definitions, this.gfacURL, this.messageBoxURL,
-                builder,true);
+                builder, true);
         this.invoker.setup();
 
         WSIFClient client = this.invoker.getClient();
@@ -247,14 +247,14 @@ public class GenericInvoker implements Invoker {
         WsdlResolver resolver = WsdlResolver.getInstance();
         // Get the concrete WSDL from invoker.setup() and set it to the
         // notifier.
-        
+
         this.notifier.setServiceID(this.nodeID);
-//        if (this.wsdlLocation != null) {
-//            this.notifier.setServiceID(this.nodeID);
-//        } else {
-//            String name = this.portTypeQName.getLocalPart();
-//            this.notifier.setServiceID(name);
-//        }
+        // if (this.wsdlLocation != null) {
+        // this.notifier.setServiceID(this.nodeID);
+        // } else {
+        // String name = this.portTypeQName.getLocalPart();
+        // this.notifier.setServiceID(name);
+        // }
     }
 
     /**
@@ -315,7 +315,7 @@ public class GenericInvoker implements Invoker {
      */
     public synchronized boolean invoke() throws XBayaException {
         try {
-                WSIFMessage inputMessage = this.invoker.getInputs();
+            WSIFMessage inputMessage = this.invoker.getInputs();
             logger.info("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) inputMessage));
             this.notifier.invokingService(inputMessage);
 

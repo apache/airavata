@@ -69,7 +69,7 @@ public class OutputNodeGUI extends ConfigurableNodeGUI {
                     URL url = new URL(description);
                     // no exception -> valid url lets try to open it
                     BrowserLauncher.openURL(url);
-                }  catch (Exception e) {
+                } catch (Exception e) {
                     // do nothing since this is an optional attempt
                 }
 

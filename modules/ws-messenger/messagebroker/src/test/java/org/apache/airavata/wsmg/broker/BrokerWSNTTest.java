@@ -35,7 +35,7 @@ import org.apache.axis2.AxisFault;
 import org.junit.Test;
 
 public class BrokerWSNTTest extends TestCase implements ConsumerNotificationHandler {
-    
+
     private static int port = TestUtilServer.TESTING_PORT;
     static Properties configs = new Properties();
 
@@ -47,7 +47,7 @@ public class BrokerWSNTTest extends TestCase implements ConsumerNotificationHand
     protected void setUp() throws Exception {
         TestUtilServer.start(null, null);
     }
-    
+
     @Override
     protected void tearDown() throws Exception {
         TestUtilServer.stop();
@@ -80,7 +80,7 @@ public class BrokerWSNTTest extends TestCase implements ConsumerNotificationHand
                 wsntMsgBrokerClient.publish(topic, AXIOMUtil.stringToOM("<foo><bar>Test</bar></foo>"));
             } catch (Exception e) {
                 fail(e.getMessage());
-            }            
+            }
 
             Thread.sleep(2000);
 
@@ -88,7 +88,7 @@ public class BrokerWSNTTest extends TestCase implements ConsumerNotificationHand
                 wsntMsgBrokerClient.unSubscribe(topicSubscriptionID);
             } catch (AxisFault e) {
                 e.printStackTrace();
-                fail(e.getMessage());                
+                fail(e.getMessage());
             }
 
             wsntMsgBrokerClient.shutdownConsumerService();

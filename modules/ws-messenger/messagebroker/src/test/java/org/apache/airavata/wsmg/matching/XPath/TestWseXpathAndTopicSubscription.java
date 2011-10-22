@@ -96,12 +96,10 @@ public class TestWseXpathAndTopicSubscription extends TestCase implements Consum
 
             String subscriptionID = msgBrokerClient.subscribe(consumerEPRs[0], null, xpathExpression);
 
-            
-
             try {
                 msgBrokerClient.publish(null, AXIOMUtil.stringToOM(validMsg));
                 msgBrokerClient.publish(null, AXIOMUtil.stringToOM(invalidMsg));
-                
+
                 SOAPEnvelope env = getMsgQueue().take();
 
                 assertNotNull(env.getBody());

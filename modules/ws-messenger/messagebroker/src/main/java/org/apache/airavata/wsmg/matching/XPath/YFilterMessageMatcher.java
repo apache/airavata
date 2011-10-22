@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 public class YFilterMessageMatcher extends AbstractMessageMatcher {
 
     private static final Logger logger = LoggerFactory.getLogger(YFilterMessageMatcher.class);
-    
+
     private OutGoingQueue outGoingQueue = null;
 
     private HashMap<String, YFilterInfo> topicToYFilterInfo = new HashMap<String, YFilterInfo>();

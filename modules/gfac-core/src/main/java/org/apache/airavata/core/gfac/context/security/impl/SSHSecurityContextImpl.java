@@ -28,25 +28,29 @@ public class SSHSecurityContextImpl implements SecurityContext {
     private String username;
     private String privateKeyLoc;
     private String keyPass;
-    
+
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username) {
         this.username = username;
     }
+
     public String getPrivateKeyLoc() {
         return privateKeyLoc;
     }
+
     public void setPrivateKeyLoc(String privateKeyLoc) {
         this.privateKeyLoc = privateKeyLoc;
     }
+
     public String getKeyPass() {
         return keyPass;
     }
+
     public void setKeyPass(String keyPass) {
         this.keyPass = keyPass;
     }
-    
-    
+
 }

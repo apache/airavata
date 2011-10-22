@@ -28,20 +28,20 @@ import org.junit.Test;
 
 public class WorkflowTest implements HeaderConstants {
 
-	@Test
+    @Test
     public void testScheduleDynamically() throws IOException, URISyntaxException, XBayaException {
 
-		Workflow workflow = new Workflow(readWorkflow("SimpleEcho.xwf"));
+        Workflow workflow = new Workflow(readWorkflow("SimpleEcho.xwf"));
         ListenerManager manager = axis2ServiceStarter();
-        ((InputNode)workflow.getGraph().getNode("input")).setDefaultValue("1");
-		WorkflowInterpreter interpretor = new WorkflowInterpreter(getConfiguration(), UUID.randomUUID().toString(), workflow, "NA", "NA", true);
-		interpretor.scheduleDynamically();
+        ((InputNode) workflow.getGraph().getNode("input")).setDefaultValue("1");
+        WorkflowInterpreter interpretor = new WorkflowInterpreter(getConfiguration(), UUID.randomUUID().toString(),
+                workflow, "NA", "NA", true);
+        interpretor.scheduleDynamically();
         manager.stop();
-	}
-	
-	
-	private XBayaConfiguration getConfiguration() throws URISyntaxException {
-		NameValue[] configurations = new NameValue[6];
+    }
+
+    private XBayaConfiguration getConfiguration() throws URISyntaxException {
+        NameValue[] configurations = new NameValue[6];
         configurations[0] = new NameValue();
         configurations[0].setName(HEADER_ELEMENT_GFAC);
         configurations[0].setValue(XBayaConstants.DEFAULT_GFAC_URL.toString());
@@ -63,32 +63,30 @@ public class WorkflowTest implements HeaderConstants {
         configurations[5] = new NameValue();
         configurations[5].setName(HEADER_ELEMENT_BROKER);
         configurations[5].setValue(XBayaConstants.DEFAULT_BROKER_URL.toString());
-		return WorkflowInterpretorSkeleton.getConfiguration(configurations);
-	}
+        return WorkflowInterpretorSkeleton.getConfiguration(configurations);
+    }
 
+    private String readWorkflow(String workflowFileNameInClasspath) throws IOException, URISyntaxException {
 
+        URL url = this.getClass().getClassLoader().getSystemResource(workflowFileNameInClasspath);
+        FileInputStream stream = new FileInputStream(new File(url.toURI()));
+        try {
+            FileChannel fc = stream.getChannel();
+            MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+            /* Instead of using default, pass in a decoder. */
+            return Charset.defaultCharset().decode(bb).toString();
+        } finally {
+            stream.close();
+        }
 
-	private String readWorkflow(String workflowFileNameInClasspath) throws IOException, URISyntaxException{
-		
-		URL url = this.getClass().getClassLoader().getSystemResource(workflowFileNameInClasspath);
-		FileInputStream stream = new FileInputStream(new File(url.toURI()));
-		  try {
-		    FileChannel fc = stream.getChannel();
-		    MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-		    /* Instead of using default, pass in a decoder. */
-		    return Charset.defaultCharset().decode(bb).toString();
-		  }
-		  finally {
-		    stream.close();
-		  }
-
-	}
+    }
 
     private ListenerManager axis2ServiceStarter() throws AxisFault {
         try {
-            ConfigurationContext configContext = ConfigurationContextFactory.createBasicConfigurationContext
-                    ("axis2_default.xml");
-            AxisService service = AxisService.createService(EchoService.class.getName(), configContext.getAxisConfiguration());
+            ConfigurationContext configContext = ConfigurationContextFactory
+                    .createBasicConfigurationContext("axis2_default.xml");
+            AxisService service = AxisService.createService(EchoService.class.getName(),
+                    configContext.getAxisConfiguration());
             configContext.deployService(service);
             ListenerManager manager = new ListenerManager();
             manager.init(configContext);

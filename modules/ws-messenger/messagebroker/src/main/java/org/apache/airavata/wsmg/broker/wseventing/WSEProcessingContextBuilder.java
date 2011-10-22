@@ -117,8 +117,8 @@ public class WSEProcessingContextBuilder extends ProcessingContextBuilder {
         processingContext.setContextParameter(ContextParameters.SUBSCRIBE_ELEMENT, subscribeElement);
 
         // -- check optional element - expires
-        Iterator iterator = subscribeElement.getChildrenWithName(new QName(NameSpaceConstants.WSE_NS
-                .getNamespaceURI(), "Expires"));
+        Iterator iterator = subscribeElement.getChildrenWithName(new QName(NameSpaceConstants.WSE_NS.getNamespaceURI(),
+                "Expires"));
 
         if (iterator.hasNext()) {
 
@@ -127,8 +127,8 @@ public class WSEProcessingContextBuilder extends ProcessingContextBuilder {
 
         }
 
-        iterator = subscribeElement.getChildrenWithName(new QName(NameSpaceConstants.WSE_NS.getNamespaceURI(),
-                "Filter"));
+        iterator = subscribeElement
+                .getChildrenWithName(new QName(NameSpaceConstants.WSE_NS.getNamespaceURI(), "Filter"));
 
         if (!iterator.hasNext()) {
 

@@ -221,7 +221,7 @@ public class AmazonEC2InvokerWindow {
 
         @Override
         public void receiveErrorjobStatus(java.lang.Exception e) {
-        	throw new XBayaRuntimeException(e);
+            throw new XBayaRuntimeException(e);
         }
 
     }

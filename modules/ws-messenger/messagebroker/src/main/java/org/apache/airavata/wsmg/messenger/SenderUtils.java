@@ -49,14 +49,14 @@ public class SenderUtils implements Deliverable {
     private static OMFactory factory = OMAbstractFactory.getOMFactory();
 
     private ConsumerUrlManager urlManager;
-    
+
     private DeliveryProtocol protocol;
 
     public SenderUtils(ConsumerUrlManager urlMan) {
         urlManager = urlMan;
     }
-    
-    public void setProtocol(DeliveryProtocol protocol){
+
+    public void setProtocol(DeliveryProtocol protocol) {
         this.protocol = protocol;
     }
 
@@ -127,8 +127,8 @@ public class SenderUtils implements Deliverable {
 
         OMElement fullNotif = factory.createOMElement("Notify", NameSpaceConstants.WSNT_NS);
 
-        OMElement notificationMessageEl = factory.createOMElement("NotificationMessage",
-                NameSpaceConstants.WSNT_NS, fullNotif);
+        OMElement notificationMessageEl = factory.createOMElement("NotificationMessage", NameSpaceConstants.WSNT_NS,
+                fullNotif);
 
         String topicElString = additionalMessageContent.getTopicElement();
         if (topicElString != null) {

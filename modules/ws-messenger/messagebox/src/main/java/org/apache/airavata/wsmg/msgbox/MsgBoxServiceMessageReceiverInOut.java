@@ -35,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * MsgBoxServiceMessageReceiverInOut message receiver, this is the actual
- * location where the service operations get invoked.
+ * MsgBoxServiceMessageReceiverInOut message receiver, this is the actual location where the service operations get
+ * invoked.
  */
 
 public class MsgBoxServiceMessageReceiverInOut extends AbstractInOutMessageReceiver {
@@ -46,15 +46,15 @@ public class MsgBoxServiceMessageReceiverInOut extends AbstractInOutMessageRecei
     public void invokeBusinessLogic(MessageContext inMsgContext, MessageContext outMsgContext) throws AxisFault {
 
         // get the implementation class for the Web Service
-        MsgBoxServiceSkeleton skel = (MsgBoxServiceSkeleton)getTheImplementationObject(inMsgContext);        
-        
+        MsgBoxServiceSkeleton skel = (MsgBoxServiceSkeleton) getTheImplementationObject(inMsgContext);
+
         OMElement response = null;
-        
+
         try {
-            
+
             String operationName = getOperationName(inMsgContext);
             MsgBoxOperations msgType = MsgBoxOperations.valueFrom(operationName);
-            
+
             switch (msgType) {
 
             case STORE_MSGS: {
@@ -103,7 +103,7 @@ public class MsgBoxServiceMessageReceiverInOut extends AbstractInOutMessageRecei
         outMsgContext.getOptions().setProperty(HTTPConstants.CHUNKED, Boolean.FALSE);
     }
 
-    private String getClientId(MessageContext inMsg) throws AxisFault{        
+    private String getClientId(MessageContext inMsg) throws AxisFault {
         String toAddress = inMsg.getTo().getAddress();
         int biginIndex = toAddress.indexOf("clientid");
         if (biginIndex == -1) {
@@ -112,7 +112,7 @@ public class MsgBoxServiceMessageReceiverInOut extends AbstractInOutMessageRecei
         String clientId = toAddress.substring(biginIndex + "clientid".length() + 1);
         return clientId;
     }
-    
+
     private SOAPEnvelope toEnvelope(SOAPFactory factory, OMElement response) {
         SOAPEnvelope envelop = factory.getDefaultEnvelope();
         envelop.getBody().addChild(response);

@@ -44,114 +44,109 @@ import java.util.List;
 import static org.junit.Assert.fail;
 
 public class PropertiesBasedServiceImplTest {
-	@Before
-	public void setUp() throws Exception {
-		/*
-		 * Create database
-		 */
-		JCRRegistry jcrRegistry = new JCRRegistry(null,
-				"org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-				"admin", null);
+    @Before
+    public void setUp() throws Exception {
+        /*
+         * Create database
+         */
+        JCRRegistry jcrRegistry = new JCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
+                "admin", null);
 
-		/*
-		 * Host
-		 */
-		HostDescription host = new HostDescription();
-		host.setId("localhost");
-		host.setAddress("localhost");
+        /*
+         * Host
+         */
+        HostDescription host = new HostDescription();
+        host.setId("localhost");
+        host.setAddress("localhost");
 
-		/*
-		 * App
-		 */
-		ShellApplicationDeployment app = new ShellApplicationDeployment();
-		app.setId("EchoLocal");
-		app.setExecutable("/bin/echo");
-		app.setTmpDir("/tmp");
-		app.setWorkingDir("/tmp");
-		app.setInputDir("/tmp/input");
-		app.setOutputDir("/tmp/output");
-		app.setStdOut("/tmp/echo.stdout");
-		app.setStdErr("/tmp/echo.stdout");
-		app.setEnv(ShellApplicationDeploymentType.Factory.newInstance().getEnv());
+        /*
+         * App
+         */
+        ShellApplicationDeployment app = new ShellApplicationDeployment();
+        app.setId("EchoLocal");
+        app.setExecutable("/bin/echo");
+        app.setTmpDir("/tmp");
+        app.setWorkingDir("/tmp");
+        app.setInputDir("/tmp/input");
+        app.setOutputDir("/tmp/output");
+        app.setStdOut("/tmp/echo.stdout");
+        app.setStdErr("/tmp/echo.stdout");
+        app.setEnv(ShellApplicationDeploymentType.Factory.newInstance().getEnv());
 
-		/*
-		 * Service
-		 */
-		ServiceDescription serv = new ServiceDescription();
-		serv.setId("SimpleEcho");
+        /*
+         * Service
+         */
+        ServiceDescription serv = new ServiceDescription();
+        serv.setId("SimpleEcho");
 
-		Parameter input = Parameter.Factory.newInstance();
-		input.setName("echo_input");
+        Parameter input = Parameter.Factory.newInstance();
+        input.setName("echo_input");
         input.addNewType().setType(DataType.STRING);
-		List<Parameter> inputList = new ArrayList<Parameter>();
-		inputList.add(input);
-        org.apache.airavata.schemas.gfac.Parameter[] inputParamList =
-                inputList.toArray(new org.apache.airavata.schemas.gfac.Parameter[inputList.size()]);
+        List<Parameter> inputList = new ArrayList<Parameter>();
+        inputList.add(input);
+        org.apache.airavata.schemas.gfac.Parameter[] inputParamList = inputList
+                .toArray(new org.apache.airavata.schemas.gfac.Parameter[inputList.size()]);
 
-		Parameter output = Parameter.Factory.newInstance();
-		output.setName("echo_output");
-		output.addNewType().setType(DataType.STRING);
-		List<Parameter> outputList = new ArrayList<Parameter>();
-		outputList.add(output);
-        org.apache.airavata.schemas.gfac.Parameter[] outputParamList =
-                outputList.toArray(new org.apache.airavata.schemas.gfac.Parameter[outputList.size()]);
-		serv.setInputParameters(inputParamList);
-		serv.setOutputParameters(outputParamList);
+        Parameter output = Parameter.Factory.newInstance();
+        output.setName("echo_output");
+        output.addNewType().setType(DataType.STRING);
+        List<Parameter> outputList = new ArrayList<Parameter>();
+        outputList.add(output);
+        org.apache.airavata.schemas.gfac.Parameter[] outputParamList = outputList
+                .toArray(new org.apache.airavata.schemas.gfac.Parameter[outputList.size()]);
+        serv.setInputParameters(inputParamList);
+        serv.setOutputParameters(outputParamList);
 
-		/*
-		 * Save to registry
-		 */
-		jcrRegistry.saveHostDescription(host);
-		jcrRegistry.saveDeploymentDescription(serv.getId(), host.getId(),
-				app);
-		jcrRegistry.saveServiceDescription(serv);
-		jcrRegistry.deployServiceOnHost(serv.getId(), host.getId());
-	}
+        /*
+         * Save to registry
+         */
+        jcrRegistry.saveHostDescription(host);
+        jcrRegistry.saveDeploymentDescription(serv.getId(), host.getId(), app);
+        jcrRegistry.saveServiceDescription(serv);
+        jcrRegistry.deployServiceOnHost(serv.getId(), host.getId());
+    }
 
-	@Test
-	public void testExecute() {
-		try {
+    @Test
+    public void testExecute() {
+        try {
 
-		    DefaultInvocationContext ct = new DefaultInvocationContext();
-			DefaultExecutionContext ec = new DefaultExecutionContext();
-			ec.addNotifiable(new LoggingNotification());
-			ct.setExecutionContext(ec);
+            DefaultInvocationContext ct = new DefaultInvocationContext();
+            DefaultExecutionContext ec = new DefaultExecutionContext();
+            ec.addNotifiable(new LoggingNotification());
+            ct.setExecutionContext(ec);
 
-			ct.setServiceName("SimpleEcho");
+            ct.setServiceName("SimpleEcho");
 
-			/*
-			 * Input
-			 */
-			ParameterContextImpl input = new ParameterContextImpl();
-			AbstractParameter echo_input = ParameterFactory.getInstance().createActualParameter("String");
-			echo_input.parseStringVal("echo_output=hello");
-			input.add("echo_input", echo_input);
+            /*
+             * Input
+             */
+            ParameterContextImpl input = new ParameterContextImpl();
+            AbstractParameter echo_input = ParameterFactory.getInstance().createActualParameter("String");
+            echo_input.parseStringVal("echo_output=hello");
+            input.add("echo_input", echo_input);
 
-			/*
-			 * Output
-			 */
-			ParameterContextImpl output = new ParameterContextImpl();
-			AbstractParameter echo_output = ParameterFactory.getInstance().createActualParameter("String");
-			output.add("echo_output", echo_output);
+            /*
+             * Output
+             */
+            ParameterContextImpl output = new ParameterContextImpl();
+            AbstractParameter echo_output = ParameterFactory.getInstance().createActualParameter("String");
+            output.add("echo_output", echo_output);
 
-			// parameter
-			ct.setInput(input);
-			ct.setOutput(output);
+            // parameter
+            ct.setInput(input);
+            ct.setOutput(output);
 
-			PropertiesBasedServiceImpl service = new PropertiesBasedServiceImpl();
-			service.init();
-			service.execute(ct);
+            PropertiesBasedServiceImpl service = new PropertiesBasedServiceImpl();
+            service.init();
+            service.execute(ct);
 
-			Assert.assertNotNull(ct.getOutput());
-			Assert.assertNotNull(ct.getOutput()
-					.getValue("echo_output"));
-			Assert.assertEquals("hello",
-					((AbstractParameter) ct.getOutput()
-							.getValue("echo_output")).toStringVal());
+            Assert.assertNotNull(ct.getOutput());
+            Assert.assertNotNull(ct.getOutput().getValue("echo_output"));
+            Assert.assertEquals("hello", ((AbstractParameter) ct.getOutput().getValue("echo_output")).toStringVal());
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("ERROR");
-		}
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("ERROR");
+        }
+    }
 }

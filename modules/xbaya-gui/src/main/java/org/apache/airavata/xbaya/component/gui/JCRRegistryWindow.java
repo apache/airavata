@@ -54,14 +54,14 @@ public class JCRRegistryWindow {
     private XBayaDialog dialog;
 
     private XBayaTextField urlTextField;
-    
+
     private XBayaTextField usernameTextField;
-    
+
     private JPasswordField passwordTextField;
 
-	private XBayaLinkButton newUserButton;
+    private XBayaLinkButton newUserButton;
 
-	private NewJCRRegistryUserDialog newUserWindow;
+    private NewJCRRegistryUserDialog newUserWindow;
 
     /**
      * @param engine
@@ -103,7 +103,7 @@ public class JCRRegistryWindow {
         try {
             registry = new JCRComponentRegistry(url, username, password);
         } catch (Exception e) {
-            this.engine.getErrorWindow().error(ErrorMessages.CREDENTIALS_WRONG,e);
+            this.engine.getErrorWindow().error(ErrorMessages.CREDENTIALS_WRONG, e);
             return;
         }
         XBayaConfiguration configuration = this.engine.getConfiguration();
@@ -116,27 +116,27 @@ public class JCRRegistryWindow {
         this.loader.load(registry);
     }
 
-    private void createNewUser(){
-		URL specifiedURL = null;
-		try {
-			specifiedURL = new URL(urlTextField.getText());
-		} catch (MalformedURLException e1) {
-			//the text box contains invalid url, we'll just ignore it
-		}
-    	if (newUserWindow == null) {
-			newUserWindow = new NewJCRRegistryUserDialog(engine);
-		}
-		newUserWindow.setUrl(specifiedURL);
-		newUserWindow.setUsername(usernameTextField.getText());
-		newUserWindow.updateControlData();
-		newUserWindow.show();
-		if (newUserWindow.isUserCreated()){
-			urlTextField.setText(newUserWindow.getUrl().toString());
-			usernameTextField.setText(newUserWindow.getUrl().toString());
-			passwordTextField.setText(newUserWindow.getPassword());
-		}
+    private void createNewUser() {
+        URL specifiedURL = null;
+        try {
+            specifiedURL = new URL(urlTextField.getText());
+        } catch (MalformedURLException e1) {
+            // the text box contains invalid url, we'll just ignore it
+        }
+        if (newUserWindow == null) {
+            newUserWindow = new NewJCRRegistryUserDialog(engine);
+        }
+        newUserWindow.setUrl(specifiedURL);
+        newUserWindow.setUsername(usernameTextField.getText());
+        newUserWindow.updateControlData();
+        newUserWindow.show();
+        if (newUserWindow.isUserCreated()) {
+            urlTextField.setText(newUserWindow.getUrl().toString());
+            usernameTextField.setText(newUserWindow.getUrl().toString());
+            passwordTextField.setText(newUserWindow.getPassword());
+        }
     }
-    
+
     /**
      * Initializes the GUI.
      */
@@ -153,23 +153,23 @@ public class JCRRegistryWindow {
         this.newUserButton = new XBayaLinkButton("Create new user...");
         newUserButton.setHorizontalAlignment(XBayaLinkButton.RIGHT);
         JLabel emptyLabel = new JLabel("");
-        
+
         newUserButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-            	createNewUser();
+                createNewUser();
             }
         });
-        
+
         GridPanel infoPanel = new GridPanel();
         infoPanel.add(urlLabel);
         infoPanel.add(this.urlTextField);
-//		GridBagConstraints c = new GridBagConstraints();
-//		c.fill = GridBagConstraints.HORIZONTAL;
-//		c.gridwidth = 2;
-//		c.gridx = 0;
-//		c.gridy = 1;
-//		infoPanel.getContentPanel().add(new JSeparator(SwingConstants.HORIZONTAL),c);
-//		infoPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
+        // GridBagConstraints c = new GridBagConstraints();
+        // c.fill = GridBagConstraints.HORIZONTAL;
+        // c.gridwidth = 2;
+        // c.gridx = 0;
+        // c.gridy = 1;
+        // infoPanel.getContentPanel().add(new JSeparator(SwingConstants.HORIZONTAL),c);
+        // infoPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         infoPanel.add(nameLabel);
         infoPanel.add(this.usernameTextField);
         infoPanel.add(passLabel);
@@ -177,7 +177,7 @@ public class JCRRegistryWindow {
         infoPanel.add(emptyLabel);
         infoPanel.add(this.newUserButton);
         infoPanel.layout(4, 2, GridPanel.WEIGHT_NONE, 1);
-        
+
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {

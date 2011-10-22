@@ -105,9 +105,8 @@ public class JdbcStorage {
     }
 
     /**
-     * This method is provided so that you can have better control over the
-     * statement. For example: You can use stmt.setString to convert quotation
-     * mark automatically in an UPDATE statement
+     * This method is provided so that you can have better control over the statement. For example: You can use
+     * stmt.setString to convert quotation mark automatically in an UPDATE statement
      * 
      * NOTE: Statement is closed after execution
      */

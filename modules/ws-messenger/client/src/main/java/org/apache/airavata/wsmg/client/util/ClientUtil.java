@@ -24,27 +24,25 @@ package org.apache.airavata.wsmg.client.util;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-
 public class ClientUtil {
-    
+
     public static final long EXPIRE_TIME = 1000 * 60 * 60 * 72l;
-    
+
     public static String formatMessageBoxUrl(String msgBoxServiceUrl, String msgboxId) {
         return msgBoxServiceUrl.endsWith("/") ? msgBoxServiceUrl + "clientid/" + msgboxId : msgBoxServiceUrl
                 + "/clientid/" + msgboxId;
     }
-    
 
     public static String formatURLString(String url) {
-       if (url == null) {
-           throw new IllegalArgumentException("url can't be null");
-       }
-       if (url.indexOf("//") < 0) {
-           url = "http://" + url; // use default http
-       }
-       return url;
-   }
-    
+        if (url == null) {
+            throw new IllegalArgumentException("url can't be null");
+        }
+        if (url.indexOf("//") < 0) {
+            url = "http://" + url; // use default http
+        }
+        return url;
+    }
+
     public static String getHostIP() {
         InetAddress localAddress = null;
         try {

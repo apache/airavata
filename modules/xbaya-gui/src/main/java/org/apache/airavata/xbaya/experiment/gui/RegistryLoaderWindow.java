@@ -48,7 +48,6 @@ import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
 
-
 public class RegistryLoaderWindow {
 
     private XBayaEngine engine;
@@ -68,7 +67,7 @@ public class RegistryLoaderWindow {
      */
     public RegistryLoaderWindow(XBayaEngine engine) {
         this.engine = engine;
-        if(XBayaUtil.acquireJCRRegistry(this.engine)){
+        if (XBayaUtil.acquireJCRRegistry(this.engine)) {
             initGUI();
         }
     }
@@ -113,7 +112,8 @@ public class RegistryLoaderWindow {
                                 try {
                                     session = val.getSession();
                                 } catch (RepositoryException e) {
-                                    RegistryLoaderWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                                    RegistryLoaderWindow.this.engine.getErrorWindow().error(
+                                            ErrorMessages.UNEXPECTED_ERROR, e);
                                 }
                                 if (session != null && session.isLive()) {
                                     session.logout();
@@ -130,7 +130,7 @@ public class RegistryLoaderWindow {
                 } catch (Error e) {
                     RegistryLoaderWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                     hide();
-                } catch (RepositoryException e){
+                } catch (RepositoryException e) {
                     RegistryLoaderWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                     hide();
                 }

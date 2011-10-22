@@ -32,9 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class ConsumerHandler implements Runnable {
-    
+
     private static final Logger log = LoggerFactory.getLogger(FixedParallelSender.class);
-    
+
     protected LinkedBlockingQueue<LightweightMsg> queue = new LinkedBlockingQueue<LightweightMsg>();
 
     private String consumerUrl;
@@ -45,10 +45,10 @@ public abstract class ConsumerHandler implements Runnable {
         this.consumerUrl = url;
         this.deliverable = deliverable;
     }
-    
+
     public String getConsumerUrl() {
         return consumerUrl;
-    }   
+    }
 
     public void submitMessage(LightweightMsg msg) {
         try {

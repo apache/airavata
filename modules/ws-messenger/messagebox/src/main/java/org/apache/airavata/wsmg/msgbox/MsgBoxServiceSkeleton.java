@@ -40,8 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Service class for MsgBoxService this get called by
- * MsgBoxServiceMessageReceiverInOut with ProcessingContext
+ * Service class for MsgBoxService this get called by MsgBoxServiceMessageReceiverInOut with ProcessingContext
  */
 public class MsgBoxServiceSkeleton implements Lifecycle {
 

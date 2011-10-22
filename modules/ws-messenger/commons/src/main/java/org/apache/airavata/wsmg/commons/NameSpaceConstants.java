@@ -27,16 +27,16 @@ import org.apache.axiom.om.OMNamespace;
 
 public abstract class NameSpaceConstants {
 
-    public final static OMFactory factory = OMAbstractFactory.getOMFactory();  
+    public final static OMFactory factory = OMAbstractFactory.getOMFactory();
 
     public final static OMNamespace WSMG_NS = factory.createOMNamespace(
             "http://org.apache.airavata/ws-messenger/wsmg/2011", "wsmg");
-    
+
     public final static OMNamespace MSG_BOX = factory.createOMNamespace(
             "http://org.apache.airavata/ws-messenger/msgbox/2011", "msgbox");
 
     public final static OMNamespace WIDGET_NS = factory.createOMNamespace("http://widgets.com", "widget");
-    
+
     /**
      * WS Addressing
      */
@@ -50,10 +50,10 @@ public abstract class NameSpaceConstants {
      */
     public final static OMNamespace WSNT_NS = factory.createOMNamespace(
             "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification", "wsnt");
-    
+
     public final static OMNamespace WSBR_NS = factory.createOMNamespace(
-            "http://www.ibm.com/xmlns/stdwip/web-services/WS-BrokeredNotification", "wsbn");    
-    
+            "http://www.ibm.com/xmlns/stdwip/web-services/WS-BrokeredNotification", "wsbn");
+
     /**
      * WS Resource specification namespace
      * 
@@ -62,10 +62,9 @@ public abstract class NameSpaceConstants {
      */
     public final static OMNamespace WSRP_NS = factory.createOMNamespace(
             "http://www.ibm.com/xmlns/stdwip/web-services/WS-ResourceProperties", "wsrp");
-    
+
     public final static OMNamespace WSRL_NS = factory.createOMNamespace(
             "http://www.ibm.com/xmlns/stdwip/web-services/WS-ResourceLifetime", "wsrl");
-    
 
     /**
      * Web Services Eventing (WS-Eventing)

@@ -39,12 +39,12 @@ import org.slf4j.LoggerFactory;
 public class DirectWsntMessageMatcher extends AbstractMessageMatcher {
 
     private static final Logger logger = LoggerFactory.getLogger(DirectWsntMessageMatcher.class);
-    
+
     private ConsumerListManager consumerListmanager = new ConsumerListManager();
 
-    private OutGoingQueue outGoingQueue = null;   
+    private OutGoingQueue outGoingQueue = null;
 
-    public DirectWsntMessageMatcher(){
+    public DirectWsntMessageMatcher() {
         super();
     }
 

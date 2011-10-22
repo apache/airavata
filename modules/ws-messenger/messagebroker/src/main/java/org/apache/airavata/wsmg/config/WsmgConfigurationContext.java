@@ -49,8 +49,8 @@ public class WsmgConfigurationContext {
     private NotificationProcessor notificationProcessor;
 
     private WsmgStorage storage;
-    
-    private WsmgQueue queue;   
+
+    private WsmgQueue queue;
 
     public WsmgConfigurationContext() {
         outgoingQueue = new OutGoingQueue();
@@ -66,7 +66,7 @@ public class WsmgConfigurationContext {
     public List<AbstractMessageMatcher> getMessageMatchers() {
         return messageMatchers;
     }
-    
+
     public OutGoingQueue getOutgoingQueue() {
         return outgoingQueue;
     }
@@ -102,14 +102,14 @@ public class WsmgConfigurationContext {
     public void setStorage(WsmgStorage s) {
         storage = s;
     }
-    
+
     public WsmgQueue getQueue() {
         return queue;
     }
 
     public void setQueue(WsmgQueue s) {
         queue = s;
-    }    
+    }
 
     public ReentrantReadWriteLock getMessegeMatcherLock() {
         return messegeMatchersLock;

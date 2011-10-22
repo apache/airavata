@@ -92,10 +92,10 @@ public class MyProxyManager {
                 String dirpath = proxyloc.substring(0, proxyloc.lastIndexOf('/'));
                 File dir = new File(dirpath);
                 if (!dir.exists()) {
-                    if (dir.mkdirs()){
-                    	log.info("new directory " + dirpath + " is created.");
-                    }else{
-                    	log.error("error in creating directory " + dirpath);
+                    if (dir.mkdirs()) {
+                        log.info("new directory " + dirpath + " is created.");
+                    } else {
+                        log.error("error in creating directory " + dirpath);
                     }
                 }
                 proxyfile.createNewFile();
@@ -103,13 +103,13 @@ public class MyProxyManager {
             }
             FileOutputStream fout = null;
             try {
-            	fout = new FileOutputStream(proxyfile);
-				globusCred.save(fout);
-			} finally{
-				if (fout!=null) {
-					fout.close();
-				}
-			}
+                fout = new FileOutputStream(proxyfile);
+                globusCred.save(fout);
+            } finally {
+                if (fout != null) {
+                    fout.close();
+                }
+            }
             Runtime.getRuntime().exec("/bin/chmod 600 " + proxyloc);
             log.info("Proxy file renewed to " + proxyloc + " for the user " + username + " with " + lifetime
                     + " lifetime.");

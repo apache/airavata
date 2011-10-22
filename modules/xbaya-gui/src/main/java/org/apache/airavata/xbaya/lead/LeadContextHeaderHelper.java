@@ -101,7 +101,7 @@ public class LeadContextHeaderHelper {
             if (topic == null || topic.length() == 0) {
                 topic = XBayaConstants.DEFAULT_TOPIC;
             }
-        //TODO remove the xsul dependency here to WsaEndpointReference object
+            // TODO remove the xsul dependency here to WsaEndpointReference object
             EndpointReference eventSink = WseMsgBrokerClient.createEndpointReference(brokerURL.toString(), topic);
             WsaEndpointReference eprReference = new WsaEndpointReference(URI.create(eventSink.getAddress()));
             this.leadContextHeader.setEventSink(eprReference);
@@ -139,13 +139,12 @@ public class LeadContextHeaderHelper {
     }
 
     /**
-     * This method has to be called before setMonitorConfiguration because this will
-     * overwrite some variables.
+     * This method has to be called before setMonitorConfiguration because this will overwrite some variables.
      * 
      * @param xbayaConfiguration
      */
     public void setXBayaConfiguration(XBayaConfiguration xbayaConfiguration) {
-//        setXRegistryURL(xbayaConfiguration.getXRegistryURL());
+        // setXRegistryURL(xbayaConfiguration.getXRegistryURL());
         setGFacURL(xbayaConfiguration.getGFacURL());
 
         // The followings might overwrite some variables.

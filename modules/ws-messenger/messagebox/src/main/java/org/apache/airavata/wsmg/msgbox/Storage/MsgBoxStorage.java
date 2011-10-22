@@ -26,8 +26,7 @@ import java.util.List;
 import org.apache.axiom.om.OMElement;
 
 /**
- * Message Box storage backend. This has implemented in two ways in-memory and
- * database.
+ * Message Box storage backend. This has implemented in two ways in-memory and database.
  */
 public interface MsgBoxStorage {
     public String createMsgBox() throws Exception;
@@ -35,9 +34,8 @@ public interface MsgBoxStorage {
     public void destroyMsgBox(String key) throws Exception;
 
     /**
-     * IMPORTANT::: List retrieved from this method is sorted by time in
-     * ascending order i.e the newest message will appear as the last item in
-     * the list.
+     * IMPORTANT::: List retrieved from this method is sorted by time in ascending order i.e the newest message will
+     * appear as the last item in the list.
      * 
      * @param key
      * @return

@@ -255,12 +255,11 @@ public class SubscriptionState {
             return BrokerUtil.sameStringValue(subscription.getLocalTopic(), this.getLocalTopic())
                     && BrokerUtil.sameStringValue(subscription.getXpathString(), this.getXpathString())
                     && BrokerUtil.sameStringValue(subscription.getConsumerIPAddressStr(),
-                            this.getConsumerIPAddressStr()) 
-                    && equalReferenceParameters(subscription);
+                            this.getConsumerIPAddressStr()) && equalReferenceParameters(subscription);
         }
         return false;
     }
-    
+
     private boolean equalReferenceParameters(SubscriptionState anotherSubscription) {
 
         Map<QName, OMElement> otherRefProperties = anotherSubscription.getConsumerReference()
@@ -280,8 +279,8 @@ public class SubscriptionState {
 
         /*
          * This OMElementComparator supports ignore list, but we don't use it here.
-         */        
-        Iterator<Entry<QName, OMElement>> iterator = otherRefProperties.entrySet().iterator();        
+         */
+        Iterator<Entry<QName, OMElement>> iterator = otherRefProperties.entrySet().iterator();
         while (iterator.hasNext()) {
 
             Entry<QName, OMElement> entry = iterator.next();

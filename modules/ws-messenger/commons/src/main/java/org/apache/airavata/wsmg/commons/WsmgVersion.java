@@ -46,7 +46,7 @@ public class WsmgVersion {
     public static String getVersion() {
         return SPEC_VERSION;
     }
-    
+
     public static String getSpecVersion() {
         return SPEC_VERSION;
     }

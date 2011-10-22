@@ -32,55 +32,54 @@ import org.slf4j.LoggerFactory;
 
 /**
  * AbstractProvider wraps up steps of execution for Provider. <br/>
- * The steps in execution are <br/> 
+ * The steps in execution are <br/>
  * - makeDirectory <br/>
  * - setupEnvironment <br/>
  * - executeApplication <br/>
  * - retrieveOutput <br/>
  */
 public abstract class AbstractProvider implements Provider {
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());   
-    
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+
     public void initialize(InvocationContext invocationContext) throws ProviderException {
         /*
          * Make a directory on the host
          */
-        makeDirectory(invocationContext);        
+        makeDirectory(invocationContext);
     }
 
-    public void dispose(InvocationContext invocationContext) throws GfacException {        
+    public void dispose(InvocationContext invocationContext) throws GfacException {
     }
-    
-    public Map<String, ?> execute(InvocationContext invocationContext) throws ProviderException{
-        
+
+    public Map<String, ?> execute(InvocationContext invocationContext) throws ProviderException {
+
         /*
          * Setup necessary environment
          */
         setupEnvironment(invocationContext);
-        
+
         GFacNotifier notifier = invocationContext.getExecutionContext().getNotifier();
-                        
+
         notifier.startExecution(invocationContext);
-        
+
         /*
          * Execution application
          */
         executeApplication(invocationContext);
-        
+
         notifier.finishExecution(invocationContext);
-        
-        
+
         /*
          * Process output information
          */
         return processOutput(invocationContext);
     }
-           
+
     protected abstract void makeDirectory(InvocationContext invocationContext) throws ProviderException;
-    
+
     protected abstract void setupEnvironment(InvocationContext invocationContext) throws ProviderException;
-    
+
     protected abstract void executeApplication(InvocationContext invocationContext) throws ProviderException;
-    
+
     protected abstract Map<String, ?> processOutput(InvocationContext invocationContext) throws ProviderException;
 }

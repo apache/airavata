@@ -37,8 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Database message Storage Implementation, if msgBox.properties configured to
- * use database this will set as the storage for MsgBoxSerivceSkeleton
+ * Database message Storage Implementation, if msgBox.properties configured to use database this will set as the storage
+ * for MsgBoxSerivceSkeleton
  */
 public class DatabaseStorageImpl implements MsgBoxStorage {
 
@@ -50,7 +50,7 @@ public class DatabaseStorageImpl implements MsgBoxStorage {
 
     public DatabaseStorageImpl(String jdbcUrl, String jdbcDriver, long timeOfOldMessage) {
         db = new JdbcStorage(10, 50, jdbcUrl, jdbcDriver, true);
-        
+
         Connection conn = null;
         try {
 

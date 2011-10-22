@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import xsul.lead.LeadDeploymentConfig;
 
-public class XBayaConfiguration extends Observable implements Observer{
+public class XBayaConfiguration extends Observable implements Observer {
 
     private static final Logger logger = LoggerFactory.getLogger(XBayaConfiguration.class);
 
@@ -68,7 +68,7 @@ public class XBayaConfiguration extends Observable implements Observer{
 
     private URI gfacURL = XBayaConstants.DEFAULT_GFAC_URL;
 
-//    private URI xRegistryURL = XBayaConstants.DEFAULT_XREGISTRY_URL;
+    // private URI xRegistryURL = XBayaConstants.DEFAULT_XREGISTRY_URL;
 
     private URI registryURL = XBayaConstants.REGISTRY_URL;
 
@@ -325,9 +325,9 @@ public class XBayaConfiguration extends Observable implements Observer{
      * 
      * @return The xRegistryURL
      */
-//    public URI getXRegistryURL() {
-//        return this.xRegistryURL;
-//    }
+    // public URI getXRegistryURL() {
+    // return this.xRegistryURL;
+    // }
 
     /**
      * Sets registryURL.
@@ -335,9 +335,9 @@ public class XBayaConfiguration extends Observable implements Observer{
      * @param registryURL
      *            The xRegistryURL to set.
      */
-//    public void setXRegistryURL(URI registryURL) {
-//        this.xRegistryURL = registryURL;
-//    }
+    // public void setXRegistryURL(URI registryURL) {
+    // this.xRegistryURL = registryURL;
+    // }
 
     /**
      * @return The DSC URL
@@ -761,13 +761,13 @@ public class XBayaConfiguration extends Observable implements Observer{
     }
 
     public void setJcrComponentRegistry(JCRComponentRegistry jcrComponentRegistry) {
-        if (this.jcrComponentRegistry!=null && this.jcrComponentRegistry.getRegistry() instanceof Observable){
-        	((Observable)this.jcrComponentRegistry.getRegistry()).deleteObserver(this);
+        if (this.jcrComponentRegistry != null && this.jcrComponentRegistry.getRegistry() instanceof Observable) {
+            ((Observable) this.jcrComponentRegistry.getRegistry()).deleteObserver(this);
         }
         this.jcrComponentRegistry = jcrComponentRegistry;
         triggerObservers(jcrComponentRegistry);
-        if (jcrComponentRegistry!=null && jcrComponentRegistry.getRegistry() instanceof Observable){
-        	((Observable)jcrComponentRegistry.getRegistry()).addObserver(this);
+        if (jcrComponentRegistry != null && jcrComponentRegistry.getRegistry() instanceof Observable) {
+            ((Observable) jcrComponentRegistry.getRegistry()).addObserver(this);
         }
     }
 
@@ -794,14 +794,14 @@ public class XBayaConfiguration extends Observable implements Observer{
     public String getRegistryPassphrase() {
         return registryPassphrase;
     }
-    
-    protected void triggerObservers(Object o){
-    	setChanged();
-    	notifyObservers(o);
+
+    protected void triggerObservers(Object o) {
+        setChanged();
+        notifyObservers(o);
     }
 
-	@Override
-	public void update(Observable observable, Object o) {
-		triggerObservers(observable);
-	}
+    @Override
+    public void update(Observable observable, Object o) {
+        triggerObservers(observable);
+    }
 }

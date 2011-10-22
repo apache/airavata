@@ -31,7 +31,6 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 abstract class CommonMsgBrokerClient implements MessageBrokerClient {
 
     protected final static OMFactory factory = OMAbstractFactory.getOMFactory();
@@ -48,14 +47,12 @@ abstract class CommonMsgBrokerClient implements MessageBrokerClient {
         WsmgVersion.requireVersionOrExit(WsmgVersion.getVersion());
     }
 
-
     public String[] getConsumerServiceEndpointReference() {
         if (xs == null) {
             throw new RuntimeException("Consumer server is not started yet");
         }
         return xs.getConsumerServiceEPRs();
     }
-
 
     public void setTimeOutInMilliSeconds(long timeout) {
         socketTimeout = timeout;
@@ -69,7 +66,6 @@ abstract class CommonMsgBrokerClient implements MessageBrokerClient {
     public long getTimeOutInMilliSeconds() {
         return socketTimeout;
     }
-
 
     public String subscribeMsgBox(String brokerService, EndpointReference msgBoxEpr, String topic, String xpath)
             throws MsgBrokerClientException {
@@ -97,8 +93,7 @@ abstract class CommonMsgBrokerClient implements MessageBrokerClient {
         } else {
             if (msgBoxEpr.getAllReferenceParameters() == null)
                 throw new MsgBrokerClientException("Invalid Message Box EPR, no reference parameters found");
-            String msgBoxId = msgBoxEpr.getAllReferenceParameters()
-                    .get(MsgBoxQNameConstants.MSG_BOXID_QNAME).getText();
+            String msgBoxId = msgBoxEpr.getAllReferenceParameters().get(MsgBoxQNameConstants.MSG_BOXID_QNAME).getText();
             if (msgBoxId == null)
                 throw new MsgBrokerClientException("Invalid Message Box EPR, reference parameter MsgBoxAddr is missing");
             String format = msgBoxEventSink.endsWith("/") ? "%sclientid/%s" : "%s/clientid/%s";
@@ -133,7 +128,7 @@ abstract class CommonMsgBrokerClient implements MessageBrokerClient {
     }
 
     public MessagePuller startPullingEventsFromMsgBox(EndpointReference msgBoxEpr, NotificationHandler handler,
-                                                      long interval, long timeout) throws MsgBrokerClientException {
+            long interval, long timeout) throws MsgBrokerClientException {
 
         MessagePuller ret = null;
         ret = msgboxHandler.startPullingEventsFromMsgBox(msgBoxEpr, handler, interval, timeout);
@@ -141,7 +136,7 @@ abstract class CommonMsgBrokerClient implements MessageBrokerClient {
     }
 
     public MessagePuller startPullingFromExistingMsgBox(EndpointReference msgBoxAddr, NotificationHandler handler,
-                                                        long interval, long timeout) throws MsgBrokerClientException {
+            long interval, long timeout) throws MsgBrokerClientException {
 
         MessagePuller ret = null;
         ret = msgboxHandler.startPullingFromExistingMsgBox(msgBoxAddr, handler, interval, timeout);

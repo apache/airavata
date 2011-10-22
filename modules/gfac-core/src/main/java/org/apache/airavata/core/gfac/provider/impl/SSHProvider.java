@@ -70,12 +70,11 @@ public class SSHProvider extends AbstractProvider {
         try {
 
             /*
-             * if it is connected, create a session
-             * Note: one client can have multiple session (on one channel)
+             * if it is connected, create a session Note: one client can have multiple session (on one channel)
              */
             if (ssh.isConnected())
                 return ssh.startSession();
-            
+
             if (sshContext == null) {
                 sshContext = ((SSHSecurityContextImpl) context.getSecurityContext(SSH_SECURITY_CONTEXT));
             }
@@ -85,15 +84,15 @@ public class SSHProvider extends AbstractProvider {
             ssh.loadKnownHosts();
             ssh.authPublickey(sshContext.getUsername(), pkey);
 
-            ssh.connect(context.getExecutionDescription().getHost().getAddress());            
+            ssh.connect(context.getExecutionDescription().getHost().getAddress());
             return ssh.startSession();
 
         } catch (NullPointerException ne) {
             throw new SecurityException("Cannot load security context for SSH", ne);
         }
     }
-    
-    private void closeSession(Session session){
+
+    private void closeSession(Session session) {
         if (session != null) {
             try {
                 session.close();
@@ -111,7 +110,7 @@ public class SSHProvider extends AbstractProvider {
             session = getSession(context);
 
             StringBuilder commandString = new StringBuilder();
-            
+
             commandString.append("mkdir -p ");
             commandString.append(app.getTmpDir());
             commandString.append(" ; ");
@@ -123,7 +122,7 @@ public class SSHProvider extends AbstractProvider {
             commandString.append(" ; ");
             commandString.append("mkdir -p ");
             commandString.append(app.getOutputDir());
-            
+
             Command cmd = session.exec(commandString.toString());
             cmd.join(COMMAND_EXECUTION_TIMEOUT, TimeUnit.SECONDS);
         } catch (ConnectionException e) {
@@ -182,10 +181,10 @@ public class SSHProvider extends AbstractProvider {
             ShellApplicationDeploymentType.Env.Entry[] env = app.getEnv().getEntryArray();
 
             Map<String, String> nv = null;
-            for (int i=0; i<env.length; i++) {
+            for (int i = 0; i < env.length; i++) {
                 String key = app.getEnv().getEntryArray(i).getKey();
                 String value = app.getEnv().getEntryArray(i).getValue();
-                nv.put(key,value);
+                nv.put(key, value);
             }
 
             // extra env's
@@ -209,9 +208,8 @@ public class SSHProvider extends AbstractProvider {
             cmd.join(COMMAND_EXECUTION_TIMEOUT, TimeUnit.SECONDS);
 
             /*
-             * check return value. usually not very helpful to draw conclusions
-             * based on return values so don't bother. just provide warning in
-             * the log messages
+             * check return value. usually not very helpful to draw conclusions based on return values so don't bother.
+             * just provide warning in the log messages
              */
             if (cmd.getExitStatus() != 0) {
                 log.error("Process finished with non zero return value. Process may have failed");
@@ -230,7 +228,7 @@ public class SSHProvider extends AbstractProvider {
         }
     }
 
-    public Map<String, ?> processOutput(InvocationContext context) throws ProviderException {       
+    public Map<String, ?> processOutput(InvocationContext context) throws ProviderException {
         ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
         try {
 

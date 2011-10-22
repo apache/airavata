@@ -57,8 +57,8 @@ public class WSNotificationMsgReceiver extends AbstractBrokerMsgReceiver {
                 WsmgConfigurationContext brokerConfigContext = (WsmgConfigurationContext) inMsg
                         .getConfigurationContext().getProperty(WsmgCommonConstants.BROKER_WSMGCONFIG);
 
-                brokerConfigContext.getNotificationProcessor().processMsg(processingContext,
-                        NameSpaceConstants.WSNT_NS);
+                brokerConfigContext.getNotificationProcessor()
+                        .processMsg(processingContext, NameSpaceConstants.WSNT_NS);
             } catch (Exception e) {
                 throw new AxisFault("unable to process message", e);
             }

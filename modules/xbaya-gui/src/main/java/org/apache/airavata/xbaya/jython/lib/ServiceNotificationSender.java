@@ -71,8 +71,8 @@ public class ServiceNotificationSender implements ServiceNotifiable {
      * @param workflowID
      * @param nodeID
      */
-    protected ServiceNotificationSender(WorkflowNotifier notifier, EndpointReference eventSink, InvocationEntity initiator,
-            URI workflowID, String nodeID,WorkflowTrackingContext context) {
+    protected ServiceNotificationSender(WorkflowNotifier notifier, EndpointReference eventSink,
+            InvocationEntity initiator, URI workflowID, String nodeID, WorkflowTrackingContext context) {
         this.notifier = notifier;
         this.eventSink = eventSink;
         this.initiator = initiator;
@@ -91,12 +91,14 @@ public class ServiceNotificationSender implements ServiceNotifiable {
                 workflowTimeStep);
     }
 
-    /* (non-Javadoc)
-	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#setServiceID(java.lang.String)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#setServiceID(java.lang.String)
+     */
     @Override
-	public void setServiceID(String serviceID) {
-        logger.debug("SerivceID:" + serviceID );
+    public void setServiceID(String serviceID) {
+        logger.debug("SerivceID:" + serviceID);
         this.serviceID = serviceID;
 
         URI receiverWorkflowID = this.workflowID;
@@ -107,27 +109,33 @@ public class ServiceNotificationSender implements ServiceNotifiable {
                 workflowTimeStep);
     }
 
-    /* (non-Javadoc)
-	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#getEventSink()
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#getEventSink()
+     */
     @Override
-	public EndpointReference getEventSink() {
+    public EndpointReference getEventSink() {
         return this.eventSink;
     }
 
-    /* (non-Javadoc)
-	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#getWorkflowID()
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#getWorkflowID()
+     */
     @Override
-	public URI getWorkflowID() {
+    public URI getWorkflowID() {
         return this.workflowID;
     }
 
-    /* (non-Javadoc)
-	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#invokingService(xsul.wsif.WSIFMessage)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#invokingService(xsul.wsif.WSIFMessage)
+     */
     @Override
-	public void invokingService(WSIFMessage inputs) {
+    public void invokingService(WSIFMessage inputs) {
         String message = "";
         Iterator partIt = inputs.partNames().iterator();
         boolean first = true;
@@ -149,14 +157,16 @@ public class ServiceNotificationSender implements ServiceNotifiable {
             logger.warn("Failed to parse " + inputs.toString(), e);
             body = null; // Send notification anyway.
         }
-        this.invocationContext = this.notifier.invokingService(this.context,this.receiver, header, body, message);
+        this.invocationContext = this.notifier.invokingService(this.context, this.receiver, header, body, message);
     }
 
-    /* (non-Javadoc)
-	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#serviceFinished(xsul.wsif.WSIFMessage)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#serviceFinished(xsul.wsif.WSIFMessage)
+     */
     @Override
-	public void serviceFinished(WSIFMessage outputs) {
+    public void serviceFinished(WSIFMessage outputs) {
         String message = "";
         Iterator partIt = outputs.partNames().iterator();
         boolean first = true;
@@ -178,14 +188,17 @@ public class ServiceNotificationSender implements ServiceNotifiable {
             logger.warn("Failed to parse " + outputs.toString(), e);
             body = null; // Send notification anyway.
         }
-        this.notifier.receivedResult(this.context,this.invocationContext,header, body, message);
+        this.notifier.receivedResult(this.context, this.invocationContext, header, body, message);
     }
 
-    /* (non-Javadoc)
-	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#invocationFailed(java.lang.String, java.lang.Throwable)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#invocationFailed(java.lang.String,
+     * java.lang.Throwable)
+     */
     @Override
-	public void invocationFailed(String message, Throwable e) {
+    public void invocationFailed(String message, Throwable e) {
 
         // TODO there are two types of error messages.
         // The first one is while creating a service. (No API)
@@ -210,17 +223,19 @@ public class ServiceNotificationSender implements ServiceNotifiable {
             XmlElement stackTraceElement = XMLUtil.BUILDER.newFragment("stackTrace");
             stackTraceElement.addChild(stackTrace);
             String annotation = XMLUtil.xmlElementToString(stackTraceElement);
-            this.notifier.invokingServiceFailed(this.context,this.invocationContext, e, message, annotation);
+            this.notifier.invokingServiceFailed(this.context, this.invocationContext, e, message, annotation);
         } else {
-            this.notifier.invokingServiceFailed(this.context,this.invocationContext, message);
+            this.notifier.invokingServiceFailed(this.context, this.invocationContext, message);
         }
     }
 
-    /* (non-Javadoc)
-	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#receivedFault(java.lang.String)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#receivedFault(java.lang.String)
+     */
     @Override
-	@Deprecated
+    @Deprecated
     public void receivedFault(String message) {
         // XXX If error occurs before invoking a service, create a fake
         // invocation context.
@@ -231,14 +246,16 @@ public class ServiceNotificationSender implements ServiceNotifiable {
         if (message == null || "".equals(message)) {
             message = "Error";
         }
-        this.notifier.receivedFault(this.context,this.invocationContext, message);
+        this.notifier.receivedFault(this.context, this.invocationContext, message);
     }
 
-    /* (non-Javadoc)
-	 * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#receivedFault(xsul.wsif.WSIFMessage)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.airavata.xbaya.jython.lib.ServiceNotifiable#receivedFault(xsul.wsif.WSIFMessage)
+     */
     @Override
-	public void receivedFault(WSIFMessage fault) {
+    public void receivedFault(WSIFMessage fault) {
         // XXX If error occurs before invoking a service, create a fake
         // invocation context.
         if (this.invocationContext == null) {
@@ -254,6 +271,6 @@ public class ServiceNotificationSender implements ServiceNotifiable {
             logger.warn("Failed to parse " + fault.toString(), e);
             body = null; // Send notification anyway.
         }
-        this.notifier.receivedFault(this.context,this.invocationContext, header, body, message);
+        this.notifier.receivedFault(this.context, this.invocationContext, header, body, message);
     }
 }

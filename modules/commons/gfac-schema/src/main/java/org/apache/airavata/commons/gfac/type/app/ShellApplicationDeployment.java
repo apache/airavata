@@ -30,8 +30,7 @@ public class ShellApplicationDeployment extends ApplicationDeploymentDescription
 
     public ShellApplicationDeployment() {
         shellApplicationDeploymentType = ShellApplicationDeploymentType.Factory.newInstance();
-        ShellApplicationDeploymentType.Env env =
-                ShellApplicationDeploymentType.Factory.newInstance().getEnv();
+        ShellApplicationDeploymentType.Env env = ShellApplicationDeploymentType.Factory.newInstance().getEnv();
         shellApplicationDeploymentType.setEnv(env);
     }
 

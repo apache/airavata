@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 public class FileMenu {
 
-	private static final Logger logger = LoggerFactory.getLogger(FileMenu.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileMenu.class);
 
     private JMenu fileMenu;
 
@@ -218,7 +218,7 @@ public class FileMenu {
                 } catch (XBayaException e) {
                     logger.error(e.getMessage(), e);
                 } finally {
-                	FileMenu.this.engine.getGUI().getFrame().dispose();
+                    FileMenu.this.engine.getGUI().getFrame().dispose();
                 }
             }
         });

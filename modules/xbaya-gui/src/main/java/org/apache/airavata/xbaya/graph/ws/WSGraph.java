@@ -145,14 +145,16 @@ public class WSGraph extends GraphImpl {
             }
 
             if (this.inputMetadata != null) {
-                XmlElement metadataElement = graphElement.addElement(GraphSchema.NS, GraphSchema.GRAPH_INPUT_METADATA_TAG);
+                XmlElement metadataElement = graphElement.addElement(GraphSchema.NS,
+                        GraphSchema.GRAPH_INPUT_METADATA_TAG);
                 // Clone the metadata to avoid parent problem because this can be
                 // called multiple times.
                 metadataElement.addChild(XMLUtil.deepClone(this.inputMetadata));
             }
 
             if (this.outputMetadata != null) {
-                XmlElement metadataElement = graphElement.addElement(GraphSchema.NS, GraphSchema.GRAPH_OUTPUT_METADATA_TAG);
+                XmlElement metadataElement = graphElement.addElement(GraphSchema.NS,
+                        GraphSchema.GRAPH_OUTPUT_METADATA_TAG);
                 // Clone the metadata to avoid parent problem because this can be
                 // called multiple times.
                 metadataElement.addChild(XMLUtil.deepClone(this.outputMetadata));

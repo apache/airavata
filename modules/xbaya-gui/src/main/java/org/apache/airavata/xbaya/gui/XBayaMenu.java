@@ -65,7 +65,7 @@ public class XBayaMenu implements XBayaComponent {
 
     private MonitorMenu monitorMenu;
 
-//    private MyProxyMenu myProxyMenu;
+    // private MyProxyMenu myProxyMenu;
 
     private RegisterApplicationsMenu registerApplications;
 
@@ -83,7 +83,7 @@ public class XBayaMenu implements XBayaComponent {
         this.amazonEC2Menu = new AmazonEC2Menu(this.engine);
         this.componentMenu = new ComponentMenu(this.engine);
         this.monitorMenu = new MonitorMenu(this.engine);
-//        this.myProxyMenu = new MyProxyMenu(this.engine);
+        // this.myProxyMenu = new MyProxyMenu(this.engine);
         this.registerApplications = new RegisterApplicationsMenu(this.engine);
 
         createMenuBar();
@@ -110,7 +110,7 @@ public class XBayaMenu implements XBayaComponent {
         this.menuBar.add(this.componentMenu.getMenu());
         this.menuBar.add(this.experimentMenu.getMenu());
         this.menuBar.add(this.amazonEC2Menu.getMenu());
-//        this.menuBar.add(this.myProxyMenu.getMenu());
+        // this.menuBar.add(this.myProxyMenu.getMenu());
         this.menuBar.add(this.monitorMenu.getMenu());
         this.menuBar.add(this.registerApplications.getMenu());
 

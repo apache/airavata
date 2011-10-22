@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.common.workflow.execution.context;
 
 import org.apache.airavata.common.utils.XMLUtil;
@@ -26,18 +26,20 @@ import org.junit.Test;
 import java.io.File;
 
 public class WorkflowContextHeaderBuilderTest {
-     @Test
-	public void testExecute() {
-         WorkflowContextHeaderBuilder builder  = new WorkflowContextHeaderBuilder("brokerurl","gfacurl","registryurl","experimentid","workflowid");
+    @Test
+    public void testExecute() {
+        WorkflowContextHeaderBuilder builder = new WorkflowContextHeaderBuilder("brokerurl", "gfacurl", "registryurl",
+                "experimentid", "workflowid");
 
-         try {
-             File testFile = new File(this.getClass().getClassLoader().getResource("result.xml").getPath());
-             System.out.println(XMLUtil.xmlElementToString(XMLUtil.xmlElement3ToXmlElement5(builder.getXml())));
-             System.out.println(XMLUtil.xmlElementToString(XMLUtil.loadXML(testFile)));
-             org.junit.Assert.assertTrue(XMLUtil.isEqual(XMLUtil.loadXML(testFile), XMLUtil.xmlElement3ToXmlElement5(builder.getXml())));
-         } catch (Exception e) {
-             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-         }
-     }
+        try {
+            File testFile = new File(this.getClass().getClassLoader().getResource("result.xml").getPath());
+            System.out.println(XMLUtil.xmlElementToString(XMLUtil.xmlElement3ToXmlElement5(builder.getXml())));
+            System.out.println(XMLUtil.xmlElementToString(XMLUtil.loadXML(testFile)));
+            org.junit.Assert.assertTrue(XMLUtil.isEqual(XMLUtil.loadXML(testFile),
+                    XMLUtil.xmlElement3ToXmlElement5(builder.getXml())));
+        } catch (Exception e) {
+            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+        }
+    }
 
 }

@@ -57,38 +57,39 @@ import com.ibm.wsdl.extensions.soap.SOAPOperationImpl;
 public class WSDLUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(WSDLUtil.class);
-    
-    private WSDLUtil(){        
+
+    private WSDLUtil() {
     }
-    
+
     /**
      * Generate Concrete WSDL (including <Binding> and <Service>) from an Abstract WSDL using WSDL4J.
      * 
-     * @param Abstract WSDL
-     * @param Service end point
+     * @param Abstract
+     *            WSDL
+     * @param Service
+     *            end point
      * @return Concrete WSDL
      * @throws WSDLException
      */
-    public static String createCWSDL(String abstractWSDL, String epr) throws WSDLException{
-        
+    public static String createCWSDL(String abstractWSDL, String epr) throws WSDLException {
+
         /*
          * Read to Definition
          */
         WSDLFactory factory = WSDLFactory.newInstance();
         WSDLReader wsdlreader = factory.newWSDLReader();
         InputSource source = new InputSource(new StringReader(abstractWSDL));
-        Definition wsdlDefinition = wsdlreader.readWSDL(null, source);                        
+        Definition wsdlDefinition = wsdlreader.readWSDL(null, source);
 
         Map portTypes = wsdlDefinition.getPortTypes();
         Iterator portIt = portTypes.keySet().iterator();
         while (portIt.hasNext()) {
-            QName key = (QName)portIt.next();
+            QName key = (QName) portIt.next();
             PortType portType = (PortType) portTypes.get(key);
             String portTypeName = key.getLocalPart();
             List operations = portType.getOperations();
             Iterator opIt = operations.iterator();
             String namespace = portType.getQName().getNamespaceURI();
-            
 
             /*
              * Create WSDL Binding
@@ -97,7 +98,7 @@ public class WSDLUtil {
             binding.setQName(new QName(namespace, portTypeName + "SoapBinding"));
             binding.setPortType(portType);
             binding.setUndefined(false);
-            
+
             /*
              * Create SOAPBinding for WSDL Binding
              */
@@ -108,7 +109,7 @@ public class WSDLUtil {
 
             while (opIt.hasNext()) {
                 Operation operation = (Operation) opIt.next();
-                
+
                 /*
                  * For each operation in portType, Create BindingOperation
                  */
@@ -121,7 +122,7 @@ public class WSDLUtil {
 
                 SOAPBodyImpl soapBodyIn = new SOAPBodyImpl();
                 soapBodyIn.setUse("literal");
-                
+
                 SOAPBodyImpl soapBodyOut = new SOAPBodyImpl();
                 soapBodyOut.setUse("literal");
 
@@ -134,17 +135,17 @@ public class WSDLUtil {
                 SOAPOperation soapoperation = new SOAPOperationImpl();
                 soapoperation.setSoapActionURI(namespace + "/invoke");
                 soapoperation.setStyle("document");
-                
+
                 boperation.setBindingInput(input);
                 boperation.setBindingOutput(outpout);
                 boperation.addExtensibilityElement(soapoperation);
-                
+
                 /*
                  * Add BindingOperation to Binding
                  */
                 binding.addBindingOperation(boperation);
             }
-            
+
             /*
              * Add Binding to WSDL
              */
@@ -167,17 +168,17 @@ public class WSDLUtil {
              */
             SOAPAddress address = new SOAPAddressImpl();
             address.setLocationURI(epr);
-            
+
             soapport.addExtensibilityElement(address);
 
-            //add Port
+            // add Port
             service.addPort(soapport);
 
             /*
              * Add Service to WSDL
              */
             wsdlDefinition.addService(service);
-        }            
+        }
 
         /*
          * Write to String
@@ -185,7 +186,7 @@ public class WSDLUtil {
         StringWriter out = new StringWriter();
         WSDLWriter writer = WSDLFactory.newInstance().newWSDLWriter();
         writer.writeWSDL(wsdlDefinition, out);
-        
+
         return out.toString();
     }
 

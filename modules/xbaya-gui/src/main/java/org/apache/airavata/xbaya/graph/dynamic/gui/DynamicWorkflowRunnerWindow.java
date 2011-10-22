@@ -91,9 +91,9 @@ public class DynamicWorkflowRunnerWindow {
 
     private XBayaLabel resourceSelectionLabel;
 
-//    private XBayaComboBox resourceSelectionComboBox;
+    // private XBayaComboBox resourceSelectionComboBox;
 
-//    private XBayaTextField xRegistryTextField;
+    // private XBayaTextField xRegistryTextField;
 
     private JComboBox gfacUrlListField;
 
@@ -109,7 +109,7 @@ public class DynamicWorkflowRunnerWindow {
      */
     public DynamicWorkflowRunnerWindow(XBayaEngine engine) {
         this.engine = engine;
-        if(XBayaUtil.acquireJCRRegistry(this.engine)){
+        if (XBayaUtil.acquireJCRRegistry(this.engine)) {
             initGUI();
         }
     }
@@ -120,10 +120,10 @@ public class DynamicWorkflowRunnerWindow {
     public void show() {
         this.workflow = this.engine.getWorkflow();
         List<String> urlList = this.engine.getConfiguration().getJcrComponentRegistry().getGFacURLList();
-        //When run xbaya continously urls can be repeating, so first remove everything and then add
+        // When run xbaya continously urls can be repeating, so first remove everything and then add
         this.gfacUrlListField.removeAllItems();
-        for(String gfacUrl:urlList){
-            if(XBayaUtil.isURLExists(gfacUrl + "?wsdl")){
+        for (String gfacUrl : urlList) {
+            if (XBayaUtil.isURLExists(gfacUrl + "?wsdl")) {
                 this.gfacUrlListField.addItem(gfacUrl);
             }
         }
@@ -176,14 +176,14 @@ public class DynamicWorkflowRunnerWindow {
 
         this.topicTextField.setText(UUID.randomUUID().toString());
 
-//        XBayaConfiguration config = this.engine.getConfiguration();
-//        this.gfacTextField.setText(config.getGFacURL().toString());
-//        URI registryURL = config.getXRegistryURL();
-//        if (null != registryURL) {
-//            this.xRegistryTextField.setText(registryURL.toString());
-//        } else {
-//            this.xRegistryTextField.setText(XBayaConstants.DEFAULT_XREGISTRY_URL);
-//        }
+        // XBayaConfiguration config = this.engine.getConfiguration();
+        // this.gfacTextField.setText(config.getGFacURL().toString());
+        // URI registryURL = config.getXRegistryURL();
+        // if (null != registryURL) {
+        // this.xRegistryTextField.setText(registryURL.toString());
+        // } else {
+        // this.xRegistryTextField.setText(XBayaConstants.DEFAULT_XREGISTRY_URL);
+        // }
 
         this.dialog.show();
     }
@@ -198,59 +198,59 @@ public class DynamicWorkflowRunnerWindow {
         this.parameterTextFields.clear();
     }
 
-    //FIXME: Change this to use JCR registry
-//    private Object[] initHostNameList() {
-//        XRegistryAccesser xRegAccesser = new XRegistryAccesser(this.engine);
-//        HostDescData[] hostDataList = xRegAccesser.searchHostByName("");
-//        List<String> nameList = new ArrayList<String>();
-//        nameList.add("");
-//        for (HostDescData hostData : hostDataList) {
-//            nameList.add(hostData.getName().toString());
-//        }
-//        return nameList.toArray();
-//    }
+    // FIXME: Change this to use JCR registry
+    // private Object[] initHostNameList() {
+    // XRegistryAccesser xRegAccesser = new XRegistryAccesser(this.engine);
+    // HostDescData[] hostDataList = xRegAccesser.searchHostByName("");
+    // List<String> nameList = new ArrayList<String>();
+    // nameList.add("");
+    // for (HostDescData hostData : hostDataList) {
+    // nameList.add(hostData.getName().toString());
+    // }
+    // return nameList.toArray();
+    // }
 
     /**
      * ReInit Host Name ComboBox
      */
-//    public void reinitHostComboBox() {
-//        if (this.resourceSelectionComboBox == null)
-//            this.resourceSelectionComboBox = new XBayaComboBox(new DefaultComboBoxModel(initHostNameList()));
-//        else
-//            this.resourceSelectionComboBox.setModel(new DefaultComboBoxModel(initHostNameList()));
-//    }
+    // public void reinitHostComboBox() {
+    // if (this.resourceSelectionComboBox == null)
+    // this.resourceSelectionComboBox = new XBayaComboBox(new DefaultComboBoxModel(initHostNameList()));
+    // else
+    // this.resourceSelectionComboBox.setModel(new DefaultComboBoxModel(initHostNameList()));
+    // }
 
     private void initGUI() {
         this.parameterPanel = new GridPanel(true);
 
-//        reinitHostComboBox();
-//        this.resourceSelectionLabel = new XBayaLabel("Select a Compute Resource", this.resourceSelectionComboBox);
+        // reinitHostComboBox();
+        // this.resourceSelectionLabel = new XBayaLabel("Select a Compute Resource", this.resourceSelectionComboBox);
 
         this.topicTextField = new XBayaTextField();
         XBayaLabel topicLabel = new XBayaLabel("Notification topic", this.topicTextField);
-//        this.xRegistryTextField = new XBayaTextField();
-//        XBayaLabel xRegistryLabel = new XBayaLabel("XRegistry URL", this.xRegistryTextField);
+        // this.xRegistryTextField = new XBayaTextField();
+        // XBayaLabel xRegistryLabel = new XBayaLabel("XRegistry URL", this.xRegistryTextField);
         this.gfacUrlListField = new JComboBox();
-        XBayaLabel gfacURLLabel  = new XBayaLabel("GFac URL", this.gfacUrlListField);
+        XBayaLabel gfacURLLabel = new XBayaLabel("GFac URL", this.gfacUrlListField);
         this.interactChkBox = new JCheckBox();
         this.interactChkBox.setSelected(false);
         XBayaLabel interactLabel = new XBayaLabel("Enable Service Interactions", this.interactChkBox);
 
         GridPanel infoPanel = new GridPanel();
-//        infoPanel.add(this.resourceSelectionLabel);
-//        infoPanel.add(this.resourceSelectionComboBox);
+        // infoPanel.add(this.resourceSelectionLabel);
+        // infoPanel.add(this.resourceSelectionComboBox);
         infoPanel.add(topicLabel);
         infoPanel.add(this.topicTextField);
-//        infoPanel.add(xRegistryLabel);
-//        infoPanel.add(this.xRegistryTextField);
-//        infoPanel.add(gfacLabel);
-//        infoPanel.add(this.gfacTextField);
+        // infoPanel.add(xRegistryLabel);
+        // infoPanel.add(this.xRegistryTextField);
+        // infoPanel.add(gfacLabel);
+        // infoPanel.add(this.gfacTextField);
         infoPanel.add(gfacURLLabel);
         infoPanel.add(this.gfacUrlListField);
         infoPanel.add(interactLabel);
         infoPanel.add(this.interactChkBox);
 
-//        infoPanel.layout(5, 2, GridPanel.WEIGHT_NONE, 1);
+        // infoPanel.layout(5, 2, GridPanel.WEIGHT_NONE, 1);
 
         GridPanel mainPanel = new GridPanel();
         mainPanel.add(this.parameterPanel);
@@ -325,16 +325,16 @@ public class DynamicWorkflowRunnerWindow {
             inputNode.setDefaultValue(value);
         }
 
-//        final String xregistryUrl = this.xRegistryTextField.getText();
-//        if (null != xregistryUrl && !"".equals(xregistryUrl)) {
-//            try {
-//                this.engine.getConfiguration().setXRegistryURL(new URI(xregistryUrl));
-//            } catch (URISyntaxException e) {
-//                this.engine.getErrorWindow().error(e);
-//            }
-//        }
+        // final String xregistryUrl = this.xRegistryTextField.getText();
+        // if (null != xregistryUrl && !"".equals(xregistryUrl)) {
+        // try {
+        // this.engine.getConfiguration().setXRegistryURL(new URI(xregistryUrl));
+        // } catch (URISyntaxException e) {
+        // this.engine.getErrorWindow().error(e);
+        // }
+        // }
 
-        final String gFacUrl = (String)this.gfacUrlListField.getSelectedItem();
+        final String gFacUrl = (String) this.gfacUrlListField.getSelectedItem();
         if (null != gFacUrl && !"".equals(gFacUrl)) {
             try {
                 this.engine.getConfiguration().setGFacURL(new URI(gFacUrl));
@@ -348,26 +348,26 @@ public class DynamicWorkflowRunnerWindow {
          * Load host description from xregistry and add to interpreter
          */
         LeadResourceMapping mapping = null;
-//        String host = this.resourceSelectionComboBox.getText();
-//        if (host != null && !host.isEmpty()) {
-//            XRegistryAccesser xregistryAccesser = new XRegistryAccesser(this.engine);
-//
-//            HostDescriptionRegistrationWindow hostWindow = HostDescriptionRegistrationWindow.getInstance();
-//
-//            if (!hostWindow.isEngineSet()) {
-//                hostWindow.setXBayaEngine(this.engine);
-//            }
-//
-//            HostBean hostBean = xregistryAccesser.getHostBean(host);
-//
-//            mapping = new LeadResourceMapping(host);
-//            try {
-//                mapping.setGatekeeperEPR(new URI(hostBean.getGateKeeperendPointReference()));
-//            } catch (Exception e) {
-//                this.engine.getErrorWindow().error(e);
-//            }
-//
-//        }
+        // String host = this.resourceSelectionComboBox.getText();
+        // if (host != null && !host.isEmpty()) {
+        // XRegistryAccesser xregistryAccesser = new XRegistryAccesser(this.engine);
+        //
+        // HostDescriptionRegistrationWindow hostWindow = HostDescriptionRegistrationWindow.getInstance();
+        //
+        // if (!hostWindow.isEngineSet()) {
+        // hostWindow.setXBayaEngine(this.engine);
+        // }
+        //
+        // HostBean hostBean = xregistryAccesser.getHostBean(host);
+        //
+        // mapping = new LeadResourceMapping(host);
+        // try {
+        // mapping.setGatekeeperEPR(new URI(hostBean.getGateKeeperendPointReference()));
+        // } catch (Exception e) {
+        // this.engine.getErrorWindow().error(e);
+        // }
+        //
+        // }
 
         final LeadResourceMapping resourceMapping = mapping;
         final String topicString = topic;

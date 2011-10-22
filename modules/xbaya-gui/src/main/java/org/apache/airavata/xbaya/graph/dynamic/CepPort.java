@@ -39,7 +39,6 @@ public class CepPort extends DataPort {
 
     private CepComponentPort componentPort;
 
-
     public CepPort(XmlElement portElement) {
         super(portElement);
     }

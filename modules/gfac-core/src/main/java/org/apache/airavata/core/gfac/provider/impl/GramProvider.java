@@ -67,8 +67,7 @@ public class GramProvider extends AbstractProvider {
         GridFtp ftp = new GridFtp();
 
         try {
-            gssContext = (GSISecurityContext) invocationContext
-                    .getSecurityContext(MYPROXY_SECURITY_CONTEXT);
+            gssContext = (GSISecurityContext) invocationContext.getSecurityContext(MYPROXY_SECURITY_CONTEXT);
             GSSCredential gssCred = gssContext.getGssCredentails();
 
             String hostgridFTP = host.getGridFTPEndPoint();
@@ -140,20 +139,15 @@ public class GramProvider extends AbstractProvider {
 
             log.info("Request to contact:" + gateKeeper);
 
-            buf.append("Finished launching job, Host = ")
-                    .append(host.getAddress()).append(" RSL = ")
-                    .append(job.getRSL())
-                    .append(" working directory = ")
-                    .append(app.getWorkingDir()).append(" tempDirectory = ")
-                    .append(app.getTmpDir())
-                    .append(" Globus GateKeeper cantact = ")
+            buf.append("Finished launching job, Host = ").append(host.getAddress()).append(" RSL = ")
+                    .append(job.getRSL()).append(" working directory = ").append(app.getWorkingDir())
+                    .append(" tempDirectory = ").append(app.getTmpDir()).append(" Globus GateKeeper cantact = ")
                     .append(gateKeeper);
             invocationContext.getExecutionContext().getNotifier().info(invocationContext, buf.toString());
 
             /*
-             * The first boolean is to specify the job is a batch job - use true
-             * for interactive and false for batch. The second boolean is to
-             * specify to use the full proxy and not delegate a limited proxy.
+             * The first boolean is to specify the job is a batch job - use true for interactive and false for batch.
+             * The second boolean is to specify to use the full proxy and not delegate a limited proxy.
              */
             job.request(gateKeeper, false, false);
             String gramJobid = job.getIDAsString();
@@ -260,7 +254,7 @@ public class GramProvider extends AbstractProvider {
         } catch (URISyntaxException e) {
             throw new ProviderException("URI is malformatted:" + e.getMessage(), e);
         } catch (IOException e) {
-            throw new ProviderException(e.getMessage(), e);            
+            throw new ProviderException(e.getMessage(), e);
         } catch (SecurityException e) {
             throw new ProviderException(e.getMessage(), e);
         } catch (ToolsException e) {

@@ -63,7 +63,7 @@ package org.apache.airavata.workflow.tracking;
  * @version $Revision: 1.6 $
  * @author
  */
-public interface Notifier extends ProvenanceNotifier, PerformanceNotifier, AuditNotifier, ResourceNotifier{
+public interface Notifier extends ProvenanceNotifier, PerformanceNotifier, AuditNotifier, ResourceNotifier {
 
     // public static final String WORKFLOW_ID = "workflow_tracking.workflow_id";
     // public static final String NODE_ID = "workflow_tracking.node_id";

@@ -17,80 +17,78 @@ import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
 
 public class HostDescriptionNode extends AbstractAiravataTreeNode {
-	private HostDescription hostDescription;
-	
-	public HostDescriptionNode(HostDescription hostDescription, TreeNode parent) {
-		super(parent);
-		setHostDescription(hostDescription);
-	}
+    private HostDescription hostDescription;
 
-	@Override
-	protected List<TreeNode> getChildren() {
-		return emptyList();
-	}
+    public HostDescriptionNode(HostDescription hostDescription, TreeNode parent) {
+        super(parent);
+        setHostDescription(hostDescription);
+    }
 
-	@Override
-	public String getCaption(boolean selected, boolean expanded, boolean leaf,
-			boolean hasFocus) {
-		return getHostDescription().getId();
-	}
+    @Override
+    protected List<TreeNode> getChildren() {
+        return emptyList();
+    }
 
-	@Override
-	public Icon getIcon(boolean selected, boolean expanded, boolean leaf,
-			boolean hasFocus) {
-		return SwingUtil.createImageIcon("host.png");
-	}
+    @Override
+    public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+        return getHostDescription().getId();
+    }
 
-	public HostDescription getHostDescription() {
-		return hostDescription;
-	}
+    @Override
+    public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+        return SwingUtil.createImageIcon("host.png");
+    }
 
-	public void setHostDescription(HostDescription hostDescription) {
-		this.hostDescription = hostDescription;
-	}
+    public HostDescription getHostDescription() {
+        return hostDescription;
+    }
 
-	@Override
-	public List<String> getSupportedActions() {
-		return Arrays.asList(EditAction.ID, DeleteAction.ID);
-	}
+    public void setHostDescription(HostDescription hostDescription) {
+        this.hostDescription = hostDescription;
+    }
 
-	public boolean triggerAction(JTree tree,String action) throws Exception{
-		if (action.equals(DeleteAction.ID)){
-			deleteHostDescription(tree);
-			return true;
-		}else if (action.equals(EditAction.ID)){
-			JOptionPane.showMessageDialog(null, "TODO");
-			return true;
-		} 
-		return super.triggerAction(tree, action);
-	}
+    @Override
+    public List<String> getSupportedActions() {
+        return Arrays.asList(EditAction.ID, DeleteAction.ID);
+    }
 
-	private void deleteHostDescription(JTree tree)
-			throws PathNotFoundException, HostDescriptionRetrieveException {
-		if (askQuestion("Host description", "Are you sure that you want to remove the host description \""+getHostDescription().getId()+"\"?")) {
-			getRegistry().deleteHostDescription(getHostDescription().getId());
-			((AbstractAiravataTreeNode)getParent()).refresh();
-			reloadTreeNode(tree, getParent());
-		}
-	}
+    public boolean triggerAction(JTree tree, String action) throws Exception {
+        if (action.equals(DeleteAction.ID)) {
+            deleteHostDescription(tree);
+            return true;
+        } else if (action.equals(EditAction.ID)) {
+            JOptionPane.showMessageDialog(null, "TODO");
+            return true;
+        }
+        return super.triggerAction(tree, action);
+    }
 
-	@Override
-	public String getActionCaption(AbstractBrowserActionItem action) {
-		if (action.getID().equals(DeleteAction.ID)){
-			return "Remove";
-		}else if (action.getID().equals(EditAction.ID)){
-			return "Edit";
-		}
-		return action.getDefaultCaption();
-	}
+    private void deleteHostDescription(JTree tree) throws PathNotFoundException, HostDescriptionRetrieveException {
+        if (askQuestion("Host description", "Are you sure that you want to remove the host description \""
+                + getHostDescription().getId() + "\"?")) {
+            getRegistry().deleteHostDescription(getHostDescription().getId());
+            ((AbstractAiravataTreeNode) getParent()).refresh();
+            reloadTreeNode(tree, getParent());
+        }
+    }
 
-	@Override
-	public Icon getActionIcon(AbstractBrowserActionItem action) {
-		return null;
-	}
+    @Override
+    public String getActionCaption(AbstractBrowserActionItem action) {
+        if (action.getID().equals(DeleteAction.ID)) {
+            return "Remove";
+        } else if (action.getID().equals(EditAction.ID)) {
+            return "Edit";
+        }
+        return action.getDefaultCaption();
+    }
 
-	@Override
-	public String getActionDescription(AbstractBrowserActionItem action) {
-		return null;
-	}
+    @Override
+    public Icon getActionIcon(AbstractBrowserActionItem action) {
+        return null;
+    }
+
+    @Override
+    public String getActionDescription(AbstractBrowserActionItem action) {
+        return null;
+    }
 }

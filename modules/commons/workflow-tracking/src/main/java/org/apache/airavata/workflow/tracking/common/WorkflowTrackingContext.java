@@ -63,6 +63,7 @@ public class WorkflowTrackingContext {
     public void setBrokerEpr(EndpointReference brokerEpr) {
         this.brokerEpr = brokerEpr;
     }
+
     public String getTopic() {
         return topic;
     }
@@ -70,6 +71,7 @@ public class WorkflowTrackingContext {
     public void setTopic(String topic) {
         this.topic = topic;
     }
+
     public String getPublisherImpl() {
         return publisherImpl;
     }
@@ -85,6 +87,5 @@ public class WorkflowTrackingContext {
     public void setEnableAsyncPublishing(boolean enableAsyncPublishing) {
         this.enableAsyncPublishing = enableAsyncPublishing;
     }
-
 
 }

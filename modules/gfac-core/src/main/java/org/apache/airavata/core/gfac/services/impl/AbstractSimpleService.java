@@ -39,16 +39,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The abstract service wraps up steps of execution for {@link GenericService}.
- * Also, it adds input/output plug-ins before/after {@link Provider} execution. <br/>
+ * The abstract service wraps up steps of execution for {@link GenericService}. Also, it adds input/output plug-ins
+ * before/after {@link Provider} execution. <br/>
  * The steps in execution are <br/>
  * - preProcess <br/>
- * - Determine Provider (Scheduling) <br/> 
+ * - Determine Provider (Scheduling) <br/>
  * - {@link DataServiceChain} Plugins <br/>
  * - {@link Provider} initialization <br/>
  * - {@link PreExecuteChain} Plugins <br/>
  * - {@link Provider} execution <br/>
- * - {@link PostExecuteChain} Plugins <br/> 
+ * - {@link PostExecuteChain} Plugins <br/>
  * - {@link Provider} disposal <br/>
  * - postProcess <br/>
  * Users who wants built in notification in to their service has to implement this class
@@ -115,16 +115,16 @@ public abstract class AbstractSimpleService implements GenericService {
             /*
              * Execute
              */
-            Map<String, ?>  result = provider.execute(context);
+            Map<String, ?> result = provider.execute(context);
 
             log.debug("After provider execution, try to run post-execution chain");
-            
+
             /*
              * Fill MessageContext with the output from Provider
              */
             for (Entry<String, ?> entry : result.entrySet()) {
                 context.getOutput().setValue(entry.getKey(), entry.getValue());
-            }   
+            }
 
             /*
              * Post-Execution
@@ -132,7 +132,7 @@ public abstract class AbstractSimpleService implements GenericService {
             buildChains(getPostExecuteSteps(context)).start(context);
 
             log.debug("After pre-execution chain, try to dispose provider");
-            
+
         } finally {
             /*
              * Destroy

@@ -29,11 +29,11 @@ public class WSMGParameter {
      * Global variable for the Out Going queue (contains message to send to subscribers)
      */
     public static WsmgQueue OUT_GOING_QUEUE = null; // default=null
-    
+
     public static final boolean testOutGoingQueueMaxiumLength = false; // default=false
 
     // enable or disable the TimerThread that displays the message rate
-    public static final boolean measureMessageRate = false; // default=false    
+    public static final boolean measureMessageRate = false; // default=false
 
     public static final boolean enableAutoCleanSubscriptions = false; // default=true
 

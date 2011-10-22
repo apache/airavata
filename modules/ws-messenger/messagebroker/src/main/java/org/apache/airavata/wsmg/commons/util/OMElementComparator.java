@@ -36,17 +36,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Compare two OMElement with its namespace, attributes, children, and text.
- * Current implementation supports ignore namespace checking i.e. if the
- * namespace is in the list, it is skipped and return as equals.
+ * Compare two OMElement with its namespace, attributes, children, and text. Current implementation supports ignore
+ * namespace checking i.e. if the namespace is in the list, it is skipped and return as equals.
  */
-public class OMElementComparator {   
+public class OMElementComparator {
 
     private static final Logger log = LoggerFactory.getLogger(OMElementComparator.class);
 
     private static List<String> ignorableNamespaceList = new ArrayList<String>();
-    
-    private OMElementComparator(){        
+
+    private OMElementComparator() {
     }
 
     public void addIgnorableNamespace(String nsURI) {
@@ -55,7 +54,7 @@ public class OMElementComparator {
 
     public void clearIgnorableNamespaces() {
         ignorableNamespaceList.clear();
-    }   
+    }
 
     public static boolean compare(OMElement elementOne, OMElement elementTwo) {
 
@@ -75,11 +74,9 @@ public class OMElementComparator {
                 && compare(elementOne.getNamespace(), elementTwo.getNamespace())
                 && compareAttibutes(elementOne, elementTwo)
                 /*
-                 * Trimming the value of the XMLElement is not correct since
-                 * this compare method cannot be used to compare element
-                 * contents with trailing and leading whitespaces BUT for the
-                 * practical side of tests and to get the current tests working
-                 * we have to trim() the contents
+                 * Trimming the value of the XMLElement is not correct since this compare method cannot be used to
+                 * compare element contents with trailing and leading whitespaces BUT for the practical side of tests
+                 * and to get the current tests working we have to trim() the contents
                  */
                 && BrokerUtil.sameStringValue(elementOne.getText().trim(), elementTwo.getText().trim())
                 && compareChildren(elementOne, elementTwo);
@@ -135,9 +132,8 @@ public class OMElementComparator {
         while (oneIter.hasNext()) {
 
             /*
-             * This catches a case where the first one has more items than the
-             * second one (one.attributes.size > two.attributes.size) and a case
-             * where the first and the second have a different attributes.
+             * This catches a case where the first one has more items than the second one (one.attributes.size >
+             * two.attributes.size) and a case where the first and the second have a different attributes.
              * (one.attributes.size == two.attributes.size)
              */
             OMAttribute omAttribute = (OMAttribute) oneIter.next();
@@ -162,8 +158,8 @@ public class OMElementComparator {
         }
 
         /*
-         * This catches a case where the second one has more items than the
-         * first one. (two.attributes.size > one.attributes.size)
+         * This catches a case where the second one has more items than the first one. (two.attributes.size >
+         * one.attributes.size)
          */
         log.debug("Number of Attributes are equal? : " + (elementOneAtribCount == elementTwoAtribCount));
         return elementOneAtribCount == elementTwoAtribCount;

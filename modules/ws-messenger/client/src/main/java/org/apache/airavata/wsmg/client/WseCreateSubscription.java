@@ -124,8 +124,7 @@ public class WseCreateSubscription {
         message.addChild(expires);
 
         OMElement notifyTo = EndpointReferenceHelper.toOM(factory, eventSinkReferenceEPR, new QName(
-                NameSpaceConstants.WSE_NS.getNamespaceURI(), "NotifyTo"), NameSpaceConstants.WSA_NS
-                .getNamespaceURI());
+                NameSpaceConstants.WSE_NS.getNamespaceURI(), "NotifyTo"), NameSpaceConstants.WSA_NS.getNamespaceURI());
 
         delivery.addChild(notifyTo);
         message.addChild(delivery);

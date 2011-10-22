@@ -46,10 +46,10 @@ public class OutputRegister extends PostExecuteChain {
     public boolean execute(InvocationContext context) throws ExtensionException {
         // output context
         MessageContext<AbstractParameter> outputContext = context.getOutput();
-        
+
         // workflow context
         MessageContext<String> workflowContext = context.getMessageContext(WorkflowContextImpl.WORKFLOW_CONTEXT_NAME);
-        
+
         // registry
         Registry registry = context.getExecutionContext().getRegistryService();
 

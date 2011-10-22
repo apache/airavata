@@ -44,9 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the core class which used by DatabaseStorageImpl to perform all the
- * service operations, DatabaseStorageImpl class simply use this class in its
- * operation methods to perform the actual functionality.
+ * This is the core class which used by DatabaseStorageImpl to perform all the service operations, DatabaseStorageImpl
+ * class simply use this class in its operation methods to perform the actual functionality.
  */
 public class MessageBoxDB {
 
@@ -219,8 +218,7 @@ public class MessageBoxDB {
             } finally {
 
                 /*
-                 * If there is error during query, close everything and throw
-                 * error
+                 * If there is error during query, close everything and throw error
                  */
                 db.quietlyClose(connection, stmt, stmt2);
             }
@@ -255,11 +253,11 @@ public class MessageBoxDB {
                 msgBoxids.add(resultSet.getString("msgboxid"));
             }
             db.commit(connection);
-        } catch(SQLException e){
+        } catch (SQLException e) {
             db.rollback(connection);
             throw e;
         } finally {
-            db.quietlyClose(connection, stmt);            
+            db.quietlyClose(connection, stmt);
         }
     }
 

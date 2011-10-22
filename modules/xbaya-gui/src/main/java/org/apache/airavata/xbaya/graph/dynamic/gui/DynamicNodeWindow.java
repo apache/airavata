@@ -359,7 +359,6 @@ public class DynamicNodeWindow {
                             e.printStackTrace();
                         }
 
-
                         typesPath = rootDir.getCanonicalPath() + File.separatorChar + "mytype.jar";
                         String[] args = new String[] { "-d", classesDir.getCanonicalPath(), "-src",
                                 srcDir.getCanonicalPath(), "-out", typesPath,

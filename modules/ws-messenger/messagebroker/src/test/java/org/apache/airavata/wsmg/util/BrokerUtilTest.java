@@ -50,7 +50,7 @@ public class BrokerUtilTest extends TestCase {
     @After
     public void tearDown() throws Exception {
     }
-    
+
     /**
      * Test method for
      * {@link org.apache.airavata.wsmg.util.BrokerUtil#sameStringValue(java.lang.String, java.lang.String)} .
@@ -65,7 +65,7 @@ public class BrokerUtilTest extends TestCase {
         assertFalse(BrokerUtil.sameStringValue(null, "test"));
         assertFalse(BrokerUtil.sameStringValue("test", null));
 
-    }  
+    }
 
     /**
      * Test method for {@link org.apache.airavata.wsmg.util.BrokerUtil#getTopicLocalString(java.lang.String)}.

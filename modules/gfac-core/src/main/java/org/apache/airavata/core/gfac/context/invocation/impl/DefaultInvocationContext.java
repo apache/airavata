@@ -33,72 +33,71 @@ import org.apache.airavata.core.gfac.context.security.SecurityContext;
 /**
  * Main context that is used throughout the service
  */
-public class DefaultInvocationContext implements InvocationContext{
+public class DefaultInvocationContext implements InvocationContext {
 
     protected final String MESSAGE_CONTEXT_INPUT = "input";
     protected final String MESSAGE_CONTEXT_OUTPUT = "output";
-    
+
     private String serviceName;
     private ExecutionContext executionContext;
     private ExecutionDescription gfacContext;
-   	private Map<String, MessageContext<?>> messageContextMap = new HashMap<String, MessageContext<?>>();
+    private Map<String, MessageContext<?>> messageContextMap = new HashMap<String, MessageContext<?>>();
     private Map<String, SecurityContext> securityContextMap = new HashMap<String, SecurityContext>();
-        
-    
-    public void setServiceName(String name){
+
+    public void setServiceName(String name) {
         this.serviceName = name;
     }
-    
+
     public String getServiceName() {
         return this.serviceName;
     }
-    
+
     public ExecutionDescription getExecutionDescription() {
         return this.gfacContext;
     }
-    
+
     public void setExecutionDescription(ExecutionDescription value) {
         this.gfacContext = value;
     }
-    
+
     public ExecutionContext getExecutionContext() {
         return this.executionContext;
     }
-    
+
     public void setExecutionContext(ExecutionContext value) {
-        this.executionContext = value;        
+        this.executionContext = value;
     }
-    
+
     public <T> MessageContext<T> getMessageContext(String name) {
         return (MessageContext<T>) this.messageContextMap.get(name);
     }
-    
+
     public SecurityContext getSecurityContext(String name) {
         return this.securityContextMap.get(name);
     }
-    
+
     public void addMessageContext(String name, MessageContext<?> value) {
         this.messageContextMap.put(name, value);
     }
 
     public void addSecurityContext(String name, SecurityContext value) {
-        this.securityContextMap.put(name, value);        
+        this.securityContextMap.put(name, value);
     }
 
     public <T> MessageContext<T> getInput() {
         return getMessageContext(MESSAGE_CONTEXT_INPUT);
     }
-    
-    public void setInput(MessageContext<?> value) {        
+
+    public void setInput(MessageContext<?> value) {
         this.messageContextMap.put(MESSAGE_CONTEXT_INPUT, value);
     }
-    
+
     public <T> MessageContext<T> getOutput() {
         return getMessageContext(MESSAGE_CONTEXT_OUTPUT);
     }
 
     public void setOutput(MessageContext<?> value) {
         this.messageContextMap.put(MESSAGE_CONTEXT_OUTPUT, value);
-        
-    };    
+
+    };
 }

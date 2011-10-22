@@ -54,17 +54,16 @@ public class GramRSLGenerator {
         jobAttr.setStderr(app.getStdErr());
 
         /*
-         * The env here contains the env of the host and the application. i.e
-         * the env specified in the host description and application description
-         * documents
+         * The env here contains the env of the host and the application. i.e the env specified in the host description
+         * and application description documents
          */
         ShellApplicationDeploymentType.Env.Entry[] env = app.getEnv().getEntryArray();
 
         Map<String, String> nv = null;
-        for (int i=0; i<env.length; i++) {
+        for (int i = 0; i < env.length; i++) {
             String key = app.getEnv().getEntryArray(i).getKey();
             String value = app.getEnv().getEntryArray(i).getValue();
-            nv.put(key,value);
+            nv.put(key, value);
         }
 
         for (Entry<String, String> entry : nv.entrySet()) {

@@ -42,14 +42,14 @@ import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 public class JCRComponentRegistry extends ComponentRegistry {
 
     private static final String NAME = "JCR Components";
-    
+
     private JCRRegistry registry;
 
     public JCRComponentRegistry(URI url, String username, String password) throws RepositoryException {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("org.apache.jackrabbit.repository.uri", url.toString());
         try {
-            this.registry = new JCRRegistry(url,"org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", username,
+            this.registry = new JCRRegistry(url, "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", username,
                     password, map);
         } catch (RepositoryException e) {
             throw e;
@@ -59,17 +59,17 @@ public class JCRComponentRegistry extends ComponentRegistry {
     static {
         registerUserManagers();
     }
-    
-	/**
-	 * to manually trigger user manager registrations
-	 */
+
+    /**
+     * to manually trigger user manager registrations
+     */
     private static void registerUserManagers() {
-		try {
-			Class.forName("org.apache.airavata.xbaya.component.registry.jackrabbit.user.JackRabbitUserManagerWrap");
-		} catch (ClassNotFoundException e) {
-			//error in registering user managers
-		}
-	}
+        try {
+            Class.forName("org.apache.airavata.xbaya.component.registry.jackrabbit.user.JackRabbitUserManagerWrap");
+        } catch (ClassNotFoundException e) {
+            // error in registering user managers
+        }
+    }
 
     /**
      * @see org.apache.airavata.xbaya.component.registry.ComponentRegistry#getComponentTree()
@@ -78,20 +78,20 @@ public class JCRComponentRegistry extends ComponentRegistry {
     public ComponentTreeNode getComponentTree() {
         ComponentTreeNode tree = new ComponentTreeNode(this);
         try {
-			List<ServiceDescription> services = this.registry.searchServiceDescription("");
-			for (ServiceDescription serviceDescription : services) {
-			    String serviceName = serviceDescription.getId();
-			    JCRComponentReference jcr = new JCRComponentReference(serviceName, registry.getWSDL(serviceName));
-			    tree.add(new ComponentTreeNode(jcr));    
-			}
-		} catch (PathNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ServiceDescriptionRetrieveException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
+            List<ServiceDescription> services = this.registry.searchServiceDescription("");
+            for (ServiceDescription serviceDescription : services) {
+                String serviceName = serviceDescription.getId();
+                JCRComponentReference jcr = new JCRComponentReference(serviceName, registry.getWSDL(serviceName));
+                tree.add(new ComponentTreeNode(jcr));
+            }
+        } catch (PathNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ServiceDescriptionRetrieveException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         return tree;
     }
 
@@ -103,60 +103,65 @@ public class JCRComponentRegistry extends ComponentRegistry {
         return NAME;
     }
 
-    public List<String> getGFacURLList(){
+    public List<String> getGFacURLList() {
         return this.registry.getGFacDescriptorList();
     }
 
-    public UserManager getUserManager(){
-    	return registry.getUserManager();
+    public UserManager getUserManager() {
+        return registry.getUserManager();
     }
-    
-    public String saveDeploymentDescription(String service, String host,
-			ApplicationDeploymentDescription app){
+
+    public String saveDeploymentDescription(String service, String host, ApplicationDeploymentDescription app) {
         // deploy the service on host
         registry.deployServiceOnHost(service, host);
-        
+
         // save deployment description
-    	return registry.saveDeploymentDescription(service, host, app);
+        return registry.saveDeploymentDescription(service, host, app);
     }
-    
-	public String saveHostDescription(String name, HostDescription host) {
-    	return registry.saveHostDescription(host);
-	}
-	
-	public List<HostDescription> searchHostDescription(String nameRegEx) throws HostDescriptionRetrieveException, PathNotFoundException {
-		return registry.searchHostDescription(nameRegEx);
-	}
-	
-	public HostDescription getHostDescription(String nameRegEx) throws HostDescriptionRetrieveException, PathNotFoundException {
-		return registry.getHostDescription(nameRegEx);
-	}
-	
-	public List<ApplicationDeploymentDescription> searchApplicationDescription(String serviceName, String host) throws HostDescriptionRetrieveException, PathNotFoundException, DeploymentDescriptionRetrieveException {
-		return registry.searchDeploymentDescription(serviceName, host);
-	}
-	
-	public ApplicationDeploymentDescription getApplicationDescription(String serviceName, String host) throws PathNotFoundException, DeploymentDescriptionRetrieveException {
-		return registry.getDeploymentDescription(serviceName, host);
-	}
-	
-	public String saveServiceDescription(String name, ServiceDescription service) {
-		return registry.saveServiceDescription(service);
-	}
-	
-	public ServiceDescription getServiceDescription(String serviceName) throws PathNotFoundException, ServiceDescriptionRetrieveException {
-		return registry.getServiceDescription(serviceName);
-	}
 
-	public List<ServiceDescription> searchServiceDescription(String serviceName) throws ServiceDescriptionRetrieveException, PathNotFoundException{
-		return registry.searchServiceDescription(serviceName);
-	}
+    public String saveHostDescription(String name, HostDescription host) {
+        return registry.saveHostDescription(host);
+    }
 
-	public Registry getRegistry() {
-		return registry;
-	}
+    public List<HostDescription> searchHostDescription(String nameRegEx) throws HostDescriptionRetrieveException,
+            PathNotFoundException {
+        return registry.searchHostDescription(nameRegEx);
+    }
 
-	public String saveWSDL(ServiceDescription service) {
-		return registry.saveWSDL(service);
-	}
+    public HostDescription getHostDescription(String nameRegEx) throws HostDescriptionRetrieveException,
+            PathNotFoundException {
+        return registry.getHostDescription(nameRegEx);
+    }
+
+    public List<ApplicationDeploymentDescription> searchApplicationDescription(String serviceName, String host)
+            throws HostDescriptionRetrieveException, PathNotFoundException, DeploymentDescriptionRetrieveException {
+        return registry.searchDeploymentDescription(serviceName, host);
+    }
+
+    public ApplicationDeploymentDescription getApplicationDescription(String serviceName, String host)
+            throws PathNotFoundException, DeploymentDescriptionRetrieveException {
+        return registry.getDeploymentDescription(serviceName, host);
+    }
+
+    public String saveServiceDescription(String name, ServiceDescription service) {
+        return registry.saveServiceDescription(service);
+    }
+
+    public ServiceDescription getServiceDescription(String serviceName) throws PathNotFoundException,
+            ServiceDescriptionRetrieveException {
+        return registry.getServiceDescription(serviceName);
+    }
+
+    public List<ServiceDescription> searchServiceDescription(String serviceName)
+            throws ServiceDescriptionRetrieveException, PathNotFoundException {
+        return registry.searchServiceDescription(serviceName);
+    }
+
+    public Registry getRegistry() {
+        return registry;
+    }
+
+    public String saveWSDL(ServiceDescription service) {
+        return registry.saveWSDL(service);
+    }
 }

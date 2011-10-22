@@ -33,7 +33,6 @@ import org.apache.airavata.workflow.tracking.impl.state.DataObjImpl;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axis2.addressing.EndpointReference;
 
-
 public class MonitorTestCase extends XBayaTestCase {
 
     private final static URI WORKFLOW_INSTANCE_ID = URI
@@ -51,7 +50,7 @@ public class MonitorTestCase extends XBayaTestCase {
                 URI.create("workflowID"), URI.create("serviceID"), "workflowNodeID", new Integer(1));
         notifier.publishURL(context, "title", "http://www.google.com", "descriptionAndAnnotation");
 
-        notifier.workflowInitialized(context,WORKFLOW_INSTANCE_ID);
+        notifier.workflowInitialized(context, WORKFLOW_INSTANCE_ID);
 
         DataObjImpl dataObj = new DataObjImpl(URI.create("test"), new ArrayList<URI>());
         notifier.dataConsumed(context, dataObj, "description");

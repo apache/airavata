@@ -54,8 +54,8 @@ public abstract class AbstractNotifier {
 
     }
 
-    public WorkflowTrackingContext createTrackingContext(Properties golbalProperties, String epr,
-            URI workflowID, URI serviceID, String workflowNodeID, Integer workflowTimestep) {
+    public WorkflowTrackingContext createTrackingContext(Properties golbalProperties, String epr, URI workflowID,
+            URI serviceID, String workflowNodeID, Integer workflowTimestep) {
         WorkflowTrackingContext workflowTrackingContext = new WorkflowTrackingContext();
         workflowTrackingContext.setGlobalAnnotations(golbalProperties);
         workflowTrackingContext.setBrokerEpr(new EndpointReference(epr));
@@ -131,19 +131,21 @@ public abstract class AbstractNotifier {
         BaseNotificationType xmlMessage = XmlBeanUtils.extractBaseNotificationType(xmldata);
         NotificationPublisher publisher = publishermap.get(context.getBrokerEpr());
         try {
-        if (publisher == null) {
-            // if a publisher class name has been defined to override the default WSM publisher, use it
-            if (context.getPublisherImpl() != null) {
-                publisher = PublisherFactory.createSomePublisher(context.getPublisherImpl(), context);
-            } else {
-                if(context.getTopic() == null){
-                    publisher = new WSMPublisher(100,context.isEnableAsyncPublishing(),context.getBrokerEpr().getAddress(),false);
-                }else{
-                    publisher = new WSMPublisher(100, context.isEnableAsyncPublishing(), context.getBrokerEpr().getAddress(),context.getTopic());
+            if (publisher == null) {
+                // if a publisher class name has been defined to override the default WSM publisher, use it
+                if (context.getPublisherImpl() != null) {
+                    publisher = PublisherFactory.createSomePublisher(context.getPublisherImpl(), context);
+                } else {
+                    if (context.getTopic() == null) {
+                        publisher = new WSMPublisher(100, context.isEnableAsyncPublishing(), context.getBrokerEpr()
+                                .getAddress(), false);
+                    } else {
+                        publisher = new WSMPublisher(100, context.isEnableAsyncPublishing(), context.getBrokerEpr()
+                                .getAddress(), context.getTopic());
+                    }
                 }
+                publishermap.put(context.getBrokerEpr(), publisher);
             }
-            publishermap.put(context.getBrokerEpr(), publisher);
-        }
 
             setIDAndTimestamp(context, xmlMessage, context.getMyself(), activityTimestamp != null ? activityTimestamp
                     : new Date());
@@ -155,7 +157,7 @@ public abstract class AbstractNotifier {
             publisher.publish(xmldata);
         } catch (RuntimeException e) {
             throw new WorkflowTrackingException(e);
-        } catch (IOException e){
+        } catch (IOException e) {
             throw new WorkflowTrackingException(e);
         }
     }

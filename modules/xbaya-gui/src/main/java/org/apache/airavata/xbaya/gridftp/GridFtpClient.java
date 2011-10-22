@@ -52,9 +52,9 @@ public class GridFtpClient implements MarkerListener {
         } catch (ServerException e) {
             throw new XBayaRuntimeException(e);
         } catch (IOException e) {
-        	throw new XBayaRuntimeException(e);
+            throw new XBayaRuntimeException(e);
         } catch (ClientException e) {
-        	throw new XBayaRuntimeException(e);
+            throw new XBayaRuntimeException(e);
         }
     }
 

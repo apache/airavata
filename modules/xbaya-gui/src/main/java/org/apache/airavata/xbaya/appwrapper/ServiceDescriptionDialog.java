@@ -49,430 +49,467 @@ import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 
 public class ServiceDescriptionDialog extends JDialog {
 
-	private static final long serialVersionUID = 2705760838264284423L;
-	private final JPanel contentPanel = new JPanel();
-	private JLabel lblServiceName;
-	private JTextField txtServiceName;
-	private JTable tblParameters;
-	private boolean serviceCreated=false;
-	private JLabel lblError;
-	private ServiceDescription serviceDescription;
+    private static final long serialVersionUID = 2705760838264284423L;
+    private final JPanel contentPanel = new JPanel();
+    private JLabel lblServiceName;
+    private JTextField txtServiceName;
+    private JTable tblParameters;
+    private boolean serviceCreated = false;
+    private JLabel lblError;
+    private ServiceDescription serviceDescription;
     private ServiceDescriptionType serviceDescriptionType;
-	private JButton okButton;
-	private JButton btnDeleteParameter;
-	private DefaultTableModel defaultTableModel;
-	private JCheckBox chckbxAutoGenerateWsdl;
-	private JButton btnWSDL;
-	private Registry registry;
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			ServiceDescriptionDialog dialog = new ServiceDescriptionDialog(null);
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    private JButton okButton;
+    private JButton btnDeleteParameter;
+    private DefaultTableModel defaultTableModel;
+    private JCheckBox chckbxAutoGenerateWsdl;
+    private JButton btnWSDL;
+    private Registry registry;
 
-	/**
-	 * Create the dialog.
-	 */
-	public ServiceDescriptionDialog(Registry registry) {
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowOpened(WindowEvent arg0) {
-				String baseName="Service";
-				int i=1;
-				String defaultName=baseName+i;
-				try {
-					while(getRegistry().getServiceDescription(defaultName)!=null){
-						defaultName=baseName+(++i);
-					}
-				} catch (Exception e) {
-				}
-				txtServiceName.setText(defaultName);
-				setServiceName(txtServiceName.getText());
-			}
-		});		
-		setRegistry(registry);
-		initGUI();
-		
-		
-	}
-	
-	public void open(){
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		setVisible(true);
-	}
-	
-	protected ServiceDescriptionDialog getDialog(){
-		return this;
-	}
-	
-	private void initGUI() {
-		setTitle("New Service Description");
-		setBounds(100, 100, 463, 459);
-		setModal(true);
-		setLocationRelativeTo(null);
-		BorderLayout borderLayout = new BorderLayout();
-		borderLayout.setVgap(5);
-		borderLayout.setHgap(5);
-		getContentPane().setLayout(borderLayout);
-		contentPanel.setBorder(null);
-		getContentPane().add(contentPanel, BorderLayout.EAST);
-		{
-			lblServiceName = new JLabel("Service name");
-		}
-		
-		txtServiceName = new JTextField();
-		txtServiceName.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				setServiceName(txtServiceName.getText());
-			}
-		});
-		txtServiceName.setColumns(10);
-		
-		JSeparator separator = new JSeparator();
-		
-		JLabel lblInputParameters = new JLabel("Service Parameters");
-		lblInputParameters.setFont(new Font("Tahoma", Font.BOLD, 11));
-		
-		JScrollPane scrollPane = new JScrollPane();
-		
-		btnDeleteParameter = new JButton("Delete parameter");
-		btnDeleteParameter.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				deleteSelectedRows();
-			}
-		});
-		btnDeleteParameter.setEnabled(false);
-		
-		chckbxAutoGenerateWsdl = new JCheckBox("Auto generate WSDL");
-		chckbxAutoGenerateWsdl.setEnabled(false);
-		chckbxAutoGenerateWsdl.setSelected(true);
-		
-		btnWSDL = new JButton("Specify WSDL...");
-		btnWSDL.setEnabled(false);
-		chckbxAutoGenerateWsdl.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent arg0) {
-//				btnWSDL.setEnabled(!chckbxAutoGenerateWsdl.isSelected());
-			}
-		});
-		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-		gl_contentPanel.setHorizontalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGap(181)
-					.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addContainerGap(212, Short.MAX_VALUE)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE)
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addComponent(chckbxAutoGenerateWsdl)
-									.addPreferredGap(ComponentPlacement.RELATED, 91, Short.MAX_VALUE)
-									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
-										.addComponent(btnWSDL, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-										.addComponent(btnDeleteParameter, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-							.addGap(27))
-						.addGroup(Alignment.TRAILING, gl_contentPanel.createSequentialGroup()
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblInputParameters)
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addComponent(lblServiceName)
-									.addGap(18)
-									.addComponent(txtServiceName, GroupLayout.PREFERRED_SIZE, 309, GroupLayout.PREFERRED_SIZE)))
-							.addGap(30))))
-		);
-		gl_contentPanel.setVerticalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblServiceName)
-						.addComponent(txtServiceName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(12)
-					.addComponent(lblInputParameters)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnDeleteParameter)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnWSDL)
-						.addComponent(chckbxAutoGenerateWsdl))
-					.addGap(44))
-		);
-		
-		tblParameters = new JTable();
-		tblParameters.setFillsViewportHeight(true);
-		defaultTableModel = new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null},
-			},
-			new String[] {
-				"I/O", "Parameter Name", "Type", "Description"
-			}
-		);
-		tblParameters.setModel(defaultTableModel);
-		defaultTableModel.addTableModelListener(new TableModelListener(){
+    /**
+     * Launch the application.
+     */
+    public static void main(String[] args) {
+        try {
+            ServiceDescriptionDialog dialog = new ServiceDescriptionDialog(null);
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-			@Override
-			public void tableChanged(TableModelEvent arg0) {
-				int selectedRow = tblParameters.getSelectedRow();
-				if (selectedRow!=-1) {
-					Object parameterIOType = defaultTableModel.getValueAt(
-							selectedRow, 0);
-					Object parameterDataType = defaultTableModel.getValueAt(
-							selectedRow, 2);
-					if (parameterIOType == null || parameterIOType.equals("")) {
-						defaultTableModel.setValueAt(getIOStringList()[0],
-								selectedRow, 0);
-					}
-					if (parameterDataType == null
-							|| parameterDataType.equals("")) {
-						defaultTableModel.setValueAt(getDataTypes()[0],
-								selectedRow, 2);
-					}
-				}
-				addNewRowIfLastIsNotEmpty();
-			}
-			
-		});
-		TableColumn ioColumn = tblParameters.getColumnModel().getColumn(0);
-		String[] ioStringList = getIOStringList();
-		ioColumn.setCellEditor(new StringArrayComboBoxEditor(ioStringList));
-		
-		TableColumn datatypeColumn = tblParameters.getColumnModel().getColumn(2);
-		DataType[] dataTypeStringList = getDataTypes();
-		datatypeColumn.setCellEditor(new StringArrayComboBoxEditor(dataTypeStringList));
-		
-		TableColumn parameterNameCol = tblParameters.getColumnModel().getColumn(1);
-		parameterNameCol.setPreferredWidth(190);
-		scrollPane.setViewportView(tblParameters);
-		ListSelectionModel selectionModel = tblParameters.getSelectionModel();
-		selectionModel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+    /**
+     * Create the dialog.
+     */
+    public ServiceDescriptionDialog(Registry registry) {
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowOpened(WindowEvent arg0) {
+                String baseName = "Service";
+                int i = 1;
+                String defaultName = baseName + i;
+                try {
+                    while (getRegistry().getServiceDescription(defaultName) != null) {
+                        defaultName = baseName + (++i);
+                    }
+                } catch (Exception e) {
+                }
+                txtServiceName.setText(defaultName);
+                setServiceName(txtServiceName.getText());
+            }
+        });
+        setRegistry(registry);
+        initGUI();
 
-		selectionModel.addListSelectionListener(new ListSelectionListener() {
-	      public void valueChanged(ListSelectionEvent e) {
-	    	  btnDeleteParameter.setEnabled(tblParameters.getSelectedRows().length>0);
-	      }
+    }
 
-	    });
-	    
-		gl_contentPanel.setAutoCreateContainerGaps(true);
-		gl_contentPanel.setAutoCreateGaps(true);
-		contentPanel.setLayout(gl_contentPanel);
-		{
-			JPanel buttonPane = new JPanel();
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			GridBagLayout gbl_buttonPane = new GridBagLayout();
-			gbl_buttonPane.columnWidths = new int[]{307, 136, 0};
-			gbl_buttonPane.rowHeights = new int[]{33, 0};
-			gbl_buttonPane.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
-			gbl_buttonPane.rowWeights = new double[]{0.0, Double.MIN_VALUE};
-			buttonPane.setLayout(gbl_buttonPane);
-			
-			lblError = new JLabel("");
-			lblError.setForeground(Color.RED);
-			GridBagConstraints gbc_lblError = new GridBagConstraints();
-			gbc_lblError.insets = new Insets(0, 0, 0, 5);
-			gbc_lblError.gridx = 0;
-			gbc_lblError.gridy = 0;
-			buttonPane.add(lblError, gbc_lblError);
-			JPanel panel = new JPanel();
-			GridBagConstraints gbc_panel = new GridBagConstraints();
-			gbc_panel.anchor = GridBagConstraints.NORTHWEST;
-			gbc_panel.gridx = 1;
-			gbc_panel.gridy = 0;
-			buttonPane.add(panel, gbc_panel);
-			{
-				okButton = new JButton("Save");
-				okButton.setEnabled(false);
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						saveServiceDescription();
-						close();
-					}
-				});
-				panel.add(okButton);
-				okButton.setActionCommand("OK");
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						setServiceCreated(false);
-						close();
-					}
-				});
-				panel.add(cancelButton);
-				cancelButton.setActionCommand("Cancel");
-			}
-		}
-		setResizable(false);
-		getRootPane().setDefaultButton(okButton);
-	}
+    public void open() {
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setVisible(true);
+    }
 
-	private String[] getIOStringList() {
-		String[] ioStringList = new String[]{"Input","Output"};
-		return ioStringList;
-	}
+    protected ServiceDescriptionDialog getDialog() {
+        return this;
+    }
 
-	private DataType[] getDataTypes() {
-		return ParameterFactory.getInstance().listDataTypes().toArray(new DataType[]{});
-	}
+    private void initGUI() {
+        setTitle("New Service Description");
+        setBounds(100, 100, 463, 459);
+        setModal(true);
+        setLocationRelativeTo(null);
+        BorderLayout borderLayout = new BorderLayout();
+        borderLayout.setVgap(5);
+        borderLayout.setHgap(5);
+        getContentPane().setLayout(borderLayout);
+        contentPanel.setBorder(null);
+        getContentPane().add(contentPanel, BorderLayout.EAST);
+        {
+            lblServiceName = new JLabel("Service name");
+        }
 
-	public boolean isServiceCreated() {
-		return serviceCreated;
-	}
+        txtServiceName = new JTextField();
+        txtServiceName.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                setServiceName(txtServiceName.getText());
+            }
+        });
+        txtServiceName.setColumns(10);
 
-	public void setServiceCreated(boolean serviceCreated) {
-		this.serviceCreated = serviceCreated;
-	}
+        JSeparator separator = new JSeparator();
 
-	public ServiceDescription getServiceDescription() {
-		if (serviceDescription==null){
-			serviceDescription=new ServiceDescription();
-		}
-		return serviceDescription;
-	}
+        JLabel lblInputParameters = new JLabel("Service Parameters");
+        lblInputParameters.setFont(new Font("Tahoma", Font.BOLD, 11));
+
+        JScrollPane scrollPane = new JScrollPane();
+
+        btnDeleteParameter = new JButton("Delete parameter");
+        btnDeleteParameter.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                deleteSelectedRows();
+            }
+        });
+        btnDeleteParameter.setEnabled(false);
+
+        chckbxAutoGenerateWsdl = new JCheckBox("Auto generate WSDL");
+        chckbxAutoGenerateWsdl.setEnabled(false);
+        chckbxAutoGenerateWsdl.setSelected(true);
+
+        btnWSDL = new JButton("Specify WSDL...");
+        btnWSDL.setEnabled(false);
+        chckbxAutoGenerateWsdl.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent arg0) {
+                // btnWSDL.setEnabled(!chckbxAutoGenerateWsdl.isSelected());
+            }
+        });
+        GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
+        gl_contentPanel
+                .setHorizontalGroup(gl_contentPanel
+                        .createParallelGroup(Alignment.TRAILING)
+                        .addGroup(
+                                gl_contentPanel
+                                        .createSequentialGroup()
+                                        .addGap(181)
+                                        .addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.PREFERRED_SIZE).addContainerGap())
+                        .addGroup(
+                                gl_contentPanel
+                                        .createSequentialGroup()
+                                        .addContainerGap(212, Short.MAX_VALUE)
+                                        .addGroup(
+                                                gl_contentPanel
+                                                        .createParallelGroup(Alignment.LEADING, false)
+                                                        .addGroup(
+                                                                gl_contentPanel
+                                                                        .createSequentialGroup()
+                                                                        .addGroup(
+                                                                                gl_contentPanel
+                                                                                        .createParallelGroup(
+                                                                                                Alignment.TRAILING)
+                                                                                        .addComponent(
+                                                                                                scrollPane,
+                                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                                380,
+                                                                                                GroupLayout.PREFERRED_SIZE)
+                                                                                        .addGroup(
+                                                                                                gl_contentPanel
+                                                                                                        .createSequentialGroup()
+                                                                                                        .addComponent(
+                                                                                                                chckbxAutoGenerateWsdl)
+                                                                                                        .addPreferredGap(
+                                                                                                                ComponentPlacement.RELATED,
+                                                                                                                91,
+                                                                                                                Short.MAX_VALUE)
+                                                                                                        .addGroup(
+                                                                                                                gl_contentPanel
+                                                                                                                        .createParallelGroup(
+                                                                                                                                Alignment.LEADING,
+                                                                                                                                false)
+                                                                                                                        .addComponent(
+                                                                                                                                btnWSDL,
+                                                                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                                                                Short.MAX_VALUE)
+                                                                                                                        .addComponent(
+                                                                                                                                btnDeleteParameter,
+                                                                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                                                                Short.MAX_VALUE))))
+                                                                        .addGap(27))
+                                                        .addGroup(
+                                                                Alignment.TRAILING,
+                                                                gl_contentPanel
+                                                                        .createSequentialGroup()
+                                                                        .addGroup(
+                                                                                gl_contentPanel
+                                                                                        .createParallelGroup(
+                                                                                                Alignment.LEADING)
+                                                                                        .addComponent(
+                                                                                                lblInputParameters)
+                                                                                        .addGroup(
+                                                                                                gl_contentPanel
+                                                                                                        .createSequentialGroup()
+                                                                                                        .addComponent(
+                                                                                                                lblServiceName)
+                                                                                                        .addGap(18)
+                                                                                                        .addComponent(
+                                                                                                                txtServiceName,
+                                                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                                                309,
+                                                                                                                GroupLayout.PREFERRED_SIZE)))
+                                                                        .addGap(30)))));
+        gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(
+                gl_contentPanel
+                        .createSequentialGroup()
+                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(
+                                gl_contentPanel
+                                        .createParallelGroup(Alignment.BASELINE)
+                                        .addComponent(lblServiceName)
+                                        .addComponent(txtServiceName, GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(ComponentPlacement.UNRELATED)
+                        .addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                                GroupLayout.PREFERRED_SIZE)
+                        .addGap(12)
+                        .addComponent(lblInputParameters)
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addComponent(btnDeleteParameter)
+                        .addPreferredGap(ComponentPlacement.UNRELATED)
+                        .addGroup(
+                                gl_contentPanel.createParallelGroup(Alignment.BASELINE).addComponent(btnWSDL)
+                                        .addComponent(chckbxAutoGenerateWsdl)).addGap(44)));
+
+        tblParameters = new JTable();
+        tblParameters.setFillsViewportHeight(true);
+        defaultTableModel = new DefaultTableModel(new Object[][] { { null, null, null, null }, }, new String[] { "I/O",
+                "Parameter Name", "Type", "Description" });
+        tblParameters.setModel(defaultTableModel);
+        defaultTableModel.addTableModelListener(new TableModelListener() {
+
+            @Override
+            public void tableChanged(TableModelEvent arg0) {
+                int selectedRow = tblParameters.getSelectedRow();
+                if (selectedRow != -1) {
+                    Object parameterIOType = defaultTableModel.getValueAt(selectedRow, 0);
+                    Object parameterDataType = defaultTableModel.getValueAt(selectedRow, 2);
+                    if (parameterIOType == null || parameterIOType.equals("")) {
+                        defaultTableModel.setValueAt(getIOStringList()[0], selectedRow, 0);
+                    }
+                    if (parameterDataType == null || parameterDataType.equals("")) {
+                        defaultTableModel.setValueAt(getDataTypes()[0], selectedRow, 2);
+                    }
+                }
+                addNewRowIfLastIsNotEmpty();
+            }
+
+        });
+        TableColumn ioColumn = tblParameters.getColumnModel().getColumn(0);
+        String[] ioStringList = getIOStringList();
+        ioColumn.setCellEditor(new StringArrayComboBoxEditor(ioStringList));
+
+        TableColumn datatypeColumn = tblParameters.getColumnModel().getColumn(2);
+        DataType[] dataTypeStringList = getDataTypes();
+        datatypeColumn.setCellEditor(new StringArrayComboBoxEditor(dataTypeStringList));
+
+        TableColumn parameterNameCol = tblParameters.getColumnModel().getColumn(1);
+        parameterNameCol.setPreferredWidth(190);
+        scrollPane.setViewportView(tblParameters);
+        ListSelectionModel selectionModel = tblParameters.getSelectionModel();
+        selectionModel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+        selectionModel.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                btnDeleteParameter.setEnabled(tblParameters.getSelectedRows().length > 0);
+            }
+
+        });
+
+        gl_contentPanel.setAutoCreateContainerGaps(true);
+        gl_contentPanel.setAutoCreateGaps(true);
+        contentPanel.setLayout(gl_contentPanel);
+        {
+            JPanel buttonPane = new JPanel();
+            getContentPane().add(buttonPane, BorderLayout.SOUTH);
+            GridBagLayout gbl_buttonPane = new GridBagLayout();
+            gbl_buttonPane.columnWidths = new int[] { 307, 136, 0 };
+            gbl_buttonPane.rowHeights = new int[] { 33, 0 };
+            gbl_buttonPane.columnWeights = new double[] { 0.0, 0.0, Double.MIN_VALUE };
+            gbl_buttonPane.rowWeights = new double[] { 0.0, Double.MIN_VALUE };
+            buttonPane.setLayout(gbl_buttonPane);
+
+            lblError = new JLabel("");
+            lblError.setForeground(Color.RED);
+            GridBagConstraints gbc_lblError = new GridBagConstraints();
+            gbc_lblError.insets = new Insets(0, 0, 0, 5);
+            gbc_lblError.gridx = 0;
+            gbc_lblError.gridy = 0;
+            buttonPane.add(lblError, gbc_lblError);
+            JPanel panel = new JPanel();
+            GridBagConstraints gbc_panel = new GridBagConstraints();
+            gbc_panel.anchor = GridBagConstraints.NORTHWEST;
+            gbc_panel.gridx = 1;
+            gbc_panel.gridy = 0;
+            buttonPane.add(panel, gbc_panel);
+            {
+                okButton = new JButton("Save");
+                okButton.setEnabled(false);
+                okButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        saveServiceDescription();
+                        close();
+                    }
+                });
+                panel.add(okButton);
+                okButton.setActionCommand("OK");
+                getRootPane().setDefaultButton(okButton);
+            }
+            {
+                JButton cancelButton = new JButton("Cancel");
+                cancelButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        setServiceCreated(false);
+                        close();
+                    }
+                });
+                panel.add(cancelButton);
+                cancelButton.setActionCommand("Cancel");
+            }
+        }
+        setResizable(false);
+        getRootPane().setDefaultButton(okButton);
+    }
+
+    private String[] getIOStringList() {
+        String[] ioStringList = new String[] { "Input", "Output" };
+        return ioStringList;
+    }
+
+    private DataType[] getDataTypes() {
+        return ParameterFactory.getInstance().listDataTypes().toArray(new DataType[] {});
+    }
+
+    public boolean isServiceCreated() {
+        return serviceCreated;
+    }
+
+    public void setServiceCreated(boolean serviceCreated) {
+        this.serviceCreated = serviceCreated;
+    }
+
+    public ServiceDescription getServiceDescription() {
+        if (serviceDescription == null) {
+            serviceDescription = new ServiceDescription();
+        }
+        return serviceDescription;
+    }
 
     public ServiceDescriptionType getServiceDescriptionType() {
-        if (serviceDescriptionType==null){
+        if (serviceDescriptionType == null) {
             serviceDescriptionType = new ServiceDescription().getServiceDescriptionType();
         }
         return serviceDescriptionType;
     }
 
-	public String getServiceName() {
-		return getServiceDescription().getId();
-	}
+    public String getServiceName() {
+        return getServiceDescription().getId();
+    }
 
-	public void setServiceName(String serviceName) {
-		getServiceDescription().setId(serviceName);
-		updateDialogStatus();
-	}
-	
-	private void validateDialog() throws Exception{
-		if (getServiceName()==null || getServiceName().trim().equals("")){
-			throw new Exception("Name of the service cannot be empty!!!");
-		}
-		
-		ServiceDescription serviceDescription2=null;
-		try {
-			serviceDescription2 = getRegistry().getServiceDescription(Pattern.quote(getServiceName()));
-		} catch (PathNotFoundException e) {
-			//what we want
-		} catch (Exception e){
-			throw e;
-		}
-		if (serviceDescription2!=null){
-			throw new Exception("Service descriptor with the given name already exists!!!");
-		}
+    public void setServiceName(String serviceName) {
+        getServiceDescription().setId(serviceName);
+        updateDialogStatus();
+    }
 
-		
-	}
-	private void updateDialogStatus(){
-		String message=null;
-		try {
-			validateDialog();
-		} catch (Exception e) {
-			message=e.getLocalizedMessage();
-		}
-		okButton.setEnabled(message==null);
-		setError(message);
-	}
+    private void validateDialog() throws Exception {
+        if (getServiceName() == null || getServiceName().trim().equals("")) {
+            throw new Exception("Name of the service cannot be empty!!!");
+        }
 
-	public void close() {
-		getDialog().setVisible(false);
-	}
+        ServiceDescription serviceDescription2 = null;
+        try {
+            serviceDescription2 = getRegistry().getServiceDescription(Pattern.quote(getServiceName()));
+        } catch (PathNotFoundException e) {
+            // what we want
+        } catch (Exception e) {
+            throw e;
+        }
+        if (serviceDescription2 != null) {
+            throw new Exception("Service descriptor with the given name already exists!!!");
+        }
 
-	public void saveServiceDescription() {
-		getServiceDescription().setInputParameters(ServiceDescriptionType.Factory.newInstance().getInputParametersArray());
-		getServiceDescription().setOutputParameters(ServiceDescriptionType.Factory.newInstance().getOutputParametersArray());
-		for(int i=0;i<defaultTableModel.getRowCount();i++){
-			Parameter parameter = Parameter.Factory.newInstance();
-			String parameterName = (String)defaultTableModel.getValueAt(i, 1);
-			if (parameterName!=null) {
-				DataType parameterDataType = (DataType) defaultTableModel
-						.getValueAt(i, 2);
-				String parameterDescription = (String) defaultTableModel
-						.getValueAt(i, 3);
-				parameter.setName(parameterName);
-				parameter.setDescription(parameterDescription);
+    }
 
-				parameter.addNewType().setType(org.apache.airavata.schemas.gfac.DataType.Enum.forString(parameterDataType.toString()));
-				if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i,
-						0))) {
-                    getServiceDescriptionType().setInputParametersArray(0,parameter);
-					//getServiceDescription().getInputParameters().add(parameter);
-				} else {
-					getServiceDescriptionType().setOutputParametersArray(0,parameter);
-					//getServiceDescription().getOutputParameters().add(parameter);
-				}
-			}
-		}
-		
-		getRegistry().saveServiceDescription(getServiceDescription());
-		if (chckbxAutoGenerateWsdl.isSelected()){
-			
-			if (getRegistry() instanceof Axis2Registry) {
-				((Axis2Registry)getRegistry()).saveWSDL(getServiceDescription());
-			}
-		}
-		setServiceCreated(true);
-	}
+    private void updateDialogStatus() {
+        String message = null;
+        try {
+            validateDialog();
+        } catch (Exception e) {
+            message = e.getLocalizedMessage();
+        }
+        okButton.setEnabled(message == null);
+        setError(message);
+    }
 
-	private void setError(String errorMessage){
-		if (errorMessage==null || errorMessage.trim().equals("")){
-			lblError.setText("");
-		}else{
-			lblError.setText(errorMessage.trim());
-		}
-	}
-	
-	private void deleteSelectedRows() {
-		//TODO confirm deletion of selected rows
-		int selectedRow = tblParameters.getSelectedRow();
-		while(selectedRow>=0){
-			defaultTableModel.removeRow(selectedRow);
-			selectedRow = tblParameters.getSelectedRow();
-		}
-		addNewRowIfLastIsNotEmpty();
-	}
+    public void close() {
+        getDialog().setVisible(false);
+    }
 
-	private void addNewRowIfLastIsNotEmpty() {
-		Object parameterName = defaultTableModel.getValueAt(defaultTableModel.getRowCount()-1, 1);
-		if (parameterName!=null && !parameterName.equals("")){
-			defaultTableModel.addRow(new Object[]{null,null,null,null});
-		}
-	}
+    public void saveServiceDescription() {
+        getServiceDescription().setInputParameters(
+                ServiceDescriptionType.Factory.newInstance().getInputParametersArray());
+        getServiceDescription().setOutputParameters(
+                ServiceDescriptionType.Factory.newInstance().getOutputParametersArray());
+        for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
+            Parameter parameter = Parameter.Factory.newInstance();
+            String parameterName = (String) defaultTableModel.getValueAt(i, 1);
+            if (parameterName != null) {
+                DataType parameterDataType = (DataType) defaultTableModel.getValueAt(i, 2);
+                String parameterDescription = (String) defaultTableModel.getValueAt(i, 3);
+                parameter.setName(parameterName);
+                parameter.setDescription(parameterDescription);
 
-	public Registry getRegistry() {
-		return registry;
-	}
+                parameter.addNewType().setType(
+                        org.apache.airavata.schemas.gfac.DataType.Enum.forString(parameterDataType.toString()));
+                if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i, 0))) {
+                    getServiceDescriptionType().setInputParametersArray(0, parameter);
+                    // getServiceDescription().getInputParameters().add(parameter);
+                } else {
+                    getServiceDescriptionType().setOutputParametersArray(0, parameter);
+                    // getServiceDescription().getOutputParameters().add(parameter);
+                }
+            }
+        }
 
-	public void setRegistry(Registry registry) {
-		this.registry = registry;
-	}
+        getRegistry().saveServiceDescription(getServiceDescription());
+        if (chckbxAutoGenerateWsdl.isSelected()) {
 
-	private class StringArrayComboBoxEditor extends DefaultCellEditor {
-		private static final long serialVersionUID = -304464739219209395L;
+            if (getRegistry() instanceof Axis2Registry) {
+                ((Axis2Registry) getRegistry()).saveWSDL(getServiceDescription());
+            }
+        }
+        setServiceCreated(true);
+    }
 
-		public StringArrayComboBoxEditor(Object[] items) {
-	        super(new JComboBox(items));
-	    }
-	}
+    private void setError(String errorMessage) {
+        if (errorMessage == null || errorMessage.trim().equals("")) {
+            lblError.setText("");
+        } else {
+            lblError.setText(errorMessage.trim());
+        }
+    }
+
+    private void deleteSelectedRows() {
+        // TODO confirm deletion of selected rows
+        int selectedRow = tblParameters.getSelectedRow();
+        while (selectedRow >= 0) {
+            defaultTableModel.removeRow(selectedRow);
+            selectedRow = tblParameters.getSelectedRow();
+        }
+        addNewRowIfLastIsNotEmpty();
+    }
+
+    private void addNewRowIfLastIsNotEmpty() {
+        Object parameterName = defaultTableModel.getValueAt(defaultTableModel.getRowCount() - 1, 1);
+        if (parameterName != null && !parameterName.equals("")) {
+            defaultTableModel.addRow(new Object[] { null, null, null, null });
+        }
+    }
+
+    public Registry getRegistry() {
+        return registry;
+    }
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
+    }
+
+    private class StringArrayComboBoxEditor extends DefaultCellEditor {
+        private static final long serialVersionUID = -304464739219209395L;
+
+        public StringArrayComboBoxEditor(Object[] items) {
+            super(new JComboBox(items));
+        }
+    }
 }

@@ -157,7 +157,7 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
 
         } else {
             notifier.serviceFinished(super.getOutputs());
-        }        
+        }
         return success;
     }
 

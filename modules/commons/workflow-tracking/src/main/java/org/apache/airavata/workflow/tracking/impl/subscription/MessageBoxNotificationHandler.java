@@ -172,8 +172,8 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
         } else {
             if (msgBoxAddr.getAllReferenceParameters() == null)
                 throw new MsgBrokerClientException("Invalid Message Box EPR, no reference parameters found");
-            String msgBoxId = msgBoxAddr.getAllReferenceParameters()
-                    .get(MsgBoxQNameConstants.MSG_BOXID_QNAME).getText();
+            String msgBoxId = msgBoxAddr.getAllReferenceParameters().get(MsgBoxQNameConstants.MSG_BOXID_QNAME)
+                    .getText();
             if (msgBoxId == null)
                 throw new MsgBrokerClientException("Invalid Message Box EPR, reference parameter MsgBoxAddr is missing");
             String format = msgBoxEventSink.endsWith("/") ? "%sclientid/%s" : "%s/clientid/%s";

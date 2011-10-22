@@ -48,9 +48,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This generic service implementation will load Registry service and Data
- * Catalog from property file using (Apache Commons-Configuration). It selects
- * provider and execute it base on execution context.
+ * This generic service implementation will load Registry service and Data Catalog from property file using (Apache
+ * Commons-Configuration). It selects provider and execute it base on execution context.
  * 
  */
 public class PropertiesBasedServiceImpl extends AbstractSimpleService {
@@ -127,9 +126,8 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.apache.airavata.core.gfac.services.GenericService#init(org.apache
-     * .airavata.core.gfac.context. InvocationContext)
+     * @see org.apache.airavata.core.gfac.services.GenericService#init(org.apache .airavata.core.gfac.context.
+     * InvocationContext)
      */
     public void init() throws GfacException {
         try {
@@ -151,9 +149,8 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.apache.airavata.core.gfac.services.GenericService#dispose(org.apache
-     * .airavata.core.gfac.context. InvocationContext)
+     * @see org.apache.airavata.core.gfac.services.GenericService#dispose(org.apache .airavata.core.gfac.context.
+     * InvocationContext)
      */
     public void dispose() throws GfacException {
     }
@@ -235,10 +232,10 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                     map = null;
 
                 try {
-                	//TODO pass the url of the registry as the first parameter
-                    this.registryService = new JCRRegistry(null,jcrClass, userName, password, map);
+                    // TODO pass the url of the registry as the first parameter
+                    this.registryService = new JCRRegistry(null, jcrClass, userName, password, map);
                 } catch (javax.jcr.RepositoryException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
                 }
 
                 log.info("Default registry service is created");
@@ -258,9 +255,8 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.apache.airavata.core.gfac.services.GenericService#getScheduler(org
-     * .apache.airavata.core.gfac.context .InvocationContext)
+     * @see org.apache.airavata.core.gfac.services.GenericService#getScheduler(org .apache.airavata.core.gfac.context
+     * .InvocationContext)
      */
     public Scheduler getScheduler(InvocationContext context) throws ServiceException {
         String className = null;
@@ -295,9 +291,8 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.apache.airavata.core.gfac.services.GenericService#getPreExecutionSteps
-     * (org.ogce.gfac .context.InvocationContext)
+     * @see org.apache.airavata.core.gfac.services.GenericService#getPreExecutionSteps (org.ogce.gfac
+     * .context.InvocationContext)
      */
     public PreExecuteChain[] getPreExecutionSteps(InvocationContext context) throws ServiceException {
         if (this.preChain == null) {
@@ -310,9 +305,8 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.apache.airavata.core.gfac.services.GenericService#getPostExecuteSteps
-     * (org.ogce.gfac .context.InvocationContext)
+     * @see org.apache.airavata.core.gfac.services.GenericService#getPostExecuteSteps (org.ogce.gfac
+     * .context.InvocationContext)
      */
     public PostExecuteChain[] getPostExecuteSteps(InvocationContext context) throws ServiceException {
         if (this.postChain == null) {
@@ -325,8 +319,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.apache.airavata.core.gfac.services.impl.OGCEGenericService#getDataChains
+     * @see org.apache.airavata.core.gfac.services.impl.OGCEGenericService#getDataChains
      * (org.apache.airavata.core.gfac.context .InvocationContext)
      */
     public DataServiceChain[] getDataChains(InvocationContext context) throws ServiceException {

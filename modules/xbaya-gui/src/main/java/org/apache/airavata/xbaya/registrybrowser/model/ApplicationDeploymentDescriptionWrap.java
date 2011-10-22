@@ -10,56 +10,56 @@ import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveExcepti
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 
 public class ApplicationDeploymentDescriptionWrap {
-	private ApplicationDeploymentDescription applicationDeploymentDescription;
-	private String service;
-	private String host;
-	private Registry registry;
-	
-	public ApplicationDeploymentDescriptionWrap(Registry registry, ApplicationDeploymentDescription applicationDeploymentDescription, String service, String host){
-		setApplicationDeploymentDescription(applicationDeploymentDescription);
-		setService(service);
-		setHost(host);
-		setRegistry(registry);
-	}
+    private ApplicationDeploymentDescription applicationDeploymentDescription;
+    private String service;
+    private String host;
+    private Registry registry;
 
-	public ApplicationDeploymentDescription getDescription() {
-		return applicationDeploymentDescription;
-	}
+    public ApplicationDeploymentDescriptionWrap(Registry registry,
+            ApplicationDeploymentDescription applicationDeploymentDescription, String service, String host) {
+        setApplicationDeploymentDescription(applicationDeploymentDescription);
+        setService(service);
+        setHost(host);
+        setRegistry(registry);
+    }
 
-	public void setApplicationDeploymentDescription(
-			ApplicationDeploymentDescription applicationDeploymentDescription) {
-		this.applicationDeploymentDescription = applicationDeploymentDescription;
-	}
+    public ApplicationDeploymentDescription getDescription() {
+        return applicationDeploymentDescription;
+    }
 
-	public String getService() {
-		return service;
-	}
-	
-	public ServiceDescription getServiceDescription() throws PathNotFoundException, ServiceDescriptionRetrieveException{
-		return getRegistry().getServiceDescription(getService());
-	}
-	
-	public void setService(String service) {
-		this.service = service;
-	}
+    public void setApplicationDeploymentDescription(ApplicationDeploymentDescription applicationDeploymentDescription) {
+        this.applicationDeploymentDescription = applicationDeploymentDescription;
+    }
 
-	public String getHost() {
-		return host;
-	}
-	
-	public HostDescription getHostDescription() throws PathNotFoundException, HostDescriptionRetrieveException{
-		return getRegistry().getHostDescription(getHost());
-	}
+    public String getService() {
+        return service;
+    }
 
-	public void setHost(String host) {
-		this.host = host;
-	}
+    public ServiceDescription getServiceDescription() throws PathNotFoundException, ServiceDescriptionRetrieveException {
+        return getRegistry().getServiceDescription(getService());
+    }
 
-	public Registry getRegistry() {
-		return registry;
-	}
+    public void setService(String service) {
+        this.service = service;
+    }
 
-	public void setRegistry(Registry registry) {
-		this.registry = registry;
-	}
+    public String getHost() {
+        return host;
+    }
+
+    public HostDescription getHostDescription() throws PathNotFoundException, HostDescriptionRetrieveException {
+        return getRegistry().getHostDescription(getHost());
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public Registry getRegistry() {
+        return registry;
+    }
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
+    }
 }

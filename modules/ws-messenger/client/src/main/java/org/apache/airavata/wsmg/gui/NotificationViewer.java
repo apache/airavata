@@ -37,8 +37,8 @@ public class NotificationViewer {
     public NotificationViewer() {
         NotificationViewerFrame frame = new NotificationViewerFrame();
         /*
-         * Validate frames that have preset sizes Pack frames that have useful
-         * preferred size info, e.g. from their layout
+         * Validate frames that have preset sizes Pack frames that have useful preferred size info, e.g. from their
+         * layout
          */
         if (packFrame) {
             frame.pack();

@@ -33,7 +33,7 @@ public interface WsmgStorage {
     int insert(SubscriptionState subscription);
 
     int delete(String subscriptionId);
-    
+
     void dispose();
-    
+
 }

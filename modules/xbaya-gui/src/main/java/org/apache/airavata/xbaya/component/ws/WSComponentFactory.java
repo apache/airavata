@@ -74,15 +74,15 @@ public class WSComponentFactory {
      */
     public static List<WSComponent> createComponents(WsdlDefinitions wsdl) throws ComponentException {
         List<WSComponent> components = new ArrayList<WSComponent>();
-        try{
+        try {
             QName portTypeQName = WSDLUtil.getFirstPortTypeQName(wsdl);
             WsdlPortType portType = wsdl.getPortType(portTypeQName.getLocalPart());
-        for (WsdlPortTypeOperation operation : portType.operations()) {
-            String operationName = operation.getOperationName();
-            WSComponent component = createComponent(wsdl, portTypeQName, operationName);
-            components.add(component);
-        }
-        }catch (Exception e){
+            for (WsdlPortTypeOperation operation : portType.operations()) {
+                String operationName = operation.getOperationName();
+                WSComponent component = createComponent(wsdl, portTypeQName, operationName);
+                components.add(component);
+            }
+        } catch (Exception e) {
             throw new ComponentException(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
         }
         return components;

@@ -21,7 +21,6 @@
 
 package org.apache.airavata.wsmg.commons.storage;
 
-
 public interface WsmgQueue {
 
     void cleanup();
@@ -29,7 +28,7 @@ public interface WsmgQueue {
     void enqueue(Object object, String trackId);
 
     Object blockingDequeue() throws InterruptedException;
-    
+
     void dispose();
-    
+
 }

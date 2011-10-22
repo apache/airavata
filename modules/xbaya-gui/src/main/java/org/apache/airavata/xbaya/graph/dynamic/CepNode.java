@@ -97,7 +97,6 @@ public class CepNode extends NodeImpl implements PortAddable {
         GraphUtil.validateConnection(edge);
     }
 
-
     public void setName(String name) {
         super.setName(name);
         this.createID();

@@ -99,8 +99,7 @@ public class JythonLibraryTest extends TestCase {
         Object output2 = adderInvoker2.getOutput("z");
         logger.info("output2 = " + output2);
 
-        Invoker multiplierInvoker = new GenericInvoker(null, multiplierWSDLLoc, "multiplier", null, null,
-                notifier);
+        Invoker multiplierInvoker = new GenericInvoker(null, multiplierWSDLLoc, "multiplier", null, null, notifier);
         multiplierInvoker.setup();
         multiplierInvoker.setOperation("multiply");
         multiplierInvoker.setInput("x", output1);

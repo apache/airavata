@@ -273,7 +273,6 @@ public class TavernaRunnerWindow {
             }
         }.start();
 
-
         hide();
     }
 }

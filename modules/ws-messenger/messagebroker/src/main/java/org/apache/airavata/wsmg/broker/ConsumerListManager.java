@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class ConsumerListManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ConsumerListManager.class);
-    
+
     protected Map<String, ConsumerList> token2ConsumerListMap = new HashMap<String, ConsumerList>();
 
     protected Map<String, String> subId2Token = new HashMap<String, String>();

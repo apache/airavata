@@ -25,8 +25,8 @@ import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ExtensionException;
 
 /**
- * The implementation of Chain of Responsibility with twist. The item in the
- * chain can stop the process by return <code>true</code> from execution method.
+ * The implementation of Chain of Responsibility with twist. The item in the chain can stop the process by return
+ * <code>true</code> from execution method.
  * 
  */
 public abstract class ExitableChain extends Chain<ExitableChain> {

@@ -57,7 +57,8 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
         __operation = new org.apache.axis2.description.OutInAxisOperation();
 
-        __operation.setName(new javax.xml.namespace.QName("http://interpretor.xbaya.airavata.apache.org", "launchWorkflow"));
+        __operation.setName(new javax.xml.namespace.QName("http://interpretor.xbaya.airavata.apache.org",
+                "launchWorkflow"));
         _service.addOperation(__operation);
 
         _operations[0] = __operation;
@@ -132,8 +133,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
     public java.lang.String launchWorkflow(
 
     java.lang.String workflowAsString1, java.lang.String topic2, java.lang.String password3,
-            java.lang.String username4, NameValue[] inputs5,
-            NameValue[] configurations6)
+            java.lang.String username4, NameValue[] inputs5, NameValue[] configurations6)
 
     throws java.rmi.RemoteException
 
@@ -154,16 +154,10 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
             // create SOAP envelope with that payload
             org.apache.axiom.soap.SOAPEnvelope env = null;
             WorkflowInterpretorStub.LaunchWorkflow dummyWrappedType = null;
-            env = toEnvelope(
-                    getFactory(_operationClient.getOptions().getSoapVersionURI()),
-                    workflowAsString1,
-                    topic2,
-                    password3,
-                    username4,
-                    inputs5,
-                    configurations6,
-                    dummyWrappedType,
-                    optimizeContent(new javax.xml.namespace.QName("http://interpretor.xbaya.airavata.apache.org", "launchWorkflow")));
+            env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()), workflowAsString1, topic2,
+                    password3, username4, inputs5, configurations6, dummyWrappedType,
+                    optimizeContent(new javax.xml.namespace.QName("http://interpretor.xbaya.airavata.apache.org",
+                            "launchWorkflow")));
 
             // adding SOAP soap_headers
             _serviceClient.addHeadersToEnvelope(env);
@@ -250,8 +244,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
     public void startlaunchWorkflow(
 
     java.lang.String workflowAsString1, java.lang.String topic2, java.lang.String password3,
-            java.lang.String username4, NameValue[] inputs5,
-            NameValue[] configurations6,
+            java.lang.String username4, NameValue[] inputs5, NameValue[] configurations6,
 
             final WorkflowInterpretorCallbackHandler callback)
 
@@ -273,7 +266,8 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
         WorkflowInterpretorStub.LaunchWorkflow dummyWrappedType = null;
         env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()), workflowAsString1, topic2,
                 password3, username4, inputs5, configurations6, dummyWrappedType,
-                optimizeContent(new javax.xml.namespace.QName("http://interpretor.xbaya.airavata.apache.org", "launchWorkflow")));
+                optimizeContent(new javax.xml.namespace.QName("http://interpretor.xbaya.airavata.apache.org",
+                        "launchWorkflow")));
 
         // adding SOAP soap_headers
         _serviceClient.addHeadersToEnvelope(env);
@@ -554,7 +548,8 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
             if (serializeType) {
 
-                java.lang.String namespacePrefix = registerPrefix(xmlWriter, "http://interpretor.xbaya.airavata.apache.org");
+                java.lang.String namespacePrefix = registerPrefix(xmlWriter,
+                        "http://interpretor.xbaya.airavata.apache.org");
                 if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)) {
                     writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
                             + ":launchWorkflowResponse", xmlWriter);
@@ -1251,7 +1246,8 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
             if (serializeType) {
 
-                java.lang.String namespacePrefix = registerPrefix(xmlWriter, "http://interpretor.xbaya.airavata.apache.org");
+                java.lang.String namespacePrefix = registerPrefix(xmlWriter,
+                        "http://interpretor.xbaya.airavata.apache.org");
                 if ((namespacePrefix != null) && (namespacePrefix.trim().length() > 0)) {
                     writeAttribute("xsi", "http://www.w3.org/2001/XMLSchema-instance", "type", namespacePrefix
                             + ":launchWorkflow", xmlWriter);
@@ -2082,9 +2078,8 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
     private org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory,
             java.lang.String param1, java.lang.String param2, java.lang.String param3, java.lang.String param4,
-            NameValue[] param5, NameValue[] param6,
-            WorkflowInterpretorStub.LaunchWorkflow dummyWrappedType, boolean optimizeContent)
-            throws org.apache.axis2.AxisFault {
+            NameValue[] param5, NameValue[] param6, WorkflowInterpretorStub.LaunchWorkflow dummyWrappedType,
+            boolean optimizeContent) throws org.apache.axis2.AxisFault {
 
         try {
             WorkflowInterpretorStub.LaunchWorkflow wrappedType = new WorkflowInterpretorStub.LaunchWorkflow();

@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.common.workflow.execution.context;
 
 import org.apache.airavata.common.utils.XMLUtil;
@@ -40,15 +40,16 @@ public class WorkflowContextHeaderBuilder {
 
     private WorkflowSchedulingContextDocument.WorkflowSchedulingContext workflowSchedulingContext = null;
 
-
-    public WorkflowContextHeaderBuilder(String brokerUrl, String gfacUrl, String registryUrl, String experimentId, String workflowId) {
+    public WorkflowContextHeaderBuilder(String brokerUrl, String gfacUrl, String registryUrl, String experimentId,
+            String workflowId) {
         this.contextHeader = ContextHeaderDocument.ContextHeader.Factory.newInstance();
 
         this.soaServiceEprs = SoaServiceEprsDocument.SoaServiceEprs.Factory.newInstance();
         this.soaServiceEprs.setGfacUrl(gfacUrl);
         this.soaServiceEprs.setRegistryUrl(registryUrl);
 
-        this.workflowMonitoringContext = WorkflowMonitoringContextDocument.WorkflowMonitoringContext.Factory.newInstance();
+        this.workflowMonitoringContext = WorkflowMonitoringContextDocument.WorkflowMonitoringContext.Factory
+                .newInstance();
         this.workflowMonitoringContext.setEventPublishEpr(brokerUrl);
         this.workflowMonitoringContext.setWorkflowInstanceId(workflowId);
         this.workflowMonitoringContext.setExperimentId(experimentId);
@@ -57,22 +58,24 @@ public class WorkflowContextHeaderBuilder {
         this.contextHeader.setSoaServiceEprs(this.soaServiceEprs);
 
         this.contextHeader.setSecurityContext(SecurityContextDocument.SecurityContext.Factory.newInstance());
-        this.contextHeader.setWorkflowSchedulingContext(WorkflowSchedulingContextDocument.WorkflowSchedulingContext.Factory.newInstance());
+        this.contextHeader
+                .setWorkflowSchedulingContext(WorkflowSchedulingContextDocument.WorkflowSchedulingContext.Factory
+                        .newInstance());
     }
 
-    public WorkflowContextHeaderBuilder setWorkflowMonitoringContext(WorkflowMonitoringContextDocument.WorkflowMonitoringContext workflowMonitoringContext) {
+    public WorkflowContextHeaderBuilder setWorkflowMonitoringContext(
+            WorkflowMonitoringContextDocument.WorkflowMonitoringContext workflowMonitoringContext) {
         this.workflowMonitoringContext = workflowMonitoringContext;
         return this;
     }
-
 
     public WorkflowContextHeaderBuilder setSecurityContext(SecurityContextDocument.SecurityContext securityContext) {
         this.securityContext = securityContext;
         return this;
     }
 
-
-    public WorkflowContextHeaderBuilder setWorkflowOutputDataHandling(WorkflowOutputDataHandlingDocument.WorkflowOutputDataHandling workflowOutputDataHandling) {
+    public WorkflowContextHeaderBuilder setWorkflowOutputDataHandling(
+            WorkflowOutputDataHandlingDocument.WorkflowOutputDataHandling workflowOutputDataHandling) {
         this.workflowOutputDataHandling = workflowOutputDataHandling;
         return this;
     }
@@ -87,7 +90,8 @@ public class WorkflowContextHeaderBuilder {
         return this;
     }
 
-    public WorkflowContextHeaderBuilder setWorkflowSchedulingContext(WorkflowSchedulingContextDocument.WorkflowSchedulingContext workflowSchedulingContext) {
+    public WorkflowContextHeaderBuilder setWorkflowSchedulingContext(
+            WorkflowSchedulingContextDocument.WorkflowSchedulingContext workflowSchedulingContext) {
         this.workflowSchedulingContext = workflowSchedulingContext;
         return this;
     }
@@ -115,7 +119,6 @@ public class WorkflowContextHeaderBuilder {
     public String getUserIdentifier() {
         return userIdentifier;
     }
-
 
     public WorkflowMonitoringContextDocument.WorkflowMonitoringContext getWorkflowMonitoringContext() {
         return workflowMonitoringContext;
@@ -186,11 +189,13 @@ public class WorkflowContextHeaderBuilder {
         return this;
     }
 
-    public WorkflowContextHeaderBuilder setGridMyProxyRepository(String myProxyServer, String userName, String password, int lifeTimeInHours) {
+    public WorkflowContextHeaderBuilder setGridMyProxyRepository(String myProxyServer, String userName,
+            String password, int lifeTimeInHours) {
         if (this.securityContext == null) {
             this.securityContext = SecurityContextDocument.SecurityContext.Factory.newInstance();
         }
-        SecurityContextDocument.SecurityContext.GridMyproxyRepository gridMyproxyRepository = this.securityContext.addNewGridMyproxyRepository();
+        SecurityContextDocument.SecurityContext.GridMyproxyRepository gridMyproxyRepository = this.securityContext
+                .addNewGridMyproxyRepository();
         gridMyproxyRepository.setMyproxyServer(myProxyServer);
         gridMyproxyRepository.setUsername(userName);
         gridMyproxyRepository.setPassword(password);
@@ -202,7 +207,8 @@ public class WorkflowContextHeaderBuilder {
         if (this.securityContext == null) {
             this.securityContext = SecurityContextDocument.SecurityContext.Factory.newInstance();
         }
-        SecurityContextDocument.SecurityContext.SshAuthentication sshAuthentication = this.securityContext.addNewSshAuthentication();
+        SecurityContextDocument.SecurityContext.SshAuthentication sshAuthentication = this.securityContext
+                .addNewSshAuthentication();
         sshAuthentication.setAccessKeyId(accessKeyId);
         sshAuthentication.setSecretAccessKey(secretKeyId);
         return this;
@@ -212,7 +218,8 @@ public class WorkflowContextHeaderBuilder {
         if (this.securityContext == null) {
             this.securityContext = SecurityContextDocument.SecurityContext.Factory.newInstance();
         }
-        SecurityContextDocument.SecurityContext.CredentialManagementService credentialManagementService = this.securityContext.addNewCredentialManagementService();
+        SecurityContextDocument.SecurityContext.CredentialManagementService credentialManagementService = this.securityContext
+                .addNewCredentialManagementService();
         credentialManagementService.setScmsUrl(scmUrl);
         credentialManagementService.setExecutionSessionId(securitySessionId);
         return this;
@@ -222,29 +229,36 @@ public class WorkflowContextHeaderBuilder {
         if (this.securityContext == null) {
             this.securityContext = SecurityContextDocument.SecurityContext.Factory.newInstance();
         }
-        SecurityContextDocument.SecurityContext.AmazonWebservices amazonWebservices = this.securityContext.addNewAmazonWebservices();
+        SecurityContextDocument.SecurityContext.AmazonWebservices amazonWebservices = this.securityContext
+                .addNewAmazonWebservices();
         amazonWebservices.setSecretAccessKey(accessKeyId);
         amazonWebservices.setSecretAccessKey(secretAccesKey);
         return this;
     }
 
-    public WorkflowContextHeaderBuilder addApplicationOutputDataHandling(String outputDir, String outputDataRegistry, boolean dataPersistence) {
+    public WorkflowContextHeaderBuilder addApplicationOutputDataHandling(String outputDir, String outputDataRegistry,
+            boolean dataPersistence) {
         if (this.workflowOutputDataHandling == null) {
-            this.workflowOutputDataHandling = WorkflowOutputDataHandlingDocument.WorkflowOutputDataHandling.Factory.newInstance();
+            this.workflowOutputDataHandling = WorkflowOutputDataHandlingDocument.WorkflowOutputDataHandling.Factory
+                    .newInstance();
         }
-        ApplicationOutputDataHandlingDocument.ApplicationOutputDataHandling applicationOutputDataHandling = this.workflowOutputDataHandling.addNewApplicationOutputDataHandling();
+        ApplicationOutputDataHandlingDocument.ApplicationOutputDataHandling applicationOutputDataHandling = this.workflowOutputDataHandling
+                .addNewApplicationOutputDataHandling();
         applicationOutputDataHandling.setOutputDataDirectory(outputDir);
         applicationOutputDataHandling.setDataRegistryUrl(outputDataRegistry);
         applicationOutputDataHandling.setDataPersistance(dataPersistence);
         return this;
     }
 
-    public WorkflowContextHeaderBuilder addApplicationSchedulingContext
-            (String workflowNodeId, String serviceId, String hostName, boolean wsGramPreffered, String gateKeepersEpr, String jobManager, int cpuCount, int nodeCount, String qName, int maxWalTime) {
+    public WorkflowContextHeaderBuilder addApplicationSchedulingContext(String workflowNodeId, String serviceId,
+            String hostName, boolean wsGramPreffered, String gateKeepersEpr, String jobManager, int cpuCount,
+            int nodeCount, String qName, int maxWalTime) {
         if (this.workflowSchedulingContext == null) {
-            this.workflowSchedulingContext = WorkflowSchedulingContextDocument.WorkflowSchedulingContext.Factory.newInstance();
+            this.workflowSchedulingContext = WorkflowSchedulingContextDocument.WorkflowSchedulingContext.Factory
+                    .newInstance();
         }
-        ApplicationSchedulingContextDocument.ApplicationSchedulingContext applicationSchedulingContext = this.workflowSchedulingContext.addNewApplicationSchedulingContext();
+        ApplicationSchedulingContextDocument.ApplicationSchedulingContext applicationSchedulingContext = this.workflowSchedulingContext
+                .addNewApplicationSchedulingContext();
         applicationSchedulingContext.setWorkflowNodeId(workflowNodeId);
         applicationSchedulingContext.setCpuCount(cpuCount);
         applicationSchedulingContext.setGatekeeperEpr(gateKeepersEpr);

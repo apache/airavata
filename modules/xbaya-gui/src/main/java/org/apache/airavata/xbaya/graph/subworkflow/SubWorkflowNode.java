@@ -73,7 +73,6 @@ public class SubWorkflowNode extends NodeImpl {
         GraphUtil.validateConnection(edge);
     }
 
-
     /**
      * @param workflow
      */

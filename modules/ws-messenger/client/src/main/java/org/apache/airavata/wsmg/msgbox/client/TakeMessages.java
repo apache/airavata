@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class can be used to invoke takeMessages operation of msgBoxService and returns the resultant operation status
- *
+ * 
  */
 public class TakeMessages {
     private static final Logger logger = LoggerFactory.getLogger(TakeMessages.class);
@@ -46,7 +46,6 @@ public class TakeMessages {
     protected EndpointReference msgBoxEndPointReference;
     protected long timeoutInMilliSeconds;
     private String msgBoxId;
-    
 
     public TakeMessages(EndpointReference msgBoxEpr, long timeout) throws AxisFault {
         this.msgBoxEndPointReference = msgBoxEpr;
@@ -85,8 +84,8 @@ public class TakeMessages {
         } finally {
             serviceClient.cleanupTransport();
         }
-        
-        return (Iterator<OMElement>)responseMessage.getFirstElement().getChildren();
+
+        return (Iterator<OMElement>) responseMessage.getFirstElement().getChildren();
     }
 
     private OMElement createMessageEl(String msgboxid) throws AxisFault {

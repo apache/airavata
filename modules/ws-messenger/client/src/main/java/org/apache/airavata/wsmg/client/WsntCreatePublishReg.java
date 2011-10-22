@@ -66,9 +66,9 @@ public class WsntCreatePublishReg extends WidgetStub {
 
         OMElement publisherRef = null;
 
-        publisherRef = EndpointReferenceHelper.toOM(factory, omEndpointReference, new QName(
-                NameSpaceConstants.WSBR_NS.getNamespaceURI(), "PublisherReference"), NameSpaceConstants.WSA_NS
-                .getNamespaceURI());
+        publisherRef = EndpointReferenceHelper.toOM(factory, omEndpointReference,
+                new QName(NameSpaceConstants.WSBR_NS.getNamespaceURI(), "PublisherReference"),
+                NameSpaceConstants.WSA_NS.getNamespaceURI());
 
         message.addChild(publisherRef);
 
@@ -77,8 +77,8 @@ public class WsntCreatePublishReg extends WidgetStub {
         OMElement responseMessage = client.sendReceive(message);
         client.cleanupTransport();
 
-        OMElement publisherRegistrationRef = responseMessage.getFirstChildWithName(new QName(
-                NameSpaceConstants.WSBR_NS.getNamespaceURI(), "PublisherRegistrationReference"));
+        OMElement publisherRegistrationRef = responseMessage.getFirstChildWithName(new QName(NameSpaceConstants.WSBR_NS
+                .getNamespaceURI(), "PublisherRegistrationReference"));
 
         EndpointReference epr = EndpointReferenceHelper.fromOM(publisherRegistrationRef);
         return new WsrfResourceStub(epr, getTimeoutInMilliSeconds());

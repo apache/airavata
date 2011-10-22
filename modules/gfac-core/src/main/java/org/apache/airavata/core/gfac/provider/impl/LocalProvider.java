@@ -132,13 +132,13 @@ public class LocalProvider extends AbstractProvider {
         ShellApplicationDeploymentType.Env.Entry[] env = app.getEnv().getEntryArray();
 
         Map<String, String> nv = null;
-        for (int i=0; i<env.length; i++) {
+        for (int i = 0; i < env.length; i++) {
             String key = app.getEnv().getEntryArray(i).getKey();
             String value = app.getEnv().getEntryArray(i).getValue();
-            nv.put(key,value);
+            nv.put(key, value);
         }
 
-        if((app.getEnv() != null) && (app.getEnv().getEntryArray().length != 0)){
+        if ((app.getEnv() != null) && (app.getEnv().getEntryArray().length != 0)) {
             builder.environment().putAll(nv);
         }
 
@@ -181,9 +181,8 @@ public class LocalProvider extends AbstractProvider {
             t2.join();
 
             /*
-             * check return value. usually not very helpful to draw conclusions
-             * based on return values so don't bother. just provide warning in
-             * the log messages
+             * check return value. usually not very helpful to draw conclusions based on return values so don't bother.
+             * just provide warning in the log messages
              */
             if (returnValue != 0) {
                 log.error("Process finished with non zero return value. Process may have failed");

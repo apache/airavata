@@ -25,16 +25,15 @@ import java.util.Iterator;
 
 /**
  * 
- * MessageContext represents a message that could be used by all provider or in
- * specific provider. Mostly, this context will be stored in the format of <key,
- * value> pair. For example, MessageContext<AbstractParameter> represents a
+ * MessageContext represents a message that could be used by all provider or in specific provider. Mostly, this context
+ * will be stored in the format of <key, value> pair. For example, MessageContext<AbstractParameter> represents a
  * message for input or output as a parameter to the service.
  * 
  * @param <T>
  *            class that associate with this message
  */
-public interface MessageContext<T> {     
-    
+public interface MessageContext<T> {
+
     /**
      * Get list of names in the context
      * 

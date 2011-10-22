@@ -31,13 +31,14 @@ import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * This class can be used to invoke destroyMsgBox operation of msgBoxService and returns the resultant operation status
  * as EndpointReference
  */
 public class StoreMessage {
     private static final Logger logger = LoggerFactory.getLogger(StoreMessage.class);
-    
+
     protected EndpointReference msgBoxEndPointReference;
     protected long timeoutInMilliSeconds;
 
@@ -45,7 +46,7 @@ public class StoreMessage {
         this.msgBoxEndPointReference = msgBoxEpr;
         this.timeoutInMilliSeconds = timeout;
         String address = msgBoxEpr.getAddress();
-        
+
         /*
          * Validate
          */
@@ -78,7 +79,7 @@ public class StoreMessage {
             throw AxisFault.makeFault(new RuntimeException("no response recieved for subscription message"));
         }
         return responseMessage.getFirstElement().getText();
-    }   
+    }
 
     private ServiceClient createServiceClient() throws AxisFault {
         String uuid = UUIDGenerator.getUUID();

@@ -112,15 +112,14 @@ public class ODEScriptFiler {
                 File bpelFile = new File(path + XBayaConstants.BPEL_SUFFIX);
                 // Add ".wsdl" at the end of the file name
                 File wsdlFile = new File(path + XBayaConstants.WSDL_SUFFIX);
-                //todo this has to fix, for compilation purpose passing dummy value instead of xregistry url
+                // todo this has to fix, for compilation purpose passing dummy value instead of xregistry url
                 URI temp = null;
                 try {
                     temp = new URI("temp");
                 } catch (URISyntaxException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
                 }
-                process = wf.getOdeProcess(WSDLUtil.appendWSDLQuary(temp),
-                        this.engine.getConfiguration().getODEURL());
+                process = wf.getOdeProcess(WSDLUtil.appendWSDLQuary(temp), this.engine.getConfiguration().getODEURL());
                 String processString = process.xmlStringPretty();
                 FileWriter writer = new FileWriter(bpelFile);
                 writer.write(processString);

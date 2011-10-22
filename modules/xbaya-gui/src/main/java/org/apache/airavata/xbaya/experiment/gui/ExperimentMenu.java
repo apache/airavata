@@ -122,12 +122,12 @@ public class ExperimentMenu {
 
     private void createLoadWorkflowfromXRegistryItem() {
         this.loadWorkflowfromRegistryItem = new JMenuItem("Load Workflow from Registry");
-       this.loadWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
+        this.loadWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 new RegistryLoaderWindow(ExperimentMenu.this.engine).show();
 
             }
-       });
+        });
     }
 
     private void createSaveWorkflowtoXRegistryItem() {
@@ -153,7 +153,6 @@ public class ExperimentMenu {
             }
         });
     }
-
 
     private void createLaunchXBayaInterpreterItem() {
         this.launchXBayaInterpreterItem = new JMenuItem("Launch Workflow to XBaya Interpreter Server");

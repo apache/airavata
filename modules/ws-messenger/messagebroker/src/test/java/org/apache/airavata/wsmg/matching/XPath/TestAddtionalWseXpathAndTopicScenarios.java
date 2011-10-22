@@ -96,27 +96,29 @@ public class TestAddtionalWseXpathAndTopicScenarios extends TestCase {
 
             String brokerEpr = "http://localhost:" + TestUtilServer.TESTING_PORT + "/axis2/services/EventingService";
 
-            WseMsgBrokerClient topicOnlyReceiverApi = new WseMsgBrokerClient();                      
+            WseMsgBrokerClient topicOnlyReceiverApi = new WseMsgBrokerClient();
             topicOnlyReceiverApi.init(brokerEpr);
             NotificationReciever topicOnlyMsgReceiver = new NotificationReciever("Topic Only");
             String[] topicConsumerEPRs = topicOnlyReceiverApi.startConsumerService(consumerPort, topicOnlyMsgReceiver);
             assertTrue("invalid consumer eprs returned", topicConsumerEPRs.length > 0);
             String topicOnlySubId = topicOnlyReceiverApi.subscribe(topicConsumerEPRs[0], topic, null);
-            System.out.println("Topic only subscription ID: " + topicOnlySubId);            
+            System.out.println("Topic only subscription ID: " + topicOnlySubId);
 
             WseMsgBrokerClient xpathAndTopicReceiverApi = new WseMsgBrokerClient();
             xpathAndTopicReceiverApi.init(brokerEpr);
             NotificationReciever topicAndXpathMsgReceiver = new NotificationReciever("Topic And Xpath");
-            String[] topicAndXpathConsumerEPRs = xpathAndTopicReceiverApi.startConsumerService(consumerPort + 1, topicAndXpathMsgReceiver);
+            String[] topicAndXpathConsumerEPRs = xpathAndTopicReceiverApi.startConsumerService(consumerPort + 1,
+                    topicAndXpathMsgReceiver);
             assertTrue("invalid consumer eprs returned", topicAndXpathConsumerEPRs.length > 0);
-            String topicAndXpathSubId = xpathAndTopicReceiverApi.subscribe(topicAndXpathConsumerEPRs[0], topic, xpathExpression);
+            String topicAndXpathSubId = xpathAndTopicReceiverApi.subscribe(topicAndXpathConsumerEPRs[0], topic,
+                    xpathExpression);
             System.out.println("Xpath and Topic subscription ID: " + topicAndXpathSubId);
-            
+
             WseMsgBrokerClient senderApi = new WseMsgBrokerClient();
-            senderApi.init(brokerEpr);            
+            senderApi.init(brokerEpr);
 
             try {
-                
+
                 senderApi.publish(topic, AXIOMUtil.stringToOM(matchingMsg));
                 senderApi.publish(topic, AXIOMUtil.stringToOM(unmatchingMsg));
 
@@ -128,7 +130,7 @@ public class TestAddtionalWseXpathAndTopicScenarios extends TestCase {
                 assertTrue("xpath and topic reciever should only get one message"
                         + topicAndXpathMsgReceiver.getMsgQueue().size(),
                         topicAndXpathMsgReceiver.getMsgQueue().size() == 1);
-            } catch (XMLStreamException x){
+            } catch (XMLStreamException x) {
                 fail("Error while creating OMElement");
             } catch (InterruptedException e) {
                 fail("interrupted while waiting for message");

@@ -40,13 +40,13 @@ public abstract class Chain<T> {
         this.next = nextChain;
         return this.next;
     }
-    
+
     /**
      * Get the next item in the Chain
      * 
      * @return next items
      */
-    protected T getNext(){
+    protected T getNext() {
         return next;
     }
 

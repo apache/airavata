@@ -26,13 +26,12 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 
 /**
- * ExecutionDescription represents an application description which is used to
- * determine how to invoke an application. For example, host where an
- * application is deployed, service name, service parameters, etc.
+ * ExecutionDescription represents an application description which is used to determine how to invoke an application.
+ * For example, host where an application is deployed, service name, service parameters, etc.
  * 
  */
 public interface ExecutionDescription {
-    
+
     /**
      * Get HostDescription
      * 

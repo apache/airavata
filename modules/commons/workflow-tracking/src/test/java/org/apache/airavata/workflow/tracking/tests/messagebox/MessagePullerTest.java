@@ -57,7 +57,7 @@ public class MessagePullerTest extends TestCase {
     public static int count = 0;
     public int messages = 10;
     public static Object mutex = new Object();
-    
+
     Subscription sub;
     String AXIS_REPO;
 

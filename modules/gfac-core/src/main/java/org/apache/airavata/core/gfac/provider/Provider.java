@@ -29,8 +29,7 @@ import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.ProviderException;
 
 /**
- * Main component in GFAC. It executes an application according to
- * {@link ApplicationDeploymentDescription}.
+ * Main component in GFAC. It executes an application according to {@link ApplicationDeploymentDescription}.
  */
 public interface Provider {
 

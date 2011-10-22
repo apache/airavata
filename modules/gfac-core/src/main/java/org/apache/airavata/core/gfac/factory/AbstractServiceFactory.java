@@ -28,12 +28,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Abstract Factory to create a generic service
- *
+ * 
  */
 public abstract class AbstractServiceFactory {
 
     protected final Logger log = LoggerFactory.getLogger(AbstractServiceFactory.class);
-        
+
     /**
      * Create and initialize a generic service
      * 

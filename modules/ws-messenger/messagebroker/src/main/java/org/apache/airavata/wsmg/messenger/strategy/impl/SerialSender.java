@@ -39,13 +39,13 @@ import org.slf4j.LoggerFactory;
 public class SerialSender implements SendingStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(SerialSender.class);
-    
-    public void init() {   
+
+    public void init() {
     }
-    
+
     public void shutdown() {
-    }   
-    
+    }
+
     public void addMessageToSend(OutGoingMessage outMessage, Deliverable deliverable) {
         sendNotification(outMessage, deliverable);
     }
@@ -60,7 +60,7 @@ public class SerialSender implements SendingStrategy {
 
         List<ConsumerInfo> consumerInfoList = outGoingMessage.getConsumerInfoList();
         AdditionalMessageContent soapHeader = outGoingMessage.getAdditionalMessageContent();
-        
+
         try {
             OMElement messgae2Send = CommonRoutines.reader2OMElement(new StringReader(messageString));
 
@@ -70,6 +70,6 @@ public class SerialSender implements SendingStrategy {
 
         } catch (XMLStreamException e) {
             log.error(e.getMessage(), e);
-        }        
+        }
     }
 }

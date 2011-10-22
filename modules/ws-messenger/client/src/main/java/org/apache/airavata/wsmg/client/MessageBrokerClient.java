@@ -37,7 +37,6 @@ public interface MessageBrokerClient {
      */
     public void init(String brokerLocation);
 
-
     /**
      * 
      * @param subscriptionId
@@ -90,15 +89,13 @@ public interface MessageBrokerClient {
     public String subscribeMsgBox(EndpointReference msgBoxEpr, String topicExpression, String xpathExpression,
             long expireTime) throws MsgBrokerClientException;
 
-
-
     /**
      * This method can be used to shutdown the consumer server started
      */
     public void shutdownConsumerService();
 
     /**
-     *
+     * 
      * @param port
      * @param handler
      * @return
@@ -107,7 +104,7 @@ public interface MessageBrokerClient {
     public String[] startConsumerService(int port, ConsumerNotificationHandler handler) throws MsgBrokerClientException;
 
     /**
-     *
+     * 
      * @param msgBoxAddr
      * @param handler
      * @param backoff
@@ -116,10 +113,10 @@ public interface MessageBrokerClient {
      * @throws AxisFault
      */
     public MessagePuller startPullingFromExistingMsgBox(EndpointReference msgBoxAddr, NotificationHandler handler,
-                                                        long backoff, long timeout) throws MsgBrokerClientException;
+            long backoff, long timeout) throws MsgBrokerClientException;
 
     /**
-     *
+     * 
      * @param msgBoxAddr
      * @param handler
      * @param backoff
@@ -128,34 +125,36 @@ public interface MessageBrokerClient {
      * @throws RemoteException
      */
     public MessagePuller startPullingEventsFromMsgBox(EndpointReference msgBoxAddr, NotificationHandler handler,
-                                                      long backoff, long timeout) throws MsgBrokerClientException;
+            long backoff, long timeout) throws MsgBrokerClientException;
 
     // public EndpointReference createPullMsgBox(String msgBoxServerLoc, String userAgent) throws RemoteException ;
 
     /**
-     *
+     * 
      * @param msgPuller
      */
-    public void stopPullingEventsFromMsgBox(org.apache.airavata.wsmg.client.msgbox.MessagePuller msgPuller)throws MsgBrokerClientException;
+    public void stopPullingEventsFromMsgBox(org.apache.airavata.wsmg.client.msgbox.MessagePuller msgPuller)
+            throws MsgBrokerClientException;
 
     /**
-     *
+     * 
      * @return
      */
     public String[] getConsumerServiceEndpointReference();
 
     /**
-     *
+     * 
      * @param brokerService
      * @param msgBoxEpr
      * @param topic
      * @param xpath
      * @return
      */
-    public String subscribeMsgBox(String brokerService, EndpointReference msgBoxEpr, String topic, String xpath)throws MsgBrokerClientException;
+    public String subscribeMsgBox(String brokerService, EndpointReference msgBoxEpr, String topic, String xpath)
+            throws MsgBrokerClientException;
 
     /**
-     *
+     * 
      * @param msgBoxLocation
      * @param timeout
      * @return
@@ -164,12 +163,11 @@ public interface MessageBrokerClient {
     public EndpointReference createPullMsgBox(String msgBoxLocation, long timeout) throws MsgBrokerClientException;
 
     /**
-     *
+     * 
      * @param msgBoxServerLoc
      * @return
      * @throws MsgBrokerClientException
      */
     public EndpointReference createPullMsgBox(String msgBoxServerLoc) throws MsgBrokerClientException;
-
 
 }

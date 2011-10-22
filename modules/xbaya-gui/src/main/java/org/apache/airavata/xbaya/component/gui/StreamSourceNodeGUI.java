@@ -62,7 +62,6 @@ public class StreamSourceNodeGUI extends ConfigurableNodeGUI {
         this.configurationWindow.show();
     }
 
-
     protected void setSelectedFlag(boolean flag) {
         this.selected = flag;
         if (this.selected) {
@@ -71,6 +70,5 @@ public class StreamSourceNodeGUI extends ConfigurableNodeGUI {
             this.headColor = HEAD_COLOR;
         }
     }
-
 
 }

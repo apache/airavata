@@ -86,8 +86,6 @@ import xsul.xwsif_runtime.WSIFRuntime;
 import xsul5.wsdl.WsdlDefinitions;
 import xsul5.wsdl.WsdlResolver;
 
-
-
 public class WorkflowModificationTestCase extends XBayaTestCase {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkflowModificationTestCase.class);
@@ -302,7 +300,8 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
         InvocationEntity serviceEntity = notifier.createEntity(serviceWorkflowID, serviceServiceID, serviceNodeID,
                 serviceTimestep);
         EndpointReference epr = new EndpointReference(this.configuration.getBrokerURL().toASCIIString());
-        WorkflowTrackingContext workflowContext = notifier.createTrackingContext(new Properties(),this.configuration.getBrokerURL().toASCIIString(),myWorkflowID,myServiceID,myNodeID,myTimestep);
+        WorkflowTrackingContext workflowContext = notifier.createTrackingContext(new Properties(), this.configuration
+                .getBrokerURL().toASCIIString(), myWorkflowID, myServiceID, myNodeID, myTimestep);
 
         XmlElement inputBody = (XmlElement) ((XmlElement) inputMessage).getParent();
         XmlObject inputBodyObject = XBeansUtil.xmlElementToXmlObject(inputBody);
@@ -319,7 +318,7 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
             XmlElement outputBody = (XmlElement) ((XmlElement) outputMessage).getParent();
             XmlObject outputBodyObject = XBeansUtil.xmlElementToXmlObject(outputBody);
 
-            notifier.receivedResult(workflowContext,context, null, outputBodyObject);
+            notifier.receivedResult(workflowContext, context, null, outputBodyObject);
         }
     }
 
@@ -360,7 +359,7 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
         }
 
         /**
-         *
+         * 
          * @param topic
          *            the topic to which this message was sent. This can also be retrieved from the messageObj XMlObject
          *            directly after typecasting.

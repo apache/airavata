@@ -103,7 +103,7 @@ public class MessageBoxStressTest extends TestCase {
         OMElement request = OMAbstractFactory.getOMFactory().createOMElement(new QName("foo"));
         request.setText("bar");
         ServiceClient client = null;
-        
+
         try {
             client = new ServiceClient();
             System.out.println(mesgboxUrl);

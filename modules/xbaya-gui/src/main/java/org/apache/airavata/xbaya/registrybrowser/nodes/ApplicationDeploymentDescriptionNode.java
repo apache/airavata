@@ -17,85 +17,84 @@ import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
 import org.apache.airavata.xbaya.registrybrowser.model.ApplicationDeploymentDescriptionWrap;
 
 public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNode {
-	private ApplicationDeploymentDescriptionWrap applicationDeploymentDescriptionWrap;
-	public ApplicationDeploymentDescriptionNode(ApplicationDeploymentDescriptionWrap applicationDeploymentDescriptionWrap,TreeNode parent) {
-		super(parent);
-		setApplicationDeploymentDescriptionWrap(applicationDeploymentDescriptionWrap);
-	}
+    private ApplicationDeploymentDescriptionWrap applicationDeploymentDescriptionWrap;
 
-	@Override
-	protected List<TreeNode> getChildren() {
-		return emptyList();
-	}
+    public ApplicationDeploymentDescriptionNode(
+            ApplicationDeploymentDescriptionWrap applicationDeploymentDescriptionWrap, TreeNode parent) {
+        super(parent);
+        setApplicationDeploymentDescriptionWrap(applicationDeploymentDescriptionWrap);
+    }
 
-	@Override
-	public String getCaption(boolean selected, boolean expanded, boolean leaf,
-			boolean hasFocus) {
-		return getApplicationDeploymentDescriptionWrap().getDescription().getId();
-	}
+    @Override
+    protected List<TreeNode> getChildren() {
+        return emptyList();
+    }
 
-	@Override
-	public Icon getIcon(boolean selected, boolean expanded, boolean leaf,
-			boolean hasFocus) {
-		return SwingUtil.createImageIcon("application.png");
-	}
+    @Override
+    public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+        return getApplicationDeploymentDescriptionWrap().getDescription().getId();
+    }
 
-	public ApplicationDeploymentDescriptionWrap getApplicationDeploymentDescriptionWrap() {
-		return applicationDeploymentDescriptionWrap;
-	}
+    @Override
+    public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+        return SwingUtil.createImageIcon("application.png");
+    }
 
-	public void setApplicationDeploymentDescriptionWrap(
-			ApplicationDeploymentDescriptionWrap applicationDeploymentDescriptionWrap) {
-		this.applicationDeploymentDescriptionWrap = applicationDeploymentDescriptionWrap;
-	}
+    public ApplicationDeploymentDescriptionWrap getApplicationDeploymentDescriptionWrap() {
+        return applicationDeploymentDescriptionWrap;
+    }
 
-	@Override
-	public List<String> getSupportedActions() {
-		return Arrays.asList(EditAction.ID, DeleteAction.ID);
-	}
+    public void setApplicationDeploymentDescriptionWrap(
+            ApplicationDeploymentDescriptionWrap applicationDeploymentDescriptionWrap) {
+        this.applicationDeploymentDescriptionWrap = applicationDeploymentDescriptionWrap;
+    }
 
-	public boolean triggerAction(JTree tree,String action) throws Exception{
-		if (action.equals(DeleteAction.ID)){
-			deleteApplicationDescription(tree);
-			return true;
-		}else if (action.equals(EditAction.ID)){
-			JOptionPane.showMessageDialog(null, "TODO");
-			return true;
-		} 
-		return super.triggerAction(tree, action);
-	}
+    @Override
+    public List<String> getSupportedActions() {
+        return Arrays.asList(EditAction.ID, DeleteAction.ID);
+    }
 
-	private void deleteApplicationDescription(JTree tree)
-			throws PathNotFoundException,
-			DeploymentDescriptionRetrieveException {
-		if (askQuestion("Application description", "Are you sure that you want to remove the application description \""+getApplicationDeploymentDescriptionWrap().getDescription().getId()+"\"?")) {
-			getRegistry().deleteDeploymentDescription(
-					getApplicationDeploymentDescriptionWrap().getService(),
-					getApplicationDeploymentDescriptionWrap().getHost(),
-					getApplicationDeploymentDescriptionWrap()
-							.getDescription().getId());
-			((AbstractAiravataTreeNode)getParent()).refresh();
-			reloadTreeNode(tree, getParent());
-		}
-	}
+    public boolean triggerAction(JTree tree, String action) throws Exception {
+        if (action.equals(DeleteAction.ID)) {
+            deleteApplicationDescription(tree);
+            return true;
+        } else if (action.equals(EditAction.ID)) {
+            JOptionPane.showMessageDialog(null, "TODO");
+            return true;
+        }
+        return super.triggerAction(tree, action);
+    }
 
-	@Override
-	public String getActionCaption(AbstractBrowserActionItem action) {
-		if (action.getID().equals(DeleteAction.ID)){
-			return "Remove";
-		}else if (action.getID().equals(EditAction.ID)){
-			return "Edit";
-		}
-		return action.getDefaultCaption();
-	}
+    private void deleteApplicationDescription(JTree tree) throws PathNotFoundException,
+            DeploymentDescriptionRetrieveException {
+        if (askQuestion("Application description",
+                "Are you sure that you want to remove the application description \""
+                        + getApplicationDeploymentDescriptionWrap().getDescription().getId() + "\"?")) {
+            getRegistry().deleteDeploymentDescription(getApplicationDeploymentDescriptionWrap().getService(),
+                    getApplicationDeploymentDescriptionWrap().getHost(),
+                    getApplicationDeploymentDescriptionWrap().getDescription().getId());
+            ((AbstractAiravataTreeNode) getParent()).refresh();
+            reloadTreeNode(tree, getParent());
+        }
+    }
 
-	@Override
-	public Icon getActionIcon(AbstractBrowserActionItem action) {
-		return null;
-	}
+    @Override
+    public String getActionCaption(AbstractBrowserActionItem action) {
+        if (action.getID().equals(DeleteAction.ID)) {
+            return "Remove";
+        } else if (action.getID().equals(EditAction.ID)) {
+            return "Edit";
+        }
+        return action.getDefaultCaption();
+    }
 
-	@Override
-	public String getActionDescription(AbstractBrowserActionItem action) {
-		return null;
-	}
+    @Override
+    public Icon getActionIcon(AbstractBrowserActionItem action) {
+        return null;
+    }
+
+    @Override
+    public String getActionDescription(AbstractBrowserActionItem action) {
+        return null;
+    }
 }

@@ -26,7 +26,7 @@ import java.util.List;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 
 public interface DataRegistry {
-    
+
     /**
      * Save output from workflow execution.
      * 
@@ -43,5 +43,5 @@ public interface DataRegistry {
      * @return List of parameters
      */
     public List<AbstractParameter> loadOutput(String workflowId);
-       
+
 }

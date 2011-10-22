@@ -26,6 +26,8 @@ import org.apache.airavata.wsmg.messenger.Deliverable;
 
 public interface SendingStrategy {
     void init();
+
     void addMessageToSend(OutGoingMessage outMessage, Deliverable deliverable);
+
     void shutdown();
 }

@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
-public class WsmgClient implements ConsumerNotificationHandler, NotificationHandler{
+public class WsmgClient implements ConsumerNotificationHandler, NotificationHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(WsmgClient.class);
 
@@ -55,7 +55,6 @@ public class WsmgClient implements ConsumerNotificationHandler, NotificationHand
     private String subscriptionID;
 
     private MessagePuller messagePuller;
-
 
     /**
      * Constructs a WsmgClient.
@@ -85,12 +84,11 @@ public class WsmgClient implements ConsumerNotificationHandler, NotificationHand
         try {
             if (this.pullMode) {
                 EndpointReference messageBoxEPR = this.wseClient.createPullMsgBox(this.messageBoxURL.toString());
-                this.subscriptionID = this.wseClient.subscribe(messageBoxEPR.getAddress(),
-                        this.topic,null);
-                this.messagePuller = this.wseClient.startPullingEventsFromMsgBox(messageBoxEPR, this, 1000L,20000L);
+                this.subscriptionID = this.wseClient.subscribe(messageBoxEPR.getAddress(), this.topic, null);
+                this.messagePuller = this.wseClient.startPullingEventsFromMsgBox(messageBoxEPR, this, 1000L, 20000L);
             } else {
-                String[] endpoints = this.wseClient.startConsumerService(2222,this);
-                this.subscriptionID = this.wseClient.subscribe(endpoints[0], this.topic,null);
+                String[] endpoints = this.wseClient.startConsumerService(2222, this);
+                this.subscriptionID = this.wseClient.subscribe(endpoints[0], this.topic, null);
             }
         } catch (IOException e) {
             throw new MonitorException("Failed to subscribe.", e);
@@ -132,7 +130,7 @@ public class WsmgClient implements ConsumerNotificationHandler, NotificationHand
     }
 
     /**
-     *
+     * 
      * @param message
      */
     public void handleNotification(String message) {

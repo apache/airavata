@@ -30,15 +30,15 @@ import java.util.regex.Pattern;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
 
-public class OutputUtils {   
-    
-    private OutputUtils(){        
+public class OutputUtils {
+
+    private OutputUtils() {
     }
-    
+
     public static Map<String, ?> fillOutputFromStdout(MessageContext<AbstractParameter> outMessage, String stdout) {
 
         Map<String, AbstractParameter> result = new HashMap<String, AbstractParameter>();
-        
+
         for (Iterator<String> iterator = outMessage.getNames(); iterator.hasNext();) {
             String parameterName = iterator.next();
 

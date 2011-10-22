@@ -26,7 +26,7 @@ import org.apache.airavata.core.gfac.services.impl.PropertiesBasedServiceImpl;
 
 /**
  * Factory for {@link PropertiesBasedServiceImpl}
- *
+ * 
  */
 public class PropertyServiceFactory extends AbstractServiceFactory {
 
@@ -36,21 +36,21 @@ public class PropertyServiceFactory extends AbstractServiceFactory {
     /**
      * Default constructor with used file "service.properties"
      */
-    public PropertyServiceFactory(){        
+    public PropertyServiceFactory() {
     }
-    
+
     /**
      * Construct the {@link PropertiesBasedServiceImpl} with a given property file
      */
-    public PropertyServiceFactory(String fileName){
+    public PropertyServiceFactory(String fileName) {
         this.fileName = fileName;
     }
-    
+
     public GenericService getGenericService() {
         if (service == null) {
-            if(this.fileName == null){
+            if (this.fileName == null) {
                 service = new PropertiesBasedServiceImpl();
-            }else{
+            } else {
                 service = new PropertiesBasedServiceImpl(this.fileName);
             }
         }

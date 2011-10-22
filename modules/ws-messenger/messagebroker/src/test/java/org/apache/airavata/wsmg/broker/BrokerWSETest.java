@@ -74,7 +74,7 @@ public class BrokerWSETest extends TestCase implements ConsumerNotificationHandl
 
             String subscriptionID = wseMsgBrokerClient.subscribe(consumerEPRs[0], topic, null);
             System.out.println("topic sub id = " + subscriptionID);
-            
+
             try {
                 wseMsgBrokerClient.publish(topic, msg);
                 wseMsgBrokerClient.publish(topic, AXIOMUtil.stringToOM("<foo><bar>Test</bar></foo>"));

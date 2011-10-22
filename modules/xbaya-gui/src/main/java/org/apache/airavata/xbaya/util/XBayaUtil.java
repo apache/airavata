@@ -50,15 +50,15 @@ public class XBayaUtil {
         XBayaConfiguration configuration = engine.getConfiguration();
         Workflow workflow = engine.getWorkflow();
 
-        LeadContextHeader leadContext = buildLeadContextHeader(workflow, configuration,
-                monitorConfiguration, nodeId, resourceMapping);
+        LeadContextHeader leadContext = buildLeadContextHeader(workflow, configuration, monitorConfiguration, nodeId,
+                resourceMapping);
 
         return leadContext;
 
     }
 
     /**
-     *
+     * 
      * @param workflow
      * @param configuration
      * @param monitorConfiguration
@@ -83,13 +83,12 @@ public class XBayaUtil {
         leadContext.setNodeId(nodeId);
 
         leadContext.setTimeStep("1");
-//        leadContext.setXRegistryUrl(new URI(configuration.getXRegistryURL().toString() + "?wsdl"));
+        // leadContext.setXRegistryUrl(new URI(configuration.getXRegistryURL().toString() + "?wsdl"));
 
         if (resourceMapping != null) {
             leadContext.setResourceMapping(resourceMapping);
         }
         return leadContext;
-
 
     }
 
@@ -115,13 +114,13 @@ public class XBayaUtil {
         }
     }
 
-    public static boolean acquireJCRRegistry(XBayaEngine engine){
+    public static boolean acquireJCRRegistry(XBayaEngine engine) {
         XBayaConfiguration configuration = engine.getConfiguration();
-        if (configuration.getJcrComponentRegistry()==null){
-	    	JCRRegistryWindow window = new JCRRegistryWindow(engine);
-			window.show();
-    	}
-    	return engine.getConfiguration().getJcrComponentRegistry()!=null;
+        if (configuration.getJcrComponentRegistry() == null) {
+            JCRRegistryWindow window = new JCRRegistryWindow(engine);
+            window.show();
+        }
+        return engine.getConfiguration().getJcrComponentRegistry() != null;
     }
 
 }

@@ -110,8 +110,8 @@ public class WseMsgBrokerClient extends CommonMsgBrokerClient implements Message
         String subscriptionId = null;
 
         try {
-            OMElement subscriptionMsg = WSEProtocolClient.createSubscription(eventSinkLocation,
-                    topicExpression, xpathExpression, expireTime);
+            OMElement subscriptionMsg = WSEProtocolClient.createSubscription(eventSinkLocation, topicExpression,
+                    xpathExpression, expireTime);
             ServiceClient serviceClient = configureServiceClientForSubscription(subscriptionMsg);
             OMElement responseMessage = serviceClient.sendReceive(subscriptionMsg);
             serviceClient.cleanupTransport();
@@ -131,8 +131,6 @@ public class WseMsgBrokerClient extends CommonMsgBrokerClient implements Message
 
         return subscriptionId;
     }
-
-
 
     public boolean unSubscribe(String subscriptionId) throws MsgBrokerClientException {
 

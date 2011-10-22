@@ -31,14 +31,12 @@ import org.apache.axis2.AxisFault;
 public class BrokerUtil {
 
     /**
-     * Compares String {@code x} with String {@code y}. The result is {@code true} if and only
-     * if both arguments are {@code null} or String {@code x} has the same sequence of
-     * characters as String {@code y}.
+     * Compares String {@code x} with String {@code y}. The result is {@code true} if and only if both arguments are
+     * {@code null} or String {@code x} has the same sequence of characters as String {@code y}.
      * 
      * @param x
      * @param y
-     * @return {@code true} if the String {@code x} and String {@code y} are
-     *          equivalent, {@code false} otherwise
+     * @return {@code true} if the String {@code x} and String {@code y} are equivalent, {@code false} otherwise
      */
     public static boolean sameStringValue(String x, String y) {
         return (x == null && y == null) || (x != null && y != null && x.equals(y));

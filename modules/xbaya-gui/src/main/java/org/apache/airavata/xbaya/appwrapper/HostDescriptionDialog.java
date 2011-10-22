@@ -27,242 +27,244 @@ import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveExcepti
 
 public class HostDescriptionDialog extends JDialog {
 
-	private static final long serialVersionUID = 1423293834766468324L;
-	private JTextField txtHostLocation;
-	private JTextField txtHostName;
-	private HostDescription hostDescription;
-	private Registry registry;
-	private JButton okButton;
-	private boolean hostCreated=false;
-	private JLabel lblError;
-	
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			HostDescriptionDialog dialog = new HostDescriptionDialog(null);
-			dialog.open();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void open(){
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		setVisible(true);
-	}
-	
-	protected HostDescriptionDialog getDialog(){
-		return this;
-	}
-	/**
-	 * Create the dialog.
-	 */
-	public HostDescriptionDialog(Registry registry) {
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowOpened(WindowEvent arg0) {
-				String baseName="Host";
-				int i=1;
-				String defaultName=baseName+i;
-				try {
-					while(getRegistry().getHostDescription(defaultName)!=null){
-						defaultName=baseName+(++i);
-					}
-				} catch (HostDescriptionRetrieveException e) {
-				} catch (PathNotFoundException e) {
-				}
-				txtHostName.setText(defaultName);
-				setHostId(txtHostName.getText());
-			}
-		});
-		setRegistry(registry);
-		initGUI();
-	}
+    private static final long serialVersionUID = 1423293834766468324L;
+    private JTextField txtHostLocation;
+    private JTextField txtHostName;
+    private HostDescription hostDescription;
+    private Registry registry;
+    private JButton okButton;
+    private boolean hostCreated = false;
+    private JLabel lblError;
 
-	private void initGUI() {
-		setTitle("New Host Description");
-		setBounds(100, 100, 455, 182);
-		setModal(true);
-		setLocationRelativeTo(null);
-		getContentPane().setLayout(new BorderLayout());
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				okButton = new JButton("Save");
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						saveHostDescription();
-						close();
-					}
-				});
-				
-				lblError = new JLabel("");
-				lblError.setForeground(Color.RED);
-				buttonPane.add(lblError);
-				okButton.setEnabled(false);
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						setHostCreated(false);
-						close();
-					}
-				});
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
-			}
-		}
-		{
-			JPanel panel = new JPanel();
-			getContentPane().add(panel, BorderLayout.CENTER);
-			JLabel lblHostName = new JLabel("Host id");
-			JLabel lblHostLocationip = new JLabel("Host address");
-			txtHostLocation = new JTextField();
-			txtHostLocation.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyReleased(KeyEvent e) {
-					setHostLocation(txtHostLocation.getText());
-				}
-			});
-			txtHostLocation.setColumns(10);
-			txtHostName = new JTextField();
-			txtHostName.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyReleased(KeyEvent e) {
-					setHostId(txtHostName.getText());
-				}
-			});
-			txtHostName.setColumns(10);
-			GroupLayout gl_panel = new GroupLayout(panel);
-			gl_panel.setHorizontalGroup(
-				gl_panel.createParallelGroup(Alignment.LEADING)
-					.addGroup(gl_panel.createSequentialGroup()
-						.addGap(22)
-						.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
-							.addComponent(lblHostName)
-							.addComponent(lblHostLocationip))
-						.addGap(18)
-						.addGroup(gl_panel.createParallelGroup(Alignment.LEADING, false)
-							.addComponent(txtHostLocation)
-							.addComponent(txtHostName, GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE))
-						.addGap(37))
-			);
-			gl_panel.setVerticalGroup(
-				gl_panel.createParallelGroup(Alignment.LEADING)
-					.addGroup(gl_panel.createSequentialGroup()
-						.addGap(31)
-						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-							.addComponent(txtHostName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addComponent(lblHostName))
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-							.addComponent(txtHostLocation, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-							.addComponent(lblHostLocationip))
-						.addGap(176))
-			);
-			gl_panel.setAutoCreateGaps(true);
-			gl_panel.setAutoCreateContainerGaps(true);
-			panel.setLayout(gl_panel);
-		}
-		setResizable(false);
-		getRootPane().setDefaultButton(okButton);
-	}
+    /**
+     * Launch the application.
+     */
+    public static void main(String[] args) {
+        try {
+            HostDescriptionDialog dialog = new HostDescriptionDialog(null);
+            dialog.open();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	public String getHostId() {
-		return getHostDescription().getId();
-	}
+    public void open() {
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setVisible(true);
+    }
 
-	public void setHostId(String hostId) {
-		getHostDescription().setId(hostId);
-		updateDialogStatus();
-	}
+    protected HostDescriptionDialog getDialog() {
+        return this;
+    }
 
-	public String getHostLocation() {
-		return getHostDescription().getAddress();
-	}
+    /**
+     * Create the dialog.
+     */
+    public HostDescriptionDialog(Registry registry) {
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowOpened(WindowEvent arg0) {
+                String baseName = "Host";
+                int i = 1;
+                String defaultName = baseName + i;
+                try {
+                    while (getRegistry().getHostDescription(defaultName) != null) {
+                        defaultName = baseName + (++i);
+                    }
+                } catch (HostDescriptionRetrieveException e) {
+                } catch (PathNotFoundException e) {
+                }
+                txtHostName.setText(defaultName);
+                setHostId(txtHostName.getText());
+            }
+        });
+        setRegistry(registry);
+        initGUI();
+    }
 
-	public void setHostLocation(String hostLocation) {
-		getHostDescription().setAddress(hostLocation);
-		updateDialogStatus();
-	}
+    private void initGUI() {
+        setTitle("New Host Description");
+        setBounds(100, 100, 455, 182);
+        setModal(true);
+        setLocationRelativeTo(null);
+        getContentPane().setLayout(new BorderLayout());
+        {
+            JPanel buttonPane = new JPanel();
+            buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+            getContentPane().add(buttonPane, BorderLayout.SOUTH);
+            {
+                okButton = new JButton("Save");
+                okButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        saveHostDescription();
+                        close();
+                    }
+                });
 
-	private void validateDialog() throws Exception{
-		if (getHostId()==null || getHostId().trim().equals("")){
-			throw new Exception("Id of the host cannot be empty!!!");
-		}
-		
-		HostDescription hostDescription2=null;
-		try {
-			hostDescription2 = getRegistry().getHostDescription(Pattern.quote(getHostId()));
-		} catch (PathNotFoundException e) {
-			//what we want
-		} catch (Exception e){
-			throw e;
-		}
-		if (hostDescription2!=null){
-			throw new Exception("Host descriptor with the given id already exists!!!");
-		}
-		
-		if (getHostLocation()==null || getHostLocation().trim().equals("")){
-			throw new Exception("Host location/ip cannot be empty!!!");
-		}
-	}
-	private void updateDialogStatus(){
-		String message=null;
-		try {
-			validateDialog();
-		} catch (Exception e) {
-			message=e.getLocalizedMessage();
-		}
-		okButton.setEnabled(message==null);
-		setError(message);
-	}
+                lblError = new JLabel("");
+                lblError.setForeground(Color.RED);
+                buttonPane.add(lblError);
+                okButton.setEnabled(false);
+                okButton.setActionCommand("OK");
+                buttonPane.add(okButton);
+                getRootPane().setDefaultButton(okButton);
+            }
+            {
+                JButton cancelButton = new JButton("Cancel");
+                cancelButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        setHostCreated(false);
+                        close();
+                    }
+                });
+                cancelButton.setActionCommand("Cancel");
+                buttonPane.add(cancelButton);
+            }
+        }
+        {
+            JPanel panel = new JPanel();
+            getContentPane().add(panel, BorderLayout.CENTER);
+            JLabel lblHostName = new JLabel("Host id");
+            JLabel lblHostLocationip = new JLabel("Host address");
+            txtHostLocation = new JTextField();
+            txtHostLocation.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    setHostLocation(txtHostLocation.getText());
+                }
+            });
+            txtHostLocation.setColumns(10);
+            txtHostName = new JTextField();
+            txtHostName.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    setHostId(txtHostName.getText());
+                }
+            });
+            txtHostName.setColumns(10);
+            GroupLayout gl_panel = new GroupLayout(panel);
+            gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(
+                    gl_panel.createSequentialGroup()
+                            .addGap(22)
+                            .addGroup(
+                                    gl_panel.createParallelGroup(Alignment.TRAILING).addComponent(lblHostName)
+                                            .addComponent(lblHostLocationip))
+                            .addGap(18)
+                            .addGroup(
+                                    gl_panel.createParallelGroup(Alignment.LEADING, false)
+                                            .addComponent(txtHostLocation)
+                                            .addComponent(txtHostName, GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE))
+                            .addGap(37)));
+            gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(
+                    gl_panel.createSequentialGroup()
+                            .addGap(31)
+                            .addGroup(
+                                    gl_panel.createParallelGroup(Alignment.BASELINE)
+                                            .addComponent(txtHostName, GroupLayout.PREFERRED_SIZE,
+                                                    GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(lblHostName))
+                            .addPreferredGap(ComponentPlacement.RELATED)
+                            .addGroup(
+                                    gl_panel.createParallelGroup(Alignment.BASELINE)
+                                            .addComponent(txtHostLocation, GroupLayout.PREFERRED_SIZE,
+                                                    GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(lblHostLocationip)).addGap(176)));
+            gl_panel.setAutoCreateGaps(true);
+            gl_panel.setAutoCreateContainerGaps(true);
+            panel.setLayout(gl_panel);
+        }
+        setResizable(false);
+        getRootPane().setDefaultButton(okButton);
+    }
 
-	public void close() {
-		getDialog().setVisible(false);
-	}
+    public String getHostId() {
+        return getHostDescription().getId();
+    }
 
-	public boolean isHostCreated() {
-		return hostCreated;
-	}
+    public void setHostId(String hostId) {
+        getHostDescription().setId(hostId);
+        updateDialogStatus();
+    }
 
-	public void setHostCreated(boolean hostCreated) {
-		this.hostCreated = hostCreated;
-	}
+    public String getHostLocation() {
+        return getHostDescription().getAddress();
+    }
 
-	public HostDescription getHostDescription() {
-		if (hostDescription==null){
-			hostDescription=new HostDescription();
-		}
-		return hostDescription;
-	}
+    public void setHostLocation(String hostLocation) {
+        getHostDescription().setAddress(hostLocation);
+        updateDialogStatus();
+    }
 
-	public void saveHostDescription() {
-		getRegistry().saveHostDescription(getHostDescription());
-		setHostCreated(true);
-	}
+    private void validateDialog() throws Exception {
+        if (getHostId() == null || getHostId().trim().equals("")) {
+            throw new Exception("Id of the host cannot be empty!!!");
+        }
 
-	private void setError(String errorMessage){
-		if (errorMessage==null || errorMessage.trim().equals("")){
-			lblError.setText("");
-		}else{
-			lblError.setText(errorMessage.trim());
-		}
-	}
+        HostDescription hostDescription2 = null;
+        try {
+            hostDescription2 = getRegistry().getHostDescription(Pattern.quote(getHostId()));
+        } catch (PathNotFoundException e) {
+            // what we want
+        } catch (Exception e) {
+            throw e;
+        }
+        if (hostDescription2 != null) {
+            throw new Exception("Host descriptor with the given id already exists!!!");
+        }
 
-	public Registry getRegistry() {
-		return registry;
-	}
+        if (getHostLocation() == null || getHostLocation().trim().equals("")) {
+            throw new Exception("Host location/ip cannot be empty!!!");
+        }
+    }
 
-	public void setRegistry(Registry registry) {
-		this.registry = registry;
-	}
+    private void updateDialogStatus() {
+        String message = null;
+        try {
+            validateDialog();
+        } catch (Exception e) {
+            message = e.getLocalizedMessage();
+        }
+        okButton.setEnabled(message == null);
+        setError(message);
+    }
+
+    public void close() {
+        getDialog().setVisible(false);
+    }
+
+    public boolean isHostCreated() {
+        return hostCreated;
+    }
+
+    public void setHostCreated(boolean hostCreated) {
+        this.hostCreated = hostCreated;
+    }
+
+    public HostDescription getHostDescription() {
+        if (hostDescription == null) {
+            hostDescription = new HostDescription();
+        }
+        return hostDescription;
+    }
+
+    public void saveHostDescription() {
+        getRegistry().saveHostDescription(getHostDescription());
+        setHostCreated(true);
+    }
+
+    private void setError(String errorMessage) {
+        if (errorMessage == null || errorMessage.trim().equals("")) {
+            lblError.setText("");
+        } else {
+            lblError.setText(errorMessage.trim());
+        }
+    }
+
+    public Registry getRegistry() {
+        return registry;
+    }
+
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
+    }
 }

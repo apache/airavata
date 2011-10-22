@@ -96,7 +96,7 @@ public class GFacInvoker implements Invoker {
         try {
 
             URI uri = new URI(this.gfacURL);
-            
+
             /*
              * Substring to remove GfacService
              */
@@ -104,15 +104,15 @@ public class GFacInvoker implements Invoker {
             if (gfacPath != null && gfacPath.contains("/")) {
                 gfacPath = gfacPath.substring(0, gfacPath.lastIndexOf('/') + 1) + portTypeQName.getLocalPart();
             }
-            URI getWsdlURI = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), gfacPath + "/getWSDL", uri.getQuery(),
-                    uri.getFragment());
+            URI getWsdlURI = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), gfacPath
+                    + "/getWSDL", uri.getQuery(), uri.getFragment());
 
             logger.info("getWSDL service:" + getWsdlURI.toString());
-            
-            WsdlDefinitions concreteWSDL = WsdlResolver.getInstance().loadWsdl(getWsdlURI);                        
-            
-            this.invoker = InvokerFactory
-                    .createInvoker(this.portTypeQName, concreteWSDL, null, this.messageBoxURL,null,true);
+
+            WsdlDefinitions concreteWSDL = WsdlResolver.getInstance().loadWsdl(getWsdlURI);
+
+            this.invoker = InvokerFactory.createInvoker(this.portTypeQName, concreteWSDL, null, this.messageBoxURL,
+                    null, true);
             this.invoker.setup();
         } catch (XBayaException xe) {
             throw xe;
@@ -139,8 +139,7 @@ public class GFacInvoker implements Invoker {
 
     /**
      * @throws XBayaException
-     * @see org.apache.airavata.xbaya.invoker.Invoker#setInput(java.lang.String,
-     *      java.lang.Object)
+     * @see org.apache.airavata.xbaya.invoker.Invoker#setInput(java.lang.String, java.lang.Object)
      */
     public void setInput(String name, Object value) throws XBayaException {
         this.invoker.setInput(name, value);
@@ -161,12 +160,12 @@ public class GFacInvoker implements Invoker {
 
         WSIFClient client = invoker.getClient();
         // FIXME: Temporary fix
-//        if (this.leadContext == null) {
-//            LeadContextHeader lh = new LeadContextHeader(UUID.randomUUID().toString(), "XBaya-User");
-//            this.leadContext = lh;
-//        }
-//        StickySoapHeaderHandler handler = new StickySoapHeaderHandler("use-lead-header", this.leadContext);
-//        client.addHandler(handler);
+        // if (this.leadContext == null) {
+        // LeadContextHeader lh = new LeadContextHeader(UUID.randomUUID().toString(), "XBaya-User");
+        // this.leadContext = lh;
+        // }
+        // StickySoapHeaderHandler handler = new StickySoapHeaderHandler("use-lead-header", this.leadContext);
+        // client.addHandler(handler);
 
         // This handler has to be end to get the entire soap message.
         NotificationHandler notificationHandler = new NotificationHandler(this.builder);

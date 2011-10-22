@@ -27,18 +27,18 @@ import org.apache.airavata.core.gfac.provider.Provider;
  * JobSubmissionFault represents an error from Provider which uses submission.
  */
 public class JobSubmissionFault extends ProviderException {
-    
+
     public static final String JOB_CANCEL = "JOB_CANCEL";
-    
+
     public static final String JOB_FAILED = "JOB_FAILED";
-    
+
     private String reason;
-    
+
     public JobSubmissionFault(Provider provider, Throwable cause, String submitHost, String contact, String rsl) {
         super(cause.getMessage(), cause);
     }
-    
-    public void setReason(String reason){
+
+    public void setReason(String reason) {
         this.reason = reason;
     }
 }

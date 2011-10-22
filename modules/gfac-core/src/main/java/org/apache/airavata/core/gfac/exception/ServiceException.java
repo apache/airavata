@@ -21,17 +21,16 @@
 
 package org.apache.airavata.core.gfac.exception;
 
-
 /**
  * Exception for Service
- *
+ * 
  */
 public class ServiceException extends GfacException {
 
     public ServiceException(String message) {
         super(message);
     }
-    
+
     public ServiceException(String message, Throwable cause) {
         super(message, cause);
     }

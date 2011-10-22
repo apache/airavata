@@ -62,10 +62,10 @@ public class ConsumerUrlManager {
         cleanupTimer = new Timer("Failed consumer url handler", true);
         cleanupTimer.scheduleAtFixedRate(new URLCleanUpTask(), 0, timerThreadInterval);
     }
-    
-    public void stop(){
+
+    public void stop() {
         logger.info("Stop ConsumerUrlManager");
-        if(this.cleanupTimer != null){
+        if (this.cleanupTimer != null) {
             this.cleanupTimer.cancel();
         }
         logger.info("ConsumerUrlManager Stopped");
@@ -129,8 +129,8 @@ public class ConsumerUrlManager {
         }
 
         /*
-         * if timeout because of the set timeout in this class In windows,
-         * timeout cause ConnectException with "Connection timed out" message
+         * if timeout because of the set timeout in this class In windows, timeout cause ConnectException with
+         * "Connection timed out" message
          */
         if (cause instanceof SocketTimeoutException || cause.getMessage().indexOf("timed out") > 0
                 || cause instanceof NoRouteToHostException) {

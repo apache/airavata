@@ -42,8 +42,8 @@ import org.slf4j.LoggerFactory;
 public class ParallelSender implements SendingStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(ParallelSender.class);
-    
-    private static final long TIME_TO_WAIT_FOR_SHUTDOWN_SECOND = 30; 
+
+    private static final long TIME_TO_WAIT_FOR_SHUTDOWN_SECOND = 30;
 
     private HashMap<String, ConsumerHandler> activeConsumerHandlers = new HashMap<String, ConsumerHandler>();
 
@@ -62,16 +62,16 @@ public class ParallelSender implements SendingStrategy {
 
     public void shutdown() {
         log.debug("Shutting down");
-        
+
         threadPool.shutdown();
-        try{
+        try {
             threadPool.awaitTermination(TIME_TO_WAIT_FOR_SHUTDOWN_SECOND, TimeUnit.SECONDS);
-        }catch(InterruptedException ie){
+        } catch (InterruptedException ie) {
             log.error("Interrupted while waiting thread pool to shutdown");
-        }        
+        }
         log.debug("Shut down");
     }
-    
+
     private void sendToConsumerHandler(ConsumerInfo consumer, OutGoingMessage message, Deliverable deliverable) {
         String consumerUrl = consumer.getConsumerEprStr();
 
@@ -124,14 +124,14 @@ public class ParallelSender implements SendingStrategy {
                      * Stop this thread if and only if there is no message
                      */
                     synchronized (activeConsumerHandlers) {
-                        if (queue.size() == 0) {                             
+                        if (queue.size() == 0) {
                             if (activeConsumerHandlers.remove(getConsumerUrl()) != null) {
                                 log.debug(String.format("Consumer handler is already removed: %s", getConsumerUrl()));
                             }
                             log.debug(String.format("ParallelConsumerHandler done: %s,", getConsumerUrl()));
                             break;
                         }
-                    }                    
+                    }
                 }
 
                 send(localList);
