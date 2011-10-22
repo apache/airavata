@@ -40,10 +40,9 @@ import edu.berkeley.cs.db.yfilterplus.queryparser.Query;
 import edu.berkeley.cs.db.yfilterplus.queryparser.XPQuery;
 import edu.berkeley.cs.db.yfilterplus.xmltree.XMLTree;
 
-
 public class YFilterInfo {
     private static final Logger logger = LoggerFactory.getLogger(YFilterInfo.class);
-    
+
     private EXfilterBasic yfilter = new EXfilterBasic();
     private HashMap<Integer, String> yFilterIdToXPath = new HashMap<Integer, String>();
     private HashMap<Integer, Query> yFilterIdToQuery = new HashMap<Integer, Query>();

@@ -34,7 +34,7 @@ public class WorkflowContextImpl implements MessageContext<String> {
 
     public static final String WORKFLOW_CONTEXT_NAME = "workflow_context";
     public static final String WORKFLOW_ID = "workflowId";
-    
+
     private Map<String, String> value;
 
     public WorkflowContextImpl() {

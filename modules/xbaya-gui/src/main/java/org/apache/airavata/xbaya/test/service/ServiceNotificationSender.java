@@ -44,8 +44,6 @@ import xsul.soap11_util.Soap11Util;
 import xsul.soap12_util.Soap12Util;
 import xsul.xbeans_util.XBeansUtil;
 
-
-
 public class ServiceNotificationSender {
 
     private final static Logger logger = LoggerFactory.getLogger(ServiceNotificationSender.class);
@@ -123,7 +121,8 @@ public class ServiceNotificationSender {
         this.initiator = this.notifier.createEntity(workflowID, serviceID, nodeID, timeStep);
         this.receiver = this.notifier.createEntity(workflowID, serviceID, nodeID, timeStep);
         EndpointReference epr = new EndpointReference(leadContext.getEventSink().getAddress().toString());
-        this.context = this.notifier.createTrackingContext(new Properties(),epr.toString(),workflowID,serviceID,nodeID,timeStep);
+        this.context = this.notifier.createTrackingContext(new Properties(), epr.toString(), workflowID, serviceID,
+                nodeID, timeStep);
     }
 
     /**
@@ -135,7 +134,7 @@ public class ServiceNotificationSender {
         XmlElement soapHeader = soapEnvelope.element(null, XmlConstants.S_HEADER);
         XmlObject headerObject = XBeansUtil.xmlElementToXmlObject(soapHeader);
         XmlObject bodyObject = XBeansUtil.xmlElementToXmlObject(soapBody);
-        this.invocationContext = this.notifier.serviceInvoked(this.context,this.initiator, headerObject, bodyObject,
+        this.invocationContext = this.notifier.serviceInvoked(this.context, this.initiator, headerObject, bodyObject,
                 INVOKED_MESSAGE);
     }
 
@@ -153,7 +152,8 @@ public class ServiceNotificationSender {
                 headerObject = XBeansUtil.xmlElementToXmlObject(soapHeader);
             }
             XmlObject bodyObject = XBeansUtil.xmlElementToXmlObject(soapBody);
-            this.notifier.sendingResult(this.context,this.invocationContext, headerObject, bodyObject, SENDING_RESULT_MESSAGE);
+            this.notifier.sendingResult(this.context, this.invocationContext, headerObject, bodyObject,
+                    SENDING_RESULT_MESSAGE);
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
         }

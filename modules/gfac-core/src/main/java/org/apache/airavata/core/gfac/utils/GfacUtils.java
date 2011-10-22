@@ -39,9 +39,9 @@ import org.slf4j.LoggerFactory;
 public class GfacUtils {
     private final static Logger log = LoggerFactory.getLogger(GfacUtils.class);
 
-    private GfacUtils(){       
+    private GfacUtils() {
     }
-    
+
     /**
      * Read data from inputStream and convert it to String.
      * 
@@ -50,7 +50,7 @@ public class GfacUtils {
      * @throws IOException
      */
     public static String readFromStream(InputStream in) throws IOException {
-        try {            
+        try {
             StringBuffer wsdlStr = new StringBuffer();
 
             int read;
@@ -82,7 +82,7 @@ public class GfacUtils {
                 buff.append(temp);
                 buff.append(GFacConstants.NEWLINE);
             }
-            return buff.toString();            
+            return buff.toString();
         } finally {
             if (instream != null) {
                 try {
@@ -96,8 +96,8 @@ public class GfacUtils {
 
     public static boolean isLocalHost(String appHost) throws UnknownHostException {
         String localHost = InetAddress.getLocalHost().getCanonicalHostName();
-        return (localHost.equals(appHost) || GFacConstants.LOCALHOST.equals(appHost)
-                || GFacConstants._127_0_0_1.equals(appHost));
+        return (localHost.equals(appHost) || GFacConstants.LOCALHOST.equals(appHost) || GFacConstants._127_0_0_1
+                .equals(appHost));
     }
 
     public static String createUniqueNameForService(String serviceName) {

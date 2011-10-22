@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
 package org.apache.airavata.services.gfac.axis2.util;
 
@@ -28,24 +28,24 @@ import org.apache.axis2.context.MessageContext;
 
 public class MessageContextUtil {
 
-	
-	/**
-	 * Add object to Map object in message context's property. Create a new list if necessary. 
-	 * 
-	 * @param msgContext
-	 * @param propertyString
-	 * @param item
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static synchronized void addContextToProperty(MessageContext msgContext, String propertyString, String name, Object item){
-		Map<String, Object> m = null;
-		if(msgContext.getProperty(propertyString) != null){
-			Object obj = msgContext.getProperty(propertyString);
-			m = (Map)obj;
-		}else{
-			m = new HashMap<String, Object>();
-		}		
-		m.put(name, item);
-		msgContext.setProperty(propertyString, m);
-	}
+    /**
+     * Add object to Map object in message context's property. Create a new list if necessary.
+     * 
+     * @param msgContext
+     * @param propertyString
+     * @param item
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static synchronized void addContextToProperty(MessageContext msgContext, String propertyString, String name,
+            Object item) {
+        Map<String, Object> m = null;
+        if (msgContext.getProperty(propertyString) != null) {
+            Object obj = msgContext.getProperty(propertyString);
+            m = (Map) obj;
+        } else {
+            m = new HashMap<String, Object>();
+        }
+        m.put(name, item);
+        msgContext.setProperty(propertyString, m);
+    }
 }

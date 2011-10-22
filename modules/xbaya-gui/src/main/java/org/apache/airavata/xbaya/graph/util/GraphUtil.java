@@ -65,7 +65,6 @@ import org.apache.airavata.xbaya.wf.Workflow;
 
 public class GraphUtil {
 
-
     /**
      * Returns the WSNodes included in a specified graph.
      * 

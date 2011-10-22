@@ -111,7 +111,7 @@ public class GFacServiceCreator {
      * @throws XBayaException
      */
     public WsdlDefinitions createService(String serviceQName) throws XBayaException {
-        logger.debug( serviceQName );
+        logger.debug(serviceQName);
         try {
             WSIFMessage inputMessage = this.gFacOperation.createInputMessage();
             WSIFMessage outputMessage = this.gFacOperation.createOutputMessage();

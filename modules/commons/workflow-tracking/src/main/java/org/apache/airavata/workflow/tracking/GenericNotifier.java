@@ -53,8 +53,8 @@ public interface GenericNotifier {
      * @param epr
      * @return
      */
-    public WorkflowTrackingContext createTrackingContext(Properties golbalProperties, String epr,
-            URI workflowID, URI serviceID, String workflowNodeID, Integer workflowTimestep);
+    public WorkflowTrackingContext createTrackingContext(Properties golbalProperties, String epr, URI workflowID,
+            URI serviceID, String workflowNodeID, Integer workflowTimestep);
 
     /**
      * Method createInitialContext. This is called when this invocation was not initiated by any external entity. This

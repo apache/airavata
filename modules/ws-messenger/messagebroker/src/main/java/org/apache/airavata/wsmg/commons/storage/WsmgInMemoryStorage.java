@@ -44,7 +44,7 @@ public class WsmgInMemoryStorage implements WsmgStorage, WsmgQueue {
         expirableSubscriptions.clear();
         unexpirableSubscriptions.clear();
     }
-    
+
     public int insert(SubscriptionState subscription) {
         if (subscription.isNeverExpire()) {
             unexpirableSubscriptions.put(subscription.getId(), subscription);
@@ -53,7 +53,7 @@ public class WsmgInMemoryStorage implements WsmgStorage, WsmgQueue {
         }
         return 0;
     }
-    
+
     public int delete(String subscriptionId) {
         expirableSubscriptions.remove(subscriptionId);
         unexpirableSubscriptions.remove(subscriptionId);

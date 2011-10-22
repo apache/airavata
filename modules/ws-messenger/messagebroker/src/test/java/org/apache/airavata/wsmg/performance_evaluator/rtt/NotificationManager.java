@@ -86,8 +86,8 @@ public class NotificationManager implements ConsumerNotificationHandler {
             multipleThreadSupportIndex = 1;
         }
 
-        String subscriptionId = client.subscribe(eprs[0] + "user" + multipleThreadSupportIndex++,
-                topicExpression, xpathExpression);
+        String subscriptionId = client.subscribe(eprs[0] + "user" + multipleThreadSupportIndex++, topicExpression,
+                xpathExpression);
         subscriptionIds.add(subscriptionId);
         Subscription subscription = new Subscription(client, subscriptionId, topicExpression, xpathExpression, this,
                 brokerLocation, protocol);

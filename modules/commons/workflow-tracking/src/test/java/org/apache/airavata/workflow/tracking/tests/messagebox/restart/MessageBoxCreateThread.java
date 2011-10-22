@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MessageBoxCreateThread extends Thread {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(MessageBoxCreateThread.class);
     private String brokerLocation;
     private String messageboxLocation;

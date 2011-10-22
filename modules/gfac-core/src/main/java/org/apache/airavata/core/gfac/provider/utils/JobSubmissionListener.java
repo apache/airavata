@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Gram job listener to check for status changed in job submission
- *
+ * 
  */
 public class JobSubmissionListener implements GramJobListener {
 
@@ -55,8 +55,7 @@ public class JobSubmissionListener implements GramJobListener {
     }
 
     /**
-     * This method is used to block the process until the status of the job is
-     * DONE or FAILED
+     * This method is used to block the process until the status of the job is DONE or FAILED
      * 
      * @throws InterruptedException
      * @throws GSSException
@@ -66,7 +65,7 @@ public class JobSubmissionListener implements GramJobListener {
     public void waitFor() throws InterruptedException, GSSException, GramException, SecurityException {
         while (!isFinished()) {
             int proxyExpTime = job.getCredentials().getRemainingLifetime();
-			if (proxyExpTime < JOB_PROXY_REMAINING_TIME_LIMIT) {
+            if (proxyExpTime < JOB_PROXY_REMAINING_TIME_LIMIT) {
                 log.info("Job proxy expired. Trying to renew proxy");
                 GSSCredential gssCred = ((GSISecurityContext) context.getSecurityContext(MYPROXY_SECURITY_CONTEXT))
                         .getGssCredentails();
@@ -82,7 +81,7 @@ public class JobSubmissionListener implements GramJobListener {
                 if (status != 0) {
                     if (job.getStatus() != status) {
                         log.info("Change job status manually");
-                        if (setStatus(job.getStatus(), job.getError())){
+                        if (setStatus(job.getStatus(), job.getError())) {
                             break;
                         }
                     } else {
@@ -93,7 +92,7 @@ public class JobSubmissionListener implements GramJobListener {
                     log.info("Status is zero");
                 }
 
-				wait(JOB_FINISH_WAIT_TIME);
+                wait(JOB_FINISH_WAIT_TIME);
             }
         }
     }

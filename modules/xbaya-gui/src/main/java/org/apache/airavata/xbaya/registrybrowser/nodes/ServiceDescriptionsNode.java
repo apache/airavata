@@ -19,93 +19,92 @@ import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 import org.apache.airavata.xbaya.registrybrowser.model.ServiceDescriptions;
 
 public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
-	private ServiceDescriptions serviceDescriptions;
-	public ServiceDescriptionsNode(ServiceDescriptions serviceDescriptions,TreeNode parent) {
-		super(parent);
-		setServiceDescriptions(serviceDescriptions);
-	}
+    private ServiceDescriptions serviceDescriptions;
 
-	@Override
-	protected List<TreeNode> getChildren() {
-		try {
-			return getTreeNodeList(getServiceDescriptions().getDescriptions().toArray(), this);
-		} catch (ServiceDescriptionRetrieveException e) {
-			e.printStackTrace();
-			return emptyList();
-		}
-	}
+    public ServiceDescriptionsNode(ServiceDescriptions serviceDescriptions, TreeNode parent) {
+        super(parent);
+        setServiceDescriptions(serviceDescriptions);
+    }
 
-	@Override
-	public String getCaption(boolean selected, boolean expanded, boolean leaf,
-			boolean hasFocus) {
-		return "Services";
-	}
+    @Override
+    protected List<TreeNode> getChildren() {
+        try {
+            return getTreeNodeList(getServiceDescriptions().getDescriptions().toArray(), this);
+        } catch (ServiceDescriptionRetrieveException e) {
+            e.printStackTrace();
+            return emptyList();
+        }
+    }
 
-	@Override
-	public Icon getIcon(boolean selected, boolean expanded, boolean leaf,
-			boolean hasFocus) {
-		return SwingUtil.createImageIcon("services.png");
-	}
+    @Override
+    public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+        return "Services";
+    }
 
-	public ServiceDescriptions getServiceDescriptions() {
-		return serviceDescriptions;
-	}
+    @Override
+    public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+        return SwingUtil.createImageIcon("services.png");
+    }
 
-	public void setServiceDescriptions(ServiceDescriptions serviceDescriptions) {
-		this.serviceDescriptions = serviceDescriptions;
-	}
-	
-	@Override
-	public List<String> getSupportedActions() {
-		return Arrays.asList(AddAction.ID, RefreshAction.ID, DeleteAction.ID);
-	}
-	
-	public boolean triggerAction(JTree tree,String action) throws Exception{
-		if (action.equals(DeleteAction.ID)){
-			deleteServiceDescription(tree);
-			return true;
-		}else if (action.equals(AddAction.ID)){
-			ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry());
-			serviceDescriptionDialog.open();
-			if (serviceDescriptionDialog.isServiceCreated()) {
-				refresh();
-				reloadTreeNode(tree, this);
-			}
-			return true;
-		} 
-		return super.triggerAction(tree, action);
-	}
+    public ServiceDescriptions getServiceDescriptions() {
+        return serviceDescriptions;
+    }
 
-	private void deleteServiceDescription(JTree tree)
-			throws Exception {
-		if (askQuestion("Service descriptions", "Are you sure that you want to remove all service descriptions in this registry?")) {
-			Registry registry = getRegistry();
-			List<ServiceDescription> descriptions = getServiceDescriptions().getDescriptions();
-			for (ServiceDescription descriptionWrap : descriptions) {
-				registry.deleteServiceDescription(descriptionWrap.getId());
-			}
-			refresh();
-			reloadTreeNode(tree, this);
-		}
-	}
+    public void setServiceDescriptions(ServiceDescriptions serviceDescriptions) {
+        this.serviceDescriptions = serviceDescriptions;
+    }
 
-	@Override
-	public String getActionCaption(AbstractBrowserActionItem action) {
-		if (action.getID().equals(DeleteAction.ID)){
-			return "Remove all services";
-		}else if (action.getID().equals(AddAction.ID)){
-			return "New service...";
-		}
-		return action.getDefaultCaption();
-	}
+    @Override
+    public List<String> getSupportedActions() {
+        return Arrays.asList(AddAction.ID, RefreshAction.ID, DeleteAction.ID);
+    }
 
-	@Override
-	public Icon getActionIcon(AbstractBrowserActionItem action) {
-		return null;
-	}
+    public boolean triggerAction(JTree tree, String action) throws Exception {
+        if (action.equals(DeleteAction.ID)) {
+            deleteServiceDescription(tree);
+            return true;
+        } else if (action.equals(AddAction.ID)) {
+            ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry());
+            serviceDescriptionDialog.open();
+            if (serviceDescriptionDialog.isServiceCreated()) {
+                refresh();
+                reloadTreeNode(tree, this);
+            }
+            return true;
+        }
+        return super.triggerAction(tree, action);
+    }
 
-	@Override
-	public String getActionDescription(AbstractBrowserActionItem action) {
-		return null;
-	}
+    private void deleteServiceDescription(JTree tree) throws Exception {
+        if (askQuestion("Service descriptions",
+                "Are you sure that you want to remove all service descriptions in this registry?")) {
+            Registry registry = getRegistry();
+            List<ServiceDescription> descriptions = getServiceDescriptions().getDescriptions();
+            for (ServiceDescription descriptionWrap : descriptions) {
+                registry.deleteServiceDescription(descriptionWrap.getId());
+            }
+            refresh();
+            reloadTreeNode(tree, this);
+        }
+    }
+
+    @Override
+    public String getActionCaption(AbstractBrowserActionItem action) {
+        if (action.getID().equals(DeleteAction.ID)) {
+            return "Remove all services";
+        } else if (action.getID().equals(AddAction.ID)) {
+            return "New service...";
+        }
+        return action.getDefaultCaption();
+    }
+
+    @Override
+    public Icon getActionIcon(AbstractBrowserActionItem action) {
+        return null;
+    }
+
+    @Override
+    public String getActionDescription(AbstractBrowserActionItem action) {
+        return null;
+    }
 }

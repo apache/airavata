@@ -26,7 +26,7 @@ import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 
 public class XmlBeanUtils {
-    
+
     public static BaseNotificationType extractBaseNotificationType(XmlObject xmldata) {
         XmlCursor c = xmldata.newCursor();
         c.toNextToken();

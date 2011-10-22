@@ -33,9 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the in memory storage implementation for MsgBoxService, this will be
- * initialized if msgBox.properties is configured not to use database
- * implementation.
+ * This is the in memory storage implementation for MsgBoxService, this will be initialized if msgBox.properties is
+ * configured not to use database implementation.
  */
 public class InMemoryImpl implements MsgBoxStorage {
     private static final Logger logger = LoggerFactory.getLogger(InMemoryImpl.class);
@@ -51,9 +50,9 @@ public class InMemoryImpl implements MsgBoxStorage {
     public String createMsgBox() throws Exception {
         synchronized (map) {
             String clientid = UUID.randomUUID().toString();
-            if(map.containsKey(clientid))
-                throw new Exception("Message Box is existed with key:" + clientid);            
-            map.put(clientid, new ArrayList<Content>());            
+            if (map.containsKey(clientid))
+                throw new Exception("Message Box is existed with key:" + clientid);
+            map.put(clientid, new ArrayList<Content>());
             return clientid;
         }
     }
@@ -95,17 +94,17 @@ public class InMemoryImpl implements MsgBoxStorage {
         synchronized (map) {
             long currentTime = System.currentTimeMillis();
             Iterator<List<Content>> it = map.values().iterator();
-            while(it.hasNext()){
+            while (it.hasNext()) {
                 Iterator<Content> itToRemove = it.next().iterator();
-                while(itToRemove.hasNext()){
+                while (itToRemove.hasNext()) {
                     Content content = itToRemove.next();
-                    if(currentTime - this.time > content.getTime()){
+                    if (currentTime - this.time > content.getTime()) {
                         itToRemove.remove();
                     }
-                }                
+                }
             }
         }
-    }   
+    }
 
     public void dispose() {
         synchronized (map) {
@@ -116,13 +115,16 @@ public class InMemoryImpl implements MsgBoxStorage {
     class Content {
         private String content;
         private long time;
+
         public Content(String content, long time) {
             this.content = content;
             this.time = time;
         }
+
         public String getContent() {
             return content;
         }
+
         public long getTime() {
             return time;
         }

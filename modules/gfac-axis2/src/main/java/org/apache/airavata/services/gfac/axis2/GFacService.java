@@ -58,9 +58,9 @@ public class GFacService implements ServiceLifeCycle {
     public static final String GFAC_URL = "GFacURL";
 
     public static final String SECURITY_CONTEXT = "security_context";
-    
+
     public static final String REPOSITORY_PROPERTIES = "repository.properties";
-    
+
     public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 
     /*
@@ -69,11 +69,11 @@ public class GFacService implements ServiceLifeCycle {
     public static final String JCR_CLASS = "jcr.class";
     public static final String JCR_USER = "jcr.user";
     public static final String JCR_PASS = "jcr.pass";
-    
+
     /*
      * Heart beat thread
      */
-    private Thread thread;    
+    private Thread thread;
 
     public void startUp(ConfigurationContext configctx, AxisService service) {
         AxisConfiguration config = null;
@@ -125,7 +125,7 @@ public class GFacService implements ServiceLifeCycle {
             log.debug("GFAC_ADDRESS:" + localAddress);
             context.setProperty(CONFIGURATION_CONTEXT_REGISTRY, registry);
             context.setProperty(GFAC_URL, localAddress);
-            
+
             /*
              * Heart beat message to registry
              */

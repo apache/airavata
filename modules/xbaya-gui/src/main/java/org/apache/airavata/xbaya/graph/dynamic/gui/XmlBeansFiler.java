@@ -68,5 +68,4 @@ public class XmlBeansFiler /* implements Filer */{
         return new FileWriter(srcFile);
     }
 
-
 }

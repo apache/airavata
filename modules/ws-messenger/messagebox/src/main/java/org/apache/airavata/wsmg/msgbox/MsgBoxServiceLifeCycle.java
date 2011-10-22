@@ -37,8 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class initialize the messageBox service by setting the messageStore
- * based on the configuration done by the user This is the LifeCycle class
+ * This class initialize the messageBox service by setting the messageStore based on the configuration done by the user
+ * This is the LifeCycle class
  */
 public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
 

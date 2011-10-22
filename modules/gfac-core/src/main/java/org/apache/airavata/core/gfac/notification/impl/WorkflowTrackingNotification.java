@@ -33,8 +33,7 @@ import org.apache.airavata.workflow.tracking.common.InvocationEntity;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 
 /**
- * Workflow Tracking notification 
- * TODO:: implement properly
+ * Workflow Tracking notification TODO:: implement properly
  */
 public class WorkflowTrackingNotification implements GFacNotifiable {
 
@@ -125,12 +124,12 @@ public class WorkflowTrackingNotification implements GFacNotifiable {
     public void exception(InvocationContext context, String... data) {
     }
 
-	public InvocationEntity getReceiver() {
-		return receiver;
-	}
+    public InvocationEntity getReceiver() {
+        return receiver;
+    }
 
-	public void setReceiver(InvocationEntity receiver) {
-		this.receiver = receiver;
-	}
+    public void setReceiver(InvocationEntity receiver) {
+        this.receiver = receiver;
+    }
 
 }

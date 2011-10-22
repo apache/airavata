@@ -231,7 +231,7 @@
                 <module>modules/ws-messenger</module>
                 <module>modules/xbaya-gui</module>
                 <module>modules/commons</module>
-		<module>samples/simple-math-service</module>
+				<module>samples/simple-math-service</module>
                 <module>modules/distribution</module>
             </modules>
         </profile>

@@ -148,8 +148,7 @@ public class HttpInputStaging extends PreExecuteChain {
         InputStream in = null;
         try {
             /*
-             * Open an output stream to the destination file on our local
-             * filesystem
+             * Open an output stream to the destination file on our local filesystem
              */
             in = src.toURL().openStream();
             out = new BufferedOutputStream(new FileOutputStream(localFile));

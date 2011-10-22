@@ -16,11 +16,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-
 public class GridFTPFileTransferClient {
     private JSONTransferAPIClient client;
-    private static DateFormat isoDateFormat =
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    private static DateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 
     public GridFTPFileTransferClient(JSONTransferAPIClient client) {
         this.client = client;
@@ -38,11 +36,10 @@ public class GridFTPFileTransferClient {
         String destEndpoint = "xsede#trestles";
         String destFilePath = "~/tmp.log.copy";
 
-        //String destEndpoint = "heshan#my_testEndpoint";
-        //String sourceFilePath = "~/var_tables.mod";
+        // String destEndpoint = "heshan#my_testEndpoint";
+        // String sourceFilePath = "~/var_tables.mod";
         try {
-            JSONTransferAPIClient c = new JSONTransferAPIClient(username,
-                    caFile, certFile, keyFile, baseUrl);
+            JSONTransferAPIClient c = new JSONTransferAPIClient(username, caFile, certFile, keyFile, baseUrl);
             System.out.println("base url: " + c.getBaseUrl());
             GridFTPFileTransferClient e = new GridFTPFileTransferClient(c);
             e.transfer(sourceEndpoint, sourceFilePath, destEndpoint, destFilePath);
@@ -53,35 +50,41 @@ public class GridFTPFileTransferClient {
 
     /**
      * Transfers a file from source endpoint to destination endpoint.
-     *
-     * @param sourceEndpoint Source endpoint
-     * @param sourceFilePath Source file path
-     * @param destEndpoint Destination endpoint
-     * @param destFilePath Destination file path
-     * @throws IOException IOException
-     * @throws JSONException JSONException
-     * @throws GeneralSecurityException GeneralSecurityException
-     * @throws APIError APIError
+     * 
+     * @param sourceEndpoint
+     *            Source endpoint
+     * @param sourceFilePath
+     *            Source file path
+     * @param destEndpoint
+     *            Destination endpoint
+     * @param destFilePath
+     *            Destination file path
+     * @throws IOException
+     *             IOException
+     * @throws JSONException
+     *             JSONException
+     * @throws GeneralSecurityException
+     *             GeneralSecurityException
+     * @throws APIError
+     *             APIError
      */
     public void transfer(String sourceEndpoint, String sourceFilePath, String destEndpoint, String destFilePath)
             throws IOException, JSONException, GeneralSecurityException, APIError {
         System.out.println("Starting transfer...");
 
-        //displayTasksummary();
-        //displayTaskList(60 * 60 * 24 * 7); // tasks at most a week old
-        //displayEndpointList();
+        // displayTasksummary();
+        // displayTaskList(60 * 60 * 24 * 7); // tasks at most a week old
+        // displayEndpointList();
 
         if (!autoActivate(sourceEndpoint) || !autoActivate(destEndpoint)) {
-            System.err.println("Unable to auto activate go tutorial endpoints, "
-                    + " exiting");
+            System.err.println("Unable to auto activate go tutorial endpoints, " + " exiting");
             return;
         }
 
-        //displayLs(sourceEndpoint, "~");
-        //displayLs(destEndpoint, "~");
+        // displayLs(sourceEndpoint, "~");
+        // displayLs(destEndpoint, "~");
 
-        JSONTransferAPIClient.Result r = client.getResult(
-                FileTransferConstants.SUBMISSION_ID_ENDPOINT);
+        JSONTransferAPIClient.Result r = client.getResult(FileTransferConstants.SUBMISSION_ID_ENDPOINT);
         String submissionId = r.document.getString(FileTransferConstants.VALUE);
         JSONObject transfer = new JSONObject();
         transfer.put(FileTransferConstants.DATA_TYPE, FileTransferConstants.TRANSFER);
@@ -97,78 +100,64 @@ public class GridFTPFileTransferClient {
         r = client.postResult(FileTransferConstants.TRANSFER_ENDPOINT, transfer.toString(), null);
         String taskId = r.document.getString(FileTransferConstants.TASK_ID);
         if (!waitForTask(taskId, 120)) {
-            System.out.println(
-                    "Transfer not complete after 2 minutes, exiting");
+            System.out.println("Transfer not complete after 2 minutes, exiting");
             return;
         }
 
         System.out.println("Transfer completed...");
 
-        //displayTasksummary();
-        //displayLs(destEndpoint, "~");
+        // displayTasksummary();
+        // displayLs(destEndpoint, "~");
     }
 
-    public void displayTasksummary()
-            throws IOException, JSONException, GeneralSecurityException, APIError {
+    public void displayTasksummary() throws IOException, JSONException, GeneralSecurityException, APIError {
         JSONTransferAPIClient.Result r = client.getResult("/tasksummary");
-        System.out.println("Task Summary for " + client.getUsername()
-                + ": ");
+        System.out.println("Task Summary for " + client.getUsername() + ": ");
         Iterator keysIter = r.document.sortedKeys();
         while (keysIter.hasNext()) {
-            String key = (String)keysIter.next();
+            String key = (String) keysIter.next();
             if (!key.equals("DATA_TYPE"))
-                System.out.println("  " + key + ": "
-                        + r.document.getString(key));
+                System.out.println("  " + key + ": " + r.document.getString(key));
         }
     }
 
-    public void displayTaskList(long maxAge)
-            throws IOException, JSONException, GeneralSecurityException, APIError {
+    public void displayTaskList(long maxAge) throws IOException, JSONException, GeneralSecurityException, APIError {
         Map<String, String> params = new HashMap<String, String>();
         if (maxAge > 0) {
             long minTime = System.currentTimeMillis() - 1000 * maxAge;
-            params.put("filter", "request_time:"
-                    + isoDateFormat.format(new Date(minTime)) + ",");
+            params.put("filter", "request_time:" + isoDateFormat.format(new Date(minTime)) + ",");
         }
-        JSONTransferAPIClient.Result r = client.getResult("/task_list",
-                params);
+        JSONTransferAPIClient.Result r = client.getResult("/task_list", params);
 
         int length = r.document.getInt("length");
         if (length == 0) {
-            System.out.println("No tasks were submitted in the last "
-                    + maxAge + " seconds");
+            System.out.println("No tasks were submitted in the last " + maxAge + " seconds");
             return;
         }
         JSONArray tasksArray = r.document.getJSONArray("DATA");
-        for (int i=0; i < tasksArray.length(); i++) {
+        for (int i = 0; i < tasksArray.length(); i++) {
             JSONObject taskObject = tasksArray.getJSONObject(i);
-            System.out.println("Task " + taskObject.getString("task_id")
-                    + ":");
+            System.out.println("Task " + taskObject.getString("task_id") + ":");
             displayTask(taskObject);
         }
     }
 
-    private static void displayTask(JSONObject taskObject)
-            throws JSONException {
+    private static void displayTask(JSONObject taskObject) throws JSONException {
         Iterator keysIter = taskObject.sortedKeys();
         while (keysIter.hasNext()) {
-            String key = (String)keysIter.next();
-            if (!key.equals("DATA_TYPE") && !key.equals("LINKS")
-                    && !key.endsWith("_link")) {
-                System.out.println("  " + key + ": "
-                        + taskObject.getString(key));
+            String key = (String) keysIter.next();
+            if (!key.equals("DATA_TYPE") && !key.equals("LINKS") && !key.endsWith("_link")) {
+                System.out.println("  " + key + ": " + taskObject.getString(key));
             }
         }
     }
 
-    public boolean autoActivate(String endpointName)
-            throws IOException, JSONException, GeneralSecurityException, APIError {
+    public boolean autoActivate(String endpointName) throws IOException, JSONException, GeneralSecurityException,
+            APIError {
         // Note: in a later release, auto-activation will be done at
         // /autoactivate instead.
-        String resource = BaseTransferAPIClient.endpointPath(endpointName)
-                + "/autoactivate";
-        JSONTransferAPIClient.Result r = client.postResult(resource, null,
-                null);
+        String resource = BaseTransferAPIClient.endpointPath(endpointName) + "/autoactivate";
+        JSONTransferAPIClient.Result r = client.postResult(resource, null, null);
         String code = r.document.getString("code");
         if (code.startsWith("AutoActivationFailed")) {
             return false;
@@ -176,41 +165,37 @@ public class GridFTPFileTransferClient {
         return true;
     }
 
-    public void displayLs(String endpointName, String path)
-            throws IOException, JSONException, GeneralSecurityException, APIError {
+    public void displayLs(String endpointName, String path) throws IOException, JSONException,
+            GeneralSecurityException, APIError {
         Map<String, String> params = new HashMap<String, String>();
         if (path != null) {
             params.put("path", path);
         }
-        String resource = BaseTransferAPIClient.endpointPath(endpointName)
-                + "/ls";
+        String resource = BaseTransferAPIClient.endpointPath(endpointName) + "/ls";
         JSONTransferAPIClient.Result r = client.getResult(resource, params);
-        System.out.println("Contents of " + path + " on "
-                + endpointName + ":");
+        System.out.println("Contents of " + path + " on " + endpointName + ":");
 
         JSONArray fileArray = r.document.getJSONArray("DATA");
-        for (int i=0; i < fileArray.length(); i++) {
+        for (int i = 0; i < fileArray.length(); i++) {
             JSONObject fileObject = fileArray.getJSONObject(i);
             System.out.println("  " + fileObject.getString("name"));
             Iterator keysIter = fileObject.sortedKeys();
             while (keysIter.hasNext()) {
-                String key = (String)keysIter.next();
-                if (!key.equals("DATA_TYPE") && !key.equals("LINKS")
-                        && !key.endsWith("_link") && !key.equals("name")) {
-                    System.out.println("    " + key + ": "
-                            + fileObject.getString(key));
+                String key = (String) keysIter.next();
+                if (!key.equals("DATA_TYPE") && !key.equals("LINKS") && !key.endsWith("_link") && !key.equals("name")) {
+                    System.out.println("    " + key + ": " + fileObject.getString(key));
                 }
             }
         }
 
     }
 
-    public boolean waitForTask(String taskId, int timeout)
-            throws IOException, JSONException, GeneralSecurityException, APIError {
+    public boolean waitForTask(String taskId, int timeout) throws IOException, JSONException, GeneralSecurityException,
+            APIError {
         String status = "ACTIVE";
         JSONTransferAPIClient.Result r;
 
-        String resource = "/task/" +  taskId;
+        String resource = "/task/" + taskId;
         Map<String, String> params = new HashMap<String, String>();
         params.put("fields", "status");
 

@@ -46,7 +46,7 @@ public class InMemoryMessageBoxServer {
 
     public static synchronized void unDeployService(QName service) throws AxisFault {
         receiver.getConfigurationContext().getAxisConfiguration().removeService(service.getLocalPart());
-    }   
+    }
 
     public static synchronized void start(String repository, String axis2xml) throws Exception {
         if (count == 0) {
@@ -90,7 +90,7 @@ public class InMemoryMessageBoxServer {
                 "http://org.apache.airavata/ws-messenger/msgbox/2011/MsgBoxPT/takeMessagesResponse");
         createOperation(axisService, "createMsgBox", new MsgBoxServiceMessageReceiverInOut(),
                 "http://org.apache.airavata/ws-messenger/msgbox/2011/createMsgBox",
-                "http://org.apache.airavata/ws-messenger/msgbox/2011/MsgBoxPT/createMsgBoxResponse");        
+                "http://org.apache.airavata/ws-messenger/msgbox/2011/MsgBoxPT/createMsgBoxResponse");
 
         InMemoryMessageBoxServer.deployService(axisService);
 
@@ -134,7 +134,7 @@ public class InMemoryMessageBoxServer {
 
     public static ConfigurationContext getConfigurationContext() {
         return receiver.getConfigurationContext();
-    }   
+    }
 
     public static String prefixBaseDirectory(String path) {
         return path;

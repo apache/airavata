@@ -54,7 +54,7 @@ public class TestUtilServer {
         if (receiver.getConfigurationContext().getAxisConfiguration() != null) {
             receiver.getConfigurationContext().getAxisConfiguration().removeService("AnonymousService");
         }
-    }    
+    }
 
     public static synchronized void start(String repository, String axis2xml) throws Exception {
         if (count == 0) {
@@ -180,7 +180,7 @@ public class TestUtilServer {
             axisService.mapActionToOperation(inputAction, operation1);
         }
     }
-    
+
     public static ConfigurationContext getNewConfigurationContext(String repository, String axis2xml) throws Exception {
         return ConfigurationContextFactory.createConfigurationContextFromFileSystem(repository, axis2xml);
     }

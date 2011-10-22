@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.xbaya.interpretor;
 
 // http://silktree.cs.indiana.edu:18080/axis2/services/WorkflowInterpretor
@@ -41,14 +41,14 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
     protected String localName;
 
     /*
-     * This tracker boolean wil be used to detect whether the user called the set method for this attribute. It will
-     * be used to determine whether to include this field in the serialized XML
+     * This tracker boolean wil be used to detect whether the user called the set method for this attribute. It will be
+     * used to determine whether to include this field in the serialized XML
      */
     protected boolean localNameTracker = false;
 
     /**
      * Auto generated getter method
-     *
+     * 
      * @return java.lang.String
      */
     public String getName() {
@@ -57,7 +57,7 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
 
     /**
      * Auto generated setter method
-     *
+     * 
      * @param param
      *            Name
      */
@@ -82,14 +82,14 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
     protected String localValue;
 
     /*
-     * This tracker boolean wil be used to detect whether the user called the set method for this attribute. It will
-     * be used to determine whether to include this field in the serialized XML
+     * This tracker boolean wil be used to detect whether the user called the set method for this attribute. It will be
+     * used to determine whether to include this field in the serialized XML
      */
     protected boolean localValueTracker = false;
 
     /**
      * Auto generated getter method
-     *
+     * 
      * @return java.lang.String
      */
     public String getValue() {
@@ -98,7 +98,7 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
 
     /**
      * Auto generated setter method
-     *
+     * 
      * @param param
      *            Value
      */
@@ -118,7 +118,7 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
 
     /**
      * isReaderMTOMAware
-     *
+     * 
      * @return true if the reader supports MTOM
      */
     public static boolean isReaderMTOMAware(javax.xml.stream.XMLStreamReader reader) {
@@ -134,7 +134,7 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
     }
 
     /**
-     *
+     * 
      * @param parentQName
      * @param factory
      * @return org.apache.axiom.om.OMElement
@@ -142,8 +142,7 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
     public org.apache.axiom.om.OMElement getOMElement(final javax.xml.namespace.QName parentQName,
             final org.apache.axiom.om.OMFactory factory) throws org.apache.axis2.databinding.ADBException {
 
-        org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this,
-                parentQName) {
+        org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this, parentQName) {
 
             public void serialize(org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
                     throws javax.xml.stream.XMLStreamException {
@@ -271,9 +270,8 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
     /**
      * Util method to write an attribute with the ns prefix
      */
-    private void writeAttribute(String prefix, String namespace, String attName,
-            String attValue, javax.xml.stream.XMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException {
+    private void writeAttribute(String prefix, String namespace, String attName, String attValue,
+            javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
         if (xmlWriter.getPrefix(namespace) == null) {
             xmlWriter.writeNamespace(prefix, namespace);
             xmlWriter.setPrefix(prefix, namespace);
@@ -300,9 +298,8 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
     /**
      * Util method to write an attribute without the ns prefix
      */
-    private void writeQNameAttribute(String namespace, String attName,
-            javax.xml.namespace.QName qname, javax.xml.stream.XMLStreamWriter xmlWriter)
-            throws javax.xml.stream.XMLStreamException {
+    private void writeQNameAttribute(String namespace, String attName, javax.xml.namespace.QName qname,
+            javax.xml.stream.XMLStreamWriter xmlWriter) throws javax.xml.stream.XMLStreamException {
 
         String attributeNamespace = qname.getNamespaceURI();
         String attributePrefix = xmlWriter.getPrefix(attributeNamespace);
@@ -377,17 +374,14 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
                     }
 
                     if (prefix.trim().length() > 0) {
-                        stringToWrite
-                                .append(prefix)
-                                .append(":")
+                        stringToWrite.append(prefix).append(":")
                                 .append(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
                     } else {
                         stringToWrite.append(org.apache.axis2.databinding.utils.ConverterUtil
                                 .convertToString(qnames[i]));
                     }
                 } else {
-                    stringToWrite.append(org.apache.axis2.databinding.utils.ConverterUtil
-                            .convertToString(qnames[i]));
+                    stringToWrite.append(org.apache.axis2.databinding.utils.ConverterUtil.convertToString(qnames[i]));
                 }
             }
             xmlWriter.writeCharacters(stringToWrite.toString());
@@ -418,7 +412,7 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
 
     /**
      * databinding method to get an XML representation of this object
-     *
+     * 
      */
     public javax.xml.stream.XMLStreamReader getPullParser(javax.xml.namespace.QName qName)
             throws org.apache.axis2.databinding.ADBException {
@@ -451,10 +445,10 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
 
         /**
          * static method to create the object Precondition: If this object is an element, the current or next start
-         * element starts this object and any intervening reader events are ignorable If this object is not an
-         * element, it is a complex type and the reader is at the event just after the outer start element
-         * Postcondition: If this object is an element, the reader is positioned at its end element If this object
-         * is a complex type, the reader is positioned at the end element of its outer element
+         * element starts this object and any intervening reader events are ignorable If this object is not an element,
+         * it is a complex type and the reader is at the event just after the outer start element Postcondition: If this
+         * object is an element, the reader is positioned at its end element If this object is a complex type, the
+         * reader is positioned at the end element of its outer element
          */
         public static NameValue parse(javax.xml.stream.XMLStreamReader reader) throws Exception {
             NameValue object = new NameValue();
@@ -466,8 +460,7 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
                     reader.next();
 
                 if (reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type") != null) {
-                    String fullTypeName = reader.getAttributeValue(
-                            "http://www.w3.org/2001/XMLSchema-instance", "type");
+                    String fullTypeName = reader.getAttributeValue("http://www.w3.org/2001/XMLSchema-instance", "type");
                     if (fullTypeName != null) {
                         String nsPrefix = null;
                         if (fullTypeName.indexOf(":") > -1) {
@@ -480,7 +473,8 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
                         if (!"NameValue".equals(type)) {
                             // find namespace for the prefix
                             String nsUri = reader.getNamespaceContext().getNamespaceURI(nsPrefix);
-                            return (NameValue) WorkflowInterpretorStub.ExtensionMapper.getTypeObject(nsUri, type, reader);
+                            return (NameValue) WorkflowInterpretorStub.ExtensionMapper.getTypeObject(nsUri, type,
+                                    reader);
                         }
 
                     }

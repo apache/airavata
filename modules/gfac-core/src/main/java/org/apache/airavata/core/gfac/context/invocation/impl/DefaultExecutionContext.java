@@ -28,15 +28,14 @@ import org.apache.airavata.core.gfac.notification.GFacNotifier;
 import org.apache.airavata.core.gfac.notification.impl.DefaultNotifier;
 
 /**
- * DefaultExecutionContext is a simple implementation of ExecutionContext.
- * It uses DefaultNotifier as its base notifier.
- *
+ * DefaultExecutionContext is a simple implementation of ExecutionContext. It uses DefaultNotifier as its base notifier.
+ * 
  */
 public class DefaultExecutionContext implements ExecutionContext {
 
     private GFacNotifier notificationService = new DefaultNotifier();
-    private Registry registryService;    
-    
+    private Registry registryService;
+
     public GFacNotifier getNotifier() {
         return this.notificationService;
     }

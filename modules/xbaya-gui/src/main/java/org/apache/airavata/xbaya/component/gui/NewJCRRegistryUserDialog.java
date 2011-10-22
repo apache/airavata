@@ -26,35 +26,35 @@ public class NewJCRRegistryUserDialog {
     private XBayaDialog dialog;
 
     private XBayaTextField urlTextField;
-    
+
     private XBayaTextField usernameTextField;
-    
+
     private JPasswordField passwordTextField;
 
-	private String username;
-	
-	private URL url;
-	
-	private String password;
+    private String username;
 
-	private JPasswordField confirmPasswordTextField;
+    private URL url;
 
-	private JButton okButton;
-	
-	private boolean userCreated=false;
-	
+    private String password;
+
+    private JPasswordField confirmPasswordTextField;
+
+    private JButton okButton;
+
+    private boolean userCreated = false;
+
     public NewJCRRegistryUserDialog(XBayaEngine engine) {
-    	this(engine,null,null);
+        this(engine, null, null);
     }
-    
+
     public NewJCRRegistryUserDialog(XBayaEngine engine, URL url) {
-    	this(engine,url,null);
+        this(engine, url, null);
     }
-    
+
     public NewJCRRegistryUserDialog(XBayaEngine engine, String username) {
-    	this(engine,null,username);
+        this(engine, null, username);
     }
-	
+
     /**
      * @param engine
      */
@@ -73,53 +73,53 @@ public class NewJCRRegistryUserDialog {
     }
 
     private void hide() {
-    	setUserCreated(false);
+        setUserCreated(false);
         this.dialog.hide();
     }
 
-    private void setData(){
-    	updateURL();
-    	updateUsername();
-    	updatePassword();
-    }
-    
-    private void ok() {
-    	setData();
-    	String status = updateStatus();
-    	if (status==null){
-	        try {
-				JCRComponentRegistry registry = new JCRComponentRegistry(getUrl().toURI(), "anonymous", "");
-				registry.getUserManager().createUser(getUsername(), getPassword());
-				hide();
-				setUserCreated(true);
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-				engine.getErrorWindow().error(e.getMessage());
-			} catch (AuthorizableExistsException e) {
-				e.printStackTrace();
-				engine.getErrorWindow().error(e.getMessage());
-			} catch (RepositoryException e) {
-				e.printStackTrace();
-				engine.getErrorWindow().error(e.getMessage());
-			}
-    	}else{
-    		engine.getErrorWindow().error(status);
-    	}
+    private void setData() {
+        updateURL();
+        updateUsername();
+        updatePassword();
     }
 
-    private String updateStatus(){
-    	String msg=null;
-    	if (getUrl()==null){
-    		msg="The url cannot be empty";
-    	} else if (getUsername()==null || getUsername().equals("")){
-    		msg="Username cannot be empty";
-    	} else if (getPassword()==null || getPassword().equals("")){
-    		msg="Passwords must match or cannot be empty";
-    	}
-//    	okButton.setEnabled(msg==null);
-    	return msg;
+    private void ok() {
+        setData();
+        String status = updateStatus();
+        if (status == null) {
+            try {
+                JCRComponentRegistry registry = new JCRComponentRegistry(getUrl().toURI(), "anonymous", "");
+                registry.getUserManager().createUser(getUsername(), getPassword());
+                hide();
+                setUserCreated(true);
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+                engine.getErrorWindow().error(e.getMessage());
+            } catch (AuthorizableExistsException e) {
+                e.printStackTrace();
+                engine.getErrorWindow().error(e.getMessage());
+            } catch (RepositoryException e) {
+                e.printStackTrace();
+                engine.getErrorWindow().error(e.getMessage());
+            }
+        } else {
+            engine.getErrorWindow().error(status);
+        }
     }
-    
+
+    private String updateStatus() {
+        String msg = null;
+        if (getUrl() == null) {
+            msg = "The url cannot be empty";
+        } else if (getUsername() == null || getUsername().equals("")) {
+            msg = "Username cannot be empty";
+        } else if (getPassword() == null || getPassword().equals("")) {
+            msg = "Passwords must match or cannot be empty";
+        }
+        // okButton.setEnabled(msg==null);
+        return msg;
+    }
+
     /**
      * Initializes the GUI.
      */
@@ -132,7 +132,7 @@ public class NewJCRRegistryUserDialog {
         XBayaLabel userLabel = new XBayaLabel("Username", this.usernameTextField);
         XBayaLabel passLabel = new XBayaLabel("Password", this.passwordTextField);
         XBayaLabel confirmPassLabel = new XBayaLabel("Confirm Password", this.confirmPasswordTextField);
-        
+
         GridPanel infoPanel = new GridPanel();
         infoPanel.add(urlLabel);
         infoPanel.add(this.urlTextField);
@@ -144,41 +144,41 @@ public class NewJCRRegistryUserDialog {
         infoPanel.add(this.confirmPasswordTextField);
 
         infoPanel.layout(4, 2, GridPanel.WEIGHT_NONE, 1);
-        
-        urlTextField.getSwingComponent().addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				updateURL();
-				updateStatus();
-			}
-        	
+
+        urlTextField.getSwingComponent().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                updateURL();
+                updateStatus();
+            }
+
         });
-        
-        usernameTextField.getSwingComponent().addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				updateUsername();
-				updateStatus();
-			}
-        	
+
+        usernameTextField.getSwingComponent().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                updateUsername();
+                updateStatus();
+            }
+
         });
-        
-        passwordTextField.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				updatePassword();
-				updateStatus();
-			}
+
+        passwordTextField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                updatePassword();
+                updateStatus();
+            }
         });
-        
-        confirmPasswordTextField.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				updatePassword();
-				updateStatus();
-			}
+
+        confirmPasswordTextField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                updatePassword();
+                updateStatus();
+            }
         });
-        
+
         okButton = new JButton("OK");
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -202,68 +202,68 @@ public class NewJCRRegistryUserDialog {
         updateControlData();
     }
 
-	public String getUsername() {
-		return username;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	
-	public void updateControlData(){
-		if (usernameTextField!=null && getUsername()!=null){
-			usernameTextField.setText(getUsername());
-		}
-		if (urlTextField!=null && getUrl()!=null){
-			urlTextField.setText(getUrl().toString());
-		}
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public URL getUrl() {
-		return url;
-	}
+    public void updateControlData() {
+        if (usernameTextField != null && getUsername() != null) {
+            usernameTextField.setText(getUsername());
+        }
+        if (urlTextField != null && getUrl() != null) {
+            urlTextField.setText(getUrl().toString());
+        }
+    }
 
-	public void setUrl(URL url) {
-		this.url = url;
-	}
+    public URL getUrl() {
+        return url;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public void setUrl(URL url) {
+        this.url = url;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	private void updateURL() {
-		URL specifiedURL=null;
-		try {
-			specifiedURL = new URL(urlTextField.getText());
-		} catch (MalformedURLException e) {
-			//erroneious url, ignore it
-		}
-		setUrl(specifiedURL);
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	private void updateUsername() {
-		setUsername(usernameTextField.getText());
-	}
+    private void updateURL() {
+        URL specifiedURL = null;
+        try {
+            specifiedURL = new URL(urlTextField.getText());
+        } catch (MalformedURLException e) {
+            // erroneious url, ignore it
+        }
+        setUrl(specifiedURL);
+    }
 
-	private void updatePassword() {
-		String password = null;
-		String ptext = new String(passwordTextField.getPassword());
-		String ctext = new String(confirmPasswordTextField.getPassword());
-		if (ptext.equals(ctext)){
-			password = ptext;
-		}
-		setPassword(password);
-	}
+    private void updateUsername() {
+        setUsername(usernameTextField.getText());
+    }
 
-	public boolean isUserCreated() {
-		return userCreated;
-	}
+    private void updatePassword() {
+        String password = null;
+        String ptext = new String(passwordTextField.getPassword());
+        String ctext = new String(confirmPasswordTextField.getPassword());
+        if (ptext.equals(ctext)) {
+            password = ptext;
+        }
+        setPassword(password);
+    }
 
-	public void setUserCreated(boolean userCreated) {
-		this.userCreated = userCreated;
-	}
+    public boolean isUserCreated() {
+        return userCreated;
+    }
+
+    public void setUserCreated(boolean userCreated) {
+        this.userCreated = userCreated;
+    }
 }

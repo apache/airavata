@@ -61,22 +61,22 @@ public class MsgBoxTest extends TestCase {
     }
 
     @Test
-    public void testMessageBox() throws Exception {               
+    public void testMessageBox() throws Exception {
 
         MsgBoxClient user = new MsgBoxClient();
         StringBuilder builder = new StringBuilder();
 
         EndpointReference msgBoxEpr = user.createMessageBox("http://localhost:" + port
                 + "/axis2/services/MsgBoxService", timeout);
-        
+
         for (int i = 0; i < 10; i++) {
-                                
+
             builder.delete(0, builder.capacity());
             Random x = new Random();
-            for (int j = 0; j < x.nextInt(50) ; j++) {
+            for (int j = 0; j < x.nextInt(50); j++) {
                 builder.append("123456789");
             }
-            
+
             String msg = String.format("<msg><seq>%d</seq><fill>%s</fill></msg>", i, builder.toString());
 
             user.storeMessage(msgBoxEpr, timeout, MsgBoxUtils.reader2OMElement(new StringReader(msg)));

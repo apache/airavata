@@ -338,7 +338,7 @@ public class ODEWSDLTransformer {
     }
 
     /**
-     *
+     * 
      * @param wsdl
      */
     private void addCrosscutImportsIfNecessary(WsdlDefinitions wsdl) {
@@ -354,7 +354,7 @@ public class ODEWSDLTransformer {
                 for (org.xmlpull.infoset.XmlElement importElement : imports) {
                     found = found
                             || WSDLUtil.attributeExist(importElement, "namespace",
-                            "http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/");
+                                    "http://lead.extreme.indiana.edu/namespaces/2006/lead-crosscut-parameters/");
                 }
                 if (!found) {
                     org.xmlpull.infoset.XmlElement crosscutImport = BUILDER.newFragment(schemaNs, "import");
@@ -372,7 +372,7 @@ public class ODEWSDLTransformer {
                 for (org.xmlpull.infoset.XmlElement importElement : imports) {
                     found = found
                             || WSDLUtil.attributeExist(importElement, "namespace",
-                            "http://www.extreme.indiana.edu/lead/xsd");
+                                    "http://www.extreme.indiana.edu/lead/xsd");
                 }
                 if (!found) {
                     org.xmlpull.infoset.XmlElement crosscutImport = BUILDER.newFragment(schemaNs, "import");

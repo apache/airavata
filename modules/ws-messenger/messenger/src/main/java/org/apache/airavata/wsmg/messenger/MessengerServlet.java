@@ -127,7 +127,7 @@ public class MessengerServlet extends HttpServlet {
         if (proc != null) {
             proc.stop();
         }
-        if(urlManager != null){
+        if (urlManager != null) {
             urlManager.stop();
             urlManager = null;
         }

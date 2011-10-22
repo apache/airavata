@@ -165,13 +165,13 @@ public class RegisterThroughFileWindow {
             }
             reader.close();
 
-//            if (this.docTypeComboBox.getText().equals("Host")) {
-//                xregistryAccesser.registerHost(fileData.toString());
-//            } else if (this.docTypeComboBox.getText().equals("Application")) {
-//                xregistryAccesser.registerApplication(fileData.toString());
-//            } else {
-//                xregistryAccesser.registerService(fileData.toString());
-//            }
+            // if (this.docTypeComboBox.getText().equals("Host")) {
+            // xregistryAccesser.registerHost(fileData.toString());
+            // } else if (this.docTypeComboBox.getText().equals("Application")) {
+            // xregistryAccesser.registerApplication(fileData.toString());
+            // } else {
+            // xregistryAccesser.registerService(fileData.toString());
+            // }
 
             JOptionPane.showMessageDialog(RegisterThroughFileWindow.this.dialog.getDialog(),
                     this.docTypeComboBox.getText() + " description registered successfully", "Successfully",

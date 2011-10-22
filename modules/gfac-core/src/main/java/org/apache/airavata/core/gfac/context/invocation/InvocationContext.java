@@ -25,19 +25,19 @@ import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.security.SecurityContext;
 
 /**
- * InvocationContext is the main context contains other contexts. It is used (per invocation) as
- * a parameter to pass to all modules in the Gfac service.
+ * InvocationContext is the main context contains other contexts. It is used (per invocation) as a parameter to pass to
+ * all modules in the Gfac service.
  * 
  */
-public interface InvocationContext {  
-    
+public interface InvocationContext {
+
     /**
      * Get ServiceName for the invocation
      * 
      * @return
      */
     String getServiceName();
-    
+
     /**
      * Get input. Use to handle specific MessageContext for input
      * 
@@ -63,15 +63,15 @@ public interface InvocationContext {
      * Set MessageContext as output
      * 
      * @param value
-     */    
+     */
     void setOutput(MessageContext<?> value);
-    
+
     /**
      * Get ExecutionDescription
      * 
      * @return ExecutionDescription
      */
-    ExecutionDescription getExecutionDescription();  
+    ExecutionDescription getExecutionDescription();
 
     /**
      * Set ExecutionDescription
@@ -117,7 +117,7 @@ public interface InvocationContext {
      * @return
      */
     SecurityContext getSecurityContext(String name);
-    
+
     /**
      * Add SecurityContext to the invocation with specific name.
      * 

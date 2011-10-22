@@ -36,8 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This Dispatcher is used to validate the incoming message, this is set to
- * Handler list in MsgBoxServiceLifeCycle.
+ * This Dispatcher is used to validate the incoming message, this is set to Handler list in MsgBoxServiceLifeCycle.
  */
 public class StoreMessageHandler extends AddressingBasedDispatcher {
     private static final Logger logger = LoggerFactory.getLogger(StoreMessageHandler.class);

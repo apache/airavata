@@ -17,14 +17,14 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.common.exception;
 
 public class UtilsException extends Exception {
 
     /**
      * Constructs a UtilsException.
-     *
+     * 
      */
     public UtilsException() {
         super();
@@ -32,7 +32,7 @@ public class UtilsException extends Exception {
 
     /**
      * Constructs a UtilsException.
-     *
+     * 
      * @param message
      */
     public UtilsException(String message) {
@@ -41,7 +41,7 @@ public class UtilsException extends Exception {
 
     /**
      * Constructs a UtilsException.
-     *
+     * 
      * @param cause
      */
     public UtilsException(Throwable cause) {
@@ -50,7 +50,7 @@ public class UtilsException extends Exception {
 
     /**
      * Constructs a UtilsException.
-     *
+     * 
      * @param message
      * @param cause
      */

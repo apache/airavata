@@ -40,7 +40,6 @@ import org.apache.airavata.wsmg.performance_evaluator.rtt.util.ConfigKeys;
 import org.apache.airavata.wsmg.performance_evaluator.rtt.util.LoadMsgPayload;
 import org.apache.airavata.wsmg.performance_evaluator.rtt.util.LoadXpath;
 
-
 class Stat {
     String name;
     Object value;

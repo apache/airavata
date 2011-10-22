@@ -70,7 +70,7 @@ public class SimpleInvoker implements Invoker {
         try {
             WSIFService service = WSIFServiceFactory.newInstance().getService(this.definitions);
             WSIFPort port = service.getPort();
-            this.client = WSIFRuntime.getDefault().newClientFor(port);            
+            this.client = WSIFRuntime.getDefault().newClientFor(port);
         } catch (RuntimeException e) {
             String message = "The WSDL is in the wrong format";
             throw new XBayaException(message, e);

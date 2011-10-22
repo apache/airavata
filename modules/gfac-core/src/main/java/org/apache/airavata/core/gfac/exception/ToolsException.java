@@ -29,7 +29,7 @@ public class ToolsException extends GfacException {
     public ToolsException(String message) {
         super(message);
     }
-    
+
     public ToolsException(String message, Throwable cause) {
         super(message, cause);
     }

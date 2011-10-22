@@ -168,13 +168,10 @@ public interface ErrorMessages {
      */
     public static final String BROKER_URL_NOT_SET_ERROR = "Broker URL is not set.";
 
-
     /**
      * Error while loading a list of workflows from XRegistry.
      */
     public static final String XREGISTRY_WORKFLOW_LIST_LOAD_ERROR = "Failed to get list of workflows from XRegistry.";
-
-
 
     /**
      * GFAC_URL_WRONG

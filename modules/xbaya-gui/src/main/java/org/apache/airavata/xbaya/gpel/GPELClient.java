@@ -270,7 +270,7 @@ public class GPELClient extends WorkflowClient {
      */
     public synchronized Workflow load(URI id, WorkflowType workflowType) throws GraphException,
             WorkflowEngineException, ComponentException {
-        logger.debug("ID: " + id.toString() + " Type:" + workflowType );
+        logger.debug("ID: " + id.toString() + " Type:" + workflowType);
 
         if (!isConnected()) {
             throw new IllegalStateException("The BPEL Engine has not configured.");

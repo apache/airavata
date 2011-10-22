@@ -24,10 +24,10 @@ package org.apache.airavata.core.gfac.context.invocation;
 import org.apache.airavata.core.gfac.notification.GFacNotifiable;
 import org.apache.airavata.core.gfac.notification.GFacNotifier;
 import org.apache.airavata.registry.api.Registry;
+
 /**
- * The Execution Context is used for passing information around the whole
- * service. It keeps information about general execution step. For example,
- * notification service, registry service.
+ * The Execution Context is used for passing information around the whole service. It keeps information about general
+ * execution step. For example, notification service, registry service.
  * 
  */
 public interface ExecutionContext {
@@ -48,8 +48,7 @@ public interface ExecutionContext {
     void addNotifiable(GFacNotifiable value);
 
     /**
-     * Get Registry object. It is used to retrieve important information about
-     * application execution.
+     * Get Registry object. It is used to retrieve important information about application execution.
      * 
      * @return Registry object
      */

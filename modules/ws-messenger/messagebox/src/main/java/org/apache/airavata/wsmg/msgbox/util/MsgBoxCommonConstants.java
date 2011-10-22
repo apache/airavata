@@ -21,7 +21,6 @@
 
 package org.apache.airavata.wsmg.msgbox.util;
 
-
 public class MsgBoxCommonConstants {
-    public static final String MSGBOX_STORAGE = "msgbox.storage";        
+    public static final String MSGBOX_STORAGE = "msgbox.storage";
 }

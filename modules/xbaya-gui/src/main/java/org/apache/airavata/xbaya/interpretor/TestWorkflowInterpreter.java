@@ -105,7 +105,6 @@ public class TestWorkflowInterpreter {
 
         invoker(userName, password, workflowAsString, in, workflow);
 
-
     }
 
     /**
@@ -120,7 +119,7 @@ public class TestWorkflowInterpreter {
         configuration.setMyProxyLifetime(XBayaConstants.DEFAULT_MYPROXY_LIFTTIME);
         configuration.setMyProxyPort(XBayaConstants.DEFAULT_MYPROXY_PORT);
         configuration.setMyProxyServer(XBayaConstants.DEFAULT_MYPROXY_SERVER);
-//        configuration.setXRegistryURL(XBayaConstants.DEFAULT_XREGISTRY_URL);
+        // configuration.setXRegistryURL(XBayaConstants.DEFAULT_XREGISTRY_URL);
         return configuration;
     }
 
@@ -156,16 +155,16 @@ public class TestWorkflowInterpreter {
         WorkflowContext context = null;
         String topic = UUID.randomUUID().toString();
 
-//        context = new GPELWorkflowContext(topic, userName, password);
-//        wfClient = new GPELWorkflowClient(context, workflow);
-//        wfClient.init();
-//        try {
-//            context.prepare(wfClient, workflow);
-//        } catch (GSSException e) {
-//            throw new RuntimeException(e);
-//        } catch (URISyntaxException e) {
-//            throw new RuntimeException(e);
-//        }
+        // context = new GPELWorkflowContext(topic, userName, password);
+        // wfClient = new GPELWorkflowClient(context, workflow);
+        // wfClient.init();
+        // try {
+        // context.prepare(wfClient, workflow);
+        // } catch (GSSException e) {
+        // throw new RuntimeException(e);
+        // } catch (URISyntaxException e) {
+        // throw new RuntimeException(e);
+        // }
 
         return wfClient.invoke(inputs);
 

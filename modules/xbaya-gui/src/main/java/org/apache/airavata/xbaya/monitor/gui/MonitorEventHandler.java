@@ -462,7 +462,7 @@ public class MonitorEventHandler implements ChangeListener {
 
     private void nodeStarted(Node node, boolean forward) {
         if (forward) {
-            if(!node.getGUI().getBodyColor().equals(NodeState.FINISHED.color)){
+            if (!node.getGUI().getBodyColor().equals(NodeState.FINISHED.color)) {
                 executeNode(node);
                 finishPredecessorNodes(node);
             }

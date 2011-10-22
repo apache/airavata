@@ -36,9 +36,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PublishedMessageHandler extends AddressingBasedDispatcher {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(PublishedMessageHandler.class);
-    
+
     private static final String ADDRESSING_VALIDATE_ACTION = "addressing.validateAction";
 
     private AxisOperation publishOperation = null;

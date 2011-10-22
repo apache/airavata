@@ -149,94 +149,89 @@ public class WorkflowInterpreter {
 
     private LeadResourceMapping resourceMapping;
 
-private boolean isoffline = false;
-	
-	
-	public WorkflowInterpreter(XBayaConfiguration configuration, String topic,
-			Workflow workflow, String username, String password) {
-		this(configuration, topic, workflow, username, password, false);
-	}
+    private boolean isoffline = false;
 
-	/**
-	 * 
-	 * Constructs a WorkflowInterpreter.
-	 * 
-	 * @param configuration
-	 * @param topic
-	 * @param workflow
-	 * @param username
-	 * @param password
-	 */
-	public WorkflowInterpreter(XBayaConfiguration configuration, String topic,
-			Workflow workflow, String username, String password, boolean offline) {
-		this.isoffline = offline;
-		this.configuration = configuration;
+    public WorkflowInterpreter(XBayaConfiguration configuration, String topic, Workflow workflow, String username,
+            String password) {
+        this(configuration, topic, workflow, username, password, false);
+    }
 
-		this.username = username;
-		this.password = password;
-		this.topic = topic;
-		this.workflow = workflow;
-		if (this.isoffline) {
-			this.notifier = new StandaloneNotificationSender(topic, this.workflow);
-		} else {
-			this.notifier = new NotificationSender(this.configuration.getBrokerURL(), topic);
-		}
-		this.mode = SERVER_MODE;
-		this.retryFailed = false;
+    /**
+     * 
+     * Constructs a WorkflowInterpreter.
+     * 
+     * @param configuration
+     * @param topic
+     * @param workflow
+     * @param username
+     * @param password
+     */
+    public WorkflowInterpreter(XBayaConfiguration configuration, String topic, Workflow workflow, String username,
+            String password, boolean offline) {
+        this.isoffline = offline;
+        this.configuration = configuration;
 
-	}
+        this.username = username;
+        this.password = password;
+        this.topic = topic;
+        this.workflow = workflow;
+        if (this.isoffline) {
+            this.notifier = new StandaloneNotificationSender(topic, this.workflow);
+        } else {
+            this.notifier = new NotificationSender(this.configuration.getBrokerURL(), topic);
+        }
+        this.mode = SERVER_MODE;
+        this.retryFailed = false;
 
-	/**
-	 * 
-	 * Constructs a WorkflowInterpreter.
-	 * 
-	 * @param engine
-	 * @param topic
-	 */
-	public WorkflowInterpreter(XBayaEngine engine, String topic) {
-		this(engine, topic, engine.getWorkflow());
-	}
+    }
 
-	/**
-	 * 
-	 * Constructs a WorkflowInterpreter.
-	 * 
-	 * @param engine
-	 * @param topic
-	 * @param workflow
-	 */
-	public WorkflowInterpreter(XBayaEngine engine, String topic,
-			Workflow workflow) {
-		this(engine, topic, workflow, false);
-	}
+    /**
+     * 
+     * Constructs a WorkflowInterpreter.
+     * 
+     * @param engine
+     * @param topic
+     */
+    public WorkflowInterpreter(XBayaEngine engine, String topic) {
+        this(engine, topic, engine.getWorkflow());
+    }
 
-	/**
-	 * 
-	 * Constructs a WorkflowInterpreter.
-	 * 
-	 * @param engine
-	 * @param topic
-	 * @param workflow
-	 * @param subWorkflow
-	 */
-	public WorkflowInterpreter(XBayaEngine engine, String topic,
-			Workflow workflow, boolean subWorkflow) {
-		this.engine = engine;
-		this.configuration = engine.getConfiguration();
-		this.myProxyChecker = new MyProxyChecker(this.engine);
-		this.workflow = workflow;
-		this.isSubWorkflow = subWorkflow;
-		this.mode = GUI_MODE;
-		if (this.isoffline) {
-			this.notifier = new StandaloneNotificationSender(topic, this.workflow);
-		} else {
-			this.notifier = new NotificationSender(this.engine.getMonitor()
-					.getConfiguration().getBrokerURL(), topic);
-		}
-		this.topic = topic;
+    /**
+     * 
+     * Constructs a WorkflowInterpreter.
+     * 
+     * @param engine
+     * @param topic
+     * @param workflow
+     */
+    public WorkflowInterpreter(XBayaEngine engine, String topic, Workflow workflow) {
+        this(engine, topic, workflow, false);
+    }
 
-	}
+    /**
+     * 
+     * Constructs a WorkflowInterpreter.
+     * 
+     * @param engine
+     * @param topic
+     * @param workflow
+     * @param subWorkflow
+     */
+    public WorkflowInterpreter(XBayaEngine engine, String topic, Workflow workflow, boolean subWorkflow) {
+        this.engine = engine;
+        this.configuration = engine.getConfiguration();
+        this.myProxyChecker = new MyProxyChecker(this.engine);
+        this.workflow = workflow;
+        this.isSubWorkflow = subWorkflow;
+        this.mode = GUI_MODE;
+        if (this.isoffline) {
+            this.notifier = new StandaloneNotificationSender(topic, this.workflow);
+        } else {
+            this.notifier = new NotificationSender(this.engine.getMonitor().getConfiguration().getBrokerURL(), topic);
+        }
+        this.topic = topic;
 
+    }
 
     public void setResourceMapping(LeadResourceMapping resourceMapping) {
         this.resourceMapping = resourceMapping;
@@ -613,8 +608,8 @@ private boolean isoffline = false;
                     }
 
                     /*
-                     * If there is a instance control component connects to this
-                     * component send information in soap header
+                     * If there is a instance control component connects to this component send information in soap
+                     * header
                      */
                     for (Node n : wsNode.getControlInPort().getFromNodes()) {
                         if (n instanceof InstanceNode) {
@@ -702,8 +697,7 @@ private boolean isoffline = false;
             Object inputVal = findInputFromPort(dataPort);
 
             /*
-             * Set type after get input value, and override inputValue if output
-             * type is array
+             * Set type after get input value, and override inputValue if output type is array
              */
             Node fromNode = dataPort.getFromNode();
             QName type = null;
@@ -881,8 +875,7 @@ private boolean isoffline = false;
             Boolean result = (Boolean) xpath.evaluate(booleanExpression, booleanExpression, XPathConstants.BOOLEAN);
 
             /*
-             * Set control port to make execution flow continue according to
-             * condition
+             * Set control port to make execution flow continue according to condition
              */
             for (ControlPort controlPort : node.getControlOutPorts()) {
                 if (controlPort.getName().equals(IfComponent.TRUE_PORT_NAME)) {
@@ -971,9 +964,8 @@ private boolean isoffline = false;
                         leadCtxHeader.setWorkflowId(new URI(this.workflow.getName()));
 
                         /*
-                         * We do this so that the wsdl resolver can is setup
-                         * wsdlresolver.getInstance is static so once this is
-                         * done rest of the loading should work.
+                         * We do this so that the wsdl resolver can is setup wsdlresolver.getInstance is static so once
+                         * this is done rest of the loading should work.
                          */
                         XBayaSecurity.init();
 
@@ -989,8 +981,8 @@ private boolean isoffline = false;
                     }
 
                     /*
-                     * If there is a instance control component connects to this
-                     * component send information in soap header
+                     * If there is a instance control component connects to this component send information in soap
+                     * header
                      */
                     for (Node n : foreachWSNode.getControlInPort().getFromNodes()) {
                         if (n instanceof InstanceNode) {
@@ -1146,8 +1138,7 @@ private boolean isoffline = false;
                 }
             } else if (component instanceof EndifComponent) {
                 /*
-                 * EndIfComponent can run if number of input equals to number of
-                 * output that it expects
+                 * EndIfComponent can run if number of input equals to number of output that it expects
                  */
                 int expectedOutput = node.getOutputPorts().size();
                 int actualInput = 0;

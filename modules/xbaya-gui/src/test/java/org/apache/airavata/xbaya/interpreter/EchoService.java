@@ -17,12 +17,12 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.xbaya.interpreter;
 
 public class EchoService {
 
-    public String echo(String input){
+    public String echo(String input) {
         return input;
     }
 }

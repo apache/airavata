@@ -280,7 +280,7 @@ public class GridFtp {
             } else {
                 localTempfile = localFile;
             }
-            
+
             log.debug("Loca temporary file:" + localTempfile);
 
             downloadFile(destURI, gsCredential, localTempfile);
@@ -292,9 +292,9 @@ public class GridFtp {
                 buff.append(temp);
                 buff.append(GFacConstants.NEWLINE);
             }
-            
+
             log.debug("finish read file:" + localTempfile);
-            
+
             return buff.toString();
         } catch (FileNotFoundException e) {
             throw new ToolsException("Cannot read localfile file:" + localTempfile, e);
@@ -346,12 +346,11 @@ public class GridFtp {
                 HostPort hp = srcClient.setPassive();
                 destClient.setActive(hp);
             }
-            
+
             log.debug("Start transfer file from GridFTP:" + srchost.toString() + " to " + desthost.toString());
 
             /**
-             * Transfer a file. The transfer() function blocks until the
-             * transfer is complete.
+             * Transfer a file. The transfer() function blocks until the transfer is complete.
              */
             srcClient.transfer(srchost.getPath(), destClient, desthost.getPath(), false, null);
             if (srcClient.getSize(srchost.getPath()) == destClient.getSize(desthost.getPath())) {
@@ -361,11 +360,14 @@ public class GridFtp {
             }
 
         } catch (ServerException e) {
-            throw new ToolsException("Cannot transfer file from GridFTP:" + srchost.toString() + " to " + desthost.toString(), e);
+            throw new ToolsException("Cannot transfer file from GridFTP:" + srchost.toString() + " to "
+                    + desthost.toString(), e);
         } catch (IOException e) {
-            throw new ToolsException("Cannot transfer file from GridFTP:" + srchost.toString() + " to " + desthost.toString(), e);
+            throw new ToolsException("Cannot transfer file from GridFTP:" + srchost.toString() + " to "
+                    + desthost.toString(), e);
         } catch (ClientException e) {
-            throw new ToolsException("Cannot transfer file from GridFTP:" + srchost.toString() + " to " + desthost.toString(), e);
+            throw new ToolsException("Cannot transfer file from GridFTP:" + srchost.toString() + " to "
+                    + desthost.toString(), e);
         } finally {
             if (destClient != null) {
                 try {

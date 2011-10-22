@@ -45,7 +45,6 @@ import org.apache.airavata.xbaya.wf.Workflow;
 import org.ietf.jgss.GSSCredential;
 import org.xmlpull.infoset.XmlElement;
 
-
 public class RegistryAccesser {
 
     /**
@@ -67,25 +66,24 @@ public class RegistryAccesser {
     public RegistryAccesser(XBayaEngine engine) {
         this.engine = engine;
     }
- 
-    private Registry connectToRegistry(){
+
+    private Registry connectToRegistry() {
         JCRComponentRegistry jcrComponentRegistry = this.engine.getConfiguration().getJcrComponentRegistry();
         return jcrComponentRegistry.getRegistry();
     }
 
     /**
-     *
+     * 
      * @return
      * @throws RepositoryException
      */
-    public Map<QName,Node> getOGCEWorkflowTemplateList() throws RepositoryException {
+    public Map<QName, Node> getOGCEWorkflowTemplateList() throws RepositoryException {
         Registry registry = connectToRegistry();
         return registry.getWorkflows(this.engine.getConfiguration().getRegigstryUserName());
     }
 
-
     /**
-     *
+     * 
      * @param workflowTemplateId
      * @return
      * @throws RepositoryException
@@ -96,7 +94,7 @@ public class RegistryAccesser {
     public Workflow getOGCEWorkflow(QName workflowTemplateId) throws RepositoryException, GraphException,
             ComponentException, Exception {
         Registry registry = connectToRegistry();
-        Node node = registry.getWorkflow(workflowTemplateId,this.engine.getConfiguration().getRegigstryUserName());
+        Node node = registry.getWorkflow(workflowTemplateId, this.engine.getConfiguration().getRegigstryUserName());
         XmlElement xwf = XMLUtil.stringToXmlElement(node.getProperty("workflow").getString());
         Workflow workflow = new Workflow(xwf);
         return workflow;
@@ -106,82 +104,83 @@ public class RegistryAccesser {
      * Save workflow in to Registry
      */
     public void saveWorkflow() {
-         if(XBayaUtil.acquireJCRRegistry(this.engine)){
-        try {
+        if (XBayaUtil.acquireJCRRegistry(this.engine)) {
+            try {
 
-            Workflow workflow = this.engine.getWorkflow();
-            JythonScript script = new JythonScript(workflow, this.engine.getConfiguration());
+                Workflow workflow = this.engine.getWorkflow();
+                JythonScript script = new JythonScript(workflow, this.engine.getConfiguration());
 
-            // Check if there is any errors in the workflow first.
-            ArrayList<String> warnings = new ArrayList<String>();
-            if (!script.validate(warnings)) {
-                StringBuilder buf = new StringBuilder();
-                for (String warning : warnings) {
-                    buf.append("- ");
-                    buf.append(warning);
-                    buf.append("\n");
+                // Check if there is any errors in the workflow first.
+                ArrayList<String> warnings = new ArrayList<String>();
+                if (!script.validate(warnings)) {
+                    StringBuilder buf = new StringBuilder();
+                    for (String warning : warnings) {
+                        buf.append("- ");
+                        buf.append(warning);
+                        buf.append("\n");
+                    }
+                    this.engine.getErrorWindow().warning(buf.toString());
+                    return;
                 }
-                this.engine.getErrorWindow().warning(buf.toString());
-                return;
+                RegistryWorkflowPublisherWindow registryPublishingWindow = new RegistryWorkflowPublisherWindow(
+                        this.engine);
+                registryPublishingWindow.show();
+
+                String workflowId = workflow.getName();
+
+                workflowId = StringUtil.convertToJavaIdentifier(workflowId);
+
+                // FIXME::Commenting the workflow UUID. It is debatable if the
+                // workflow template id should be unique or not.
+                // workflowId = workflowId + UUID.randomUUID();
+
+                QName workflowQName = new QName(XBayaConstants.OGCE_WORKFLOW_NS, workflowId);
+
+                // first find whether this resource is already in xregistry
+                // TODO: Add the check back
+                // DocData[] resource =
+                // client.findOGCEResource(workflowQName.toString(), "Workflow",
+                // null);
+                // if (resource != null && !"".equals(resource)) {
+                // // if already there then remove
+                //
+                // int result =
+                // JOptionPane.showConfirmDialog(this.engine.getGUI().getGraphCanvas().getSwingComponent(),
+                // "Workflow Already Exist in Xregistry. Do you want to overwrite",
+                // "Workflow already exist", JOptionPane.YES_NO_OPTION);
+                // if(result != JOptionPane.YES_OPTION){
+                // return;
+                // }
+                // client.removeResource(workflowQName);
+                // }
+                String workflowAsString = XMLUtil.xmlElementToString(workflow.toXML());
+                String owner = this.engine.getConfiguration().getRegigstryUserName();
+
+                Registry registry = this.connectToRegistry();
+                registry.saveWorkflow(workflowQName, workflow.getName(), workflow.getDescription(), workflowAsString,
+                        owner, registryPublishingWindow.isMakePublic());
+                registryPublishingWindow.hide();
+
+            } catch (Exception e) {
+                this.engine.getErrorWindow().error(e.getMessage(), e);
             }
-            RegistryWorkflowPublisherWindow registryPublishingWindow = new RegistryWorkflowPublisherWindow(
-                    this.engine);
-            registryPublishingWindow.show();
-
-            String workflowId = workflow.getName();
-
-            workflowId = StringUtil.convertToJavaIdentifier(workflowId);
-
-            // FIXME::Commenting the workflow UUID. It is debatable if the
-            // workflow template id should be unique or not.
-            // workflowId = workflowId + UUID.randomUUID();
-
-            QName workflowQName = new QName(XBayaConstants.OGCE_WORKFLOW_NS, workflowId);
-
-            // first find whether this resource is already in xregistry
-            // TODO: Add the check back
-            // DocData[] resource =
-            // client.findOGCEResource(workflowQName.toString(), "Workflow",
-            // null);
-            // if (resource != null && !"".equals(resource)) {
-            // // if already there then remove
-            //
-            // int result =
-            // JOptionPane.showConfirmDialog(this.engine.getGUI().getGraphCanvas().getSwingComponent(),
-            // "Workflow Already Exist in Xregistry. Do you want to overwrite",
-            // "Workflow already exist", JOptionPane.YES_NO_OPTION);
-            // if(result != JOptionPane.YES_OPTION){
-            // return;
-            // }
-            // client.removeResource(workflowQName);
-            // }
-            String workflowAsString = XMLUtil.xmlElementToString(workflow.toXML());
-            String owner = this.engine.getConfiguration().getRegigstryUserName();
-
-            Registry registry = this.connectToRegistry();
-            registry.saveWorkflow(workflowQName,workflow.getName(),workflow.getDescription(),workflowAsString,owner,registryPublishingWindow.isMakePublic());
-            registryPublishingWindow.hide();
-
-        } catch (Exception e) {
-            this.engine.getErrorWindow().error(e.getMessage(), e);
         }
-         }
     }
 
     /**
-     *
+     * 
      * @param workflowTemplateId
      * @throws RepositoryException
      */
     public void deleteOGCEWorkflow(QName workflowTemplateId) throws RepositoryException {
-        if(XBayaUtil.acquireJCRRegistry(this.engine)){
-        Registry registry = connectToRegistry();
-        registry.deleteWorkflow(workflowTemplateId,this.engine.getConfiguration().getRegigstryUserName());
+        if (XBayaUtil.acquireJCRRegistry(this.engine)) {
+            Registry registry = connectToRegistry();
+            registry.deleteWorkflow(workflowTemplateId, this.engine.getConfiguration().getRegigstryUserName());
         }
     }
 
     /**
-     *
+     * 
      * @param qname
      * @return
      */
@@ -193,17 +192,17 @@ public class RegistryAccesser {
             XmlElement xwf = XMLUtil.stringToXmlElement(node.getProperty("workflow").getString());
             workflow = new Workflow(xwf);
         } catch (GraphException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         } catch (ComponentException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         } catch (RepositoryException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         }
         return workflow;
     }
 
     /**
-     *
+     * 
      * @param name
      * @return
      */

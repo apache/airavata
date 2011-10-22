@@ -53,9 +53,9 @@ import org.slf4j.LoggerFactory;
 public class BrokerServiceLifeCycle implements ServiceLifeCycle {
 
     private static final Logger log = LoggerFactory.getLogger(BrokerServiceLifeCycle.class);
-    
+
     private static final long DEFAULT_SOCKET_TIME_OUT = 20000l;
-    
+
     private DeliveryProcessor proc;
     private ConsumerUrlManager urlManager;
 
@@ -65,7 +65,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
             proc.stop();
             proc = null;
         }
-        if(urlManager != null){
+        if (urlManager != null) {
             urlManager.stop();
             urlManager = null;
         }
@@ -112,20 +112,20 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
             wsmgConfig.setStorage(inmem);
             wsmgConfig.setQueue(inmem);
             wsmgConfig.setSubscriptionManager(new SubscriptionManager(wsmgConfig, inmem));
-            
+
         } else {
             String jdbcUrl = configMan.getConfig(WsmgCommonConstants.CONFIG_JDBC_URL);
             String jdbcDriver = configMan.getConfig(WsmgCommonConstants.CONFIG_JDBC_DRIVER);
             WsmgPersistantStorage persis = new WsmgPersistantStorage(jdbcUrl, jdbcDriver);
-            
+
             wsmgConfig.setStorage(persis);
             wsmgConfig.setQueue(persis);
             wsmgConfig.setSubscriptionManager(new SubscriptionManager(wsmgConfig, persis));
-        }                
+        }
 
         NotificationProcessor notificatonProcessor = new NotificationProcessor(wsmgConfig);
         wsmgConfig.setNotificationProcessor(notificatonProcessor);
-        
+
         return wsmgConfig;
     }
 
@@ -156,20 +156,21 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
                     WsmgCommonConstants.STORAGE_TYPE_IN_MEMORY)) {
 
                 /*
-                 *  user has asked to use in memory queue but without starting the delivery thread. this will accumulate message in memory.
+                 * user has asked to use in memory queue but without starting the delivery thread. this will accumulate
+                 * message in memory.
                  */
                 log.error("conflicting configuration detected, using in memory queue without starting delivery thread will result memory growth.");
 
             }
             return;
         }
-        
+
         /*
          * Create Protocol
          */
         DeliveryProtocol protocol;
-        String protocolClass = configMan.getConfig(WsmgCommonConstants.DELIVERY_PROTOCOL,
-                Axis2Protocol.class.getName());
+        String protocolClass = configMan
+                .getConfig(WsmgCommonConstants.DELIVERY_PROTOCOL, Axis2Protocol.class.getName());
         try {
             Class cl = Class.forName(protocolClass);
             Constructor<DeliveryProtocol> co = cl.getConstructor(null);
@@ -179,19 +180,19 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
             log.error("Cannot initial protocol sender", e);
             return;
         }
-        protocol.setTimeout(configMan.getConfig(WsmgCommonConstants.CONFIG_SOCKET_TIME_OUT, DEFAULT_SOCKET_TIME_OUT));                      
+        protocol.setTimeout(configMan.getConfig(WsmgCommonConstants.CONFIG_SOCKET_TIME_OUT, DEFAULT_SOCKET_TIME_OUT));
 
         /*
-         * Create delivery method 
+         * Create delivery method
          */
         SendingStrategy method = null;
-        String initedmethod = null;        
+        String initedmethod = null;
         String deliveryMethod = configMan.getConfig(WsmgCommonConstants.CONFIG_DELIVERY_METHOD,
                 WsmgCommonConstants.DELIVERY_METHOD_SERIAL);
         if (WsmgCommonConstants.DELIVERY_METHOD_PARALLEL.equalsIgnoreCase(deliveryMethod)) {
             method = new ParallelSender();
             initedmethod = WsmgCommonConstants.DELIVERY_METHOD_PARALLEL;
-            
+
         } else if (WsmgCommonConstants.DELIVERY_METHOD_THREAD_CREW.equalsIgnoreCase(deliveryMethod)) {
             int poolsize = configMan.getConfig(WsmgCommonConstants.CONFIG_SENDING_THREAD_POOL_SIZE,
                     WsmgCommonConstants.DEFAULT_SENDING_THREAD_POOL_SIZE);
@@ -199,19 +200,19 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
                     WsmgCommonConstants.DEFAULT_SENDING_BATCH_SIZE);
             method = new FixedParallelSender(poolsize, batchsize);
             initedmethod = WsmgCommonConstants.DELIVERY_METHOD_THREAD_CREW;
-            
+
         } else {
             method = new SerialSender();
             initedmethod = WsmgCommonConstants.DELIVERY_METHOD_SERIAL;
-        }        
-        
+        }
+
         /*
          * Create Deliverable
          */
         urlManager = new ConsumerUrlManager(configMan);
         Deliverable senderUtils = new SenderUtils(urlManager);
         senderUtils.setProtocol(protocol);
-        
+
         proc = new DeliveryProcessor(senderUtils, method);
         proc.start();
         log.info(initedmethod + " sending method inited");

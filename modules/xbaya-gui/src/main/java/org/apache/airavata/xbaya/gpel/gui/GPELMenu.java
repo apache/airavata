@@ -83,7 +83,7 @@ public class GPELMenu implements EventListener {
      * @see org.apache.airavata.xbaya.event.EventListener#eventReceived(org.apache.airavata.xbaya.event.Event)
      */
     public void eventReceived(Event event) {
-        
+
         boolean connected;
         if (event.getType() == Event.Type.GPEL_ENGINE_CONNECTED) {
             connected = true;
@@ -156,8 +156,6 @@ public class GPELMenu implements EventListener {
         });
         return item;
     }
-
-   
 
     private JMenuItem createConfigurationItem() {
         JMenuItem item = new JMenuItem("Configure GPEL Setting");

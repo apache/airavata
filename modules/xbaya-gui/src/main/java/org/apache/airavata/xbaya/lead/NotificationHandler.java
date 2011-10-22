@@ -46,7 +46,6 @@ import xsul.message_router.MessageContext;
 import xsul.xbeans_util.XBeansUtil;
 import xsul.xhandler.BaseHandler;
 
-
 public class NotificationHandler extends BaseHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationHandler.class);
@@ -78,7 +77,7 @@ public class NotificationHandler extends BaseHandler {
         super(NotificationHandler.class.getName());
         this.leadContext = leadContext;
         this.notifier = NotifierFactory.createNotifier();
-           URI myWorkflowID = null;
+        URI myWorkflowID = null;
         URI myServiceID = URI.create(XBayaConstants.APPLICATION_SHORT_NAME);
         String userDN = this.leadContext.getUserDn();
         if (userDN != null || userDN.trim().length() == 0) {
@@ -93,8 +92,8 @@ public class NotificationHandler extends BaseHandler {
         Integer myTimestep = null;
         EndpointReference epr = new EndpointReference(leadContext.getEventSink().getAddress().toString());
         this.invocationEntity = this.notifier.createEntity(myWorkflowID, myServiceID, myNodeID, myTimestep);
-        this.context = this.notifier.createTrackingContext(new Properties(),epr.getAddress().toString(),myWorkflowID,
-                myServiceID,myNodeID,myTimestep);
+        this.context = this.notifier.createTrackingContext(new Properties(), epr.getAddress().toString(), myWorkflowID,
+                myServiceID, myNodeID, myTimestep);
     }
 
     public NotificationHandler(WorkflowContextHeaderBuilder builder) {
@@ -129,8 +128,6 @@ public class NotificationHandler extends BaseHandler {
             throws DynamicInfosetInvokerException {
         logger.info("soapEnvelope: " + XMLUtil.xmlElementToString(soapEnvelope));
 
-
-
         URI serviceWorkflowID = null;
         URI serviceServiceID = URI.create(this.builder.getWorkflowMonitoringContext().getServiceInstanceId());
         if (serviceServiceID == null) {
@@ -154,9 +151,9 @@ public class NotificationHandler extends BaseHandler {
         }
         XmlObject bodyObject = XBeansUtil.xmlElementToXmlObject(soapBody);
 
-        this.invocationContext = this.notifier.invokingService(this.context,this.invocationEntity, headerObject, bodyObject,
-                INVOKING_MESSAGE);
-        return super.processOutgoingXml(soapEnvelope,context);
+        this.invocationContext = this.notifier.invokingService(this.context, this.invocationEntity, headerObject,
+                bodyObject, INVOKING_MESSAGE);
+        return super.processOutgoingXml(soapEnvelope, context);
     }
 
     /**
@@ -178,9 +175,11 @@ public class NotificationHandler extends BaseHandler {
         XmlObject bodyObject = XBeansUtil.xmlElementToXmlObject(soapBody);
         XmlElement faultElement = soapBody.element(null, "Fault");
         if (faultElement == null) {
-            this.notifier.receivedResult(this.context,this.invocationContext, headerObject, bodyObject, RECEIVE_RESULT_MESSAGE);
+            this.notifier.receivedResult(this.context, this.invocationContext, headerObject, bodyObject,
+                    RECEIVE_RESULT_MESSAGE);
         } else {
-            this.notifier.receivedFault(this.context,this.invocationContext, headerObject, bodyObject, RECEIVE_FAULT_MESSAGE);
+            this.notifier.receivedFault(this.context, this.invocationContext, headerObject, bodyObject,
+                    RECEIVE_FAULT_MESSAGE);
         }
 
         return super.processIncomingXml(soapEnvelope, context);

@@ -207,7 +207,7 @@ public class GPELInvokeSetupForTesting extends GPELInvokeWindow {
         this.dscTextField.setText(configuration.getDSCURL());
 
         // XRegistry
-//        this.xRegistryTextField.setText(configuration.getXRegistryURL());
+        // this.xRegistryTextField.setText(configuration.getXRegistryURL());
 
         // GFac URL
         this.gfacTextField.setText(configuration.getGFacURL());

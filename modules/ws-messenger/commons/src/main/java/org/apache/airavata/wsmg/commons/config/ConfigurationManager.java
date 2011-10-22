@@ -46,7 +46,7 @@ public class ConfigurationManager {
     public int getConfig(String configName, int defaultVal) {
         return Integer.parseInt(configurations.getProperty(configName, Integer.toString(defaultVal)));
     }
-    
+
     public long getConfig(String configName, long defaultVal) {
         return Long.parseLong(configurations.getProperty(configName, Long.toString(defaultVal)));
     }

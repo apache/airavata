@@ -37,10 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class creates the database tables required for messagebox and
- * messagebroker with default configuration this class creates embedded derby
- * database in local file system. User can specify required database in
- * appropriate properties files.
+ * This class creates the database tables required for messagebox and messagebroker with default configuration this
+ * class creates embedded derby database in local file system. User can specify required database in appropriate
+ * properties files.
  */
 public class DatabaseCreator {
 
@@ -82,13 +81,11 @@ public class DatabaseCreator {
     }
 
     /**
-     * Checks whether database tables are created by using select * on given
-     * table name
+     * Checks whether database tables are created by using select * on given table name
      * 
      * @param tableName
      *            Table which should be existed
-     * @return <code>true</core> if checkSQL is success, else <code>false</code>
-     *         .
+     * @return <code>true</core> if checkSQL is success, else <code>false</code> .
      */
     public static boolean isDatabaseStructureCreated(String tableName, Connection conn) {
         try {
@@ -240,7 +237,7 @@ public class DatabaseCreator {
      * @return script location
      */
     private static String getScriptLocation(String prefix, DatabaseType databaseType) {
-        String scriptName = prefix + "-" + databaseType + ".sql";        
+        String scriptName = prefix + "-" + databaseType + ".sql";
         log.debug("Loading database script from :" + scriptName);
         return "database_scripts" + File.separator + scriptName;
     }
@@ -322,20 +319,17 @@ public class DatabaseCreator {
     }
 
     /**
-     * Checks that a string buffer ends up with a given string. It may sound
-     * trivial with the existing JDK API but the various implementation among
-     * JDKs can make those methods extremely resource intensive and perform
-     * poorly due to massive memory allocation and copying. See
+     * Checks that a string buffer ends up with a given string. It may sound trivial with the existing JDK API but the
+     * various implementation among JDKs can make those methods extremely resource intensive and perform poorly due to
+     * massive memory allocation and copying. See
      * 
      * @param buffer
      *            the buffer to perform the check on
      * @param suffix
      *            the suffix
-     * @return <code>true</code> if the character sequence represented by the
-     *         argument is a suffix of the character sequence represented by the
-     *         StringBuffer object; <code>false</code> otherwise. Note that the
-     *         result will be <code>true</code> if the argument is the empty
-     *         string.
+     * @return <code>true</code> if the character sequence represented by the argument is a suffix of the character
+     *         sequence represented by the StringBuffer object; <code>false</code> otherwise. Note that the result will
+     *         be <code>true</code> if the argument is the empty string.
      */
     public static boolean checkStringBufferEndsWith(StringBuffer buffer, String suffix) {
         if (suffix.length() > buffer.length()) {

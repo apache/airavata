@@ -1,4 +1,5 @@
 package org.apache.airavata.services.gfac.axis2.dispatchers;
+
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -42,23 +43,22 @@ public class GFacURIBasedDispatcher extends AbstractServiceDispatcher {
     private static final Logger log = LoggerFactory.getLogger(GFacURIBasedDispatcher.class);
 
     /*
-     *  (non-Javadoc)
+     * (non-Javadoc)
+     * 
      * @see org.apache.axis2.engine.AbstractDispatcher#findService(org.apache.axis2.context.MessageContext)
      */
     public AxisService findService(MessageContext messageContext) throws AxisFault {
         EndpointReference toEPR = messageContext.getTo();
         if (toEPR != null) {
             if (LoggingControl.debugLoggingAllowed && log.isDebugEnabled()) {
-                log.debug(messageContext.getLogIDString() +
-                       " Checking for Service using target endpoint address : " +
-                        toEPR.getAddress());
+                log.debug(messageContext.getLogIDString() + " Checking for Service using target endpoint address : "
+                        + toEPR.getAddress());
             }
             String filePart = toEPR.getAddress();
             ConfigurationContext configurationContext = messageContext.getConfigurationContext();
-            String[] values = Utils.parseRequestURLForServiceAndOperation(filePart,
-                                  messageContext.getConfigurationContext().getServiceContextPath());
-            AxisConfiguration registry =
-                                configurationContext.getAxisConfiguration();
+            String[] values = Utils.parseRequestURLForServiceAndOperation(filePart, messageContext
+                    .getConfigurationContext().getServiceContextPath());
+            AxisConfiguration registry = configurationContext.getAxisConfiguration();
 
             if ((values.length >= 1) && (values[0] != null)) {
                 AxisService service = registry.getService(values[0]);
@@ -67,14 +67,14 @@ public class GFacURIBasedDispatcher extends AbstractServiceDispatcher {
                     if (service != null) {
                         messageContext.setAxisService(service);
                         if (GFacServiceOperations.INVOKE.toString().equals(values[1])) {
-                            messageContext.setAxisOperation(
-                                    service.getOperation(new QName(GFacServiceOperations.INVOKE.toString())));
+                            messageContext.setAxisOperation(service.getOperation(new QName(GFacServiceOperations.INVOKE
+                                    .toString())));
                         } else if (GFacServiceOperations.GETWSDL.toString().equals(values[1])) {
-                            messageContext.setAxisOperation(
-                                    service.getOperation(new QName(GFacServiceOperations.GETWSDL.toString())));
-                        }else if (GFacServiceOperations.GETABSTRACTWSDL.toString().equals(values[1])) {
-                            messageContext.setAxisOperation(
-                                    service.getOperation(new QName(GFacServiceOperations.GETABSTRACTWSDL.toString())));
+                            messageContext.setAxisOperation(service.getOperation(new QName(
+                                    GFacServiceOperations.GETWSDL.toString())));
+                        } else if (GFacServiceOperations.GETABSTRACTWSDL.toString().equals(values[1])) {
+                            messageContext.setAxisOperation(service.getOperation(new QName(
+                                    GFacServiceOperations.GETABSTRACTWSDL.toString())));
                         } else {
                             log.error("Wrong Service Name :" + values[0]);
                         }

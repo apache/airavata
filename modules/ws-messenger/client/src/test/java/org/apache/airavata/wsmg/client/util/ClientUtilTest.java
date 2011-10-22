@@ -27,7 +27,7 @@ public class ClientUtilTest {
         assertTrue(ClientUtil.formatURLString(url).startsWith("http://"));
 
     }
-    
+
     /**
      * Test method for {@link org.apache.airavata.wsmg.util.WsmgUtil#getHostIP()}.
      */

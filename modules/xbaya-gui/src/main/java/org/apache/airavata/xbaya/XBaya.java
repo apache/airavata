@@ -81,11 +81,11 @@ public class XBaya {
         System.err.println("Usage: java " + XBaya.class.getName() + " [-help]" + "[-config file]" + " [-title title]"
                 + " [-workflow workflow]" + " [-enableLocalRegistry]" + " [-localRegistry dir]"
                 + " [-gpelEngineURL url]" + " [-templateID templateID]" + " [-instanceID instanceID]"
-                + " [-gfacURL url]" + " [-dscURL url" + " [-startMonitor {true,false}]"
-                + " [-brokerURL url]" + " [-topic topic]" + " [-pullMode {true,false}]" + " [-myProxyServer host]"
-                + " [-karmaURL url]" + " [-karmaWorkflowInstanceID]" + " [-myProxyPort port]"
-                + " [-myProxyUsername username]" + " [-myProxyLifetime sec]" + " [-loadMyProxy {true,false}]"
-                + " [-messageBoxURL url]" + " [-width width]" + " [-height height]" + " [-exitOnClose false/true]");
+                + " [-gfacURL url]" + " [-dscURL url" + " [-startMonitor {true,false}]" + " [-brokerURL url]"
+                + " [-topic topic]" + " [-pullMode {true,false}]" + " [-myProxyServer host]" + " [-karmaURL url]"
+                + " [-karmaWorkflowInstanceID]" + " [-myProxyPort port]" + " [-myProxyUsername username]"
+                + " [-myProxyLifetime sec]" + " [-loadMyProxy {true,false}]" + " [-messageBoxURL url]"
+                + " [-width width]" + " [-height height]" + " [-exitOnClose false/true]");
     }
 
     private void parseArguments(String[] args) {
@@ -193,7 +193,7 @@ public class XBaya {
                         logger.warn(message, e);
                         this.config.addError(new XBayaException(message, e));
                     }
-                }  else if ("-registryURL".equalsIgnoreCase(arg)) {
+                } else if ("-registryURL".equalsIgnoreCase(arg)) {
                     index++;
                     String registryURL = args[index];
                     try {
@@ -207,12 +207,11 @@ public class XBaya {
 
                     index++;
                     this.config.setRegigstryUserName(args[index]);
-                }else if ("-registryPassphrase".equalsIgnoreCase(arg)) {
+                } else if ("-registryPassphrase".equalsIgnoreCase(arg)) {
 
                     index++;
                     this.config.setRegistryPassphrase(args[index]);
-                }
-                else if ("-width".equalsIgnoreCase(arg)) {
+                } else if ("-width".equalsIgnoreCase(arg)) {
                     index++;
                     String width = args[index];
                     try {

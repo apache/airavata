@@ -91,10 +91,10 @@ public class MsgboxHandler {
         } else {
             if (msgBoxEpr.getAllReferenceParameters() == null)
                 throw new MsgBrokerClientException("Invalid Message Box EPR, no reference parameters found");
-            String msgBoxId = msgBoxEpr.getAllReferenceParameters()
-                    .get(MsgBoxQNameConstants.MSG_BOXID_QNAME).getText();
+            String msgBoxId = msgBoxEpr.getAllReferenceParameters().get(MsgBoxQNameConstants.MSG_BOXID_QNAME).getText();
             if (msgBoxId == null)
-                throw new MsgBrokerClientException("Invalid Message Box EPR, reference parameter MsgBoxAddress is missing");
+                throw new MsgBrokerClientException(
+                        "Invalid Message Box EPR, reference parameter MsgBoxAddress is missing");
             String format = msgBoxEventSink.endsWith("/") ? "%sclientid/%s" : "%s/clientid/%s";
 
             formattedEventSink = String.format(format, msgBoxEventSink, msgBoxId);

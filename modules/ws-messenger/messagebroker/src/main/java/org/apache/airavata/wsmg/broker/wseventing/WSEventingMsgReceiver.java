@@ -47,7 +47,7 @@ public class WSEventingMsgReceiver extends AbstractBrokerMsgReceiver {
         MessageContext outputMsg = null;
 
         log.debug("WS-Eventing: " + msgType);
-        
+
         switch (msgType) {
         case SUBSCRIBE: {
             WsmgConfigurationContext brokerConfigContext = (WsmgConfigurationContext) inMsg.getConfigurationContext()

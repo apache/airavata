@@ -46,7 +46,7 @@ public class IOUtil {
      * @throws IOException
      */
     public static void writeToFile(String content, String path) throws IOException {
-        logger.debug("Path:" + path + " Content:" + content );
+        logger.debug("Path:" + path + " Content:" + content);
 
         FileWriter fw = new FileWriter(path);
         writeToWriter(content, fw);

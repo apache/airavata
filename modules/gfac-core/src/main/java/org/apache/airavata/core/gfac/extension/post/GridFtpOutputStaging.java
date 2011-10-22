@@ -52,10 +52,10 @@ import org.slf4j.LoggerFactory;
  * Output plugin to transfer file from GridFTP host to location given in output parameter
  */
 public class GridFtpOutputStaging extends PostExecuteChain {
-    
+
     public static final Logger log = LoggerFactory.getLogger(GridFtpOutputStaging.class);
 
-    public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";        
+    public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";
 
     public boolean execute(InvocationContext context) throws ExtensionException {
         try {
@@ -94,7 +94,7 @@ public class GridFtpOutputStaging extends PostExecuteChain {
                         }
                     }
                 }
-            }else{
+            } else {
                 log.debug("Output Context is null");
             }
         } catch (UnknownHostException e) {

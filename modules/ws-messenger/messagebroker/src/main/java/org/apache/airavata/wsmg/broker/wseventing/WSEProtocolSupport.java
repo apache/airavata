@@ -92,7 +92,7 @@ public class WSEProtocolSupport {
 
             if (filterDialectAttrib.compareTo(WsmgCommonConstants.TOPIC_EXPRESSION_SIMPLE_DIALECT) == 0) {
                 topicLocalString = BrokerUtil.getTopicLocalString(filterEl.getText()); // get what ever inside this
-                                                                                     // element
+                                                                                       // element
 
                 if (topicLocalString == null) {
                     throw new AxisFault("topic is not given in the subscription");
@@ -177,8 +177,8 @@ public class WSEProtocolSupport {
         try {
 
             subscriptionManagerEpr = EndpointReferenceHelper.toOM(factory, serviceLocationEndpointReference, new QName(
-                    NameSpaceConstants.WSE_NS.getNamespaceURI(), "SubscriptionManager"),
-                    NameSpaceConstants.WSA_NS.getNamespaceURI());
+                    NameSpaceConstants.WSE_NS.getNamespaceURI(), "SubscriptionManager"), NameSpaceConstants.WSA_NS
+                    .getNamespaceURI());
 
             responseMessage.addChild(subscriptionManagerEpr);
             subscriptionManagerEpr.setNamespace(responseMessage.getNamespace());

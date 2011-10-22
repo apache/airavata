@@ -17,75 +17,75 @@ import org.apache.airavata.xbaya.registrybrowser.model.HostDescriptions;
 import org.apache.airavata.xbaya.registrybrowser.model.ServiceDescriptions;
 import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflows;
 
-public class RegistryNode  extends AbstractAiravataTreeNode{
-	private Registry registry;
-	
-	public RegistryNode(Registry registry, TreeNode parent) {
-		super(parent);
-		setRegistry(registry);
-	}
+public class RegistryNode extends AbstractAiravataTreeNode {
+    private Registry registry;
 
-	protected List<TreeNode> getChildren() {
-		List<Object> children = new ArrayList<Object>();
-		GFacURLs gFacURLs = new GFacURLs(getRegistry());
-		children.add(gFacURLs);
-		HostDescriptions hostDescriptions = new HostDescriptions(getRegistry());
-		children.add(hostDescriptions);
-		ServiceDescriptions serviceDescriptions = new ServiceDescriptions(getRegistry());
-		children.add(serviceDescriptions);
-		ApplicationDeploymentDescriptions applicationDeploymentDescriptions = new ApplicationDeploymentDescriptions(getRegistry());
-		children.add(applicationDeploymentDescriptions);
-		XBayaWorkflows xBayaWorkflows = new XBayaWorkflows(getRegistry());
-		children.add(xBayaWorkflows);
-		return getTreeNodeList(children.toArray(), this);
-	}
+    public RegistryNode(Registry registry, TreeNode parent) {
+        super(parent);
+        setRegistry(registry);
+    }
 
-	public Registry getRegistry() {
-		return registry;
-	}
+    protected List<TreeNode> getChildren() {
+        List<Object> children = new ArrayList<Object>();
+        GFacURLs gFacURLs = new GFacURLs(getRegistry());
+        children.add(gFacURLs);
+        HostDescriptions hostDescriptions = new HostDescriptions(getRegistry());
+        children.add(hostDescriptions);
+        ServiceDescriptions serviceDescriptions = new ServiceDescriptions(getRegistry());
+        children.add(serviceDescriptions);
+        ApplicationDeploymentDescriptions applicationDeploymentDescriptions = new ApplicationDeploymentDescriptions(
+                getRegistry());
+        children.add(applicationDeploymentDescriptions);
+        XBayaWorkflows xBayaWorkflows = new XBayaWorkflows(getRegistry());
+        children.add(xBayaWorkflows);
+        return getTreeNodeList(children.toArray(), this);
+    }
 
-	public void setRegistry(Registry registry) {
-		this.registry = registry;
-	}
+    public Registry getRegistry() {
+        return registry;
+    }
 
-	@Override
-	public String getCaption(boolean selected, boolean expanded, boolean leaf,
-			boolean hasFocus) {
-		return getRegistry().getName()+" - "+getRegistry().getUsername()+"@"+getRegistry().getRepositoryURI().toString();
-	}
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
+    }
 
-	@Override
-	public Icon getIcon(boolean selected, boolean expanded, boolean leaf,
-			boolean hasFocus) {
-		return SwingUtil.createImageIcon("registry.png");
-	}
-	
-//	@Override
-//	public void refresh() {
-//		List<TreeNode> children = getChildren();
-//		for (TreeNode node : children) {
-//			if (node instanceof AbstractAiravataTreeNode){
-//				((AbstractAiravataTreeNode)node).refresh();
-//			}
-//		}
-//	}
-	@Override
-	public List<String> getSupportedActions() {
-		return Arrays.asList(RefreshAction.ID);
-	}
+    @Override
+    public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+        return getRegistry().getName() + " - " + getRegistry().getUsername() + "@"
+                + getRegistry().getRepositoryURI().toString();
+    }
 
-	@Override
-	public String getActionCaption(AbstractBrowserActionItem action) {
-		return action.getDefaultCaption();
-	}
+    @Override
+    public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+        return SwingUtil.createImageIcon("registry.png");
+    }
 
-	@Override
-	public Icon getActionIcon(AbstractBrowserActionItem action) {
-		return null;
-	}
+    // @Override
+    // public void refresh() {
+    // List<TreeNode> children = getChildren();
+    // for (TreeNode node : children) {
+    // if (node instanceof AbstractAiravataTreeNode){
+    // ((AbstractAiravataTreeNode)node).refresh();
+    // }
+    // }
+    // }
+    @Override
+    public List<String> getSupportedActions() {
+        return Arrays.asList(RefreshAction.ID);
+    }
 
-	@Override
-	public String getActionDescription(AbstractBrowserActionItem action) {
-		return null;
-	}
+    @Override
+    public String getActionCaption(AbstractBrowserActionItem action) {
+        return action.getDefaultCaption();
+    }
+
+    @Override
+    public Icon getActionIcon(AbstractBrowserActionItem action) {
+        return null;
+    }
+
+    @Override
+    public String getActionDescription(AbstractBrowserActionItem action) {
+        return null;
+    }
 }

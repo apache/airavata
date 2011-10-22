@@ -59,15 +59,15 @@ public class SchedulerImpl implements Scheduler {
          * Load Service
          */
         ServiceDescription serviceDesc = null;
-		try {
-			serviceDesc = registryService.getServiceDescription(context.getServiceName());
-		} catch (PathNotFoundException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (ServiceDescriptionRetrieveException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
+        try {
+            serviceDesc = registryService.getServiceDescription(context.getServiceName());
+        } catch (PathNotFoundException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        } catch (ServiceDescriptionRetrieveException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        }
 
         if (serviceDesc == null)
             throw new SchedulerException("Service Desciption for " + context.getServiceName()
@@ -85,17 +85,16 @@ public class SchedulerImpl implements Scheduler {
         /*
          * Load app
          */
-        ApplicationDeploymentDescription app=null;
-		try {
-			app = registryService.getDeploymentDescription(context.getServiceName(),
-			        host.getId());
-		} catch (PathNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (DeploymentDescriptionRetrieveException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+        ApplicationDeploymentDescription app = null;
+        try {
+            app = registryService.getDeploymentDescription(context.getServiceName(), host.getId());
+        } catch (PathNotFoundException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (DeploymentDescriptionRetrieveException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
 
         if (app == null)
             throw new SchedulerException("App Desciption for " + context.getServiceName()

@@ -8,14 +8,15 @@ import javax.swing.tree.TreeCellRenderer;
 
 public class RegistryTreeCellRenderer implements TreeCellRenderer {
 
-	@Override
-	public Component getTreeCellRendererComponent(JTree tree, Object value,
-			boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-		if (value instanceof AbstractAiravataTreeNode){
-			AbstractAiravataTreeNode node=(AbstractAiravataTreeNode)value;
-			return node.getNodeComponent(tree, value, selected, expanded, leaf, row, hasFocus);
-		}
-		return new DefaultTreeCellRenderer().getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
-	}
+    @Override
+    public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
+            boolean leaf, int row, boolean hasFocus) {
+        if (value instanceof AbstractAiravataTreeNode) {
+            AbstractAiravataTreeNode node = (AbstractAiravataTreeNode) value;
+            return node.getNodeComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+        }
+        return new DefaultTreeCellRenderer().getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row,
+                hasFocus);
+    }
 
 }

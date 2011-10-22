@@ -110,23 +110,23 @@ public class ApplicationDescriptionRegistrationWindow {
         return window;
     }
 
-    //FIXME: Update this to get the documents from JCR Registry
-//    private Object[] initHostNameList() {
-//        XRegistryAccesser xRegAccesser = new XRegistryAccesser(this.engine);
-//        HostDescData[] hostDataList = xRegAccesser.searchHostByName("");
-//        List<String> nameList = new ArrayList<String>();
-//        for (HostDescData hostData : hostDataList) {
-//            nameList.add(hostData.getName().toString());
-//        }
-//        return nameList.toArray();
-//    }
+    // FIXME: Update this to get the documents from JCR Registry
+    // private Object[] initHostNameList() {
+    // XRegistryAccesser xRegAccesser = new XRegistryAccesser(this.engine);
+    // HostDescData[] hostDataList = xRegAccesser.searchHostByName("");
+    // List<String> nameList = new ArrayList<String>();
+    // for (HostDescData hostData : hostDataList) {
+    // nameList.add(hostData.getName().toString());
+    // }
+    // return nameList.toArray();
+    // }
 
-//    /**
-//     * ReInit Host Name ComboBox
-//     */
-//    public void reinitHostComboBox() {
-//        this.hostNameComboBox.setModel(new DefaultComboBoxModel(initHostNameList()));
-//    }
+    // /**
+    // * ReInit Host Name ComboBox
+    // */
+    // public void reinitHostComboBox() {
+    // this.hostNameComboBox.setModel(new DefaultComboBoxModel(initHostNameList()));
+    // }
 
     /**
      * Clear All the TextFields
@@ -170,7 +170,7 @@ public class ApplicationDescriptionRegistrationWindow {
         this.applicationNameTextField = new XBayaTextField();
         this.applicationNameLabel = new XBayaLabel("Application Name", this.applicationNameTextField);
 
-//        this.hostNameComboBox = new XBayaComboBox(new DefaultComboBoxModel(initHostNameList()));
+        // this.hostNameComboBox = new XBayaComboBox(new DefaultComboBoxModel(initHostNameList()));
         this.hostNameComboBox.setEditable(false);
         this.hostNameLabel = new XBayaLabel("Host Name", this.hostNameComboBox);
 
@@ -307,49 +307,49 @@ public class ApplicationDescriptionRegistrationWindow {
             }
 
             /* Generate Bean Object */
-			String hostName = StringUtil.trimSpaceInString(this.hostNameComboBox.getText());
-			String projectName = StringUtil.trimSpaceInString(this.projectNameComboBox.getText());
-			String jobType = StringUtil.trimSpaceInString(this.jobTypeComboBox.getText());
-			String queue = StringUtil.trimSpaceInString(this.queueTextField.getText());
-			Integer maxWallTime = null;
-			if (!this.maxWallTimeTextField.getText().equals("")) {
-				maxWallTime = new Integer(
-						Integer.parseInt(this.maxWallTimeTextField.getText()));
-			}
-			Integer pCount = null;
-			if (!this.procsCountTextField.getText().equals("")) {
-				pCount = new Integer(Integer.parseInt(this.procsCountTextField
-						.getText()));
-			}
-            
+            String hostName = StringUtil.trimSpaceInString(this.hostNameComboBox.getText());
+            String projectName = StringUtil.trimSpaceInString(this.projectNameComboBox.getText());
+            String jobType = StringUtil.trimSpaceInString(this.jobTypeComboBox.getText());
+            String queue = StringUtil.trimSpaceInString(this.queueTextField.getText());
+            Integer maxWallTime = null;
+            if (!this.maxWallTimeTextField.getText().equals("")) {
+                maxWallTime = new Integer(Integer.parseInt(this.maxWallTimeTextField.getText()));
+            }
+            Integer pCount = null;
+            if (!this.procsCountTextField.getText().equals("")) {
+                pCount = new Integer(Integer.parseInt(this.procsCountTextField.getText()));
+            }
+
             ShellApplicationDeployment shellApplicationDeployment = new ShellApplicationDeployment();
             shellApplicationDeployment.setId(StringUtil.trimSpaceInString(this.applicationNameTextField.getText()));
             shellApplicationDeployment.setExecutable(StringUtil.trimSpaceInString(this.executableTextField.getText()));
-            shellApplicationDeployment.setWorkingDir(StringUtil.trimSpaceInString(this.workDirectoryTextField.getText()));
+            shellApplicationDeployment
+                    .setWorkingDir(StringUtil.trimSpaceInString(this.workDirectoryTextField.getText()));
             shellApplicationDeployment.setTmpDir(StringUtil.trimSpaceInString(this.tempDirTextField.getText()));
 
             ShellApplicationDeploymentType.Env.Entry[] entries = shellApplicationDeployment.getEnv().getEntryArray();
 
             Map<String, String> env = null;
-            for (int i=0; i<entries.length; i++) {
+            for (int i = 0; i < entries.length; i++) {
                 String key = shellApplicationDeployment.getEnv().getEntryArray(i).getKey();
                 String value = shellApplicationDeployment.getEnv().getEntryArray(i).getValue();
                 env.put(key, value);
             }
 
-            env.put("ProjectName",projectName);
-    		env.put("JobType",jobType);
-			env.put("Queue", queue);
-			env.put("HostName", hostName);
-            if (maxWallTime!=null) {
-            	env.put("MaxWallTime", maxWallTime.toString());
+            env.put("ProjectName", projectName);
+            env.put("JobType", jobType);
+            env.put("Queue", queue);
+            env.put("HostName", hostName);
+            if (maxWallTime != null) {
+                env.put("MaxWallTime", maxWallTime.toString());
             }
-            if (pCount!=null) {
-            	env.put("Pcount", pCount.toString());
+            if (pCount != null) {
+                env.put("Pcount", pCount.toString());
             }
-            
+
             /*--- save to registry ---*/
-            this.engine.getConfiguration().getJcrComponentRegistry().saveDeploymentDescription(projectName, hostName, shellApplicationDeployment);
+            this.engine.getConfiguration().getJcrComponentRegistry()
+                    .saveDeploymentDescription(projectName, hostName, shellApplicationDeployment);
         } catch (Exception e) {
             e.printStackTrace();
             this.hide();
@@ -399,7 +399,7 @@ public class ApplicationDescriptionRegistrationWindow {
      * show the dialog
      */
     public void show() {
-//        this.reinitHostComboBox();
+        // this.reinitHostComboBox();
         this.dialog.show();
     }
 

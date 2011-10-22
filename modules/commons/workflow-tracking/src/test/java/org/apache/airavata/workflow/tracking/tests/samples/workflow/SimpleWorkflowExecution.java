@@ -388,7 +388,8 @@ public class SimpleWorkflowExecution extends TestCase {
 
     public void runSample() throws Exception {
         notifier = NotifierFactory.createNotifier();
-        WorkflowTrackingContext context = notifier.createTrackingContext(null, BROKER_URL, WORKFLOW_1, SERVICE_0, null, null);
+        WorkflowTrackingContext context = notifier.createTrackingContext(null, BROKER_URL, WORKFLOW_1, SERVICE_0, null,
+                null);
         // create workflow and service instances
         {
 

@@ -28,12 +28,12 @@ import org.slf4j.Logger;
 
 public class LogUtils {
 
-    private LogUtils(){        
+    private LogUtils() {
     }
-    
+
     /**
-     * Print out properties' items into a log with the format: key = value. 
-     * Use debug level if it is enabled otherwise use info level.
+     * Print out properties' items into a log with the format: key = value. Use debug level if it is enabled otherwise
+     * use info level.
      * 
      * @param log
      * @param prop

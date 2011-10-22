@@ -27,6 +27,6 @@ import org.apache.axiom.om.OMElement;
 
 public interface Deliverable {
     void setProtocol(DeliveryProtocol protocol);
-    
+
     void send(ConsumerInfo consumerInfo, OMElement message, AdditionalMessageContent additionalMessageContent);
 }

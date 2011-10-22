@@ -131,7 +131,7 @@ public class EdgeGUI implements GraphPieceGUI {
     }
 
     private boolean isStream() {
-        return  this.edge.getFromPort().getNode() instanceof StreamSourceNode
+        return this.edge.getFromPort().getNode() instanceof StreamSourceNode
                 || this.edge.getFromPort().getNode() instanceof CepNode;
     }
 

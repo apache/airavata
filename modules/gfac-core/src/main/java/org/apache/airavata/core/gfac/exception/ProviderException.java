@@ -25,14 +25,14 @@ import org.apache.airavata.core.gfac.provider.Provider;
 
 /**
  * The exception for {@link Provider}
- *
+ * 
  */
 public class ProviderException extends GfacException {
-    
-    public ProviderException(String message){
+
+    public ProviderException(String message) {
         super(message);
     }
-    
+
     public ProviderException(String message, Throwable cause) {
         super(message, cause);
     }

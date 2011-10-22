@@ -220,7 +220,8 @@ public class NotificationProcessor {
                     .getNamespaceURI(), "Topic"));
             if (topicEl != null) {
 
-                topicLocalString = BrokerUtil.getTopicLocalString(topicEl.getText()); // get what ever inside this element
+                topicLocalString = BrokerUtil.getTopicLocalString(topicEl.getText()); // get what ever inside this
+                                                                                      // element
 
                 try {
                     topicElString = topicEl.toStringWithConsume();
@@ -229,8 +230,8 @@ public class NotificationProcessor {
                 }
                 additionalMessageContent.setTopicElement(topicElString);
             }
-            OMElement producerReferenceEl = wrappedMessageEl.getFirstChildWithName(new QName(
-                    NameSpaceConstants.WSNT_NS.getNamespaceURI(), "ProducerReference"));
+            OMElement producerReferenceEl = wrappedMessageEl.getFirstChildWithName(new QName(NameSpaceConstants.WSNT_NS
+                    .getNamespaceURI(), "ProducerReference"));
 
             if (producerReferenceEl != null) {
                 try {

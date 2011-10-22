@@ -25,14 +25,14 @@ import org.apache.airavata.core.gfac.scheduler.Scheduler;
 
 /**
  * The exception for {@link Scheduler}
- *
+ * 
  */
 public class SchedulerException extends GfacException {
 
-    public SchedulerException(String message){
+    public SchedulerException(String message) {
         super(message);
     }
-    
+
     public SchedulerException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -85,14 +85,14 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
     private UserManager userManager;
     private String username;
     private URI repositoryURI;
-    
+
     private static Logger log = LoggerFactory.getLogger(JCRRegistry.class);
 
-    public JCRRegistry(URI repositoryURI, String className, String user, String pass, Map<String, String> map) throws RepositoryException {
+    public JCRRegistry(URI repositoryURI, String className, String user, String pass, Map<String, String> map)
+            throws RepositoryException {
         try {
             /*
-             * Load the configuration from properties file at this level and
-             * create the object
+             * Load the configuration from properties file at this level and create the object
              */
             Class registryRepositoryFactory = Class.forName(className);
             Constructor c = registryRepositoryFactory.getConstructor();
@@ -177,26 +177,26 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         }
         return result;
     }
-    
+
     public void deleteServiceDescription(String serviceId) throws ServiceDescriptionRetrieveException,
-    		PathNotFoundException {
-		Session session = null;
-		try {
-		    session = getSession();
-		    Node serviceNode = getServiceNode(session);
-		    Node node = serviceNode.getNode(serviceId);
-		    if (node!=null) {
-				node.remove();
-				session.save();
-			}
-		} catch (PathNotFoundException e) {
-			throw e;
-		} catch (Exception e){
-		    throw new ServiceDescriptionRetrieveException(e);
-		} finally {
-		    closeSession(session);
-		}
-	}
+            PathNotFoundException {
+        Session session = null;
+        try {
+            session = getSession();
+            Node serviceNode = getServiceNode(session);
+            Node node = serviceNode.getNode(serviceId);
+            if (node != null) {
+                node.remove();
+                session.save();
+            }
+        } catch (PathNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ServiceDescriptionRetrieveException(e);
+        } finally {
+            closeSession(session);
+        }
+    }
 
     public ServiceDescription getServiceDescription(String serviceId) throws ServiceDescriptionRetrieveException,
             PathNotFoundException {
@@ -209,8 +209,8 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
             Property prop = node.getProperty(XML_PROPERTY_NAME);
             result = (ServiceDescription) SchemaUtil.parseFromXML(prop.getString());
         } catch (PathNotFoundException e) {
-        	throw e;
-        } catch (Exception e){
+            throw e;
+        } catch (Exception e) {
             throw new ServiceDescriptionRetrieveException(e);
         } finally {
             closeSession(session);
@@ -243,25 +243,25 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         return result;
     }
 
-    public void deleteHostDescription(String hostId) throws HostDescriptionRetrieveException,
-		    PathNotFoundException {
-		Session session = null;
-		try {
-		    session = getSession();
-		    Node hostNode = getHostNode(session);
-		    Node node = hostNode.getNode(hostId);
-		    if (node != null) {
-		        node.remove();
-		        session.save();
-		    }
-		} catch (PathNotFoundException e) {
-		    throw e;
-		} catch (Exception e) {
-		    throw new HostDescriptionRetrieveException(e);
-		} finally {
-		    closeSession(session);
-		}
-	}
+    public void deleteHostDescription(String hostId) throws HostDescriptionRetrieveException, PathNotFoundException {
+        Session session = null;
+        try {
+            session = getSession();
+            Node hostNode = getHostNode(session);
+            Node node = hostNode.getNode(hostId);
+            if (node != null) {
+                node.remove();
+                session.save();
+            }
+        } catch (PathNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new HostDescriptionRetrieveException(e);
+        } finally {
+            closeSession(session);
+        }
+    }
+
     public HostDescription getHostDescription(String hostId) throws HostDescriptionRetrieveException,
             PathNotFoundException {
         Session session = null;
@@ -399,8 +399,6 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         return false;
     }
 
-    
-    
     public List<ServiceDescription> searchServiceDescription(String name) throws ServiceDescriptionRetrieveException,
             PathNotFoundException {
         Session session = null;
@@ -487,8 +485,8 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         return result;
     }
 
-    public void deleteDeploymentDescription(String serviceName, String hostName,
-            String applicationName) throws PathNotFoundException, DeploymentDescriptionRetrieveException {
+    public void deleteDeploymentDescription(String serviceName, String hostName, String applicationName)
+            throws PathNotFoundException, DeploymentDescriptionRetrieveException {
         Session session = null;
         try {
             session = getSession();
@@ -515,7 +513,6 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         }
     }
 
-    
     public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName,
             String applicationName) throws PathNotFoundException, DeploymentDescriptionRetrieveException {
         Session session = null;
@@ -639,7 +636,7 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
             return false;
             // TODO propagate
         } finally {
-            closeSession(session);            
+            closeSession(session);
         }
         return true;
     }
@@ -660,7 +657,7 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
             return false;
             // TODO propagate
         } finally {
-            closeSession(session);            
+            closeSession(session);
         }
         return true;
     }
@@ -825,31 +822,31 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         } finally {
             closeSession(session);
         }
-        return false; 
-    }
-    
-    public String getUsername(){
-    	return username;
+        return false;
     }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public URI getRepositoryURI() {
-		return repositoryURI;
-	}
-
-	private void setRepositoryURI(URI repositoryURI) {
-		this.repositoryURI = repositoryURI;
-	}
-	
-    protected void triggerObservers(Object o){
-    	setChanged();
-    	notifyObservers(o);
+    public String getUsername() {
+        return username;
     }
 
-	public String getName() {
-		return repository.getDescriptor(Repository.REP_NAME_DESC);
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public URI getRepositoryURI() {
+        return repositoryURI;
+    }
+
+    private void setRepositoryURI(URI repositoryURI) {
+        this.repositoryURI = repositoryURI;
+    }
+
+    protected void triggerObservers(Object o) {
+        setChanged();
+        notifyObservers(o);
+    }
+
+    public String getName() {
+        return repository.getDescriptor(Repository.REP_NAME_DESC);
+    }
 }

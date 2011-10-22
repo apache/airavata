@@ -78,7 +78,7 @@ public class SubscriptionManager {
     private WsmgConfigurationContext wsmgConfig;
 
     private OutGoingQueue outGoingQueue;
-    
+
     private int counter = 1;
 
     public SubscriptionManager(WsmgConfigurationContext paramters, WsmgStorage storage) {
@@ -234,8 +234,7 @@ public class SubscriptionManager {
     }
 
     /**
-     * if find the subscription already exists, return the current
-     * subscriptionId else return null;
+     * if find the subscription already exists, return the current subscriptionId else return null;
      */
 
     public String checkSubscriptionExist(SubscriptionState state) {

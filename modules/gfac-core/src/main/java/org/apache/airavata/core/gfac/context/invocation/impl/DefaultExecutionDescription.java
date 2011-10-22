@@ -26,31 +26,35 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.core.gfac.context.invocation.ExecutionDescription;
 
-
 /**
- * This class provides access to the Host, Application Deployment, and Service descriptions, which
- * are XML<->JavaBean serializations. 
- */ 
-public class DefaultExecutionDescription implements ExecutionDescription{
+ * This class provides access to the Host, Application Deployment, and Service descriptions, which are XML<->JavaBean
+ * serializations.
+ */
+public class DefaultExecutionDescription implements ExecutionDescription {
     private HostDescription host;
     private ApplicationDeploymentDescription app;
     private ServiceDescription service;
-    
+
     public HostDescription getHost() {
         return host;
     }
+
     public void setHost(HostDescription host) {
         this.host = host;
     }
+
     public ApplicationDeploymentDescription getApp() {
         return app;
     }
+
     public void setApp(ApplicationDeploymentDescription app) {
         this.app = app;
     }
+
     public ServiceDescription getService() {
         return service;
     }
+
     public void setService(ServiceDescription service) {
         this.service = service;
     }

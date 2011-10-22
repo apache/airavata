@@ -121,7 +121,6 @@ public class WorkflowMenu {
         this.workflowMenu.add(this.launchGridChemWorkflowItem);
     }
 
-
     private JMenuItem createNewWorkflowItem() {
         JMenuItem menuItem = new JMenuItem("New Workflow");
         menuItem.setMnemonic(KeyEvent.VK_N);

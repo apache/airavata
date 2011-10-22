@@ -18,81 +18,79 @@ import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
 import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflow;
 
 public class XBayaWorkflowNode extends AbstractAiravataTreeNode {
-	private XBayaWorkflow xbayaWorkflow;
-	
-	public XBayaWorkflowNode(XBayaWorkflow xbayaWorkflow,TreeNode parent) {
-		super(parent);
-		setXbayaWorkflow(xbayaWorkflow);
-	}
+    private XBayaWorkflow xbayaWorkflow;
 
-	@Override
-	protected List<TreeNode> getChildren() {
-		return emptyList();
-	}
+    public XBayaWorkflowNode(XBayaWorkflow xbayaWorkflow, TreeNode parent) {
+        super(parent);
+        setXbayaWorkflow(xbayaWorkflow);
+    }
 
-	@Override
-	public String getCaption(boolean selected, boolean expanded, boolean leaf,
-			boolean hasFocus) {
-		return getXbayaWorkflow().getWorkflowName();
-	}
+    @Override
+    protected List<TreeNode> getChildren() {
+        return emptyList();
+    }
 
-	@Override
-	public Icon getIcon(boolean selected, boolean expanded, boolean leaf,
-			boolean hasFocus) {
-		return SwingUtil.createImageIcon("workflow.png");
-	}
+    @Override
+    public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+        return getXbayaWorkflow().getWorkflowName();
+    }
 
-	public XBayaWorkflow getXbayaWorkflow() {
-		return xbayaWorkflow;
-	}
+    @Override
+    public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+        return SwingUtil.createImageIcon("workflow.png");
+    }
 
-	public void setXbayaWorkflow(XBayaWorkflow xbayaWorkflow) {
-		this.xbayaWorkflow = xbayaWorkflow;
-	}
-	
-	@Override
-	public List<String> getSupportedActions() {
-		return Arrays.asList(DeleteAction.ID);
-	}
+    public XBayaWorkflow getXbayaWorkflow() {
+        return xbayaWorkflow;
+    }
 
-	public boolean triggerAction(JTree tree,String action) throws Exception{
-		if (action.equals(DeleteAction.ID)){
-			deleteHostDescription(tree);
-			return true;
-		}else if (action.equals(EditAction.ID)){
-			JOptionPane.showMessageDialog(null, "TODO");
-			//TODO
-			return true;
-		} 
-		return super.triggerAction(tree, action);
-	}
+    public void setXbayaWorkflow(XBayaWorkflow xbayaWorkflow) {
+        this.xbayaWorkflow = xbayaWorkflow;
+    }
 
-	private void deleteHostDescription(JTree tree)
-			throws PathNotFoundException, ServiceDescriptionRetrieveException {
-		if (askQuestion("XBaya Workflow", "Are you sure that you want to remove the workflow \""+getXbayaWorkflow().getWorkflowName()+"\"?")) {
-			getRegistry().deleteWorkflow(new QName(getXbayaWorkflow().getWorkflowName()), getRegistry().getUsername());
-			((AbstractAiravataTreeNode)getParent()).refresh();
-			reloadTreeNode(tree, getParent());
-		}
-	}
+    @Override
+    public List<String> getSupportedActions() {
+        return Arrays.asList(DeleteAction.ID);
+    }
 
-	@Override
-	public String getActionCaption(AbstractBrowserActionItem action) {
-		if (action.getID().equals(DeleteAction.ID)){
-			return "Remove";
-		}else if (action.getID().equals(EditAction.ID)){
-			return "Edit";
-		}
-		return action.getDefaultCaption();
-	}
+    public boolean triggerAction(JTree tree, String action) throws Exception {
+        if (action.equals(DeleteAction.ID)) {
+            deleteHostDescription(tree);
+            return true;
+        } else if (action.equals(EditAction.ID)) {
+            JOptionPane.showMessageDialog(null, "TODO");
+            // TODO
+            return true;
+        }
+        return super.triggerAction(tree, action);
+    }
 
-	@Override
-	public Icon getActionIcon(AbstractBrowserActionItem action) {
-		return null;
-	}
+    private void deleteHostDescription(JTree tree) throws PathNotFoundException, ServiceDescriptionRetrieveException {
+        if (askQuestion("XBaya Workflow", "Are you sure that you want to remove the workflow \""
+                + getXbayaWorkflow().getWorkflowName() + "\"?")) {
+            getRegistry().deleteWorkflow(new QName(getXbayaWorkflow().getWorkflowName()), getRegistry().getUsername());
+            ((AbstractAiravataTreeNode) getParent()).refresh();
+            reloadTreeNode(tree, getParent());
+        }
+    }
 
-	@Override
-	public String getActionDescription(AbstractBrowserActionItem action) {
-		return null;
-	}
+    @Override
+    public String getActionCaption(AbstractBrowserActionItem action) {
+        if (action.getID().equals(DeleteAction.ID)) {
+            return "Remove";
+        } else if (action.getID().equals(EditAction.ID)) {
+            return "Edit";
+        }
+        return action.getDefaultCaption();
+    }
+
+    @Override
+    public Icon getActionIcon(AbstractBrowserActionItem action) {
+        return null;
+    }
+
+    @Override
+    public String getActionDescription(AbstractBrowserActionItem action) {
+        return null;
+    }
 }

@@ -31,9 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The default notifier which uses {@link ArrayList} to store {@link org.apache.airavata.core.gfac.notification.GFacNotifiable}
- * objects. Notification method is done by a single thread. It ignore all errors
- * from {@link org.apache.airavata.core.gfac.notification.GFacNotifiable} object.
+ * The default notifier which uses {@link ArrayList} to store
+ * {@link org.apache.airavata.core.gfac.notification.GFacNotifiable} objects. Notification method is done by a single
+ * thread. It ignore all errors from {@link org.apache.airavata.core.gfac.notification.GFacNotifiable} object.
  */
 public class DefaultNotifier implements GFacNotifier {
 
@@ -46,7 +46,7 @@ public class DefaultNotifier implements GFacNotifier {
     }
 
     public GFacNotifiable[] getNotifiable() {
-        return notifiableObjects.toArray(new GFacNotifiable[]{});
+        return notifiableObjects.toArray(new GFacNotifiable[] {});
     }
 
     public void startSchedule(InvocationContext context) {

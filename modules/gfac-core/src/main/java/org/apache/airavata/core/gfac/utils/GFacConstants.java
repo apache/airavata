@@ -22,9 +22,9 @@
 package org.apache.airavata.core.gfac.utils;
 
 public class GFacConstants {
-    
+
     public static final String NEWLINE = System.getProperty("line.separator");
-    
+
     public static final String INPUT_DATA_DIR_VAR_NAME = "inputData";
 
     public static final String OUTPUT_DATA_DIR_VAR_NAME = "outputData";
@@ -34,8 +34,8 @@ public class GFacConstants {
     public static final String _127_0_0_1 = "127.0.0.1";
 
     public static final String LOCALHOST = "localhost";
-    
-    private GFacConstants(){       
+
+    private GFacConstants() {
     }
-    
+
 }

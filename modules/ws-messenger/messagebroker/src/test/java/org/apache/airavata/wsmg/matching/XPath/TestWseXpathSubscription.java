@@ -42,7 +42,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-
 public class TestWseXpathSubscription extends TestCase implements ConsumerNotificationHandler {
 
     static Properties configs = new Properties();
@@ -100,10 +99,10 @@ public class TestWseXpathSubscription extends TestCase implements ConsumerNotifi
             String subscriptionID = wseMsgBrokerClient.subscribe(consumerEPRs[0], topicExpression, xpathExpression);
 
             try {
-                
+
                 wseMsgBrokerClient.publish(topicExpression, AXIOMUtil.stringToOM(validMsg));
                 wseMsgBrokerClient.publish(topicExpression, AXIOMUtil.stringToOM(invalidMsg));
-                
+
                 SOAPEnvelope env = getMsgQueue().take();
 
                 assertNotNull(env.getBody());

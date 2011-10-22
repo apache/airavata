@@ -105,8 +105,7 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.apache.airavata.wsmg.commons.storage.WsmgStorage#getAllSubscription()
+     * @see org.apache.airavata.wsmg.commons.storage.WsmgStorage#getAllSubscription()
      */
     public List<SubscriptionEntry> getAllSubscription() {
 
@@ -124,16 +123,16 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
             stmt = conn.prepareStatement(SubscriptionConstants.EXP_SELECT_QUERY);
             ResultSet rs = stmt.executeQuery();
             ret.ensureCapacity(size);
-                                            
+
             if (rs != null) {
-                
+
                 /*
                  * Buffer data
                  */
                 int nRead;
                 byte[] buffer = new byte[1024];
                 ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-                
+
                 while (rs.next()) {
                     SubscriptionEntry subscriptionEntry = new SubscriptionEntry();
                     subscriptionEntry.setSubscriptionId(rs.getString("SubscriptionId"));
@@ -142,8 +141,8 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
                      * Read Binary Stream
                      */
                     InputStream inStream = null;
-                    
-                    try {                        
+
+                    try {
                         inStream = rs.getBinaryStream("content");
                         while ((nRead = inStream.read(buffer)) != -1) {
                             outStream.write(buffer, 0, nRead);
@@ -151,21 +150,21 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
                         outStream.flush();
 
                         subscriptionEntry.setSubscribeXml(new String(outStream.toByteArray()));
-                        
+
                     } catch (IOException ie) {
                         logger.error("Unable to read XML from database", ie);
-                        
-                        //skip this subscription entry
+
+                        // skip this subscription entry
                         continue;
-                    } finally{
-                        //clear all data in outputStream
+                    } finally {
+                        // clear all data in outputStream
                         outStream.reset();
-                        
-                        //close database stream
-                        if(inStream != null){
-                            try{
+
+                        // close database stream
+                        if (inStream != null) {
+                            try {
                                 inStream.close();
-                            }catch(Exception e){
+                            } catch (Exception e) {
                                 logger.error("Cannot close database stream", e);
                             }
                         }
@@ -247,9 +246,7 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.apache.airavata.wsmg.commons.storage.SubscriptionStorage#delete(java
-     * .lang.String)
+     * @see org.apache.airavata.wsmg.commons.storage.SubscriptionStorage#delete(java .lang.String)
      */
     public int delete(String subscriptionId) {
         int result = 0;
@@ -587,17 +584,12 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
             for (int i = 0; !bError && i < aiupdateCounts.length; i++) {
                 int iProcessed = aiupdateCounts[i];
                 /**
-                 * The int values that can be returned in the update counts
-                 * array are: <br/>
-                 * -3--Operation error. A driver has the option to stop at the
-                 * first error and throw a BatchUpdateException or to report the
-                 * error and continue. This value is only seen in the latter
-                 * case. <br/>
-                 * -2--The operation was successful, but the number of rows
-                 * affected is unknown. <br/>
-                 * Zero--DDL statement or no rows affected by the operation.
-                 * Greater than zero--Operation was successful, number of rows
-                 * affected by the operation.
+                 * The int values that can be returned in the update counts array are: <br/>
+                 * -3--Operation error. A driver has the option to stop at the first error and throw a
+                 * BatchUpdateException or to report the error and continue. This value is only seen in the latter case. <br/>
+                 * -2--The operation was successful, but the number of rows affected is unknown. <br/>
+                 * Zero--DDL statement or no rows affected by the operation. Greater than zero--Operation was
+                 * successful, number of rows affected by the operation.
                  */
                 if (iProcessed < 0 && iProcessed != -2) {
                     // error on statement
@@ -613,8 +605,7 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
             }
 
             /*
-             * Unlock table after rollback and commit, since it is not automatic
-             * in MySql
+             * Unlock table after rollback and commit, since it is not automatic in MySql
              */
 
             if (DatabaseType.mysql.equals(databaseType)) {
@@ -678,9 +669,8 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
             switch (databaseType) {
             case derby:
                 /*
-                 * Derby doesn't have explicit unlock SQL It uses commit or
-                 * rollback as a unlock mechanism, so make sure that connection
-                 * is always commited or rollbacked
+                 * Derby doesn't have explicit unlock SQL It uses commit or rollback as a unlock mechanism, so make sure
+                 * that connection is always commited or rollbacked
                  */
                 break;
             case mysql:

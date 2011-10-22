@@ -39,8 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class can be used to invoke createMsgBox operation of msgBoxService and returns the resultant messageBoxId
- * as EndpointReference
+ * This class can be used to invoke createMsgBox operation of msgBoxService and returns the resultant messageBoxId as
+ * EndpointReference
  */
 public class CreateMsgBox {
     private static final Logger logger = LoggerFactory.getLogger(CreateMsgBox.class);

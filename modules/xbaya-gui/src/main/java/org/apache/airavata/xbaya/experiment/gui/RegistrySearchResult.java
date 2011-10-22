@@ -46,7 +46,7 @@ public class RegistrySearchResult implements TableRenderable {
 
     /**
      * Constructs a RegistrySearchResult.
-     *
+     * 
      * @param node
      */
 
@@ -54,18 +54,18 @@ public class RegistrySearchResult implements TableRenderable {
         try {
             String property = node.getProperty("Type").getString();
             if (property.equals(XBayaConstants.REGISTRY_TYPE_HOST_DESC)) {
-                //todo
+                // todo
             } else if (property.equals(XBayaConstants.REGISTRY_TYPE_APPLICATION_DESC)) {
-                //todo
+                // todo
             } else if (property.equals(XBayaConstants.REGISTRY_TYPE_SERVICE_DESC)) {
-                //todo
+                // todo
             } else if (property.equals(XBayaConstants.REGISTRY_TYPE_WORKFLOW)) {
-//                this.qname = new ;
-                this.resourceID = new QName(node.getProperty("NamespaceURI").getString(),node.getProperty("LocalPart").getString(),node.getProperty("Prefix").getString());
+                // this.qname = new ;
+                this.resourceID = new QName(node.getProperty("NamespaceURI").getString(), node.getProperty("LocalPart")
+                        .getString(), node.getProperty("Prefix").getString());
                 this.description = node.getProperty("Description").getString();
                 this.resourceName = node.getName();
             }
-
 
         } catch (RepositoryException e) {
             e.printStackTrace();
@@ -110,7 +110,7 @@ public class RegistrySearchResult implements TableRenderable {
 
     /**
      * Returns the data.
-     *
+     * 
      * @return The data
      */
     public Node getData() {

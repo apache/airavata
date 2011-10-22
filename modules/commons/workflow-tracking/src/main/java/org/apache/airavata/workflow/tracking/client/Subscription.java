@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public class Subscription {
 
     private static final Logger logger = LoggerFactory.getLogger(Subscription.class);
-    
+
     private String subscriptionID;
 
     private String topic;

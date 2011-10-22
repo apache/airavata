@@ -26,22 +26,23 @@ public class GlobusFileTransferWindow {
 
     private XBayaTextField caFileTextField;
 
-    private XBayaTextField  certFileTextField;
+    private XBayaTextField certFileTextField;
 
-    private XBayaTextField  keyFileTextField;
+    private XBayaTextField keyFileTextField;
 
-    private XBayaTextField  baseUrlTextField;
+    private XBayaTextField baseUrlTextField;
 
-    private XBayaTextField  sourceEndpointTextField;
+    private XBayaTextField sourceEndpointTextField;
 
-    private XBayaTextField  sourceFilePathTextField;
+    private XBayaTextField sourceFilePathTextField;
 
-    private XBayaTextField  destEndpointTextField;
+    private XBayaTextField destEndpointTextField;
 
-    private XBayaTextField  destFilePathTextField;
+    private XBayaTextField destFilePathTextField;
 
     /**
-     * @param engine XBaya workflow engine
+     * @param engine
+     *            XBaya workflow engine
      */
     public GlobusFileTransferWindow(XBayaEngine engine) {
         this.engine = engine;
@@ -73,13 +74,12 @@ public class GlobusFileTransferWindow {
 
         JSONTransferAPIClient c = null;
         try {
-            c = new JSONTransferAPIClient(username,
-                    caFile, certFile, keyFile, baseUrl);
+            c = new JSONTransferAPIClient(username, caFile, certFile, keyFile, baseUrl);
         } catch (KeyManagementException e) {
-            this.engine.getErrorWindow().error("Key Management Error.",e);
+            this.engine.getErrorWindow().error("Key Management Error.", e);
             return;
         } catch (NoSuchAlgorithmException e) {
-            this.engine.getErrorWindow().error("No Such Algorithm Error.",e);
+            this.engine.getErrorWindow().error("No Such Algorithm Error.", e);
             return;
         }
         System.out.println("base url: " + c.getBaseUrl());
@@ -87,13 +87,13 @@ public class GlobusFileTransferWindow {
         try {
             e.transfer(sourceEndpoint, sourceFilePath, destEndpoint, destFilePath);
         } catch (IOException e1) {
-            this.engine.getErrorWindow().error("IO Error.",e1);
+            this.engine.getErrorWindow().error("IO Error.", e1);
             return;
         } catch (JSONException e1) {
-            this.engine.getErrorWindow().error("JSON Error.",e1);
+            this.engine.getErrorWindow().error("JSON Error.", e1);
             return;
         } catch (GeneralSecurityException e1) {
-            this.engine.getErrorWindow().error("Key Management Error.",e1);
+            this.engine.getErrorWindow().error("Key Management Error.", e1);
             return;
         } catch (APIError apiError) {
             this.engine.getErrorWindow().error("Globus Transfer API Calling Error.", apiError);
@@ -121,7 +121,8 @@ public class GlobusFileTransferWindow {
 
         // Setting some sample values when the Window is loaded
         this.usernameTextField.setText("heshan");
-        this.caFileTextField.setText("/home/heshan/Dev/globusonline/transfer-api-client-java.git/trunk/ca/gd-bundle_ca.cert");
+        this.caFileTextField
+                .setText("/home/heshan/Dev/globusonline/transfer-api-client-java.git/trunk/ca/gd-bundle_ca.cert");
         this.certFileTextField.setText("/tmp/x509up_u780936");
         this.keyFileTextField.setText("/tmp/x509up_u780936");
         this.baseUrlTextField = new XBayaTextField("https://transfer.api.globusonline.org/v0.10");

@@ -41,10 +41,10 @@ public class FixedParallelSender implements SendingStrategy {
     private static final Logger log = LoggerFactory.getLogger(FixedParallelSender.class);
 
     private static final long TIME_TO_WAIT_FOR_SHUTDOWN_SECOND = 30;
-    
+
     private HashMap<String, ConsumerHandler> activeConsumerHandlers = new HashMap<String, ConsumerHandler>();
     private HashMap<String, Boolean> submittedConsumerHandlers = new HashMap<String, Boolean>();
-   
+
     private int batchSize;
 
     private ExecutorService threadPool;
@@ -70,7 +70,7 @@ public class FixedParallelSender implements SendingStrategy {
         }
     }
 
-    public void shutdown() {       
+    public void shutdown() {
         log.debug("Shutting down");
         this.stop = true;
 
@@ -79,14 +79,14 @@ public class FixedParallelSender implements SendingStrategy {
         } catch (InterruptedException ie) {
             log.error("Wait for ChooseHandlerToSubmit thread to finish (join) is interrupted");
         }
-        
+
         threadPool.shutdown();
-        try{
+        try {
             threadPool.awaitTermination(TIME_TO_WAIT_FOR_SHUTDOWN_SECOND, TimeUnit.SECONDS);
-        }catch(InterruptedException ie){
+        } catch (InterruptedException ie) {
             log.error("Interrupted while waiting thread pool to shutdown");
         }
-        
+
         log.debug("Shut down");
     }
 
@@ -113,9 +113,9 @@ public class FixedParallelSender implements SendingStrategy {
 
         public void run() {
             /*
-             * If stop is true, we will not get any message to send from addMessageToSend() method.
-             * So, activeConsumerHandlers size will not increase but decrease only.
-             * When shutdown() is invoked, we will have to send out all messages in our queue.
+             * If stop is true, we will not get any message to send from addMessageToSend() method. So,
+             * activeConsumerHandlers size will not increase but decrease only. When shutdown() is invoked, we will have
+             * to send out all messages in our queue.
              */
             while (!stop || activeConsumerHandlers.size() > 0) {
 
@@ -124,7 +124,7 @@ public class FixedParallelSender implements SendingStrategy {
                     while (it.hasNext()) {
                         String key = it.next();
                         boolean submitted = submittedConsumerHandlers.get(key);
-                        
+
                         /*
                          * If consumer handlers is not scheduled to run, submit it to thread pool.
                          */
@@ -167,15 +167,14 @@ public class FixedParallelSender implements SendingStrategy {
             synchronized (activeConsumerHandlers) {
 
                 /*
-                 * all message is sent or not, we will set it as not submitted.
-                 * So, it can be put back to thread pool.
+                 * all message is sent or not, we will set it as not submitted. So, it can be put back to thread pool.
                  */
                 submittedConsumerHandlers.put(getConsumerUrl(), Boolean.FALSE);
 
                 if (queue.size() == 0) {
                     submittedConsumerHandlers.remove(getConsumerUrl());
                     activeConsumerHandlers.remove(getConsumerUrl());
-                    
+
                     log.debug(String.format("Consumer handler is already removed: %s", getConsumerUrl()));
                 }
             }

@@ -23,7 +23,7 @@ package org.apache.airavata.core.gfac.exception;
 
 /**
  * The main exception for the GFac Service
- *
+ * 
  */
 public class GfacException extends Exception {
 
@@ -34,7 +34,7 @@ public class GfacException extends Exception {
     public GfacException(String message) {
         super(message);
     }
-    
+
     public GfacException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -97,9 +97,9 @@ public class WorkflowInterpreterLaunchWindow {
      */
     public WorkflowInterpreterLaunchWindow(XBayaEngine engine) {
         this.engine = engine;
-          if (XBayaUtil.acquireJCRRegistry(engine)) {
-                initGUI();
-          }
+        if (XBayaUtil.acquireJCRRegistry(engine)) {
+            initGUI();
+        }
     }
 
     /**

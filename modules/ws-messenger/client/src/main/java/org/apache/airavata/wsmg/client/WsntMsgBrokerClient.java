@@ -111,8 +111,8 @@ public class WsntMsgBrokerClient extends CommonMsgBrokerClient implements Messag
             OMElement responseMessage = client.sendReceive(message);
             client.cleanupTransport();
 
-            OMElement sr = responseMessage.getFirstChildWithName(new QName(NameSpaceConstants.WSNT_NS
-                    .getNamespaceURI(), "SubscriptionReference"));
+            OMElement sr = responseMessage.getFirstChildWithName(new QName(
+                    NameSpaceConstants.WSNT_NS.getNamespaceURI(), "SubscriptionReference"));
 
             if (sr == null) {
                 throw new MsgBrokerClientException("unable to subscribe, invalid response returned by broker");

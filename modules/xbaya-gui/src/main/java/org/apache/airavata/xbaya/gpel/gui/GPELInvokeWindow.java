@@ -81,7 +81,7 @@ public class GPELInvokeWindow {
 
     protected XBayaTextField resourceCatalogTextField;
 
-//    protected XBayaTextField xRegistryTextField;
+    // protected XBayaTextField xRegistryTextField;
 
     protected XBayaTextField gfacTextField;
 
@@ -264,7 +264,7 @@ public class GPELInvokeWindow {
         this.dscTextField.setText(configuration.getDSCURL());
 
         // XRegistry
-//        this.xRegistryTextField.setText(configuration.getXRegistryURL());
+        // this.xRegistryTextField.setText(configuration.getXRegistryURL());
 
         // GFac URL
         this.gfacTextField.setText(configuration.getGFacURL());
@@ -288,8 +288,8 @@ public class GPELInvokeWindow {
         this.resourceCatalogTextField = new XBayaTextField();
         XBayaLabel resourceCatalogLabel = new XBayaLabel("Resource Catalog URL", this.resourceCatalogTextField);
 
-//        this.xRegistryTextField = new XBayaTextField();
-//        XBayaLabel xRegistryLabel = new XBayaLabel("XRegistry URL", this.xRegistryTextField);
+        // this.xRegistryTextField = new XBayaTextField();
+        // XBayaLabel xRegistryLabel = new XBayaLabel("XRegistry URL", this.xRegistryTextField);
 
         this.gfacTextField = new XBayaTextField();
         XBayaLabel gfacLabel = new XBayaLabel("GFac URL", this.gfacTextField);
@@ -304,8 +304,8 @@ public class GPELInvokeWindow {
         infoPanel.add(this.dscTextField);
         infoPanel.add(resourceCatalogLabel);
         infoPanel.add(this.resourceCatalogTextField);
-//        infoPanel.add(xRegistryLabel);
-//        infoPanel.add(this.xRegistryTextField);
+        // infoPanel.add(xRegistryLabel);
+        // infoPanel.add(this.xRegistryTextField);
         infoPanel.add(gfacLabel);
         infoPanel.add(this.gfacTextField);
         infoPanel.layout(5, 2, GridPanel.WEIGHT_NONE, 1);
@@ -400,19 +400,19 @@ public class GPELInvokeWindow {
         }
 
         // XRegistry
-//        String xRegistry = this.xRegistryTextField.getText();
-//        URI xRegistryURL;
-//        if (xRegistry.length() == 0) {
-//            xRegistryURL = null;
-//        } else {
-//            try {
-//                xRegistryURL = new URI(xRegistry).parseServerAuthority();
-//
-//            } catch (URISyntaxException e) {
-//                this.engine.getErrorWindow().error(ErrorMessages.XREGISTRY_URL_WRONG, e);
-//                return;
-//            }
-//        }
+        // String xRegistry = this.xRegistryTextField.getText();
+        // URI xRegistryURL;
+        // if (xRegistry.length() == 0) {
+        // xRegistryURL = null;
+        // } else {
+        // try {
+        // xRegistryURL = new URI(xRegistry).parseServerAuthority();
+        //
+        // } catch (URISyntaxException e) {
+        // this.engine.getErrorWindow().error(ErrorMessages.XREGISTRY_URL_WRONG, e);
+        // return;
+        // }
+        // }
 
         // GFac
         String gfac = this.gfacTextField.getText();
@@ -433,7 +433,7 @@ public class GPELInvokeWindow {
         monitorConfig.setTopic(topic);
         XBayaConfiguration config = this.engine.getConfiguration();
         config.setDSCURL(dscURL);
-//        config.setXRegistryURL(xRegistryURL);
+        // config.setXRegistryURL(xRegistryURL);
         config.setGFacURL(gfacURL);
 
         this.invoker.invoke(this.workflow, inputs, redeploy);

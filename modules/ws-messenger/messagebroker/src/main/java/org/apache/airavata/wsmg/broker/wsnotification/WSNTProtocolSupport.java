@@ -151,8 +151,7 @@ public class WSNTProtocolSupport {
             OMElement message = factory.createOMElement("SubscribeRequest", NameSpaceConstants.WSNT_NS);
 
             if (topicExpression != null) {
-                OMElement topicExpEl = factory.createOMElement("TopicExpression", NameSpaceConstants.WSNT_NS,
-                        message);
+                OMElement topicExpEl = factory.createOMElement("TopicExpression", NameSpaceConstants.WSNT_NS, message);
 
                 topicExpEl.addAttribute("Dialect", WsmgCommonConstants.TOPIC_EXPRESSION_SIMPLE_DIALECT,
                         NameSpaceConstants.WSNT_NS);
@@ -222,10 +221,9 @@ public class WSNTProtocolSupport {
 
             notificationMesssageEl.addChild(topicExpEl);
 
-            notificationMesssageEl
-                    .addChild(EndpointReferenceHelper.toOM(factory, producerReference, new QName(notificationMesssageEl
-                            .getNamespace().getNamespaceURI(), "ProducerReference", notificationMesssageEl
-                            .getNamespace().getPrefix()), NameSpaceConstants.WSA_NS.getNamespaceURI()));
+            notificationMesssageEl.addChild(EndpointReferenceHelper.toOM(factory, producerReference, new QName(
+                    notificationMesssageEl.getNamespace().getNamespaceURI(), "ProducerReference",
+                    notificationMesssageEl.getNamespace().getPrefix()), NameSpaceConstants.WSA_NS.getNamespaceURI()));
 
             OMElement messageEl = factory.createOMElement("Message", notificationMesssageEl.getNamespace(),
                     notificationMesssageEl);

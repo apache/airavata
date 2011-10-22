@@ -485,38 +485,39 @@ public class WorkflowWSDL {
         try {
             typeDefinition = WSDLUtil.getTypeDefinition(this.definitions, paramType);
 
-        if (typeDefinition == null) {
+            if (typeDefinition == null) {
 
-            // now lets check whether there is an import in the service wsdl schema
-            // that would import this type,
-            // if so we would be done by just importing that schema
+                // now lets check whether there is an import in the service wsdl schema
+                // that would import this type,
+                // if so we would be done by just importing that schema
 
-            typeDefinition = WSDLUtil.findTypeDefinitionInImports(serviceWSDL, paramType);
-            if (typeDefinition != null) {
-                XmlElement importEle = WSDLUtil.getImportContainingTypeDefinition(serviceWSDL, paramType);
-                addImportIfNecessary(importEle);
+                typeDefinition = WSDLUtil.findTypeDefinitionInImports(serviceWSDL, paramType);
+                if (typeDefinition != null) {
+                    XmlElement importEle = WSDLUtil.getImportContainingTypeDefinition(serviceWSDL, paramType);
+                    addImportIfNecessary(importEle);
+                    String prefix = declareNamespaceIfNecessary(paramType.getPrefix(), paramType.getNamespaceURI(),
+                            false);
+                    return new QName(paramType.getNamespaceURI(), paramType.getLocalPart(), prefix);
+                }
+
+                // copy the type defition and use it.
+
+                // Need to copy the whole schema because it might have different
+                // targetNamespace.
+                XmlElement newSchema = WSDLUtil.getSchema(serviceWSDL, paramType);
+                if (newSchema == null) {
+                    // This should have been caught in WSComponent
+                    throw new XBayaRuntimeException("could not find definition for type " + paramType + " in "
+                            + WSDLUtil.getWSDLQName(serviceWSDL));
+                }
+                this.definitions.getTypes().addChild(XMLUtil.deepClone(newSchema));
+
                 String prefix = declareNamespaceIfNecessary(paramType.getPrefix(), paramType.getNamespaceURI(), false);
                 return new QName(paramType.getNamespaceURI(), paramType.getLocalPart(), prefix);
+            } else {
+                XmlNamespace namespace = this.definitions.xml().lookupNamespaceByName(paramType.getNamespaceURI());
+                return new QName(paramType.getNamespaceURI(), paramType.getLocalPart(), namespace.getPrefix());
             }
-
-            // copy the type defition and use it.
-
-            // Need to copy the whole schema because it might have different
-            // targetNamespace.
-            XmlElement newSchema = WSDLUtil.getSchema(serviceWSDL, paramType);
-            if (newSchema == null) {
-                // This should have been caught in WSComponent
-                throw new XBayaRuntimeException("could not find definition for type " + paramType + " in "
-                        + WSDLUtil.getWSDLQName(serviceWSDL));
-            }
-            this.definitions.getTypes().addChild(XMLUtil.deepClone(newSchema));
-
-            String prefix = declareNamespaceIfNecessary(paramType.getPrefix(), paramType.getNamespaceURI(), false);
-            return new QName(paramType.getNamespaceURI(), paramType.getLocalPart(), prefix);
-        } else {
-            XmlNamespace namespace = this.definitions.xml().lookupNamespaceByName(paramType.getNamespaceURI());
-            return new QName(paramType.getNamespaceURI(), paramType.getLocalPart(), namespace.getPrefix());
-        }
         } catch (UtilsException e) {
             e.printStackTrace();
         }

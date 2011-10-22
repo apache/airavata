@@ -24,12 +24,12 @@ package org.apache.airavata.core.gfac.utils;
 import java.util.List;
 
 public class InputUtils {
-    
+
     private static final String SPACE = " ";
-    
-    private InputUtils(){       
+
+    private InputUtils() {
     }
-    
+
     public static String buildCommand(List<String> cmdList) {
         StringBuffer buff = new StringBuffer();
         for (String string : cmdList) {

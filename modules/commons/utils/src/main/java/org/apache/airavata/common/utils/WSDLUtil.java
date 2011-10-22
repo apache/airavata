@@ -147,8 +147,7 @@ public class WSDLUtil {
      * @return The name of the first operation in a given portType.
      * @throws UtilsException
      */
-    public static String getFirstOperationName(WsdlDefinitions definitions, QName portTypeQName)
-            throws UtilsException {
+    public static String getFirstOperationName(WsdlDefinitions definitions, QName portTypeQName) throws UtilsException {
         WsdlPortType portType = definitions.getPortType(portTypeQName.getLocalPart());
         for (WsdlPortTypeOperation operation : portType.operations()) {
             String operationName = operation.getOperationName();
@@ -171,7 +170,7 @@ public class WSDLUtil {
      * @param definitions
      * @return The cloned WsdlDefinitions
      */
-    public static WsdlDefinitions deepClone(WsdlDefinitions definitions)throws UtilsException {
+    public static WsdlDefinitions deepClone(WsdlDefinitions definitions) throws UtilsException {
         return new WsdlDefinitions(XMLUtil.deepClone(definitions.xml()));
     }
 
@@ -269,13 +268,14 @@ public class WSDLUtil {
     }
 
     /**
-     *
+     * 
      * @param definitions
      * @param paramType
      * @return
      */
 
-    public static XmlElement getImportContainingTypeDefinition(WsdlDefinitions definitions, QName paramType)throws UtilsException{
+    public static XmlElement getImportContainingTypeDefinition(WsdlDefinitions definitions, QName paramType)
+            throws UtilsException {
         XmlElement types = definitions.getTypes();
         XmlElement returnType = null;
         Iterable<XmlElement> schemas = types.elements(WSConstants.XSD_NS, WSConstants.SCHEMA_TAG);
@@ -310,13 +310,14 @@ public class WSDLUtil {
     }
 
     /**
-     *
+     * 
      * @param definitions
      * @param paramType
      * @return
      */
 
-    public static XmlElement findTypeDefinitionInImports(WsdlDefinitions definitions, QName paramType)throws UtilsException {
+    public static XmlElement findTypeDefinitionInImports(WsdlDefinitions definitions, QName paramType)
+            throws UtilsException {
         XmlElement types = definitions.getTypes();
         XmlElement returnType = null;
         Iterable<XmlElement> schemas = types.elements(null, WSConstants.SCHEMA_TAG);
@@ -469,8 +470,6 @@ public class WSDLUtil {
         return uri;
     }
 
-
-
     /**
      * @param valueElement
      * @return
@@ -482,7 +481,7 @@ public class WSDLUtil {
     }
 
     /**
-     *
+     * 
      * @param vals
      * @param <T>
      * @return

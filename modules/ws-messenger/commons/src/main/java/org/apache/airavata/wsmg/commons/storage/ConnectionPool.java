@@ -201,7 +201,7 @@ public class ConnectionPool {
         }
     }
 
-    private synchronized void fillUpConnection(Connection conn){
+    private synchronized void fillUpConnection(Connection conn) {
         setTimeStamp(conn);
         availableConnections.push(conn);
 
@@ -216,16 +216,12 @@ public class ConnectionPool {
     // The database connection cannot be left idle for too long, otherwise TCP
     // connection will be broken.
     /**
-     * From http://forums.mysql.com/read.php?39,28450,57460#msg-57460 Okay, then
-     * it looks like wait_timeout on the server is killing your connection (it
-     * is set to 8 hours of idle time by default). Either set that value higher
-     * on your server, or configure your connection pool to not hold connections
-     * idle that long (I prefer the latter). Most folks I know that run MySQL
-     * with a connection pool in high-load production environments only let
-     * connections sit idle for a matter of minutes, since it only takes a few
-     * milliseconds to open a connection, and the longer one sits idle the more
-     * chance it will go "bad" because of a network hiccup or the MySQL server
-     * being restarted.
+     * From http://forums.mysql.com/read.php?39,28450,57460#msg-57460 Okay, then it looks like wait_timeout on the
+     * server is killing your connection (it is set to 8 hours of idle time by default). Either set that value higher on
+     * your server, or configure your connection pool to not hold connections idle that long (I prefer the latter). Most
+     * folks I know that run MySQL with a connection pool in high-load production environments only let connections sit
+     * idle for a matter of minutes, since it only takes a few milliseconds to open a connection, and the longer one
+     * sits idle the more chance it will go "bad" because of a network hiccup or the MySQL server being restarted.
      * 
      * @throws SQLException
      */
@@ -278,15 +274,13 @@ public class ConnectionPool {
     }
 
     /**
-     * Close all the connections. Use with caution: be sure no connections are
-     * in use before calling. Note that you are not <I>required</I> to call this
-     * when done with a ConnectionPool, since connections are guaranteed to be
-     * closed when garbage collected. But this method gives more control
-     * regarding when the connections are closed.
+     * Close all the connections. Use with caution: be sure no connections are in use before calling. Note that you are
+     * not <I>required</I> to call this when done with a ConnectionPool, since connections are guaranteed to be closed
+     * when garbage collected. But this method gives more control regarding when the connections are closed.
      */
     public synchronized void dispose() {
         logger.info("Connection Pool Shutting down");
-        
+
         // stop clean up thread
         this.stop = true;
         this.clenupThread.interrupt();
@@ -302,14 +296,14 @@ public class ConnectionPool {
         lastAccessTimeRecord.clear();
 
         logger.info("All connection is closed");
-        
+
         try {
             this.clenupThread.join();
             this.producerThread.join();
         } catch (Exception e) {
             logger.error("Cannot shutdown cleanup thread", e);
         }
-        
+
         logger.info("Connection Pool Shutdown");
     }
 
@@ -350,13 +344,13 @@ public class ConnectionPool {
         public void run() {
             while (!stop) {
                 try {
-                    //block until get
+                    // block until get
                     needConnection.acquire();
-                    
-                    Connection conn = makeNewConnection();                    
+
+                    Connection conn = makeNewConnection();
                     fillUpConnection(conn);
                 } catch (SQLException e) {
-                    //cannot create connection (increase semaphore value back)
+                    // cannot create connection (increase semaphore value back)
                     needConnection.release();
                     logger.error(e.getMessage(), e);
                 } catch (InterruptedException e) {

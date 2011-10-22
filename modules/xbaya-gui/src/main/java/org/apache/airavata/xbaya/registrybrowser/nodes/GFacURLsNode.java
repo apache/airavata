@@ -12,51 +12,53 @@ import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 import org.apache.airavata.xbaya.registrybrowser.model.GFacURLs;
 
 public class GFacURLsNode extends AbstractAiravataTreeNode {
-	private GFacURLs gfacURLs;
-	public GFacURLsNode(GFacURLs gfacURLs, TreeNode parent) {
-		super(parent);
-		setGfacURLs(gfacURLs);
-	}
-	@Override
-	protected List<TreeNode> getChildren() {
-		return getTreeNodeList(getGfacURLs().getURLS().toArray(),this);
-	}
+    private GFacURLs gfacURLs;
 
-	@Override
-	public String getCaption(boolean selected, boolean expanded, boolean leaf,
-			boolean hasFocus) {
-		return "GFac Locations";
-	}
+    public GFacURLsNode(GFacURLs gfacURLs, TreeNode parent) {
+        super(parent);
+        setGfacURLs(gfacURLs);
+    }
 
-	@Override
-	public Icon getIcon(boolean selected, boolean expanded, boolean leaf,
-			boolean hasFocus) {
-		return SwingUtil.createImageIcon("gfac_urls.png");
-	}
-	public GFacURLs getGfacURLs() {
-		return gfacURLs;
-	}
-	public void setGfacURLs(GFacURLs gfacURLs) {
-		this.gfacURLs = gfacURLs;
-	}
+    @Override
+    protected List<TreeNode> getChildren() {
+        return getTreeNodeList(getGfacURLs().getURLS().toArray(), this);
+    }
 
-	@Override
-	public List<String> getSupportedActions() {
-		return Arrays.asList(RefreshAction.ID);
-	}
+    @Override
+    public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+        return "GFac Locations";
+    }
 
-	@Override
-	public String getActionCaption(AbstractBrowserActionItem action) {
-		return action.getDefaultCaption();
-	}
+    @Override
+    public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+        return SwingUtil.createImageIcon("gfac_urls.png");
+    }
 
-	@Override
-	public Icon getActionIcon(AbstractBrowserActionItem action) {
-		return null;
-	}
+    public GFacURLs getGfacURLs() {
+        return gfacURLs;
+    }
 
-	@Override
-	public String getActionDescription(AbstractBrowserActionItem action) {
-		return null;
-	}
+    public void setGfacURLs(GFacURLs gfacURLs) {
+        this.gfacURLs = gfacURLs;
+    }
+
+    @Override
+    public List<String> getSupportedActions() {
+        return Arrays.asList(RefreshAction.ID);
+    }
+
+    @Override
+    public String getActionCaption(AbstractBrowserActionItem action) {
+        return action.getDefaultCaption();
+    }
+
+    @Override
+    public Icon getActionIcon(AbstractBrowserActionItem action) {
+        return null;
+    }
+
+    @Override
+    public String getActionDescription(AbstractBrowserActionItem action) {
+        return null;
+    }
 }

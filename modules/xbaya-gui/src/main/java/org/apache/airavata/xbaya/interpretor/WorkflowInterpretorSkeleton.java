@@ -69,9 +69,9 @@ public class WorkflowInterpretorSkeleton {
             System.err.println("Workflow Object created");
 
         } catch (GraphException e1) {
-           throw new XBayaRuntimeException(e1);
+            throw new XBayaRuntimeException(e1);
         } catch (ComponentException e1) {
-        	throw new XBayaRuntimeException(e1);
+            throw new XBayaRuntimeException(e1);
         }
         System.err.println("Setting Input values");
         List<InputNode> inputNodes = new ODEClient().getInputNodes(workflow);
@@ -133,8 +133,8 @@ public class WorkflowInterpretorSkeleton {
         configuration.setMyProxyLifetime(XBayaConstants.DEFAULT_MYPROXY_LIFTTIME);
         configuration.setMyProxyPort(XBayaConstants.DEFAULT_MYPROXY_PORT);
         configuration.setMyProxyServer(findValue(vals, PROXYSERVER, XBayaConstants.DEFAULT_MYPROXY_SERVER));
-//        configuration.setXRegistryURL(new URI(findValue(vals, XREGISTRY,
-//                XBayaConstants.DEFAULT_XREGISTRY_URL.toString())));
+        // configuration.setXRegistryURL(new URI(findValue(vals, XREGISTRY,
+        // XBayaConstants.DEFAULT_XREGISTRY_URL.toString())));
         return configuration;
     }
 
