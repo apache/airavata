@@ -31,19 +31,24 @@ public class XBayaConstants {
     public static final String APPLICATION_SHORT_NAME = "XBaya";
 
     /**
+     * The name of the project
+     */
+    public static final String PROJECT_NAME = "Apache Airavata";
+    
+    /**
      * The name of the application
      */
-    public static final String APPLICATION_NAME = "XBaya Workflow Composer";
+    public static final String APPLICATION_NAME = "XBaya Dashboard";
 
     /**
      * The URL of the web page of the application
      */
-    public static final URI WEB_URL = URI.create("http://www.extreme.indiana.edu/xgws/xbaya/");
+    public static final URI WEB_URL = URI.create("http://airavata.org");
 
     /**
      * Namespace URI
      */
-    public static final String NS_URI_XBAYA = "http://www.extreme.indiana.edu/xbaya/";
+    public static final String NS_URI_XBAYA = "http://airavata.apache.org/xbaya/";
 
     // Default values
 

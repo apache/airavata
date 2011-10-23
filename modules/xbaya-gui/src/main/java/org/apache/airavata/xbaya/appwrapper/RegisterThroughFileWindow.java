@@ -153,7 +153,6 @@ public class RegisterThroughFileWindow {
 	 */
     protected void register() {
         try {
-            RegistryAccesser xregistryAccesser = new RegistryAccesser(this.engine);
             StringBuffer fileData = new StringBuffer(1000);
             BufferedReader reader = new BufferedReader(new FileReader(this.fileLocationField.getText()));
             char[] buf = new char[1024];
@@ -164,14 +163,6 @@ public class RegisterThroughFileWindow {
                 buf = new char[1024];
             }
             reader.close();
-
-            // if (this.docTypeComboBox.getText().equals("Host")) {
-            // xregistryAccesser.registerHost(fileData.toString());
-            // } else if (this.docTypeComboBox.getText().equals("Application")) {
-            // xregistryAccesser.registerApplication(fileData.toString());
-            // } else {
-            // xregistryAccesser.registerService(fileData.toString());
-            // }
 
             JOptionPane.showMessageDialog(RegisterThroughFileWindow.this.dialog.getDialog(),
                     this.docTypeComboBox.getText() + " description registered successfully", "Successfully",

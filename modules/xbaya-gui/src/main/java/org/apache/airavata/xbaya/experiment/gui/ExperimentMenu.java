@@ -39,8 +39,6 @@ public class ExperimentMenu {
 
     private JMenu experimentMenu;
 
-    private ODEDeploymentDescriptor odeDeploymentDescription;
-
     protected RegistryAccesser registryAccesser;
 
     private JMenuItem configureRegistryItem;
@@ -50,10 +48,6 @@ public class ExperimentMenu {
     private JMenuItem saveWorkflowtoRegistryItem;
 
     private JMenuItem deleteWorkflowfromRegistryItem;
-
-    private JMenuItem deployWorkflowtoODEItem;
-
-    private JMenuItem launchODEWorkflowItem;
 
     private JMenuItem launchXBayaInterpreterItem;
 
@@ -69,7 +63,6 @@ public class ExperimentMenu {
      */
     public ExperimentMenu(XBayaEngine engine) {
         this.engine = engine;
-        this.odeDeploymentDescription = new ODEDeploymentDescriptor();
         this.registryAccesser = new RegistryAccesser(engine);
 
         createExperimentMenu();
@@ -77,10 +70,10 @@ public class ExperimentMenu {
 
     private void createExperimentMenu() {
 
-        createConfigureXRegistryItem();
-        createLoadWorkflowfromXRegistryItem();
-        createSaveWorkflowtoXRegistryItem();
-        createDeleteWorkflowtoXRegistryItem();
+        createConfigureRegistryItem();
+        createLoadWorkflowfromRegistryItem();
+        createSaveWorkflowtoRegistryItem();
+        createDeleteWorkflowtoRegistryItem();
         createLaunchXBayaInterpreterItem();
         createLaunchGridChemWorkflowItem();
 
@@ -105,7 +98,7 @@ public class ExperimentMenu {
         return this.experimentMenu;
     }
 
-    private void createConfigureXRegistryItem() {
+    private void createConfigureRegistryItem() {
         this.configureRegistryItem = new JMenuItem("Configure Registry");
         configureRegistryItem.setMnemonic(KeyEvent.VK_C);
         configureRegistryItem.addActionListener(new AbstractAction() {
@@ -120,7 +113,7 @@ public class ExperimentMenu {
         });
     }
 
-    private void createLoadWorkflowfromXRegistryItem() {
+    private void createLoadWorkflowfromRegistryItem() {
         this.loadWorkflowfromRegistryItem = new JMenuItem("Load Workflow from Registry");
         this.loadWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -130,7 +123,7 @@ public class ExperimentMenu {
         });
     }
 
-    private void createSaveWorkflowtoXRegistryItem() {
+    private void createSaveWorkflowtoRegistryItem() {
         this.saveWorkflowtoRegistryItem = new JMenuItem("Save Workflow to Registry");
         this.saveWorkflowtoRegistryItem.setMnemonic(KeyEvent.VK_C);
         this.saveWorkflowtoRegistryItem.addActionListener(new AbstractAction() {
@@ -140,7 +133,7 @@ public class ExperimentMenu {
         });
     }
 
-    private void createDeleteWorkflowtoXRegistryItem() {
+    private void createDeleteWorkflowtoRegistryItem() {
         this.deleteWorkflowfromRegistryItem = new JMenuItem("Delete Workflows in Registry");
         this.deleteWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
