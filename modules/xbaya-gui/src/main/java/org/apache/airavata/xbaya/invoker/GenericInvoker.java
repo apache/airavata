@@ -156,16 +156,13 @@ public class GenericInvoker implements Invoker {
     }
 
     /**
-     * Constructs a GenericInvoker.
-     * 
-     * @param portTypeQName2
-     * @param wsdlDefinitions5ToWsdlDefintions3
-     * @param id
-     * @param string
-     * @param object
-     * @param object2
-     * @param object3
-     * @param notifier2
+     *
+     * @param portTypeQName
+     * @param wsdl
+     * @param nodeID
+     * @param messageBoxURL
+     * @param gfacURL
+     * @param notifier
      */
     public GenericInvoker(QName portTypeQName, WsdlDefinitions wsdl, String nodeID, String messageBoxURL,
             String gfacURL, WorkflowNotifiable notifier) {

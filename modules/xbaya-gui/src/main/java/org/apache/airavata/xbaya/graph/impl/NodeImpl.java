@@ -40,6 +40,7 @@ import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.Port.Kind;
+import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler;
 import org.apache.airavata.xbaya.streaming.StreamTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -725,4 +726,7 @@ public abstract class NodeImpl implements Node {
     public boolean getRequireJoin() {
         return this.requireJoin;
     }
+    public boolean isFinished(){
+		return this.getGUI().getBodyColor() == MonitorEventHandler.NodeState.FINISHED.color;
+	}
 }

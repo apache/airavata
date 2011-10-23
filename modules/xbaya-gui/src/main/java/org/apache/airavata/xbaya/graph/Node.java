@@ -218,4 +218,9 @@ public interface Node extends GraphPiece {
      * @return
      */
     public boolean getRequireJoin();
+
+    /**
+	 * @return
+	 */
+	public boolean isFinished();
 }
