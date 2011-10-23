@@ -119,7 +119,7 @@ public class RegistryWorkflowPublisherWindow {
         buttonPanel.add(this.okButton);
 
         GridPanel mainPanel = new GridPanel();
-        TitledBorder border = new TitledBorder(new EtchedBorder(), "Save Workflow to XRegistry");
+        TitledBorder border = new TitledBorder(new EtchedBorder(), "Save Workflow to Registry");
         mainPanel.getSwingComponent().setBorder(border);
         mainPanel.add(nameLabel);
         mainPanel.add(this.nameTextField);
@@ -129,7 +129,7 @@ public class RegistryWorkflowPublisherWindow {
         mainPanel.add(chkMakePublic);
         mainPanel.layout(2, 2, 0, 0);
 
-        this.dialog = new XBayaDialog(this.engine, "Save Workflow to XRegistry", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine, "Save Workflow to Registry", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(this.okButton);
     }
 

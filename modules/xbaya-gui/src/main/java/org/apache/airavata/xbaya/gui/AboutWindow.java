@@ -81,9 +81,9 @@ public class AboutWindow {
         });
         buttonPanel.add(okButton);
 
-        String message = "<html>" + "<h2>" + XBayaConstants.APPLICATION_NAME + "</h2>" + "Version: "
-                + XBayaVersion.VERSION + "<br>" + "<a href='" + XBayaConstants.WEB_URL.toString() + "'>"
-                + XBayaConstants.WEB_URL.toString() + "</a>" + "</html>";
+        String message = "<html>" + "<h2>" + XBayaConstants.PROJECT_NAME + "</h2>" + XBayaConstants.APPLICATION_NAME
+                + "<br>" + "Version: " + XBayaVersion.VERSION + "<br>" + "<a href='"
+                + XBayaConstants.WEB_URL.toString() + "'>" + XBayaConstants.WEB_URL.toString() + "</a>" + "</html>";
         JEditorPane editorPane = new JEditorPane(XmlConstants.CONTENT_TYPE_HTML, message);
         editorPane.setEditable(false);
         editorPane.setBackground(buttonPanel.getBackground());
@@ -102,7 +102,7 @@ public class AboutWindow {
             }
         });
 
-        this.dialog = new XBayaDialog(this.engine, XBayaConstants.APPLICATION_NAME, editorPane, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine, XBayaConstants.PROJECT_NAME, editorPane, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

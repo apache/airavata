@@ -61,7 +61,7 @@ public class RegistryLoaderWindow {
     private XbayaEnhancedList<RegistrySearchResult> list;
 
     /**
-     * Constructs a XRegistryLoaderWindow.
+     * Constructs a RegistryLoaderWindow.
      * 
      * @param engine
      */
@@ -78,7 +78,7 @@ public class RegistryLoaderWindow {
     public void show() {
 
         /*
-         * this.list.getList().setListData( new String[]{ "Loading the workflow list from the XRegistry.",
+         * this.list.getList().setListData( new String[]{ "Loading the workflow list from the Registry.",
          * "Please wait for a moment."});
          */
         this.list.setEnabled(false);
@@ -125,7 +125,7 @@ public class RegistryLoaderWindow {
                     });
                 } catch (RuntimeException e) {
                     RegistryLoaderWindow.this.engine.getErrorWindow().error(
-                            ErrorMessages.XREGISTRY_WORKFLOW_LIST_LOAD_ERROR, e);
+                            ErrorMessages.REGISTRY_WORKFLOW_LIST_LOAD_ERROR, e);
                     hide();
                 } catch (Error e) {
                     RegistryLoaderWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
@@ -232,7 +232,7 @@ public class RegistryLoaderWindow {
         });
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Load a Workflow from the XRegistry", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine, "Load a Workflow from the Registry", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(this.okButton);
     }
 }

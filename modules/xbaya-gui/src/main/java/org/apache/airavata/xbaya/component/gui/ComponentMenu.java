@@ -61,8 +61,6 @@ public class ComponentMenu {
 
     private JMenuItem refreshAllItem;
 
-    private JMenuItem xregistryItem;
-
     private JMenuItem streamSourceItem;
 
     private JMenuItem workflowItem;

@@ -495,7 +495,6 @@ public class XBayaGUI implements EventListener {
 
     /**
      * @param model
-     * @throws XregistryException
      * @throws MalformedURLException
      */
     public void addStreamSources(final StreamTableModel model) throws MalformedURLException {
@@ -705,7 +704,6 @@ public class XBayaGUI implements EventListener {
     /**
      * @param newStreamName
      * @return
-     * @throws XRegistryClientException
      * @throws MalformedURLException
      * 
      */

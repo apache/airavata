@@ -41,7 +41,6 @@ import org.apache.airavata.xbaya.wf.Workflow;
  */
 public class WorkflowInterpretorSkeleton {
 
-    public static final String XREGISTRY = "xregistry";
     public static final String PROXYSERVER = "proxyserver";
     public static final String MSGBOX = "msgbox";
     public static final String GFAC = "gfac";

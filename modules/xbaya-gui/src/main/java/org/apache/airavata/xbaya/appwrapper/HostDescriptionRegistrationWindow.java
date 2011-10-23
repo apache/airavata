@@ -410,22 +410,6 @@ public class HostDescriptionRegistrationWindow {
                 hostBean.setJdkName(this.jdkNameComboBox.getText());
             }
 
-            /* Register to XRegistry */
-            RegistryAccesser xRegAccesser = new RegistryAccesser(this.engine);
-
-            // if (!this.isEditing) {
-            // xRegAccesser.registerHost(hostBean);
-            // } else {
-            // /* Delete old host bean */
-            // xRegAccesser.deleteHostDescription(this.editingHostBean.getHostName());
-            //
-            // /* Register new host bean */
-            // xRegAccesser.registerHost(hostBean);
-            //
-            // this.isEditing = false;
-            // this.addHostButton.setText("Add Host");
-            // }
-
         } catch (Exception e) {
             e.printStackTrace();
             this.hide();

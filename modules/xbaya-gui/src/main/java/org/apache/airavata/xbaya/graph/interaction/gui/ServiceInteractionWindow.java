@@ -102,7 +102,7 @@ public class ServiceInteractionWindow {
         buttonPanel.add(sendButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Deploy workflow to ODE and XRegistry", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine, "Deploy workflow to ODE and Registry", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(sendButton);
 
     }
