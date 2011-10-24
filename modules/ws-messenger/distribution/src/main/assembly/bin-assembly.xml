@@ -73,7 +73,7 @@
 			<outputDirectory>standalone-server/repository/services
 			</outputDirectory>
 			<includes>
-				<include>airavata-messagebroker*.aar</include>
+				<include>messagebroker*.aar</include>
 			</includes>
 		</fileSet>
 
@@ -86,7 +86,7 @@
 			<outputDirectory>standalone-server/repository/services
 			</outputDirectory>
 			<includes>
-				<include>airavata-messagebox*.aar</include>
+				<include>messagebox*.aar</include>
 			</includes>
 		</fileSet>
 
@@ -152,7 +152,7 @@
 			<directory>../messagebroker/target</directory>
 			<outputDirectory>lib</outputDirectory>
 			<includes>
-				<include>airavata-messagebroker*.jar</include>
+				<include>messagebroker*.jar</include>
 			</includes>
 		</fileSet>
 
@@ -164,7 +164,7 @@
 			<directory>../messagebox/target</directory>
 			<outputDirectory>lib</outputDirectory>
 			<includes>
-				<include>airavata-messagebox*.jar</include>
+				<include>messagebox*.jar</include>
 			</includes>
 		</fileSet>
 
@@ -205,7 +205,7 @@
 			<directory>../messenger/target</directory>
 			<outputDirectory>messenger</outputDirectory>
 			<includes>
-				<include>airavata-messenger*.war</include>
+				<include>messenger*.war</include>
 			</includes>
 		</fileSet-->
 

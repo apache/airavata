@@ -16,14 +16,14 @@
 
     <parent>
         <groupId>org.apache.airavata</groupId>
-        <artifactId>airavata-commons</artifactId>
+        <artifactId>commons</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.airavata</groupId>
-    <artifactId>airavata-common-utils</artifactId>
+    <artifactId>common-utils</artifactId>
     <packaging>jar</packaging>
     <name>Airavata Common Utilities</name>
     <url>http://incubator.apache.org/airavata/</url>
@@ -50,12 +50,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-messagebroker</artifactId>
+            <artifactId>messagebroker</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-workflowtracking</artifactId>
+            <artifactId>workflowtracking</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>

@@ -65,7 +65,7 @@
             <outputDirectory>standalone-server/repository/services
             </outputDirectory>
             <includes>
-                <include>airavata-messagebroker*.aar</include>
+                <include>messagebroker*.aar</include>
             </includes>
         </fileSet>
 
@@ -78,7 +78,7 @@
             <outputDirectory>standalone-server/repository/services
             </outputDirectory>
             <includes>
-                <include>airavata-messagebox*.aar</include>
+                <include>messagebox*.aar</include>
             </includes>
         </fileSet>
 
@@ -118,7 +118,7 @@
             <directory>../ws-messenger/messagebroker/target</directory>
             <outputDirectory>lib</outputDirectory>
             <includes>
-                <include>airavata-messagebroker*.jar</include>
+                <include>messagebroker*.jar</include>
             </includes>
         </fileSet>
 
@@ -130,7 +130,7 @@
             <directory>../ws-messenger/messagebox/target</directory>
             <outputDirectory>lib</outputDirectory>
             <includes>
-                <include>airavata-messagebox*.jar</include>
+                <include>messagebox*.jar</include>
             </includes>
         </fileSet>
 
@@ -142,7 +142,7 @@
             <directory>../ws-messenger/commons/target</directory>
             <outputDirectory>lib</outputDirectory>
             <includes>
-                <include>airavata-messenger-commons*.jar</include>
+                <include>messenger-commons*.jar</include>
             </includes>
         </fileSet>
 
@@ -150,7 +150,7 @@
             <directory>../ws-messenger/client/target</directory>
             <outputDirectory>lib</outputDirectory>
             <includes>
-                <include>airavata-messenger-client*.jar</include>
+                <include>messenger-client*.jar</include>
             </includes>
         </fileSet>
 
@@ -188,7 +188,7 @@
             <directory>../ws-messenger/messenger/target</directory>
             <outputDirectory>messenger</outputDirectory>
             <includes>
-                <include>airavata-messenger*.war</include>
+                <include>messenger*.war</include>
             </includes>
         </fileSet>
 

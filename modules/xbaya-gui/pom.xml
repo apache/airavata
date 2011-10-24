@@ -23,7 +23,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.airavata</groupId>
-    <artifactId>airavata-xbaya-gui</artifactId>
+    <artifactId>xbaya-gui</artifactId>
     <packaging>jar</packaging>
     <name>Airavata XBaya</name>
     <url>http://incubator.apache.org/airavata/</url>
@@ -359,28 +359,28 @@
         <!-- AIRAVATA modules -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-messagebroker</artifactId>
+            <artifactId>messagebroker</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-api</artifactId>
+            <artifactId>registry-api</artifactId>
             <version>${airavata.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-common-utils</artifactId>
+            <artifactId>common-utils</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-workflowtracking</artifactId>
+            <artifactId>workflowtracking</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-common-utils</artifactId>
+            <artifactId>common-utils</artifactId>
             <version>${airavata.version}</version>
         </dependency>
 
@@ -388,7 +388,7 @@
         <!-- TODO need clean up -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-schema-utils</artifactId>
+            <artifactId>gfac-schema-utils</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
@@ -430,8 +430,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-       	<artifactId>airavata-workflow-execution-context</artifactId>
+            <artifactId>workflow-execution-context</artifactId>
             <version>${airavata.version}</version>
         </dependency>
-	</dependencies>
+    </dependencies>
 </project>
