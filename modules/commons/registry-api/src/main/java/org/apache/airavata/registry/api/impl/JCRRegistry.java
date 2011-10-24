@@ -54,10 +54,10 @@ import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.registry.api.user.UserManager;
 import org.apache.airavata.registry.api.util.WebServiceUtil;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescription;
-import org.apache.airavata.schemas.gfac.HostDescription;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionDocument;
+import org.apache.airavata.schemas.gfac.HostDescriptionDocument;
 import org.apache.airavata.schemas.gfac.Parameter;
-import org.apache.airavata.schemas.gfac.ServiceDescription;
+import org.apache.airavata.schemas.gfac.ServiceDescriptionDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,9 +155,9 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		}
 	}
 
-	public List<HostDescription> getServiceLocation(String serviceId) {
+	public List<HostDescriptionDocument> getServiceLocation(String serviceId) {
 		Session session = null;
-		ArrayList<HostDescription> result = new ArrayList<HostDescription>();
+		ArrayList<HostDescriptionDocument> result = new ArrayList<HostDescriptionDocument>();
 		try {
 			session = getSession();
 			Node node = getServiceNode(session);
@@ -168,7 +168,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 				for (Value val : vals) {
 					Node host = session.getNodeByIdentifier(val.getString());
 					Property hostProp = host.getProperty(XML_PROPERTY_NAME);
-					result.add(HostDescription.Factory.parse(hostProp
+					result.add(HostDescriptionDocument.Factory.parse(hostProp
 							.getString()));
 				}
 			}
@@ -200,16 +200,16 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		}
 	}
 
-	public ServiceDescription getServiceDescription(String serviceId)
+	public ServiceDescriptionDocument getServiceDescription(String serviceId)
 			throws ServiceDescriptionRetrieveException {
 		Session session = null;
-		ServiceDescription result = null;
+		ServiceDescriptionDocument result = null;
 		try {
 			session = getSession();
 			Node serviceNode = getServiceNode(session);
 			Node node = serviceNode.getNode(serviceId);
 			Property prop = node.getProperty(XML_PROPERTY_NAME);
-			result = ServiceDescription.Factory.parse(prop.getString());
+			result = ServiceDescriptionDocument.Factory.parse(prop.getString());
 		} catch (Exception e) {
 			throw new ServiceDescriptionRetrieveException(e);
 		} finally {
@@ -218,10 +218,10 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		return result;
 	}
 
-	public ApplicationDeploymentDescription getDeploymentDescription(
+	public ApplicationDeploymentDescriptionDocument getDeploymentDescription(
 			String serviceId, String hostId) throws RegistryException {
 		Session session = null;
-		ApplicationDeploymentDescription result = null;
+		ApplicationDeploymentDescriptionDocument result = null;
 		try {
 			session = getSession();
 			Node deploymentNode = getDeploymentNode(session);
@@ -231,7 +231,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			for (; nodes.hasNext();) {
 				Node app = nodes.nextNode();
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
-				result = ApplicationDeploymentDescription.Factory.parse(prop
+				result = ApplicationDeploymentDescriptionDocument.Factory.parse(prop
 						.getString());
 			}
 		} catch (Exception e) {
@@ -260,10 +260,10 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		}
 	}
 
-	public HostDescription getHostDescription(String hostId)
+	public HostDescriptionDocument getHostDescription(String hostId)
 			throws RegistryException {
 		Session session = null;
-		HostDescription result = null;
+		HostDescriptionDocument result = null;
 		try {
 			session = getSession();
 			Node hostNode = getHostNode(session);
@@ -279,25 +279,25 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		return result;
 	}
 
-	private HostDescription getHostDescriptor(Node node)
+	private HostDescriptionDocument getHostDescriptor(Node node)
 			throws RegistryException {
-		HostDescription result;
+		HostDescriptionDocument result;
 		try {			
 			Property prop = node.getProperty(XML_PROPERTY_NAME);
-			result = HostDescription.Factory.parse(prop.getString());
+			result = HostDescriptionDocument.Factory.parse(prop.getString());
 		} catch (Exception e) {
 			throw new HostDescriptionRetrieveException(e);
 		}
 		return result;
 	}
 
-	public String saveHostDescription(HostDescription host) {
+	public String saveHostDescription(HostDescriptionDocument host) {
 		Session session = null;
 		String result = null;
 		try {
 			session = getSession();
 			Node hostNode = getHostNode(session);
-			Node node = getOrAddNode(hostNode, host.getName());
+			Node node = getOrAddNode(hostNode, host.getHostDescription().getName());
 			node.setProperty(XML_PROPERTY_NAME, host.xmlText());
 			session.save();
 
@@ -313,13 +313,13 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		return result;
 	}
 
-	public String saveServiceDescription(ServiceDescription service) {
+	public String saveServiceDescription(ServiceDescriptionDocument service) {
 		Session session = null;
 		String result = null;
 		try {
 			session = getSession();
 			Node serviceNode = getServiceNode(session);
-			Node node = getOrAddNode(serviceNode, service.getName());
+			Node node = getOrAddNode(serviceNode, service.getServiceDescription().getName());
 			node.setProperty(XML_PROPERTY_NAME, service.xmlText());
 			session.save();
 
@@ -336,7 +336,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 	}
 
 	public String saveDeploymentDescription(String serviceId, String hostId,
-			ApplicationDeploymentDescription app) {
+			ApplicationDeploymentDescriptionDocument app) {
 		Session session = null;
 		String result = null;
 		try {
@@ -344,7 +344,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			Node deployNode = getDeploymentNode(session);
 			Node serviceNode = getOrAddNode(deployNode, serviceId);
 			Node hostNode = getOrAddNode(serviceNode, hostId);
-			Node appName = getOrAddNode(hostNode, app.getName());
+			Node appName = getOrAddNode(hostNode, app.getApplicationDeploymentDescription().getName());
 			appName.setProperty(XML_PROPERTY_NAME, app.xmlText());
 			session.save();
 
@@ -401,10 +401,10 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		return false;
 	}
 
-	public List<ServiceDescription> searchServiceDescription(String name)
+	public List<ServiceDescriptionDocument> searchServiceDescription(String name)
 			throws RegistryException {
 		Session session = null;
-		ArrayList<ServiceDescription> result = new ArrayList<ServiceDescription>();
+		ArrayList<ServiceDescriptionDocument> result = new ArrayList<ServiceDescriptionDocument>();
 		try {
 			session = getSession();
 			Node node = getServiceNode(session);
@@ -412,7 +412,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			for (; nodes.hasNext();) {
 				Node service = nodes.nextNode();
 				Property prop = service.getProperty(XML_PROPERTY_NAME);
-				result.add(ServiceDescription.Factory.parse(prop.getString()));
+				result.add(ServiceDescriptionDocument.Factory.parse(prop.getString()));
 			}
 		} catch (Exception e) {
 			new ServiceDescriptionRetrieveException(e);
@@ -422,10 +422,10 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		return result;
 	}
 
-	public List<HostDescription> searchHostDescription(String nameRegEx)
+	public List<HostDescriptionDocument> searchHostDescription(String nameRegEx)
 			throws RegistryException {
 		Session session = null;
-		List<HostDescription> result = new ArrayList<HostDescription>();
+		List<HostDescriptionDocument> result = new ArrayList<HostDescriptionDocument>();
 		try {
 			session = getSession();
 			Node node = getHostNode(session);
@@ -433,7 +433,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			for (; nodes.hasNext();) {
 				Node host = nodes.nextNode();
 				if (host != null && host.getName().matches(nameRegEx)) {
-					HostDescription hostDescriptor = getHostDescriptor(host);
+					HostDescriptionDocument hostDescriptor = getHostDescriptor(host);
 					result.add(hostDescriptor);
 				}
 			}
@@ -445,10 +445,10 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		return result;
 	}
 
-	public Map<ApplicationDeploymentDescription, String> searchDeploymentDescription()
+	public Map<ApplicationDeploymentDescriptionDocument, String> searchDeploymentDescription()
 			throws RegistryException {
 		Session session = null;
-		Map<ApplicationDeploymentDescription, String> result = new HashMap<ApplicationDeploymentDescription, String>();
+		Map<ApplicationDeploymentDescriptionDocument, String> result = new HashMap<ApplicationDeploymentDescriptionDocument, String>();
 		try {
 			session = getSession();
 			Node deploymentNode = getDeploymentNode(session);
@@ -464,7 +464,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 					for (; nodes.hasNext();) {
 						Node app = nodes.nextNode();
 						Property prop = app.getProperty(XML_PROPERTY_NAME);
-						result.put(ApplicationDeploymentDescription.Factory
+						result.put(ApplicationDeploymentDescriptionDocument.Factory
 								.parse(prop.getString()), serviceNode.getName()
 								+ "$" + hostNode.getName());
 					}
@@ -491,9 +491,9 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			for (; nodes.hasNext();) {
 				Node app = nodes.nextNode();
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
-				ApplicationDeploymentDescription appDesc = ApplicationDeploymentDescription.Factory
+				ApplicationDeploymentDescriptionDocument appDesc = ApplicationDeploymentDescriptionDocument.Factory
 						.parse(prop.getString());
-				if (appDesc.getName().matches(applicationName)) {
+				if (appDesc.getApplicationDeploymentDescription().getName().matches(applicationName)) {
 					app.remove();
 				}
 			}
@@ -505,11 +505,11 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		}
 	}
 
-	public List<ApplicationDeploymentDescription> searchDeploymentDescription(
+	public List<ApplicationDeploymentDescriptionDocument> searchDeploymentDescription(
 			String serviceName, String hostName, String applicationName)
 			throws RegistryException {
 		Session session = null;
-		List<ApplicationDeploymentDescription> result = new ArrayList<ApplicationDeploymentDescription>();
+		List<ApplicationDeploymentDescriptionDocument> result = new ArrayList<ApplicationDeploymentDescriptionDocument>();
 		try {
 			session = getSession();
 			Node deploymentNode = getDeploymentNode(session);
@@ -519,9 +519,9 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			for (; nodes.hasNext();) {
 				Node app = nodes.nextNode();
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
-				ApplicationDeploymentDescription appDesc = ApplicationDeploymentDescription.Factory
+				ApplicationDeploymentDescriptionDocument appDesc = ApplicationDeploymentDescriptionDocument.Factory
 						.parse(prop.getString());
-				if (appDesc.getName().matches(applicationName)) {
+				if (appDesc.getApplicationDeploymentDescription().getName().matches(applicationName)) {
 					result.add(appDesc);
 				}
 			}
@@ -533,10 +533,10 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		return result;
 	}
 
-	public List<ApplicationDeploymentDescription> searchDeploymentDescription(
+	public List<ApplicationDeploymentDescriptionDocument> searchDeploymentDescription(
 			String serviceName, String hostName) throws RegistryException {
 		Session session = null;
-		List<ApplicationDeploymentDescription> result = new ArrayList<ApplicationDeploymentDescription>();
+		List<ApplicationDeploymentDescriptionDocument> result = new ArrayList<ApplicationDeploymentDescriptionDocument>();
 		try {
 			session = getSession();
 			Node deploymentNode = getDeploymentNode(session);
@@ -546,7 +546,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			for (; nodes.hasNext();) {
 				Node app = nodes.nextNode();
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
-				result.add(ApplicationDeploymentDescription.Factory.parse(prop
+				result.add(ApplicationDeploymentDescriptionDocument.Factory.parse(prop
 						.getString()));
 			}
 		} catch (Exception e) {
@@ -557,13 +557,13 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		return result;
 	}
 
-	public String saveWSDL(ServiceDescription service, String WSDL) {
+	public String saveWSDL(ServiceDescriptionDocument service, String WSDL) {
 		Session session = null;
 		String result = null;
 		try {
 			session = getSession();
 			Node serviceNode = getServiceNode(session);
-			Node node = getOrAddNode(serviceNode, service.getName());
+			Node node = getOrAddNode(serviceNode, service.getServiceDescription().getName());
 			node.setProperty(WSDL_PROPERTY_NAME, WSDL);
 			session.save();
 
@@ -579,7 +579,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		return result;
 	}
 
-	public String saveWSDL(ServiceDescription service) {
+	public String saveWSDL(ServiceDescriptionDocument service) {
 		return saveWSDL(service, WebServiceUtil.generateWSDL(service));
 	}
 

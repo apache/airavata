@@ -28,9 +28,9 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescription;
-import org.apache.airavata.schemas.gfac.HostDescription;
-import org.apache.airavata.schemas.gfac.ServiceDescription;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionDocument;
+import org.apache.airavata.schemas.gfac.HostDescriptionDocument;
+import org.apache.airavata.schemas.gfac.ServiceDescriptionDocument;
 
 public interface Registry {
     /**
@@ -39,7 +39,7 @@ public interface Registry {
      * @param serviceId
      * @return List of HostDescription having the service
      */
-    public List<HostDescription> getServiceLocation(String serviceId);
+    public List<HostDescriptionDocument> getServiceLocation(String serviceId);
 
     /**
      * Retrieve a service description i.e. name, description, parameters
@@ -48,7 +48,7 @@ public interface Registry {
      * @return a service description or null if a description is not found
      * @throws ServiceDescriptionRetrieveException
      */
-    public ServiceDescription getServiceDescription(String serviceId) throws RegistryException;
+    public ServiceDescriptionDocument getServiceDescription(String serviceId) throws RegistryException;
 
     /**
      * Retrieve a deployment description for a service from the specific host
@@ -58,7 +58,7 @@ public interface Registry {
      * @return a deployment description or null if a description is not found
      * @throws DeploymentDescriptionRetrieveException
      */
-    public ApplicationDeploymentDescription getDeploymentDescription(String serviceId, String hostId)
+    public ApplicationDeploymentDescriptionDocument getDeploymentDescription(String serviceId, String hostId)
             throws RegistryException;
 
     /**
@@ -67,7 +67,7 @@ public interface Registry {
      * @param hostId
      * @return a host description or null if a description is not found
      */
-    public HostDescription getHostDescription(String hostId) throws RegistryException;
+    public HostDescriptionDocument getHostDescription(String hostId) throws RegistryException;
 
     /**
      * Save a host description with the specific name.
@@ -76,7 +76,7 @@ public interface Registry {
      * @param host
      * @return identifier
      */
-    public String saveHostDescription(HostDescription host);
+    public String saveHostDescription(HostDescriptionDocument host);
 
     /**
      * Save a service description with the specific name.
@@ -85,7 +85,7 @@ public interface Registry {
      * @param host
      * @return identifier
      */
-    public String saveServiceDescription(ServiceDescription service);
+    public String saveServiceDescription(ServiceDescriptionDocument service);
 
     /**
      * Save a deployment description according to the service and host
@@ -95,7 +95,7 @@ public interface Registry {
      * @param app
      * @return identifier
      */
-    public String saveDeploymentDescription(String serviceId, String hostId, ApplicationDeploymentDescription app);
+    public String saveDeploymentDescription(String serviceId, String hostId, ApplicationDeploymentDescriptionDocument app);
 
     /**
      * Deploy a service on a host
@@ -114,7 +114,7 @@ public interface Registry {
      * @throws HostDescriptionRetrieveException
      * @throws PathNotFoundException
      */
-    public List<HostDescription> searchHostDescription(String name) throws RegistryException;
+    public List<HostDescriptionDocument> searchHostDescription(String name) throws RegistryException;
 
     /**
      * Search service description with name
@@ -124,7 +124,7 @@ public interface Registry {
      * @throws PathNotFoundException
      * @throws ServiceDescriptionRetrieveException
      */
-    public List<ServiceDescription> searchServiceDescription(String name) throws RegistryException;
+    public List<ServiceDescriptionDocument> searchServiceDescription(String name) throws RegistryException;
 
     /**
      * Search deployment description from a service and/or a hostname
@@ -135,7 +135,7 @@ public interface Registry {
      * @throws PathNotFoundException
      * @throws DeploymentDescriptionRetrieveException
      */
-    public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName)
+    public List<ApplicationDeploymentDescriptionDocument> searchDeploymentDescription(String serviceName, String hostName)
             throws RegistryException;
 
     /**
@@ -148,7 +148,7 @@ public interface Registry {
      * @throws PathNotFoundException
      * @throws DeploymentDescriptionRetrieveException
      */
-    public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName,
+    public List<ApplicationDeploymentDescriptionDocument> searchDeploymentDescription(String serviceName, String hostName,
             String applicationName) throws RegistryException;
 
     /**
@@ -159,7 +159,7 @@ public interface Registry {
      * @throws PathNotFoundException
      * @throws DeploymentDescriptionRetrieveException
      */
-    public Map<ApplicationDeploymentDescription, String> searchDeploymentDescription() throws RegistryException;
+    public Map<ApplicationDeploymentDescriptionDocument, String> searchDeploymentDescription() throws RegistryException;
 
     /**
      * This method can be used to save the gfacURL in to registry
