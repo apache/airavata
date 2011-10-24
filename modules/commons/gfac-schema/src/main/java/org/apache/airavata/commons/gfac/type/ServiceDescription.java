@@ -62,4 +62,18 @@ public class ServiceDescription implements Type {
     public void setOutputParameters(org.apache.airavata.schemas.gfac.Parameter[] outputParameters) {
         this.serviceDescriptionType.setOutputParametersArray(outputParameters);
     }
+    
+    public String toXml() {
+		return serviceDescriptionType.xmlText();
+	}
+
+	public ServiceDescription fromXml(String xml) {
+		try {
+			this.serviceDescriptionType = ServiceDescriptionType.Factory
+					.parse(xml);			
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return this;
+	}
 }

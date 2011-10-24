@@ -25,53 +25,69 @@ import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 
 public class ApplicationDeploymentDescription implements Type {
 
-    private ApplicationDeploymentDescriptionType appDeploymentDescType;
+	private ApplicationDeploymentDescriptionType appDeploymentDescType;
 
-    public ApplicationDeploymentDescription() {
-        this.appDeploymentDescType = ApplicationDeploymentDescriptionType.Factory.newInstance();
-    }
+	public ApplicationDeploymentDescription() {
+		this.appDeploymentDescType = ApplicationDeploymentDescriptionType.Factory
+				.newInstance();
+	}
 
-    public ApplicationDeploymentDescription(ApplicationDeploymentDescriptionType addt) {
-        this.appDeploymentDescType = addt;
-    }
+	public ApplicationDeploymentDescription(
+			ApplicationDeploymentDescriptionType addt) {
+		this.appDeploymentDescType = addt;
+	}
 
-    public String getId() {
-        return appDeploymentDescType.getName();
-    }
+	public String getId() {
+		return appDeploymentDescType.getName();
+	}
 
-    public void setId(String id) {
-        this.appDeploymentDescType.setName(id);
-    }
+	public void setId(String id) {
+		this.appDeploymentDescType.setName(id);
+	}
 
-    public String getTmpDir() {
-        return appDeploymentDescType.getTmpDir();
-    }
+	public String getTmpDir() {
+		return appDeploymentDescType.getTmpDir();
+	}
 
-    public void setTmpDir(String tmpDir) {
-        this.appDeploymentDescType.setTmpDir(tmpDir);
-    }
+	public void setTmpDir(String tmpDir) {
+		this.appDeploymentDescType.setTmpDir(tmpDir);
+	}
 
-    public String getWorkingDir() {
-        return appDeploymentDescType.getWorkingDir();
-    }
+	public String getWorkingDir() {
+		return appDeploymentDescType.getWorkingDir();
+	}
 
-    public void setWorkingDir(String workingDir) {
-        this.appDeploymentDescType.setWorkingDir(workingDir);
-    }
+	public void setWorkingDir(String workingDir) {
+		this.appDeploymentDescType.setWorkingDir(workingDir);
+	}
 
-    public String getInputDir() {
-        return appDeploymentDescType.getInputDir();
-    }
+	public String getInputDir() {
+		return appDeploymentDescType.getInputDir();
+	}
 
-    public void setInputDir(String inputDir) {
-        this.appDeploymentDescType.setInputDir(inputDir);
-    }
+	public void setInputDir(String inputDir) {
+		this.appDeploymentDescType.setInputDir(inputDir);
+	}
 
-    public String getOutputDir() {
-        return appDeploymentDescType.getOutputDir();
-    }
+	public String getOutputDir() {
+		return appDeploymentDescType.getOutputDir();
+	}
 
-    public void setOutputDir(String outputDir) {
-        this.appDeploymentDescType.setOutputDir(outputDir);
-    }
+	public void setOutputDir(String outputDir) {
+		this.appDeploymentDescType.setOutputDir(outputDir);
+	}
+
+	public String toXml() {
+		return appDeploymentDescType.xmlText();
+	}
+
+	public ApplicationDeploymentDescription fromXml(String xml) {
+		try {
+			this.appDeploymentDescType = ApplicationDeploymentDescriptionType.Factory
+					.parse(xml);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return this;
+	}
 }

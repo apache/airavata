@@ -21,6 +21,7 @@
 
 package org.apache.airavata.commons.gfac.type;
 
+
 public class DataType implements Type {
 
     private org.apache.airavata.schemas.gfac.DataType.Enum dataType;
@@ -44,4 +45,12 @@ public class DataType implements Type {
     public String toString() {
         return dataType.toString();
     }
+    
+    public String toXml() {
+    	return null;
+    }
+
+	public Type fromXml(String xml) {
+		return null;
+	}
 }
