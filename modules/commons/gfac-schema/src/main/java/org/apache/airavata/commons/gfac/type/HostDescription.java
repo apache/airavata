@@ -21,6 +21,7 @@
 
 package org.apache.airavata.commons.gfac.type;
 
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 
 public class HostDescription implements Type {
@@ -50,5 +51,19 @@ public class HostDescription implements Type {
     public void setAddress(String address) {
         this.hostDescriptionType.setAddress(address);
     }
+    
+    public String toXml() {
+		return hostDescriptionType.xmlText();
+	}
+
+	public HostDescription fromXml(String xml) {
+		try {
+			this.hostDescriptionType = HostDescriptionType.Factory
+					.parse(xml);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return this;
+	}
 
 }

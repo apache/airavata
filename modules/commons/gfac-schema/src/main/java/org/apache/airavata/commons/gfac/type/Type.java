@@ -24,4 +24,6 @@ package org.apache.airavata.commons.gfac.type;
 import java.io.Serializable;
 
 public interface Type extends Serializable {
+	String toXml();
+	Type fromXml(String xml);	
 }
