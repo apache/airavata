@@ -22,7 +22,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.airavata</groupId>
-    <artifactId>airavata-gfac-core</artifactId>
+    <artifactId>gfac-core</artifactId>
     <name>GFac-Core</name>
     <description>The core GFAC functionality independent from any webservice implementation.</description>
 
@@ -69,19 +69,19 @@
         <!-- GFAC schemas -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-schema-utils</artifactId>
+            <artifactId>gfac-schema-utils</artifactId>
             <version>${airavata.version}</version>
         </dependency>
 	<dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-api</artifactId>
+            <artifactId>registry-api</artifactId>
             <version>${airavata.version}</version>
         </dependency>
 
         <!-- Workflow Tracking -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-workflowtracking</artifactId>
+            <artifactId>workflowtracking</artifactId>
             <version>${airavata.version}</version>
         </dependency>
 

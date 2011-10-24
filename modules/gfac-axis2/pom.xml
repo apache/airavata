@@ -19,7 +19,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.airavata</groupId>
-    <artifactId>airavata-gfac-axis2-interface</artifactId>
+    <artifactId>gfac-axis2-interface</artifactId>
     <name>GFac-Axis2-Interface</name>
     <description>Axis2 Interface to the GFac-Core</description>
 
@@ -27,22 +27,22 @@
         <!-- AIRAVATA MODULES DEPENDECIES -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-api</artifactId>
+            <artifactId>registry-api</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-workflow-execution-context</artifactId>
+            <artifactId>workflow-execution-context</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-workflowtracking</artifactId>
+            <artifactId>workflowtracking</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-core</artifactId>
+            <artifactId>gfac-core</artifactId>
             <version>${airavata.version}</version>
         </dependency>
 

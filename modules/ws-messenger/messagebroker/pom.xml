@@ -3,13 +3,13 @@
 
     <parent>
         <groupId>org.apache.airavata</groupId>
-        <artifactId>airavata-ws-messenger</artifactId>
+        <artifactId>ws-messenger</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.airavata</groupId>
-    <artifactId>airavata-messagebroker</artifactId>
+    <artifactId>messagebroker</artifactId>
     <name>Message Broker</name>
     <url>http://incubator.apache.org/airavata/</url>
     <packaging>jar</packaging>
@@ -72,7 +72,7 @@
 
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-messenger-commons</artifactId>
+            <artifactId>messenger-commons</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         
@@ -119,7 +119,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-messenger-client</artifactId>
+            <artifactId>messenger-client</artifactId>
             <version>${airavata.version}</version>
             <scope>test</scope>
         </dependency>
