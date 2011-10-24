@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.concurrent.PredicatedExecutable;
 import org.apache.airavata.xbaya.graph.DataPort;
@@ -34,7 +35,6 @@ import org.apache.airavata.xbaya.graph.system.EndForEachNode;
 import org.apache.airavata.xbaya.graph.system.ForEachNode;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
-import org.apache.airavata.xbaya.interpretor.ProvenanceFileWrite;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.xmlpull.infoset.XmlElement;
@@ -54,11 +54,17 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 
 	private Map<Node, Invoker> invokerMap;
 
+    private String experimentId;
+
+    private Registry registry;
+
 	public ProvenanceWrite(Node node, String workflowName,
-			Map<Node, Invoker> invokerMap) {
+                           Map<Node, Invoker> invokerMap, String experimentId,Registry registry) {
 		this.node = node;
 		this.workflowName = workflowName;
 		this.invokerMap = invokerMap;
+        this.experimentId = experimentId;
+        this.registry = registry;
 	}
 
 	public void run() {
@@ -189,10 +195,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 					outputParamElement.addChild("null");
 				}
 			}
-
-			new ProvenanceFileWrite(PROVENANCE_DIR, workflowName + node.getID()
-					+ System.currentTimeMillis() + ".xml").write(elem);
-
+            this.registry.saveWorkflowData(xsul5.XmlConstants.BUILDER.serializeToString(elem),experimentId,node.getID());
 		}
 	}
 }
