@@ -21,7 +21,7 @@
 
 package org.apache.airavata.registry.api;
 
-import org.apache.airavata.schemas.gfac.ServiceDescription;
+import org.apache.airavata.schemas.gfac.ServiceDescriptionDocument;
 
 public interface Axis2Registry extends Registry {
 
@@ -31,7 +31,7 @@ public interface Axis2Registry extends Registry {
      * @param service
      * @param WSDL
      */
-    public String saveWSDL(ServiceDescription service, String WSDL);
+    public String saveWSDL(ServiceDescriptionDocument service, String WSDL);
 
     /**
      * Save WSDL for Axis2
@@ -39,7 +39,7 @@ public interface Axis2Registry extends Registry {
      * @param serviceName
      * @param service
      */
-    public String saveWSDL(ServiceDescription service);
+    public String saveWSDL(ServiceDescriptionDocument service);
 
     /**
      * Load WSDL for Axis2
