@@ -18,6 +18,8 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 public class GlobusFileTransferWindow {
+    public static final String GLOBUSONLINE_BASE_URL_V0_10 = "https://transfer.api.globusonline.org/v0.10";
+
     private XBayaEngine engine;
 
     private XBayaDialog dialog;
@@ -30,8 +32,6 @@ public class GlobusFileTransferWindow {
 
     private XBayaTextField keyFileTextField;
 
-    private XBayaTextField baseUrlTextField;
-
     private XBayaTextField sourceEndpointTextField;
 
     private XBayaTextField sourceFilePathTextField;
@@ -41,8 +41,7 @@ public class GlobusFileTransferWindow {
     private XBayaTextField destFilePathTextField;
 
     /**
-     * @param engine
-     *            XBaya workflow engine
+     * @param engine XBaya workflow engine
      */
     public GlobusFileTransferWindow(XBayaEngine engine) {
         this.engine = engine;
@@ -65,16 +64,15 @@ public class GlobusFileTransferWindow {
         String caFile = this.caFileTextField.getText();
         String certFile = this.certFileTextField.getText();
         String keyFile = this.keyFileTextField.getText();
-        String baseUrl = this.baseUrlTextField.getText();
 
         String sourceEndpoint = this.sourceEndpointTextField.getText();
         String sourceFilePath = this.sourceFilePathTextField.getText();
         String destEndpoint = this.destEndpointTextField.getText();
         String destFilePath = this.destFilePathTextField.getText();
 
-        JSONTransferAPIClient c = null;
+        JSONTransferAPIClient c;
         try {
-            c = new JSONTransferAPIClient(username, caFile, certFile, keyFile, baseUrl);
+            c = new JSONTransferAPIClient(username, caFile, certFile, keyFile, GLOBUSONLINE_BASE_URL_V0_10);
         } catch (KeyManagementException e) {
             this.engine.getErrorWindow().error("Key Management Error.", e);
             return;
@@ -113,7 +111,6 @@ public class GlobusFileTransferWindow {
         this.caFileTextField = new XBayaTextField();
         this.certFileTextField = new XBayaTextField();
         this.keyFileTextField = new XBayaTextField();
-        this.baseUrlTextField = new XBayaTextField();
         this.sourceEndpointTextField = new XBayaTextField();
         this.sourceFilePathTextField = new XBayaTextField();
         this.destEndpointTextField = new XBayaTextField();
@@ -125,7 +122,6 @@ public class GlobusFileTransferWindow {
                 .setText("/home/heshan/Dev/globusonline/transfer-api-client-java.git/trunk/ca/gd-bundle_ca.cert");
         this.certFileTextField.setText("/tmp/x509up_u780936");
         this.keyFileTextField.setText("/tmp/x509up_u780936");
-        this.baseUrlTextField = new XBayaTextField("https://transfer.api.globusonline.org/v0.10");
         this.sourceEndpointTextField.setText("xsede#ranger");
         this.sourceFilePathTextField.setText("~/tmp.log");
         this.destEndpointTextField.setText("xsede#trestles");
@@ -135,7 +131,6 @@ public class GlobusFileTransferWindow {
         XBayaLabel caFileLabel = new XBayaLabel("CA File", this.caFileTextField);
         XBayaLabel certFileLabel = new XBayaLabel("Certificate File", this.certFileTextField);
         XBayaLabel keyFileLabel = new XBayaLabel("Key File", this.keyFileTextField);
-        XBayaLabel baseUrlLabel = new XBayaLabel("Base URL", this.baseUrlTextField);
         XBayaLabel sourceEprLabel = new XBayaLabel("Source Endpoint", this.sourceEndpointTextField);
         XBayaLabel sourceFilePathLabel = new XBayaLabel("Source File Path", this.sourceFilePathTextField);
         XBayaLabel destEprLabel = new XBayaLabel("Destination Endpoint", this.destEndpointTextField);
@@ -150,8 +145,6 @@ public class GlobusFileTransferWindow {
         infoPanel.add(certFileTextField);
         infoPanel.add(keyFileLabel);
         infoPanel.add(this.keyFileTextField);
-        infoPanel.add(baseUrlLabel);
-        infoPanel.add(this.baseUrlTextField);
         infoPanel.add(sourceEprLabel);
         infoPanel.add(this.sourceEndpointTextField);
         infoPanel.add(sourceFilePathLabel);
