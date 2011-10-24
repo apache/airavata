@@ -25,11 +25,6 @@ import java.net.UnknownHostException;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.jcr.PathNotFoundException;
-
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
-import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -41,6 +36,8 @@ import org.apache.airavata.core.gfac.provider.impl.GramProvider;
 import org.apache.airavata.core.gfac.provider.impl.LocalProvider;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
+import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,11 +58,7 @@ public class SchedulerImpl implements Scheduler {
         ServiceDescription serviceDesc = null;
         try {
             serviceDesc = registryService.getServiceDescription(context.getServiceName());
-        } catch (PathNotFoundException e2) {
-            // TODO Auto-generated catch block
-            e2.printStackTrace();
-        } catch (ServiceDescriptionRetrieveException e2) {
-            // TODO Auto-generated catch block
+        } catch (RegistryException e2) {
             e2.printStackTrace();
         }
 
@@ -88,12 +81,8 @@ public class SchedulerImpl implements Scheduler {
         ApplicationDeploymentDescription app = null;
         try {
             app = registryService.getDeploymentDescription(context.getServiceName(), host.getId());
-        } catch (PathNotFoundException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        } catch (DeploymentDescriptionRetrieveException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        } catch (RegistryException e2) {
+            e2.printStackTrace();
         }
 
         if (app == null)
