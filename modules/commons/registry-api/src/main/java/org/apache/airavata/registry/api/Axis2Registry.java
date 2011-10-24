@@ -21,7 +21,7 @@
 
 package org.apache.airavata.registry.api;
 
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.schemas.gfac.ServiceDescription;
 
 public interface Axis2Registry extends Registry {
 
