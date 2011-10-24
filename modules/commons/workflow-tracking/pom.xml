@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <parent>
+        <groupId>org.apache.airavata</groupId>
         <artifactId>airavata-commons</artifactId>
-        <groupId>airavata</groupId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>airavata</groupId>
+    <groupId>org.apache.airavata</groupId>
     <artifactId>airavata-workflowtracking</artifactId>
     <packaging>jar</packaging>
     <name>Airavata Workflow Tracking</name>
@@ -97,7 +98,7 @@
             <artifactId>axis2</artifactId>
         </dependency>
         <dependency>
-            <groupId>airavata</groupId>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-messenger-client</artifactId>
             <version>${airavata.version}</version>
         </dependency>
