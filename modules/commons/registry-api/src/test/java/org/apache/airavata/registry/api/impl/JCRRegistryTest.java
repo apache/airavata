@@ -23,9 +23,9 @@ package org.apache.airavata.registry.api.impl;
 
 import static org.junit.Assert.fail;
 
+import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.schemas.gfac.HostDescriptionDocument;
-import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.junit.Test;
 
 public class JCRRegistryTest {
@@ -45,17 +45,16 @@ public class JCRRegistryTest {
             /*
              * Host
              */
-            HostDescriptionDocument doc = HostDescriptionDocument.Factory.newInstance();
-            HostDescriptionType host = doc.addNewHostDescription();
-            host.setName(hostId);
+            HostDescription host = new HostDescription();
+            host.setId(hostId);
             host.setAddress(address);
             
-            jcrRegistry.saveHostDescription(doc);
+            jcrRegistry.saveHostDescription(host);
             
             
-            HostDescriptionDocument docR = jcrRegistry.getHostDescription(hostId);
+            HostDescription hostR = jcrRegistry.getHostDescription(hostId);
             
-            if(!(docR.getHostDescription().getName().equals(hostId) && docR.getHostDescription().getAddress().equals(address))){
+            if(!(hostR.getId().equals(hostId) && hostR.getAddress().equals(address))){
             	fail("Save and Load Host Description Fail with Different Value");	
             }
           
