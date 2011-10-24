@@ -51,6 +51,7 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.commons.gfac.util.SchemaUtil;
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.DataRegistry;
 import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
@@ -702,7 +703,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 					OUTPUT_NODE_NAME);
 			Node node = getOrAddNode(outputNode, workflowId);
 			for (int i = 0; i < parameters.size(); i++) {
-				node.setProperty(String.valueOf(i), parameters.get(i).toXml());
+				node.setProperty(String.valueOf(i), SchemaUtil.toXML(parameters.get(i)));
 			}
 
 			session.save();
@@ -731,7 +732,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			PropertyIterator it = node.getProperties();
 			while (it.hasNext()) {
 				Property prop = (Property) it.next();
-				result.add(new Parameter().fromXml(prop.getString()));
+				result.add((AbstractParameter)SchemaUtil.parseFromXML(prop.getString()));
 			}
 		} catch (Exception e) {
 			System.out.println(e);
