@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <parent>
+        <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <groupId>airavata</groupId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>Airavata</groupId>
+    <groupId>org.apache.airavata</groupId>
     <artifactId>distribution</artifactId>
     <name>distribution</name>
     <url>http://incubator.apache.org/airavata</url>
+
     <build>
         <plugins>
             <plugin>

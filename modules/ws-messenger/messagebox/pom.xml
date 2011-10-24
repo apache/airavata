@@ -2,21 +2,21 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
+        <groupId>org.apache.airavata</groupId>
         <artifactId>airavata-ws-messenger</artifactId>
-        <groupId>airavata</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
-    <groupId>airavata</groupId>
+    <groupId>org.apache.airavata</groupId>
     <artifactId>airavata-messagebox</artifactId>
     <packaging>jar</packaging>
     <name>MessageBox</name>
     <url>http://incubator.apache.org/airavata/</url>
 
     <dependencies>
-
         <dependency>
-            <groupId>airavata</groupId>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-messenger-commons</artifactId>
             <version>${airavata.version}</version>
         </dependency>
@@ -34,7 +34,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>airavata</groupId>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-messenger-client</artifactId>
             <version>${airavata.version}</version>
             <scope>test</scope>

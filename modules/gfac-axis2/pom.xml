@@ -9,16 +9,16 @@
     the License. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
+        <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <groupId>airavata</groupId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>airavata</groupId>
+    <groupId>org.apache.airavata</groupId>
     <artifactId>airavata-gfac-axis2-interface</artifactId>
     <name>GFac-Axis2-Interface</name>
     <description>Axis2 Interface to the GFac-Core</description>
@@ -26,26 +26,22 @@
     <dependencies>
         <!-- AIRAVATA MODULES DEPENDECIES -->
         <dependency>
-            <groupId>airavata</groupId>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-registry-api</artifactId>
             <version>${airavata.version}</version>
         </dependency>
-<dependency>
-            <groupId>airavata</groupId>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflow-execution-context</artifactId>
             <version>${airavata.version}</version>
         </dependency>
-
-
-
-
         <dependency>
-            <groupId>airavata</groupId>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflowtracking</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
-            <groupId>airavata</groupId>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-core</artifactId>
             <version>${airavata.version}</version>
         </dependency>
@@ -56,26 +52,26 @@
             <artifactId>axis2-kernel</artifactId>
             <version>${axis2.version}</version>
         </dependency>
-        
+
         <!-- JCR -->
         <dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
         </dependency>
-        
+
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        
+
         <!-- For Concrete WSDL Generation -->
         <dependency>
             <groupId>wsdl4j</groupId>
             <artifactId>wsdl4j</artifactId>
             <version>1.6.2</version>
         </dependency>
-        
+
     </dependencies>
     <build>
         <plugins>

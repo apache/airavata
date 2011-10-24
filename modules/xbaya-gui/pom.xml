@@ -13,15 +13,16 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <parent>
+        <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <groupId>airavata</groupId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>airavata</groupId>
+    <groupId>org.apache.airavata</groupId>
     <artifactId>airavata-xbaya-gui</artifactId>
     <packaging>jar</packaging>
     <name>Airavata XBaya</name>
@@ -357,28 +358,28 @@
         
         <!-- AIRAVATA modules -->
         <dependency>
-            <groupId>airavata</groupId>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-messagebroker</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
-            <groupId>airavata</groupId>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-registry-api</artifactId>
             <version>${airavata.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>airavata</groupId>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-common-utils</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
-            <groupId>airavata</groupId>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflowtracking</artifactId>
             <version>${airavata.version}</version>
         </dependency>
         <dependency>
-            <groupId>airavata</groupId>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-common-utils</artifactId>
             <version>${airavata.version}</version>
         </dependency>
@@ -386,7 +387,7 @@
         <!-- JCR Support -->
         <!-- TODO need clean up -->
         <dependency>
-            <groupId>airavata</groupId>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-schema-utils</artifactId>
             <version>${airavata.version}</version>
         </dependency>
@@ -428,7 +429,7 @@
             <version>0.10</version>
         </dependency>
         <dependency>
-            <groupId>airavata</groupId>
+            <groupId>org.apache.airavata</groupId>
        	<artifactId>airavata-workflow-execution-context</artifactId>
             <version>${airavata.version}</version>
         </dependency>
