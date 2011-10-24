@@ -26,29 +26,43 @@ import org.apache.airavata.schemas.gfac.GlobusHostType;
 
 public class GlobusHost extends HostDescription {
 
-    private GlobusHostType globusHostType;
+	private GlobusHostType globusHostType;
 
-    private GlobusHost() {
-        this.globusHostType = GlobusHostType.Factory.newInstance();
-    }
+	private GlobusHost() {
+		this.globusHostType = GlobusHostType.Factory.newInstance();
+	}
 
-    private GlobusHost(GlobusHostType ght) {
-        this.globusHostType = ght;
-    }
+	private GlobusHost(GlobusHostType ght) {
+		this.globusHostType = ght;
+	}
 
-    public String getGridFTPEndPoint() {
-        return globusHostType.getGridFTPEndPoint();
-    }
+	public String getGridFTPEndPoint() {
+		return globusHostType.getGridFTPEndPoint();
+	}
 
-    public void setGridFTPEndPoint(String gridFTPEndPoint) {
-        this.globusHostType.setGridFTPEndPoint(gridFTPEndPoint);
-    }
+	public void setGridFTPEndPoint(String gridFTPEndPoint) {
+		this.globusHostType.setGridFTPEndPoint(gridFTPEndPoint);
+	}
 
-    public String getGlobusGateKeeperEndPoint() {
-        return globusHostType.getGlobusGateKeeperEndPoint();
-    }
+	public String getGlobusGateKeeperEndPoint() {
+		return globusHostType.getGlobusGateKeeperEndPoint();
+	}
 
-    public void setGlobusGateKeeperEndPoint(String globusGateKeeperEndPoint) {
-        this.globusHostType.setGlobusGateKeeperEndPoint(globusGateKeeperEndPoint);
-    }
+	public void setGlobusGateKeeperEndPoint(String globusGateKeeperEndPoint) {
+		this.globusHostType
+				.setGlobusGateKeeperEndPoint(globusGateKeeperEndPoint);
+	}
+
+	public String toXml() {
+		return globusHostType.xmlText();
+	}
+
+	public HostDescription fromXml(String xml) {
+		try {
+			this.globusHostType = GlobusHostType.Factory.parse(xml);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return this;
+	}
 }
