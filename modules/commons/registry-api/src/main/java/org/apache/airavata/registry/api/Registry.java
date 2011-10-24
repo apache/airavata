@@ -227,4 +227,6 @@ public interface Registry {
      * @return
      */
     public String getName();
+
+    public boolean saveWorkflowData(String data,String experimentId,String nodeId);
 }

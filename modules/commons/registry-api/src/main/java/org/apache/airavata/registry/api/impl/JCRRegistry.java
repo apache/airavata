@@ -79,6 +79,8 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
     public static final String PUBLIC = "PUBLIC";
     public static final String REGISTRY_TYPE_WORKFLOW = "workflow";
     public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
+    public static final String WORKFLOW_DATA = "WorkflowData";
+
 
     private Repository repository;
     private Credentials credentials;
@@ -848,5 +850,20 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
 
     public String getName() {
         return repository.getDescriptor(Repository.REP_NAME_DESC);
+    }
+
+    public boolean saveWorkflowData(String data, String experimentId,String nodeId) {
+        Session session = null;
+        try {
+            session = getSession();
+            Node workflowDataNode = getOrAddNode(getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOW_DATA),experimentId),nodeId);
+            workflowDataNode.setProperty("content",data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeSession(session);
+            return true;
+        }
+
     }
 }
