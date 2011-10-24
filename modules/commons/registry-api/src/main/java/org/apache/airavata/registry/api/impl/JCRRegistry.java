@@ -870,6 +870,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 							getOrAddNode(session.getRootNode(), WORKFLOW_DATA),
 							experimentId), nodeId);
 			workflowDataNode.setProperty("content", data);
+            session.save();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
