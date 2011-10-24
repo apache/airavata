@@ -324,7 +324,7 @@
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <archieve.name>apache-airavata-</archieve.name>
+        <archieve.name>apache-airavata</archieve.name>
         <used.axis2.release>${axis2.version}</used.axis2.release>
     </properties>
 </project>
