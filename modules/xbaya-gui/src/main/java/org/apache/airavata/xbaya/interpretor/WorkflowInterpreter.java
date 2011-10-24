@@ -40,6 +40,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -64,6 +65,7 @@ import org.apache.airavata.xbaya.component.system.OutputComponent;
 import org.apache.airavata.xbaya.component.system.S3InputComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
+import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
 import org.apache.airavata.xbaya.graph.ControlPort;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.Node;
@@ -98,6 +100,8 @@ import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.myproxy.gui.MyProxyChecker;
 import org.apache.airavata.xbaya.ode.ODEClient;
+import org.apache.airavata.xbaya.provenance.ProvenanceReader;
+import org.apache.airavata.xbaya.provenance.ProvenanceWrite;
 import org.apache.airavata.xbaya.security.SecurityUtil;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.util.AmazonUtil;
@@ -150,6 +154,10 @@ public class WorkflowInterpreter {
     private LeadResourceMapping resourceMapping;
 
     private boolean isoffline = false;
+
+    private boolean actOnProvenance;
+
+	private PredicatedTaskRunner provenanceWriter;
 
     public WorkflowInterpreter(XBayaConfiguration configuration, String topic, Workflow workflow, String username,
             String password) {
@@ -205,19 +213,20 @@ public class WorkflowInterpreter {
      * @param workflow
      */
     public WorkflowInterpreter(XBayaEngine engine, String topic, Workflow workflow) {
-        this(engine, topic, workflow, false);
+        this(engine, topic, workflow, false, true);
     }
 
     /**
      * 
      * Constructs a WorkflowInterpreter.
-     * 
+     *
      * @param engine
      * @param topic
      * @param workflow
      * @param subWorkflow
+     * @param actOnProvenance
      */
-    public WorkflowInterpreter(XBayaEngine engine, String topic, Workflow workflow, boolean subWorkflow) {
+    public WorkflowInterpreter(XBayaEngine engine, String topic, Workflow workflow, boolean subWorkflow, boolean actOnProvenance) {
         this.engine = engine;
         this.configuration = engine.getConfiguration();
         this.myProxyChecker = new MyProxyChecker(this.engine);
@@ -230,6 +239,12 @@ public class WorkflowInterpreter {
             this.notifier = new NotificationSender(this.engine.getMonitor().getConfiguration().getBrokerURL(), topic);
         }
         this.topic = topic;
+        // testing
+		actOnProvenance = true;
+		this.actOnProvenance = actOnProvenance;
+		if (this.actOnProvenance) {
+			provenanceWriter = new PredicatedTaskRunner(1);
+		}
 
     }
 
@@ -291,6 +306,10 @@ public class WorkflowInterpreter {
                         // want
                         // recalculate the execution stack
                     }
+                    if (this.actOnProvenance) {
+                        readProvenance(node);
+                    }
+
                     executeDynamically(node);
                     if (this.workflow.getExecutionState() == XBayaExecutionState.STEP) {
                         this.workflow.setExecutionState(XBayaExecutionState.PAUSED);
@@ -543,7 +562,7 @@ public class WorkflowInterpreter {
         }
 
         if (this.mode == GUI_MODE) {
-            new WorkflowInterpreter(this.engine, this.topic, subWorkflow, true).scheduleDynamically();
+            new WorkflowInterpreter(this.engine, this.topic, subWorkflow, true, true).scheduleDynamically();
         } else {
             new WorkflowInterpreter(this.configuration, this.topic, subWorkflow, this.username, this.password)
                     .scheduleDynamically();
@@ -1296,4 +1315,46 @@ public class WorkflowInterpreter {
         }
         return null;
     }
+
+    	/**
+	 * @param node
+	 * @throws XBayaException
+	 * @throws java.io.IOException
+	 */
+	private void readProvenance(Node node)  {
+
+		try {
+			List<DataPort> inputPorts = node.getInputPorts();
+			Pair<String, String>[] inputs = new Pair[inputPorts.size()];
+			for (int i =0; i<inputPorts.size(); ++i) {
+				inputs[i] = new Pair<String, String>(inputPorts.get(i).getName(),  XBayaUtil.findInputFromPort(inputPorts.get(i), this.invokerMap).toString());
+			}
+
+			Object result = new ProvenanceReader().read(node.getID(), inputs);
+			if(null ==result){
+				writeProvenanceLater(node);
+			}else{
+				SystemComponentInvoker invoker = new SystemComponentInvoker();
+				invoker.addOutput(node.getID(), result);
+				this.invokerMap.put(node, invoker);
+				node.getGUI().setBodyColor(NodeState.FINISHED.color);
+			}
+		} catch (Exception e) {
+			throw new XBayaRuntimeException(e);
+		}
+
+	}
+
+	/**
+	 * @param node
+	 * @throws XBayaException
+	 */
+	private void writeProvenanceLater(Node node) throws XBayaException {
+
+		if(node instanceof ForEachNode){
+			node = XBayaUtil.findEndForEachFor((ForEachNode)node);
+		}
+		this.provenanceWriter.scedule(new ProvenanceWrite(node,
+				this.workflow.getName(), invokerMap, this.topic,this.configuration.getJcrComponentRegistry().getRegistry()));
+	}
 }
