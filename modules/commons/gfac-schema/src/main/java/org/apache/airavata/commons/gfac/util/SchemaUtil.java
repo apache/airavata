@@ -27,10 +27,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import org.apache.airavata.commons.gfac.type.Type;
-import org.apache.airavata.schemas.gfac.BatchApplicationDeploymentDescriptionDocument;
-import org.apache.airavata.schemas.gfac.BatchApplicationDeploymentDescriptionType;
-import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlObject;
 
 public class SchemaUtil {
     public static Type parseFromXML(String xml) {
@@ -48,23 +44,4 @@ public class SchemaUtil {
         e.close();
         return x.toString();
     }
-    
-//
-//    public static void main(String[] args) throws XmlException {
-//
-//        BatchApplicationDeploymentDescriptionDocument t = BatchApplicationDeploymentDescriptionDocument.Factory.newInstance();
-//
-//        BatchApplicationDeploymentDescriptionType t2 = BatchApplicationDeploymentDescriptionType.Factory.newInstance();
-//
-//        t.setBatchApplicationDeploymentDescription(t2 );
-//
-//        t2.setCpuCount(4);
-//        System.out.println(t);
-//
-//
-//        XmlObject k = XmlObject.Factory.parse(t.toString());
-//        if (k instanceof BatchApplicationDeploymentDescriptionDocument ){
-//            System.out.println("ooo");
-//        }
-//    }
 }
