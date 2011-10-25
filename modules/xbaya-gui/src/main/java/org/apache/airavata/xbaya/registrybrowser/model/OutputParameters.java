@@ -1,6 +1,6 @@
 package org.apache.airavata.xbaya.registrybrowser.model;
 
-import org.apache.airavata.commons.gfac.type.Parameter;
+import org.apache.airavata.schemas.gfac.Parameter;
 
 public class OutputParameters extends ServiceParameters {
 

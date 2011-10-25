@@ -30,18 +30,18 @@ public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
 	@Override
 	protected List<TreeNode> getChildren() {
 		List<ServiceParameters> parameterTypeList=new ArrayList<ServiceParameters>();
-		if (getServiceDescription().getInputParameters().length>0){
-			parameterTypeList.add(new InputParameters(getServiceDescription().getInputParameters()));
+		if (getServiceDescription().getType().getInputParametersArray().length>0){
+			parameterTypeList.add(new InputParameters(getServiceDescription().getType().getInputParametersArray()));
 		}
-		if (getServiceDescription().getOutputParameters().length>0){
-			parameterTypeList.add(new OutputParameters(getServiceDescription().getOutputParameters()));
+		if (getServiceDescription().getType().getOutputParametersArray().length>0){
+			parameterTypeList.add(new OutputParameters(getServiceDescription().getType().getInputParametersArray()));
 		}
 		return getTreeNodeList(parameterTypeList.toArray(), this);
 	}
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return getServiceDescription().getId();
+        return getServiceDescription().getType().getName();
     }
 
     @Override
@@ -75,8 +75,8 @@ public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
 
     private void deleteHostDescription(JTree tree) throws RegistryException {
         if (askQuestion("Service description", "Are you sure that you want to remove the service description \""
-                + getServiceDescription().getId() + "\"?")) {
-            getRegistry().deleteServiceDescription(getServiceDescription().getId());
+                + getServiceDescription().getType().getName() + "\"?")) {
+            getRegistry().deleteServiceDescription(getServiceDescription().getType().getName());
             ((AbstractAiravataTreeNode) getParent()).refresh();
             reloadTreeNode(tree, getParent());
         }
