@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.GroupLayout;
@@ -29,10 +28,9 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
-import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
+import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
-import org.apache.airavata.xbaya.XBayaEngine;
 
 public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private static final long serialVersionUID = 3920479739097405014L;
@@ -43,7 +41,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private JTextField txtSTDOUT;
     private JTextField txtSTDERR;
     private JTable tblEnv;
-    private ShellApplicationDeployment shellApplicationDescription;
+    private ApplicationDeploymentDescription shellApplicationDescription;
     private DefaultTableModel defaultTableModel;
     private boolean tableModelChanging = false;
     private JButton btnDeleteVariable;
@@ -67,7 +65,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     /**
      * Create the dialog.
      */
-    public ApplicationDescriptionAdvancedOptionDialog(Registry registry, ShellApplicationDeployment descriptor) {
+    public ApplicationDescriptionAdvancedOptionDialog(Registry registry, ApplicationDeploymentDescription descriptor) {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
@@ -411,11 +409,15 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         addNewRowIfLastIsNotEmpty();
     }
 
-    public ShellApplicationDeployment getShellApplicationDescription() {
+    public ApplicationDeploymentDescription getShellApplicationDescription() {
         return shellApplicationDescription;
     }
 
-    public void setShellApplicationDescription(ShellApplicationDeployment shellApplicationDescription) {
+    public ShellApplicationDeploymentType getShellApplicationDescriptionType() {
+        return (ShellApplicationDeploymentType)shellApplicationDescription.getType();
+    }
+    
+    public void setShellApplicationDescription(ApplicationDeploymentDescription shellApplicationDescription) {
         this.shellApplicationDescription = shellApplicationDescription;
     }
 
@@ -430,39 +432,39 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     }
 
     private void saveApplicationDescriptionAdvancedOptions() {
-        getShellApplicationDescription().setWorkingDir(txtWorkingDir.getText());
-        getShellApplicationDescription().setInputDir(txtInputDir.getText());
-        getShellApplicationDescription().setOutputDir(txtOutputDir.getText());
-        getShellApplicationDescription().setStdIn(txtSTDIN.getText());
-        getShellApplicationDescription().setStdOut(txtSTDOUT.getText());
-        getShellApplicationDescription().setStdErr(txtSTDERR.getText());
+    	getShellApplicationDescriptionType().setWorkingDir(txtWorkingDir.getText());
+    	getShellApplicationDescriptionType().setInputDir(txtInputDir.getText());
+    	getShellApplicationDescriptionType().setOutputDir(txtOutputDir.getText());
+    	getShellApplicationDescriptionType().setStdIn(txtSTDIN.getText());
+    	getShellApplicationDescriptionType().setStdOut(txtSTDOUT.getText());
+    	getShellApplicationDescriptionType().setStdErr(txtSTDERR.getText());
 
-        getShellApplicationDescription().setEnv(ShellApplicationDeploymentType.Factory.newInstance().getEnv());
+    	getShellApplicationDescriptionType().setEnv(ShellApplicationDeploymentType.Factory.newInstance().getEnv());
         for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
             String varName = (String) defaultTableModel.getValueAt(i, 0);
             if (varName != null && !varName.equals("")) {
                 String varValue = (String) defaultTableModel.getValueAt(i, 1);
-                getShellApplicationDescription().getEnv().addNewEntry().setKey(varName);
-                getShellApplicationDescription().getEnv().addNewEntry().setValue(varValue);
+                getShellApplicationDescriptionType().getEnv().addNewEntry().setKey(varName);
+                getShellApplicationDescriptionType().getEnv().addNewEntry().setValue(varValue);
             }
         }
     }
 
     private void loadApplicationDescriptionAdvancedOptions() {
-        txtWorkingDir.setText(getShellApplicationDescription().getWorkingDir());
-        txtInputDir.setText(getShellApplicationDescription().getInputDir());
-        txtOutputDir.setText(getShellApplicationDescription().getOutputDir());
-        txtSTDIN.setText(getShellApplicationDescription().getStdIn());
-        txtSTDOUT.setText(getShellApplicationDescription().getStdOut());
-        txtSTDERR.setText(getShellApplicationDescription().getStdErr());
+        txtWorkingDir.setText(getShellApplicationDescriptionType().getWorkingDir());
+        txtInputDir.setText(getShellApplicationDescriptionType().getInputDir());
+        txtOutputDir.setText(getShellApplicationDescriptionType().getOutputDir());
+        txtSTDIN.setText(getShellApplicationDescriptionType().getStdIn());
+        txtSTDOUT.setText(getShellApplicationDescriptionType().getStdOut());
+        txtSTDERR.setText(getShellApplicationDescriptionType().getStdErr());
         tableModelChanging = true;
 
-        ShellApplicationDeploymentType.Env.Entry[] entry = getShellApplicationDescription().getEnv().getEntryArray();
+        ShellApplicationDeploymentType.Env.Entry[] entry = getShellApplicationDescriptionType().getEnv().getEntryArray();
 
         Map<String, String> env = null;
         for (int i = 0; i < entry.length; i++) {
-            String key = getShellApplicationDescription().getEnv().getEntryArray(i).getKey();
-            String value = getShellApplicationDescription().getEnv().getEntryArray(i).getValue();
+            String key = getShellApplicationDescriptionType().getEnv().getEntryArray(i).getKey();
+            String value = getShellApplicationDescriptionType().getEnv().getEntryArray(i).getValue();
             env.put(key, value);
         }
 

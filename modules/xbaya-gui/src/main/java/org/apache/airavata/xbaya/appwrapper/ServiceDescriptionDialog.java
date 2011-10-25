@@ -313,15 +313,15 @@ public class ServiceDescriptionDialog extends JDialog {
     }
 
     public ServiceDescriptionType getServiceDescriptionType() {
-        return getServiceDescription().getServiceDescriptionType();
+        return getServiceDescription().getType();
     }
 
     public String getServiceName() {
-        return getServiceDescription().getId();
+        return getServiceDescription().getType().getName();
     }
 
     public void setServiceName(String serviceName) {
-        getServiceDescription().setId(serviceName);
+        getServiceDescription().getType().setName(serviceName);
         updateDialogStatus();
     }
     private void updateDialogStatus() {
@@ -388,38 +388,6 @@ public class ServiceDescriptionDialog extends JDialog {
     public void close() {
         getDialog().setVisible(false);
     }
-
-//    public void saveServiceDescription() {
-//        for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
-//            Parameter parameter = Parameter.Factory.newInstance();
-//            String parameterName = (String) defaultTableModel.getValueAt(i, 1);
-//			if (parameterName!=null && !parameterName.trim().equals("")) {
-//                DataType parameterDataType = (DataType) defaultTableModel.getValueAt(i, 2);
-//                String parameterDescription = (String) defaultTableModel.getValueAt(i, 3);
-//                parameter.setName(parameterName);
-//                parameter.setDescription(parameterDescription);
-//
-//                parameter.addNewType().setType(
-//                        org.apache.airavata.schemas.gfac.DataType.Enum.forString(parameterDataType.toString()));
-//                if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i, 0))) {
-//                    getServiceDescriptionType().setInputParametersArray(0, parameter);
-//                    // getServiceDescription().getInputParameters().add(parameter);
-//                } else {
-//                    getServiceDescriptionType().setOutputParametersArray(0, parameter);
-//                    // getServiceDescription().getOutputParameters().add(parameter);
-//                }
-//            }
-//        }
-//
-//        getRegistry().saveServiceDescription(getServiceDescription());
-//        if (chckbxAutoGenerateWsdl.isSelected()) {
-//
-//            if (getRegistry() instanceof Axis2Registry) {
-//                ((Axis2Registry) getRegistry()).saveWSDL(getServiceDescription());
-//            }
-//        }
-//        setServiceCreated(true);
-//    }
 
     private void setError(String errorMessage) {
         if (errorMessage == null || errorMessage.trim().equals("")) {

@@ -27,10 +27,10 @@ public class ParameterNode extends AbstractAiravataTreeNode {
 	@Override
 	public String getCaption(boolean selected, boolean expanded, boolean leaf,
 			boolean hasFocus) {
-		if (getParameter().getValue()==null){
+		if (getParameter().getValue()!=null){
 			return getParameter().getName()+":"+getParameter().getValue().toString();
 		}else{
-			return getParameter().getName()+":<"+getParameter().getType().toString()+">";
+			return getParameter().getName()+":<"+getParameter().getType().getType().toString()+">";
 		}
 	}
 
