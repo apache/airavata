@@ -1,9 +1,9 @@
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.jcr.PathNotFoundException;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
@@ -12,24 +12,32 @@ import javax.swing.tree.TreeNode;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
+import org.apache.airavata.xbaya.registrybrowser.model.InputParameters;
+import org.apache.airavata.xbaya.registrybrowser.model.OutputParameters;
+import org.apache.airavata.xbaya.registrybrowser.model.ServiceParameters;
 
 public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
-    private ServiceDescription serviceDescription;
+	private ServiceDescription serviceDescription;
 
-    public ServiceDescriptionNode(ServiceDescription serviceDescription, TreeNode parent) {
-        super(parent);
-        setServiceDescription(serviceDescription);
-    }
+	public ServiceDescriptionNode(ServiceDescription serviceDescription, TreeNode parent) {
+		super(parent);
+		setServiceDescription(serviceDescription);
+	}
 
-    @Override
-    protected List<TreeNode> getChildren() {
-        // TODO perhaps we should show the parameters as children
-        return emptyList();
-    }
+	@Override
+	protected List<TreeNode> getChildren() {
+		List<ServiceParameters> parameterTypeList=new ArrayList<ServiceParameters>();
+		if (getServiceDescription().getInputParameters().length>0){
+			parameterTypeList.add(new InputParameters(getServiceDescription().getInputParameters()));
+		}
+		if (getServiceDescription().getOutputParameters().length>0){
+			parameterTypeList.add(new OutputParameters(getServiceDescription().getOutputParameters()));
+		}
+		return getTreeNodeList(parameterTypeList.toArray(), this);
+	}
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {

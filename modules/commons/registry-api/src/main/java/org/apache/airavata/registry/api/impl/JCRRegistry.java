@@ -59,6 +59,7 @@ import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.registry.api.user.UserManager;
 import org.apache.airavata.registry.api.util.WebServiceUtil;
+import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +75,10 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 	private static final String WSDL_PROPERTY_NAME = "WSDL";
 	private static final String GFAC_URL_PROPERTY_NAME = "GFAC_URL_LIST";
 	private static final String LINK_NAME = "LINK";
+    private static final String PROPERTY_WORKFLOW_NAME = "workflowName";
+    private static final String PROPERTY_WORKFLOW_IO_CONTENT = "content";
+
+	
 	public static final String WORKFLOWS = "WORKFLOWS";
 	public static final String PUBLIC = "PUBLIC";
 	public static final String REGISTRY_TYPE_WORKFLOW = "workflow";
@@ -555,51 +560,44 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		return result;
 	}
 
-	public String saveWSDL(ServiceDescription service, String WSDL) {
-		Session session = null;
-		String result = null;
-		try {
-			session = getSession();
-			Node serviceNode = getServiceNode(session);
-			Node node = getOrAddNode(serviceNode, service.getId());
-			node.setProperty(WSDL_PROPERTY_NAME, WSDL);
-			session.save();
+//	public String saveWSDL(ServiceDescription service, String WSDL) {
+//		Session session = null;
+//		String result = null;
+//		try {
+//			session = getSession();
+//			Node serviceNode = getServiceNode(session);
+//			Node node = getOrAddNode(serviceNode, service.getId());
+//			node.setProperty(WSDL_PROPERTY_NAME, WSDL);
+//			session.save();
+//
+//			result = node.getIdentifier();
+//			triggerObservers(this);
+//		} catch (Exception e) {
+//			System.out.println(e);
+//			e.printStackTrace();
+//			// TODO propagate
+//		} finally {
+//			closeSession(session);
+//		}
+//		return result;
+//	}
+//
+//	public String saveWSDL(ServiceDescription service) {
+//		return saveWSDL(service, WebServiceUtil.generateWSDL(service));
+//	}
 
-			result = node.getIdentifier();
-			triggerObservers(this);
-		} catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
-			// TODO propagate
-		} finally {
-			closeSession(session);
+	public String getWSDL(String serviceName) throws RegistryException {
+		List<ServiceDescription> searchServiceDescription = searchServiceDescription(serviceName);
+		if (searchServiceDescription.size()>0){
+			return getWSDL(searchServiceDescription.get(0));
 		}
-		return result;
+		throw new ServiceDescriptionRetrieveException(new Exception("No service description from the name "+serviceName));
 	}
 
-	public String saveWSDL(ServiceDescription service) {
-		return saveWSDL(service, WebServiceUtil.generateWSDL(service));
+	public String getWSDL(ServiceDescription service) {
+		return WebServiceUtil.generateWSDL(service);
 	}
-
-	public String getWSDL(String serviceName) {
-		Session session = null;
-		String result = null;
-		try {
-			session = getSession();
-			Node serviceNode = getServiceNode(session);
-			Node node = serviceNode.getNode(serviceName);
-			Property prop = node.getProperty(WSDL_PROPERTY_NAME);
-			result = prop.getString();
-		} catch (Exception e) {
-			System.out.println(e);
-			e.printStackTrace();
-			// TODO propagate
-		} finally {
-			closeSession(session);
-		}
-		return result;
-	}
-
+	
 	public boolean saveGFacDescriptor(String gfacURL) {
 		java.util.Date today = Calendar
 				.getInstance(TimeZone.getTimeZone("GMT")).getTime();
@@ -858,46 +856,89 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		return repository.getDescriptor(Repository.REP_NAME_DESC);
 	}
 
-	public boolean saveWorkflowInput(String data, String experimentId,
-                                     String nodeId,String workflowName) {
-			Session session = null;
-		try {
-			session = getSession();
-			Node workflowDataNode =
-					getOrAddNode(getOrAddNode(
-							getOrAddNode(session.getRootNode(), WORKFLOW_DATA),
-							experimentId),experimentId);
-            workflowDataNode.setProperty("workflowName",workflowName);
-            workflowDataNode = getOrAddNode(getOrAddNode(workflowDataNode,nodeId), OUTPUT);
-            workflowDataNode.setProperty("content", data);
-            session.save();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			closeSession(session);
-			return true;
-		}
+	public boolean saveWorkflowInput(WorkflowIOData workflowInputData) {
+		return saveWorkflowIO(workflowInputData, OUTPUT);
 	}
 
-    public boolean saveWorkflowOutput(String data, String experimentId,
-                                     String nodeId,String workflowName) {
+    public boolean saveWorkflowOutput(WorkflowIOData workflowOutputData) {
+		return saveWorkflowIO(workflowOutputData, INPUT);
+	}
+
+	private boolean saveWorkflowIO(WorkflowIOData workflowOutputData, String type) {
 		Session session = null;
+		boolean isSaved=true;
 		try {
 			session = getSession();
 			Node workflowDataNode =
 					getOrAddNode(getOrAddNode(
 							getOrAddNode(session.getRootNode(), WORKFLOW_DATA),
-							experimentId),experimentId);
-            workflowDataNode.setProperty("workflowName",workflowName);
-            workflowDataNode = getOrAddNode(getOrAddNode(workflowDataNode,nodeId), INPUT);
-            workflowDataNode.setProperty("content", data);
+							workflowOutputData.getExperimentId()),workflowOutputData.getExperimentId());
+			workflowDataNode.setProperty(PROPERTY_WORKFLOW_NAME,workflowOutputData.getWorkflowName());
+            workflowDataNode = getOrAddNode(getOrAddNode(workflowDataNode,workflowOutputData.getNodeId()), type);
+			workflowDataNode.setProperty(PROPERTY_WORKFLOW_IO_CONTENT, workflowOutputData.getData());
             session.save();
+		} catch (Exception e) {
+			isSaved=false;
+			e.printStackTrace();
+		} finally {
+			closeSession(session);
+		}
+		return isSaved;
+	}
+    
+    public List<WorkflowIOData> searchWorkflowInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx){
+    	return searchWorkflowIO(experimentIdRegEx, workflowNameRegEx,
+				nodeNameRegEx, INPUT);
+    }
+
+    public List<WorkflowIOData> searchWorkflowOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx){
+    	return searchWorkflowIO(experimentIdRegEx, workflowNameRegEx,
+				nodeNameRegEx, OUTPUT);
+    }
+    
+	private List<WorkflowIOData> searchWorkflowIO(String experimentIdRegEx,
+			String workflowNameRegEx, String nodeNameRegEx, String type) {
+		List<WorkflowIOData> workflowIODataList=new ArrayList<WorkflowIOData>();
+    	Session session = null;
+		try {
+			session = getSession();
+			Node experimentsNode = getOrAddNode(session.getRootNode(), WORKFLOW_DATA);
+			NodeIterator experimentNodes = experimentsNode.getNodes();
+			for (; experimentNodes.hasNext();) {
+				Node experimentNode = experimentNodes.nextNode();
+				if (experimentIdRegEx!=null && !experimentNode.getName().matches(experimentIdRegEx)){
+					continue;
+				}
+				NodeIterator workflowNodes = experimentNode.getNodes();
+				for (; workflowNodes.hasNext();) {
+					Node workflowNode = workflowNodes.nextNode();
+					String workflowName = workflowNode.getProperty(PROPERTY_WORKFLOW_NAME).getString();
+					if (workflowNameRegEx!=null && !workflowName.matches(workflowNameRegEx)){
+						continue;
+					}
+					NodeIterator serviceNodes = workflowNode.getNodes();
+					for (; serviceNodes.hasNext();) {
+						Node serviceNode = serviceNodes.nextNode();
+						if (nodeNameRegEx!=null && !serviceNode.getName().matches(nodeNameRegEx)){
+							continue;
+						}
+						Node ioNode = getOrAddNode(serviceNode,type);
+						WorkflowIOData workflowIOData = new WorkflowIOData();
+						workflowIOData.setExperimentId(experimentNode.getName());
+						workflowIOData.setWorkflowId(workflowNode.getName());
+						workflowIOData.setWorkflowName(workflowName);
+						workflowIOData.setNodeId(ioNode.getName());
+						workflowIOData.setData(ioNode.getProperty(PROPERTY_WORKFLOW_IO_CONTENT).getString());
+						workflowIODataList.add(workflowIOData);
+					}
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			closeSession(session);
-			return true;
 		}
-
+		return workflowIODataList;
 	}
+    
 }

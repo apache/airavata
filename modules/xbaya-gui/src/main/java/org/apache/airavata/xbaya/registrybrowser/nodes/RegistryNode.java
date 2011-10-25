@@ -15,7 +15,7 @@ import org.apache.airavata.xbaya.registrybrowser.model.ApplicationDeploymentDesc
 import org.apache.airavata.xbaya.registrybrowser.model.GFacURLs;
 import org.apache.airavata.xbaya.registrybrowser.model.HostDescriptions;
 import org.apache.airavata.xbaya.registrybrowser.model.ServiceDescriptions;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflows;
+import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowTemplates;
 
 public class RegistryNode extends AbstractAiravataTreeNode {
     private Registry registry;
@@ -36,7 +36,7 @@ public class RegistryNode extends AbstractAiravataTreeNode {
         ApplicationDeploymentDescriptions applicationDeploymentDescriptions = new ApplicationDeploymentDescriptions(
                 getRegistry());
         children.add(applicationDeploymentDescriptions);
-        XBayaWorkflows xBayaWorkflows = new XBayaWorkflows(getRegistry());
+        XBayaWorkflowTemplates xBayaWorkflows = new XBayaWorkflowTemplates(getRegistry());
         children.add(xBayaWorkflows);
         return getTreeNodeList(children.toArray(), this);
     }

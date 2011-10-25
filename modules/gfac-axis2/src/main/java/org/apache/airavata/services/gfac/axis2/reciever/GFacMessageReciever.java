@@ -46,6 +46,7 @@ import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.notification.impl.WorkflowTrackingNotification;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.registry.api.Axis2Registry;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.services.gfac.axis2.GFacService;
 import org.apache.airavata.services.gfac.axis2.util.GFacServiceOperations;
@@ -321,7 +322,13 @@ public class GFacMessageReciever implements MessageReceiver {
      * @throws XMLStreamException
      */
     private OMElement getWSDL(ConfigurationContext context, String serviceName) throws XMLStreamException {
-        String WSDL = getRegistry(context).getWSDL(serviceName);
+        String WSDL = null;
+		try {
+			WSDL = getRegistry(context).getWSDL(serviceName);
+		} catch (RegistryException e) {
+			//TODO this scenario occur if the service is not present in the registry.
+			//someone should handle this 
+		}
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(WSDL));
         StAXOMBuilder builder = new StAXOMBuilder(reader);
         OMElement wsdlElement = builder.getDocumentElement();

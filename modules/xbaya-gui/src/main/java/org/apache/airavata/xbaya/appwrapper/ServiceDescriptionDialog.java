@@ -12,13 +12,15 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.jcr.PathNotFoundException;
 import javax.swing.DefaultCellEditor;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -29,8 +31,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -41,7 +41,6 @@ import javax.swing.table.TableColumn;
 import org.apache.airavata.commons.gfac.type.DataType;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
-import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.schemas.gfac.Parameter;
@@ -57,12 +56,9 @@ public class ServiceDescriptionDialog extends JDialog {
     private boolean serviceCreated = false;
     private JLabel lblError;
     private ServiceDescription serviceDescription;
-    private ServiceDescriptionType serviceDescriptionType;
     private JButton okButton;
     private JButton btnDeleteParameter;
     private DefaultTableModel defaultTableModel;
-    private JCheckBox chckbxAutoGenerateWsdl;
-    private JButton btnWSDL;
     private Registry registry;
 
     /**
@@ -150,117 +146,47 @@ public class ServiceDescriptionDialog extends JDialog {
             }
         });
         btnDeleteParameter.setEnabled(false);
-
-        chckbxAutoGenerateWsdl = new JCheckBox("Auto generate WSDL");
-        chckbxAutoGenerateWsdl.setEnabled(false);
-        chckbxAutoGenerateWsdl.setSelected(true);
-
-        btnWSDL = new JButton("Specify WSDL...");
-        btnWSDL.setEnabled(false);
-        chckbxAutoGenerateWsdl.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent arg0) {
-                // btnWSDL.setEnabled(!chckbxAutoGenerateWsdl.isSelected());
-            }
-        });
         GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-        gl_contentPanel
-                .setHorizontalGroup(gl_contentPanel
-                        .createParallelGroup(Alignment.TRAILING)
-                        .addGroup(
-                                gl_contentPanel
-                                        .createSequentialGroup()
-                                        .addGap(181)
-                                        .addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                                                GroupLayout.PREFERRED_SIZE).addContainerGap())
-                        .addGroup(
-                                gl_contentPanel
-                                        .createSequentialGroup()
-                                        .addContainerGap(212, Short.MAX_VALUE)
-                                        .addGroup(
-                                                gl_contentPanel
-                                                        .createParallelGroup(Alignment.LEADING, false)
-                                                        .addGroup(
-                                                                gl_contentPanel
-                                                                        .createSequentialGroup()
-                                                                        .addGroup(
-                                                                                gl_contentPanel
-                                                                                        .createParallelGroup(
-                                                                                                Alignment.TRAILING)
-                                                                                        .addComponent(
-                                                                                                scrollPane,
-                                                                                                GroupLayout.PREFERRED_SIZE,
-                                                                                                380,
-                                                                                                GroupLayout.PREFERRED_SIZE)
-                                                                                        .addGroup(
-                                                                                                gl_contentPanel
-                                                                                                        .createSequentialGroup()
-                                                                                                        .addComponent(
-                                                                                                                chckbxAutoGenerateWsdl)
-                                                                                                        .addPreferredGap(
-                                                                                                                ComponentPlacement.RELATED,
-                                                                                                                91,
-                                                                                                                Short.MAX_VALUE)
-                                                                                                        .addGroup(
-                                                                                                                gl_contentPanel
-                                                                                                                        .createParallelGroup(
-                                                                                                                                Alignment.LEADING,
-                                                                                                                                false)
-                                                                                                                        .addComponent(
-                                                                                                                                btnWSDL,
-                                                                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                                                                Short.MAX_VALUE)
-                                                                                                                        .addComponent(
-                                                                                                                                btnDeleteParameter,
-                                                                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                                                                Short.MAX_VALUE))))
-                                                                        .addGap(27))
-                                                        .addGroup(
-                                                                Alignment.TRAILING,
-                                                                gl_contentPanel
-                                                                        .createSequentialGroup()
-                                                                        .addGroup(
-                                                                                gl_contentPanel
-                                                                                        .createParallelGroup(
-                                                                                                Alignment.LEADING)
-                                                                                        .addComponent(
-                                                                                                lblInputParameters)
-                                                                                        .addGroup(
-                                                                                                gl_contentPanel
-                                                                                                        .createSequentialGroup()
-                                                                                                        .addComponent(
-                                                                                                                lblServiceName)
-                                                                                                        .addGap(18)
-                                                                                                        .addComponent(
-                                                                                                                txtServiceName,
-                                                                                                                GroupLayout.PREFERRED_SIZE,
-                                                                                                                309,
-                                                                                                                GroupLayout.PREFERRED_SIZE)))
-                                                                        .addGap(30)))));
-        gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(
-                gl_contentPanel
-                        .createSequentialGroup()
-                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(
-                                gl_contentPanel
-                                        .createParallelGroup(Alignment.BASELINE)
-                                        .addComponent(lblServiceName)
-                                        .addComponent(txtServiceName, GroupLayout.PREFERRED_SIZE,
-                                                GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(ComponentPlacement.UNRELATED)
-                        .addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                                GroupLayout.PREFERRED_SIZE)
-                        .addGap(12)
-                        .addComponent(lblInputParameters)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(ComponentPlacement.RELATED)
-                        .addComponent(btnDeleteParameter)
-                        .addPreferredGap(ComponentPlacement.UNRELATED)
-                        .addGroup(
-                                gl_contentPanel.createParallelGroup(Alignment.BASELINE).addComponent(btnWSDL)
-                                        .addComponent(chckbxAutoGenerateWsdl)).addGap(44)));
+        gl_contentPanel.setHorizontalGroup(
+        	gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+        		.addGroup(gl_contentPanel.createSequentialGroup()
+        			.addContainerGap(212, Short.MAX_VALUE)
+        			.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+        				.addGroup(gl_contentPanel.createSequentialGroup()
+        					.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        					.addContainerGap())
+        				.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
+        					.addGroup(gl_contentPanel.createSequentialGroup()
+        						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+        							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE)
+        							.addComponent(btnDeleteParameter))
+        						.addGap(27))
+        					.addGroup(gl_contentPanel.createSequentialGroup()
+        						.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+        							.addComponent(lblInputParameters)
+        							.addGroup(gl_contentPanel.createSequentialGroup()
+        								.addComponent(lblServiceName)
+        								.addGap(18)
+        								.addComponent(txtServiceName, GroupLayout.PREFERRED_SIZE, 309, GroupLayout.PREFERRED_SIZE)))
+        						.addGap(30)))))
+        );
+        gl_contentPanel.setVerticalGroup(
+        	gl_contentPanel.createParallelGroup(Alignment.LEADING)
+        		.addGroup(gl_contentPanel.createSequentialGroup()
+        			.addContainerGap(42, Short.MAX_VALUE)
+        			.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(lblServiceName)
+        				.addComponent(txtServiceName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        			.addGap(12)
+        			.addComponent(lblInputParameters)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addComponent(btnDeleteParameter)
+        			.addGap(78))
+        );
 
         tblParameters = new JTable();
         tblParameters.setFillsViewportHeight(true);
@@ -387,10 +313,7 @@ public class ServiceDescriptionDialog extends JDialog {
     }
 
     public ServiceDescriptionType getServiceDescriptionType() {
-        if (serviceDescriptionType == null) {
-            serviceDescriptionType = new ServiceDescription().getServiceDescriptionType();
-        }
-        return serviceDescriptionType;
+        return getServiceDescription().getServiceDescriptionType();
     }
 
     public String getServiceName() {
@@ -401,24 +324,6 @@ public class ServiceDescriptionDialog extends JDialog {
         getServiceDescription().setId(serviceName);
         updateDialogStatus();
     }
-
-    private void validateDialog() throws Exception {
-        if (getServiceName() == null || getServiceName().trim().equals("")) {
-            throw new Exception("Name of the service cannot be empty!!!");
-        }
-
-        ServiceDescription serviceDescription2 = null;
-        try {
-            serviceDescription2 = getRegistry().getServiceDescription(Pattern.quote(getServiceName()));
-        } catch (RegistryException e) {
-            throw e;
-        }
-        if (serviceDescription2 != null) {
-            throw new Exception("Service descriptor with the given name already exists!!!");
-        }
-
-    }
-
     private void updateDialogStatus() {
         String message = null;
         try {
@@ -429,42 +334,92 @@ public class ServiceDescriptionDialog extends JDialog {
         okButton.setEnabled(message == null);
         setError(message);
     }
+    private void validateDialog() throws Exception {
+        if (getServiceName() == null || getServiceName().trim().equals("")) {
+            throw new Exception("Name of the service cannot be empty!!!");
+        }
+
+        ServiceDescription serviceDescription2 = null;
+        try {
+            serviceDescription2 = getRegistry().getServiceDescription(Pattern.quote(getServiceName()));
+        } catch (RegistryException e) {
+        	if (e.getCause() instanceof PathNotFoundException){
+        		//non-existant name. just want we want
+        	}else{
+        		throw e;
+        	}
+        }
+        if (serviceDescription2 != null) {
+            throw new Exception("Service descriptor with the given name already exists!!!");
+        }
+	}
+
+	public void saveServiceDescription() {
+		List<Parameter> inputParameters=new ArrayList<Parameter>();
+		List<Parameter> outputParameters=new ArrayList<Parameter>();
+		
+		for(int i=0;i<defaultTableModel.getRowCount();i++){
+			Parameter parameter = Parameter.Factory.newInstance();
+			String parameterName = (String)defaultTableModel.getValueAt(i, 1);
+			if (parameterName!=null && !parameterName.trim().equals("")) {
+				DataType parameterDataType = (DataType) defaultTableModel
+						.getValueAt(i, 2);
+				String parameterDescription = (String) defaultTableModel
+						.getValueAt(i, 3);
+				parameter.setName(parameterName);
+				parameter.setDescription(parameterDescription);
+
+				parameter.addNewType().setType(org.apache.airavata.schemas.gfac.DataType.Enum.forString(parameterDataType.toString()));
+				if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i,
+						0))) {
+					inputParameters.add(parameter);
+				} else {
+					outputParameters.add(parameter);
+				}
+			}
+		}
+		getServiceDescriptionType().setInputParametersArray(inputParameters.toArray(new Parameter[]{}));
+		getServiceDescriptionType().setOutputParametersArray(outputParameters.toArray(new Parameter[]{}));
+		
+		getRegistry().saveServiceDescription(getServiceDescription());
+		setServiceCreated(true);
+	}
 
     public void close() {
         getDialog().setVisible(false);
     }
 
-    public void saveServiceDescription() {
-        for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
-            Parameter parameter = Parameter.Factory.newInstance();
-            String parameterName = (String) defaultTableModel.getValueAt(i, 1);
-            if (parameterName != null) {
-                DataType parameterDataType = (DataType) defaultTableModel.getValueAt(i, 2);
-                String parameterDescription = (String) defaultTableModel.getValueAt(i, 3);
-                parameter.setName(parameterName);
-                parameter.setDescription(parameterDescription);
-
-                parameter.addNewType().setType(
-                        org.apache.airavata.schemas.gfac.DataType.Enum.forString(parameterDataType.toString()));
-                if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i, 0))) {
-                    getServiceDescriptionType().setInputParametersArray(0, parameter);
-                    // getServiceDescription().getInputParameters().add(parameter);
-                } else {
-                    getServiceDescriptionType().setOutputParametersArray(0, parameter);
-                    // getServiceDescription().getOutputParameters().add(parameter);
-                }
-            }
-        }
-
-        getRegistry().saveServiceDescription(getServiceDescription());
-        if (chckbxAutoGenerateWsdl.isSelected()) {
-
-            if (getRegistry() instanceof Axis2Registry) {
-                ((Axis2Registry) getRegistry()).saveWSDL(getServiceDescription());
-            }
-        }
-        setServiceCreated(true);
-    }
+//    public void saveServiceDescription() {
+//        for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
+//            Parameter parameter = Parameter.Factory.newInstance();
+//            String parameterName = (String) defaultTableModel.getValueAt(i, 1);
+//			if (parameterName!=null && !parameterName.trim().equals("")) {
+//                DataType parameterDataType = (DataType) defaultTableModel.getValueAt(i, 2);
+//                String parameterDescription = (String) defaultTableModel.getValueAt(i, 3);
+//                parameter.setName(parameterName);
+//                parameter.setDescription(parameterDescription);
+//
+//                parameter.addNewType().setType(
+//                        org.apache.airavata.schemas.gfac.DataType.Enum.forString(parameterDataType.toString()));
+//                if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i, 0))) {
+//                    getServiceDescriptionType().setInputParametersArray(0, parameter);
+//                    // getServiceDescription().getInputParameters().add(parameter);
+//                } else {
+//                    getServiceDescriptionType().setOutputParametersArray(0, parameter);
+//                    // getServiceDescription().getOutputParameters().add(parameter);
+//                }
+//            }
+//        }
+//
+//        getRegistry().saveServiceDescription(getServiceDescription());
+//        if (chckbxAutoGenerateWsdl.isSelected()) {
+//
+//            if (getRegistry() instanceof Axis2Registry) {
+//                ((Axis2Registry) getRegistry()).saveWSDL(getServiceDescription());
+//            }
+//        }
+//        setServiceCreated(true);
+//    }
 
     private void setError(String errorMessage) {
         if (errorMessage == null || errorMessage.trim().equals("")) {

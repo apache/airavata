@@ -76,7 +76,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
      */
     @Override
     public ComponentTreeNode getComponentTree() {
-        ComponentTreeNode tree = new ComponentTreeNode(this);
+    	ComponentTreeNode tree = new ComponentTreeNode(this);
         try {
             List<ServiceDescription> services = this.registry.searchServiceDescription("");
             for (ServiceDescription serviceDescription : services) {
@@ -151,9 +151,5 @@ public class JCRComponentRegistry extends ComponentRegistry {
 
     public Registry getRegistry() {
         return registry;
-    }
-
-    public String saveWSDL(ServiceDescription service) {
-        return registry.saveWSDL(service);
     }
 }
