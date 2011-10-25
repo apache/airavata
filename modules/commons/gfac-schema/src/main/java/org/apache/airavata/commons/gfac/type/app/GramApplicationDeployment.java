@@ -84,18 +84,4 @@ public class GramApplicationDeployment extends ShellApplicationDeployment {
     public void setJobType(String jobType) {
         this.gramApplicationDeploymentType.setJobType(jobType);
     }
-    
-    public String toXml() {
-		return gramApplicationDeploymentType.xmlText();
-	}
-
-	public ApplicationDeploymentDescription fromXml(String xml) {
-		try {
-			this.gramApplicationDeploymentType = GramApplicationDeploymentType.Factory
-					.parse(xml);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return this;
-	}
 }
