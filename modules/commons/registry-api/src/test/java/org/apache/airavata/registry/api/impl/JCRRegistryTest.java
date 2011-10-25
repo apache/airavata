@@ -26,11 +26,11 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.commons.gfac.type.DataType;
 import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.host.GlobusHost;
-import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.Parameter;
 import org.junit.Test;
 
 public class JCRRegistryTest {
@@ -100,23 +100,23 @@ public class JCRRegistryTest {
             ServiceDescription serv = new ServiceDescription();
             serv.setId(serviceId);
 
-            Parameter input = Parameter.Factory.newInstance();
-            input.setName("echo_input");
-            input.addNewType().setType(DataType.STRING);
-            List<Parameter> inputList = new ArrayList<Parameter>();
-            inputList.add(input);
-            org.apache.airavata.schemas.gfac.Parameter[] inputParamList = inputList
-                    .toArray(new org.apache.airavata.schemas.gfac.Parameter[inputList.size()]);
+            Parameter input = new Parameter();
+    		input.setName("echo_input");
+    		input.setType(new DataType());
+    		List<Parameter> inputList = new ArrayList<Parameter>();
+    		inputList.add(input);
+    		Parameter[] inputParamList = inputList.toArray(new Parameter[inputList
+    				.size()]);
 
-            Parameter output = Parameter.Factory.newInstance();
-            output.setName("echo_output");
-            output.addNewType().setType(DataType.STRING);
-            List<Parameter> outputList = new ArrayList<Parameter>();
-            outputList.add(output);
-            org.apache.airavata.schemas.gfac.Parameter[] outputParamList = outputList
-                    .toArray(new org.apache.airavata.schemas.gfac.Parameter[outputList.size()]);
-            serv.setInputParameters(inputParamList);
-            serv.setOutputParameters(outputParamList);
+    		Parameter output = new Parameter();
+    		output.setName("echo_output");
+    		input.setType(new DataType());
+    		List<Parameter> outputList = new ArrayList<Parameter>();
+    		outputList.add(output);
+    		Parameter[] outputParamList = outputList
+    				.toArray(new Parameter[outputList.size()]);
+    		serv.setInputParameters(inputParamList);
+    		serv.setOutputParameters(outputParamList);
 
             /*
              * Save to registry
