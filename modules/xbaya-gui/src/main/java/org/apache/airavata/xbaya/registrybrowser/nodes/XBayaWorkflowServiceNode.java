@@ -1,5 +1,6 @@
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,37 +10,37 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflow;
+import org.apache.airavata.xbaya.registrybrowser.model.ServiceParameters;
+import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowService;
 
-public class XBayaWorkflowNode extends AbstractAiravataTreeNode {
-    private XBayaWorkflow xbayaWorkflow;
+public class XBayaWorkflowServiceNode extends AbstractAiravataTreeNode {
+    private XBayaWorkflowService xbayaWorkflowService;
 
-    public XBayaWorkflowNode(XBayaWorkflow xbayaWorkflow, TreeNode parent) {
+    public XBayaWorkflowServiceNode(XBayaWorkflowService xbayaWorkflowService, TreeNode parent) {
         super(parent);
-        setXbayaWorkflow(xbayaWorkflow);
+        setXbayaWorkflowService(xbayaWorkflowService);
     }
 
     @Override
     protected List<TreeNode> getChildren() {
-        return emptyList();
+		List<ServiceParameters> parameterTypeList=new ArrayList<ServiceParameters>();
+		if (getXbayaWorkflowService().getInputParameters().getParameters().length>0){
+			parameterTypeList.add(getXbayaWorkflowService().getInputParameters());
+		}
+		if (getXbayaWorkflowService().getOutputParameters().getParameters().length>0){
+			parameterTypeList.add(getXbayaWorkflowService().getOutputParameters());
+		}
+		return getTreeNodeList(parameterTypeList.toArray(), this);
     }
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return getXbayaWorkflow().getWorkflowName()+" : "+getXbayaWorkflow().getWorkflowId();
+        return getXbayaWorkflowService().getServiceNodeId();
     }
 
     @Override
     public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
         return SwingUtil.createImageIcon("workflow.png");
-    }
-
-    public XBayaWorkflow getXbayaWorkflow() {
-        return xbayaWorkflow;
-    }
-
-    public void setXbayaWorkflow(XBayaWorkflow xbayaWorkflow) {
-        this.xbayaWorkflow = xbayaWorkflow;
     }
 
     @Override
@@ -65,4 +66,12 @@ public class XBayaWorkflowNode extends AbstractAiravataTreeNode {
     public String getActionDescription(AbstractBrowserActionItem action) {
         return null;
     }
+
+	public XBayaWorkflowService getXbayaWorkflowService() {
+		return xbayaWorkflowService;
+	}
+
+	public void setXbayaWorkflowService(XBayaWorkflowService xbayaWorkflowService) {
+		this.xbayaWorkflowService = xbayaWorkflowService;
+	}
 }

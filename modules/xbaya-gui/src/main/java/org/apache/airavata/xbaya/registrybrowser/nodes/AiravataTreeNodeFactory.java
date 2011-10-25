@@ -16,6 +16,10 @@ import org.apache.airavata.xbaya.registrybrowser.model.OutputParameters;
 import org.apache.airavata.xbaya.registrybrowser.model.ServiceDescriptions;
 import org.apache.airavata.xbaya.registrybrowser.model.ServiceParameter;
 import org.apache.airavata.xbaya.registrybrowser.model.ServiceParameters;
+import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflow;
+import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowExperiment;
+import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowExperiments;
+import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowService;
 import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowTemplate;
 import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowTemplates;
 
@@ -51,6 +55,14 @@ public class AiravataTreeNodeFactory {
 			return new OutputParametersNode((OutputParameters)o,parent);
 		}else if (o instanceof ServiceParameters){
 			return new ParametersNode((ServiceParameters)o,parent);
+		}else if (o instanceof XBayaWorkflowExperiments){
+			return new XBayaWorkflowExperimentsNode((XBayaWorkflowExperiments)o,parent);
+		}else if (o instanceof XBayaWorkflowExperiment){
+			return new XBayaWorkflowExperimentNode((XBayaWorkflowExperiment)o,parent);
+		}else if (o instanceof XBayaWorkflow){
+			return new XBayaWorkflowNode((XBayaWorkflow)o,parent);
+		}else if (o instanceof XBayaWorkflowService){
+			return new XBayaWorkflowServiceNode((XBayaWorkflowService)o,parent);
 		}else{
 			return new DefaultMutableTreeNode(o);
 		}

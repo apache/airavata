@@ -8,7 +8,6 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.model.ServiceParameter;
 

@@ -4,32 +4,29 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Icon;
-import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.registrybrowser.menu.AddAction;
-import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflows;
+import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowExperiment;
 
-public class XBayaWorkflowsNode extends AbstractAiravataTreeNode {
-    private XBayaWorkflows xbayaWorkflows;
-
-    public XBayaWorkflowsNode(XBayaWorkflows xbayaWorkflows, TreeNode parent) {
+public class XBayaWorkflowExperimentNode extends AbstractAiravataTreeNode {
+	private XBayaWorkflowExperiment experiment;
+	
+    public XBayaWorkflowExperimentNode(XBayaWorkflowExperiment experiment, TreeNode parent) {
         super(parent);
-        setXbayaWorkflows(xbayaWorkflows);
+        setExperiment(experiment);
     }
 
     @Override
     protected List<TreeNode> getChildren() {
-        return getTreeNodeList(getXbayaWorkflows().getWorkflows().toArray(), this);
+        return getTreeNodeList(getExperiment().getWorkflows().toArray(), this);
     }
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return "Workflows";
+        return getExperiment().getExperimentId();
     }
 
     @Override
@@ -37,33 +34,17 @@ public class XBayaWorkflowsNode extends AbstractAiravataTreeNode {
         return SwingUtil.createImageIcon("workflows.png");
     }
 
-    public XBayaWorkflows getXbayaWorkflows() {
-        return xbayaWorkflows;
-    }
-
-    public void setXbayaWorkflows(XBayaWorkflows xbayaWorkflows) {
-        this.xbayaWorkflows = xbayaWorkflows;
-    }
-
     @Override
     public List<String> getSupportedActions() {
-        return Arrays.asList(AddAction.ID, RefreshAction.ID);
+        return Arrays.asList();
     }
 
     public boolean triggerAction(JTree tree, String action) throws Exception {
-        if (action.equals(AddAction.ID)) {
-            JOptionPane.showMessageDialog(null, "TODO");
-            // TODO
-            return true;
-        }
         return super.triggerAction(tree, action);
     }
 
     @Override
     public String getActionCaption(AbstractBrowserActionItem action) {
-        if (action.getID().equals(AddAction.ID)) {
-            return "New workflow...";
-        }
         return action.getDefaultCaption();
     }
 
@@ -76,4 +57,12 @@ public class XBayaWorkflowsNode extends AbstractAiravataTreeNode {
     public String getActionDescription(AbstractBrowserActionItem action) {
         return null;
     }
+
+	public XBayaWorkflowExperiment getExperiment() {
+		return experiment;
+	}
+
+	public void setExperiment(XBayaWorkflowExperiment experiment) {
+		this.experiment = experiment;
+	}
 }
