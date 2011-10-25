@@ -27,8 +27,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
-import org.apache.airavata.commons.gfac.type.host.GlobusHost;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
@@ -42,6 +40,8 @@ import org.apache.airavata.core.gfac.provider.utils.GramRSLGenerator;
 import org.apache.airavata.core.gfac.provider.utils.JobSubmissionListener;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.globus.gram.GramAttributes;
 import org.globus.gram.GramException;
 import org.globus.gram.GramJob;
@@ -60,9 +60,8 @@ public class GramProvider extends AbstractProvider {
     private JobSubmissionListener listener;
 
     public void makeDirectory(InvocationContext invocationContext) throws ProviderException {
-        GlobusHost host = (GlobusHost) invocationContext.getExecutionDescription().getHost();
-        ShellApplicationDeployment app = (ShellApplicationDeployment) invocationContext.getExecutionDescription()
-                .getApp();
+    	GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
+    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) invocationContext.getExecutionDescription().getApp().getType();
 
         GridFtp ftp = new GridFtp();
 
@@ -99,7 +98,7 @@ public class GramProvider extends AbstractProvider {
     }
 
     public void setupEnvironment(InvocationContext invocationContext) throws ProviderException {
-        GlobusHost host = (GlobusHost) invocationContext.getExecutionDescription().getHost();
+    	GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
 
         log.info("Searching for Gate Keeper");
         gateKeeper = host.getGlobusGateKeeperEndPoint();
@@ -125,9 +124,9 @@ public class GramProvider extends AbstractProvider {
     }
 
     public void executeApplication(InvocationContext invocationContext) throws ProviderException {
-        GlobusHost host = (GlobusHost) invocationContext.getExecutionDescription().getHost();
-        ShellApplicationDeployment app = (ShellApplicationDeployment) invocationContext.getExecutionDescription()
-                .getApp();
+    	GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
+    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) invocationContext.getExecutionDescription().getApp().getType();
+    	
         StringBuffer buf = new StringBuffer();
         try {
 
@@ -214,9 +213,9 @@ public class GramProvider extends AbstractProvider {
 
     }
 
-    public Map<String, ?> processOutput(InvocationContext context) throws ProviderException {
-        GlobusHost host = (GlobusHost) context.getExecutionDescription().getHost();
-        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
+    public Map<String, ?> processOutput(InvocationContext invocationContext) throws ProviderException {
+    	GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
+    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) invocationContext.getExecutionDescription().getApp().getType();
         GridFtp ftp = new GridFtp();
         try {
             GSSCredential gssCred = gssContext.getGssCredentails();
@@ -242,14 +241,14 @@ public class GramProvider extends AbstractProvider {
             }
 
             // Get the Stdouts and StdErrs
-            String timeStampedServiceName = GfacUtils.createUniqueNameForService(context.getServiceName());
+            String timeStampedServiceName = GfacUtils.createUniqueNameForService(invocationContext.getServiceName());
             File localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
             File localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
 
             String stdout = ftp.readRemoteFile(stdoutURI, gssCred, localStdOutFile);
             String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
 
-            return OutputUtils.fillOutputFromStdout(context.<AbstractParameter> getOutput(), stdout);
+            return OutputUtils.fillOutputFromStdout(invocationContext.<AbstractParameter> getOutput(), stdout);
 
         } catch (URISyntaxException e) {
             throw new ProviderException("URI is malformatted:" + e.getMessage(), e);

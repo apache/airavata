@@ -21,59 +21,36 @@
 
 package org.apache.airavata.commons.gfac.type;
 
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionDocument;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlException;
 
 public class ApplicationDeploymentDescription implements Type {
 
-	private ApplicationDeploymentDescriptionType appDeploymentDescType;
+	private ApplicationDeploymentDescriptionDocument appDocument;
 
 	public ApplicationDeploymentDescription() {
-		this.appDeploymentDescType = ApplicationDeploymentDescriptionType.Factory
-				.newInstance();
+		this.appDocument = ApplicationDeploymentDescriptionDocument.Factory.newInstance();
+		this.appDocument.addNewApplicationDeploymentDescription();
 	}
 
-	public ApplicationDeploymentDescription(
-			ApplicationDeploymentDescriptionType addt) {
-		this.appDeploymentDescType = addt;
+	public ApplicationDeploymentDescription(SchemaType type){
+		this();
+		this.appDocument.getApplicationDeploymentDescription().changeType(type);
 	}
-
-	public String getId() {
-		return appDeploymentDescType.getName();
+	
+	public ApplicationDeploymentDescriptionType getType(){
+		return this.appDocument.getApplicationDeploymentDescription();
 	}
-
-	public void setId(String id) {
-		this.appDeploymentDescType.setName(id);
+	
+	public String toXML(){
+		return appDocument.xmlText();
 	}
-
-	public String getTmpDir() {
-		return appDeploymentDescType.getTmpDir();
-	}
-
-	public void setTmpDir(String tmpDir) {
-		this.appDeploymentDescType.setTmpDir(tmpDir);
-	}
-
-	public String getWorkingDir() {
-		return appDeploymentDescType.getWorkingDir();
-	}
-
-	public void setWorkingDir(String workingDir) {
-		this.appDeploymentDescType.setWorkingDir(workingDir);
-	}
-
-	public String getInputDir() {
-		return appDeploymentDescType.getInputDir();
-	}
-
-	public void setInputDir(String inputDir) {
-		this.appDeploymentDescType.setInputDir(inputDir);
-	}
-
-	public String getOutputDir() {
-		return appDeploymentDescType.getOutputDir();
-	}
-
-	public void setOutputDir(String outputDir) {
-		this.appDeploymentDescType.setOutputDir(outputDir);
+	
+	public static ApplicationDeploymentDescription fromXML(String xml) throws XmlException{
+		ApplicationDeploymentDescription app = new ApplicationDeploymentDescription();
+		app.appDocument = ApplicationDeploymentDescriptionDocument.Factory.parse(xml);
+		return app;
 	}
 }

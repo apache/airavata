@@ -21,8 +21,19 @@
 
 package org.apache.airavata.core.gfac.provider.impl;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ProviderException;
@@ -31,13 +42,8 @@ import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.InputUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * {@link LocalProvider} will execute jobs (application) on local machine.
@@ -96,7 +102,7 @@ public class LocalProvider extends AbstractProvider {
     }
 
     public void makeDirectory(InvocationContext invocationContext) throws ProviderException {
-        ApplicationDeploymentDescription app = invocationContext.getExecutionDescription().getApp();
+        ApplicationDeploymentDescriptionType app = invocationContext.getExecutionDescription().getApp().getType();
 
         log.info("working diectroy = " + app.getWorkingDir());
         log.info("temp directory = " + app.getTmpDir());
@@ -108,7 +114,7 @@ public class LocalProvider extends AbstractProvider {
     }
 
     public void setupEnvironment(InvocationContext context) throws ProviderException {
-        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
+        ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
 
         // input parameter
         ArrayList<String> tmp = new ArrayList<String>();
@@ -158,7 +164,7 @@ public class LocalProvider extends AbstractProvider {
     }
 
     public void executeApplication(InvocationContext context) throws ProviderException {
-        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
+    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
 
         try {
             // running cmd
@@ -207,7 +213,7 @@ public class LocalProvider extends AbstractProvider {
 
     public Map<String, ?> processOutput(InvocationContext context) throws ProviderException {
 
-        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
+    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
 
         try {
             String stdOutStr = GfacUtils.readFileToString(app.getStdOut());

@@ -187,7 +187,7 @@ public class GFacMessageReciever implements MessageReceiver {
              * Input
              */
             ParameterContextImpl inputParam = new ParameterContextImpl();
-            ServiceDescriptionType serviceDescriptionType = serviceDescription.getServiceDescriptionType();
+            ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
 
             List<org.apache.airavata.schemas.gfac.Parameter> newInputs = null;
             for (int i = 0; i < serviceDescriptionType.getInputParametersArray().length; i++) {

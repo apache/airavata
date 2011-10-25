@@ -13,7 +13,6 @@
     xmlns:gfac="http://schemas.airavata.apache.org/gfac/type" xmlns="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified">
 
-        <element name="globusHost" type="gfac:globusHostType" />
         <element name="hostDescription" type="gfac:hostDescriptionType" />
         
         <!-- Globus Host Description -->

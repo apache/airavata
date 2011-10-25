@@ -10,19 +10,19 @@ public class WebServiceUtil {
         StringBuilder builder = new StringBuilder();
         builder.append("<wsdl:definitions xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\" xmlns:ns1=\"http://org.apache.axis2/xsd\" xmlns:ns=\"http://www.wso2.org/types\" xmlns:wsaw=\"http://www.w3.org/2006/05/addressing/wsdl\" xmlns:http=\"http://schemas.xmlsoap.org/wsdl/http/\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\" xmlns:mime=\"http://schemas.xmlsoap.org/wsdl/mime/\" xmlns:soap12=\"http://schemas.xmlsoap.org/wsdl/soap12/\" targetNamespace=\"http://www.wso2.org/types\">");
         builder.append("<wsdl:documentation>");
-        builder.append(service.getId());
+        builder.append(service.getType().getName());
         builder.append("</wsdl:documentation>");
         builder.append("<wsdl:types>");
         builder.append("<xs:schema attributeFormDefault=\"qualified\" elementFormDefault=\"unqualified\" targetNamespace=\"http://www.wso2.org/types\">");
 
-        boolean isInputParametersPresent = service.getInputParameters() != null
-                && service.getInputParameters().length > 0;
+        boolean isInputParametersPresent = service.getType().getInputParametersArray() != null
+                && service.getType().getInputParametersArray().length > 0;
         if (isInputParametersPresent) {
             builder.append("<xs:element name=\"invoke\">");
             builder.append("<xs:complexType>");
             builder.append("<xs:sequence>");
 
-            ServiceDescriptionType p = service.getServiceDescriptionType();
+            ServiceDescriptionType p = service.getType();
 
             for (int i = 0; i < p.getInputParametersArray().length; i++) {
                 generateElementFromType(p.getInputParametersArray(i), builder);
@@ -33,14 +33,14 @@ public class WebServiceUtil {
             builder.append("</xs:element>");
         }
 
-        boolean isOutputParametersPresent = service.getOutputParameters() != null
-                && service.getOutputParameters().length > 0;
+        boolean isOutputParametersPresent = service.getType().getOutputParametersArray() != null
+                && service.getType().getOutputParametersArray().length > 0;
         if (isOutputParametersPresent) {
             builder.append("<xs:element name=\"invokeResponse\">");
             builder.append("<xs:complexType>");
             builder.append("<xs:sequence>");
 
-            ServiceDescriptionType p = service.getServiceDescriptionType();
+            ServiceDescriptionType p = service.getType();
 
             for (int i = 0; i < p.getOutputParametersArray().length; i++) {
                 generateElementFromType(p.getOutputParametersArray(i), builder);
@@ -66,7 +66,7 @@ public class WebServiceUtil {
         }
 
         builder.append("<wsdl:portType name=\"");
-        builder.append(service.getId());
+        builder.append(service.getType().getName());
         builder.append("\">");
         builder.append("<wsdl:operation name=\"invoke\">");
         builder.append("<wsdl:input message=\"ns:invokeRequest\" wsaw:Action=\"urn:invoke\"/>");

@@ -21,34 +21,36 @@
 
 package org.apache.airavata.commons.gfac.type;
 
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.HostDescriptionDocument;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
+import org.apache.xmlbeans.SchemaType;
+import org.apache.xmlbeans.XmlException;
 
 public class HostDescription implements Type {
 
-    private HostDescriptionType hostDescriptionType;
+	private HostDescriptionDocument hostDocument;
 
-    public HostDescription() {
-        this.hostDescriptionType = HostDescriptionType.Factory.newInstance();
-    }
+	public HostDescription() {
+		this.hostDocument = HostDescriptionDocument.Factory.newInstance();
+		this.hostDocument.addNewHostDescription();
+	}
+	
+	public HostDescription(SchemaType type) {
+		this();
+		this.hostDocument.getHostDescription().changeType(type);
+	}
 
-    public HostDescription(HostDescriptionType hdt) {
-        this.hostDescriptionType = hdt;
-    }
-
-    public String getId() {
-        return hostDescriptionType.getName();
-    }
-
-    public void setId(String id) {
-        this.hostDescriptionType.setName(id);
-    }
-
-    public String getAddress() {
-        return hostDescriptionType.getAddress();
-    }
-
-    public void setAddress(String address) {
-        this.hostDescriptionType.setAddress(address);
-    }
+	public HostDescriptionType getType(){
+		return this.hostDocument.getHostDescription();
+	}
+	
+	public String toXML(){
+		return hostDocument.xmlText();
+	}
+	
+	public static HostDescription fromXML(String xml) throws XmlException{
+		HostDescription host = new HostDescription();
+		host.hostDocument = HostDescriptionDocument.Factory.parse(xml);
+		return host;
+	}
 }

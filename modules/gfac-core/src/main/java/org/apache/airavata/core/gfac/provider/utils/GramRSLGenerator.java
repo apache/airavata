@@ -21,18 +21,18 @@
 
 package org.apache.airavata.core.gfac.provider.utils;
 
-import org.apache.airavata.commons.gfac.type.app.GramApplicationDeployment;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
+import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.globus.gram.GramAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Utilities for generating GRAM RSL
@@ -45,7 +45,7 @@ public class GramRSLGenerator {
     };
 
     public static GramAttributes configureRemoteJob(InvocationContext context) throws ToolsException {
-        GramApplicationDeployment app = (GramApplicationDeployment) context.getExecutionDescription().getApp();
+        GramApplicationDeploymentType app = (GramApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
 
         GramAttributes jobAttr = new GramAttributes();
         jobAttr.setExecutable(app.getExecutable());
