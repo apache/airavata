@@ -12,6 +12,7 @@ import javax.swing.tree.TreeNode;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
@@ -63,7 +64,7 @@ public class HostDescriptionNode extends AbstractAiravataTreeNode {
         return super.triggerAction(tree, action);
     }
 
-    private void deleteHostDescription(JTree tree) throws PathNotFoundException, HostDescriptionRetrieveException {
+    private void deleteHostDescription(JTree tree) throws RegistryException {
         if (askQuestion("Host description", "Are you sure that you want to remove the host description \""
                 + getHostDescription().getId() + "\"?")) {
             getRegistry().deleteHostDescription(getHostDescription().getId());

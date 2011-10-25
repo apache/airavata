@@ -11,6 +11,7 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
@@ -64,7 +65,7 @@ public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
         return super.triggerAction(tree, action);
     }
 
-    private void deleteHostDescription(JTree tree) throws PathNotFoundException, ServiceDescriptionRetrieveException {
+    private void deleteHostDescription(JTree tree) throws RegistryException {
         if (askQuestion("Service description", "Are you sure that you want to remove the service description \""
                 + getServiceDescription().getId() + "\"?")) {
             getRegistry().deleteServiceDescription(getServiceDescription().getId());

@@ -11,7 +11,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.regex.Pattern;
 
-import javax.jcr.PathNotFoundException;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -23,10 +22,14 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
+import org.apache.airavata.registry.api.exception.RegistryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HostDescriptionDialog extends JDialog {
 
+    private static final Logger log = LoggerFactory.getLogger(HostDescriptionDialog.class);
+    
     private static final long serialVersionUID = 1423293834766468324L;
     private JTextField txtHostLocation;
     private JTextField txtHostName;
@@ -71,8 +74,8 @@ public class HostDescriptionDialog extends JDialog {
                     while (getRegistry().getHostDescription(defaultName) != null) {
                         defaultName = baseName + (++i);
                     }
-                } catch (HostDescriptionRetrieveException e) {
-                } catch (PathNotFoundException e) {
+                } catch (RegistryException e) {
+                    log.error("error", e);
                 }
                 txtHostName.setText(defaultName);
                 setHostId(txtHostName.getText());
@@ -203,9 +206,7 @@ public class HostDescriptionDialog extends JDialog {
         HostDescription hostDescription2 = null;
         try {
             hostDescription2 = getRegistry().getHostDescription(Pattern.quote(getHostId()));
-        } catch (PathNotFoundException e) {
-            // what we want
-        } catch (Exception e) {
+        } catch (RegistryException e) {
             throw e;
         }
         if (hostDescription2 != null) {

@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.jcr.PathNotFoundException;
-
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
-import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 
 public class ApplicationDeploymentDescriptions {
     private Registry registry;
@@ -26,18 +23,14 @@ public class ApplicationDeploymentDescriptions {
         this.registry = registry;
     }
 
-    public List<ApplicationDeploymentDescriptionWrap> getDescriptions() throws DeploymentDescriptionRetrieveException {
+    public List<ApplicationDeploymentDescriptionWrap> getDescriptions() throws RegistryException {
         List<ApplicationDeploymentDescriptionWrap> list = new ArrayList<ApplicationDeploymentDescriptionWrap>();
-        try {
-            Map<ApplicationDeploymentDescription, String> deploymentDescriptions = getRegistry()
-                    .searchDeploymentDescription();
-            for (ApplicationDeploymentDescription descriptionWrap : deploymentDescriptions.keySet()) {
-                String[] descDetails = deploymentDescriptions.get(descriptionWrap).split("\\$");
-                list.add(new ApplicationDeploymentDescriptionWrap(getRegistry(), descriptionWrap, descDetails[0],
-                        descDetails[1]));
-            }
-        } catch (PathNotFoundException e) {
-            // has no descriptions defined
+        Map<ApplicationDeploymentDescription, String> deploymentDescriptions = getRegistry()
+                .searchDeploymentDescription();
+        for (ApplicationDeploymentDescription descriptionWrap : deploymentDescriptions.keySet()) {
+            String[] descDetails = deploymentDescriptions.get(descriptionWrap).split("\\$");
+            list.add(new ApplicationDeploymentDescriptionWrap(getRegistry(), descriptionWrap, descDetails[0],
+                    descDetails[1]));
         }
         return list;
     }

@@ -13,7 +13,6 @@ import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javax.jcr.PathNotFoundException;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -33,6 +32,7 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.gui.XBayaLinkButton;
 
 public class ApplicationDescriptionDialog extends JDialog implements ActionListener {
@@ -525,9 +525,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         try {
             deploymentDescriptions = getRegistry().searchDeploymentDescription(getServiceName(), getHostName(),
                     Pattern.quote(getApplicationName()));
-        } catch (PathNotFoundException e) {
-            // what we want
-        } catch (Exception e) {
+        } catch (RegistryException e) {
             throw e;
         }
         if (deploymentDescriptions.size() > 0) {
