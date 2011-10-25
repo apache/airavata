@@ -26,11 +26,10 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.commons.gfac.type.DataType;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.commons.gfac.type.host.GlobusHost;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.Parameter;
 import org.junit.Test;
 
 public class JCRRegistryTest {
@@ -53,33 +52,35 @@ public class JCRRegistryTest {
              * Host
              */
             HostDescription host = new HostDescription();
-            host.setId(hostId);
-            host.setAddress(address);
+            host.getType().setName(hostId);
+            host.getType().setAddress(address);
 
             jcrRegistry.saveHostDescription(host);
 
             HostDescription hostR = jcrRegistry.getHostDescription(hostId);
 
-            if (!(hostR.getId().equals(hostId) && hostR.getAddress().equals(address))) {
+            if (!(hostR.getType().getName().equals(hostId) && hostR.getType().getAddress().equals(address))) {
                 fail("Save and Load Host Description Fail with Different Value");
             }
             
             /*
              * Test for polymorphism
              */
-            GlobusHost globus = new GlobusHost();
-            globus.setId(hostId2);
-            globus.setAddress(address);
+            HostDescription globus = new HostDescription(GlobusHostType.type);
+            globus.getType().setName(hostId2);
+            globus.getType().setAddress(address);
+            
+            ((GlobusHostType)globus.getType()).setGridFTPEndPoint("xxxxxxx");
 
             jcrRegistry.saveHostDescription(globus);
 
             HostDescription hg = jcrRegistry.getHostDescription(hostId2);
 
-            if (!(hg.getId().equals(hostId2) && hg.getAddress().equals(address))) {
+            if (!(hg.getType().getName().equals(hostId2) && hg.getType().getAddress().equals(address))) {
                 fail("Save and Load Host Description Fail with Different Value");
             }
             
-            if(!(hg instanceof GlobusHost))
+            if(!(hg.getType() instanceof GlobusHostType))
                 fail("Save and Load Host Type Fail with Different Type when loading");
 
         } catch (Exception e) {
@@ -98,25 +99,25 @@ public class JCRRegistryTest {
             String serviceId = "SimpleEcho";            
             
             ServiceDescription serv = new ServiceDescription();
-            serv.setId(serviceId);
+            serv.getType().setName(serviceId);
 
-            Parameter input = new Parameter();
+            Parameter input = Parameter.Factory.newInstance();
     		input.setName("echo_input");
-    		input.setType(new DataType());
+    		input.addNewType();
     		List<Parameter> inputList = new ArrayList<Parameter>();
     		inputList.add(input);
     		Parameter[] inputParamList = inputList.toArray(new Parameter[inputList
     				.size()]);
 
-    		Parameter output = new Parameter();
+    		Parameter output = Parameter.Factory.newInstance();
     		output.setName("echo_output");
-    		input.setType(new DataType());
+    		output.addNewType();
     		List<Parameter> outputList = new ArrayList<Parameter>();
     		outputList.add(output);
     		Parameter[] outputParamList = outputList
     				.toArray(new Parameter[outputList.size()]);
-    		serv.setInputParameters(inputParamList);
-    		serv.setOutputParameters(outputParamList);
+    		serv.getType().setInputParametersArray(inputParamList);
+    		serv.getType().setOutputParametersArray(outputParamList);
 
             /*
              * Save to registry
@@ -132,11 +133,11 @@ public class JCRRegistryTest {
                 fail("Service is null");
             }
             
-            if(service.getInputParameters() == null || service.getInputParameters().length != 1){
+            if(service.getType().getInputParametersArray() == null || service.getType().getInputParametersArray().length != 1){
                 fail("Input Parameters is missing");
             }
             
-            if(service.getOutputParameters()== null || service.getOutputParameters().length != 1){
+            if(service.getType().getOutputParametersArray()== null || service.getType().getOutputParametersArray().length != 1){
                 fail("Input Parameters is missing");
             }
             

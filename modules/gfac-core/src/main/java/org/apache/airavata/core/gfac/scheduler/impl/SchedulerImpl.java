@@ -80,7 +80,7 @@ public class SchedulerImpl implements Scheduler {
          */
         ApplicationDeploymentDescription app = null;
         try {
-            app = registryService.getDeploymentDescription(context.getServiceName(), host.getId());
+            app = registryService.getDeploymentDescription(context.getServiceName(), host.getType().getName());
         } catch (RegistryException e2) {
             e2.printStackTrace();
         }
@@ -103,7 +103,7 @@ public class SchedulerImpl implements Scheduler {
         /*
          * Determine provider
          */
-        String hostName = host.getAddress();
+        String hostName = host.getType().getAddress();
         try {
             if (GfacUtils.isLocalHost(hostName)) {
                 return new LocalProvider();
@@ -125,7 +125,7 @@ public class SchedulerImpl implements Scheduler {
             for (Iterator<HostDescription> iterator = hosts.iterator(); iterator.hasNext();) {
                 result = iterator.next();
 
-                log.info("Found service on: " + result.getAddress());
+                log.info("Found service on: " + result.getType().getAddress());
             }
             return result;
         } else {

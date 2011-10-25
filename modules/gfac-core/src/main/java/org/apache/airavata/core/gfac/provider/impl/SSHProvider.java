@@ -21,6 +21,15 @@
 
 package org.apache.airavata.core.gfac.provider.impl;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
+
 import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.connection.channel.direct.Session;
@@ -28,7 +37,7 @@ import net.schmizz.sshj.connection.channel.direct.Session.Command;
 import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
-import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
+
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.security.impl.SSHSecurityContextImpl;
@@ -40,15 +49,6 @@ import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.InputUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Execute application using remote SSH
@@ -84,7 +84,7 @@ public class SSHProvider extends AbstractProvider {
             ssh.loadKnownHosts();
             ssh.authPublickey(sshContext.getUsername(), pkey);
 
-            ssh.connect(context.getExecutionDescription().getHost().getAddress());
+            ssh.connect(context.getExecutionDescription().getHost().getType().getAddress());
             return ssh.startSession();
 
         } catch (NullPointerException ne) {
@@ -103,7 +103,7 @@ public class SSHProvider extends AbstractProvider {
     }
 
     public void makeDirectory(InvocationContext context) throws ProviderException {
-        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
+    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
 
         Session session = null;
         try {
@@ -137,7 +137,7 @@ public class SSHProvider extends AbstractProvider {
     }
 
     public void setupEnvironment(InvocationContext context) throws ProviderException {
-        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
+    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
 
         // input parameter
         ArrayList<String> tmp = new ArrayList<String>();
@@ -166,7 +166,7 @@ public class SSHProvider extends AbstractProvider {
     }
 
     public void executeApplication(InvocationContext context) throws ProviderException {
-        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
+    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
 
         Session session = null;
         try {
@@ -229,7 +229,7 @@ public class SSHProvider extends AbstractProvider {
     }
 
     public Map<String, ?> processOutput(InvocationContext context) throws ProviderException {
-        ShellApplicationDeployment app = (ShellApplicationDeployment) context.getExecutionDescription().getApp();
+    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
         try {
 
             // Get the Stdouts and StdErrs

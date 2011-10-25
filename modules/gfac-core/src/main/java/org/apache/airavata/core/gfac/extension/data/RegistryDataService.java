@@ -28,10 +28,11 @@ import java.util.UUID;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ExtensionException;
 import org.apache.airavata.core.gfac.extension.DataServiceChain;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 
 /**
  * This plugin fills out all information that is missing in {@link ApplicationDeploymentDescription} based on Unix
@@ -44,7 +45,7 @@ public class RegistryDataService extends DataServiceChain {
 
         ServiceDescription serviceDesc = context.getExecutionDescription().getService();
         HostDescription hostDesc = context.getExecutionDescription().getHost();
-        ApplicationDeploymentDescription appDesc = context.getExecutionDescription().getApp();
+        ApplicationDeploymentDescriptionType appDesc = context.getExecutionDescription().getApp().getType();
         if (serviceDesc != null && hostDesc != null && appDesc != null) {
             /*
              * if there is no setting in deployment description, use from host
@@ -61,7 +62,7 @@ public class RegistryDataService extends DataServiceChain {
                 date = date.replaceAll(" ", "_");
                 date = date.replaceAll(":", "_");
 
-                String tmpDir = appDesc.getTmpDir() + File.separator + appDesc.getId() + "_" + date + "_"
+                String tmpDir = appDesc.getTmpDir() + File.separator + appDesc.getName() + "_" + date + "_"
                         + UUID.randomUUID();
 
                 appDesc.setWorkingDir(tmpDir);
@@ -80,13 +81,13 @@ public class RegistryDataService extends DataServiceChain {
             /*
              * Stdout and Stderr for Shell
              */
-            if (appDesc.getClass().isAssignableFrom(ShellApplicationDeployment.class)) {
-                ShellApplicationDeployment shell = (ShellApplicationDeployment) appDesc;
+            if (appDesc.getClass().isAssignableFrom(ShellApplicationDeploymentType.class)) {
+            	ShellApplicationDeploymentType shell = (ShellApplicationDeploymentType) appDesc;
                 if (shell.getStdOut() == null) {
-                    shell.setStdOut(appDesc.getWorkingDir() + File.separator + appDesc.getId() + ".stdout");
+                    shell.setStdOut(appDesc.getWorkingDir() + File.separator + appDesc.getName() + ".stdout");
                 }
                 if (shell.getStdErr() == null) {
-                    shell.setStdErr(appDesc.getWorkingDir() + File.separator + appDesc.getId() + ".stderr");
+                    shell.setStdErr(appDesc.getWorkingDir() + File.separator + appDesc.getName() + ".stderr");
                 }
             }
 

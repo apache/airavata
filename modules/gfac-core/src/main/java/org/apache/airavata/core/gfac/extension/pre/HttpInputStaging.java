@@ -31,11 +31,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.commons.gfac.type.DataType;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
-import org.apache.airavata.commons.gfac.type.host.GlobusHost;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.commons.gfac.type.parameter.FileParameter;
 import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
@@ -48,6 +43,10 @@ import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.external.GridFtp;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.HostDescriptionType;
+import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,21 +76,20 @@ public class HttpInputStaging extends PreExecuteChain {
                          * Determine scheme
                          */
                         URI uri = URI.create(fileParameter.toStringVal());
-                        if (uri.getScheme().equalsIgnoreCase("http")) {
-                            HostDescription hostDescription = context.getExecutionDescription().getHost();
-
+                        if (uri.getScheme().equalsIgnoreCase("http")) {                            
                             /*
                              * Desctination complete URI
                              */
                             File file = new File(uri.getPath());
                             String destFilePath = file.getName();
 
-                            ApplicationDeploymentDescription app = context.getExecutionDescription().getApp();
-                            if (app instanceof ShellApplicationDeployment) {
+                            ApplicationDeploymentDescriptionType app = context.getExecutionDescription().getApp().getType();
+                            if (app instanceof ShellApplicationDeploymentType) {
                                 destFilePath = app.getInputDir() + File.separator + destFilePath;
                             }
 
-                            if (hostDescription instanceof GlobusHost) {
+                            HostDescriptionType hostDescription = context.getExecutionDescription().getHost().getType();
+                            if (hostDescription instanceof GlobusHostType) {
                                 uploadToGridFTPFromHttp(context, uri, destFilePath);
                             } else {
                                 downloadFile(context, uri, destFilePath);
@@ -125,7 +123,7 @@ public class HttpInputStaging extends PreExecuteChain {
         GSSCredential gssCred = ((GSISecurityContext) context.getSecurityContext(MYPROXY_SECURITY_CONTEXT))
                 .getGssCredentails();
 
-        GlobusHost host = (GlobusHost) context.getExecutionDescription().getHost();
+        GlobusHostType host = (GlobusHostType) context.getExecutionDescription().getHost().getType();
         URI destURI = GfacUtils.createGsiftpURI(host.getGridFTPEndPoint(), remoteLocation);
 
         InputStream in = null;

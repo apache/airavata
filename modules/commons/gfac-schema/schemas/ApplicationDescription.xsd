@@ -13,9 +13,7 @@
     xmlns:gfac="http://schemas.airavata.apache.org/gfac/type" xmlns="http://www.w3.org/2001/XMLSchema"
     elementFormDefault="qualified">
        
-    <element name="shellApplicationDeployment" type="gfac:shellApplicationDeploymentType"/>
     <element name="applicationDeploymentDescription" type="gfac:applicationDeploymentDescriptionType"/>
-    <element name="gramApplicationDeployment" type="gfac:gramApplicationDeploymentType"/>
     
     <complexType name="gramApplicationDeploymentType">
         <complexContent>
