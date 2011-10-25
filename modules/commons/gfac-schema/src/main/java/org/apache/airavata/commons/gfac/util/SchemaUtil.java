@@ -49,22 +49,22 @@ public class SchemaUtil {
         return x.toString();
     }
     
-    
-    public static void main(String[] args) throws XmlException {
-        
-        BatchApplicationDeploymentDescriptionDocument t = BatchApplicationDeploymentDescriptionDocument.Factory.newInstance();
-        
-        BatchApplicationDeploymentDescriptionType t2 = BatchApplicationDeploymentDescriptionType.Factory.newInstance();
-        
-        t.setBatchApplicationDeploymentDescription(t2 );
-        
-        t2.setCpuCount(4);
-        System.out.println(t);
-        
-        
-        XmlObject k = XmlObject.Factory.parse(t.toString());
-        if (k instanceof BatchApplicationDeploymentDescriptionDocument ){
-            System.out.println("ooo");
-        }
-    }
+//
+//    public static void main(String[] args) throws XmlException {
+//
+//        BatchApplicationDeploymentDescriptionDocument t = BatchApplicationDeploymentDescriptionDocument.Factory.newInstance();
+//
+//        BatchApplicationDeploymentDescriptionType t2 = BatchApplicationDeploymentDescriptionType.Factory.newInstance();
+//
+//        t.setBatchApplicationDeploymentDescription(t2 );
+//
+//        t2.setCpuCount(4);
+//        System.out.println(t);
+//
+//
+//        XmlObject k = XmlObject.Factory.parse(t.toString());
+//        if (k instanceof BatchApplicationDeploymentDescriptionDocument ){
+//            System.out.println("ooo");
+//        }
+//    }
 }
