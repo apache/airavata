@@ -78,9 +78,11 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 	public static final String PUBLIC = "PUBLIC";
 	public static final String REGISTRY_TYPE_WORKFLOW = "workflow";
 	public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
-	public static final String WORKFLOW_DATA = "WorkflowData";
+    public static final String WORKFLOW_DATA = "experiments";
+    public static final String INPUT = "Input";
+    public static final String OUTPUT = "Output";
 
-	private Repository repository;
+    private Repository repository;
 	private Credentials credentials;
 	private UserManager userManager;
 	private String username;
@@ -856,16 +858,39 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		return repository.getDescriptor(Repository.REP_NAME_DESC);
 	}
 
-	public boolean saveWorkflowData(String data, String experimentId,
-			String nodeId) {
+	public boolean saveWorkflowInput(String data, String experimentId,
+                                     String nodeId,String workflowName) {
+			Session session = null;
+		try {
+			session = getSession();
+			Node workflowDataNode =
+					getOrAddNode(getOrAddNode(
+							getOrAddNode(session.getRootNode(), WORKFLOW_DATA),
+							experimentId),experimentId);
+            workflowDataNode.setProperty("workflowName",workflowName);
+            workflowDataNode = getOrAddNode(getOrAddNode(workflowDataNode,nodeId), OUTPUT);
+            workflowDataNode.setProperty("content", data);
+            session.save();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeSession(session);
+			return true;
+		}
+	}
+
+    public boolean saveWorkflowOutput(String data, String experimentId,
+                                     String nodeId,String workflowName) {
 		Session session = null;
 		try {
 			session = getSession();
-			Node workflowDataNode = getOrAddNode(
-					getOrAddNode(
+			Node workflowDataNode =
+					getOrAddNode(getOrAddNode(
 							getOrAddNode(session.getRootNode(), WORKFLOW_DATA),
-							experimentId), nodeId);
-			workflowDataNode.setProperty("content", data);
+							experimentId),experimentId);
+            workflowDataNode.setProperty("workflowName",workflowName);
+            workflowDataNode = getOrAddNode(getOrAddNode(workflowDataNode,nodeId), INPUT);
+            workflowDataNode.setProperty("content", data);
             session.save();
 		} catch (Exception e) {
 			e.printStackTrace();
