@@ -3,7 +3,6 @@ package org.apache.airavata.xbaya.registrybrowser.nodes;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.jcr.PathNotFoundException;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
@@ -11,7 +10,6 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;

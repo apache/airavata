@@ -9,37 +9,29 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflow;
+import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowExperiments;
 
-public class XBayaWorkflowNode extends AbstractAiravataTreeNode {
-    private XBayaWorkflow xbayaWorkflow;
-
-    public XBayaWorkflowNode(XBayaWorkflow xbayaWorkflow, TreeNode parent) {
+public class XBayaWorkflowExperimentsNode extends AbstractAiravataTreeNode {
+	private XBayaWorkflowExperiments experiments;
+	
+    public XBayaWorkflowExperimentsNode(XBayaWorkflowExperiments experiments, TreeNode parent) {
         super(parent);
-        setXbayaWorkflow(xbayaWorkflow);
+        setExperiments(experiments);
     }
 
     @Override
     protected List<TreeNode> getChildren() {
-        return emptyList();
+        return getTreeNodeList(getExperiments().getAllExperiments().toArray(), this);
     }
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return getXbayaWorkflow().getWorkflowName()+" : "+getXbayaWorkflow().getWorkflowId();
+        return "Experiments";
     }
 
     @Override
     public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return SwingUtil.createImageIcon("workflow.png");
-    }
-
-    public XBayaWorkflow getXbayaWorkflow() {
-        return xbayaWorkflow;
-    }
-
-    public void setXbayaWorkflow(XBayaWorkflow xbayaWorkflow) {
-        this.xbayaWorkflow = xbayaWorkflow;
+        return SwingUtil.createImageIcon("workflows.png");
     }
 
     @Override
@@ -65,4 +57,12 @@ public class XBayaWorkflowNode extends AbstractAiravataTreeNode {
     public String getActionDescription(AbstractBrowserActionItem action) {
         return null;
     }
+
+	public XBayaWorkflowExperiments getExperiments() {
+		return experiments;
+	}
+
+	public void setExperiments(XBayaWorkflowExperiments experiments) {
+		this.experiments = experiments;
+	}
 }
