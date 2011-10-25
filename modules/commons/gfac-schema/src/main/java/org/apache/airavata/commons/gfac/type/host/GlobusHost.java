@@ -52,17 +52,4 @@ public class GlobusHost extends HostDescription {
 		this.globusHostType
 				.setGlobusGateKeeperEndPoint(globusGateKeeperEndPoint);
 	}
-
-	public String toXml() {
-		return globusHostType.xmlText();
-	}
-
-	public HostDescription fromXml(String xml) {
-		try {
-			this.globusHostType = GlobusHostType.Factory.parse(xml);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return this;
-	}
 }

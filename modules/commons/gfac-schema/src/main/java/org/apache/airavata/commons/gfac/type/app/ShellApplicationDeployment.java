@@ -76,19 +76,5 @@ public class ShellApplicationDeployment extends ApplicationDeploymentDescription
 
     public void setStdIn(String stdIn) {
         this.shellApplicationDeploymentType.setStdIn(stdIn);
-    }
-    
-    public String toXml() {
-		return shellApplicationDeploymentType.xmlText();
-	}
-
-	public ApplicationDeploymentDescription fromXml(String xml) {
-		try {
-			this.shellApplicationDeploymentType = ShellApplicationDeploymentType.Factory
-					.parse(xml);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return this;
-	}
+    }      
 }
