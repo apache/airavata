@@ -124,6 +124,10 @@ public class XBayaConfiguration extends Observable implements Observer {
 
     private boolean closeOnExit = true;
 
+    private boolean collectProvenance = false;
+
+    private boolean provenanceSmartRun = false;
+
     /**
      * Constructs an XwfConfiguration.
      */
@@ -804,4 +808,21 @@ public class XBayaConfiguration extends Observable implements Observer {
     public void update(Observable observable, Object o) {
         triggerObservers(observable);
     }
+
+    public boolean isCollectProvenance() {
+        return collectProvenance;
+    }
+
+    public boolean isProvenanceSmartRun() {
+        return provenanceSmartRun;
+    }
+
+    public void setCollectProvenance(boolean collectProvenance) {
+        this.collectProvenance = collectProvenance;
+    }
+
+    public void setProvenanceSmartRun(boolean provenanceSmartRun) {
+        this.provenanceSmartRun = provenanceSmartRun;
+    }
+
 }
