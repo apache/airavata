@@ -36,6 +36,7 @@ import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveE
 import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
+import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 
 public interface Registry {
     /**
@@ -221,7 +222,11 @@ public interface Registry {
      */
     public String getName();
 
-    public boolean saveWorkflowInput(String data, String experimentId, String nodeId,String workflowName);
+    public boolean saveWorkflowInput(WorkflowIOData workflowInputData);
 
-    public boolean saveWorkflowOutput(String data,String experimentId,String nodeId,String workflowName);
+    public boolean saveWorkflowOutput(WorkflowIOData workflowOutputData);
+    
+    public List<WorkflowIOData> searchWorkflowInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx);
+
+    public List<WorkflowIOData> searchWorkflowOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx);
 }
