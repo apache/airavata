@@ -169,7 +169,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 				}
 
 			}
-
+            this.registry.saveWorkflowInput(xsul5.XmlConstants.BUILDER.serializeToString(elem), experimentId, node.getID(),this.workflowName);
 			// deal with the outputs
 
 			XmlElement outputs = elem.newElement("outputs");
@@ -195,7 +195,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 					outputParamElement.addChild("null");
 				}
 			}
-            this.registry.saveWorkflowData(xsul5.XmlConstants.BUILDER.serializeToString(elem),experimentId,node.getID());
+            this.registry.saveWorkflowOutput(xsul5.XmlConstants.BUILDER.serializeToString(outputs), experimentId, node.getID(),this.workflowName);
 		}
 	}
 }
