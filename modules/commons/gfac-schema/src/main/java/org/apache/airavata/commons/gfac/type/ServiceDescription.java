@@ -47,19 +47,41 @@ public class ServiceDescription implements Type {
         return serviceDescriptionType;
     }
 
-    public org.apache.airavata.schemas.gfac.Parameter[] getInputParameters() {
-        return this.serviceDescriptionType.getInputParametersArray();
+    public Parameter[] getInputParameters() {    	
+    	int length = this.serviceDescriptionType.getInputParametersArray().length;
+    	Parameter[] result = new Parameter[length];
+    	for (int i = 0; i < length; i++) {
+    		result[i] = new Parameter(this.serviceDescriptionType.getInputParametersArray(i));			
+		}
+        return result; 
     }
 
-    public void setInputParameters(org.apache.airavata.schemas.gfac.Parameter[] inputParameters) {
-        this.serviceDescriptionType.setInputParametersArray(inputParameters);
+    public void setInputParameters(Parameter[] inputParameters) {
+    	int length = inputParameters.length;
+    	org.apache.airavata.schemas.gfac.Parameter[] result = new org.apache.airavata.schemas.gfac.Parameter[length];
+    	for (int i = 0; i < length; i++) {
+    		result[i] = inputParameters[i].getParameterType();			
+		}
+    	
+        this.serviceDescriptionType.setInputParametersArray(result);
     }
 
-    public org.apache.airavata.schemas.gfac.Parameter[] getOutputParameters() {
-        return this.serviceDescriptionType.getOutputParametersArray();
+    public Parameter[] getOutputParameters() {
+    	int length = this.serviceDescriptionType.getOutputParametersArray().length;
+    	Parameter[] result = new Parameter[length];
+    	for (int i = 0; i < length; i++) {
+    		result[i] = new Parameter(this.serviceDescriptionType.getOutputParametersArray(i));			
+		}    	
+        return result;
     }
 
-    public void setOutputParameters(org.apache.airavata.schemas.gfac.Parameter[] outputParameters) {
-        this.serviceDescriptionType.setOutputParametersArray(outputParameters);
+    public void setOutputParameters(Parameter[] outputParameters) {
+    	int length = outputParameters.length;
+    	org.apache.airavata.schemas.gfac.Parameter[] result = new org.apache.airavata.schemas.gfac.Parameter[length];
+    	for (int i = 0; i < length; i++) {
+    		result[i] = outputParameters[i].getParameterType();			
+		}
+    	
+        this.serviceDescriptionType.setInputParametersArray(result);
     }
 }

@@ -49,6 +49,10 @@ public class Parameter implements Type {
     public void setDescription(String description) {
         this.parameterType.setDescription(description);
     }
+    
+    public org.apache.airavata.schemas.gfac.Parameter getParameterType(){
+    	return this.parameterType;
+    }
 
     // TODO
     public DataType getType() {
@@ -58,18 +62,4 @@ public class Parameter implements Type {
     public void setType(DataType type) {
         this.type = type;
     }
-
-	public String toXml() {
-		return parameterType.xmlText();
-	}
-
-	public Parameter fromXml(String xml) {
-		try {
-			this.parameterType = org.apache.airavata.schemas.gfac.Parameter.Factory
-					.parse(xml);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return this;
-	}
 }
