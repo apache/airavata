@@ -29,7 +29,7 @@ public class GramApplicationDeployment extends ShellApplicationDeployment {
 
     private GramApplicationDeploymentType gramApplicationDeploymentType;
 
-    private GramApplicationDeployment() {
+    public GramApplicationDeployment() {
         this.gramApplicationDeploymentType = GramApplicationDeploymentType.Factory.newInstance();
     }
 

@@ -28,7 +28,7 @@ public class GlobusHost extends HostDescription {
 
 	private GlobusHostType globusHostType;
 
-	private GlobusHost() {
+	public GlobusHost() {
 		this.globusHostType = GlobusHostType.Factory.newInstance();
 	}
 
