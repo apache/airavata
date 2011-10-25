@@ -14,7 +14,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.regex.Pattern;
 
-import javax.jcr.PathNotFoundException;
 import javax.swing.DefaultCellEditor;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -44,6 +43,7 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 
@@ -410,9 +410,7 @@ public class ServiceDescriptionDialog extends JDialog {
         ServiceDescription serviceDescription2 = null;
         try {
             serviceDescription2 = getRegistry().getServiceDescription(Pattern.quote(getServiceName()));
-        } catch (PathNotFoundException e) {
-            // what we want
-        } catch (Exception e) {
+        } catch (RegistryException e) {
             throw e;
         }
         if (serviceDescription2 != null) {

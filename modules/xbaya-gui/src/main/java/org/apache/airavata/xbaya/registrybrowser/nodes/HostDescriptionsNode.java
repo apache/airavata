@@ -10,7 +10,7 @@ import javax.swing.tree.TreeNode;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.appwrapper.HostDescriptionDialog;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.AddAction;
@@ -30,7 +30,7 @@ public class HostDescriptionsNode extends AbstractAiravataTreeNode {
     protected List<TreeNode> getChildren() {
         try {
             return getTreeNodeList(getHostDescriptions().getDescriptions().toArray(), this);
-        } catch (HostDescriptionRetrieveException e) {
+        } catch (RegistryException e) {
             e.printStackTrace();
             return emptyList();
         }

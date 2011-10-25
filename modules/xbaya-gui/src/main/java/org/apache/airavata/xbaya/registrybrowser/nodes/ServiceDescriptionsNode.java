@@ -10,7 +10,7 @@ import javax.swing.tree.TreeNode;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.appwrapper.ServiceDescriptionDialog;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.AddAction;
@@ -30,7 +30,7 @@ public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
     protected List<TreeNode> getChildren() {
         try {
             return getTreeNodeList(getServiceDescriptions().getDescriptions().toArray(), this);
-        } catch (ServiceDescriptionRetrieveException e) {
+        } catch (RegistryException e) {
             e.printStackTrace();
             return emptyList();
         }

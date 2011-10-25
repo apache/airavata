@@ -10,6 +10,7 @@ import javax.swing.tree.TreeNode;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.appwrapper.ApplicationDescriptionDialog;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.AddAction;
@@ -31,7 +32,7 @@ public class ApplicationDeploymentDescriptionsNode extends AbstractAiravataTreeN
     protected List<TreeNode> getChildren() {
         try {
             return getTreeNodeList(getApplicationDeploymentDescriptions().getDescriptions().toArray(), this);
-        } catch (DeploymentDescriptionRetrieveException e) {
+        } catch (RegistryException e) {
             e.printStackTrace();
             return emptyList();
         }

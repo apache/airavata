@@ -1,13 +1,10 @@
 package org.apache.airavata.xbaya.registrybrowser.model;
 
-import javax.jcr.PathNotFoundException;
-
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
-import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 
 public class ApplicationDeploymentDescriptionWrap {
     private ApplicationDeploymentDescription applicationDeploymentDescription;
@@ -35,7 +32,7 @@ public class ApplicationDeploymentDescriptionWrap {
         return service;
     }
 
-    public ServiceDescription getServiceDescription() throws PathNotFoundException, ServiceDescriptionRetrieveException {
+    public ServiceDescription getServiceDescription() throws RegistryException{
         return getRegistry().getServiceDescription(getService());
     }
 
@@ -47,7 +44,7 @@ public class ApplicationDeploymentDescriptionWrap {
         return host;
     }
 
-    public HostDescription getHostDescription() throws PathNotFoundException, HostDescriptionRetrieveException {
+    public HostDescription getHostDescription() throws RegistryException{
         return getRegistry().getHostDescription(getHost());
     }
 

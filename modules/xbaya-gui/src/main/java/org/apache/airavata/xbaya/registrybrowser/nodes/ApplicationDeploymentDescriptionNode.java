@@ -3,14 +3,13 @@ package org.apache.airavata.xbaya.registrybrowser.nodes;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.jcr.PathNotFoundException;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
@@ -65,8 +64,7 @@ public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNo
         return super.triggerAction(tree, action);
     }
 
-    private void deleteApplicationDescription(JTree tree) throws PathNotFoundException,
-            DeploymentDescriptionRetrieveException {
+    private void deleteApplicationDescription(JTree tree) throws RegistryException {
         if (askQuestion("Application description",
                 "Are you sure that you want to remove the application description \""
                         + getApplicationDeploymentDescriptionWrap().getDescription().getId() + "\"?")) {

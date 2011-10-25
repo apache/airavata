@@ -25,22 +25,22 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
-import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
-import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.registry.api.user.UserManager;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JCRComponentRegistry extends ComponentRegistry {
 
+    private static final Logger log = LoggerFactory.getLogger(JCRComponentRegistry.class);
     private static final String NAME = "JCR Components";
 
     private JCRRegistry registry;
@@ -84,12 +84,8 @@ public class JCRComponentRegistry extends ComponentRegistry {
                 JCRComponentReference jcr = new JCRComponentReference(serviceName, registry.getWSDL(serviceName));
                 tree.add(new ComponentTreeNode(jcr));
             }
-        } catch (PathNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ServiceDescriptionRetrieveException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (RegistryException e) {
+            log.error(e.getMessage(), e);
         }
 
         return tree;
@@ -123,23 +119,21 @@ public class JCRComponentRegistry extends ComponentRegistry {
         return registry.saveHostDescription(host);
     }
 
-    public List<HostDescription> searchHostDescription(String nameRegEx) throws HostDescriptionRetrieveException,
-            PathNotFoundException {
+    public List<HostDescription> searchHostDescription(String nameRegEx) throws RegistryException {
         return registry.searchHostDescription(nameRegEx);
     }
 
-    public HostDescription getHostDescription(String nameRegEx) throws HostDescriptionRetrieveException,
-            PathNotFoundException {
+    public HostDescription getHostDescription(String nameRegEx) throws RegistryException {
         return registry.getHostDescription(nameRegEx);
     }
 
     public List<ApplicationDeploymentDescription> searchApplicationDescription(String serviceName, String host)
-            throws HostDescriptionRetrieveException, PathNotFoundException, DeploymentDescriptionRetrieveException {
+            throws RegistryException {
         return registry.searchDeploymentDescription(serviceName, host);
     }
 
     public ApplicationDeploymentDescription getApplicationDescription(String serviceName, String host)
-            throws PathNotFoundException, DeploymentDescriptionRetrieveException {
+            throws RegistryException {
         return registry.getDeploymentDescription(serviceName, host);
     }
 
@@ -147,13 +141,11 @@ public class JCRComponentRegistry extends ComponentRegistry {
         return registry.saveServiceDescription(service);
     }
 
-    public ServiceDescription getServiceDescription(String serviceName) throws PathNotFoundException,
-            ServiceDescriptionRetrieveException {
+    public ServiceDescription getServiceDescription(String serviceName) throws RegistryException {
         return registry.getServiceDescription(serviceName);
     }
 
-    public List<ServiceDescription> searchServiceDescription(String serviceName)
-            throws ServiceDescriptionRetrieveException, PathNotFoundException {
+    public List<ServiceDescription> searchServiceDescription(String serviceName) throws RegistryException {
         return registry.searchServiceDescription(serviceName);
     }
 
