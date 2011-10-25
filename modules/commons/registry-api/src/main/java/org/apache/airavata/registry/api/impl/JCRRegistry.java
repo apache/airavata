@@ -48,7 +48,6 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
 import org.apache.airavata.commons.gfac.util.SchemaUtil;
@@ -60,9 +59,6 @@ import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.registry.api.user.UserManager;
 import org.apache.airavata.registry.api.util.WebServiceUtil;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.HostDescriptionType;
-import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -173,8 +169,8 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 				for (Value val : vals) {
 					Node host = session.getNodeByIdentifier(val.getString());
 					Property hostProp = host.getProperty(XML_PROPERTY_NAME);
-					result.add(new HostDescription(HostDescriptionType.Factory.parse(hostProp
-							.getString())));
+					result.add((HostDescription)SchemaUtil.parseFromXML(hostProp
+							.getString()));
 				}
 			}
 		} catch (Exception e) {
@@ -214,7 +210,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			Node serviceNode = getServiceNode(session);
 			Node node = serviceNode.getNode(serviceId);
 			Property prop = node.getProperty(XML_PROPERTY_NAME);
-			result = new ServiceDescription(ServiceDescriptionType.Factory.parse(prop.getString()));
+			result = (ServiceDescription)SchemaUtil.parseFromXML(prop.getString());
 		} catch (Exception e) {
 			throw new ServiceDescriptionRetrieveException(e);
 		} finally {
@@ -236,8 +232,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			for (; nodes.hasNext();) {
 				Node app = nodes.nextNode();
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
-				result = new ApplicationDeploymentDescription(ApplicationDeploymentDescriptionType.Factory.parse(prop
-						.getString()));
+				result = (ApplicationDeploymentDescription)SchemaUtil.parseFromXML(prop.getString());
 			}
 		} catch (Exception e) {
 			log.error("Cannot get Deployment Description", e);
@@ -289,7 +284,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		HostDescription result;
 		try {			
 			Property prop = node.getProperty(XML_PROPERTY_NAME);
-			result = new HostDescription(HostDescriptionType.Factory.parse(prop.getString()));
+			result = (HostDescription)SchemaUtil.parseFromXML(prop.getString());
 		} catch (Exception e) {
 			throw new HostDescriptionRetrieveException(e);
 		}
@@ -303,7 +298,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			session = getSession();
 			Node hostNode = getHostNode(session);
 			Node node = getOrAddNode(hostNode, host.getId());
-			node.setProperty(XML_PROPERTY_NAME, host.toXml());
+			node.setProperty(XML_PROPERTY_NAME, SchemaUtil.toXML(host));
 			session.save();
 
 			result = node.getIdentifier();
@@ -325,7 +320,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			session = getSession();
 			Node serviceNode = getServiceNode(session);
 			Node node = getOrAddNode(serviceNode, service.getId());
-			node.setProperty(XML_PROPERTY_NAME, service.toXml());
+			node.setProperty(XML_PROPERTY_NAME, SchemaUtil.toXML(service));
 			session.save();
 
 			result = node.getIdentifier();
@@ -350,7 +345,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			Node serviceNode = getOrAddNode(deployNode, serviceId);
 			Node hostNode = getOrAddNode(serviceNode, hostId);
 			Node appName = getOrAddNode(hostNode, app.getId());
-			appName.setProperty(XML_PROPERTY_NAME, app.toXml());
+			appName.setProperty(XML_PROPERTY_NAME, SchemaUtil.toXML(app));
 			session.save();
 
 			result = appName.getIdentifier();
@@ -417,7 +412,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			for (; nodes.hasNext();) {
 				Node service = nodes.nextNode();
 				Property prop = service.getProperty(XML_PROPERTY_NAME);
-				result.add(new ServiceDescription().fromXml(prop.getString()));
+				result.add((ServiceDescription)SchemaUtil.parseFromXML(prop.getString()));
 			}
 		} catch (Exception e) {
 			new ServiceDescriptionRetrieveException(e);
@@ -469,7 +464,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 					for (; nodes.hasNext();) {
 						Node app = nodes.nextNode();
 						Property prop = app.getProperty(XML_PROPERTY_NAME);
-						result.put(new ApplicationDeploymentDescription().fromXml(prop.getString()), serviceNode.getName()
+						result.put((ApplicationDeploymentDescription)SchemaUtil.parseFromXML(prop.getString()), serviceNode.getName()
 								+ "$" + hostNode.getName());
 					}
 				}
@@ -495,7 +490,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			for (; nodes.hasNext();) {
 				Node app = nodes.nextNode();
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
-				ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription().fromXml(prop.getString());
+				ApplicationDeploymentDescription appDesc = (ApplicationDeploymentDescription)SchemaUtil.parseFromXML(prop.getString());
 				if (appDesc.getId().matches(applicationName)) {
 					app.remove();
 				}
@@ -522,7 +517,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			for (; nodes.hasNext();) {
 				Node app = nodes.nextNode();
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
-				ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription().fromXml(prop.getString());
+				ApplicationDeploymentDescription appDesc = (ApplicationDeploymentDescription)SchemaUtil.parseFromXML(prop.getString());
 				if (appDesc.getId().matches(applicationName)) {
 					result.add(appDesc);
 				}
@@ -548,7 +543,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			for (; nodes.hasNext();) {
 				Node app = nodes.nextNode();
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
-				result.add(new ApplicationDeploymentDescription().fromXml(prop.getString()));
+				result.add((ApplicationDeploymentDescription)SchemaUtil.parseFromXML(prop.getString()));
 			}
 		} catch (Exception e) {
 			throw new DeploymentDescriptionRetrieveException(e);

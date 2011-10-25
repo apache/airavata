@@ -24,8 +24,6 @@ package org.apache.airavata.registry.api.impl;
 import static org.junit.Assert.fail;
 
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.registry.api.impl.JCRRegistry;
-import org.apache.airavata.schemas.gfac.HostDescriptionDocument;
 import org.junit.Test;
 
 public class JCRRegistryTest {
@@ -59,6 +57,7 @@ public class JCRRegistryTest {
             }
           
         }catch(Exception e){
+            e.printStackTrace();
         	fail(e.getMessage());
         }
     }
