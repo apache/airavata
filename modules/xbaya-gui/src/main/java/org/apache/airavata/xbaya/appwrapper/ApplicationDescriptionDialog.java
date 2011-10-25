@@ -30,9 +30,9 @@ import javax.swing.SwingConstants;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.apache.airavata.xbaya.gui.XBayaLinkButton;
 
 public class ApplicationDescriptionDialog extends JDialog implements ActionListener {
@@ -45,7 +45,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     private JTextField txtTempDir;
 
     private Registry registry;
-    private ShellApplicationDeployment shellApplicationDescription;
+    private ApplicationDeploymentDescription shellApplicationDescription;
     private JLabel lblError;
     private boolean applcationDescCreated = false;
     private JButton okButton;
@@ -84,7 +84,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                     while (true) {
                         boolean notFound = true;
                         for (ApplicationDeploymentDescription deploymentDescription : applicationDescriptions) {
-                            if (deploymentDescription.getId().equals(defaultName)) {
+                            if (deploymentDescription.getType().getName().equals(defaultName)) {
                                 notFound = false;
                                 break;
                             }
@@ -420,7 +420,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         try {
             List<ServiceDescription> serviceDescriptions = getRegistry().searchServiceDescription("");
             for (ServiceDescription serviceDescription : serviceDescriptions) {
-                cmbServiceName.addItem(serviceDescription.getId());
+                cmbServiceName.addItem(serviceDescription.getType().getName());
             }
         } catch (Exception e) {
             setError(e.getLocalizedMessage());
@@ -434,10 +434,10 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         try {
             List<HostDescription> hostDescriptions = getRegistry().searchHostDescription(".*");
             for (HostDescription hostDescription : hostDescriptions) {
-                if (hostDescription.getId() == null) {
-                    cmbHostName.addItem(hostDescription.getAddress());
+                if (hostDescription.getType().getName() == null) {
+                    cmbHostName.addItem(hostDescription.getType().getAddress());
                 } else {
-                    cmbHostName.addItem(hostDescription.getId());
+                    cmbHostName.addItem(hostDescription.getType().getName());
                 }
             }
         } catch (Exception e) {
@@ -446,37 +446,41 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         updateHostName();
     }
 
-    public ShellApplicationDeployment getShellApplicationDescription() {
+    public ApplicationDeploymentDescription getShellApplicationDescription() {
         if (shellApplicationDescription == null) {
-            shellApplicationDescription = new ShellApplicationDeployment();
+            shellApplicationDescription = new ApplicationDeploymentDescription(ShellApplicationDeploymentType.type);
         }
         return shellApplicationDescription;
     }
 
+    public ShellApplicationDeploymentType getShellApplicationDescriptionType() {
+    	return (ShellApplicationDeploymentType)getShellApplicationDescription().getType();
+    }
+    
     public String getApplicationName() {
-        return getShellApplicationDescription().getId();
+        return getShellApplicationDescriptionType().getName();
     }
 
     public void setApplicationName(String applicationName) {
-        getShellApplicationDescription().setId(applicationName);
+    	getShellApplicationDescriptionType().setName(applicationName);
         updateDialogStatus();
     }
 
     public String getExecutablePath() {
-        return getShellApplicationDescription().getExecutable();
+        return getShellApplicationDescriptionType().getExecutable();
     }
 
     public void setExecutablePath(String executablePath) {
-        getShellApplicationDescription().setExecutable(executablePath);
+    	getShellApplicationDescriptionType().setExecutable(executablePath);
         updateDialogStatus();
     }
 
     public String getTempDir() {
-        return getShellApplicationDescription().getTmpDir();
+        return getShellApplicationDescriptionType().getTmpDir();
     }
 
     public void setTempDir(String tempDir) {
-        getShellApplicationDescription().setTmpDir(tempDir);
+    	getShellApplicationDescriptionType().setTmpDir(tempDir);
         updateDialogStatus();
     }
 

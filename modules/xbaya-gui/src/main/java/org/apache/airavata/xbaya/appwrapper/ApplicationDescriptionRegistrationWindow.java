@@ -21,8 +21,6 @@
 
 package org.apache.airavata.xbaya.appwrapper;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.DefaultComboBoxModel;
@@ -33,7 +31,7 @@ import javax.swing.JPanel;
 
 import org.apache.airavata.common.utils.NameValidator;
 import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.commons.gfac.type.app.ShellApplicationDeployment;
+import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
@@ -319,9 +317,10 @@ public class ApplicationDescriptionRegistrationWindow {
             if (!this.procsCountTextField.getText().equals("")) {
                 pCount = new Integer(Integer.parseInt(this.procsCountTextField.getText()));
             }
-
-            ShellApplicationDeployment shellApplicationDeployment = new ShellApplicationDeployment();
-            shellApplicationDeployment.setId(StringUtil.trimSpaceInString(this.applicationNameTextField.getText()));
+            ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(ShellApplicationDeploymentType.type);
+            
+            ShellApplicationDeploymentType shellApplicationDeployment = (ShellApplicationDeploymentType) appDesc.getType();
+            shellApplicationDeployment.setName(StringUtil.trimSpaceInString(this.applicationNameTextField.getText()));
             shellApplicationDeployment.setExecutable(StringUtil.trimSpaceInString(this.executableTextField.getText()));
             shellApplicationDeployment
                     .setWorkingDir(StringUtil.trimSpaceInString(this.workDirectoryTextField.getText()));
@@ -349,7 +348,7 @@ public class ApplicationDescriptionRegistrationWindow {
 
             /*--- save to registry ---*/
             this.engine.getConfiguration().getJcrComponentRegistry()
-                    .saveDeploymentDescription(projectName, hostName, shellApplicationDeployment);
+                    .saveDeploymentDescription(projectName, hostName, appDesc);
         } catch (Exception e) {
             e.printStackTrace();
             this.hide();
