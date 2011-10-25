@@ -155,8 +155,6 @@ public class WorkflowInterpreter {
 
     private boolean isoffline = false;
 
-    private boolean actOnProvenance;
-
 	private PredicatedTaskRunner provenanceWriter;
 
     public WorkflowInterpreter(XBayaConfiguration configuration, String topic, Workflow workflow, String username,
@@ -213,7 +211,7 @@ public class WorkflowInterpreter {
      * @param workflow
      */
     public WorkflowInterpreter(XBayaEngine engine, String topic, Workflow workflow) {
-        this(engine, topic, workflow, false, true);
+        this(engine, topic, workflow, false);
     }
 
     /**
@@ -226,7 +224,7 @@ public class WorkflowInterpreter {
      * @param subWorkflow
      * @param actOnProvenance
      */
-    public WorkflowInterpreter(XBayaEngine engine, String topic, Workflow workflow, boolean subWorkflow, boolean actOnProvenance) {
+    public WorkflowInterpreter(XBayaEngine engine, String topic, Workflow workflow, boolean subWorkflow) {
         this.engine = engine;
         this.configuration = engine.getConfiguration();
         this.myProxyChecker = new MyProxyChecker(this.engine);
@@ -240,7 +238,7 @@ public class WorkflowInterpreter {
         }
         this.topic = topic;
         // testing
-		actOnProvenance = true;
+
 		this.actOnProvenance = actOnProvenance;
 		if (this.actOnProvenance) {
 			provenanceWriter = new PredicatedTaskRunner(1);
@@ -306,8 +304,11 @@ public class WorkflowInterpreter {
                         // want
                         // recalculate the execution stack
                     }
-                    if (this.actOnProvenance) {
+                    if (this.configuration.isProvenanceSmartRun()) {
                         readProvenance(node);
+                    }
+                    if (this.configuration.isCollectProvenance()) {
+                        writeProvenanceLater(node);
                     }
 
                     executeDynamically(node);
@@ -392,6 +393,9 @@ public class WorkflowInterpreter {
      * @throws MonitorException
      */
     public void cleanup() throws MonitorException {
+        if(this.configuration.isCollectProvenance()){
+            this.provenanceWriter.shutDown();
+        }
         if (this.mode == GUI_MODE) {
             this.engine.getMonitor().stop();
             this.engine.getGUI().removeDynamicExecutionToolsFromToolbar();
@@ -1331,9 +1335,7 @@ public class WorkflowInterpreter {
 			}
 
 			Object result = new ProvenanceReader().read(node.getID(), inputs);
-			if(null ==result){
-				writeProvenanceLater(node);
-			}else{
+			if(result != null){
 				SystemComponentInvoker invoker = new SystemComponentInvoker();
 				invoker.addOutput(node.getID(), result);
 				this.invokerMap.put(node, invoker);
