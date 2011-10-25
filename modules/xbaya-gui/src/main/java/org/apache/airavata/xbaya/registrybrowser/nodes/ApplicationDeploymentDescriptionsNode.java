@@ -84,7 +84,7 @@ public class ApplicationDeploymentDescriptionsNode extends AbstractAiravataTreeN
                     .getDescriptions();
             for (ApplicationDeploymentDescriptionWrap descriptionWrap : descriptions) {
                 registry.deleteDeploymentDescription(descriptionWrap.getService(), descriptionWrap.getHost(),
-                        descriptionWrap.getDescription().getId());
+                        descriptionWrap.getDescription().getType().getName());
             }
             refresh();
             reloadTreeNode(tree, this);

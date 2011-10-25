@@ -80,7 +80,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
         try {
             List<ServiceDescription> services = this.registry.searchServiceDescription("");
             for (ServiceDescription serviceDescription : services) {
-                String serviceName = serviceDescription.getId();
+                String serviceName = serviceDescription.getType().getName();
                 JCRComponentReference jcr = new JCRComponentReference(serviceName, registry.getWSDL(serviceName));
                 tree.add(new ComponentTreeNode(jcr));
             }

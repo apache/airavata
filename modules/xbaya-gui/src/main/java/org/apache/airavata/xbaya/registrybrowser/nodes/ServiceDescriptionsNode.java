@@ -81,7 +81,7 @@ public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
             Registry registry = getRegistry();
             List<ServiceDescription> descriptions = getServiceDescriptions().getDescriptions();
             for (ServiceDescription descriptionWrap : descriptions) {
-                registry.deleteServiceDescription(descriptionWrap.getId());
+                registry.deleteServiceDescription(descriptionWrap.getType().getName());
             }
             refresh();
             reloadTreeNode(tree, this);
