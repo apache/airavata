@@ -239,8 +239,8 @@ public class WorkflowInterpreter {
         this.topic = topic;
         // testing
 
-		this.actOnProvenance = actOnProvenance;
-		if (this.actOnProvenance) {
+
+		if (this.configuration.isCollectProvenance()) {
 			provenanceWriter = new PredicatedTaskRunner(1);
 		}
 
