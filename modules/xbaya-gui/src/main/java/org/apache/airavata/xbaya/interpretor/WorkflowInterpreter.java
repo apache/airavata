@@ -566,7 +566,7 @@ public class WorkflowInterpreter {
         }
 
         if (this.mode == GUI_MODE) {
-            new WorkflowInterpreter(this.engine, this.topic, subWorkflow, true, true).scheduleDynamically();
+            new WorkflowInterpreter(this.engine, this.topic, subWorkflow, true).scheduleDynamically();
         } else {
             new WorkflowInterpreter(this.configuration, this.topic, subWorkflow, this.username, this.password)
                     .scheduleDynamically();
