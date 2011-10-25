@@ -76,18 +76,4 @@ public class ApplicationDeploymentDescription implements Type {
 	public void setOutputDir(String outputDir) {
 		this.appDeploymentDescType.setOutputDir(outputDir);
 	}
-
-	public String toXml() {
-		return appDeploymentDescType.xmlText();
-	}
-
-	public ApplicationDeploymentDescription fromXml(String xml) {
-		try {
-			this.appDeploymentDescType = ApplicationDeploymentDescriptionType.Factory
-					.parse(xml);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		return this;
-	}
 }
