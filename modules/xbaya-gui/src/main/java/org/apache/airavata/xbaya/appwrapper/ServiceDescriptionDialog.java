@@ -435,10 +435,6 @@ public class ServiceDescriptionDialog extends JDialog {
     }
 
     public void saveServiceDescription() {
-        getServiceDescription().setInputParameters(
-                ServiceDescriptionType.Factory.newInstance().getInputParametersArray());
-        getServiceDescription().setOutputParameters(
-                ServiceDescriptionType.Factory.newInstance().getOutputParametersArray());
         for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
             Parameter parameter = Parameter.Factory.newInstance();
             String parameterName = (String) defaultTableModel.getValueAt(i, 1);
