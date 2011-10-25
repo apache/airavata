@@ -19,4 +19,4 @@
 
 . `dirname $0`/setenv.sh
 java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
-    org.apache.airavata.xbaya.XBaya 
+    org.apache.airavata.xbaya.XBaya $* 
