@@ -23,10 +23,8 @@ package org.apache.airavata.xbaya.experiment.gui;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.commons.gfac.util.*;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.gui.TableRenderable;
 
