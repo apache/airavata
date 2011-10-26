@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
 
 /**
@@ -49,7 +50,7 @@ public class ParameterContextImpl implements MessageContext<ActualParameter> {
 
     public String getStringValue(String name) {
         if (this.value.containsKey(name))
-            return this.value.get(name).toXML();
+            return MappingFactory.toString(this.value.get(name));
         else
             return null;
     }
