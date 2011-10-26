@@ -27,17 +27,18 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
+import org.apache.xmlbeans.XmlException;
 
 public class OutputUtils {
 
     private OutputUtils() {
     }
 
-    public static Map<String, ?> fillOutputFromStdout(MessageContext<AbstractParameter> outMessage, String stdout) {
+    public static Map<String, ?> fillOutputFromStdout(MessageContext<ActualParameter> outMessage, String stdout) throws XmlException{
 
-        Map<String, AbstractParameter> result = new HashMap<String, AbstractParameter>();
+        Map<String, ActualParameter> result = new HashMap<String, ActualParameter>();
 
         for (Iterator<String> iterator = outMessage.getNames(); iterator.hasNext();) {
             String parameterName = iterator.next();
@@ -46,10 +47,8 @@ public class OutputUtils {
             if (outMessage.getValue(parameterName) == null) {
                 continue;
             }
-
-            AbstractParameter x = outMessage.getValue(parameterName);
-            x.parseStringVal(parseStdout(stdout, parameterName));
-            result.put(parameterName, x);
+            
+            result.put(parameterName, ActualParameter.fromXML(parseStdout(stdout, parameterName)));
         }
         return result;
     }

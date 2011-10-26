@@ -25,40 +25,40 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
 
 /**
  * This class contains actual parameters in service invocation.
  */
-public class ParameterContextImpl implements MessageContext<AbstractParameter> {
+public class ParameterContextImpl implements MessageContext<ActualParameter> {
 
-    private Map<String, AbstractParameter> value;
+    private Map<String, ActualParameter> value;
 
     public ParameterContextImpl() {
-        this.value = new HashMap<String, AbstractParameter>();
+        this.value = new HashMap<String, ActualParameter>();
     }
 
     public Iterator<String> getNames() {
         return this.value.keySet().iterator();
     }
 
-    public AbstractParameter getValue(String name) {
+    public ActualParameter getValue(String name) {
         return this.value.get(name);
     }
 
     public String getStringValue(String name) {
         if (this.value.containsKey(name))
-            return this.value.get(name).toStringVal();
+            return this.value.get(name).toXML();
         else
             return null;
     }
 
-    public void add(String name, AbstractParameter value) {
+    public void add(String name, ActualParameter value) {
         this.value.put(name, value);
     }
 
-    public void setValue(String name, AbstractParameter value) {
+    public void setValue(String name, ActualParameter value) {
         this.value.put(name, value);
     }
 

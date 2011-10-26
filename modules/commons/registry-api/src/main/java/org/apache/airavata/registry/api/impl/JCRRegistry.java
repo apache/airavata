@@ -46,11 +46,10 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.Value;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
-import org.apache.airavata.commons.gfac.util.SchemaUtil;
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.DataRegistry;
 import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
@@ -688,7 +687,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		this.userManager = userManager;
 	}
 
-	public String saveOutput(String workflowId, List<AbstractParameter> parameters) {
+	public String saveOutput(String workflowId, List<ActualParameter> parameters) {
 		Session session = null;
 		String result = null;
 		try {
@@ -697,7 +696,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 					OUTPUT_NODE_NAME);
 			Node node = getOrAddNode(outputNode, workflowId);
 			for (int i = 0; i < parameters.size(); i++) {
-				node.setProperty(String.valueOf(i), SchemaUtil.toXML(parameters.get(i)));
+				node.setProperty(String.valueOf(i), parameters.get(i).toXML());
 			}
 
 			session.save();
@@ -714,9 +713,9 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		return result;
 	}
 
-	public List<AbstractParameter> loadOutput(String workflowId) {
+	public List<ActualParameter> loadOutput(String workflowId) {
 		Session session = null;
-		ArrayList<AbstractParameter> result = new ArrayList<AbstractParameter>();
+		ArrayList<ActualParameter> result = new ArrayList<ActualParameter>();
 		try {
 			session = getSession();
 			Node outputNode = getOrAddNode(session.getRootNode(),
@@ -726,7 +725,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			PropertyIterator it = node.getProperties();
 			while (it.hasNext()) {
 				Property prop = (Property) it.next();
-				result.add((AbstractParameter)SchemaUtil.parseFromXML(prop.getString()));
+				result.add(ActualParameter.fromXML(prop.getString()));
 			}
 		} catch (Exception e) {
 			System.out.println(e);

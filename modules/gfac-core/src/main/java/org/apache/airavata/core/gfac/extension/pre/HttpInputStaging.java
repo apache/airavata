@@ -31,9 +31,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
 
-import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
-import org.apache.airavata.commons.gfac.type.parameter.FileParameter;
-import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
@@ -44,6 +42,8 @@ import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.external.GridFtp;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.FileParameter;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
@@ -63,19 +63,19 @@ public class HttpInputStaging extends PreExecuteChain {
     public boolean execute(InvocationContext context) throws ExtensionException {
 
         try {
-            MessageContext<AbstractParameter> inputContext = context.getInput();
+            MessageContext<ActualParameter> inputContext = context.getInput();
 
             if (inputContext != null) {
 
                 for (Iterator<String> iterator = inputContext.getNames(); iterator.hasNext();) {
                     String key = iterator.next();
-                    if (ParameterFactory.getInstance().hasType(inputContext.getValue(key).getType(), "File")) {
-                        FileParameter fileParameter = (FileParameter) inputContext.getValue(key);
+                    if (inputContext.getValue(key).hasType(DataType.FILE)) {
+                        FileParameter fileParameter = (FileParameter) inputContext.getValue(key).getType();
 
                         /*
                          * Determine scheme
                          */
-                        URI uri = URI.create(fileParameter.toStringVal());
+                        URI uri = URI.create(fileParameter.getValue());
                         if (uri.getScheme().equalsIgnoreCase("http")) {                            
                             /*
                              * Desctination complete URI
@@ -98,7 +98,7 @@ public class HttpInputStaging extends PreExecuteChain {
                             /*
                              * Replace parameter
                              */
-                            fileParameter.parseStringVal(destFilePath);
+                            fileParameter.setValue(destFilePath);
                         }
                     }
                 }

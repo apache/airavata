@@ -38,7 +38,7 @@ import net.schmizz.sshj.transport.TransportException;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 import net.schmizz.sshj.xfer.scp.SCPFileTransfer;
 
-import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.security.impl.SSHSecurityContextImpl;
 import org.apache.airavata.core.gfac.exception.GfacException;
@@ -49,6 +49,7 @@ import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.InputUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
+import org.apache.xmlbeans.XmlException;
 
 /**
  * Execute application using remote SSH
@@ -244,8 +245,10 @@ public class SSHProvider extends AbstractProvider {
             String stdOutStr = GfacUtils.readFileToString(localStdOutFile.getAbsolutePath());
             String stdErrStr = GfacUtils.readFileToString(localStdErrFile.getAbsolutePath());
 
-            return OutputUtils.fillOutputFromStdout(context.<AbstractParameter> getOutput(), stdOutStr);
-
+            return OutputUtils.fillOutputFromStdout(context.<ActualParameter> getOutput(), stdOutStr);
+            
+        } catch (XmlException e){
+            throw new ProviderException("Cannot read output:" + e.getMessage(), e);
         } catch (ConnectionException e) {
             throw new ProviderException(e.getMessage(), e);
         } catch (TransportException e) {

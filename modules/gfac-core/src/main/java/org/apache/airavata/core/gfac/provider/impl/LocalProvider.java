@@ -33,8 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.provider.AbstractProvider;
@@ -44,6 +43,7 @@ import org.apache.airavata.core.gfac.utils.InputUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
+import org.apache.xmlbeans.XmlException;
 
 /**
  * {@link LocalProvider} will execute jobs (application) on local machine.
@@ -219,7 +219,9 @@ public class LocalProvider extends AbstractProvider {
             String stdOutStr = GfacUtils.readFileToString(app.getStdOut());
 
             // set to context
-            return OutputUtils.fillOutputFromStdout(context.<AbstractParameter> getOutput(), stdOutStr);
+            return OutputUtils.fillOutputFromStdout(context.<ActualParameter> getOutput(), stdOutStr);
+        } catch (XmlException e){
+            throw new ProviderException("Cannot read output:" + e.getMessage(), e);
         } catch (IOException io) {
             throw new ProviderException(io.getMessage(), io);
         }
