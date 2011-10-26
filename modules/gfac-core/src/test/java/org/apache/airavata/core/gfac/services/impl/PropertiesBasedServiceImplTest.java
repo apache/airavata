@@ -26,11 +26,10 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
-import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
@@ -38,6 +37,7 @@ import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.registry.api.impl.JCRRegistry;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.StringParameter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -120,19 +120,17 @@ public class PropertiesBasedServiceImplTest {
 
 			/*
 			 * Input
-			 */
+			 */			
 			ParameterContextImpl input = new ParameterContextImpl();
-			AbstractParameter echo_input = ParameterFactory.getInstance()
-					.createActualParameter("String");
-			echo_input.parseStringVal("echo_output=hello");
+			ActualParameter echo_input = new ActualParameter();
+			((StringParameter)echo_input.getType()).setValue("echo_output=<value>hello</value>");
 			input.add("echo_input", echo_input);
 
 			/*
 			 * Output
 			 */
 			ParameterContextImpl output = new ParameterContextImpl();
-			AbstractParameter echo_output = ParameterFactory.getInstance()
-					.createActualParameter("String");
+			ActualParameter echo_output = new ActualParameter();
 			output.add("echo_output", echo_output);
 
 			// parameter
@@ -145,8 +143,8 @@ public class PropertiesBasedServiceImplTest {
 
 			Assert.assertNotNull(ct.getOutput());
 			Assert.assertNotNull(ct.getOutput().getValue("echo_output"));
-			Assert.assertEquals("hello", ((AbstractParameter) ct.getOutput()
-					.getValue("echo_output")).toStringVal());
+			Assert.assertEquals("hello", ((StringParameter) ct.getOutput()
+					.getValue("echo_output")).getValue());
 
 		} catch (Exception e) {
 			e.printStackTrace();

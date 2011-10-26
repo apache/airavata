@@ -31,12 +31,8 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
-import org.apache.airavata.commons.gfac.type.Parameter;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
-import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
@@ -47,6 +43,8 @@ import org.apache.airavata.core.gfac.notification.impl.WorkflowTrackingNotificat
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.schemas.gfac.Parameter;
+import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.services.gfac.axis2.GFacService;
 import org.apache.airavata.services.gfac.axis2.util.GFacServiceOperations;
@@ -71,15 +69,6 @@ import org.apache.axis2.util.Utils;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.io.StringReader;
-import java.net.URI;
-import java.util.Iterator;
-import java.util.List;
 
 public class GFacMessageReciever implements MessageReceiver {
 
@@ -189,22 +178,19 @@ public class GFacMessageReciever implements MessageReceiver {
             ParameterContextImpl inputParam = new ParameterContextImpl();
             ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
 
-            List<org.apache.airavata.schemas.gfac.Parameter> newInputs = null;
+            List<Parameter> newInputs = null;
             for (int i = 0; i < serviceDescriptionType.getInputParametersArray().length; i++) {
                 newInputs.add(serviceDescriptionType.getInputParametersArray(i));
             }
 
-            for (org.apache.airavata.schemas.gfac.Parameter parameter : newInputs) {
+            for (Parameter parameter : newInputs) {
                 OMElement element = input.getFirstChildWithName(new QName(parameter.getName()));
 
                 if (element == null) {
                     throw new Exception("Parameter is not found in the message");
                 }
 
-                AbstractParameter param = ParameterFactory.getInstance().createActualParameter(
-                        parameter.getType().getType().toString());
-                param.parseStringVal(element.getText());
-                inputParam.add(parameter.getName(), param);
+                inputParam.add(parameter.getName(), ActualParameter.fromXML(element.getText()));
             }
 
             /*
@@ -212,15 +198,14 @@ public class GFacMessageReciever implements MessageReceiver {
              */
             ParameterContextImpl outputParam = new ParameterContextImpl();
 
-            List<org.apache.airavata.schemas.gfac.Parameter> newOutputs = null;
+            List<Parameter> newOutputs = null;
             for (int i = 0; i < serviceDescriptionType.getOutputParametersArray().length; i++) {
                 newOutputs.add(serviceDescriptionType.getOutputParametersArray(i));
             }
 
             // List<Parameter> outputs = serviceDescription.getOutputParameters();
-            for (org.apache.airavata.schemas.gfac.Parameter parameter : newOutputs) {
-                outputParam.add(parameter.getName(),
-                        ParameterFactory.getInstance().createActualParameter(parameter.getType().getType().toString()));
+            for (Parameter parameter : newOutputs) {
+                outputParam.add(parameter.getName(), new ActualParameter(parameter.getType().schemaType()));
             }
 
             invocationContext.setInput(inputParam);
@@ -240,12 +225,11 @@ public class GFacMessageReciever implements MessageReceiver {
             outputElement = fac.createOMElement("invokeResponse", omNs);
 
             ParameterContextImpl paramContext = (ParameterContextImpl) invocationContext
-                    .<AbstractParameter> getMessageContext("output");
+                    .<ActualParameter> getMessageContext("output");
             for (Iterator<String> iterator = paramContext.getNames(); iterator.hasNext();) {
                 String name = iterator.next();
                 OMElement ele = fac.createOMElement(name, omNs);
-                ele.addAttribute("type", paramContext.getValue(name).getType().toString(), omNs);
-                ele.setText(paramContext.getValue(name).toStringVal());
+                ele.setText(paramContext.getValue(name).toXML());
                 outputElement.addChild(ele);
             }
 

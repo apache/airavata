@@ -27,9 +27,7 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.Iterator;
 
-import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
-import org.apache.airavata.commons.gfac.type.parameter.FileParameter;
-import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
@@ -40,6 +38,8 @@ import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.external.GridFtp;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.FileParameter;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
@@ -58,19 +58,20 @@ public class GridFtpOutputStaging extends PostExecuteChain {
 
     public boolean execute(InvocationContext context) throws ExtensionException {
         try {
-            MessageContext<AbstractParameter> outputContext = context.getOutput();
+            MessageContext<ActualParameter> outputContext = context.getOutput();
 
             if (outputContext != null) {
 
                 for (Iterator<String> iterator = outputContext.getNames(); iterator.hasNext();) {
                     String key = iterator.next();
-                    if (ParameterFactory.getInstance().hasType(outputContext.getValue(key).getType(), "File")) {
-                        FileParameter fileParameter = (FileParameter) outputContext.getValue(key);
-
+                    
+                    if (outputContext.getValue(key).hasType(DataType.FILE)) {
+                        FileParameter fileParameter = (FileParameter) outputContext.getValue(key).getType();                        
+                        
                         /*
                          * Determine scheme
                          */
-                        URI uri = URI.create(fileParameter.toStringVal());
+                        URI uri = URI.create(fileParameter.getValue());
                         if (uri.getScheme().equalsIgnoreCase(GridFtp.GSIFTP_SCHEME)) {
                             
 

@@ -38,11 +38,10 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import org.apache.airavata.commons.gfac.type.DataType;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.commons.gfac.type.parameter.ParameterFactory;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 
@@ -217,7 +216,7 @@ public class ServiceDescriptionDialog extends JDialog {
         ioColumn.setCellEditor(new StringArrayComboBoxEditor(ioStringList));
 
         TableColumn datatypeColumn = tblParameters.getColumnModel().getColumn(2);
-        DataType[] dataTypeStringList = getDataTypes();
+        String[] dataTypeStringList = getDataTypes();
         datatypeColumn.setCellEditor(new StringArrayComboBoxEditor(dataTypeStringList));
 
         TableColumn parameterNameCol = tblParameters.getColumnModel().getColumn(1);
@@ -293,8 +292,13 @@ public class ServiceDescriptionDialog extends JDialog {
         return ioStringList;
     }
 
-    private DataType[] getDataTypes() {
-        return ParameterFactory.getInstance().listDataTypes().toArray(new DataType[] {});
+    private String[] getDataTypes() {
+        String[] type = new String[DataType.Enum.table.lastInt()];
+        for (int i = 1; i <= DataType.Enum.table.lastInt(); i++) 
+        {
+            type[i-1] = DataType.Enum.forInt(i).toString();
+        }        
+        return type;
     }
 
     public boolean isServiceCreated() {

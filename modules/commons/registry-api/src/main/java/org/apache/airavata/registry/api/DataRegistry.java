@@ -23,7 +23,7 @@ package org.apache.airavata.registry.api;
 
 import java.util.List;
 
-import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 
 public interface DataRegistry {
 
@@ -34,7 +34,7 @@ public interface DataRegistry {
      * @param parameters
      * @return
      */
-    public String saveOutput(String workflowId, List<AbstractParameter> parameters);
+    public String saveOutput(String workflowId, List<ActualParameter> parameters);
 
     /**
      * Load output from workflow execution.
@@ -42,6 +42,6 @@ public interface DataRegistry {
      * @param workflowId
      * @return List of parameters
      */
-    public List<AbstractParameter> loadOutput(String workflowId);
+    public List<ActualParameter> loadOutput(String workflowId);
 
 }

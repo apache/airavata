@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.airavata.commons.gfac.type.parameter.AbstractParameter;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.message.impl.WorkflowContextImpl;
@@ -45,7 +45,7 @@ public class OutputRegister extends PostExecuteChain {
 
     public boolean execute(InvocationContext context) throws ExtensionException {
         // output context
-        MessageContext<AbstractParameter> outputContext = context.getOutput();
+        MessageContext<ActualParameter> outputContext = context.getOutput();
 
         // workflow context
         MessageContext<String> workflowContext = context.getMessageContext(WorkflowContextImpl.WORKFLOW_CONTEXT_NAME);
@@ -56,7 +56,7 @@ public class OutputRegister extends PostExecuteChain {
         if (outputContext != null && workflowContext != null) {
 
             String workflowId = workflowContext.getValue(WorkflowContextImpl.WORKFLOW_ID);
-            List<AbstractParameter> outputs = new ArrayList<AbstractParameter>();
+            List<ActualParameter> outputs = new ArrayList<ActualParameter>();
 
             for (Iterator<String> iterator = outputContext.getNames(); iterator.hasNext();) {
                 String key = iterator.next();
