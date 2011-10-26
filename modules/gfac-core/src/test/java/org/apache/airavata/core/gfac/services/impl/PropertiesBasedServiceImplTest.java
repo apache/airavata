@@ -62,8 +62,10 @@ public class PropertiesBasedServiceImplTest {
 		/*
 		 * App
 		 */
-		ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(ShellApplicationDeploymentType.type);
-		ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) appDesc.getType();
+		ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(
+				ShellApplicationDeploymentType.type);
+		ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) appDesc
+				.getType();
 		app.setName("EchoLocal");
 		app.setExecutable("/bin/echo");
 		app.setTmpDir("/tmp");
@@ -80,7 +82,7 @@ public class PropertiesBasedServiceImplTest {
 		ServiceDescription serv = new ServiceDescription();
 		serv.getType().setName("SimpleEcho");
 
-        Parameter input = Parameter.Factory.newInstance();
+		Parameter input = Parameter.Factory.newInstance();
 		input.setName("echo_input");
 		input.addNewType();
 		List<Parameter> inputList = new ArrayList<Parameter>();
@@ -102,9 +104,11 @@ public class PropertiesBasedServiceImplTest {
 		 * Save to registry
 		 */
 		jcrRegistry.saveHostDescription(host);
-		jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host.getType().getName(), appDesc);
+		jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host
+				.getType().getName(), appDesc);
 		jcrRegistry.saveServiceDescription(serv);
-		jcrRegistry.deployServiceOnHost(serv.getType().getName(), host.getType().getName());
+		jcrRegistry.deployServiceOnHost(serv.getType().getName(), host
+				.getType().getName());
 	}
 
 	@Test
@@ -122,15 +126,15 @@ public class PropertiesBasedServiceImplTest {
 			 * Input
 			 */			
 			ParameterContextImpl input = new ParameterContextImpl();
-			ActualParameter echo_input = new ActualParameter();
-			((StringParameter)echo_input.getType()).setValue("echo_output=<value>hello</value>");
+			ActualParameter echo_input = new ActualParameter(StringParameter.type);
+			((StringParameter)echo_input.getType()).setValue("echo_output=hello");
 			input.add("echo_input", echo_input);
 
 			/*
 			 * Output
 			 */
 			ParameterContextImpl output = new ParameterContextImpl();
-			ActualParameter echo_output = new ActualParameter();
+			ActualParameter echo_output = new ActualParameter(StringParameter.type);
 			output.add("echo_output", echo_output);
 
 			// parameter
@@ -143,8 +147,7 @@ public class PropertiesBasedServiceImplTest {
 
 			Assert.assertNotNull(ct.getOutput());
 			Assert.assertNotNull(ct.getOutput().getValue("echo_output"));
-			Assert.assertEquals("hello", ((StringParameter) ct.getOutput()
-					.getValue("echo_output")).getValue());
+			Assert.assertEquals("hello", ((StringParameter)((ActualParameter)ct.getOutput().getValue("echo_output")).getType()).getValue());
 
 		} catch (Exception e) {
 			e.printStackTrace();

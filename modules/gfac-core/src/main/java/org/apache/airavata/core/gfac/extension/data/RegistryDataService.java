@@ -81,7 +81,7 @@ public class RegistryDataService extends DataServiceChain {
             /*
              * Stdout and Stderr for Shell
              */
-            if (appDesc.getClass().isAssignableFrom(ShellApplicationDeploymentType.class)) {
+            if (ShellApplicationDeploymentType.class.isAssignableFrom(appDesc.getClass())) {
             	ShellApplicationDeploymentType shell = (ShellApplicationDeploymentType) appDesc;
                 if (shell.getStdOut() == null) {
                     shell.setStdOut(appDesc.getWorkingDir() + File.separator + appDesc.getName() + ".stdout");

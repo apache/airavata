@@ -28,6 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.xmlbeans.XmlException;
 
@@ -48,7 +49,9 @@ public class OutputUtils {
                 continue;
             }
             
-            result.put(parameterName, ActualParameter.fromXML(parseStdout(stdout, parameterName)));
+            ActualParameter actual = outMessage.getValue(parameterName);
+            MappingFactory.fromString(actual, parseStdout(stdout, parameterName));
+            result.put(parameterName, actual);
         }
         return result;
     }
