@@ -19,22 +19,30 @@
  *
  */
 
-package org.apache.airavata.workflow.tracking.tests.impl.publish;
+package org.apache.airavata.test.suite.workflowtracking.tests;
 
-import org.apache.airavata.workflow.tracking.types.BaseNotificationType;
-import org.apache.airavata.workflow.tracking.types.WorkflowInitializedDocument;
-import org.apache.xmlbeans.XmlCursor;
+import org.apache.airavata.workflow.tracking.client.LeadNotificationManager;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-public class Test {
-    public static void main(String[] args) {
-        WorkflowInitializedDocument activity = WorkflowInitializedDocument.Factory.newInstance();
-        BaseNotificationType activityType = activity.addNewWorkflowInitialized();
+public class LeadNotificationManagerTest {
 
-        XmlCursor c = activity.newCursor();
-        c.toNextToken();
-
-        System.out.println(c.getObject().getClass());
-
-        System.out.println(((BaseNotificationType) c.getObject()).getDescription());
+    @Before
+    public void setUp() throws Exception {
     }
+
+    @After
+    public void tearDown() throws Exception {
+    }
+
+    @Test
+    public final void testGetBrokerPublishEPR() {
+
+        String endpointRefAsStr = LeadNotificationManager.getBrokerPublishEPR("http://brokerurl", "testtopic");
+
+        System.out.println(endpointRefAsStr);
+
+    }
+
 }

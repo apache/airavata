@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.workflow.tracking.tests.messagebox;
+package org.apache.airavata.test.suite.workflowtracking.tests.messagebox;
 
 import java.rmi.RemoteException;
 
@@ -27,7 +27,7 @@ import org.apache.airavata.workflow.tracking.client.Callback;
 import org.apache.airavata.workflow.tracking.client.LeadNotificationManager;
 import org.apache.airavata.workflow.tracking.client.NotificationType;
 import org.apache.airavata.workflow.tracking.client.Subscription;
-import org.apache.airavata.workflow.tracking.tests.ThreadMessagePassingCallback;
+import org.apache.airavata.test.suite.workflowtracking.tests.ThreadMessagePassingCallback;
 import org.apache.xmlbeans.XmlObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

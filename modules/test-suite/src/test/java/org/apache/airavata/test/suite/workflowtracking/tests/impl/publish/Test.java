@@ -19,8 +19,22 @@
  *
  */
 
-package org.apache.airavata.workflow.tracking.tests.util;
+package org.apache.airavata.test.suite.workflowtracking.tests.impl.publish;
 
-public class CommonUtils {
-    public static final String WORKFLOW_INITIALIZED_NOTIFICATION = "<wor:workflowInitialized xmlns:wor=\"http://lead.extreme.indiana.edu/namespaces/2006/06/workflow_tracking\"><wor:notificationSource wor:serviceID=\"http://tempuri.org/workflow1\" /><wor:timestamp>2006-06-04T00:53:41.296-04:00</wor:timestamp></wor:workflowInitialized>";
+import org.apache.airavata.workflow.tracking.types.BaseNotificationType;
+import org.apache.airavata.workflow.tracking.types.WorkflowInitializedDocument;
+import org.apache.xmlbeans.XmlCursor;
+
+public class Test {
+    public static void main(String[] args) {
+        WorkflowInitializedDocument activity = WorkflowInitializedDocument.Factory.newInstance();
+        BaseNotificationType activityType = activity.addNewWorkflowInitialized();
+
+        XmlCursor c = activity.newCursor();
+        c.toNextToken();
+
+        System.out.println(c.getObject().getClass());
+
+        System.out.println(((BaseNotificationType) c.getObject()).getDescription());
+    }
 }

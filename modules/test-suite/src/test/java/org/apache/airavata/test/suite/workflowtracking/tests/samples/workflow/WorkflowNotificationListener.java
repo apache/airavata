@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.workflow.tracking.tests.samples.workflow;
+package org.apache.airavata.test.suite.workflowtracking.tests.samples.workflow;
 
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -29,7 +29,7 @@ import org.apache.airavata.workflow.tracking.client.Callback;
 import org.apache.airavata.workflow.tracking.client.LeadNotificationManager;
 import org.apache.airavata.workflow.tracking.client.NotificationType;
 import org.apache.airavata.workflow.tracking.client.Subscription;
-import org.apache.airavata.workflow.tracking.tests.util.TestConfigKeys;
+import org.apache.airavata.test.suite.workflowtracking.tests.util.TestConfigKeys;
 import org.apache.airavata.workflow.tracking.types.WorkflowTerminatedDocument;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;

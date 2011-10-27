@@ -19,19 +19,20 @@
  *
  */
 
-package org.apache.airavata.workflow.tracking.tests.messagebox.restart;
+package org.apache.airavata.test.suite.workflowtracking.tests.messagebox;
 
 import java.io.StringReader;
 import java.net.URL;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.apache.airavata.commons.WorkFlowUtils;
 import org.apache.airavata.workflow.tracking.client.Callback;
 import org.apache.airavata.workflow.tracking.client.LeadNotificationManager;
 import org.apache.airavata.workflow.tracking.client.NotificationType;
 import org.apache.airavata.workflow.tracking.client.Subscription;
-import org.apache.airavata.workflow.tracking.tests.util.CommonUtils;
-import org.apache.airavata.workflow.tracking.tests.util.TestConfigKeys;
+import org.apache.airavata.test.suite.workflowtracking.tests.util.CommonUtils;
+import org.apache.airavata.test.suite.workflowtracking.tests.util.TestConfigKeys;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
@@ -41,21 +42,24 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MessageBoxClientRestartTest extends TestCase {
+public class MessagePullerTest extends TestCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(MessageBoxClientRestartTest.class);
-    private static final String TOPIC = "RestartclientTopic2";
-    private boolean wait = true;
+    private static final Logger logger = LoggerFactory.getLogger(MessagePullerTest.class);
     static Properties configs = new Properties();
     String BROKER_URL;
     String MESSAGEBOX_URL;
     int consumerPort;
-    public static final int NOTIFICATIONS_PUBLISHED = 4;
-    public static final int NUMBER_OF_SUBSCRIBERS = 4;
+    public static final String TEST_TOPIC = "3a9c7b20-0475-11db-ba88-b61b57d3be03";
+    private static final String MESSAGE_BOX_ID = UUID.randomUUID().toString();
+    public static int count = 0;
+    public int messages = 10;
+    public static Object mutex = new Object();
+
+    Subscription sub;
+    String AXIS_REPO;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -73,59 +77,64 @@ public class MessageBoxClientRestartTest extends TestCase {
         BROKER_URL = configs.getProperty(TestConfigKeys.BROKER_EVENTING_SERVICE_EPR);
         MESSAGEBOX_URL = configs.getProperty(TestConfigKeys.MSGBOX_SERVICE_EPR);
         consumerPort = Integer.parseInt(configs.getProperty(TestConfigKeys.CONSUMER_PORT));
-
     }
 
     @After
     public void tearDown() throws Exception {
     }
 
-    @Test
-    public void testRestart() throws Exception {
+    private boolean wait = true;
+
+    public void testMessagePulling() throws Exception {
         Subscription subscription = null;
 
-        MessageBoxCreateThread thread = new MessageBoxCreateThread(BROKER_URL, MESSAGEBOX_URL, TOPIC);
-        thread.start();
+        Callback testCallback1 = new Callback() {
+            public void deliverMessage(String topic, NotificationType type, XmlObject messageObj) {
+                System.out.println("Notification Received, notification of type:" + type);
+                // assertEquals(type, NotificationType.WorkflowInitialized);
+                wait = false;
+            }
+        };
 
-        Thread.sleep(100);
-        thread.stop();
+        subscription = LeadNotificationManager.createMessageBoxSubscription(MESSAGEBOX_URL, BROKER_URL, TEST_TOPIC,
+                null, testCallback1);
 
-        Thread.sleep(5000);
+        System.out.println(subscription.getMessageBoxEPR());
+        System.out.println(subscription.getSubscriptionID());
 
-        System.out.println("bringing down the Puller\n Publishing Messages");
         WseMsgBrokerClient client = new WseMsgBrokerClient();
         client.init(BROKER_URL);
 
         OMElement msg = WorkFlowUtils.reader2OMElement(new StringReader(CommonUtils.WORKFLOW_INITIALIZED_NOTIFICATION));
 
-        client.publish(TOPIC, msg);
+        client.publish(TEST_TOPIC, msg);
 
-        System.out.println("Messages published");
-        System.out.println("Creating another puller");
-        EndpointReference epr = thread.getWsaEndpointReference();
-        String subscriptionID = thread.getSubscriptionID();
-        String topic = thread.getTopic();
-        System.out.println(epr);
-        System.out.println(subscriptionID);
+        EndpointReference MSG_BOX_EPR = subscription.getMessageBoxEPR();
+        System.out.println(MSG_BOX_EPR);
+        String subscriptionID = subscription.getSubscriptionID();
+        Callback testCallback2 = new Callback() {
 
-        subscription = LeadNotificationManager.startListeningToSavedSubscription(BROKER_URL, epr, subscriptionID,
-                topic, null, new Callback() {
+            public void deliverMessage(String topic, NotificationType type, XmlObject messageObj) {
 
-                    public void deliverMessage(String topic, NotificationType type, XmlObject messageObj) {
+                System.out.println("Notification Received, notification of type:" + type);
+                // This assertion is wrong because type and NotificationType.WorkflowInitialized are two different types
+                // assertEquals(type, NotificationType.WorkflowInitialized);
+                wait = false;
 
-                        System.out.println("Notification Received, notification of type:" + type);
-                        System.out.println("Topic[" + topic + "]");
-                        // assertEquals(type, NotificationType.WorkflowInitialized);
-                        wait = false;
-
-                    }
-                }, false);
+            }
+        };
+        subscription = LeadNotificationManager.startListeningToSavedSubscription(BROKER_URL, MSG_BOX_EPR,
+                subscriptionID, TEST_TOPIC, null, testCallback2, true);
 
         System.out.println(subscription.getMessageBoxEPR());
 
         while (wait) {
+
             Thread.sleep(1000);
 
         }
+
+        System.out.println("MessagePuller test completed");
+        subscription.destroy();
     }
 }
