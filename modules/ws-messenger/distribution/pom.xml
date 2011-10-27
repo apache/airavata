@@ -54,7 +54,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>${archieve.name}-${version}</finalName>
+                            <finalName>${archieve.name}-${project.version}</finalName>
                             <descriptors>
                                 <descriptor>src/main/assembly/bin-assembly.xml</descriptor>
                             </descriptors>

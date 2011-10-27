@@ -54,7 +54,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>${archieve.name}-${version}</finalName>
+                            <finalName>${archieve.name}-${project.version}</finalName>
                             <descriptors>
                                 <descriptor>src/main/assembly/bin-assembly.xml</descriptor>
                             </descriptors>
@@ -110,10 +110,6 @@
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-server</artifactId>
             <version>${jackrabbit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>xsul</groupId>
-            <artifactId>xsul</artifactId>
         </dependency>
         <dependency>
             <groupId>xsul5-ogce</groupId>
@@ -199,11 +195,6 @@
             <groupId>gfac</groupId>
             <artifactId>gfac-schema-utils</artifactId>
             <version>0.4.3</version>
-        </dependency>
-        <dependency>
-            <groupId>lead-security</groupId>
-            <artifactId>cryptix32</artifactId>
-            <version>versionless</version>
         </dependency>
         <dependency>
             <groupId>lead-security</groupId>

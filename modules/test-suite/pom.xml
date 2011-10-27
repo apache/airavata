@@ -148,6 +148,7 @@
                 <configuration>
                     <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
                 </configuration>
+                <version>${surefire.version}</version>
             </plugin>
         </plugins>
     </build>
