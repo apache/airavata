@@ -59,7 +59,7 @@ public class GSISecurityContext implements SecurityContext {
                     gssCredentails = proxyRenewer.renewProxy();
                 } else if (myproxyUserName != null && myproxyPasswd != null && myproxyServer != null) {
                     this.proxyRenewer = new MyProxyManager(myproxyUserName, myproxyPasswd, MyProxy.MYPROXY_SERVER_PORT,
-                            myproxyLifetime, myproxyServer);
+                            myproxyLifetime, myproxyServer,trustedCertLoc);
                     log.info("loaded credentails from Proxy server");
                     gssCredentails = this.proxyRenewer.renewProxy();
                 }
@@ -68,6 +68,14 @@ public class GSISecurityContext implements SecurityContext {
         } catch (Exception e) {
             throw new SecurityException(e.getMessage(), e);
         }
+    }
+
+    public String getTrustedCertLoc() {
+        return trustedCertLoc;
+    }
+
+    public void setTrustedCertLoc(String trustedCertLoc) {
+        this.trustedCertLoc = trustedCertLoc;
     }
 
     public String getMyproxyUserName() {
