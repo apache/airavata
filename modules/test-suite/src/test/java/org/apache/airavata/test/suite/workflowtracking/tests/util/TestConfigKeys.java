@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.workflow.tracking.tests.util;
+package org.apache.airavata.test.suite.workflowtracking.tests.util;
 
 public class TestConfigKeys {
     public final static String CONFIG_FILE_NAME = "unit_test.properties";

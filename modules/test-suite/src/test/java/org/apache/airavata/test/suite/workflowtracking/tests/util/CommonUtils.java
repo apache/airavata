@@ -19,30 +19,8 @@
  *
  */
 
-package org.apache.airavata.workflow.tracking.tests;
+package org.apache.airavata.test.suite.workflowtracking.tests.util;
 
-import org.apache.airavata.workflow.tracking.client.LeadNotificationManager;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-public class LeadNotificationManagerTest {
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
-    @Test
-    public final void testGetBrokerPublishEPR() {
-
-        String endpointRefAsStr = LeadNotificationManager.getBrokerPublishEPR("http://brokerurl", "testtopic");
-
-        System.out.println(endpointRefAsStr);
-
-    }
-
+public class CommonUtils {
+    public static final String WORKFLOW_INITIALIZED_NOTIFICATION = "<wor:workflowInitialized xmlns:wor=\"http://lead.extreme.indiana.edu/namespaces/2006/06/workflow_tracking\"><wor:notificationSource wor:serviceID=\"http://tempuri.org/workflow1\" /><wor:timestamp>2006-06-04T00:53:41.296-04:00</wor:timestamp></wor:workflowInitialized>";
 }

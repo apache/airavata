@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.workflow.tracking.tests.samples.workflow;
+package org.apache.airavata.test.suite.workflowtracking.tests.samples.workflow;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URI;

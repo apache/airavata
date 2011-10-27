@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.workflow.tracking.tests.messagebox.restart;
+package org.apache.airavata.test.suite.workflowtracking.tests.messagebox.restart;
 
 import org.apache.airavata.workflow.tracking.client.Callback;
 import org.apache.airavata.workflow.tracking.client.LeadNotificationManager;

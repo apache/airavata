@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.workflow.tracking.tests.samples.workflow;
+package org.apache.airavata.test.suite.workflowtracking.tests.samples.workflow;
 
 /**
  * Simple test that generates notifications from the perspective of an application (e.g. Jython script or web service)

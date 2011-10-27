@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.workflow.tracking.tests.impl.publish;
+package org.apache.airavata.test.suite.workflowtracking.tests.impl.publish;
 
 import java.io.IOException;
 

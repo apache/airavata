@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.workflow.tracking.tests;
+package org.apache.airavata.test.suite.workflowtracking.tests;
 
 public interface ThreadMessagePassingCallback {
 

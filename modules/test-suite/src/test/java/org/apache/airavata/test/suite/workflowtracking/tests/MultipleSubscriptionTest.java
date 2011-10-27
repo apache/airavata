@@ -19,14 +19,14 @@
  *
  */
 
-package org.apache.airavata.workflow.tracking.tests;
+package org.apache.airavata.test.suite.workflowtracking.tests;
 
 import java.net.URL;
 import java.util.Properties;
 
-import org.apache.airavata.workflow.tracking.tests.util.CommonUtils;
-import org.apache.airavata.workflow.tracking.tests.util.SubscriberThread;
-import org.apache.airavata.workflow.tracking.tests.util.TestConfigKeys;
+import org.apache.airavata.test.suite.workflowtracking.tests.util.CommonUtils;
+import org.apache.airavata.test.suite.workflowtracking.tests.util.SubscriberThread;
+import org.apache.airavata.test.suite.workflowtracking.tests.util.TestConfigKeys;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.xmlbeans.impl.tool.XSTCTester.TestCase;
 import org.junit.After;
