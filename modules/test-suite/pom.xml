@@ -32,6 +32,13 @@
             <artifactId>cog-jglobus</artifactId>
             <version>1.8.0_1</version>
         </dependency>
+<dependency>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-transport-local</artifactId>
+                <version>${axis2.version}</version>
+                <scope>compile</scope>
+            </dependency>
+
         <dependency>
             <groupId>cog-4_1_6_rc2</groupId>
             <artifactId>puretls</artifactId>
