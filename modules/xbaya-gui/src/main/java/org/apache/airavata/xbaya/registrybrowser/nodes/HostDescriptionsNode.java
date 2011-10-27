@@ -81,7 +81,7 @@ public class HostDescriptionsNode extends AbstractAiravataTreeNode {
             Registry registry = getRegistry();
             List<HostDescription> descriptions = getHostDescriptions().getDescriptions();
             for (HostDescription descriptionWrap : descriptions) {
-                registry.deleteHostDescription(descriptionWrap.getType().getName());
+                registry.deleteHostDescription(descriptionWrap.getType().getHostName());
             }
             refresh();
             reloadTreeNode(tree, this);

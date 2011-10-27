@@ -30,7 +30,7 @@ public class HostDescriptionNode extends AbstractAiravataTreeNode {
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return getHostDescription().getType().getName();
+        return getHostDescription().getType().getHostName();
     }
 
     @Override
@@ -64,8 +64,8 @@ public class HostDescriptionNode extends AbstractAiravataTreeNode {
 
     private void deleteHostDescription(JTree tree) throws RegistryException {
         if (askQuestion("Host description", "Are you sure that you want to remove the host description \""
-                + getHostDescription().getType().getName() + "\"?")) {
-            getRegistry().deleteHostDescription(getHostDescription().getType().getName());
+                + getHostDescription().getType().getHostName() + "\"?")) {
+            getRegistry().deleteHostDescription(getHostDescription().getType().getHostName());
             ((AbstractAiravataTreeNode) getParent()).refresh();
             reloadTreeNode(tree, getParent());
         }
