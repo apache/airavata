@@ -21,6 +21,7 @@
 package org.apache.airavata.common.workflow.execution.context;
 
 import org.apache.airavata.common.utils.XMLUtil;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -33,8 +34,6 @@ public class WorkflowContextHeaderBuilderTest {
 
         try {
             File testFile = new File(this.getClass().getClassLoader().getResource("result.xml").getPath());
-            System.out.println(XMLUtil.xmlElementToString(XMLUtil.xmlElement3ToXmlElement5(builder.getXml())));
-            System.out.println(XMLUtil.xmlElementToString(XMLUtil.loadXML(testFile)));
             org.junit.Assert.assertTrue(XMLUtil.isEqual(XMLUtil.loadXML(testFile),
                     XMLUtil.xmlElement3ToXmlElement5(builder.getXml())));
         } catch (Exception e) {
