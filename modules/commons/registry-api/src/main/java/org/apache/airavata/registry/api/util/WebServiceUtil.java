@@ -82,6 +82,7 @@ public class WebServiceUtil {
     }
 
     private static void generateElementFromType(Parameter parameter, StringBuilder builder) {
+    	/*
         String type = parameter.getType().getType().toString();
         if (type.equals("String")) {
             builder.append("<xs:element minOccurs=\"0\" name=\"");
@@ -109,7 +110,7 @@ public class WebServiceUtil {
             // builder.append(parameter.getName());
             // builder.append("\"  nillable=\"true\" type=\"ax22:File\"/>");
         }
-
+	*/
     }
 
 }

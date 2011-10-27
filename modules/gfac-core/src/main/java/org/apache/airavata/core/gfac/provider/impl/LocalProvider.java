@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.InputUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.apache.xmlbeans.XmlException;
 
 /**
@@ -104,17 +105,17 @@ public class LocalProvider extends AbstractProvider {
     public void makeDirectory(InvocationContext invocationContext) throws ProviderException {
         ApplicationDeploymentDescriptionType app = invocationContext.getExecutionDescription().getApp().getType();
 
-        log.info("working diectroy = " + app.getWorkingDir());
-        log.info("temp directory = " + app.getTmpDir());
+        log.info("working diectroy = " + app.getStaticWorkingDirectory());
+        log.info("temp directory = " + app.getScratchWorkingDirectory());
 
-        makeFileSystemDir(app.getWorkingDir());
-        makeFileSystemDir(app.getTmpDir());
-        makeFileSystemDir(app.getInputDir());
-        makeFileSystemDir(app.getOutputDir());
+        makeFileSystemDir(app.getStaticWorkingDirectory());
+        makeFileSystemDir(app.getScratchWorkingDirectory());
+        makeFileSystemDir(app.getInputDataDirectory());
+        makeFileSystemDir(app.getOutputDataDirectory());
     }
 
     public void setupEnvironment(InvocationContext context) throws ProviderException {
-        ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
+        ApplicationDeploymentDescriptionType app = context.getExecutionDescription().getApp().getType();
 
         // input parameter
         ArrayList<String> tmp = new ArrayList<String>();
@@ -128,32 +129,35 @@ public class LocalProvider extends AbstractProvider {
         /*
          * Builder Command
          */
-        cmdList.add(app.getExecutable());
+        cmdList.add(app.getExecutableLocation());
         cmdList.addAll(tmp);
 
         // create process builder from command
         this.builder = new ProcessBuilder(cmdList);
 
         // get the env of the host and the application
-        ShellApplicationDeploymentType.Env.Entry[] env = app.getEnv().getEntryArray();
+        NameValuePairType[] env = app.getApplicationEnvironmentArray();
 
-        Map<String, String> nv = null;
-        for (int i = 0; i < env.length; i++) {
-            String key = app.getEnv().getEntryArray(i).getKey();
-            String value = app.getEnv().getEntryArray(i).getValue();
-            nv.put(key, value);
-        }
+        if (env != null) {
+            Map<String, String> nv = new HashMap<String, String>();
+            for (int i = 0; i < env.length; i++) {
+                String key = env[i].getName();
+                String value = env[i].getValue();
+                nv.put(key, value);
+            }
 
-        if ((app.getEnv() != null) && (app.getEnv().getEntryArray().length != 0)) {
-            builder.environment().putAll(nv);
+            if ((app.getApplicationEnvironmentArray() != null) && (app.getApplicationEnvironmentArray().length != 0)
+                    && nv.size() > 0) {
+                builder.environment().putAll(nv);
+            }
         }
 
         // extra env's
-        builder.environment().put(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());
-        builder.environment().put(GFacConstants.OUTPUT_DATA_DIR_VAR_NAME, app.getOutputDir());
+        builder.environment().put(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDataDirectory());
+        builder.environment().put(GFacConstants.OUTPUT_DATA_DIR_VAR_NAME, app.getOutputDataDirectory());
 
         // working directory
-        builder.directory(new File(app.getWorkingDir()));
+        builder.directory(new File(app.getStaticWorkingDirectory()));
 
         // log info
         log.info("Command = " + InputUtils.buildCommand(cmdList));
@@ -164,14 +168,14 @@ public class LocalProvider extends AbstractProvider {
     }
 
     public void executeApplication(InvocationContext context) throws ProviderException {
-    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
+        ApplicationDeploymentDescriptionType app = context.getExecutionDescription().getApp().getType();
 
         try {
             // running cmd
             Process process = builder.start();
 
-            Thread t1 = new ReadStreamWriteFile(process.getInputStream(), app.getStdOut());
-            Thread t2 = new ReadStreamWriteFile(process.getErrorStream(), app.getStdErr());
+            Thread t1 = new ReadStreamWriteFile(process.getInputStream(), app.getStandardOutput());
+            Thread t2 = new ReadStreamWriteFile(process.getErrorStream(), app.getStandardError());
 
             // start output threads
             t1.setDaemon(true);
@@ -198,8 +202,8 @@ public class LocalProvider extends AbstractProvider {
 
             StringBuffer buf = new StringBuffer();
             buf.append("Executed ").append(InputUtils.buildCommand(cmdList))
-                    .append(" on the localHost, working directory = ").append(app.getWorkingDir())
-                    .append(" tempDirectory = ").append(app.getTmpDir()).append(" With the status ")
+                    .append(" on the localHost, working directory = ").append(app.getStaticWorkingDirectory())
+                    .append(" tempDirectory = ").append(app.getScratchWorkingDirectory()).append(" With the status ")
                     .append(String.valueOf(returnValue));
 
             log.info(buf.toString());
@@ -213,14 +217,14 @@ public class LocalProvider extends AbstractProvider {
 
     public Map<String, ?> processOutput(InvocationContext context) throws ProviderException {
 
-    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
+        ApplicationDeploymentDescriptionType app = context.getExecutionDescription().getApp().getType();
 
         try {
-            String stdOutStr = GfacUtils.readFileToString(app.getStdOut());
+            String stdOutStr = GfacUtils.readFileToString(app.getStandardOutput());
 
             // set to context
             return OutputUtils.fillOutputFromStdout(context.<ActualParameter> getOutput(), stdOutStr);
-        } catch (XmlException e){
+        } catch (XmlException e) {
             throw new ProviderException("Cannot read output:" + e.getMessage(), e);
         } catch (IOException io) {
             throw new ProviderException(io.getMessage(), io);

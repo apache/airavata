@@ -39,10 +39,9 @@ import org.apache.airavata.core.gfac.external.GridFtp;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.FileParameter;
+import org.apache.airavata.schemas.gfac.FileParameterType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
-import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +65,7 @@ public class GridFtpInputStaging extends PreExecuteChain {
                 for (Iterator<String> iterator = inputContext.getNames(); iterator.hasNext();) {
                     String key = iterator.next();
                     if (inputContext.getValue(key).hasType(DataType.FILE)) {
-                        FileParameter fileParameter = (FileParameter) inputContext.getValue(key).getType();
+                        FileParameterType fileParameter = (FileParameterType) inputContext.getValue(key).getType();
 
                         /*
                          * Determine scheme
@@ -81,14 +80,12 @@ public class GridFtpInputStaging extends PreExecuteChain {
                             String destFilePath = file.getName();
 
                             ApplicationDeploymentDescriptionType app = context.getExecutionDescription().getApp().getType();
-                            if (app instanceof ShellApplicationDeploymentType) {
-                                destFilePath = app.getInputDir() + File.separator + destFilePath;
-                            }
+                            destFilePath = app.getInputDataDirectory() + File.separator + destFilePath;
 
                             HostDescriptionType hostDescription = context.getExecutionDescription().getHost().getType();
                             if (hostDescription instanceof GlobusHostType) {
                                 gridFTPTransfer(context, uri, destFilePath);
-                            } else if (GfacUtils.isLocalHost(hostDescription.getAddress())) {
+                            } else if (GfacUtils.isLocalHost(hostDescription.getHostAddress())) {
                                 downloadFile(context, uri, destFilePath);
                             }
 
@@ -121,8 +118,16 @@ public class GridFtpInputStaging extends PreExecuteChain {
         GSSCredential gssCred = ((GSISecurityContext) context.getSecurityContext(MYPROXY_SECURITY_CONTEXT))
                 .getGssCredentails();
         GlobusHostType host = (GlobusHostType) context.getExecutionDescription().getHost().getType();
-        URI inputURI = GfacUtils.createGsiftpURI(host.getGridFTPEndPoint(), remoteFile);
-        ftp.transfer(src, inputURI, gssCred, true);
+        
+        for (String endpoint : host.getGridFTPEndPointArray()) {
+            try {
+                URI inputURI = GfacUtils.createGsiftpURI(endpoint, remoteFile);
+                ftp.transfer(src, inputURI, gssCred, true);
+                return;
+            } catch (ToolsException e) {
+                log.error(e.getMessage(), e);
+            }
+        }        
     }
 
     private void downloadFile(InvocationContext context, URI src, String localFile) throws SecurityException,

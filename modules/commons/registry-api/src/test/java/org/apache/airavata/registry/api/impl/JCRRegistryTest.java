@@ -29,7 +29,10 @@ import java.util.List;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.Parameter;
+import org.apache.xmlbeans.XmlString;
 import org.junit.Test;
 
 public class JCRRegistryTest {
@@ -52,14 +55,14 @@ public class JCRRegistryTest {
              * Host
              */
             HostDescription host = new HostDescription();
-            host.getType().setName(hostId);
-            host.getType().setAddress(address);
+            host.getType().setHostName(hostId);
+            host.getType().setHostAddress(address);
 
             jcrRegistry.saveHostDescription(host);
 
             HostDescription hostR = jcrRegistry.getHostDescription(hostId);
 
-            if (!(hostR.getType().getName().equals(hostId) && hostR.getType().getAddress().equals(address))) {
+            if (!(hostR.getType().getHostName().equals(hostId) && hostR.getType().getHostAddress().equals(address))) {
                 fail("Save and Load Host Description Fail with Different Value");
             }
             
@@ -67,16 +70,17 @@ public class JCRRegistryTest {
              * Test for polymorphism
              */
             HostDescription globus = new HostDescription(GlobusHostType.type);
-            globus.getType().setName(hostId2);
-            globus.getType().setAddress(address);
+            globus.getType().setHostName(hostId2);
+            globus.getType().setHostAddress(address);
             
-            ((GlobusHostType)globus.getType()).setGridFTPEndPoint("xxxxxxx");
+            XmlString point = ((GlobusHostType)globus.getType()).addNewGridFTPEndPoint();
+            point.setStringValue("xxxxxxx");           
 
             jcrRegistry.saveHostDescription(globus);
 
             HostDescription hg = jcrRegistry.getHostDescription(hostId2);
 
-            if (!(hg.getType().getName().equals(hostId2) && hg.getType().getAddress().equals(address))) {
+            if (!(hg.getType().getHostName().equals(hostId2) && hg.getType().getHostAddress().equals(address))) {
                 fail("Save and Load Host Description Fail with Different Value");
             }
             
@@ -101,21 +105,19 @@ public class JCRRegistryTest {
             ServiceDescription serv = new ServiceDescription();
             serv.getType().setName(serviceId);
 
-            Parameter input = Parameter.Factory.newInstance();
-    		input.setName("echo_input");
-    		input.addNewType();
-    		List<Parameter> inputList = new ArrayList<Parameter>();
+            InputParameterType input = InputParameterType.Factory.newInstance();
+    		input.setParameterName("echo_input");
+    		List<InputParameterType> inputList = new ArrayList<InputParameterType>();
     		inputList.add(input);
-    		Parameter[] inputParamList = inputList.toArray(new Parameter[inputList
+    		InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList
     				.size()]);
 
-    		Parameter output = Parameter.Factory.newInstance();
-    		output.setName("echo_output");
-    		output.addNewType();
-    		List<Parameter> outputList = new ArrayList<Parameter>();
+    		OutputParameterType output = OutputParameterType.Factory.newInstance();
+    		output.setParameterName("echo_output");
+    		List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
     		outputList.add(output);
-    		Parameter[] outputParamList = outputList
-    				.toArray(new Parameter[outputList.size()]);
+    		OutputParameterType[] outputParamList = outputList
+    				.toArray(new OutputParameterType[outputList.size()]);
     		serv.getType().setInputParametersArray(inputParamList);
     		serv.getType().setOutputParametersArray(outputParamList);
 

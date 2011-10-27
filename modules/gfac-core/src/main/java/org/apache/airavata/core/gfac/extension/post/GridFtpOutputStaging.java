@@ -39,10 +39,9 @@ import org.apache.airavata.core.gfac.external.GridFtp;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.FileParameter;
+import org.apache.airavata.schemas.gfac.FileParameterType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
-import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,16 +63,15 @@ public class GridFtpOutputStaging extends PostExecuteChain {
 
                 for (Iterator<String> iterator = outputContext.getNames(); iterator.hasNext();) {
                     String key = iterator.next();
-                    
+
                     if (outputContext.getValue(key).hasType(DataType.FILE)) {
-                        FileParameter fileParameter = (FileParameter) outputContext.getValue(key).getType();                        
-                        
+                        FileParameterType fileParameter = (FileParameterType) outputContext.getValue(key).getType();
+
                         /*
                          * Determine scheme
                          */
                         URI uri = URI.create(fileParameter.getValue());
                         if (uri.getScheme().equalsIgnoreCase(GridFtp.GSIFTP_SCHEME)) {
-                            
 
                             /*
                              * src complete URI
@@ -81,15 +79,14 @@ public class GridFtpOutputStaging extends PostExecuteChain {
                             File file = new File(uri.getPath());
                             String srcFilePath = file.getName();
 
-                            ApplicationDeploymentDescriptionType app = context.getExecutionDescription().getApp().getType();
-                            if (app instanceof ShellApplicationDeploymentType) {
-                                srcFilePath = app.getOutputDir() + File.separator + srcFilePath;
-                            }
+                            ApplicationDeploymentDescriptionType app = context.getExecutionDescription().getApp()
+                                    .getType();
+                            srcFilePath = app.getOutputDataDirectory() + File.separator + srcFilePath;
 
                             HostDescriptionType hostDescription = context.getExecutionDescription().getHost().getType();
                             if (hostDescription instanceof GlobusHostType) {
                                 gridFTPTransfer(context, uri, srcFilePath);
-                            } else if (GfacUtils.isLocalHost(hostDescription.getAddress())) {
+                            } else if (GfacUtils.isLocalHost(hostDescription.getHostAddress())) {
                                 updateFile(context, uri, srcFilePath);
                             }
                         }
@@ -116,8 +113,17 @@ public class GridFtpOutputStaging extends PostExecuteChain {
         GSSCredential gssCred = ((GSISecurityContext) context.getSecurityContext(MYPROXY_SECURITY_CONTEXT))
                 .getGssCredentails();
         GlobusHostType host = (GlobusHostType) context.getExecutionDescription().getHost().getType();
-        URI srcURI = GfacUtils.createGsiftpURI(host.getGridFTPEndPoint(), remoteSrcFile);
-        ftp.transfer(srcURI, dest, gssCred, true);
+
+        for (String endpoint : host.getGridFTPEndPointArray()) {
+            try {
+                URI srcURI = GfacUtils.createGsiftpURI(endpoint, remoteSrcFile);
+                ftp.transfer(srcURI, dest, gssCred, true);
+                return;
+            } catch (ToolsException e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+
     }
 
     private void updateFile(InvocationContext context, URI dest, String localFile) throws SecurityException,

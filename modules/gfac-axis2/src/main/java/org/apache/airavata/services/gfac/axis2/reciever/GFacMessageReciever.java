@@ -43,6 +43,7 @@ import org.apache.airavata.core.gfac.notification.impl.WorkflowTrackingNotificat
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
@@ -184,13 +185,13 @@ public class GFacMessageReciever implements MessageReceiver {
             }
 
             for (Parameter parameter : newInputs) {
-                OMElement element = input.getFirstChildWithName(new QName(parameter.getName()));
+                OMElement element = input.getFirstChildWithName(new QName(parameter.getParameterName()));
 
                 if (element == null) {
                     throw new Exception("Parameter is not found in the message");
                 }
 
-                inputParam.add(parameter.getName(), ActualParameter.fromXML(element.getText()));
+                inputParam.add(parameter.getParameterName(), ActualParameter.fromXML(element.getText()));
             }
 
             /*
@@ -198,14 +199,14 @@ public class GFacMessageReciever implements MessageReceiver {
              */
             ParameterContextImpl outputParam = new ParameterContextImpl();
 
-            List<Parameter> newOutputs = null;
+            List<OutputParameterType> newOutputs = null;
             for (int i = 0; i < serviceDescriptionType.getOutputParametersArray().length; i++) {
                 newOutputs.add(serviceDescriptionType.getOutputParametersArray(i));
             }
 
             // List<Parameter> outputs = serviceDescription.getOutputParameters();
-            for (Parameter parameter : newOutputs) {
-                outputParam.add(parameter.getName(), new ActualParameter(parameter.getType().schemaType()));
+            for (OutputParameterType parameter : newOutputs) {
+                outputParam.add(parameter.getParameterName(), new ActualParameter(parameter.getParameterType().schemaType()));
             }
 
             invocationContext.setInput(inputParam);

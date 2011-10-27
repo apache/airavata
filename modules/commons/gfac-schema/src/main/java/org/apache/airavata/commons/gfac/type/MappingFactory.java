@@ -21,13 +21,13 @@
 
 package org.apache.airavata.commons.gfac.type;
 
-import org.apache.airavata.schemas.gfac.BooleanParameter;
+import org.apache.airavata.schemas.gfac.BooleanParameterType;
 import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.DoubleParameter;
-import org.apache.airavata.schemas.gfac.FileParameter;
-import org.apache.airavata.schemas.gfac.FloatParameter;
-import org.apache.airavata.schemas.gfac.IntegerParameter;
-import org.apache.airavata.schemas.gfac.StringParameter;
+import org.apache.airavata.schemas.gfac.DoubleParameterType;
+import org.apache.airavata.schemas.gfac.FileParameterType;
+import org.apache.airavata.schemas.gfac.FloatParameterType;
+import org.apache.airavata.schemas.gfac.IntegerParameterType;
+import org.apache.airavata.schemas.gfac.StringParameterType;
 
 /*
  * TODO use XML meta data instead of static coding
@@ -36,34 +36,34 @@ import org.apache.airavata.schemas.gfac.StringParameter;
 public class MappingFactory {
 	public static String toString(ActualParameter param){
 		if(param.hasType(DataType.STRING)){
-			return ((StringParameter)param.getType()).getValue();
+			return ((StringParameterType)param.getType()).getValue();
 		}else if (param.hasType(DataType.INTEGER)){
-			return String.valueOf(((IntegerParameter)param.getType()).getValue());
+			return String.valueOf(((IntegerParameterType)param.getType()).getValue());
 		}else if (param.hasType(DataType.DOUBLE)){
-			return String.valueOf(((DoubleParameter)param.getType()).getValue());
+			return String.valueOf(((DoubleParameterType)param.getType()).getValue());
 		}else if (param.hasType(DataType.BOOLEAN)){
-			return String.valueOf(((BooleanParameter)param.getType()).getValue());
+			return String.valueOf(((BooleanParameterType)param.getType()).getValue());
 		}else if (param.hasType(DataType.FILE)){
-			return ((FileParameter)param.getType()).getValue();
+			return ((FileParameterType)param.getType()).getValue();
 		}else if (param.hasType(DataType.FLOAT)){
-			return String.valueOf(((FloatParameter)param.getType()).getValue());
+			return String.valueOf(((FloatParameterType)param.getType()).getValue());
 		}
 		return null;
 	}
 	
 	public static void fromString(ActualParameter param, String val){
 		if(param.hasType(DataType.STRING)){
-			((StringParameter)param.getType()).setValue(val);
+			((StringParameterType)param.getType()).setValue(val);
 		}else if (param.hasType(DataType.INTEGER)){
-			((IntegerParameter)param.getType()).setValue(Integer.parseInt(val));
+			((IntegerParameterType)param.getType()).setValue(Integer.parseInt(val));
 		}else if (param.hasType(DataType.DOUBLE)){
-			((DoubleParameter)param.getType()).setValue(Double.parseDouble(val));
+			((DoubleParameterType)param.getType()).setValue(Double.parseDouble(val));
 		}else if (param.hasType(DataType.BOOLEAN)){
-			((BooleanParameter)param.getType()).setValue(Boolean.parseBoolean(val));
+			((BooleanParameterType)param.getType()).setValue(Boolean.parseBoolean(val));
 		}else if (param.hasType(DataType.FILE)){
-			((FileParameter)param.getType()).setValue(val);
+			((FileParameterType)param.getType()).setValue(val);
 		}else if (param.hasType(DataType.FLOAT)){
-			((FloatParameter)param.getType()).setValue(Float.parseFloat(val));
+			((FloatParameterType)param.getType()).setValue(Float.parseFloat(val));
 		}
 	}
 }
