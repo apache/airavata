@@ -81,6 +81,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
@@ -89,6 +90,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.1</version>
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
@@ -120,6 +122,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo.webstart</groupId>
                 <artifactId>webstart-maven-plugin</artifactId>
+                <version>1.0-beta-2</version>
                 <executions>
                     <execution>
                         <goals>
@@ -378,11 +381,6 @@
             <artifactId>workflowtracking</artifactId>
             <version>${airavata.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>common-utils</artifactId>
-            <version>${airavata.version}</version>
-        </dependency>
 
         <!-- JCR Support -->
         <!-- TODO need clean up -->
@@ -406,10 +404,6 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>${org.slf4j.version}</version>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.jcr</groupId>

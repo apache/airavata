@@ -120,6 +120,7 @@
                 <configuration>
                     <skipTests>false</skipTests>
                 </configuration>
+                <version>${surefire.version}</version>
             </plugin>
 
         </plugins>
@@ -198,6 +199,7 @@
         <release.version>1.1.1</release.version>
         <axis2.version>1.5.1</axis2.version>
         <derby.version>10.7.1.1</derby.version>
+        <surefire.version>2.10</surefire.version>
     </properties>
 
 </project>

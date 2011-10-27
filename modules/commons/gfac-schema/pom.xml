@@ -100,6 +100,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
                 <executions>
                     <execution>
                         <id>add-source</id>
@@ -132,7 +133,7 @@
                     <xmlConfigs>
                         <xmlConfig implementation="java.io.File">schemas/gfac-schemas.xsdconfig</xmlConfig>
                     </xmlConfigs>
-                    <outputJar>target/generated/${artifactId}-${version}.jar</outputJar>
+                    <outputJar>target/generated/${project.artifactId}-${project.version}.jar</outputJar>
                 </configuration>
             </plugin>
         </plugins>

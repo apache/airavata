@@ -78,13 +78,14 @@
 					<xmlConfigs>
 						<xmlConfig implementation="java.io.File">src/main/resources/workflow_execution_context.xsdconfig</xmlConfig>
 					</xmlConfigs>
-					<outputJar>target/generated/${artifactId}-${version}.jar</outputJar>
+					<outputJar>target/generated/${project.artifactId}-${project.version}.jar</outputJar>
 				</configuration>
 			</plugin>
 
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
 				<executions>
 					<execution>
 						<id>add-source</id>

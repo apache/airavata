@@ -34,6 +34,7 @@
                 <configuration>
                     <skipTests>true</skipTests>
                 </configuration>
+                <version>${surefire.version}</version>
             </plugin>
         </plugins>
     </build>
