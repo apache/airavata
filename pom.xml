@@ -144,15 +144,15 @@
     </repositories>
     <profiles>
         <profile>
-            <id>profile-xregistry</id>
+            <id>profile-test-suite</id>
             <activation>
                 <property>
                     <name>module</name>
-                    <value>xregistry</value>
+                    <value>test-suite</value>
                 </property>
             </activation>
             <modules>
-                <module>modules/xregistry</module>
+                <module>modules/test-suite</module>
             </modules>
         </profile>
         <profile>
