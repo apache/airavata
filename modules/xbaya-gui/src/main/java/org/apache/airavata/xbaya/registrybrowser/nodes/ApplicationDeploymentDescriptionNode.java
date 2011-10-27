@@ -31,7 +31,7 @@ public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNo
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return getApplicationDeploymentDescriptionWrap().getDescription().getType().getName();
+        return getApplicationDeploymentDescriptionWrap().getDescription().getType().getApplicationName().getStringValue();
     }
 
     @Override
@@ -67,10 +67,10 @@ public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNo
     private void deleteApplicationDescription(JTree tree) throws RegistryException {
         if (askQuestion("Application description",
                 "Are you sure that you want to remove the application description \""
-                        + getApplicationDeploymentDescriptionWrap().getDescription().getType().getName() + "\"?")) {
+                        + getApplicationDeploymentDescriptionWrap().getDescription().getType().getApplicationName().getStringValue() + "\"?")) {
             getRegistry().deleteDeploymentDescription(getApplicationDeploymentDescriptionWrap().getService(),
                     getApplicationDeploymentDescriptionWrap().getHost(),
-                    getApplicationDeploymentDescriptionWrap().getDescription().getType().getName());
+                    getApplicationDeploymentDescriptionWrap().getDescription().getType().getApplicationName().getStringValue());
             ((AbstractAiravataTreeNode) getParent()).refresh();
             reloadTreeNode(tree, getParent());
         }
