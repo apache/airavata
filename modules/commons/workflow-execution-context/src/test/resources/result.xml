@@ -1,8 +1,8 @@
 <wor:context-header
-      xmlns:wor="http://schemas.airavata.apache.org/workflow-execution-context">
+  xmlns:wor="http://schemas.airavata.apache.org/workflow-execution-context">
     <wor:user-identifier xsi:nil="true"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns:wor="http://schemas.airavata.apache.org/workflow-execution-context" />
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:wor="http://schemas.airavata.apache.org/workflow-execution-context" />
     <wor:soa-service-eprs>
         <wor:gfac-url>gfacurl</wor:gfac-url>
         <wor:registry-url>registryurl</wor:registry-url>
@@ -13,12 +13,12 @@
         <wor:event-publish-epr>brokerurl</wor:event-publish-epr>
     </wor:workflow-monitoring-context>
     <wor:workflow-scheduling-context xsi:nil="true"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns:wor="http://schemas.airavata.apache.org/workflow-execution-context" />
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:wor="http://schemas.airavata.apache.org/workflow-execution-context" />
     <wor:workflow-output-data-handling xsi:nil="true"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns:wor="http://schemas.airavata.apache.org/workflow-execution-context" />
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:wor="http://schemas.airavata.apache.org/workflow-execution-context" />
     <wor:security-context xsi:nil="true"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns:wor="http://schemas.airavata.apache.org/workflow-execution-context" />
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:wor="http://schemas.airavata.apache.org/workflow-execution-context" />
 </wor:context-header>

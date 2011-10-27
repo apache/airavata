@@ -29,6 +29,12 @@
     <url>http://incubator.apache.org/airavata/</url>
 
     <dependencies>
+<dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>xpp3</groupId>
             <artifactId>xpp3</artifactId>
