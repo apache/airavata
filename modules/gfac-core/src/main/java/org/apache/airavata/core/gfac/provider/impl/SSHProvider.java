@@ -24,6 +24,7 @@ package org.apache.airavata.core.gfac.provider.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,8 @@ import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.InputUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
-import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.apache.xmlbeans.XmlException;
 
 /**
@@ -85,7 +87,7 @@ public class SSHProvider extends AbstractProvider {
             ssh.loadKnownHosts();
             ssh.authPublickey(sshContext.getUsername(), pkey);
 
-            ssh.connect(context.getExecutionDescription().getHost().getType().getAddress());
+            ssh.connect(context.getExecutionDescription().getHost().getType().getHostAddress());
             return ssh.startSession();
 
         } catch (NullPointerException ne) {
@@ -104,7 +106,7 @@ public class SSHProvider extends AbstractProvider {
     }
 
     public void makeDirectory(InvocationContext context) throws ProviderException {
-    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
+        ApplicationDeploymentDescriptionType app = context.getExecutionDescription().getApp().getType();
 
         Session session = null;
         try {
@@ -113,16 +115,16 @@ public class SSHProvider extends AbstractProvider {
             StringBuilder commandString = new StringBuilder();
 
             commandString.append("mkdir -p ");
-            commandString.append(app.getTmpDir());
+            commandString.append(app.getScratchWorkingDirectory());
             commandString.append(" ; ");
             commandString.append("mkdir -p ");
-            commandString.append(app.getWorkingDir());
+            commandString.append(app.getStaticWorkingDirectory());
             commandString.append(" ; ");
             commandString.append("mkdir -p ");
-            commandString.append(app.getInputDir());
+            commandString.append(app.getInputDataDirectory());
             commandString.append(" ; ");
             commandString.append("mkdir -p ");
-            commandString.append(app.getOutputDir());
+            commandString.append(app.getOutputDataDirectory());
 
             Command cmd = session.exec(commandString.toString());
             cmd.join(COMMAND_EXECUTION_TIMEOUT, TimeUnit.SECONDS);
@@ -138,7 +140,7 @@ public class SSHProvider extends AbstractProvider {
     }
 
     public void setupEnvironment(InvocationContext context) throws ProviderException {
-    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
+        ApplicationDeploymentDescriptionType app = context.getExecutionDescription().getApp().getType();
 
         // input parameter
         ArrayList<String> tmp = new ArrayList<String>();
@@ -152,7 +154,7 @@ public class SSHProvider extends AbstractProvider {
         /*
          * Builder Command
          */
-        cmdList.add(app.getExecutable());
+        cmdList.add(app.getExecutableLocation());
         cmdList.addAll(tmp);
 
         // create process builder from command
@@ -162,12 +164,12 @@ public class SSHProvider extends AbstractProvider {
         // TODO: Make 1> and 2> into static constants.
         // TODO: This only works for the BASH shell. CSH and TCSH will be
         // different.
-        command += SPACE + "1>" + SPACE + app.getStdOut();
-        command += SPACE + "2>" + SPACE + app.getStdErr();
+        command += SPACE + "1>" + SPACE + app.getStandardOutput();
+        command += SPACE + "2>" + SPACE + app.getStandardError();
     }
 
     public void executeApplication(InvocationContext context) throws ProviderException {
-    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
+        ApplicationDeploymentDescriptionType app = context.getExecutionDescription().getApp().getType();
 
         Session session = null;
         try {
@@ -176,21 +178,22 @@ public class SSHProvider extends AbstractProvider {
             /*
              * Going to working Directory
              */
-            session.exec("cd " + app.getWorkingDir());
+            session.exec("cd " + app.getStaticWorkingDirectory());
 
             // get the env of the host and the application
-            ShellApplicationDeploymentType.Env.Entry[] env = app.getEnv().getEntryArray();
+            NameValuePairType[] env = app.getApplicationEnvironmentArray();
 
-            Map<String, String> nv = null;
-            for (int i = 0; i < env.length; i++) {
-                String key = app.getEnv().getEntryArray(i).getKey();
-                String value = app.getEnv().getEntryArray(i).getValue();
-                nv.put(key, value);
+            Map<String, String> nv = new HashMap<String, String>();
+            if (env != null) {                
+                for (int i = 0; i < env.length; i++) {
+                    String key = env[i].getName();
+                    String value = env[i].getValue();
+                    nv.put(key, value);
+                }
             }
-
             // extra env's
-            nv.put(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());
-            nv.put(GFacConstants.OUTPUT_DATA_DIR_VAR_NAME, app.getOutputDir());
+            nv.put(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDataDirectory());
+            nv.put(GFacConstants.OUTPUT_DATA_DIR_VAR_NAME, app.getOutputDataDirectory());
 
             /*
              * Set environment
@@ -230,7 +233,7 @@ public class SSHProvider extends AbstractProvider {
     }
 
     public Map<String, ?> processOutput(InvocationContext context) throws ProviderException {
-    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
+        ApplicationDeploymentDescriptionType app = context.getExecutionDescription().getApp().getType();
         try {
 
             // Get the Stdouts and StdErrs
@@ -239,15 +242,15 @@ public class SSHProvider extends AbstractProvider {
             File localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
 
             SCPFileTransfer fileTransfer = ssh.newSCPFileTransfer();
-            fileTransfer.download(app.getStdOut(), localStdOutFile.getAbsolutePath());
-            fileTransfer.download(app.getStdErr(), localStdErrFile.getAbsolutePath());
+            fileTransfer.download(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
+            fileTransfer.download(app.getStandardError(), localStdErrFile.getAbsolutePath());
 
             String stdOutStr = GfacUtils.readFileToString(localStdOutFile.getAbsolutePath());
             String stdErrStr = GfacUtils.readFileToString(localStdErrFile.getAbsolutePath());
 
             return OutputUtils.fillOutputFromStdout(context.<ActualParameter> getOutput(), stdOutStr);
-            
-        } catch (XmlException e){
+
+        } catch (XmlException e) {
             throw new ProviderException("Cannot read output:" + e.getMessage(), e);
         } catch (ConnectionException e) {
             throw new ProviderException(e.getMessage(), e);

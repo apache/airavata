@@ -21,10 +21,11 @@
 
 package org.apache.airavata.commons.gfac.type;
 
+import org.apache.airavata.commons.gfac.type.Type;
 import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.GFacParameterDocument;
 import org.apache.airavata.schemas.gfac.ParameterType;
-import org.apache.airavata.schemas.gfac.StringParameter;
+import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.apache.xmlbeans.SchemaType;
 import org.apache.xmlbeans.XmlException;
 
@@ -37,7 +38,7 @@ public class ActualParameter implements Type {
         this.paramDoc.addNewGFacParameter();
         
         //default type is String
-        this.paramDoc.getGFacParameter().changeType(StringParameter.type);
+        this.paramDoc.getGFacParameter().changeType(StringParameterType.type);
     }
     
     public ActualParameter(SchemaType type) {

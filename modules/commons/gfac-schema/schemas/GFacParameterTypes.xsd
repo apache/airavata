@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?> <!--Licensed to the Apache Software Foundation (ASF) under one or more contributor 
+	license agreements. See the NOTICE file distributed with this work for additional 
+	information regarding copyright ownership. The ASF licenses this file to 
+	you under the Apache License, Version 2.0 (theÏ "License"); you may not use 
+	this file except in compliance with the License. You may obtain a copy of 
+	the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+	by applicable law or agreed to in writing, software distributed under the 
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+	OF ANY ~ KIND, either express or implied. See the License for the specific 
+	language governing permissions and limitations under the License. -->
+
+<schema elementFormDefault="unqualified"
+	targetNamespace="http://schemas.airavata.apache.org/gfac/type" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gfac="http://schemas.airavata.apache.org/gfac/type">
+
+	<element name="GFacParameter" type="gfac:ParameterType" />
+
+	<complexType abstract="true" name="ParameterType">
+		<sequence>
+			<element name="name" type="xsd:string" minOccurs="1" maxOccurs="1" />
+		</sequence>
+		<attribute name="type" type="gfac:DataType" use="required"/>
+	</complexType>
+
+	<simpleType name="DataType">
+		<restriction base="xsd:string">
+			<enumeration value="String" />
+			<enumeration value="Double" />
+			<enumeration value="Integer" />
+			<enumeration value="Float" />
+			<enumeration value="Boolean" />
+			<enumeration value="File" />
+			<enumeration value="StringArray" />
+			<enumeration value="DoubleArray" />
+			<enumeration value="IntegerArray" />
+			<enumeration value="FloatArray" />
+			<enumeration value="BooleanArray" />
+			<enumeration value="FileArray" />
+			<enumeration value="DataID" />
+			<enumeration value="DataIDArray" />
+		</restriction>
+	</simpleType>
+
+	<complexType name="StringParameterType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" type="xsd:string" />
+				</sequence>
+				<attribute name="type" fixed="String" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="DoubleParameterType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" type="xsd:double" />
+				</sequence>
+				<attribute name="type" fixed="Double" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="IntegerParameterType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" type="xsd:int" />
+				</sequence>
+				<attribute name="type" fixed="Integer" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="FloatParameterType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" type="xsd:float" />
+				</sequence>
+				<attribute name="type" fixed="Float" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="BooleanParameterType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" type="xsd:boolean" />
+				</sequence>
+				<attribute name="type" fixed="Boolean" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="FileParameterType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" type="xsd:anyURI" />
+				</sequence>
+				<attribute name="type" fixed="File" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="DataIDType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" type="xsd:anyURI" />
+				</sequence>
+				<attribute name="type" fixed="File" />
+				<attribute name="location" type="xsd:string" use="optional" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="StringArrayType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence >
+					<element name="value" nillable="true" maxOccurs="unbounded" type="xsd:string"/>
+				</sequence>
+				<attribute name="type" fixed="StringArray" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="DoubleArrayType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" maxOccurs="unbounded" type="xsd:double"/>
+				</sequence>
+				<attribute name="type" fixed="IntegerArray" />				
+			</extension>			
+		</complexContent>
+	</complexType>
+
+	<complexType name="IntegerArrayType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" maxOccurs="unbounded" type="xsd:int"/>
+				</sequence>
+				<attribute name="type" fixed="IntegerArray" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="FloatArrayType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" maxOccurs="unbounded" type="xsd:float"/>
+				</sequence>
+				<attribute name="type" fixed="StringArray" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="BooleanArrayType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" maxOccurs="unbounded" type="xsd:boolean"/>
+				</sequence>
+				<attribute name="type" fixed="BooleanArray" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="FileArrayType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" maxOccurs="unbounded" type="xsd:anyURI"/>
+				</sequence>
+				<attribute name="type" fixed="FileArray" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="DataIDArrayType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="item" nillable="true" maxOccurs="unbounded" type="gfac:DataIDType"/>
+				</sequence>
+				<attribute name="type" fixed="DataIDArray" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+</schema>

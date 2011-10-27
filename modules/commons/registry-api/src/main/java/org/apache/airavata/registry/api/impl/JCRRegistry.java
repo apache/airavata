@@ -302,7 +302,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		try {
 			session = getSession();
 			Node hostNode = getHostNode(session);
-			Node node = getOrAddNode(hostNode, host.getType().getName());
+			Node node = getOrAddNode(hostNode, host.getType().getHostName());
 			node.setProperty(XML_PROPERTY_NAME, host.toXML());
 			session.save();
 
@@ -349,7 +349,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			Node deployNode = getDeploymentNode(session);
 			Node serviceNode = getOrAddNode(deployNode, serviceId);
 			Node hostNode = getOrAddNode(serviceNode, hostId);
-			Node appName = getOrAddNode(hostNode, app.getType().getName());
+			Node appName = getOrAddNode(hostNode, app.getType().getApplicationName().getStringValue());
 			appName.setProperty(XML_PROPERTY_NAME, app.toXML());
 			session.save();
 
@@ -496,7 +496,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 				Node app = nodes.nextNode();
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
 				ApplicationDeploymentDescription appDesc = ApplicationDeploymentDescription.fromXML(prop.getString());
-				if (appDesc.getType().getName().matches(applicationName)) {
+				if (appDesc.getType().getApplicationName().getStringValue().matches(applicationName)) {
 					app.remove();
 				}
 			}
@@ -523,7 +523,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 				Node app = nodes.nextNode();
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
 				ApplicationDeploymentDescription appDesc = ApplicationDeploymentDescription.fromXML(prop.getString());
-				if (appDesc.getType().getName().matches(applicationName)) {
+				if (appDesc.getType().getApplicationName().getStringValue().matches(applicationName)) {
 					result.add(appDesc);
 				}
 			}

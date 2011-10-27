@@ -32,7 +32,6 @@ import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ExtensionException;
 import org.apache.airavata.core.gfac.extension.DataServiceChain;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 
 /**
  * This plugin fills out all information that is missing in {@link ApplicationDeploymentDescription} based on Unix
@@ -50,45 +49,44 @@ public class RegistryDataService extends DataServiceChain {
             /*
              * if there is no setting in deployment description, use from host
              */
-            if (appDesc.getTmpDir() == null) {
-                appDesc.setTmpDir("/tmp");
+            if (appDesc.getScratchWorkingDirectory() == null) {
+                appDesc.setScratchWorkingDirectory("/tmp");
             }
 
             /*
              * Working dir
              */
-            if (appDesc.getWorkingDir() == null) {
+            if (appDesc.getStaticWorkingDirectory() == null) {
                 String date = new Date().toString();
                 date = date.replaceAll(" ", "_");
                 date = date.replaceAll(":", "_");
 
-                String tmpDir = appDesc.getTmpDir() + File.separator + appDesc.getName() + "_" + date + "_"
-                        + UUID.randomUUID();
+                String tmpDir = appDesc.getScratchWorkingDirectory() + File.separator
+                        + appDesc.getApplicationName().getStringValue() + "_" + date + "_" + UUID.randomUUID();
 
-                appDesc.setWorkingDir(tmpDir);
+                appDesc.setStaticWorkingDirectory(tmpDir);
             }
 
             /*
              * Input and Output Directory
              */
-            if (appDesc.getInputDir() == null) {
-                appDesc.setInputDir(appDesc.getWorkingDir() + File.separator + "inputData");
+            if (appDesc.getInputDataDirectory() == null) {
+                appDesc.setInputDataDirectory(appDesc.getScratchWorkingDirectory() + File.separator + "inputData");
             }
-            if (appDesc.getOutputDir() == null) {
-                appDesc.setOutputDir(appDesc.getWorkingDir() + File.separator + "outputData");
+            if (appDesc.getOutputDataDirectory() == null) {
+                appDesc.setOutputDataDirectory(appDesc.getScratchWorkingDirectory() + File.separator + "outputData");
             }
 
             /*
              * Stdout and Stderr for Shell
              */
-            if (ShellApplicationDeploymentType.class.isAssignableFrom(appDesc.getClass())) {
-            	ShellApplicationDeploymentType shell = (ShellApplicationDeploymentType) appDesc;
-                if (shell.getStdOut() == null) {
-                    shell.setStdOut(appDesc.getWorkingDir() + File.separator + appDesc.getName() + ".stdout");
-                }
-                if (shell.getStdErr() == null) {
-                    shell.setStdErr(appDesc.getWorkingDir() + File.separator + appDesc.getName() + ".stderr");
-                }
+            if (appDesc.getStandardOutput() == null) {
+                appDesc.setStandardOutput(appDesc.getScratchWorkingDirectory() + File.separator
+                        + appDesc.getApplicationName().getStringValue() + ".stdout");
+            }
+            if (appDesc.getStandardError() == null) {
+                appDesc.setStandardError(appDesc.getScratchWorkingDirectory() + File.separator
+                        + appDesc.getApplicationName().getStringValue() + ".stderr");
             }
 
         } else {

@@ -35,9 +35,11 @@ import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationCo
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.registry.api.impl.JCRRegistry;
-import org.apache.airavata.schemas.gfac.Parameter;
-import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
-import org.apache.airavata.schemas.gfac.StringParameter;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType.ApplicationName;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,25 +58,24 @@ public class PropertiesBasedServiceImplTest {
 		 * Host
 		 */
 		HostDescription host = new HostDescription();
-		host.getType().setName("localhost");
-		host.getType().setAddress("localhost");
+		host.getType().setHostName("localhost");
+		host.getType().setHostAddress("localhost");
 
 		/*
 		 * App
 		 */
-		ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(
-				ShellApplicationDeploymentType.type);
-		ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) appDesc
-				.getType();
-		app.setName("EchoLocal");
-		app.setExecutable("/bin/echo");
-		app.setTmpDir("/tmp");
-		app.setWorkingDir("/tmp");
-		app.setInputDir("/tmp/input");
-		app.setOutputDir("/tmp/output");
-		app.setStdOut("/tmp/echo.stdout");
-		app.setStdErr("/tmp/echo.stdout");
-		app.setEnv(app.addNewEnv());
+		ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription();
+		ApplicationDeploymentDescriptionType app = appDesc.getType();
+		ApplicationName name = ApplicationName.Factory.newInstance();
+		name.setStringValue("EchoLocal");
+		app.setApplicationName(name);
+		app.setExecutableLocation("/bin/echo");
+		app.setScratchWorkingDirectory("/tmp");
+		app.setStaticWorkingDirectory("/tmp");
+		app.setInputDataDirectory("/tmp/input");
+		app.setOutputDataDirectory("/tmp/output");
+		app.setStandardOutput("/tmp/echo.stdout");
+		app.setStandardError("/tmp/echo.stdout");
 
 		/*
 		 * Service
@@ -82,21 +83,22 @@ public class PropertiesBasedServiceImplTest {
 		ServiceDescription serv = new ServiceDescription();
 		serv.getType().setName("SimpleEcho");
 
-		Parameter input = Parameter.Factory.newInstance();
-		input.setName("echo_input");
-		input.addNewType();
-		List<Parameter> inputList = new ArrayList<Parameter>();
+		List<InputParameterType> inputList = new ArrayList<InputParameterType>();		
+		InputParameterType input = InputParameterType.Factory.newInstance();
+		input.setParameterName("echo_input");
+		input.setParameterType(StringParameterType.Factory.newInstance());		
 		inputList.add(input);
-		Parameter[] inputParamList = inputList.toArray(new Parameter[inputList
+		InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList
 				.size()]);
-
-		Parameter output = Parameter.Factory.newInstance();
-		output.setName("echo_output");
-		output.addNewType();
-		List<Parameter> outputList = new ArrayList<Parameter>();
+		
+		List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
+		OutputParameterType output = OutputParameterType.Factory.newInstance();
+		output.setParameterName("echo_output");
+		input.setParameterType(StringParameterType.Factory.newInstance());		
 		outputList.add(output);
-		Parameter[] outputParamList = outputList
-				.toArray(new Parameter[outputList.size()]);
+		OutputParameterType[] outputParamList = outputList
+				.toArray(new OutputParameterType[outputList.size()]);
+		
 		serv.getType().setInputParametersArray(inputParamList);
 		serv.getType().setOutputParametersArray(outputParamList);
 
@@ -105,10 +107,10 @@ public class PropertiesBasedServiceImplTest {
 		 */
 		jcrRegistry.saveHostDescription(host);
 		jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host
-				.getType().getName(), appDesc);
+				.getType().getHostName(), appDesc);
 		jcrRegistry.saveServiceDescription(serv);
 		jcrRegistry.deployServiceOnHost(serv.getType().getName(), host
-				.getType().getName());
+				.getType().getHostName());
 	}
 
 	@Test
@@ -126,15 +128,15 @@ public class PropertiesBasedServiceImplTest {
 			 * Input
 			 */			
 			ParameterContextImpl input = new ParameterContextImpl();
-			ActualParameter echo_input = new ActualParameter(StringParameter.type);
-			((StringParameter)echo_input.getType()).setValue("echo_output=hello");
+			ActualParameter echo_input = new ActualParameter();
+			((StringParameterType)echo_input.getType()).setValue("echo_output=hello");
 			input.add("echo_input", echo_input);
 
 			/*
 			 * Output
 			 */
 			ParameterContextImpl output = new ParameterContextImpl();
-			ActualParameter echo_output = new ActualParameter(StringParameter.type);
+			ActualParameter echo_output = new ActualParameter();
 			output.add("echo_output", echo_output);
 
 			// parameter
@@ -147,7 +149,7 @@ public class PropertiesBasedServiceImplTest {
 
 			Assert.assertNotNull(ct.getOutput());
 			Assert.assertNotNull(ct.getOutput().getValue("echo_output"));
-			Assert.assertEquals("hello", ((StringParameter)((ActualParameter)ct.getOutput().getValue("echo_output")).getType()).getValue());
+			Assert.assertEquals("hello", ((StringParameterType)((ActualParameter)ct.getOutput().getValue("echo_output")).getType()).getValue());
 
 		} catch (Exception e) {
 			e.printStackTrace();

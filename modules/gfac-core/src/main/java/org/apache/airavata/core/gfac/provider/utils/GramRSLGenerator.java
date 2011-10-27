@@ -21,6 +21,7 @@
 
 package org.apache.airavata.core.gfac.provider.utils;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -29,7 +30,7 @@ import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
-import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.globus.gram.GramAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,21 +49,21 @@ public class GramRSLGenerator {
         GramApplicationDeploymentType app = (GramApplicationDeploymentType) context.getExecutionDescription().getApp().getType();
 
         GramAttributes jobAttr = new GramAttributes();
-        jobAttr.setExecutable(app.getExecutable());
-        jobAttr.setDirectory(app.getWorkingDir());
-        jobAttr.setStdout(app.getStdOut());
-        jobAttr.setStderr(app.getStdErr());
+        jobAttr.setExecutable(app.getExecutableLocation());
+        jobAttr.setDirectory(app.getStaticWorkingDirectory());
+        jobAttr.setStdout(app.getStandardOutput());
+        jobAttr.setStderr(app.getStandardError());
 
         /*
          * The env here contains the env of the host and the application. i.e the env specified in the host description
          * and application description documents
          */
-        ShellApplicationDeploymentType.Env.Entry[] env = app.getEnv().getEntryArray();
+        NameValuePairType[] env = app.getApplicationEnvironmentArray();
         if(env.length != 0){
-            Map<String, String> nv = null;
+            Map<String, String> nv =new HashMap<String, String>();
             for (int i = 0; i < env.length; i++) {
-                String key = app.getEnv().getEntryArray(i).getKey();
-                String value = app.getEnv().getEntryArray(i).getValue();
+                String key = env[i].getName();
+                String value = env[i].getValue();
                 nv.put(key, value);
             }
 
@@ -70,24 +71,24 @@ public class GramRSLGenerator {
                 jobAttr.addEnvVariable(entry.getKey(), entry.getValue());
             }
         }
-        jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());
-        jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getOutputDir());
+        jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDataDirectory());
+        jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getOutputDataDirectory());
 
-        if (app.getWallTime() > 0) {
-            log.info("Setting max wall clock time to " + app.getWallTime());
+        if (app.getMaxWallTime() > 0) {
+            log.info("Setting max wall clock time to " + app.getMaxWallTime());
 
-            if (app.getWallTime() > 30 && app.getQueueName() != null && app.getQueueName().equals("debug")) {
+            if (app.getMaxWallTime() > 30 && app.getQueue() != null && app.getQueue().getQueueName().equals("debug")) {
                 throw new ToolsException("NCSA debug Queue only support jobs < 30 minutes");
             }
 
-            jobAttr.setMaxWallTime(app.getWallTime());
+            jobAttr.setMaxWallTime(app.getMaxWallTime());
             jobAttr.set("proxy_timeout", "1");
         } else {
             jobAttr.setMaxWallTime(29);
         }
 
-        if (app.getStdIn() != null) {
-            jobAttr.setStdin(app.getStdIn());
+        if (app.getStandardInput() != null) {
+            jobAttr.setStdin(app.getStandardInput());
         } else {
             // input parameter
             for (Iterator<String> iterator = context.getInput().getNames(); iterator.hasNext();) {
@@ -103,18 +104,18 @@ public class GramRSLGenerator {
             log.info("Setting number of procs to " + app.getCpuCount());
             jobAttr.setNumProcs(app.getCpuCount());
         }
-        if (app.getProjectName() != null) {
-            log.info("Setting project to " + app.getProjectName());
-            jobAttr.setProject(app.getProjectName());
+        if (app.getProjectAccount().getProjectAccountNumber() != null) {
+            log.info("Setting project to " + app.getProjectAccount().getProjectAccountNumber());
+            jobAttr.setProject(app.getProjectAccount().getProjectAccountNumber());
         }
-        if (app.getQueueName() != null) {
-            log.info("Setting job queue to " + app.getQueueName());
-            jobAttr.setQueue(app.getQueueName());
+        if (app.getQueue().getQueueName() != null) {
+            log.info("Setting job queue to " + app.getQueue().getQueueName());
+            jobAttr.setQueue(app.getQueue().getQueueName());
         }
 
         String jobType = JobType.SINGLE.toString();
         if (app.getJobType() != null) {
-            jobType = app.getJobType();
+            jobType = app.getJobType().toString();
         }
 
         if (jobType.equalsIgnoreCase(JobType.SINGLE.toString())) {

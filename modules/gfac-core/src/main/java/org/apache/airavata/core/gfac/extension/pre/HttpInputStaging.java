@@ -43,10 +43,9 @@ import org.apache.airavata.core.gfac.external.GridFtp;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.FileParameter;
+import org.apache.airavata.schemas.gfac.FileParameterType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
-import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.ietf.jgss.GSSCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +69,7 @@ public class HttpInputStaging extends PreExecuteChain {
                 for (Iterator<String> iterator = inputContext.getNames(); iterator.hasNext();) {
                     String key = iterator.next();
                     if (inputContext.getValue(key).hasType(DataType.FILE)) {
-                        FileParameter fileParameter = (FileParameter) inputContext.getValue(key).getType();
+                        FileParameterType fileParameter = (FileParameterType) inputContext.getValue(key).getType();
 
                         /*
                          * Determine scheme
@@ -84,9 +83,7 @@ public class HttpInputStaging extends PreExecuteChain {
                             String destFilePath = file.getName();
 
                             ApplicationDeploymentDescriptionType app = context.getExecutionDescription().getApp().getType();
-                            if (app instanceof ShellApplicationDeploymentType) {
-                                destFilePath = app.getInputDir() + File.separator + destFilePath;
-                            }
+                            destFilePath = app.getInputDataDirectory() + File.separator + destFilePath;
 
                             HostDescriptionType hostDescription = context.getExecutionDescription().getHost().getType();
                             if (hostDescription instanceof GlobusHostType) {
@@ -124,21 +121,28 @@ public class HttpInputStaging extends PreExecuteChain {
                 .getGssCredentails();
 
         GlobusHostType host = (GlobusHostType) context.getExecutionDescription().getHost().getType();
-        URI destURI = GfacUtils.createGsiftpURI(host.getGridFTPEndPoint(), remoteLocation);
-
-        InputStream in = null;
-        try {
-            in = src.toURL().openStream();
-            ftp.updateFile(destURI, gssCred, in);
-        } finally {
+        
+        for (String endpoint : host.getGridFTPEndPointArray()) {
             try {
-                if (in != null) {
-                    in.close();
+                URI destURI = GfacUtils.createGsiftpURI(endpoint, remoteLocation);
+                InputStream in = null;
+                try {
+                    in = src.toURL().openStream();
+                    ftp.updateFile(destURI, gssCred, in);
+                } finally {
+                    try {
+                        if (in != null) {
+                            in.close();
+                        }
+                    } catch (Exception e) {
+                        log.warn("Cannot close URL inputstream");
+                    }
                 }
-            } catch (Exception e) {
-                log.warn("Cannot close URL inputstream");
+                return;
+            } catch (ToolsException e) {
+                log.error(e.getMessage(), e);
             }
-        }
+        }        
     }
 
     private void downloadFile(InvocationContext context, URI src, String localFile) throws IOException {

@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
@@ -40,8 +41,8 @@ import org.apache.airavata.core.gfac.provider.utils.GramRSLGenerator;
 import org.apache.airavata.core.gfac.provider.utils.JobSubmissionListener;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
 import org.apache.xmlbeans.XmlException;
 import org.globus.gram.GramAttributes;
 import org.globus.gram.GramException;
@@ -61,8 +62,8 @@ public class GramProvider extends AbstractProvider {
     private JobSubmissionListener listener;
 
     public void makeDirectory(InvocationContext invocationContext) throws ProviderException {
-    	GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
-    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) invocationContext.getExecutionDescription().getApp().getType();
+        GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
+        ApplicationDeploymentDescriptionType app = invocationContext.getExecutionDescription().getApp().getType();
 
         GridFtp ftp = new GridFtp();
 
@@ -70,41 +71,62 @@ public class GramProvider extends AbstractProvider {
             gssContext = (GSISecurityContext) invocationContext.getSecurityContext(MYPROXY_SECURITY_CONTEXT);
             GSSCredential gssCred = gssContext.getGssCredentails();
 
-            String hostgridFTP = host.getGridFTPEndPoint();
-            if (host.getGridFTPEndPoint() == null) {
-                hostgridFTP = host.getAddress();
+            String[] hostgridFTP = host.getGridFTPEndPointArray();
+            if (hostgridFTP == null || hostgridFTP.length == 0) {
+                hostgridFTP = new String[] { host.getHostAddress() };
             }
 
-            URI tmpdirURI = GfacUtils.createGsiftpURI(hostgridFTP, app.getTmpDir());
-            URI workingDirURI = GfacUtils.createGsiftpURI(hostgridFTP, app.getWorkingDir());
-            URI inputURI = GfacUtils.createGsiftpURI(hostgridFTP, app.getInputDir());
-            URI outputURI = GfacUtils.createGsiftpURI(hostgridFTP, app.getOutputDir());
+            boolean success = false;
+            ProviderException pe = new ProviderException("");
 
-            log.info("Host FTP = " + hostgridFTP);
-            log.info("temp directory = " + tmpdirURI);
-            log.info("Working directory = " + workingDirURI);
-            log.info("Input directory = " + inputURI);
-            log.info("Output directory = " + outputURI);
+            for (String endpoint : host.getGridFTPEndPointArray()) {
+                try {
 
-            ftp.makeDir(tmpdirURI, gssCred);
-            ftp.makeDir(workingDirURI, gssCred);
-            ftp.makeDir(inputURI, gssCred);
-        } catch (URISyntaxException e) {
-            throw new ProviderException("URI is malformatted:" + e.getMessage(), e);
+                    URI tmpdirURI = GfacUtils.createGsiftpURI(endpoint, app.getScratchWorkingDirectory());
+                    URI workingDirURI = GfacUtils.createGsiftpURI(endpoint, app.getStaticWorkingDirectory());
+                    URI inputURI = GfacUtils.createGsiftpURI(endpoint, app.getInputDataDirectory());
+                    URI outputURI = GfacUtils.createGsiftpURI(endpoint, app.getOutputDataDirectory());
+
+                    log.info("Host FTP = " + hostgridFTP);
+                    log.info("temp directory = " + tmpdirURI);
+                    log.info("Working directory = " + workingDirURI);
+                    log.info("Input directory = " + inputURI);
+                    log.info("Output directory = " + outputURI);
+
+                    ftp.makeDir(tmpdirURI, gssCred);
+                    ftp.makeDir(workingDirURI, gssCred);
+                    ftp.makeDir(inputURI, gssCred);
+                    success = true;
+                    break;
+                } catch (URISyntaxException e) {
+                    pe = new ProviderException("URI is malformatted:" + e.getMessage(), e);
+
+                } catch (ToolsException e) {
+                    pe = new ProviderException(e.getMessage(), e);
+                }
+            }
+            if (success == false) {
+                throw pe;
+            }
         } catch (SecurityException e) {
-            throw new ProviderException(e.getMessage(), e);
-        } catch (ToolsException e) {
             throw new ProviderException(e.getMessage(), e);
         }
     }
 
     public void setupEnvironment(InvocationContext invocationContext) throws ProviderException {
-    	GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
+        GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
 
         log.info("Searching for Gate Keeper");
-        gateKeeper = host.getGlobusGateKeeperEndPoint();
-        if (gateKeeper == null) {
-            gateKeeper = host.getAddress();
+        
+        
+        String tmp[] = host.getGlobusGateKeeperEndPointArray();         
+        if (tmp == null || tmp.length == 0) {
+            gateKeeper = host.getHostAddress();
+        }else{
+            /*
+             * TODO: algorithm for correct gatekeeper selection
+             */    
+            gateKeeper = tmp[0];
         }
         log.info("Using Globus GateKeeper " + gateKeeper);
 
@@ -125,9 +147,9 @@ public class GramProvider extends AbstractProvider {
     }
 
     public void executeApplication(InvocationContext invocationContext) throws ProviderException {
-    	GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
-    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) invocationContext.getExecutionDescription().getApp().getType();
-    	
+        GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
+        ApplicationDeploymentDescriptionType app = invocationContext.getExecutionDescription().getApp().getType();
+
         StringBuffer buf = new StringBuffer();
         try {
 
@@ -139,10 +161,10 @@ public class GramProvider extends AbstractProvider {
 
             log.info("Request to contact:" + gateKeeper);
 
-            buf.append("Finished launching job, Host = ").append(host.getAddress()).append(" RSL = ")
-                    .append(job.getRSL()).append(" working directory = ").append(app.getWorkingDir())
-                    .append(" tempDirectory = ").append(app.getTmpDir()).append(" Globus GateKeeper cantact = ")
-                    .append(gateKeeper);
+            buf.append("Finished launching job, Host = ").append(host.getHostAddress()).append(" RSL = ")
+                    .append(job.getRSL()).append(" working directory = ").append(app.getStaticWorkingDirectory())
+                    .append(" tempDirectory = ").append(app.getScratchWorkingDirectory())
+                    .append(" Globus GateKeeper cantact = ").append(gateKeeper);
             invocationContext.getExecutionContext().getNotifier().info(invocationContext, buf.toString());
 
             /*
@@ -178,7 +200,8 @@ public class GramProvider extends AbstractProvider {
             int jobStatus = listener.getStatus();
             if (jobStatus == GramJob.STATUS_FAILED) {
                 int errCode = listener.getError();
-                String errorMsg = "Job " + job.getID() + " on host " + host.getAddress() + " Error Code = " + errCode;
+                String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress() + " Error Code = "
+                        + errCode;
                 JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
                         gateKeeper, job.getRSL());
                 if (errCode == 8) {
@@ -190,7 +213,7 @@ public class GramProvider extends AbstractProvider {
             }
 
         } catch (GramException e) {
-            JobSubmissionFault error = new JobSubmissionFault(this, e, host.getAddress(), gateKeeper, job.getRSL());
+            JobSubmissionFault error = new JobSubmissionFault(this, e, host.getHostAddress(), gateKeeper, job.getRSL());
             if (listener.getError() == 8) {
                 error.setReason(JobSubmissionFault.JOB_CANCEL);
             } else {
@@ -215,52 +238,68 @@ public class GramProvider extends AbstractProvider {
     }
 
     public Map<String, ?> processOutput(InvocationContext invocationContext) throws ProviderException {
-    	GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
-    	ShellApplicationDeploymentType app = (ShellApplicationDeploymentType) invocationContext.getExecutionDescription().getApp().getType();
+        GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
+        ApplicationDeploymentDescriptionType app = invocationContext.getExecutionDescription().getApp().getType();
         GridFtp ftp = new GridFtp();
         try {
             GSSCredential gssCred = gssContext.getGssCredentails();
 
+            String[] hostgridFTP = host.getGridFTPEndPointArray();
+            if (hostgridFTP == null || hostgridFTP.length == 0) {
+                hostgridFTP = new String[] { host.getHostAddress() };
+            }
+
+            boolean success = false;
+            ProviderException pe = new ProviderException("");
+
+            for (String endpoint : host.getGridFTPEndPointArray()) {
+
+                try {
+
+                    /*
+                     * Stdout and Stderror
+                     */
+
+                    URI stdoutURI = GfacUtils.createGsiftpURI(endpoint, app.getStandardOutput());
+                    URI stderrURI = GfacUtils.createGsiftpURI(endpoint, app.getStandardError());
+
+                    log.info("STDOUT:" + stdoutURI.toString());
+                    log.info("STDERR:" + stderrURI.toString());
+
+                    File logDir = new File("./service_logs");
+                    if (!logDir.exists()) {
+                        logDir.mkdir();
+                    }
+
+                    // Get the Stdouts and StdErrs
+                    String timeStampedServiceName = GfacUtils.createUniqueNameForService(invocationContext
+                            .getServiceName());
+                    File localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
+                    File localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
+
+                    String stdout = ftp.readRemoteFile(stdoutURI, gssCred, localStdOutFile);
+                    String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
+
+                    return OutputUtils.fillOutputFromStdout(invocationContext.<ActualParameter> getOutput(), stdout);
+                } catch (ToolsException e) {
+                    throw new ProviderException(e.getMessage(), e);
+                } catch (URISyntaxException e) {
+                    throw new ProviderException("URI is malformatted:" + e.getMessage(), e);
+                }
+            }
+            
             /*
-             * Stdout and Stderror
+             * If the execution reach here, all GridFTP Endpoint is failed.
              */
+            throw pe;
 
-            String hostgridFTP = host.getGridFTPEndPoint();
-            if (host.getGridFTPEndPoint() == null) {
-                hostgridFTP = host.getAddress();
-            }
-
-            URI stdoutURI = GfacUtils.createGsiftpURI(hostgridFTP, app.getStdOut());
-            URI stderrURI = GfacUtils.createGsiftpURI(hostgridFTP, app.getStdErr());
-
-            log.info("STDOUT:" + stdoutURI.toString());
-            log.info("STDERR:" + stderrURI.toString());
-
-            File logDir = new File("./service_logs");
-            if (!logDir.exists()) {
-                logDir.mkdir();
-            }
-
-            // Get the Stdouts and StdErrs
-            String timeStampedServiceName = GfacUtils.createUniqueNameForService(invocationContext.getServiceName());
-            File localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
-            File localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
-
-            String stdout = ftp.readRemoteFile(stdoutURI, gssCred, localStdOutFile);
-            String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
-
-            return OutputUtils.fillOutputFromStdout(invocationContext.<ActualParameter> getOutput(), stdout);
-
-        } catch (XmlException e){
+        } catch (XmlException e) {
             throw new ProviderException("Cannot read output:" + e.getMessage(), e);
-        } catch (URISyntaxException e) {
-            throw new ProviderException("URI is malformatted:" + e.getMessage(), e);
         } catch (IOException e) {
             throw new ProviderException(e.getMessage(), e);
         } catch (SecurityException e) {
             throw new ProviderException(e.getMessage(), e);
-        } catch (ToolsException e) {
-            throw new ProviderException(e.getMessage(), e);
         }
+
     }
 }
