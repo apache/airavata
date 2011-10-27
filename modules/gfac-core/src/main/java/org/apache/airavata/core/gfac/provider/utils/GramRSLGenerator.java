@@ -58,18 +58,18 @@ public class GramRSLGenerator {
          * and application description documents
          */
         ShellApplicationDeploymentType.Env.Entry[] env = app.getEnv().getEntryArray();
+        if(env.length != 0){
+            Map<String, String> nv = null;
+            for (int i = 0; i < env.length; i++) {
+                String key = app.getEnv().getEntryArray(i).getKey();
+                String value = app.getEnv().getEntryArray(i).getValue();
+                nv.put(key, value);
+            }
 
-        Map<String, String> nv = null;
-        for (int i = 0; i < env.length; i++) {
-            String key = app.getEnv().getEntryArray(i).getKey();
-            String value = app.getEnv().getEntryArray(i).getValue();
-            nv.put(key, value);
+            for (Entry<String, String> entry : nv.entrySet()) {
+                jobAttr.addEnvVariable(entry.getKey(), entry.getValue());
+            }
         }
-
-        for (Entry<String, String> entry : nv.entrySet()) {
-            jobAttr.addEnvVariable(entry.getKey(), entry.getValue());
-        }
-
         jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDir());
         jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getOutputDir());
 
