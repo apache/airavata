@@ -26,12 +26,12 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.xmlbeans.XmlString;
 import org.junit.Test;
 
@@ -150,4 +150,82 @@ public class JCRRegistryTest {
             fail(e.getMessage());
         }
     }
+    
+    @Test
+    public void testSaveLoadApplicationDescription() {
+        try {
+
+            JCRRegistry jcrRegistry = new JCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
+                    "admin", "admin", null);
+            
+            String hostId = "localhost";
+            String address = "127.0.0.1";
+            String serviceId = "SimpleEcho";            
+            
+            ServiceDescription serv = new ServiceDescription();
+            serv.getType().setName(serviceId);
+
+            InputParameterType input = InputParameterType.Factory.newInstance();
+            input.setParameterName("echo_input");
+            List<InputParameterType> inputList = new ArrayList<InputParameterType>();
+            inputList.add(input);
+            InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList
+                    .size()]);
+
+            OutputParameterType output = OutputParameterType.Factory.newInstance();
+            output.setParameterName("echo_output");
+            List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
+            outputList.add(output);
+            OutputParameterType[] outputParamList = outputList
+                    .toArray(new OutputParameterType[outputList.size()]);
+            serv.getType().setInputParametersArray(inputParamList);
+            serv.getType().setOutputParametersArray(outputParamList);            
+            
+            
+            /*
+             * Host
+             */
+            HostDescription host = new HostDescription();
+            host.getType().setHostName(hostId);
+            host.getType().setHostAddress(address);
+
+            /*
+             * Save
+             */
+            jcrRegistry.saveHostDescription(host);
+            jcrRegistry.saveServiceDescription(serv);
+            
+            
+            ApplicationDeploymentDescription app = new ApplicationDeploymentDescription();
+            app.getType().addNewApplicationName().setStringValue("ECHOLOCAL");
+            app.getType().setExecutableLocation("/bin/echo");
+            app.getType().setScratchWorkingDirectory("/tmp");
+            
+            jcrRegistry.deployServiceOnHost(serviceId, hostId);
+            jcrRegistry.saveDeploymentDescription(serviceId, hostId, app);            
+                        
+            /*
+             * Load
+             */
+            ApplicationDeploymentDescription appR = jcrRegistry.getDeploymentDescription(serviceId, hostId);
+            
+            if(appR == null){
+                fail("Deployment is null");
+            }
+            
+            if(appR.getType().getApplicationName() == null || !appR.getType().getApplicationName().getStringValue().equals("ECHOLOCAL")){
+                fail("Wrong deployment name");
+            }
+            
+            if(!appR.getType().getExecutableLocation().equals("/bin/echo") || !appR.getType().getScratchWorkingDirectory().equals("/tmp")){
+                fail("Setting and Loading value fail");
+            }                        
+            
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(e.getMessage());
+        }
+    }
+    
 }
