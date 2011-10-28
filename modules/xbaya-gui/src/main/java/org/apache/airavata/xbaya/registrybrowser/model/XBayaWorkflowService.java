@@ -12,6 +12,9 @@ public class XBayaWorkflowService {
 	}
 
 	public OutputParameters getOutputParameters() {
+		if (outputParameters==null){
+			outputParameters=new OutputParameters((ServiceParameter[])null);
+		}
 		return outputParameters;
 	}
 
@@ -20,6 +23,9 @@ public class XBayaWorkflowService {
 	}
 
 	public InputParameters getInputParameters() {
+		if (inputParameters==null){
+			inputParameters=new InputParameters((ServiceParameter[])null);
+		}
 		return inputParameters;
 	}
 

@@ -21,7 +21,7 @@ public class XBayaWorkflowNode extends AbstractAiravataTreeNode {
 
     @Override
     protected List<TreeNode> getChildren() {
-        return emptyList();
+        return getTreeNodeList(getXbayaWorkflow().getWorkflowServices().toArray(),this);
     }
 
     @Override

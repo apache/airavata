@@ -20,7 +20,7 @@ public class ParametersNode extends AbstractAiravataTreeNode {
 
 	@Override
 	protected List<TreeNode> getChildren() {
-		return getTreeNodeList(getParametersList().getParameters(), this);
+		return getTreeNodeList(getParametersList().getParameters().toArray(), this);
 	}
 
 	@Override
