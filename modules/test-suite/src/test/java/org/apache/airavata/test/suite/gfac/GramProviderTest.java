@@ -50,87 +50,87 @@ public class GramProviderTest {
     public static final String GRAM_PROPERTIES = "gram.properties";
 
     @Before
-	public void setUp() throws Exception {
-		/*
-		 * Create database
-		 */
-		JCRRegistry jcrRegistry = new JCRRegistry(null,
-				"org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-				"admin", null);
+    public void setUp() throws Exception {
+        /*
+           * Create database
+           */
+        JCRRegistry jcrRegistry = new JCRRegistry(null,
+                "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
+                "admin", null);
 
-		/*
-		 * Host
-		 */
+        /*
+           * Host
+           */
 
         URL url = this.getClass().getClassLoader().getResource(GRAM_PROPERTIES);
         Properties properties = new Properties();
         properties.load(url.openStream());
-		HostDescription host = new HostDescription();
+        HostDescription host = new HostDescription();
         host.getType().changeType(GlobusHostType.type);
-		host.getType().setName(properties.getProperty("gram.name"));
-		host.getType().setAddress(properties.getProperty("gram.host"));
-        ((GlobusHostType)host.getType()).setGridFTPEndPoint(properties.getProperty("gridftp.endpoint"));
-        ((GlobusHostType)host.getType()).setGlobusGateKeeperEndPoint(properties.getProperty("globus.endpoints"));
+        host.getType().setHostName(properties.getProperty("gram.name"));
+        host.getType().setHostAddress(properties.getProperty("gram.host"));
+        ((GlobusHostType) host.getType()).setGridFTPEndPointArray(new String[]{properties.getProperty("gridftp.endpoint")});
+        ((GlobusHostType) host.getType()).setGlobusGateKeeperEndPointArray(new String[]{properties.getProperty("globus.endpoints")});
 
 
-            /*
-            * App
-            */
-		ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(GramApplicationDeploymentType.type);
-		GramApplicationDeploymentType app = (GramApplicationDeploymentType) appDesc.getType();
-		app.setName("EchoLocal");
-		app.setExecutable("/bin/echo");
-		app.setTmpDir("/scratch/01437/ogce/test");
-        ShellApplicationDeploymentType.Env env = app.addNewEnv();
-        app.setEnv(env);
-        app.setProjectName(properties.getProperty("project.name"));
+        /*
+        * App
+        */
+        ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(GramApplicationDeploymentType.type);
+        GramApplicationDeploymentType app = (GramApplicationDeploymentType) appDesc.getType();
         app.setCpuCount(1);
         app.setNodeCount(1);
+        ApplicationDeploymentDescriptionType.ApplicationName name = appDesc.getType().addNewApplicationName();
+        name.setStringValue("EchoLocal");
+        app.setExecutableLocation("/bin/echo");
+        app.setCpuCount(1);
+        ProjectAccountType projectAccountType = ((GramApplicationDeploymentType) appDesc.getType()).addNewProjectAccount();
+        projectAccountType.setProjectAccountNumber(properties.getProperty("project.name"));
 
-		/*
-		 * Service
-		 */
-		ServiceDescription serv = new ServiceDescription();
-		serv.getType().setName("SimpleEcho");
+        /*
+           * Service
+           */
+        ServiceDescription serv = new ServiceDescription();
+        serv.getType().setName("SimpleEcho");
 
-        Parameter input = Parameter.Factory.newInstance();
-		input.setName("echo_input");
-		input.addNewType();
-		List<Parameter> inputList = new ArrayList<Parameter>();
-		inputList.add(input);
-		Parameter[] inputParamList = inputList.toArray(new Parameter[inputList
-				.size()]);
+        InputParameterType input = InputParameterType.Factory.newInstance();
+        ParameterType parameterType = input.addNewParameterType();
+        parameterType.setName("echo_input");
+        List<InputParameterType> inputList = new ArrayList<InputParameterType>();
+        inputList.add(input);
+        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList
+                .size()]);
 
-		Parameter output = Parameter.Factory.newInstance();
-		output.setName("echo_output");
-		output.addNewType();
-		List<Parameter> outputList = new ArrayList<Parameter>();
-		outputList.add(output);
-		Parameter[] outputParamList = outputList
-				.toArray(new Parameter[outputList.size()]);
-		serv.getType().setInputParametersArray(inputParamList);
-		serv.getType().setOutputParametersArray(outputParamList);
+        OutputParameterType output = OutputParameterType.Factory.newInstance();
+        ParameterType parameterType1 = output.addNewParameterType();
+        parameterType1.setName("echo_output");
+        List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
+        outputList.add(output);
+        OutputParameterType[] outputParamList = outputList
+                .toArray(new OutputParameterType[outputList.size()]);
+        serv.getType().setInputParametersArray(inputParamList);
+        serv.getType().setOutputParametersArray(outputParamList);
 
-		/*
-		 * Save to registry
-		 */
-		jcrRegistry.saveHostDescription(host);
-		jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host.getType().getName(), appDesc);
-		jcrRegistry.saveServiceDescription(serv);
-		jcrRegistry.deployServiceOnHost(serv.getType().getName(), host.getType().getName());
-	}
+        /*
+           * Save to registry
+           */
+        jcrRegistry.saveHostDescription(host);
+        jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host.getType().getHostName(), appDesc);
+        jcrRegistry.saveServiceDescription(serv);
+        jcrRegistry.deployServiceOnHost(serv.getType().getName(), host.getType().getHostName());
+    }
 
-	@Test
-	public void testExecute() {
-		try {
+    @Test
+    public void testExecute() {
+        try {
             URL url = this.getClass().getClassLoader().getResource(GRAM_PROPERTIES);
-        Properties properties = new Properties();
-        properties.load(url.openStream());
+            Properties properties = new Properties();
+            properties.load(url.openStream());
 
-			DefaultInvocationContext ct = new DefaultInvocationContext();
-			DefaultExecutionContext ec = new DefaultExecutionContext();
-			ec.addNotifiable(new LoggingNotification());
-			ct.setExecutionContext(ec);
+            DefaultInvocationContext ct = new DefaultInvocationContext();
+            DefaultExecutionContext ec = new DefaultExecutionContext();
+            ec.addNotifiable(new LoggingNotification());
+            ct.setExecutionContext(ec);
 
 
             GSISecurityContext gsiSecurityContext = new GSISecurityContext();
@@ -140,22 +140,23 @@ public class GramProviderTest {
             gsiSecurityContext.setMyproxyLifetime(14400);
             gsiSecurityContext.setTrustedCertLoc(properties.getProperty("certificate.path"));
 
-            ct.addSecurityContext(MYPROXY,gsiSecurityContext);
+            ct.addSecurityContext(MYPROXY, gsiSecurityContext);
 
             ct.setServiceName("SimpleEcho");
-/*
-			 * Input
-			 */
+
+            /*
+            * Input
+            */
             ParameterContextImpl input = new ParameterContextImpl();
-            ActualParameter echo_input = new ActualParameter(StringParameter.type);
-            ((StringParameter)echo_input.getType()).setValue("echo_output=hello");
+            ActualParameter echo_input = new ActualParameter();
+            ((StringParameterType) echo_input.getType()).setValue("echo_output=hello");
             input.add("echo_input", echo_input);
 
             /*
-             * Output
-             */
+            * Output
+            */
             ParameterContextImpl output = new ParameterContextImpl();
-            ActualParameter echo_output = new ActualParameter(StringParameter.type);
+            ActualParameter echo_output = new ActualParameter();
             output.add("echo_output", echo_output);
 
             // parameter
@@ -168,13 +169,12 @@ public class GramProviderTest {
 
             Assert.assertNotNull(ct.getOutput());
             Assert.assertNotNull(ct.getOutput().getValue("echo_output"));
-            Assert.assertEquals("hello", ((StringParameter)((ActualParameter)ct.getOutput().getValue("echo_output")).getType()).getValue());
+            Assert.assertEquals("hello", ((StringParameterType) ((ActualParameter) ct.getOutput().getValue("echo_output")).getType()).getValue());
 
 
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("ERROR");
-		}
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("ERROR");
+        }
+    }
 }
