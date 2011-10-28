@@ -154,6 +154,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+                    <skipTests>true</skipTests>
                 </configuration>
                 <version>${surefire.version}</version>
             </plugin>
