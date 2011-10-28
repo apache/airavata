@@ -446,6 +446,9 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     }
 
     public ApplicationDeploymentDescription getShellApplicationDescription() {
+        if(shellApplicationDescription == null){
+            shellApplicationDescription = new ApplicationDeploymentDescription();
+        }
         return shellApplicationDescription;
     }
 

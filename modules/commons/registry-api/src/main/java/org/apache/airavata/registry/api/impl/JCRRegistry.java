@@ -239,7 +239,9 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
 				result = ApplicationDeploymentDescription.fromXML(prop.getString());
 			}
-		} catch (Exception e) {
+		} catch (PathNotFoundException e){
+            return null;
+        }catch (Exception e) {
 			log.error("Cannot get Deployment Description", e);
 			throw new DeploymentDescriptionRetrieveException(e);
 		} finally {
@@ -276,7 +278,11 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			if (node != null) {
 				result = getHostDescriptor(node);
 			}
-		} catch (Exception e) {
+		} catch (PathNotFoundException e){
+            return null;
+        }catch (Exception e) {
+            log.debug(e.getMessage());
+            e.printStackTrace();
 			throw new HostDescriptionRetrieveException(e);
 		} finally {
 			closeSession(session);
@@ -516,9 +522,9 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		try {
 			session = getSession();
 			Node deploymentNode = getDeploymentNode(session);
-			Node serviceNode = deploymentNode.getNode(serviceName);
-			Node hostNode = serviceNode.getNode(hostName);
-			NodeIterator nodes = hostNode.getNodes();
+            Node serviceNode = deploymentNode.getNode(serviceName);
+            Node hostNode = serviceNode.getNode(hostName);
+            NodeIterator nodes = hostNode.getNodes();
 			for (; nodes.hasNext();) {
 				Node app = nodes.nextNode();
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
@@ -527,7 +533,9 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 					result.add(appDesc);
 				}
 			}
-		} catch (Exception e) {
+		}catch (PathNotFoundException e){
+            return result;
+        }catch (Exception e) {
 			throw new DeploymentDescriptionRetrieveException(e);
 		} finally {
 			closeSession(session);
@@ -550,7 +558,9 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
 				result.add(ApplicationDeploymentDescription.fromXML(prop.getString()));
 			}
-		} catch (Exception e) {
+		}catch (PathNotFoundException e){
+            return result;
+        } catch (Exception e) {
 			throw new DeploymentDescriptionRetrieveException(e);
 		} finally {
 			closeSession(session);

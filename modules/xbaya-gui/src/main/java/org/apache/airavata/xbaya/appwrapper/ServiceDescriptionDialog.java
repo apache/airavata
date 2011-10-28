@@ -196,7 +196,7 @@ public class ServiceDescriptionDialog extends JDialog {
             public void tableChanged(TableModelEvent arg0) {
                 int selectedRow = tblParameters.getSelectedRow();
                 if (selectedRow != -1) {
-                    Object parameterIOType = defaultTableModel.getValueAt(selectedRow, 0);
+                        Object parameterIOType = defaultTableModel.getValueAt(selectedRow, 0);
                     Object parameterDataType = defaultTableModel.getValueAt(selectedRow, 2);
                     if (parameterIOType == null || parameterIOType.equals("")) {
                         defaultTableModel.setValueAt(getIOStringList()[0], selectedRow, 0);
@@ -361,25 +361,32 @@ public class ServiceDescriptionDialog extends JDialog {
 		List<OutputParameterType> outputParameters=new ArrayList<OutputParameterType>();
 		
 		for(int i=0;i<defaultTableModel.getRowCount();i++){
-			Parameter parameter = Parameter.Factory.newInstance();
-			String parameterName = (String)defaultTableModel.getValueAt(i, 1);
-			if (parameterName!=null && !parameterName.trim().equals("")) {
-				DataType parameterDataType = (DataType) defaultTableModel
-						.getValueAt(i, 2);
-				String parameterDescription = (String) defaultTableModel
-						.getValueAt(i, 3);
-				parameter.setParameterName(parameterName);
-				parameter.setParameterDescription(parameterDescription);
+            String parameterName = (String)defaultTableModel.getValueAt(i, 1);
+            String paramType = (String)defaultTableModel.getValueAt(i, 2);
+            String parameterDescription = (String) defaultTableModel
+                    .getValueAt(i, 3);
+            if (parameterName!=null && !parameterName.trim().equals("")) {
                 //todo how to handle Enum
-				if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i,
+                if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i,
 						0))) {
-					inputParameters.add((InputParameterType)parameter);
+                    InputParameterType parameter = InputParameterType.Factory.newInstance();
+                    parameter.setParameterName(parameterName);
+                    parameter.setParameterDescription(parameterDescription);
+                    ParameterType parameterType = parameter.addNewParameterType();
+                    parameterType.setName(paramType);
+                    inputParameters.add(parameter);
+
 				} else {
-					outputParameters.add((OutputParameterType)parameter);
+                    OutputParameterType parameter = OutputParameterType.Factory.newInstance();
+                    parameter.setParameterName(parameterName);
+                    parameter.setParameterDescription(parameterDescription);
+                    ParameterType parameterType = parameter.addNewParameterType();
+                    parameterType.setName(paramType);
+					outputParameters.add(parameter);
 				}
 			}
 		}
-		(getServiceDescriptionType()).setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
+		getServiceDescriptionType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
 		getServiceDescriptionType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
 		
 		getRegistry().saveServiceDescription(getServiceDescription());
