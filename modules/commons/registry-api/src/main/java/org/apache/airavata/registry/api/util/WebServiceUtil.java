@@ -1,5 +1,7 @@
 package org.apache.airavata.registry.api.util;
 
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
@@ -25,7 +27,7 @@ public class WebServiceUtil {
             ServiceDescriptionType p = service.getType();
 
             for (int i = 0; i < p.getInputParametersArray().length; i++) {
-                generateElementFromType(p.getInputParametersArray(i), builder);
+                generateElementFromInputType(p.getInputParametersArray(i), builder);
             }
 
             builder.append("</xs:sequence>");
@@ -43,7 +45,7 @@ public class WebServiceUtil {
             ServiceDescriptionType p = service.getType();
 
             for (int i = 0; i < p.getOutputParametersArray().length; i++) {
-                generateElementFromType(p.getOutputParametersArray(i), builder);
+                generateElementFromOutputType(p.getOutputParametersArray(i), builder);
             }
 
             builder.append("</xs:sequence>");
@@ -81,28 +83,28 @@ public class WebServiceUtil {
         return builder.toString();
     }
 
-    private static void generateElementFromType(Parameter parameter, StringBuilder builder) {
-    	/*
-        String type = parameter.getType().getType().toString();
+    private static void generateElementFromInputType(InputParameterType parameter, StringBuilder builder) {
+
+        String type = parameter.getParameterType().getName();
         if (type.equals("String")) {
             builder.append("<xs:element minOccurs=\"0\" name=\"");
-            builder.append(parameter.getName());
+            builder.append(parameter.getParameterName());
             builder.append("\" nillable=\"true\" type=\"xs:string\"/>");
         } else if (type.equals("Integer")) {
             builder.append("<xs:element minOccurs=\"0\" name=\"");
-            builder.append(parameter.getName());
+            builder.append(parameter.getParameterName());
             builder.append("\" type=\"xs:int\"/>");
         } else if (type.equals("Boolean")) {
             builder.append("<xs:element minOccurs=\"0\" name=\"");
-            builder.append(parameter.getName());
+            builder.append(parameter.getParameterName());
             builder.append("\" type=\"xs:boolean\"/>");
         } else if (type.equals("Double")) {
             builder.append("<xs:element minOccurs=\"0\" name=\"");
-            builder.append(parameter.getName());
+            builder.append(parameter.getParameterName());
             builder.append("\" type=\"xs:double\"/>");
         } else if (type.equals("Float")) {
             builder.append("<xs:element minOccurs=\"0\" name=\"");
-            builder.append(parameter.getName());
+            builder.append(parameter.getParameterName());
             builder.append("\" type=\"xs:float\"/>");
         } else if (type.equals("File")) {
             // TODO adding this means adding a new complex type for File type
@@ -110,7 +112,39 @@ public class WebServiceUtil {
             // builder.append(parameter.getName());
             // builder.append("\"  nillable=\"true\" type=\"ax22:File\"/>");
         }
-	*/
+
+    }
+
+        private static void generateElementFromOutputType(OutputParameterType parameter, StringBuilder builder) {
+
+        String type = parameter.getParameterType().getName();
+        if (type.equals("String")) {
+            builder.append("<xs:element minOccurs=\"0\" name=\"");
+            builder.append(parameter.getParameterName());
+            builder.append("\" nillable=\"true\" type=\"xs:string\"/>");
+        } else if (type.equals("Integer")) {
+            builder.append("<xs:element minOccurs=\"0\" name=\"");
+            builder.append(parameter.getParameterName());
+            builder.append("\" type=\"xs:int\"/>");
+        } else if (type.equals("Boolean")) {
+            builder.append("<xs:element minOccurs=\"0\" name=\"");
+            builder.append(parameter.getParameterName());
+            builder.append("\" type=\"xs:boolean\"/>");
+        } else if (type.equals("Double")) {
+            builder.append("<xs:element minOccurs=\"0\" name=\"");
+            builder.append(parameter.getParameterName());
+            builder.append("\" type=\"xs:double\"/>");
+        } else if (type.equals("Float")) {
+            builder.append("<xs:element minOccurs=\"0\" name=\"");
+            builder.append(parameter.getParameterName());
+            builder.append("\" type=\"xs:float\"/>");
+        } else if (type.equals("File")) {
+            // TODO adding this means adding a new complex type for File type
+            // builder.append("<xs:element minOccurs=\"0\" name=\"");
+            // builder.append(parameter.getName());
+            // builder.append("\"  nillable=\"true\" type=\"ax22:File\"/>");
+        }
+
     }
 
 }
