@@ -78,7 +78,6 @@ public class JCRBrowserPanel extends JPanel implements Observer {
                 addPopup(tree, popupMenu);
 
                 AbstractBrowserActionItem actionRefresh = new RefreshAction();
-                browserActions.add(actionRefresh);
                 actionRefresh.getMenuItem().setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
                 actionRefresh.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -87,31 +86,33 @@ public class JCRBrowserPanel extends JPanel implements Observer {
                 });
 
                 actionDelete = new DeleteAction();
-                browserActions.add(actionDelete);
                 actionDelete.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
                         triggerNodeAction(DeleteAction.ID);
                     }
                 });
                 AddAction actionAdd = new AddAction();
-                browserActions.add(actionAdd);
                 actionAdd.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
                         triggerNodeAction(AddAction.ID);
                     }
                 });
 
-                AddAction actionEdit = new AddAction();
-                browserActions.add(actionEdit);
+                EditAction actionEdit = new EditAction();
                 actionEdit.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
                         triggerNodeAction(EditAction.ID);
                     }
                 });
 
-                popupMenu.add(actionAdd.getMenuItem());
-                popupMenu.add(actionDelete.getMenuItem());
-                popupMenu.add(actionRefresh.getMenuItem());
+                browserActions.add(actionRefresh);
+                browserActions.add(actionAdd);
+                browserActions.add(actionDelete);
+                browserActions.add(actionEdit);
+
+//                popupMenu.add(actionAdd.getMenuItem());
+//                popupMenu.add(actionDelete.getMenuItem());
+//                popupMenu.add(actionRefresh.getMenuItem());
             }
         }
     }
@@ -182,6 +183,7 @@ public class JCRBrowserPanel extends JPanel implements Observer {
                 if (selRow != -1 && e.isPopupTrigger()) {
                     tree.setSelectionRow(selRow);
                     Object o = tree.getLastSelectedPathComponent();
+                    popup.removeAll();
                     if (o instanceof AbstractAiravataTreeNode) {
                         AbstractAiravataTreeNode node = ((AbstractAiravataTreeNode) o);
                         for (AbstractBrowserActionItem action : browserActions) {
@@ -191,11 +193,14 @@ public class JCRBrowserPanel extends JPanel implements Observer {
                                 action.setCaption(node.getActionCaption(action));
                                 action.setIcon(node.getActionIcon(action));
                                 action.setDescription(node.getActionDescription(action));
+                                popup.add(action.getMenuItem());
                             }
                         }
                     }
-
-                    popup.show(e.getComponent(), e.getX(), e.getY());
+                    
+                    if (popup.getSubElements().length>0) {
+						popup.show(e.getComponent(), e.getX(), e.getY());
+					}
                 }
             }
         });

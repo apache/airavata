@@ -1,28 +1,36 @@
 package org.apache.airavata.xbaya.registrybrowser.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.airavata.schemas.gfac.Parameter;
 
 public class ServiceParameters {
-	private ServiceParameter[] parameters;
+	private List<ServiceParameter> parameters;
 	
 	public ServiceParameters(Parameter[] parameters) {
-		List<ServiceParameter> serviceParaList=new ArrayList<ServiceParameter>();
-		for (Parameter parameter : parameters) {
-			serviceParaList.add(new ServiceParameter(parameter));
+		if (parameters!=null) {
+			List<ServiceParameter> serviceParaList = new ArrayList<ServiceParameter>();
+			for (Parameter parameter : parameters) {
+				serviceParaList.add(new ServiceParameter(parameter));
+			}
+			setParameters(serviceParaList);
 		}
-		setParameters(serviceParaList.toArray(new ServiceParameter[]{}));
 	}
 	
 	public ServiceParameters(ServiceParameter[] parameters) {
-		setParameters(parameters);
+		if (parameters!=null) {
+			setParameters(Arrays.asList(parameters));
+		}
 	}
-	public ServiceParameter[] getParameters() {
+	public List<ServiceParameter> getParameters() {
+		if (parameters==null){
+			parameters=new ArrayList<ServiceParameter>();
+		}
 		return parameters;
 	}
-	public void setParameters(ServiceParameter[] parameters) {
+	public void setParameters(List<ServiceParameter> parameters) {
 		this.parameters = parameters;
 	}
 }

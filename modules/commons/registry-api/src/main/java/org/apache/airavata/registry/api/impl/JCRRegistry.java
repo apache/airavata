@@ -595,9 +595,9 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 //	}
 
 	public String getWSDL(String serviceName) throws RegistryException {
-		List<ServiceDescription> searchServiceDescription = searchServiceDescription(serviceName);
-		if (searchServiceDescription.size()>0){
-			return getWSDL(searchServiceDescription.get(0));
+		ServiceDescription serviceDescription = getServiceDescription(serviceName);
+		if (serviceDescription!=null){
+			return getWSDL(serviceDescription);
 		}
 		throw new ServiceDescriptionRetrieveException(new Exception("No service description from the name "+serviceName));
 	}

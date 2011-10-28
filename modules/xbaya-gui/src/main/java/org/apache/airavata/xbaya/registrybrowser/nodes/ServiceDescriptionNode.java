@@ -34,7 +34,7 @@ public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
 			parameterTypeList.add(new InputParameters(getServiceDescription().getType().getInputParametersArray()));
 		}
 		if (getServiceDescription().getType().getOutputParametersArray().length>0){
-			parameterTypeList.add(new OutputParameters(getServiceDescription().getType().getInputParametersArray()));
+			parameterTypeList.add(new OutputParameters(getServiceDescription().getType().getOutputParametersArray()));
 		}
 		return getTreeNodeList(parameterTypeList.toArray(), this);
 	}

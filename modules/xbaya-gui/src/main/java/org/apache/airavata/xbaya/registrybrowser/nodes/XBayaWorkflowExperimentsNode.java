@@ -9,6 +9,7 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowExperiments;
 
 public class XBayaWorkflowExperimentsNode extends AbstractAiravataTreeNode {
@@ -36,7 +37,7 @@ public class XBayaWorkflowExperimentsNode extends AbstractAiravataTreeNode {
 
     @Override
     public List<String> getSupportedActions() {
-        return Arrays.asList();
+        return Arrays.asList(RefreshAction.ID);
     }
 
     public boolean triggerAction(JTree tree, String action) throws Exception {

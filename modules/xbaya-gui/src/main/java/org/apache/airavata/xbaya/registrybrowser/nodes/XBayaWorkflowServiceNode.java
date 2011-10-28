@@ -24,10 +24,10 @@ public class XBayaWorkflowServiceNode extends AbstractAiravataTreeNode {
     @Override
     protected List<TreeNode> getChildren() {
 		List<ServiceParameters> parameterTypeList=new ArrayList<ServiceParameters>();
-		if (getXbayaWorkflowService().getInputParameters().getParameters().length>0){
+		if (getXbayaWorkflowService().getInputParameters()!=null && getXbayaWorkflowService().getInputParameters().getParameters().size()>0){
 			parameterTypeList.add(getXbayaWorkflowService().getInputParameters());
 		}
-		if (getXbayaWorkflowService().getOutputParameters().getParameters().length>0){
+		if (getXbayaWorkflowService().getOutputParameters()!=null && getXbayaWorkflowService().getOutputParameters().getParameters().size()>0){
 			parameterTypeList.add(getXbayaWorkflowService().getOutputParameters());
 		}
 		return getTreeNodeList(parameterTypeList.toArray(), this);

@@ -1,12 +1,22 @@
 package org.apache.airavata.xbaya.registrybrowser.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
+import org.apache.airavata.schemas.gfac.Parameter;
+import org.apache.axis2.util.XMLUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class XBayaWorkflowExperiments {
 	private Registry registry;
@@ -55,6 +65,26 @@ public class XBayaWorkflowExperiments {
 				workflowService=new XBayaWorkflowService(workflowIOData.getNodeId(),null,null);
 				xbayaWorkflow.add(workflowService);
 			}
+			try {
+				Document parameterDocument = XMLUtils.newDocument(new ByteArrayInputStream(workflowIOData.getData().getBytes()));
+				NodeList childNodes = parameterDocument.getDocumentElement().getChildNodes();
+				for(int i=0;i<childNodes.getLength();i++){
+					Node parameterNode = childNodes.item(i);
+					Parameter parameter = Parameter.Factory.newInstance();
+					parameter.setParameterName(parameterNode.getLocalName());
+					workflowService.getInputParameters().getParameters().add(new ServiceParameter(parameter, parameterNode.getTextContent()));
+				}
+			} catch (ParserConfigurationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SAXException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			
 			//TODO setup parameters
 		}
