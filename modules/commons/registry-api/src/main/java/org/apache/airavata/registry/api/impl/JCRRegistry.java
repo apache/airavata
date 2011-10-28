@@ -198,6 +198,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			if (node != null) {
 				node.remove();
 				session.save();
+				triggerObservers(this);
 			}
 		} catch (Exception e) {
 			throw new ServiceDescriptionRetrieveException(e);
@@ -259,6 +260,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			if (node != null) {
 				node.remove();
 				session.save();
+				triggerObservers(this);
 			}
 		} catch (Exception e) {
 			throw new HostDescriptionRetrieveException(e);
@@ -498,15 +500,20 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			Node serviceNode = deploymentNode.getNode(serviceName);
 			Node hostNode = serviceNode.getNode(hostName);
 			NodeIterator nodes = hostNode.getNodes();
+			boolean found=false;
 			for (; nodes.hasNext();) {
 				Node app = nodes.nextNode();
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
 				ApplicationDeploymentDescription appDesc = ApplicationDeploymentDescription.fromXML(prop.getString());
 				if (appDesc.getType().getApplicationName().getStringValue().matches(applicationName)) {
 					app.remove();
+					found=true;
 				}
 			}
-			session.save();
+			if (found) {
+				session.save();
+				triggerObservers(this);
+			}
 		} catch (Exception e) {
 			throw new DeploymentDescriptionRetrieveException(e);
 		} finally {
@@ -647,8 +654,11 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			Node gfacDataNode = getOrAddNode(session.getRootNode(),
 					GFAC_INSTANCE_DATA);
 			Property prop = gfacDataNode.getProperty(propertyName);
-			prop.setValue((String) null);
-			session.save();
+			if (prop!=null) {
+				prop.setValue((String) null);
+				session.save();
+				triggerObservers(this);
+			}
 		} catch (Exception e) {
 			System.out.println(e);
 			e.printStackTrace();
@@ -829,8 +839,11 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 					getOrAddNode(session.getRootNode(), WORKFLOWS), userName);
 			Node result = getOrAddNode(workflowListNode,
 					resourceID.getLocalPart());
-			result.remove();
-			session.save();
+			if (result!=null) {
+				result.remove();
+				session.save();
+				triggerObservers(this);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
