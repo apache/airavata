@@ -29,10 +29,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.amazonaws.services.importexport.model.JobType;
 import org.apache.airavata.common.utils.NameValidator;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaComboBox;
@@ -40,6 +41,7 @@ import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
 import org.ogce.schemas.gfac.beans.ApplicationBean;
+import org.ogce.schemas.gfac.documents.ApplicationDescriptionDocument;
 
 public class ApplicationDescriptionRegistrationWindow {
     private XBayaDialog dialog;
@@ -317,38 +319,32 @@ public class ApplicationDescriptionRegistrationWindow {
             if (!this.procsCountTextField.getText().equals("")) {
                 pCount = new Integer(Integer.parseInt(this.procsCountTextField.getText()));
             }
-            ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(ShellApplicationDeploymentType.type);
-            
-            ShellApplicationDeploymentType shellApplicationDeployment = (ShellApplicationDeploymentType) appDesc.getType();
-            shellApplicationDeployment.setName(StringUtil.trimSpaceInString(this.applicationNameTextField.getText()));
-            shellApplicationDeployment.setExecutable(StringUtil.trimSpaceInString(this.executableTextField.getText()));
-            shellApplicationDeployment
-                    .setWorkingDir(StringUtil.trimSpaceInString(this.workDirectoryTextField.getText()));
-            shellApplicationDeployment.setTmpDir(StringUtil.trimSpaceInString(this.tempDirTextField.getText()));
-
-            ShellApplicationDeploymentType.Env.Entry[] entries = shellApplicationDeployment.getEnv().getEntryArray();
-
-            Map<String, String> env = null;
-            for (int i = 0; i < entries.length; i++) {
-                String key = shellApplicationDeployment.getEnv().getEntryArray(i).getKey();
-                String value = shellApplicationDeployment.getEnv().getEntryArray(i).getValue();
-                env.put(key, value);
+            ApplicationDeploymentDescription deploymentDescription = new ApplicationDeploymentDescription();
+            ApplicationDeploymentDescriptionType appDesc = deploymentDescription.getType();
+            ApplicationDeploymentDescriptionType.ApplicationName applicationName = appDesc.addNewApplicationName();
+            applicationName.setStringValue(StringUtil.trimSpaceInString(this.applicationNameTextField.getText()));
+            appDesc.setExecutableLocation(StringUtil.trimSpaceInString(this.executableTextField.getText()));
+            appDesc.setScratchWorkingDirectory(StringUtil.trimSpaceInString(this.tempDirTextField.getText()));
+            appDesc.setStaticWorkingDirectory(StringUtil.trimSpaceInString(this.workDirectoryTextField.getText()));
+            BatchApplicationDeploymentDescriptionType appDesc1 = (BatchApplicationDeploymentDescriptionType) appDesc;
+            // this.tmpDirTextField.getText is not yet set to any value.
+            // Don't know how the job type is setting Enum has three values
+            appDesc1.getJobType();
+            if(pCount != null){
+                appDesc1.setCpuCount(pCount);
             }
+            if(maxWallTime != null){
+                appDesc1.setMaxWallTime(maxWallTime);
+            }
+            ProjectAccountType projectAccountType = appDesc1.addNewProjectAccount();
+            projectAccountType.setProjectAccountNumber(projectName);
 
-            env.put("ProjectName", projectName);
-            env.put("JobType", jobType);
-            env.put("Queue", queue);
-            env.put("HostName", hostName);
-            if (maxWallTime != null) {
-                env.put("MaxWallTime", maxWallTime.toString());
-            }
-            if (pCount != null) {
-                env.put("Pcount", pCount.toString());
-            }
+            QueueType queueType = appDesc1.addNewQueue();
+            queueType.setQueueName(queue);
 
             /*--- save to registry ---*/
             this.engine.getConfiguration().getJcrComponentRegistry()
-                    .saveDeploymentDescription(projectName, hostName, appDesc);
+                    .saveDeploymentDescription(projectName, hostName, deploymentDescription);
         } catch (Exception e) {
             e.printStackTrace();
             this.hide();

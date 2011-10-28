@@ -30,7 +30,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.schemas.gfac.ShellApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 
 public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private static final long serialVersionUID = 3920479739097405014L;
@@ -409,12 +409,12 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         addNewRowIfLastIsNotEmpty();
     }
 
-    public ApplicationDeploymentDescription getShellApplicationDescription() {
+    public ApplicationDeploymentDescription getApplicationDescription() {
         return shellApplicationDescription;
     }
 
-    public ShellApplicationDeploymentType getShellApplicationDescriptionType() {
-        return (ShellApplicationDeploymentType)shellApplicationDescription.getType();
+    public ApplicationDeploymentDescriptionType getShellApplicationDescriptionType() {
+        return (ApplicationDeploymentDescriptionType)shellApplicationDescription.getType();
     }
     
     public void setShellApplicationDescription(ApplicationDeploymentDescription shellApplicationDescription) {
@@ -432,50 +432,50 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     }
 
     private void saveApplicationDescriptionAdvancedOptions() {
-    	getShellApplicationDescriptionType().setWorkingDir(txtWorkingDir.getText());
-    	getShellApplicationDescriptionType().setInputDir(txtInputDir.getText());
-    	getShellApplicationDescriptionType().setOutputDir(txtOutputDir.getText());
-    	getShellApplicationDescriptionType().setStdIn(txtSTDIN.getText());
-    	getShellApplicationDescriptionType().setStdOut(txtSTDOUT.getText());
-    	getShellApplicationDescriptionType().setStdErr(txtSTDERR.getText());
+    	getShellApplicationDescriptionType().setStaticWorkingDirectory(txtWorkingDir.getText());
+    	getShellApplicationDescriptionType().setInputDataDirectory(txtInputDir.getText());
+    	getShellApplicationDescriptionType().setOutputDataDirectory(txtOutputDir.getText());
+    	getShellApplicationDescriptionType().setStandardInput(txtSTDIN.getText());
+    	getShellApplicationDescriptionType().setStandardOutput(txtSTDOUT.getText());
+    	getShellApplicationDescriptionType().setStandardError(txtSTDERR.getText());
 
-    	getShellApplicationDescriptionType().setEnv(ShellApplicationDeploymentType.Factory.newInstance().getEnv());
-        for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
-            String varName = (String) defaultTableModel.getValueAt(i, 0);
-            if (varName != null && !varName.equals("")) {
-                String varValue = (String) defaultTableModel.getValueAt(i, 1);
-                getShellApplicationDescriptionType().getEnv().addNewEntry().setKey(varName);
-                getShellApplicationDescriptionType().getEnv().addNewEntry().setValue(varValue);
-            }
-        }
+//    	getShellApplicationDescriptionType().setEnv(Apll.Factory.newInstance().getEnv());
+//        for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
+//            String varName = (String) defaultTableModel.getValueAt(i, 0);
+//            if (varName != null && !varName.equals("")) {
+//                String varValue = (String) defaultTableModel.getValueAt(i, 1);
+//                getShellApplicationDescriptionType().getEnv().addNewEntry().setKey(varName);
+//                getShellApplicationDescriptionType().getEnv().addNewEntry().setValue(varValue);
+//            }
+//        }
     }
 
     private void loadApplicationDescriptionAdvancedOptions() {
-        txtWorkingDir.setText(getShellApplicationDescriptionType().getWorkingDir());
-        txtInputDir.setText(getShellApplicationDescriptionType().getInputDir());
-        txtOutputDir.setText(getShellApplicationDescriptionType().getOutputDir());
-        txtSTDIN.setText(getShellApplicationDescriptionType().getStdIn());
-        txtSTDOUT.setText(getShellApplicationDescriptionType().getStdOut());
-        txtSTDERR.setText(getShellApplicationDescriptionType().getStdErr());
+        txtWorkingDir.setText(getShellApplicationDescriptionType().getScratchWorkingDirectory());
+        txtInputDir.setText(getShellApplicationDescriptionType().getInputDataDirectory());
+        txtOutputDir.setText(getShellApplicationDescriptionType().getOutputDataDirectory());
+        txtSTDIN.setText(getShellApplicationDescriptionType().getStandardInput());
+        txtSTDOUT.setText(getShellApplicationDescriptionType().getStandardOutput());
+        txtSTDERR.setText(getShellApplicationDescriptionType().getStandardError());
         tableModelChanging = true;
+//      todo handle other parameters previous sent in the Entry Now they are defined
+//        ShellApplicationDeploymentType.Env.Entry[] entry = getShellApplicationDescriptionType().getEnv().getEntryArray();
+//
+//        Map<String, String> env = null;
+//        for (int i = 0; i < entry.length; i++) {
+//            String key = getShellApplicationDescriptionType().getEnv().getEntryArray(i).getKey();
+//            String value = getShellApplicationDescriptionType().getEnv().getEntryArray(i).getValue();
+//            env.put(key, value);
+//        }
 
-        ShellApplicationDeploymentType.Env.Entry[] entry = getShellApplicationDescriptionType().getEnv().getEntryArray();
-
-        Map<String, String> env = null;
-        for (int i = 0; i < entry.length; i++) {
-            String key = getShellApplicationDescriptionType().getEnv().getEntryArray(i).getKey();
-            String value = getShellApplicationDescriptionType().getEnv().getEntryArray(i).getValue();
-            env.put(key, value);
-        }
-
-        while (defaultTableModel.getRowCount() > 0) {
-            defaultTableModel.removeRow(0);
-        }
-        if (env != null) {
-            for (String varName : env.keySet()) {
-                defaultTableModel.addRow(new String[] { varName, env.get(varName) });
-            }
-        }
+//        while (defaultTableModel.getRowCount() > 0) {
+//            defaultTableModel.removeRow(0);
+//        }
+//        if (env != null) {
+//            for (String varName : env.keySet()) {
+//                defaultTableModel.addRow(new String[] { varName, env.get(varName) });
+//            }
+//        }
         addNewRowIfLastIsNotEmpty();
         tableModelChanging = false;
     }

@@ -103,7 +103,7 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
                     leaf, row, hasFocus);
             if (nodeComponent instanceof JLabel) {
                 JLabel lbl = (JLabel) nodeComponent;
-                lbl.setText(getCaption(selected, expanded, leaf, hasFocus));
+                lbl.setText(    getCaption(selected, expanded, leaf, hasFocus));
                 lbl.setIcon(getIcon(selected, expanded, leaf, hasFocus));
             }
         }
