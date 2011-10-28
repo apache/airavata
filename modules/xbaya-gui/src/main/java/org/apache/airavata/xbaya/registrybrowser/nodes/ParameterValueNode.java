@@ -27,7 +27,7 @@ public class ParameterValueNode extends AbstractAiravataTreeNode {
 	@Override
 	public String getCaption(boolean selected, boolean expanded, boolean leaf,
 			boolean hasFocus) {
-		return getParameter().getName()+":"+getParameter().getType().toString();
+		return getParameter().getParameterName();
 	}
 
 	@Override

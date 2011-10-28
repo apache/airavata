@@ -181,20 +181,20 @@ public class HostDescriptionDialog extends JDialog {
     }
 
     public String getHostId() {
-        return getHostDescription().getType().getName();
+        return getHostDescription().getType().getHostName();
     }
 
     public void setHostId(String hostId) {
-        getHostDescription().getType().setName(hostId);
+        getHostDescription().getType().setHostName(hostId);
         updateDialogStatus();
     }
 
     public String getHostLocation() {
-        return getHostDescription().getType().getAddress();
+        return getHostDescription().getType().getHostAddress();
     }
 
     public void setHostLocation(String hostLocation) {
-        getHostDescription().getType().setAddress(hostLocation);
+        getHostDescription().getType().setHostAddress(hostLocation);
         updateDialogStatus();
     }
 

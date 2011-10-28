@@ -30,7 +30,7 @@ public class ParameterNode extends AbstractAiravataTreeNode {
 		if (getParameter().getValue()!=null){
 			return getParameter().getName()+":"+getParameter().getValue().toString();
 		}else{
-			return getParameter().getName()+":<"+getParameter().getType().getType().toString()+">";
+			return getParameter().getName();
 		}
 	}
 

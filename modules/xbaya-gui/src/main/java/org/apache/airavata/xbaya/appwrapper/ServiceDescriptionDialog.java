@@ -41,9 +41,7 @@ import javax.swing.table.TableColumn;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.Parameter;
-import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
+import org.apache.airavata.schemas.gfac.*;
 
 public class ServiceDescriptionDialog extends JDialog {
 
@@ -359,8 +357,8 @@ public class ServiceDescriptionDialog extends JDialog {
 	}
 
 	public void saveServiceDescription() {
-		List<Parameter> inputParameters=new ArrayList<Parameter>();
-		List<Parameter> outputParameters=new ArrayList<Parameter>();
+		List<InputParameterType> inputParameters=new ArrayList<InputParameterType>();
+		List<OutputParameterType> outputParameters=new ArrayList<OutputParameterType>();
 		
 		for(int i=0;i<defaultTableModel.getRowCount();i++){
 			Parameter parameter = Parameter.Factory.newInstance();
@@ -370,20 +368,19 @@ public class ServiceDescriptionDialog extends JDialog {
 						.getValueAt(i, 2);
 				String parameterDescription = (String) defaultTableModel
 						.getValueAt(i, 3);
-				parameter.setName(parameterName);
-				parameter.setDescription(parameterDescription);
-
-				parameter.addNewType().setType(org.apache.airavata.schemas.gfac.DataType.Enum.forString(parameterDataType.toString()));
+				parameter.setParameterName(parameterName);
+				parameter.setParameterDescription(parameterDescription);
+                //todo how to handle Enum
 				if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i,
 						0))) {
-					inputParameters.add(parameter);
+					inputParameters.add((InputParameterType)parameter);
 				} else {
-					outputParameters.add(parameter);
+					outputParameters.add((OutputParameterType)parameter);
 				}
 			}
 		}
-		getServiceDescriptionType().setInputParametersArray(inputParameters.toArray(new Parameter[]{}));
-		getServiceDescriptionType().setOutputParametersArray(outputParameters.toArray(new Parameter[]{}));
+		(getServiceDescriptionType()).setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
+		getServiceDescriptionType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
 		
 		getRegistry().saveServiceDescription(getServiceDescription());
 		setServiceCreated(true);

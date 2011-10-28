@@ -1,7 +1,6 @@
 package org.apache.airavata.xbaya.registrybrowser.model;
 
 import org.apache.airavata.schemas.gfac.Parameter;
-import org.apache.airavata.schemas.gfac.ParameterType;
 
 
 public class ServiceParameter {
@@ -30,15 +29,11 @@ public class ServiceParameter {
 	}
 	
 	public String getName(){
-		return getParameter().getName();
+		return getParameter().getParameterName();
 	}
 	
 	public String getDescription(){
-		return getParameter().getDescription();
-	}
-	
-	public ParameterType getType(){
-		return getParameter().getType();
+		return getParameter().getParameterDescription();
 	}
 }
 
