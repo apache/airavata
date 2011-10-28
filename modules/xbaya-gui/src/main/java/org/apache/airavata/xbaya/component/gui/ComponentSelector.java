@@ -120,6 +120,15 @@ public class ComponentSelector implements XBayaComponent {
         addComponentTree(-1, componentTree);
     }
 
+    public void removeComponentTree(final ComponentTreeNode componentTree) {
+    	SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                ComponentSelector.this.treeModel.removeNodeFromParent(componentTree);
+            }
+
+        });
+    }
+    
     /**
      * Adds a new selectedComponent registry to the specified location.
      * 

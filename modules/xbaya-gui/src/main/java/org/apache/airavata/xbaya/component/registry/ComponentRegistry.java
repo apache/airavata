@@ -21,6 +21,7 @@
 
 package org.apache.airavata.xbaya.component.registry;
 
+import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 
 public abstract class ComponentRegistry {
@@ -47,4 +48,5 @@ public abstract class ComponentRegistry {
      * @return The name to show in the tree.
      */
     public abstract String getName();
+    
 }
