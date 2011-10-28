@@ -113,7 +113,7 @@ public class JCRRegistryWindow {
         configuration.setRegistryURL(url);
         hide();
 
-        this.loader.load(registry);
+//        this.loader.load(registry);
     }
 
     private void createNewUser() {

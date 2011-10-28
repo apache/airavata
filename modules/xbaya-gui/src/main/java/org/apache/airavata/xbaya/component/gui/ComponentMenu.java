@@ -273,7 +273,7 @@ public class ComponentMenu {
     }
 
     private JMenuItem createJCRRegistryItem() {
-        JMenuItem item = new JMenuItem("Add Registry");
+        JMenuItem item = new JMenuItem("Set Registry");
         item.setMnemonic(KeyEvent.VK_J);
         item.addActionListener(new AbstractAction() {
             private JCRRegistryWindow window;
