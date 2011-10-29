@@ -125,12 +125,12 @@ public interface Registry {
     /**
      * Search service description with name
      * 
-     * @param name
+     * @param nameRegEx
      * @return the service descriptions with matched name
      * @throws PathNotFoundException
      * @throws ServiceDescriptionRetrieveException
      */
-    public List<ServiceDescription> searchServiceDescription(String name) throws RegistryException;
+    public List<ServiceDescription> searchServiceDescription(String nameRegEx) throws RegistryException;
 
     /**
      * Search deployment description from a service and/or a hostname

@@ -27,7 +27,8 @@ import org.apache.airavata.xbaya.XBayaEngine;
 
 public class WSDLDialog extends JDialog {
 
-    private final JPanel contentPanel = new JPanel();
+	private static final long serialVersionUID = -8250430517289749776L;
+	private final JPanel contentPanel = new JPanel();
     private String wsdl;
     private boolean wsdlChanged = false;
     private JTextPane txtWSDL;
