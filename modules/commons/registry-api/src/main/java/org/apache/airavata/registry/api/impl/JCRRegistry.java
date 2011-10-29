@@ -239,6 +239,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 				Node app = nodes.nextNode();
 				Property prop = app.getProperty(XML_PROPERTY_NAME);
 				result = ApplicationDeploymentDescription.fromXML(prop.getString());
+				break;
 			}
 		} catch (PathNotFoundException e){
             return null;
@@ -414,7 +415,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 		return false;
 	}
 
-	public List<ServiceDescription> searchServiceDescription(String name)
+	public List<ServiceDescription> searchServiceDescription(String nameRegEx)
 			throws RegistryException {
 		Session session = null;
 		ArrayList<ServiceDescription> result = new ArrayList<ServiceDescription>();
@@ -424,8 +425,10 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			NodeIterator nodes = node.getNodes();
 			for (; nodes.hasNext();) {
 				Node service = nodes.nextNode();
-				Property prop = service.getProperty(XML_PROPERTY_NAME);
-				result.add(ServiceDescription.fromXML(prop.getString()));
+				if (service.getName().matches(nameRegEx)) {
+					Property prop = service.getProperty(XML_PROPERTY_NAME);
+					result.add(ServiceDescription.fromXML(prop.getString()));
+				}
 			}
 		} catch (Exception e) {
 			new ServiceDescriptionRetrieveException(e);

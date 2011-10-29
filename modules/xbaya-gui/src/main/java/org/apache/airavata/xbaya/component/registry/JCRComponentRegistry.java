@@ -115,40 +115,6 @@ public class JCRComponentRegistry extends ComponentRegistry {
         return registry.saveDeploymentDescription(service, host, app);
     }
 
-    public String saveHostDescription(String name, HostDescription host) {
-        return registry.saveHostDescription(host);
-    }
-
-    public List<HostDescription> searchHostDescription(String nameRegEx) throws RegistryException {
-        return registry.searchHostDescription(nameRegEx);
-    }
-
-    public HostDescription getHostDescription(String nameRegEx) throws RegistryException {
-        return registry.getHostDescription(nameRegEx);
-    }
-
-    public List<ApplicationDeploymentDescription> searchApplicationDescription(String serviceName, String host)
-            throws RegistryException {
-        return registry.searchDeploymentDescription(serviceName, host);
-    }
-
-    public ApplicationDeploymentDescription getApplicationDescription(String serviceName, String host)
-            throws RegistryException {
-        return registry.getDeploymentDescription(serviceName, host);
-    }
-
-    public String saveServiceDescription(String name, ServiceDescription service) {
-        return registry.saveServiceDescription(service);
-    }
-
-    public ServiceDescription getServiceDescription(String serviceName) throws RegistryException {
-        return registry.getServiceDescription(serviceName);
-    }
-
-    public List<ServiceDescription> searchServiceDescription(String serviceName) throws RegistryException {
-        return registry.searchServiceDescription(serviceName);
-    }
-
     public Registry getRegistry() {
         return registry;
     }
