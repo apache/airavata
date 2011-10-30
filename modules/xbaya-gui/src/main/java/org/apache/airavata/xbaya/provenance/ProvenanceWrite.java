@@ -89,12 +89,13 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 
 		if (null != node && !(node instanceof InputNode)) {
 			XmlElement elem = XmlConstants.BUILDER.newFragment("previousdat");
+			XmlElement inputs = null;
 			if (node instanceof WSNode) {
 				String nodeID = node.getComponent().getName();
 				XmlElement nodeElement = elem.newElement("wsnode");
 				elem.addChild(nodeElement);
 				nodeElement.addChild(nodeID);
-				XmlElement inputs = elem.newElement("inputs");
+				inputs = elem.newElement("inputs");
 				elem.addChild(inputs);
 
 				List<DataPort> portsToBeSaved = node.getInputPorts();
@@ -120,7 +121,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 				XmlElement nodeElement = elem.newElement("foreach");
 				elem.addChild(nodeElement);
 				nodeElement.addChild(nodeID);
-				XmlElement inputs = elem.newElement("inputs");
+				inputs = elem.newElement("inputs");
 				elem.addChild(inputs);
 				XmlConstants.BUILDER.serializeToString(elem);
 				if (middleNode instanceof ForEachExecutableNode) {
@@ -170,9 +171,12 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 				}
 
 			}
-            this.registry.saveWorkflowInput(new WorkflowIOData(xsul5.XmlConstants.BUILDER.serializeToString(elem), experimentId, node.getID(),this.workflowName));
-			// deal with the outputs
-
+            if (inputs!=null) {
+				this.registry.saveWorkflowInput(new WorkflowIOData(
+						xsul5.XmlConstants.BUILDER.serializeToString(inputs),
+						experimentId, node.getID(), this.workflowName));
+				// deal with the outputs
+			}
 			XmlElement outputs = elem.newElement("outputs");
 			elem.addChild(outputs);
 
