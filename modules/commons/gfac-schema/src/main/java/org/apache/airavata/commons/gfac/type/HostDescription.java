@@ -34,21 +34,21 @@ public class HostDescription implements Type {
 		this.hostDocument = HostDescriptionDocument.Factory.newInstance();
 		this.hostDocument.addNewHostDescription();
 	}
-	
+
 	public HostDescription(SchemaType type) {
 		this();
 		this.hostDocument.getHostDescription().changeType(type);
 	}
 
-	public HostDescriptionType getType(){
+	public HostDescriptionType getType() {
 		return this.hostDocument.getHostDescription();
 	}
-	
-	public String toXML(){
+
+	public String toXML() {
 		return hostDocument.xmlText();
 	}
-	
-	public static HostDescription fromXML(String xml) throws XmlException{
+
+	public static HostDescription fromXML(String xml) throws XmlException {
 		HostDescription host = new HostDescription();
 		host.hostDocument = HostDescriptionDocument.Factory.parse(xml);
 		return host;
