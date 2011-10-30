@@ -30,19 +30,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Map;
 
-import javax.swing.GroupLayout;
+import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -52,6 +42,8 @@ import javax.swing.table.DefaultTableModel;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.JobTypeType;
+import org.apache.airavata.xbaya.gui.XBayaComboBox;
 
 public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private static final long serialVersionUID = 3920479739097405014L;
@@ -61,6 +53,13 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private JTextField txtSTDIN;
     private JTextField txtSTDOUT;
     private JTextField txtSTDERR;
+    private XBayaComboBox jobType;
+    private JTextField projectAccountNumber;
+    private JTextField projectAccountDescription;
+    private JTextField queueType;
+    private JTextField queueName;
+    private JTextField rslParameterName;
+    private JTextField rslParameterValue;
     private JTable tblEnv;
     private ApplicationDeploymentDescription shellApplicationDescription;
     private DefaultTableModel defaultTableModel;
@@ -148,7 +147,15 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
             JPanel panel = new JPanel();
             getContentPane().add(panel, BorderLayout.CENTER);
             JLabel lblWorkingDirectory = new JLabel("Working Directory");
+            JLabel lbljobType = new JLabel("Job Type");
+            JLabel lblProjectAccountNumber = new JLabel("Project Account Number");
+            JLabel lblProjectAccountDescription = new JLabel("Project Account Description");
+            JLabel lblQueueType = new JLabel("Queue Type");
+            JLabel lblQueueName = new JLabel("Queue Name");
+            JLabel lblRSLParameterName = new JLabel("RSL Parameter Name");
+            JLabel lslRSLParameterValue = new JLabel("RSL Parameter Value");
             JLabel lblInputDirectory = new JLabel("Input directory");
+
             txtInputDir = new JTextField();
             txtInputDir.setColumns(10);
             txtWorkingDir = new JTextField();
@@ -183,6 +190,32 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 
             txtSTDERR = new JTextField();
             txtSTDERR.setColumns(10);
+
+            JLabel other = new JLabel("Other");
+            other.setFont(new Font("Tahoma", Font.BOLD, 11));
+            lblStdin.setHorizontalAlignment(SwingConstants.TRAILING);
+
+            projectAccountNumber = new JTextField();
+            projectAccountNumber.setColumns(10);
+
+            projectAccountDescription = new JTextField();
+            projectAccountDescription.setColumns(10);
+
+            queueName = new JTextField();
+            queueName.setColumns(10);
+
+            queueType = new JTextField();
+            queueType.setColumns(10);
+
+            rslParameterName = new JTextField();
+            rslParameterName.setColumns(10);
+
+            rslParameterValue = new JTextField();
+            rslParameterValue.setColumns(10);
+
+            this.jobType = new XBayaComboBox(new DefaultComboBoxModel(new String[]
+                    {JobTypeType.OPEN_MP.toString(),JobTypeType.MPI.toString(),JobTypeType.SERIAL.toString()}));
+            this.jobType.setEditable(false);
 
             JSeparator separator_1 = new JSeparator();
             separator_1.setOrientation(SwingConstants.VERTICAL);
