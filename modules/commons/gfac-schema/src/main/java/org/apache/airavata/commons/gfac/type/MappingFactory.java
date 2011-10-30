@@ -34,36 +34,44 @@ import org.apache.airavata.schemas.gfac.StringParameterType;
  * 
  */
 public class MappingFactory {
-	public static String toString(ActualParameter param){
-		if(param.hasType(DataType.STRING)){
-			return ((StringParameterType)param.getType()).getValue();
-		}else if (param.hasType(DataType.INTEGER)){
-			return String.valueOf(((IntegerParameterType)param.getType()).getValue());
-		}else if (param.hasType(DataType.DOUBLE)){
-			return String.valueOf(((DoubleParameterType)param.getType()).getValue());
-		}else if (param.hasType(DataType.BOOLEAN)){
-			return String.valueOf(((BooleanParameterType)param.getType()).getValue());
-		}else if (param.hasType(DataType.FILE)){
-			return ((FileParameterType)param.getType()).getValue();
-		}else if (param.hasType(DataType.FLOAT)){
-			return String.valueOf(((FloatParameterType)param.getType()).getValue());
+	public static String toString(ActualParameter param) {
+		if (param.hasType(DataType.STRING)) {
+			return ((StringParameterType) param.getType()).getValue();
+		} else if (param.hasType(DataType.INTEGER)) {
+			return String.valueOf(((IntegerParameterType) param.getType())
+					.getValue());
+		} else if (param.hasType(DataType.DOUBLE)) {
+			return String.valueOf(((DoubleParameterType) param.getType())
+					.getValue());
+		} else if (param.hasType(DataType.BOOLEAN)) {
+			return String.valueOf(((BooleanParameterType) param.getType())
+					.getValue());
+		} else if (param.hasType(DataType.FILE)) {
+			return ((FileParameterType) param.getType()).getValue();
+		} else if (param.hasType(DataType.FLOAT)) {
+			return String.valueOf(((FloatParameterType) param.getType())
+					.getValue());
 		}
 		return null;
 	}
-	
-	public static void fromString(ActualParameter param, String val){
-		if(param.hasType(DataType.STRING)){
-			((StringParameterType)param.getType()).setValue(val);
-		}else if (param.hasType(DataType.INTEGER)){
-			((IntegerParameterType)param.getType()).setValue(Integer.parseInt(val));
-		}else if (param.hasType(DataType.DOUBLE)){
-			((DoubleParameterType)param.getType()).setValue(Double.parseDouble(val));
-		}else if (param.hasType(DataType.BOOLEAN)){
-			((BooleanParameterType)param.getType()).setValue(Boolean.parseBoolean(val));
-		}else if (param.hasType(DataType.FILE)){
-			((FileParameterType)param.getType()).setValue(val);
-		}else if (param.hasType(DataType.FLOAT)){
-			((FloatParameterType)param.getType()).setValue(Float.parseFloat(val));
+
+	public static void fromString(ActualParameter param, String val) {
+		if (param.hasType(DataType.STRING)) {
+			((StringParameterType) param.getType()).setValue(val);
+		} else if (param.hasType(DataType.INTEGER)) {
+			((IntegerParameterType) param.getType()).setValue(Integer
+					.parseInt(val));
+		} else if (param.hasType(DataType.DOUBLE)) {
+			((DoubleParameterType) param.getType()).setValue(Double
+					.parseDouble(val));
+		} else if (param.hasType(DataType.BOOLEAN)) {
+			((BooleanParameterType) param.getType()).setValue(Boolean
+					.parseBoolean(val));
+		} else if (param.hasType(DataType.FILE)) {
+			((FileParameterType) param.getType()).setValue(val);
+		} else if (param.hasType(DataType.FLOAT)) {
+			((FloatParameterType) param.getType()).setValue(Float
+					.parseFloat(val));
 		}
 	}
 }

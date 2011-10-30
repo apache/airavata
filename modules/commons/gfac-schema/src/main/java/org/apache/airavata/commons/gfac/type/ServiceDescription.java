@@ -27,6 +27,7 @@ import org.apache.xmlbeans.XmlException;
 
 public class ServiceDescription implements Type {
 
+	private static final long serialVersionUID = -4365350045872875217L;
 	private ServiceDescriptionDocument serviceDocument;
 
 	public ServiceDescription() {
@@ -34,15 +35,15 @@ public class ServiceDescription implements Type {
 		this.serviceDocument.addNewServiceDescription();
 	}
 
-	public ServiceDescriptionType getType(){
+	public ServiceDescriptionType getType() {
 		return this.serviceDocument.getServiceDescription();
 	}
-	
-	public String toXML(){
+
+	public String toXML() {
 		return serviceDocument.xmlText();
 	}
-	
-	public static ServiceDescription fromXML(String xml) throws XmlException{
+
+	public static ServiceDescription fromXML(String xml) throws XmlException {
 		ServiceDescription service = new ServiceDescription();
 		service.serviceDocument = ServiceDescriptionDocument.Factory.parse(xml);
 		return service;

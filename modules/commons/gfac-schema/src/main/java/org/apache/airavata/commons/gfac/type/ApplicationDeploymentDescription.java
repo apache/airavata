@@ -31,26 +31,29 @@ public class ApplicationDeploymentDescription implements Type {
 	private ApplicationDeploymentDescriptionDocument appDocument;
 
 	public ApplicationDeploymentDescription() {
-		this.appDocument = ApplicationDeploymentDescriptionDocument.Factory.newInstance();
+		this.appDocument = ApplicationDeploymentDescriptionDocument.Factory
+				.newInstance();
 		this.appDocument.addNewApplicationDeploymentDescription();
 	}
 
-	public ApplicationDeploymentDescription(SchemaType type){
+	public ApplicationDeploymentDescription(SchemaType type) {
 		this();
 		this.appDocument.getApplicationDeploymentDescription().changeType(type);
 	}
-	
-	public ApplicationDeploymentDescriptionType getType(){
+
+	public ApplicationDeploymentDescriptionType getType() {
 		return this.appDocument.getApplicationDeploymentDescription();
 	}
-	
-	public String toXML(){
+
+	public String toXML() {
 		return appDocument.xmlText();
 	}
-	
-	public static ApplicationDeploymentDescription fromXML(String xml) throws XmlException{
+
+	public static ApplicationDeploymentDescription fromXML(String xml)
+			throws XmlException {
 		ApplicationDeploymentDescription app = new ApplicationDeploymentDescription();
-		app.appDocument = ApplicationDeploymentDescriptionDocument.Factory.parse(xml);
+		app.appDocument = ApplicationDeploymentDescriptionDocument.Factory
+				.parse(xml);
 		return app;
 	}
 }
