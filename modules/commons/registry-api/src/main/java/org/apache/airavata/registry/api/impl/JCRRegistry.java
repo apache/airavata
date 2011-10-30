@@ -951,7 +951,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 						workflowIOData.setExperimentId(experimentNode.getName());
 						workflowIOData.setWorkflowId(workflowNode.getName());
 						workflowIOData.setWorkflowName(workflowName);
-						workflowIOData.setNodeId(ioNode.getName());
+						workflowIOData.setNodeId(serviceNode.getName());
 						workflowIOData.setData(ioNode.getProperty(PROPERTY_WORKFLOW_IO_CONTENT).getString());
 						workflowIODataList.add(workflowIOData);
 					}

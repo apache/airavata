@@ -56,7 +56,11 @@ public class XBayaWorkflowServiceNode extends AbstractAiravataTreeNode {
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return getXbayaWorkflowService().getServiceNodeId();
+        String type = "";
+//        if (selected) {
+//			type = " <font color=\"#D3D3D3\">Service call</font>";
+//		}
+		return wrapAsHtml(getXbayaWorkflowService().getServiceNodeId(),type);
     }
 
     @Override

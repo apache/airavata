@@ -50,13 +50,13 @@ public class XBayaWorkflowExperiments {
 		Map<String, XBayaWorkflowExperiment> experiments=new HashMap<String,XBayaWorkflowExperiment>();
     	List<WorkflowIOData> workflowInput = getRegistry().searchWorkflowInput(null, null, null);
     	List<WorkflowIOData> workflowOutput = getRegistry().searchWorkflowOutput(null, null, null);
-    	createChildren(experiments, workflowInput);
-    	createChildren(experiments, workflowOutput);
+    	createChildren(experiments, workflowInput, true);
+    	createChildren(experiments, workflowOutput, false);
     	return Arrays.asList(experiments.values().toArray(new XBayaWorkflowExperiment[]{}));
 	}
 	private void createChildren(
 			Map<String, XBayaWorkflowExperiment> experiments,
-			List<WorkflowIOData> workflowIO) {
+			List<WorkflowIOData> workflowIO, boolean inputData) {
 		for (WorkflowIOData workflowIOData : workflowIO) {
 			if (!experiments.containsKey(workflowIOData.getExperimentId())){
 				experiments.put(workflowIOData.getExperimentId(),new XBayaWorkflowExperiment(workflowIOData.getExperimentId(), null));
@@ -93,7 +93,14 @@ public class XBayaWorkflowExperiments {
 					Node parameterNode = childNodes.item(i);
 					Parameter parameter = Parameter.Factory.newInstance();
 					parameter.setParameterName(parameterNode.getLocalName());
-					workflowService.getInputParameters().getParameters().add(new ServiceParameter(parameter, parameterNode.getTextContent()));
+					ServiceParameter serviceParameter = new ServiceParameter(parameter, parameterNode.getTextContent());
+					if (inputData) {
+						workflowService.getInputParameters().getParameters()
+								.add(serviceParameter);
+					}else{
+						workflowService.getOutputParameters().getParameters()
+						.add(serviceParameter);
+					}
 				}
 			} catch (ParserConfigurationException e) {
 				// TODO Auto-generated catch block
