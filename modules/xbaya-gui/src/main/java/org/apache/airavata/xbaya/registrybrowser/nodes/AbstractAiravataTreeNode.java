@@ -32,6 +32,7 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -124,7 +125,7 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
                     leaf, row, hasFocus);
             if (nodeComponent instanceof JLabel) {
                 JLabel lbl = (JLabel) nodeComponent;
-                lbl.setText(    getCaption(selected, expanded, leaf, hasFocus));
+                lbl.setText(getCaption(selected, expanded, leaf, hasFocus));
                 lbl.setIcon(getIcon(selected, expanded, leaf, hasFocus));
             }
         }
@@ -202,4 +203,13 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
     public abstract Icon getActionIcon(AbstractBrowserActionItem action);
 
     public abstract String getActionDescription(AbstractBrowserActionItem action);
+    
+    protected String wrapAsHtml(String...data){
+    	String result="<html>";
+    	for (String item : data) {
+			result+=item;
+		}
+    	result+="</html>";
+    	return result;
+    }
 }
