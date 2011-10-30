@@ -881,11 +881,11 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 	}
 
 	public boolean saveWorkflowInput(WorkflowIOData workflowInputData) {
-		return saveWorkflowIO(workflowInputData, OUTPUT);
+		return saveWorkflowIO(workflowInputData, INPUT);
 	}
 
     public boolean saveWorkflowOutput(WorkflowIOData workflowOutputData) {
-		return saveWorkflowIO(workflowOutputData, INPUT);
+		return saveWorkflowIO(workflowOutputData, OUTPUT);
 	}
 
 	private boolean saveWorkflowIO(WorkflowIOData workflowOutputData, String type) {
