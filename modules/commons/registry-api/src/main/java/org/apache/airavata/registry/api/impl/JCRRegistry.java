@@ -425,7 +425,7 @@ public class JCRRegistry extends Observable implements Axis2Registry,
 			NodeIterator nodes = node.getNodes();
 			for (; nodes.hasNext();) {
 				Node service = nodes.nextNode();
-				if (service.getName().matches(nameRegEx)) {
+				if (nameRegEx.equals("") || service.getName().matches(nameRegEx)) {
 					Property prop = service.getProperty(XML_PROPERTY_NAME);
 					result.add(ServiceDescription.fromXML(prop.getString()));
 				}
