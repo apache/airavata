@@ -34,6 +34,38 @@ import org.apache.airavata.schemas.gfac.StringParameterType;
  * 
  */
 public class MappingFactory {
+
+    /**
+     * This method is used to map between ENUM datatype to actual parameter type for example: Enum type String will map
+     * to StringParameterType in XMLSchema
+     * 
+     * @param type
+     * @return
+     */
+    public static String getActualParameterType(DataType.Enum type) {
+        if (type.equals(DataType.STRING)) {
+            return StringParameterType.class.getSimpleName();
+        } else if (type.equals(DataType.INTEGER)) {
+            return IntegerParameterType.class.getSimpleName();
+        } else if (type.equals(DataType.DOUBLE)) {
+            return DoubleParameterType.class.getSimpleName();
+        } else if (type.equals(DataType.BOOLEAN)) {
+            return BooleanParameterType.class.getSimpleName();
+        } else if (type.equals(DataType.FILE)) {
+            return FileParameterType.class.getSimpleName();
+        } else if (type.equals(DataType.FLOAT)) {
+            return FloatParameterType.class.getSimpleName();
+        }
+        return StringParameterType.class.getSimpleName();
+    }
+
+    /**
+     * This method is used to map from Actual parameter type to String. It is used for mapping between ParamaterType in
+     * XML to command-line application arguments
+     * 
+     * @param param
+     * @return
+     */
     public static String toString(ActualParameter param) {
         if (param.hasType(DataType.STRING)) {
             return ((StringParameterType) param.getType()).getValue();
@@ -51,6 +83,12 @@ public class MappingFactory {
         return null;
     }
 
+    /**
+     * This method is used to map output from command-line application to actual parameter in XML Schema.
+     * 
+     * @param param
+     * @param val
+     */
     public static void fromString(ActualParameter param, String val) {
         if (param.hasType(DataType.STRING)) {
             ((StringParameterType) param.getType()).setValue(val);
