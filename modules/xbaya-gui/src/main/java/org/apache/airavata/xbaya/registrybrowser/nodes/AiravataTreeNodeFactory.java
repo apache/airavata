@@ -21,34 +21,21 @@
 
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.registrybrowser.model.*;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.xbaya.registrybrowser.model.ApplicationDeploymentDescriptionWrap;
-import org.apache.airavata.xbaya.registrybrowser.model.ApplicationDeploymentDescriptions;
-import org.apache.airavata.xbaya.registrybrowser.model.GFacURL;
-import org.apache.airavata.xbaya.registrybrowser.model.GFacURLs;
-import org.apache.airavata.xbaya.registrybrowser.model.HostDescriptions;
-import org.apache.airavata.xbaya.registrybrowser.model.InputParameters;
-import org.apache.airavata.xbaya.registrybrowser.model.OutputParameters;
-import org.apache.airavata.xbaya.registrybrowser.model.ServiceDescriptions;
-import org.apache.airavata.xbaya.registrybrowser.model.ServiceParameter;
-import org.apache.airavata.xbaya.registrybrowser.model.ServiceParameters;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflow;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowExperiment;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowExperiments;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowService;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowTemplate;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowTemplates;
-
 public class AiravataTreeNodeFactory {
 	public static TreeNode getTreeNode(Object o,TreeNode parent){
-		if (o instanceof Registry){
-			return new RegistryNode((Registry)o,parent);
-		}else if (o instanceof GFacURLs){
+        if (o instanceof XBayaEngine){
+            return new RegistryNode((XBayaEngine)o,parent);
+        }/*else if (o instanceof Registry){
+//			return new RegistryNode((Registry)o,parent);
+		}*/else if (o instanceof GFacURLs){
 			return new GFacURLsNode((GFacURLs)o,parent);
 		}else if (o instanceof GFacURL){
 			return new GFacURLNode((GFacURL)o,parent);

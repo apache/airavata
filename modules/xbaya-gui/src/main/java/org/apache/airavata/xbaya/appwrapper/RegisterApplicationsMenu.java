@@ -156,8 +156,7 @@ public class RegisterApplicationsMenu {
                 if (XBayaUtil.acquireJCRRegistry(engine)) {
                     try {
                         ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(
-                                RegisterApplicationsMenu.this.engine.getConfiguration().getJcrComponentRegistry()
-                                        .getRegistry());
+                                RegisterApplicationsMenu.this.engine);
                         applicationDescriptionDialog.open();
                     } catch (Exception e1) {
                         RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
@@ -179,9 +178,10 @@ public class RegisterApplicationsMenu {
                 if (XBayaUtil.acquireJCRRegistry(engine)) {
                     try {
                         HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(
-                                RegisterApplicationsMenu.this.engine.getConfiguration().getJcrComponentRegistry()
-                                        .getRegistry());
-                        hostDescriptionDialog.open();
+                                RegisterApplicationsMenu.this.engine);
+                        // TODO : should remove this
+                        //hostDescriptionDialog.open();
+                        hostDescriptionDialog.show();
                     } catch (Exception e1) {
                         RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
                     }
