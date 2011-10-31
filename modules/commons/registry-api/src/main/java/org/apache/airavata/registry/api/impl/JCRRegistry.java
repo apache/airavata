@@ -608,6 +608,7 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
             ServiceType type = service.getType().addNewService();
             ServiceName name = type.addNewServiceName();
             name.setStringValue(service.getType().getName());
+            name.setTargetNamespace("http://schemas.airavata.apache.org/gfac/type");
             
             PortTypeType portType = service.getType().addNewPortType();
             MethodType methodType = portType.addNewMethod();
