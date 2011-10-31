@@ -63,6 +63,8 @@ import org.apache.airavata.registry.api.user.UserManager;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.schemas.gfac.MethodType;
 import org.apache.airavata.schemas.gfac.PortTypeType;
+import org.apache.airavata.schemas.gfac.ServiceType;
+import org.apache.airavata.schemas.gfac.ServiceType.ServiceName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -602,6 +604,11 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
 
     public String getWSDL(ServiceDescription service) {
         try {
+            
+            ServiceType type = service.getType().addNewService();
+            ServiceName name = type.addNewServiceName();
+            name.setStringValue(service.getType().getName());
+            
             PortTypeType portType = service.getType().addNewPortType();
             MethodType methodType = portType.addNewMethod();
             
