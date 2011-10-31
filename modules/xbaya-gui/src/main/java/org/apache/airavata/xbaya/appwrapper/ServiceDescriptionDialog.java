@@ -435,6 +435,7 @@ public class ServiceDescriptionDialog extends JDialog {
                     parameter.setParameterName(parameterName);
                     parameter.setParameterDescription(parameterDescription);
                     ParameterType parameterType = parameter.addNewParameterType();
+                    parameterType.setType(DataType.Enum.forString(paramType));
                     parameterType.setName(paramType);
                     inputParameters.add(parameter);
 
@@ -443,6 +444,7 @@ public class ServiceDescriptionDialog extends JDialog {
                     parameter.setParameterName(parameterName);
                     parameter.setParameterDescription(parameterDescription);
                     ParameterType parameterType = parameter.addNewParameterType();
+                    parameterType.setType(DataType.Enum.forString(paramType));
                     parameterType.setName(paramType);
                     outputParameters.add(parameter);
                 }
