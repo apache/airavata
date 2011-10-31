@@ -1,10 +1,24 @@
 package org.apache.airavata.commons.gfac.wsdl;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Set;
+import java.util.Map.Entry;
 
+import javax.xml.namespace.QName;
+
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.MethodType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.PortTypeType;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionDocument;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
+import org.apache.airavata.schemas.gfac.StringParameterType;
+import org.apache.airavata.schemas.gfac.ServiceType.ServiceName;
 import org.apache.xmlbeans.XmlException;
+import org.junit.Test;
 
 public class TestWSDLGeneration {
 
@@ -42,5 +56,54 @@ public class TestWSDLGeneration {
             throw new GFacWSDLException(e);
         }
     }
+    
+    @Test
+    public void test() {
+
+        /*
+         * Service
+         */
+        ServiceDescription serv = new ServiceDescription();
+        serv.getType().setName("SimpleEcho");
+        serv.getType().addNewService();
+        ServiceName name = serv.getType().getService().addNewServiceName();
+        name.setStringValue("SimpleEcho");
+        PortTypeType portType = serv.getType().addNewPortType();
+        MethodType methodType = portType.addNewMethod();
+        
+        portType.setPortName(new QName("xasdfasd"));
+        methodType.setMethodName("invoke");
+
+        List<InputParameterType> inputList = new ArrayList<InputParameterType>();
+        InputParameterType input = InputParameterType.Factory.newInstance();
+        input.setParameterName("echo_input");
+        input.setParameterType(StringParameterType.Factory.newInstance());
+        inputList.add(input);
+        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
+
+        List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
+        OutputParameterType output = OutputParameterType.Factory.newInstance();
+        output.setParameterName("echo_output");
+        output.setParameterType(StringParameterType.Factory.newInstance());
+        outputList.add(output);
+        OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
+
+        serv.getType().setInputParametersArray(inputParamList);
+        serv.getType().setOutputParametersArray(outputParamList);
+
+        try {
+            WSDLGenerator generator = new WSDLGenerator();
+            Hashtable table = generator.generateWSDL("http://localhost.com", new QName("xxxx"), "xx", serv.getType(), true);            
+            Set set = table.entrySet();
+            for (Object object : set) {
+                System.out.println(((Entry)object).getKey());
+                System.out.println(((Entry)object).getValue());
+                
+            }
+            System.out.println("DONE");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+     }
     
 }

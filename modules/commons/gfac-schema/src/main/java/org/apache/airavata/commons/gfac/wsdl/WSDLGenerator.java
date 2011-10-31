@@ -132,6 +132,8 @@ public class WSDLGenerator implements WSDLConstants {
             def.addNamespace(SOAP, SOAP_NAMESPACE);
             def.addNamespace(XSD, XSD_NAMESPACE);
             def.addNamespace(WSA_PREFIX, "http://www.w3.org/2005/08/addressing");
+            def.addNamespace("gfac", "http://schemas.airavata.apache.org/gfac/type");
+            
 
             if (GFacSchemaConstants.TRANSPORT_LEVEL.equals(security)
                     || GFacSchemaConstants.MESSAGE_SIGNATURE.equals(security)) {
