@@ -76,8 +76,9 @@ public class TypesGenerator implements WSDLConstants {
 
         for (int k = 0; k < inputParams.length; ++k) {
             inParamNames.add(inputParams[k].getParameterName());
-            inParamDesc.add(inputParams[k].getParameterDescription());
-            inParamTypes.add(inputParams[k].getParameterType().getType().toString());
+            inParamDesc.add(inputParams[k].getParameterDescription());            
+            // XMLBEANS specific way to get type
+            inParamTypes.add(inputParams[k].getParameterType().getClass().getInterfaces()[0].getSimpleName());
             inputParams[k].getParameterValueArray();
         }
 
@@ -89,7 +90,8 @@ public class TypesGenerator implements WSDLConstants {
         for (int k = 0; k < outputParams.length; ++k) {
             outParamNames.add(outputParams[k].getParameterName());
             outParamDesc.add(outputParams[k].getParameterDescription());
-            outParamTypes.add(outputParams[k].getParameterType().getType().toString());
+            // XMLBEANS specific way to get type
+            outParamTypes.add(outputParams[k].getParameterType().getClass().getInterfaces()[0].getSimpleName());
         }
 
         String methodName = serviceDesc.getPortType().getMethod().getMethodName();
@@ -129,51 +131,8 @@ public class TypesGenerator implements WSDLConstants {
             String paramName = (String) inParamNames.get(j);
             paramName = paramName.replaceAll(HYPHEN, HYPHEN_REPLACEMENT);
             elem.setAttribute("name", paramName);
-            String dataType = (String) inParamTypes.get(j);
-
-            if (dataType.equals("String")) {
-                elem.setAttribute("type", XSD_STRING_TYPE);
-            } else if (dataType.equals("Integer")) {
-                elem.setAttribute("type", "xsd:int");
-            } else if (dataType.equals("Float")) {
-                elem.setAttribute("type", "xsd:float");
-            } else if (dataType.equals("Double")) {
-                elem.setAttribute("type", "xsd:double");
-            } else if (dataType.equals("Boolean")) {
-                elem.setAttribute("type", "xsd:boolean");
-            } else if (dataType.equals("QName")) {
-                elem.setAttribute("type", "xsd:QName");
-            } else if (dataType.equals("URI")) {
-                elem.setAttribute("type", "xsd:anyURI");
-            }
-            // schemas for complex types will be written later
-            else if (dataType.equals("StringArray") || dataType.equals("IntegerArray") || dataType.equals("FloatArray")
-                    || dataType.equals("DoubleArray") || dataType.equals("BooleanArray")
-                    || dataType.equals("QNameArray") || dataType.equals("HostName")
-                    || dataType.equals(GFacSchemaConstants.Types.TYPE_URI_ARRAY)
-                    || dataType.equals(GFacSchemaConstants.Types.TYPE_DATAID)) {
-                elem.setAttribute("type", GLOBAL_TYPENS + ":" + dataType + "Type");
-                if (!complexTypes.contains(dataType)) {
-                    complexTypes.add(dataType);
-                }
-            } else if (dataType.equals(GFacSchemaConstants.Types.TYPE_DATAID_ARRAY)) {
-                elem.setAttribute("type", GLOBAL_TYPENS + ":" + dataType + "Type");
-                if (!complexTypes.contains(GFacSchemaConstants.Types.TYPE_DATAID_ARRAY)) {
-                    complexTypes.add(GFacSchemaConstants.Types.TYPE_DATAID_ARRAY);
-                }
-                if (!complexTypes.contains(GFacSchemaConstants.Types.TYPE_DATAID)) {
-                    complexTypes.add(GFacSchemaConstants.Types.TYPE_DATAID);
-                }
-            } else if (dataType.equals("StringEnum") || dataType.equals("IntegerEnum") || dataType.equals("FloatEnum")
-                    || dataType.equals("DoubleEnum")) {
-                elem.setAttribute("type", TYPENS + ":" + methodName + "_" + paramName + "_" + dataType + "Type");
-            } else if (dataType.equals(ENDPOINT_REFERENCE_TYPE)) {
-                if (!knownTypes.containsKey(ENDPOINT_REFERENCE_TYPE)) {
-                    schemaTable.add(createAddressingSchema(doc));
-                    knownTypes.put(ENDPOINT_REFERENCE_TYPE, ENDPOINT_REFERENCE_TYPE);
-                }
-                elem.setAttribute("type", WSDLGenerator.WSA_PREFIX + ":" + ENDPOINT_REFERENCE_TYPE);
-            }
+            String dataType = (String) inParamTypes.get(j);            
+            elem.setAttribute("type", "gfac:" + dataType);            
 
             Element annotation = doc.createElement(ANNOTATION);
 
@@ -259,39 +218,7 @@ public class TypesGenerator implements WSDLConstants {
                 elem.setAttribute("name", (String) outParamNames.get(j));
                 String dataType = (String) outParamTypes.get(j);
 
-                if (dataType.equals("String") || dataType.equals("StdOut") || dataType.equals("StdErr")) {
-                    elem.setAttribute("type", XSD_STRING_TYPE);
-                } else if (dataType.equals("Integer")) {
-                    elem.setAttribute("type", "xsd:int");
-                } else if (dataType.equals("Float")) {
-                    elem.setAttribute("type", "xsd:float");
-                } else if (dataType.equals("Double")) {
-                    elem.setAttribute("type", "xsd:double");
-                } else if (dataType.equals("Boolean")) {
-                    elem.setAttribute("type", "xsd:boolean");
-                } else if (dataType.equals("URI")) {
-                    elem.setAttribute("type", "xsd:anyURI");
-                } else if (dataType.equals("QName")) {
-                    elem.setAttribute("type", "xsd:QName");
-                } else if (dataType.equals("StringArray") || dataType.equals("IntegerArray")
-                        || dataType.equals("FloatArray") || dataType.equals("DoubleArray")
-                        || dataType.equals("BooleanArray") || dataType.equals("QNameArray")
-                        || dataType.equals("LEADFileID") || dataType.equals("LEADFileIDArray")
-                        || dataType.equals(GFacSchemaConstants.Types.TYPE_DATAID)
-                        || dataType.equals(GFacSchemaConstants.Types.TYPE_URI_ARRAY)) {
-                    elem.setAttribute("type", GLOBAL_TYPENS + ":" + dataType + "Type");
-                    if (!complexTypes.contains(dataType)) {
-                        complexTypes.add(dataType);
-                    }
-                } else if (dataType.equals(GFacSchemaConstants.Types.TYPE_DATAID_ARRAY)) {
-                    elem.setAttribute("type", GLOBAL_TYPENS + ":" + dataType + "Type");
-                    if (!complexTypes.contains(GFacSchemaConstants.Types.TYPE_DATAID_ARRAY)) {
-                        complexTypes.add(GFacSchemaConstants.Types.TYPE_DATAID_ARRAY);
-                    }
-                    if (!complexTypes.contains(GFacSchemaConstants.Types.TYPE_DATAID)) {
-                        complexTypes.add(GFacSchemaConstants.Types.TYPE_DATAID);
-                    }
-                }
+                elem.setAttribute("type", "gfac:" + dataType);
 
                 // Create an annotation
                 Element annotation = doc.createElement(ANNOTATION);
@@ -306,41 +233,7 @@ public class TypesGenerator implements WSDLConstants {
         }
 
         first.appendChild(sequence);
-        schema.appendChild(first);
-
-        // write the schemas for the complex types in the input and output
-        // parameters
-
-        for (int i = 0; i < complexTypes.size(); ++i) {
-            Element wsdlFirstElement = doc.createElement(COMPLEX_TYPE);
-            String dataType = (String) complexTypes.get(i);
-            first.setAttribute("name", dataType + "Type");
-            Element wsdlSequence = doc.createElement("sequence");
-            Element elem = doc.createElement("element");
-            elem.setAttribute("name", GFacSchemaConstants.ARRAY_VALUE);
-
-            if (dataType.equals("StringArray")) {
-                elem.setAttribute("type", "xsd:string");
-            } else if (dataType.equals("IntegerArray")) {
-                elem.setAttribute("type", "xsd:int");
-            } else if (dataType.equals("FloatArray")) {
-                elem.setAttribute("type", "xsd:float");
-            } else if (dataType.equals("DoubleArray")) {
-                elem.setAttribute("type", "xsd:double");
-            } else if (dataType.equals("BooleanArray")) {
-                elem.setAttribute("type", "xsd:boolean");
-            } else if (dataType.equals("QNameArray")) {
-                elem.setAttribute("type", "xsd:anyQName");
-            } else {
-                continue;
-            }
-
-            elem.setAttribute("minOccurs", "0");
-            elem.setAttribute("maxOccurs", "unbounded");
-            wsdlSequence.appendChild(elem);
-            first.appendChild(wsdlSequence);
-            globalSchema.appendChild(first);
-        }
+        schema.appendChild(first);        
 
         // types.setDocumentationElement(schema);
         SchemaImpl schemaImpl = new SchemaImpl();
@@ -350,8 +243,8 @@ public class TypesGenerator implements WSDLConstants {
         // schemaImpl.addImport(schemaimport);
 
         Element importEle = doc.createElement("import");
-        importEle.setAttribute("namespace", "http://www.extreme.indiana.edu/lead/xsd");
-        importEle.setAttribute("schemaLocation", "http://www.extreme.indiana.edu/gfac/gfac-simple-types.xsd");
+        importEle.setAttribute("namespace", "http://schemas.airavata.apache.org/gfac/type");
+        importEle.setAttribute("schemaLocation", "http://people.apache.org/~lahiru/GFacParameterTypes.xsd");
         schema.insertBefore(importEle, schema.getFirstChild());
 
         // schema.appendChild();
