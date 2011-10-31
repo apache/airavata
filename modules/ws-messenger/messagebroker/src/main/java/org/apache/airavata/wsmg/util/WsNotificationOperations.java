@@ -33,7 +33,6 @@ public enum WsNotificationOperations {
         name = n;
     }
 
-    @Override
     public String toString() {
         return name;
     }

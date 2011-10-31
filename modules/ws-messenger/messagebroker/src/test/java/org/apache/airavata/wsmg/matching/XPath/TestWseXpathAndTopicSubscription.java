@@ -58,7 +58,6 @@ public class TestWseXpathAndTopicSubscription extends TestCase implements Consum
         return queue;
     }
 
-    @Override
     @Before
     public void setUp() throws Exception {
         URL configURL = ClassLoader.getSystemResource(ConfigKeys.CONFIG_FILE_NAME);
@@ -67,7 +66,6 @@ public class TestWseXpathAndTopicSubscription extends TestCase implements Consum
         TestUtilServer.start(null, null);
     }
 
-    @Override
     @After
     public void tearDown() throws Exception {
     }

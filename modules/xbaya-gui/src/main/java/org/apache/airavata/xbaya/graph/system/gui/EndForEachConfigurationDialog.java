@@ -139,7 +139,6 @@ public class EndForEachConfigurationDialog {
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 setInput();
             }
@@ -147,7 +146,6 @@ public class EndForEachConfigurationDialog {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

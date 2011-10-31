@@ -199,7 +199,6 @@ public class MyProxyDialog {
 
         this.okButton = new JButton("OK");
         this.okButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 ok();
             }
@@ -207,7 +206,6 @@ public class MyProxyDialog {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

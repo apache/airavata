@@ -29,7 +29,6 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
@@ -40,6 +39,7 @@ import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.experiment.gui.RegistryWorkflowPublisherWindow;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.ietf.jgss.GSSCredential;

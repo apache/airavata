@@ -40,7 +40,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
-import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -49,8 +48,8 @@ import org.apache.airavata.xbaya.XBayaEngine;
 
 public class WSDLDialog extends JDialog {
 
-    private static final long serialVersionUID = -8250430517289749776L;
-    private final JPanel contentPanel = new JPanel();
+	private static final long serialVersionUID = -8250430517289749776L;
+	private final JPanel contentPanel = new JPanel();
     private String wsdl;
     private boolean wsdlChanged = false;
     private JTextPane txtWSDL;
@@ -65,7 +64,7 @@ public class WSDLDialog extends JDialog {
     public static void main(String[] args) {
         try {
             WSDLDialog dialog = new WSDLDialog(null, "");
-            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -108,7 +107,6 @@ public class WSDLDialog extends JDialog {
             {
                 JButton btnUrl = new JButton("URL...");
                 btnUrl.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent e) {
                         clickFromURL();
                     }
@@ -118,7 +116,6 @@ public class WSDLDialog extends JDialog {
             {
                 JButton btnLoadFromFile = new JButton("File...");
                 btnLoadFromFile.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent e) {
                         clickFromFile();
                     }
@@ -128,7 +125,6 @@ public class WSDLDialog extends JDialog {
             {
                 JButton btnClear = new JButton("Clear");
                 btnClear.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent e) {
                         txtWSDL.setText("");
                     }
@@ -143,7 +139,6 @@ public class WSDLDialog extends JDialog {
             {
                 JButton okButton = new JButton("Update");
                 okButton.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent arg0) {
                         setWsdlChanged(true);
                         close();
@@ -156,7 +151,6 @@ public class WSDLDialog extends JDialog {
             {
                 JButton cancelButton = new JButton("Cancel");
                 cancelButton.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent e) {
                         setWsdlChanged(false);
                         close();

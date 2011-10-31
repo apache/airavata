@@ -85,7 +85,7 @@ public class TakeMessages {
             serviceClient.cleanupTransport();
         }
 
-        return responseMessage.getFirstElement().getChildren();
+        return (Iterator<OMElement>) responseMessage.getFirstElement().getChildren();
     }
 
     private OMElement createMessageEl(String msgboxid) throws AxisFault {

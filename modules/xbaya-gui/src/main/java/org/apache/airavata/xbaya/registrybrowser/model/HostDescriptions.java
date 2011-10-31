@@ -42,7 +42,7 @@ public class HostDescriptions {
         this.registry = registry;
     }
 
-    public List<HostDescription> getDescriptions() throws RegistryException {
+    public List<HostDescription> getDescriptions() throws RegistryException{
         return getRegistry().searchHostDescription(".*");
     }
 }

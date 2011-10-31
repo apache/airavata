@@ -28,29 +28,29 @@ import org.apache.xmlbeans.XmlException;
 
 public class HostDescription implements Type {
 
-    private HostDescriptionDocument hostDocument;
+	private HostDescriptionDocument hostDocument;
 
-    public HostDescription() {
-        this.hostDocument = HostDescriptionDocument.Factory.newInstance();
-        this.hostDocument.addNewHostDescription();
-    }
+	public HostDescription() {
+		this.hostDocument = HostDescriptionDocument.Factory.newInstance();
+		this.hostDocument.addNewHostDescription();
+	}
 
-    public HostDescription(SchemaType type) {
-        this();
-        this.hostDocument.getHostDescription().changeType(type);
-    }
+	public HostDescription(SchemaType type) {
+		this();
+		this.hostDocument.getHostDescription().changeType(type);
+	}
 
-    public HostDescriptionType getType() {
-        return this.hostDocument.getHostDescription();
-    }
+	public HostDescriptionType getType() {
+		return this.hostDocument.getHostDescription();
+	}
 
-    public String toXML() {
-        return hostDocument.xmlText();
-    }
+	public String toXML() {
+		return hostDocument.xmlText();
+	}
 
-    public static HostDescription fromXML(String xml) throws XmlException {
-        HostDescription host = new HostDescription();
-        host.hostDocument = HostDescriptionDocument.Factory.parse(xml);
-        return host;
-    }
+	public static HostDescription fromXML(String xml) throws XmlException {
+		HostDescription host = new HostDescription();
+		host.hostDocument = HostDescriptionDocument.Factory.parse(xml);
+		return host;
+	}
 }

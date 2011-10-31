@@ -16,9 +16,8 @@
  */
 package org.apache.airavata.registry.api.user;
 
-import java.util.Iterator;
-
 import javax.jcr.RepositoryException;
+import java.util.Iterator;
 
 /**
  * A Group is a collection of {@link #getMembers() Authorizable}s.

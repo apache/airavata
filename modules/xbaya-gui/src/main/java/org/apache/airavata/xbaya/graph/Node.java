@@ -35,7 +35,6 @@ public interface Node extends GraphPiece {
      * 
      * @return the gui
      */
-    @Override
     public NodeGUI getGUI();
 
     /**
@@ -221,7 +220,7 @@ public interface Node extends GraphPiece {
     public boolean getRequireJoin();
 
     /**
-     * @return
-     */
-    public boolean isFinished();
+	 * @return
+	 */
+	public boolean isFinished();
 }

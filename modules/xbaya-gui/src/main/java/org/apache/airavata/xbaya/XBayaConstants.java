@@ -34,7 +34,7 @@ public class XBayaConstants {
      * The name of the project
      */
     public static final String PROJECT_NAME = "Apache Airavata";
-
+    
     /**
      * The name of the application
      */

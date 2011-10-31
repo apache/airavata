@@ -52,8 +52,7 @@ public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNo
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return getApplicationDeploymentDescriptionWrap().getDescription().getType().getApplicationName()
-                .getStringValue();
+        return getApplicationDeploymentDescriptionWrap().getDescription().getType().getApplicationName().getStringValue();
     }
 
     @Override
@@ -75,7 +74,6 @@ public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNo
         return Arrays.asList(EditAction.ID, DeleteAction.ID);
     }
 
-    @Override
     public boolean triggerAction(JTree tree, String action) throws Exception {
         if (action.equals(DeleteAction.ID)) {
             deleteApplicationDescription(tree);
@@ -90,13 +88,10 @@ public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNo
     private void deleteApplicationDescription(JTree tree) throws RegistryException {
         if (askQuestion("Application description",
                 "Are you sure that you want to remove the application description \""
-                        + getApplicationDeploymentDescriptionWrap().getDescription().getType().getApplicationName()
-                                .getStringValue() + "\"?")) {
-            getRegistry().deleteDeploymentDescription(
-                    getApplicationDeploymentDescriptionWrap().getService(),
+                        + getApplicationDeploymentDescriptionWrap().getDescription().getType().getApplicationName().getStringValue() + "\"?")) {
+            getRegistry().deleteDeploymentDescription(getApplicationDeploymentDescriptionWrap().getService(),
                     getApplicationDeploymentDescriptionWrap().getHost(),
-                    getApplicationDeploymentDescriptionWrap().getDescription().getType().getApplicationName()
-                            .getStringValue());
+                    getApplicationDeploymentDescriptionWrap().getDescription().getType().getApplicationName().getStringValue());
             ((AbstractAiravataTreeNode) getParent()).refresh();
             reloadTreeNode(tree, getParent());
         }

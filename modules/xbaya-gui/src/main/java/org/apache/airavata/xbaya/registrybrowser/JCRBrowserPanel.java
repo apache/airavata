@@ -82,7 +82,7 @@ public class JCRBrowserPanel extends JPanel implements Observer {
             this.add(scrollPane, BorderLayout.CENTER);
             {
                 tree = new JTree(AiravataTreeNodeFactory.getTreeNode(getJCRRegistry() == null ? "No registry specified"
-                        : getEngine(), null));
+                        : getJCRRegistry(), null));
                 tree.addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyPressed(KeyEvent e) {
@@ -101,7 +101,6 @@ public class JCRBrowserPanel extends JPanel implements Observer {
                 AbstractBrowserActionItem actionRefresh = new RefreshAction();
                 actionRefresh.getMenuItem().setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
                 actionRefresh.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent e) {
                         triggerNodeAction(RefreshAction.ID);
                     }
@@ -109,14 +108,12 @@ public class JCRBrowserPanel extends JPanel implements Observer {
 
                 actionDelete = new DeleteAction();
                 actionDelete.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent arg0) {
                         triggerNodeAction(DeleteAction.ID);
                     }
                 });
                 AddAction actionAdd = new AddAction();
                 actionAdd.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent arg0) {
                         triggerNodeAction(AddAction.ID);
                     }
@@ -124,7 +121,6 @@ public class JCRBrowserPanel extends JPanel implements Observer {
 
                 EditAction actionEdit = new EditAction();
                 actionEdit.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent arg0) {
                         triggerNodeAction(EditAction.ID);
                     }
@@ -135,9 +131,9 @@ public class JCRBrowserPanel extends JPanel implements Observer {
                 browserActions.add(actionDelete);
                 browserActions.add(actionEdit);
 
-                // popupMenu.add(actionAdd.getMenuItem());
-                // popupMenu.add(actionDelete.getMenuItem());
-                // popupMenu.add(actionRefresh.getMenuItem());
+//                popupMenu.add(actionAdd.getMenuItem());
+//                popupMenu.add(actionDelete.getMenuItem());
+//                popupMenu.add(actionRefresh.getMenuItem());
             }
         }
     }
@@ -191,14 +187,12 @@ public class JCRBrowserPanel extends JPanel implements Observer {
 
     private void addPopup(Component component, final JPopupMenu popup) {
         component.addMouseListener(new MouseAdapter() {
-            @Override
             public void mousePressed(MouseEvent e) {
                 if (e.isPopupTrigger()) {
                     showMenu(e);
                 }
             }
 
-            @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.isPopupTrigger()) {
                     showMenu(e);
@@ -224,10 +218,10 @@ public class JCRBrowserPanel extends JPanel implements Observer {
                             }
                         }
                     }
-
-                    if (popup.getSubElements().length > 0) {
-                        popup.show(e.getComponent(), e.getX(), e.getY());
-                    }
+                    
+                    if (popup.getSubElements().length>0) {
+						popup.show(e.getComponent(), e.getX(), e.getY());
+					}
                 }
             }
         });

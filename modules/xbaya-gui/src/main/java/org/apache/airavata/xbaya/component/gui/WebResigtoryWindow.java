@@ -108,7 +108,6 @@ public class WebResigtoryWindow {
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 ok();
             }
@@ -116,7 +115,6 @@ public class WebResigtoryWindow {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

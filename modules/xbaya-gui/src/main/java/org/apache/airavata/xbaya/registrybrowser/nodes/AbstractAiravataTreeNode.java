@@ -32,13 +32,13 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 
@@ -179,14 +179,6 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
         return rootNode;
     }
 
-    protected XBayaEngine getXBayaEngine() {
-        TreeNode root = getRootNode();
-        if (root instanceof RegistryNode) {
-            return ((RegistryNode) root).getEngine();
-        }
-        return null;
-    }
-
     public Registry getRegistry() {
         TreeNode rootNode = getRootNode();
         if (rootNode instanceof RegistryNode) {
@@ -211,13 +203,13 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
     public abstract Icon getActionIcon(AbstractBrowserActionItem action);
 
     public abstract String getActionDescription(AbstractBrowserActionItem action);
-
-    protected String wrapAsHtml(String... data) {
-        String result = "<html>";
-        for (String item : data) {
-            result += item;
-        }
-        result += "</html>";
-        return result;
+    
+    protected String wrapAsHtml(String...data){
+    	String result="<html>";
+    	for (String item : data) {
+			result+=item;
+		}
+    	result+="</html>";
+    	return result;
     }
 }

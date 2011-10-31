@@ -26,11 +26,7 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponentFactory;
-import org.apache.airavata.xbaya.graph.Edge;
-import org.apache.airavata.xbaya.graph.ForEachExecutableNode;
-import org.apache.airavata.xbaya.graph.Graph;
-import org.apache.airavata.xbaya.graph.GraphException;
-import org.apache.airavata.xbaya.graph.GraphSchema;
+import org.apache.airavata.xbaya.graph.*;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
@@ -38,7 +34,7 @@ import org.apache.airavata.xbaya.graph.ws.gui.WSNodeGUI;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.xmlpull.infoset.XmlElement;
 
-public class WSNode extends NodeImpl implements ForEachExecutableNode {
+public class WSNode extends NodeImpl implements ForEachExecutableNode{
 
     protected String wsdlID;
 
@@ -70,7 +66,6 @@ public class WSNode extends NodeImpl implements ForEachExecutableNode {
     /**
      * @see org.apache.airavata.xbaya.graph.Node#getGUI()
      */
-    @Override
     public NodeGUI getGUI() {
         if (this.gui == null) {
             this.gui = new WSNodeGUI(this);

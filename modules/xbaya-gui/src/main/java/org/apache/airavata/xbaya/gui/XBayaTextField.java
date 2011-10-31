@@ -56,7 +56,6 @@ public class XBayaTextField implements XBayaTextComponent {
     /**
      * @return The swing component.
      */
-    @Override
     public JTextField getSwingComponent() {
         return getTextField();
     }
@@ -71,7 +70,6 @@ public class XBayaTextField implements XBayaTextComponent {
     /**
      * @param text
      */
-    @Override
     public void setText(String text) {
         if (text == null) {
             text = "";
@@ -85,7 +83,6 @@ public class XBayaTextField implements XBayaTextComponent {
     /**
      * @return The text. It never returns null.
      */
-    @Override
     public String getText() {
         return this.textArea.getText().trim();
     }

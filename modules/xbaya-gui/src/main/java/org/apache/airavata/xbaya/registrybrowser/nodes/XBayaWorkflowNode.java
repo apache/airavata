@@ -42,12 +42,12 @@ public class XBayaWorkflowNode extends AbstractAiravataTreeNode {
 
     @Override
     protected List<TreeNode> getChildren() {
-        return getTreeNodeList(getXbayaWorkflow().getWorkflowServices().toArray(), this);
+        return getTreeNodeList(getXbayaWorkflow().getWorkflowServices().toArray(),this);
     }
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return getXbayaWorkflow().getWorkflowName() + " : " + getXbayaWorkflow().getWorkflowId();
+        return getXbayaWorkflow().getWorkflowName()+" : "+getXbayaWorkflow().getWorkflowId();
     }
 
     @Override
@@ -68,7 +68,6 @@ public class XBayaWorkflowNode extends AbstractAiravataTreeNode {
         return Arrays.asList();
     }
 
-    @Override
     public boolean triggerAction(JTree tree, String action) throws Exception {
         return super.triggerAction(tree, action);
     }

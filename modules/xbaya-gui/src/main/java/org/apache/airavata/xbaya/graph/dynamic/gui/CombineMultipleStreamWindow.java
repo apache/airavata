@@ -124,7 +124,6 @@ public class CombineMultipleStreamWindow {
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
 
                 ok();

@@ -85,7 +85,7 @@ public class XBayaEngine {
      */
     public XBayaEngine(XBayaConfiguration configuration) {
         this.configuration = configuration;
-        XBayaEngine.engine = this;
+        this.engine = this;
 
         // Creates some essential objects.
 
@@ -384,7 +384,7 @@ public class XBayaEngine {
      */
     public WorkflowPropertyWindow getWorkflowPropertyWindow() {
         if (this.workflowPropertiesWindow == null) {
-            this.workflowPropertiesWindow = new WorkflowPropertyWindow(XBayaEngine.engine);
+            this.workflowPropertiesWindow = new WorkflowPropertyWindow(this.engine);
         }
         return this.workflowPropertiesWindow;
     }

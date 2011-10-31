@@ -56,7 +56,6 @@ public class GraphGUI implements GraphPieceGUI {
      * @see org.apache.airavata.xbaya.graph.gui.GraphPieceGUI#mouseClicked(java.awt.event.MouseEvent,
      *      org.apache.airavata.xbaya.XBayaEngine)
      */
-    @Override
     public void mouseClicked(MouseEvent event, XBayaEngine engine) {
         GraphPiece piece = getGraphPieceAt(event.getPoint());
         if (piece != null) {

@@ -274,15 +274,15 @@ public class WSComponent extends Component {
 
         buf.append("<h2>Operation: " + this.operationName + "</h2>\n");
 
-        if (getInputPorts().size() > 0) {
-            buf.append("<h3>Input parameter(s)</h3>\n");
-            messageToHtml(getInputPorts(), buf);
-        }
-        if (getOutputPorts().size() > 0) {
-            buf.append("<h3>Output parameter(s)</h3>\n");
-            messageToHtml(getOutputPorts(), buf);
-        }
-        buf.append("</html>\n");
+        if (getInputPorts().size()>0) {
+			buf.append("<h3>Input parameter(s)</h3>\n");
+			messageToHtml(getInputPorts(), buf);
+		}
+		if (getOutputPorts().size()>0) {
+			buf.append("<h3>Output parameter(s)</h3>\n");
+			messageToHtml(getOutputPorts(), buf);
+		}
+		buf.append("</html>\n");
         return buf.toString();
     }
 

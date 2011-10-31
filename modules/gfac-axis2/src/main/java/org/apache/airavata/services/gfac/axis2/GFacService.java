@@ -85,7 +85,7 @@ public class GFacService implements ServiceLifeCycle {
          * Add dispatcher and security handler to inFlowPhases
          */
         for (Iterator<Phase> iterator = phases.iterator(); iterator.hasNext();) {
-            Phase phase = iterator.next();
+            Phase phase = (Phase) iterator.next();
             if ("Security".equals(phase.getPhaseName())) {
                 phase.addHandler(new MyProxySecurityHandler());
                 phase.addHandler(new AmazonSecurityHandler());
@@ -155,7 +155,6 @@ public class GFacService implements ServiceLifeCycle {
             this.context = context;
         }
 
-        @Override
         public void run() {
             try {
                 while (true) {

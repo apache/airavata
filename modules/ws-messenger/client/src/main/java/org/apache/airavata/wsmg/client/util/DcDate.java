@@ -37,7 +37,6 @@ import java.util.TimeZone;
  */
 public final class DcDate implements Cloneable {
 
-    @Override
     public Object clone() throws CloneNotSupportedException {
         // it is easy as object is immutable
         DcDate dd = (DcDate) super.clone();
@@ -309,7 +308,6 @@ public final class DcDate implements Cloneable {
         return sb.toString();
     }
 
-    @Override
     public String toString() {
         return canonical;
     }
@@ -335,7 +333,7 @@ public final class DcDate implements Cloneable {
             return "\\'";
         }
         if (ch > 127 || ch < 32) {
-            return "\\u" + Integer.toHexString(ch);
+            return "\\u" + Integer.toHexString((int) ch);
         }
         return "" + ch;
     }

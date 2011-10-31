@@ -81,14 +81,12 @@ public class ApplicationDeploymentDescriptionsNode extends AbstractAiravataTreeN
         return Arrays.asList(AddAction.ID, RefreshAction.ID, DeleteAction.ID);
     }
 
-    @Override
     public boolean triggerAction(JTree tree, String action) throws Exception {
         if (action.equals(DeleteAction.ID)) {
             deleteApplicationDescription(tree);
             return true;
         } else if (action.equals(AddAction.ID)) {
-            ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(
-                    getXBayaEngine());
+            ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(getRegistry());
             applicationDescriptionDialog.open();
             if (applicationDescriptionDialog.isApplicationDescCreated()) {
                 refresh();

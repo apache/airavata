@@ -22,12 +22,14 @@
 package org.apache.airavata.xbaya.ode;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentException;
@@ -40,6 +42,8 @@ import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
 import org.apache.airavata.xbaya.lead.LEADTypes;
 import org.apache.airavata.xbaya.lead.LEADWorkflowInvoker;
+import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
+import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.ietf.jgss.GSSCredential;
@@ -47,6 +51,7 @@ import org.ietf.jgss.GSSCredential;
 import xsul.XmlConstants;
 import xsul.invoker.gsi.GsiInvoker;
 import xsul.lead.LeadContextHeader;
+import xsul.lead.LeadResourceMapping;
 import xsul5.wsdl.WsdlDefinitions;
 
 public class ODEClient {
@@ -185,7 +190,6 @@ public class ODEClient {
             final LEADWorkflowInvoker finalInvoker = invoker;
 
             new Thread() {
-                @Override
                 public synchronized void run() {
                     boolean success;
                     try {

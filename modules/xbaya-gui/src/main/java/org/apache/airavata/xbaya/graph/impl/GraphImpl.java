@@ -99,7 +99,6 @@ public abstract class GraphImpl implements Graph {
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#getGUI()
      */
-    @Override
     public GraphGUI getGUI() {
         return this.gui;
     }
@@ -107,7 +106,6 @@ public abstract class GraphImpl implements Graph {
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#getID()
      */
-    @Override
     public String getID() {
         if (this.id == null) {
             // No other choice but to prompt
@@ -137,7 +135,6 @@ public abstract class GraphImpl implements Graph {
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#setName(java.lang.String)
      */
-    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -145,7 +142,6 @@ public abstract class GraphImpl implements Graph {
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#getName()
      */
-    @Override
     public String getName() {
         return this.name;
     }
@@ -153,7 +149,6 @@ public abstract class GraphImpl implements Graph {
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#getDescription()
      */
-    @Override
     public String getDescription() {
         return this.description;
     }
@@ -161,7 +156,6 @@ public abstract class GraphImpl implements Graph {
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#setDescription(java.lang.String)
      */
-    @Override
     public void setDescription(String description) {
         this.description = description;
     }
@@ -169,7 +163,6 @@ public abstract class GraphImpl implements Graph {
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#getNodes()
      */
-    @Override
     public List<NodeImpl> getNodes() {
         return this.nodes;
     }
@@ -177,7 +170,6 @@ public abstract class GraphImpl implements Graph {
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#getPorts()
      */
-    @Override
     public List<PortImpl> getPorts() {
         return this.ports;
     }
@@ -185,7 +177,6 @@ public abstract class GraphImpl implements Graph {
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#getEdges()
      */
-    @Override
     public List<EdgeImpl> getEdges() {
         return this.edges;
     }
@@ -193,7 +184,6 @@ public abstract class GraphImpl implements Graph {
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#removeNode(org.apache.airavata.xbaya.graph.Node)
      */
-    @Override
     public void removeNode(Node node) throws GraphException {
         if (node == null) {
             throw new IllegalArgumentException("null");
@@ -290,7 +280,6 @@ public abstract class GraphImpl implements Graph {
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#getNode(java.lang.String)
      */
-    @Override
     public NodeImpl getNode(String nodeID) {
         for (NodeImpl node : this.nodes) {
             if (nodeID.equals(node.getID())) {
@@ -325,7 +314,6 @@ public abstract class GraphImpl implements Graph {
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#getPort(java.lang.String)
      */
-    @Override
     public PortImpl getPort(String portID) {
         for (PortImpl port : this.ports) {
             if (portID.equals(port.getID())) {
@@ -339,7 +327,6 @@ public abstract class GraphImpl implements Graph {
      * @see org.apache.airavata.xbaya.graph.Graph#addEdge(org.apache.airavata.xbaya.graph.Port,
      *      org.apache.airavata.xbaya.graph.Port)
      */
-    @Override
     public Edge addEdge(Port fromPort, Port toPort) throws GraphException {
         if (containsEdge(fromPort, toPort)) {
             // The edge already exists. Doesn't create a new one.
@@ -379,7 +366,6 @@ public abstract class GraphImpl implements Graph {
      * @throws GraphException
      * @see org.apache.airavata.xbaya.graph.Graph#removeEdge(org.apache.airavata.xbaya.graph.Edge)
      */
-    @Override
     public void removeEdge(Edge edge) throws GraphException {
         if (!this.edges.contains(edge)) {
             throw new GraphException("The graph doesn't contain the specified edge.");
@@ -407,7 +393,6 @@ public abstract class GraphImpl implements Graph {
      * @see org.apache.airavata.xbaya.graph.Graph#removeEdge(org.apache.airavata.xbaya.graph.Port,
      *      org.apache.airavata.xbaya.graph.Port)
      */
-    @Override
     public void removeEdge(Port fromPort, Port toPort) throws GraphException {
         Collection<? extends Edge> fromEdges = fromPort.getEdges();
         for (Edge fromEdge : fromEdges) {
@@ -425,7 +410,6 @@ public abstract class GraphImpl implements Graph {
      * @see org.apache.airavata.xbaya.graph.Graph#containsEdge(org.apache.airavata.xbaya.graph.Port,
      *      org.apache.airavata.xbaya.graph.Port)
      */
-    @Override
     public boolean containsEdge(Port fromPort, Port toPort) {
         for (Edge fromEdge : fromPort.getEdges()) {
             Collection<? extends Edge> toEdges = toPort.getEdges();
@@ -440,7 +424,6 @@ public abstract class GraphImpl implements Graph {
      * @throws GraphException
      * @see org.apache.airavata.xbaya.graph.Graph#importGraph(org.apache.airavata.xbaya.graph.Graph)
      */
-    @Override
     public void importGraph(Graph graph) throws GraphException {
 
         // Does not support other implementations.
@@ -472,7 +455,6 @@ public abstract class GraphImpl implements Graph {
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#toXML()
      */
-    @Override
     public XmlElement toXML() {
 
         XmlElement graphElement = XMLUtil.BUILDER.newFragment(GraphSchema.NS, GraphSchema.GRAPH_TAG);

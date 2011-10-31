@@ -47,7 +47,6 @@ public class StoreMessageHandler extends AddressingBasedDispatcher {
     private Phase addressingPhase;
     private AxisOperation messageBoxOperation;
 
-    @Override
     public org.apache.axis2.engine.Handler.InvocationResponse invoke(MessageContext msgContext) throws AxisFault {
 
         InvocationResponse response = InvocationResponse.CONTINUE;

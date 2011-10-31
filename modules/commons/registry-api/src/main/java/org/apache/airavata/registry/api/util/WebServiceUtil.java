@@ -135,7 +135,7 @@ public class WebServiceUtil {
 
     }
 
-    private static void generateElementFromOutputType(OutputParameterType parameter, StringBuilder builder) {
+        private static void generateElementFromOutputType(OutputParameterType parameter, StringBuilder builder) {
 
         String type = parameter.getParameterType().getName();
         if (type.equals("String")) {

@@ -51,7 +51,6 @@ public class ExitNode extends SystemNode {
     /**
      * @see org.apache.airavata.xbaya.graph.Node#getGUI()
      */
-    @Override
     public NodeGUI getGUI() {
         if (gui == null) {
             this.gui = new ExitNodeGUI(this);

@@ -66,7 +66,6 @@ public class SubWorkflowNodeGUI extends NodeGUI {
         }
     }
 
-    @Override
     protected void setSelectedFlag(boolean flag) {
         this.selected = flag;
         if (this.selected) {

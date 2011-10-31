@@ -66,7 +66,6 @@ public class SimpleInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#setup()
      */
-    @Override
     public void setup() throws XBayaException {
         try {
             WSIFService service = WSIFServiceFactory.newInstance().getService(this.definitions);
@@ -81,7 +80,6 @@ public class SimpleInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#getClient()
      */
-    @Override
     public WSIFClient getClient() {
         return this.client;
     }
@@ -89,7 +87,6 @@ public class SimpleInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#setOperation(java.lang.String)
      */
-    @Override
     public void setOperation(String operationName) throws XBayaException {
         try {
             WSIFPort port = this.client.getPort();
@@ -106,7 +103,6 @@ public class SimpleInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#setInput(java.lang.String, java.lang.Object)
      */
-    @Override
     public void setInput(String name, Object value) throws XBayaException {
         try {
             if (value instanceof XmlElement) {
@@ -130,7 +126,6 @@ public class SimpleInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#getInputs()
      */
-    @Override
     public WSIFMessage getInputs() {
         return this.inputMessage;
     }
@@ -138,7 +133,6 @@ public class SimpleInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#invoke()
      */
-    @Override
     public boolean invoke() throws XBayaException {
         try {
             boolean success = this.operation.executeRequestResponseOperation(this.inputMessage, this.outputMessage,
@@ -153,7 +147,6 @@ public class SimpleInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#getOutputs()
      */
-    @Override
     public WSIFMessage getOutputs() {
         return this.outputMessage;
     }
@@ -161,7 +154,6 @@ public class SimpleInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#getOutput(java.lang.String)
      */
-    @Override
     public Object getOutput(String name) throws XBayaException {
         try {
             // This code doesn't work when the output is a complex type.
@@ -196,7 +188,6 @@ public class SimpleInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#getFault()
      */
-    @Override
     public WSIFMessage getFault() {
         return this.faultMessage;
     }

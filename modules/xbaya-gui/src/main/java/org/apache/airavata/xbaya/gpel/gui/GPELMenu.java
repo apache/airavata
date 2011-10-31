@@ -82,7 +82,6 @@ public class GPELMenu implements EventListener {
     /**
      * @see org.apache.airavata.xbaya.event.EventListener#eventReceived(org.apache.airavata.xbaya.event.Event)
      */
-    @Override
     public void eventReceived(Event event) {
 
         boolean connected;
@@ -142,7 +141,6 @@ public class GPELMenu implements EventListener {
             /**
              * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
              */
-            @Override
             public void actionPerformed(ActionEvent e) {
 
                 if (this.window == null) {
@@ -165,7 +163,6 @@ public class GPELMenu implements EventListener {
         item.addActionListener(new AbstractAction() {
             private GPELConfigurationWindow window;
 
-            @Override
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
                     this.window = new GPELConfigurationWindow(GPELMenu.this.engine);
@@ -183,7 +180,6 @@ public class GPELMenu implements EventListener {
         item.addActionListener(new AbstractAction() {
             private GPELDeployWindow window;
 
-            @Override
             public void actionPerformed(ActionEvent event) {
                 if (this.window == null) {
                     this.window = new GPELDeployWindow(GPELMenu.this.engine);
@@ -201,7 +197,6 @@ public class GPELMenu implements EventListener {
         item.addActionListener(new AbstractAction() {
             private GPELLoadWindow window;
 
-            @Override
             public void actionPerformed(ActionEvent event) {
                 if (this.window == null) {
                     this.window = new GPELLoadWindow(GPELMenu.this.engine);
@@ -219,7 +214,6 @@ public class GPELMenu implements EventListener {
         item.addActionListener(new AbstractAction() {
             private GPELInvokeWindow window;
 
-            @Override
             public void actionPerformed(ActionEvent event) {
                 if (this.window == null) {
                     this.window = new GPELInvokeWindow(GPELMenu.this.engine);
@@ -237,7 +231,6 @@ public class GPELMenu implements EventListener {
         item.addActionListener(new AbstractAction() {
             private GPELInvokeWindow window;
 
-            @Override
             public void actionPerformed(ActionEvent event) {
                 if (this.window == null) {
                     this.window = new GPELInvokeWindow(GPELMenu.this.engine);
@@ -255,7 +248,6 @@ public class GPELMenu implements EventListener {
         item.addActionListener(new AbstractAction() {
             private GPELRegistryWindow window;
 
-            @Override
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
                     this.window = new GPELRegistryWindow(GPELMenu.this.engine);
@@ -273,7 +265,6 @@ public class GPELMenu implements EventListener {
         item.addActionListener(new AbstractAction() {
             private WorkflowModifierGUI modifierGUI;
 
-            @Override
             public void actionPerformed(ActionEvent event) {
                 if (this.modifierGUI == null) {
                     this.modifierGUI = new WorkflowModifierGUI(GPELMenu.this.engine);

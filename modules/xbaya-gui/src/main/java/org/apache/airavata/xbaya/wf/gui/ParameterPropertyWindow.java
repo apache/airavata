@@ -149,7 +149,6 @@ public class ParameterPropertyWindow {
         this.okButton = new JButton("OK");
         this.okButton.setDefaultCapable(true);
         this.okButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 ok();
             }
@@ -158,7 +157,6 @@ public class ParameterPropertyWindow {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

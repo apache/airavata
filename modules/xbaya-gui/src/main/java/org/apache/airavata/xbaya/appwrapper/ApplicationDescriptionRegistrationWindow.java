@@ -21,19 +21,19 @@
 
 package org.apache.airavata.xbaya.appwrapper;
 
+import java.util.Map;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.amazonaws.services.importexport.model.JobType;
 import org.apache.airavata.common.utils.NameValidator;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.BatchApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.ProjectAccountType;
-import org.apache.airavata.schemas.gfac.QueueType;
+import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaComboBox;
@@ -41,6 +41,7 @@ import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
 import org.ogce.schemas.gfac.beans.ApplicationBean;
+import org.ogce.schemas.gfac.documents.ApplicationDescriptionDocument;
 
 public class ApplicationDescriptionRegistrationWindow {
     private XBayaDialog dialog;
@@ -329,10 +330,10 @@ public class ApplicationDescriptionRegistrationWindow {
             // this.tmpDirTextField.getText is not yet set to any value.
             // Don't know how the job type is setting Enum has three values
             appDesc1.getJobType();
-            if (pCount != null) {
+            if(pCount != null){
                 appDesc1.setCpuCount(pCount);
             }
-            if (maxWallTime != null) {
+            if(maxWallTime != null){
                 appDesc1.setMaxWallTime(maxWallTime);
             }
             ProjectAccountType projectAccountType = appDesc1.addNewProjectAccount();

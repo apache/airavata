@@ -45,7 +45,6 @@ public class CombineMultipleStreamNodeGUI extends CepNodeGUI {
         this.node = node;
     }
 
-    @Override
     public void mouseClicked(MouseEvent event, XBayaEngine engine) {
         if (event.getClickCount() >= 2) {
             showWindow(engine);

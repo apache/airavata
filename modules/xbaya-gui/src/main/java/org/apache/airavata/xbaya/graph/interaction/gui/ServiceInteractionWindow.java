@@ -83,7 +83,6 @@ public class ServiceInteractionWindow {
             /**
              * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
              */
-            @Override
             public void actionPerformed(ActionEvent e) {
                 send();
 
@@ -93,7 +92,6 @@ public class ServiceInteractionWindow {
 
         JButton cancelButton = new JButton("Done");
         cancelButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

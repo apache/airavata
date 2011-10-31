@@ -124,7 +124,6 @@ public class AdditionalMessageContent implements Serializable {
         this.trackId = trackId;
     }
 
-    @Override
     public String toString() {
         return String.format("msgId = %s, trackId = %s, topic = %s", messageID, trackId, topicElement);
     }

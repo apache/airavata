@@ -124,7 +124,6 @@ public class WsmgClient implements ConsumerNotificationHandler, NotificationHand
     /**
      * @see org.apache.airavata.wsmg.client.NotificationHandler#handleNotification(java.lang.String)
      */
-    @Override
     public void handleNotification(SOAPEnvelope message) {
         String soapBody = message.getBody().toString();
         this.handleNotification(soapBody);
@@ -134,7 +133,6 @@ public class WsmgClient implements ConsumerNotificationHandler, NotificationHand
      * 
      * @param message
      */
-    @Override
     public void handleNotification(String message) {
         try {
             XmlElement event = XMLUtil.stringToXmlElement(message);

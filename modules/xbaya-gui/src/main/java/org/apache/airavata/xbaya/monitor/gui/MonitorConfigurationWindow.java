@@ -148,7 +148,6 @@ public class MonitorConfigurationWindow {
 
         this.messageBoxTextField.setEnabled(false);
         this.pullCheckBox.addItemListener(new ItemListener() {
-            @Override
             public void itemStateChanged(ItemEvent event) {
                 int stateChange = event.getStateChange();
                 if (stateChange == ItemEvent.SELECTED) {
@@ -172,7 +171,6 @@ public class MonitorConfigurationWindow {
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 setConfiguration();
             }
@@ -180,7 +178,6 @@ public class MonitorConfigurationWindow {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

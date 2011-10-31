@@ -131,7 +131,8 @@ public class ODEDeploymentDescriptor {
                         QName portTypeQname = null;
                         // find the qname of the porttype
                         while (namespaceIterator.hasNext()) {
-                            org.xmlpull.infoset.XmlNamespace ns = namespaceIterator.next();
+                            org.xmlpull.infoset.XmlNamespace ns = (org.xmlpull.infoset.XmlNamespace) namespaceIterator
+                                    .next();
                             if (ns.getPrefix().equals(portTypeSegs[0])) {
                                 portTypeQname = new QName(ns.getName(), portTypeSegs[1]);
                             }

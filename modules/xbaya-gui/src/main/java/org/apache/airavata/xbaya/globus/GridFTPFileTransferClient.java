@@ -21,6 +21,13 @@
 
 package org.apache.airavata.xbaya.globus;
 
+import org.globusonline.transfer.APIError;
+import org.globusonline.transfer.BaseTransferAPIClient;
+import org.globusonline.transfer.JSONTransferAPIClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.DateFormat;
@@ -29,13 +36,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.globusonline.transfer.APIError;
-import org.globusonline.transfer.BaseTransferAPIClient;
-import org.globusonline.transfer.JSONTransferAPIClient;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class GridFTPFileTransferClient {
     private JSONTransferAPIClient client;

@@ -21,172 +21,184 @@
 
 package org.apache.airavata.xbaya.appwrapper;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.regex.Pattern;
 
-import javax.swing.AbstractAction;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
 
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.gui.GridPanel;
-import org.apache.airavata.xbaya.gui.XBayaDialog;
-import org.apache.airavata.xbaya.gui.XBayaLabel;
-import org.apache.airavata.xbaya.gui.XBayaTextField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HostDescriptionDialog extends JDialog {
 
-    private XBayaEngine engine;
-
-    private XBayaDialog dialog;
-
-    private XBayaTextField hostIdTextField;
-
-    private XBayaTextField hostAddressTextField;
-
-    private XBayaTextField globusGateKeeperTextField;
-
-    private XBayaTextField GridFTPTextField;
-
+    private static final Logger log = LoggerFactory.getLogger(HostDescriptionDialog.class);
+    
+    private static final long serialVersionUID = 1423293834766468324L;
+    private JTextField txtHostLocation;
+    private JTextField txtHostName;
     private HostDescription hostDescription;
-
-    private GlobusHostType globusHostType;
-
-    private boolean hostCreated = false;
-
-    private boolean isGlobusHostCreated = false;
-
     private Registry registry;
+    private JButton okButton;
+    private boolean hostCreated = false;
+    private JLabel lblError;
 
     /**
-     * @param engine
-     *            XBaya workflow engine
+     * Launch the application.
      */
-    public HostDescriptionDialog(XBayaEngine engine) {
-        this.engine = engine;
-        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
+    public static void main(String[] args) {
+        try {
+            HostDescriptionDialog dialog = new HostDescriptionDialog(null);
+            dialog.open();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void open() {
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setVisible(true);
+    }
+
+    protected HostDescriptionDialog getDialog() {
+        return this;
+    }
+
+    /**
+     * Create the dialog.
+     */
+    public HostDescriptionDialog(Registry registry) {
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowOpened(WindowEvent arg0) {
+                String baseName = "Host";
+                int i = 1;
+                String defaultName = baseName + i;
+                try {
+                    while (getRegistry().getHostDescription(defaultName) != null) {
+                        defaultName = baseName + (++i);
+                    }
+                } catch (RegistryException e) {
+                    log.error("error", e);
+                }
+                txtHostName.setText(defaultName);
+                setHostId(txtHostName.getText());
+            }
+        });
+        setRegistry(registry);
         initGUI();
     }
 
-    /**
-     * Displays the dialog.
-     */
-    @Override
-    public void show() {
-        this.dialog.show();
-    }
-
-    @Override
-    public void hide() {
-        this.dialog.hide();
-    }
-
-    private void ok() {
-        String hostId = this.hostIdTextField.getText();
-        String hostAddress = this.hostAddressTextField.getText();
-        String globusGateKeeperEPR = this.globusGateKeeperTextField.getText();
-        String gridFTP = this.GridFTPTextField.getText();
-
-        if ((globusGateKeeperEPR != null) || (gridFTP != null)) {
-            isGlobusHostCreated = true;
-        }
-
-        // TODO the logic here
-
-        setHostId(hostId);
-        setHostLocation(hostAddress);
-        if (globusGateKeeperEPR != null) {
-            setGlobusGateKeeperEPR(globusGateKeeperEPR);
-        }
-        if (gridFTP != null) {
-            setGridFTPEPR(globusGateKeeperEPR);
-        }
-
-        saveHostDescription();
-        hide();
-    }
-
-    private void setGlobusGateKeeperEPR(String epr) {
-        if (hostDescription.getType() == GlobusHostType.type) {
-            ((GlobusHostType) hostDescription).addGlobusGateKeeperEndPoint(epr);
-        }
-    }
-
-    private String[] getGlobusGateKeeperEPR(String epr) {
-        if (hostDescription.getType() == GlobusHostType.type) {
-            return ((GlobusHostType) hostDescription).getGlobusGateKeeperEndPointArray();
-        } else {
-            return null;
-        }
-    }
-
-    private void setGridFTPEPR(String epr) {
-        if (hostDescription.getType() == GlobusHostType.type) {
-            ((GlobusHostType) hostDescription).addGridFTPEndPoint(epr);
-        }
-    }
-
-    private String[] getGridFTPEPR(String epr) {
-        if (hostDescription.getType() == GlobusHostType.type) {
-            return ((GlobusHostType) hostDescription).getGridFTPEndPointArray();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Initializes the GUI.
-     */
     private void initGUI() {
-        this.hostIdTextField = new XBayaTextField();
-        this.hostAddressTextField = new XBayaTextField();
-        this.globusGateKeeperTextField = new XBayaTextField();
-        this.GridFTPTextField = new XBayaTextField();
+        setTitle("New Host Description");
+        setBounds(100, 100, 455, 182);
+        setModal(true);
+        setLocationRelativeTo(null);
+        getContentPane().setLayout(new BorderLayout());
+        {
+            JPanel buttonPane = new JPanel();
+            buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+            getContentPane().add(buttonPane, BorderLayout.SOUTH);
+            {
+                okButton = new JButton("Save");
+                okButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        saveHostDescription();
+                        close();
+                    }
+                });
 
-        XBayaLabel hostIdLabel = new XBayaLabel("Host ID", this.hostIdTextField);
-        XBayaLabel hostAddressLabel = new XBayaLabel("Host Address", this.hostAddressTextField);
-        XBayaLabel globusGateKeeperLabel = new XBayaLabel("Gloubus Gate Keeper Endpoint",
-                this.globusGateKeeperTextField);
-        XBayaLabel gridFTPLabel = new XBayaLabel("Grid FTP Endpoint", this.GridFTPTextField);
-
-        GridPanel infoPanel = new GridPanel();
-        infoPanel.add(hostIdLabel);
-        infoPanel.add(this.hostIdTextField);
-        infoPanel.add(hostAddressLabel);
-        infoPanel.add(this.hostAddressTextField);
-        infoPanel.add(globusGateKeeperLabel);
-        infoPanel.add(globusGateKeeperTextField);
-        infoPanel.add(gridFTPLabel);
-        infoPanel.add(this.GridFTPTextField);
-        infoPanel.layout(4, 2, GridPanel.WEIGHT_NONE, 1);
-
-        JButton okButton = new JButton("OK");
-        okButton.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ok();
+                lblError = new JLabel("");
+                lblError.setForeground(Color.RED);
+                buttonPane.add(lblError);
+                okButton.setEnabled(false);
+                okButton.setActionCommand("OK");
+                buttonPane.add(okButton);
+                getRootPane().setDefaultButton(okButton);
             }
-        });
-
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                hide();
+            {
+                JButton cancelButton = new JButton("Cancel");
+                cancelButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        setHostCreated(false);
+                        close();
+                    }
+                });
+                cancelButton.setActionCommand("Cancel");
+                buttonPane.add(cancelButton);
             }
-        });
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.add(okButton);
-        buttonPanel.add(cancelButton);
-
-        this.dialog = new XBayaDialog(this.engine, "New Host Description", infoPanel, buttonPanel);
-        this.dialog.setDefaultButton(okButton);
+        }
+        {
+            JPanel panel = new JPanel();
+            getContentPane().add(panel, BorderLayout.CENTER);
+            JLabel lblHostName = new JLabel("Host id");
+            JLabel lblHostLocationip = new JLabel("Host address");
+            txtHostLocation = new JTextField();
+            txtHostLocation.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    setHostLocation(txtHostLocation.getText());
+                }
+            });
+            txtHostLocation.setColumns(10);
+            txtHostName = new JTextField();
+            txtHostName.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    setHostId(txtHostName.getText());
+                }
+            });
+            txtHostName.setColumns(10);
+            GroupLayout gl_panel = new GroupLayout(panel);
+            gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(
+                    gl_panel.createSequentialGroup()
+                            .addGap(22)
+                            .addGroup(
+                                    gl_panel.createParallelGroup(Alignment.TRAILING).addComponent(lblHostName)
+                                            .addComponent(lblHostLocationip))
+                            .addGap(18)
+                            .addGroup(
+                                    gl_panel.createParallelGroup(Alignment.LEADING, false)
+                                            .addComponent(txtHostLocation)
+                                            .addComponent(txtHostName, GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE))
+                            .addGap(37)));
+            gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(
+                    gl_panel.createSequentialGroup()
+                            .addGap(31)
+                            .addGroup(
+                                    gl_panel.createParallelGroup(Alignment.BASELINE)
+                                            .addComponent(txtHostName, GroupLayout.PREFERRED_SIZE,
+                                                    GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(lblHostName))
+                            .addPreferredGap(ComponentPlacement.RELATED)
+                            .addGroup(
+                                    gl_panel.createParallelGroup(Alignment.BASELINE)
+                                            .addComponent(txtHostLocation, GroupLayout.PREFERRED_SIZE,
+                                                    GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(lblHostLocationip)).addGap(176)));
+            gl_panel.setAutoCreateGaps(true);
+            gl_panel.setAutoCreateContainerGaps(true);
+            panel.setLayout(gl_panel);
+        }
+        setResizable(false);
+        getRootPane().setDefaultButton(okButton);
     }
 
     public String getHostId() {
@@ -234,13 +246,13 @@ public class HostDescriptionDialog extends JDialog {
         } catch (Exception e) {
             message = e.getLocalizedMessage();
         }
-        // okButton.setEnabled(message == null);
-        // setError(message);
+        okButton.setEnabled(message == null);
+        setError(message);
     }
 
-    /*
-     * public void close() { getDialog().setVisible(false); }
-     */
+    public void close() {
+        getDialog().setVisible(false);
+    }
 
     public boolean isHostCreated() {
         return hostCreated;
@@ -252,11 +264,7 @@ public class HostDescriptionDialog extends JDialog {
 
     public HostDescription getHostDescription() {
         if (hostDescription == null) {
-            if (isGlobusHostCreated) {
-                hostDescription = new HostDescription(GlobusHostType.type);
-            } else {
-                hostDescription = new HostDescription();
-            }
+            hostDescription = new HostDescription();
         }
         return hostDescription;
     }
@@ -266,10 +274,13 @@ public class HostDescriptionDialog extends JDialog {
         setHostCreated(true);
     }
 
-    /*
-     * private void setError(String errorMessage) { if (errorMessage == null || errorMessage.trim().equals("")) {
-     * lblError.setText(""); } else { lblError.setText(errorMessage.trim()); } }
-     */
+    private void setError(String errorMessage) {
+        if (errorMessage == null || errorMessage.trim().equals("")) {
+            lblError.setText("");
+        } else {
+            lblError.setText(errorMessage.trim());
+        }
+    }
 
     public Registry getRegistry() {
         return registry;

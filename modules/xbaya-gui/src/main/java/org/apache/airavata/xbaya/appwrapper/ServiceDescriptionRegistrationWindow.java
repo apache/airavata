@@ -24,21 +24,24 @@ package org.apache.airavata.xbaya.appwrapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.NameValidator;
-import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaComboBox;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
+import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.ogce.schemas.gfac.beans.MethodBean;
 import org.ogce.schemas.gfac.beans.ServiceBean;
 import org.ogce.schemas.gfac.beans.utils.ParamObject;

@@ -20,10 +20,11 @@
  */
 package org.apache.airavata.common.workflow.execution.context;
 
-import java.io.File;
-
 import org.apache.airavata.common.utils.XMLUtil;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.io.File;
 
 public class WorkflowContextHeaderBuilderTest {
     @Test

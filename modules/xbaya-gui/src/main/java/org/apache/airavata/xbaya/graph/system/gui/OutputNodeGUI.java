@@ -22,10 +22,13 @@
 package org.apache.airavata.xbaya.graph.system.gui;
 
 import java.awt.Color;
+import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.BrowserLauncher;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
 
 public class OutputNodeGUI extends ConfigurableNodeGUI {
@@ -79,7 +82,6 @@ public class OutputNodeGUI extends ConfigurableNodeGUI {
 
     }
 
-    @Override
     protected void setSelectedFlag(boolean flag) {
         this.selected = flag;
         if (this.selected) {

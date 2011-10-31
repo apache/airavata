@@ -29,7 +29,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.WindowConstants;
 
 import org.apache.airavata.xbaya.XBayaEngine;
 
@@ -48,7 +47,7 @@ public class JCRBrowserDialog extends JDialog {
     public static void main(String[] args) {
         try {
             JCRBrowserDialog dialog = new JCRBrowserDialog(null);
-            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,7 +86,6 @@ public class JCRBrowserDialog extends JDialog {
             {
                 JButton okButton = new JButton("Close");
                 okButton.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent e) {
                         close();
                     }

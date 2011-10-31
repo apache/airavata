@@ -91,7 +91,6 @@ public class XBayaToolBar implements XBayaComponent {
      * 
      * @return The toolbar
      */
-    @Override
     public JComponent getSwingComponent() {
         return this.toolbar;
     }
@@ -107,7 +106,6 @@ public class XBayaToolBar implements XBayaComponent {
         addNodeButton.addActionListener(new AbstractAction() {
             private static final long serialVersionUID = 1L;
 
-            @Override
             public void actionPerformed(ActionEvent event) {
                 try {
                     XBayaToolBar.this.engine.getGUI().addNode();
@@ -123,7 +121,6 @@ public class XBayaToolBar implements XBayaComponent {
         removeNodeButton.addActionListener(new AbstractAction() {
             private static final long serialVersionUID = 1L;
 
-            @Override
             public void actionPerformed(ActionEvent event) {
                 try {
                     XBayaToolBar.this.engine.getGUI().getGraphCanvas().removeSelectedNode();
@@ -142,7 +139,6 @@ public class XBayaToolBar implements XBayaComponent {
         connectEdgeButton.addActionListener(new AbstractAction() {
             private static final long serialVersionUID = 1L;
 
-            @Override
             public void actionPerformed(ActionEvent event) {
                 try {
                     XBayaToolBar.this.engine.getGUI().getGraphCanvas().addOrRemoveEdge();
@@ -161,7 +157,6 @@ public class XBayaToolBar implements XBayaComponent {
             /**
              * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
              */
-            @Override
             public void actionPerformed(ActionEvent e1) {
                 try {
                     Workflow workflow = engine.getWorkflow();
@@ -190,7 +185,6 @@ public class XBayaToolBar implements XBayaComponent {
             /**
              * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
              */
-            @Override
             public void actionPerformed(ActionEvent e2) {
                 try {
                     if (engine.getWorkflow().getExecutionState() == XBayaExecutionState.PAUSED) {
@@ -213,7 +207,6 @@ public class XBayaToolBar implements XBayaComponent {
             /**
              * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
              */
-            @Override
             public void actionPerformed(ActionEvent e1) {
                 try {
                     if (engine.getWorkflow().getExecutionState() != XBayaExecutionState.NONE

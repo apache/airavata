@@ -23,8 +23,8 @@ package org.apache.airavata.wsmg.broker.wseventing;
 
 import org.apache.airavata.wsmg.broker.AbstractBrokerMsgReceiver;
 import org.apache.airavata.wsmg.broker.context.ProcessingContext;
-import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
 import org.apache.airavata.wsmg.util.WsEventingOperations;
 import org.apache.axiom.om.OMElement;

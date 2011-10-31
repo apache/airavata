@@ -60,7 +60,6 @@ public class DynamicInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutput(java.lang.String)
      */
-    @Override
     public Object getOutput(String name) throws XBayaException {
         waitToFinish();
         return result;
@@ -69,7 +68,6 @@ public class DynamicInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#invoke()
      */
-    @Override
     public boolean invoke() throws XBayaException {
         try {
             Class<?> targetClass = Class.forName(this.className);
@@ -99,7 +97,6 @@ public class DynamicInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setInput(java.lang.String, java.lang.Object)
      */
-    @Override
     public void setInput(String name, Object value) throws XBayaException {
 
     }
@@ -107,7 +104,6 @@ public class DynamicInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setOperation(java.lang.String)
      */
-    @Override
     public void setOperation(String operationName) throws XBayaException {
         this.operationName = operationName;
     }
@@ -115,7 +111,6 @@ public class DynamicInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setup()
      */
-    @Override
     public void setup() throws XBayaException {
         Class[] parameters = new Class[] { URL.class };
         URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
@@ -149,7 +144,6 @@ public class DynamicInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutputs()
      */
-    @Override
     public WSIFMessage getOutputs() throws XBayaException {
         waitToFinish();
         return (WSIFMessage) this.result;

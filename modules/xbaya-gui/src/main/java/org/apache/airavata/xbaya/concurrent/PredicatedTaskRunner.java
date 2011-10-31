@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
+*/
 package org.apache.airavata.xbaya.concurrent;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -26,123 +26,134 @@ import java.util.concurrent.Executors;
 
 /**
  * Used to run jobs that need to be started after a predicate is
- * 
+ *
  * @author Chathura Herath
  */
 public class PredicatedTaskRunner {
 
-    protected volatile ConcurrentLinkedQueue<PredicatedExecutable> jobQueue = new ConcurrentLinkedQueue<PredicatedExecutable>();
+	protected volatile ConcurrentLinkedQueue<PredicatedExecutable> jobQueue = new ConcurrentLinkedQueue<PredicatedExecutable>();
 
-    protected ExecutorService threadPool;
+	protected ExecutorService threadPool;
 
-    protected volatile boolean stop = false;
+	protected volatile boolean stop = false;
 
-    public PredicatedTaskRunner(int numberOfThreads) {
-        this.threadPool = Executors.newFixedThreadPool(numberOfThreads);
-        addIdleTask();
-        startCheckThread();
+	public PredicatedTaskRunner(int numberOfThreads) {
+		this.threadPool = Executors.newFixedThreadPool(numberOfThreads);
+		addIdleTask();
+		startCheckThread();
 
-    }
+	}
 
-    private void addIdleTask() {
-        PredicatedExecutable sleepTask = new PredicatedExecutable() {
+	private void addIdleTask() {
+		PredicatedExecutable sleepTask = new PredicatedExecutable() {
 
-            @Override
-            public void run() {
-                synchronized (jobQueue) {
-                    if (jobQueue.size() == 1) {
-                        try {
-                            jobQueue.wait();
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    } else if (allTasksAreWaiting(jobQueue)) {
-                        try {
-                            Thread.sleep(50);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
-                }
+			@Override
+			public void run() {
+				synchronized (jobQueue) {
+					if (jobQueue.size() == 1) {
+						try {
+							jobQueue.wait();
+						} catch (InterruptedException e) {
+							Thread.currentThread().interrupt();
+						}
+					} else if (allTasksAreWaiting(jobQueue)) {
+						try {
+							Thread.sleep(50);
+						} catch (InterruptedException e) {
+							Thread.currentThread().interrupt();
+						}
+					}
+				}
 
-            }
+			}
 
-            private boolean allTasksAreWaiting(ConcurrentLinkedQueue<PredicatedExecutable> jobQueue) {
-                for (PredicatedExecutable predicatedExecutable : jobQueue) {
-                    if (predicatedExecutable.isReady()) {
-                        return false;
-                    }
-                }
-                return true;
+			private boolean allTasksAreWaiting(
+					ConcurrentLinkedQueue<PredicatedExecutable> jobQueue) {
+				for (PredicatedExecutable predicatedExecutable : jobQueue) {
+					if (predicatedExecutable.isReady()) {
+						return false;
+					}
+				}
+				return true;
 
-            }
+			}
 
-            @Override
-            public boolean isReady() {
-                // TODO Auto-generated method stub
-                return true;
-            }
-        };
+			@Override
+			public boolean isReady() {
+				// TODO Auto-generated method stub
+				return true;
+			}
+		};
 
-        this.jobQueue.add(sleepTask);
-    }
+		this.jobQueue.add(sleepTask);
+	}
 
-    private void startCheckThread() {
-        new Thread(new Runnable() {
+	private void startCheckThread() {
+		new Thread(new Runnable() {
 
-            @Override
-            public void run() {
+			@Override
+			public void run() {
 
-                while (!stop) {
-                    try {
+				while (!stop) {
+					try {
 
-                        synchronized (jobQueue) {
-                            while (jobQueue.size() == 0 || allTasksAreWaiting(jobQueue)) {
-                                jobQueue.wait(50);
-                            }
-                        }
 
-                        PredicatedExecutable job = jobQueue.remove();
-                        if (job.isReady()) {
-                            // remove from front and execute and you are done
-                            threadPool.execute(job);
-                        } else {
-                            // add to end if not ready to run
-                            jobQueue.add(job);
-                        }
 
-                    } catch (Throwable e) {
-                        // we go on no matter what
-                        e.printStackTrace();
-                    }
-                }
 
-            }
-        }).start();
-    }
 
-    private boolean allTasksAreWaiting(ConcurrentLinkedQueue<PredicatedExecutable> jobQueue) {
-        for (PredicatedExecutable predicatedExecutable : jobQueue) {
-            if (predicatedExecutable.isReady()) {
-                return false;
-            }
-        }
-        return true;
+						synchronized (jobQueue) {
+							while(jobQueue.size() == 0 || allTasksAreWaiting(jobQueue)){
+								jobQueue.wait(50);
+							}
+						}
 
-    }
+						PredicatedExecutable job = jobQueue.remove();
+						if (job.isReady()) {
+							// remove from front and execute and you are done
+							threadPool.execute(job);
+						} else {
+							// add to end if not ready to run
+							jobQueue.add(job);
+						}
 
-    public void scedule(PredicatedExecutable job) {
 
-        synchronized (jobQueue) {
-            this.jobQueue.add(job);
-            this.jobQueue.notifyAll();
-        }
 
-    }
 
-    public void shutDown() {
-        this.threadPool.shutdown();
-        this.stop = true;
-    }
+
+
+					} catch (Throwable e) {
+						// we go on no matter what
+						e.printStackTrace();
+					}
+				}
+
+			}
+		}).start();
+	}
+
+	private  boolean allTasksAreWaiting(
+			ConcurrentLinkedQueue<PredicatedExecutable> jobQueue) {
+		for (PredicatedExecutable predicatedExecutable : jobQueue) {
+			if (predicatedExecutable.isReady()) {
+				return false;
+			}
+		}
+		return true;
+
+	}
+
+	public void scedule(PredicatedExecutable job) {
+
+		synchronized (jobQueue) {
+			this.jobQueue.add(job);
+			this.jobQueue.notifyAll();
+		}
+
+	}
+
+	public void shutDown() {
+		this.threadPool.shutdown();
+		this.stop = true;
+	}
 
 }

@@ -30,7 +30,6 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 import org.apache.airavata.xbaya.registrybrowser.model.ApplicationDeploymentDescriptions;
@@ -42,15 +41,12 @@ import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowTemplates;
 
 public class RegistryNode extends AbstractAiravataTreeNode {
     private Registry registry;
-    private XBayaEngine engine;
 
-    public RegistryNode(XBayaEngine engine, TreeNode parent) {
+    public RegistryNode(Registry registry, TreeNode parent) {
         super(parent);
-        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
-        this.engine = engine;
+        setRegistry(registry);
     }
 
-    @Override
     protected List<TreeNode> getChildren() {
         List<Object> children = new ArrayList<Object>();
         GFacURLs gFacURLs = new GFacURLs(getRegistry());
@@ -69,7 +65,6 @@ public class RegistryNode extends AbstractAiravataTreeNode {
         return getTreeNodeList(children.toArray(), this);
     }
 
-    @Override
     public Registry getRegistry() {
         return registry;
     }
@@ -116,13 +111,5 @@ public class RegistryNode extends AbstractAiravataTreeNode {
     @Override
     public String getActionDescription(AbstractBrowserActionItem action) {
         return null;
-    }
-
-    public XBayaEngine getEngine() {
-        return engine;
-    }
-
-    public void setEngine(XBayaEngine engine) {
-        this.engine = engine;
     }
 }

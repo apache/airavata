@@ -28,29 +28,32 @@ import org.apache.xmlbeans.XmlException;
 
 public class ApplicationDeploymentDescription implements Type {
 
-    private ApplicationDeploymentDescriptionDocument appDocument;
+	private ApplicationDeploymentDescriptionDocument appDocument;
 
-    public ApplicationDeploymentDescription() {
-        this.appDocument = ApplicationDeploymentDescriptionDocument.Factory.newInstance();
-        this.appDocument.addNewApplicationDeploymentDescription();
-    }
+	public ApplicationDeploymentDescription() {
+		this.appDocument = ApplicationDeploymentDescriptionDocument.Factory
+				.newInstance();
+		this.appDocument.addNewApplicationDeploymentDescription();
+	}
 
-    public ApplicationDeploymentDescription(SchemaType type) {
-        this();
-        this.appDocument.getApplicationDeploymentDescription().changeType(type);
-    }
+	public ApplicationDeploymentDescription(SchemaType type) {
+		this();
+		this.appDocument.getApplicationDeploymentDescription().changeType(type);
+	}
 
-    public ApplicationDeploymentDescriptionType getType() {
-        return this.appDocument.getApplicationDeploymentDescription();
-    }
+	public ApplicationDeploymentDescriptionType getType() {
+		return this.appDocument.getApplicationDeploymentDescription();
+	}
 
-    public String toXML() {
-        return appDocument.xmlText();
-    }
+	public String toXML() {
+		return appDocument.xmlText();
+	}
 
-    public static ApplicationDeploymentDescription fromXML(String xml) throws XmlException {
-        ApplicationDeploymentDescription app = new ApplicationDeploymentDescription();
-        app.appDocument = ApplicationDeploymentDescriptionDocument.Factory.parse(xml);
-        return app;
-    }
+	public static ApplicationDeploymentDescription fromXML(String xml)
+			throws XmlException {
+		ApplicationDeploymentDescription app = new ApplicationDeploymentDescription();
+		app.appDocument = ApplicationDeploymentDescriptionDocument.Factory
+				.parse(xml);
+		return app;
+	}
 }

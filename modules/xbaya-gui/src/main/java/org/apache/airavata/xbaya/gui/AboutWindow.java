@@ -75,7 +75,6 @@ public class AboutWindow {
         JButton okButton = new JButton("OK");
         okButton.setDefaultCapable(true);
         okButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }
@@ -89,7 +88,6 @@ public class AboutWindow {
         editorPane.setEditable(false);
         editorPane.setBackground(buttonPanel.getBackground());
         editorPane.addHyperlinkListener(new HyperlinkListener() {
-            @Override
             public void hyperlinkUpdate(HyperlinkEvent event) {
                 logger.debug("Event:" + event);
                 if (event.getEventType() == EventType.ACTIVATED) {

@@ -21,12 +21,12 @@
 
 package org.apache.airavata.wsmg.client;
 
-import java.rmi.RemoteException;
-
 import org.apache.airavata.wsmg.client.msgbox.MessagePuller;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
+
+import java.rmi.RemoteException;
 
 public interface MessageBrokerClient {
 

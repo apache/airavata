@@ -1108,12 +1108,10 @@ public class GraphCanvas {
 
         this.panel.addMouseMotionListener(new MouseMotionListener() {
 
-            @Override
             public void mouseDragged(MouseEvent event) {
                 GraphCanvas.this.mouseDragged(event);
             }
 
-            @Override
             public void mouseMoved(MouseEvent event) {
                 GraphCanvas.this.mouseMoved(event);
             }
@@ -1136,7 +1134,6 @@ public class GraphCanvas {
 
         // Set up drag and drop
         DropTargetListener dropTargetListener = new DropTargetAdapter() {
-            @Override
             public void drop(DropTargetDropEvent event) {
                 GraphCanvas.this.drop(event);
             }
@@ -1155,7 +1152,6 @@ public class GraphCanvas {
         this.nodePopup = new JPopupMenu();
         JMenuItem deleteItem = new JMenuItem("Delete");
         deleteItem.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent event) {
                 try {
                     removeSelectedNode();
@@ -1178,7 +1174,6 @@ public class GraphCanvas {
 
         rerunItem = new JMenuItem("ReRun");
         rerunItem.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent event) {
                 try {
                     rerunSelectedNode();
@@ -1195,7 +1190,6 @@ public class GraphCanvas {
 
         breakPointItem = new JMenuItem("Add break Point");
         breakPointItem.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent event) {
                 try {
                     toggleBreakPointToNode();
@@ -1232,7 +1226,6 @@ public class GraphCanvas {
         this.labelNodesItem.add(labelBPEL);
         labelBPEL.addActionListener(new AbstractAction() {
 
-            @Override
             public void actionPerformed(ActionEvent e) {
 
                 GraphUtil.setLabelsToNodes(GraphCanvas.this.multipleSelectedNodes, "BPEL"
@@ -1256,7 +1249,6 @@ public class GraphCanvas {
         this.labelNodesItem.add(customLabelItem);
         customLabelItem.addActionListener(new AbstractAction() {
 
-            @Override
             public void actionPerformed(ActionEvent e) {
                 String label = JOptionPane.showInputDialog("Enter the label");
                 if (null == label || "".equals(label)) {
@@ -1323,7 +1315,6 @@ public class GraphCanvas {
         deleteItem.addActionListener(new AbstractAction() {
             private static final long serialVersionUID = 1L;
 
-            @Override
             public void actionPerformed(ActionEvent e) {
                 removeSelectedEdge();
             }

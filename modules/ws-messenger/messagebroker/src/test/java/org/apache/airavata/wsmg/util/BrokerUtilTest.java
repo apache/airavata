@@ -40,7 +40,6 @@ public class BrokerUtilTest extends TestCase {
     /**
      * @throws java.lang.Exception
      */
-    @Override
     @Before
     public void setUp() throws Exception {
     }
@@ -48,7 +47,6 @@ public class BrokerUtilTest extends TestCase {
     /**
      * @throws java.lang.Exception
      */
-    @Override
     @After
     public void tearDown() throws Exception {
     }

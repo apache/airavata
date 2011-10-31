@@ -171,7 +171,6 @@ public class CepNodeWindow {
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
 
                 ok();

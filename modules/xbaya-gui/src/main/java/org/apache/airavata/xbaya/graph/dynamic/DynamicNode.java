@@ -58,7 +58,6 @@ public class DynamicNode extends NodeImpl implements PortAddable {
     /**
      * @see org.apache.airavata.xbaya.graph.Node#getGUI()
      */
-    @Override
     public synchronized NodeGUI getGUI() {
         if (this.gui == null) {
             this.gui = new DynamicNodeGUI(this);
@@ -83,7 +82,6 @@ public class DynamicNode extends NodeImpl implements PortAddable {
         GraphUtil.validateConnection(edge);
     }
 
-    @Override
     public DataPort getFreeInPort() {
         List<DataPort> inputPorts = this.getInputPorts();
         for (DataPort dataPort : inputPorts) {

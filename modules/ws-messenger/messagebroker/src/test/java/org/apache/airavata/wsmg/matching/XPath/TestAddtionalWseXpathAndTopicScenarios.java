@@ -65,7 +65,6 @@ public class TestAddtionalWseXpathAndTopicScenarios extends TestCase {
         }
     }
 
-    @Override
     @Before
     public void setUp() throws Exception {
         URL configURL = ClassLoader.getSystemResource(ConfigKeys.CONFIG_FILE_NAME);
@@ -74,7 +73,6 @@ public class TestAddtionalWseXpathAndTopicScenarios extends TestCase {
         TestUtilServer.start(null, null);
     }
 
-    @Override
     @After
     public void tearDown() throws Exception {
     }

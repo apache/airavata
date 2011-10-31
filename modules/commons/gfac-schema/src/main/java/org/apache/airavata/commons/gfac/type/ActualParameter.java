@@ -21,6 +21,7 @@
 
 package org.apache.airavata.commons.gfac.type;
 
+import org.apache.airavata.commons.gfac.type.Type;
 import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.GFacParameterDocument;
 import org.apache.airavata.schemas.gfac.ParameterType;
@@ -30,38 +31,38 @@ import org.apache.xmlbeans.XmlException;
 
 public class ActualParameter implements Type {
 
-    private static final long serialVersionUID = -6022759981837350675L;
-    private GFacParameterDocument paramDoc;
+	private static final long serialVersionUID = -6022759981837350675L;
+	private GFacParameterDocument paramDoc;
 
-    public ActualParameter() {
-        this.paramDoc = GFacParameterDocument.Factory.newInstance();
-        this.paramDoc.addNewGFacParameter();
+	public ActualParameter() {
+		this.paramDoc = GFacParameterDocument.Factory.newInstance();
+		this.paramDoc.addNewGFacParameter();
 
-        // default type is String
-        this.paramDoc.getGFacParameter().changeType(StringParameterType.type);
-    }
+		// default type is String
+		this.paramDoc.getGFacParameter().changeType(StringParameterType.type);
+	}
 
-    public ActualParameter(SchemaType type) {
-        this.paramDoc = GFacParameterDocument.Factory.newInstance();
-        this.paramDoc.addNewGFacParameter();
-        this.paramDoc.getGFacParameter().changeType(type);
-    }
+	public ActualParameter(SchemaType type) {
+		this.paramDoc = GFacParameterDocument.Factory.newInstance();
+		this.paramDoc.addNewGFacParameter();
+		this.paramDoc.getGFacParameter().changeType(type);
+	}
 
-    public ParameterType getType() {
-        return this.paramDoc.getGFacParameter();
-    }
+	public ParameterType getType() {
+		return this.paramDoc.getGFacParameter();
+	}
 
-    public boolean hasType(DataType.Enum type) {
-        return this.paramDoc.getGFacParameter().getType() == type;
-    }
+	public boolean hasType(DataType.Enum type) {
+		return this.paramDoc.getGFacParameter().getType() == type;
+	}
 
-    public String toXML() {
-        return this.paramDoc.xmlText();
-    }
+	public String toXML() {
+		return this.paramDoc.xmlText();
+	}
 
-    public static ActualParameter fromXML(String xml) throws XmlException {
-        ActualParameter param = new ActualParameter();
-        param.paramDoc = GFacParameterDocument.Factory.parse(xml);
-        return param;
-    }
+	public static ActualParameter fromXML(String xml) throws XmlException {
+		ActualParameter param = new ActualParameter();
+		param.paramDoc = GFacParameterDocument.Factory.parse(xml);
+		return param;
+	}
 }

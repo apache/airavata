@@ -39,7 +39,6 @@ public class EchoImpl implements Echo {
     /**
      * @see org.apache.airavata.xbaya.test.service.echo.Echo#echo(org.xmlpull.v1.builder.XmlElement)
      */
-    @Override
     public XmlElement echo(XmlElement inputElement) {
         logger.info(XMLUtil.xmlElementToString(inputElement));
 
