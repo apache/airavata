@@ -21,30 +21,27 @@
 
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
+import org.apache.airavata.common.utils.SwingUtil;
+import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
+import org.apache.airavata.xbaya.registrybrowser.model.*;
+
+import javax.swing.*;
+import javax.swing.tree.TreeNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.Icon;
-import javax.swing.tree.TreeNode;
-
-import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
-import org.apache.airavata.xbaya.registrybrowser.model.ApplicationDeploymentDescriptions;
-import org.apache.airavata.xbaya.registrybrowser.model.GFacURLs;
-import org.apache.airavata.xbaya.registrybrowser.model.HostDescriptions;
-import org.apache.airavata.xbaya.registrybrowser.model.ServiceDescriptions;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowExperiments;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowTemplates;
-
 public class RegistryNode extends AbstractAiravataTreeNode {
     private Registry registry;
+    private XBayaEngine engine;
 
-    public RegistryNode(Registry registry, TreeNode parent) {
+    public RegistryNode(XBayaEngine engine, TreeNode parent) {
         super(parent);
-        setRegistry(registry);
+        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
+        this.engine=engine;
     }
 
     protected List<TreeNode> getChildren() {
@@ -111,5 +108,13 @@ public class RegistryNode extends AbstractAiravataTreeNode {
     @Override
     public String getActionDescription(AbstractBrowserActionItem action) {
         return null;
+    }
+
+    public XBayaEngine getEngine() {
+        return engine;
+    }
+
+    public void setEngine(XBayaEngine engine) {
+        this.engine = engine;
     }
 }
