@@ -94,7 +94,7 @@ public class PropertiesBasedServiceImplTest {
 		List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
 		OutputParameterType output = OutputParameterType.Factory.newInstance();
 		output.setParameterName("echo_output");
-		input.setParameterType(StringParameterType.Factory.newInstance());		
+		output.setParameterType(StringParameterType.Factory.newInstance());		
 		outputList.add(output);
 		OutputParameterType[] outputParamList = outputList
 				.toArray(new OutputParameterType[outputList.size()]);
