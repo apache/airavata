@@ -71,7 +71,6 @@ public class TestWSDLGeneration {
         PortTypeType portType = serv.getType().addNewPortType();
         MethodType methodType = portType.addNewMethod();
         
-        portType.setPortName(new QName("xasdfasd"));
         methodType.setMethodName("invoke");
 
         List<InputParameterType> inputList = new ArrayList<InputParameterType>();

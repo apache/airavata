@@ -27,6 +27,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
@@ -50,6 +51,8 @@ import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.commons.gfac.wsdl.WSDLConstants;
+import org.apache.airavata.commons.gfac.wsdl.WSDLGenerator;
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.DataRegistry;
 import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
@@ -57,8 +60,9 @@ import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveExcepti
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.registry.api.user.UserManager;
-import org.apache.airavata.registry.api.util.WebServiceUtil;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
+import org.apache.airavata.schemas.gfac.MethodType;
+import org.apache.airavata.schemas.gfac.PortTypeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -597,7 +601,18 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
     }
 
     public String getWSDL(ServiceDescription service) {
-        return WebServiceUtil.generateWSDL(service);
+        try {
+            PortTypeType portType = service.getType().addNewPortType();
+            MethodType methodType = portType.addNewMethod();
+            
+            methodType.setMethodName("invoke");
+            
+            WSDLGenerator generator = new WSDLGenerator();
+            Hashtable table = generator.generateWSDL(null, null, null, service.getType(), true);            
+            return (String) table.get(WSDLConstants.AWSDL);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean saveGFacDescriptor(String gfacURL) {
