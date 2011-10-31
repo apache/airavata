@@ -29,6 +29,7 @@ import javax.wsdl.Definition;
 import javax.wsdl.Types;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
@@ -78,7 +79,7 @@ public class TypesGenerator implements WSDLConstants {
             inParamNames.add(inputParams[k].getParameterName());
             inParamDesc.add(inputParams[k].getParameterDescription());            
             // XMLBEANS specific way to get type
-            inParamTypes.add(inputParams[k].getParameterType().getClass().getInterfaces()[0].getSimpleName());
+            inParamTypes.add(MappingFactory.getActualParameterType(inputParams[k].getParameterType().getType()));
             inputParams[k].getParameterValueArray();
         }
 
@@ -91,7 +92,7 @@ public class TypesGenerator implements WSDLConstants {
             outParamNames.add(outputParams[k].getParameterName());
             outParamDesc.add(outputParams[k].getParameterDescription());
             // XMLBEANS specific way to get type
-            outParamTypes.add(outputParams[k].getParameterType().getClass().getInterfaces()[0].getSimpleName());
+            outParamTypes.add(MappingFactory.getActualParameterType(outputParams[k].getParameterType().getType()));
         }
 
         String methodName = serviceDesc.getPortType().getMethod().getMethodName();
