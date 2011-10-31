@@ -44,8 +44,7 @@ Including External Dependencies
 WS-Messenger Binary Distribution Directory Structure
 --------------------------------------------
 
-    CARBON_HOME
-        |-- messenger <folder>
+    WS-MESSENGER_HOME
         |-- gui <folder>
         |-- standalone-server <folder>
         |   |-- lib <folder>
@@ -62,8 +61,6 @@ WS-Messenger Binary Distribution Directory Structure
         |-- INSTALL.txt <file>
 
 
-    - messenger
-      Contains messenger.war file to be deployed in an Application Server
 
     - gui
       Contains the scripts to run WS Notification Listener GUI tool
