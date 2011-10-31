@@ -312,14 +312,6 @@
                 <include>repository.properties</include>
             </includes>
         </fileSet>
-
-        <fileSet>
-            <directory>../gfac-core/src/main/resources</directory>
-            <outputDirectory>standalone-server/conf</outputDirectory>
-            <includes>
-                <include>service.properties</include>
-            </includes>
-        </fileSet>
         <fileSet>
             <directory>../../samples</directory>
             <outputDirectory>samples</outputDirectory>
@@ -332,6 +324,20 @@
             <outputDirectory>standalone-server/conf</outputDirectory>
             <includes>
                 <include>axis2.xml</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>resources</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>INSTALL.txt</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>resources</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>README.txt</include>
             </includes>
         </fileSet>
     </fileSets>
