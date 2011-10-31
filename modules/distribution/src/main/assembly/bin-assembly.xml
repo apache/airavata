@@ -154,6 +154,21 @@
             </includes>
         </fileSet>
 
+        <fileSet>
+            <directory>../ws-messenger/client/target/</directory>
+            <outputDirectory>standalone-server/lib</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../ws-messenger/commons/target/</directory>
+            <outputDirectory>standalone-server/lib</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+
         <!--
               ********************** copy messagebroker+ messagebox samples **********************
           -->
