@@ -28,7 +28,6 @@ import org.apache.airavata.workflow.tracking.Notifier;
 import org.apache.airavata.workflow.tracking.NotifierFactory;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
-
 import org.apache.axis2.addressing.EndpointReference;
 
 public class ResourceNotifierTestCase extends XBayaTestCase {

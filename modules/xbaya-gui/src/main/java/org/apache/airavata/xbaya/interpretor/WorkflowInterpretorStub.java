@@ -278,6 +278,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
         _operationClient.addMessageContext(_messageContext);
 
         _operationClient.setCallback(new org.apache.axis2.client.async.AxisCallback() {
+            @Override
             public void onMessage(org.apache.axis2.context.MessageContext resultContext) {
                 try {
                     org.apache.axiom.soap.SOAPEnvelope resultEnv = resultContext.getEnvelope();
@@ -291,6 +292,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
                 }
             }
 
+            @Override
             public void onError(java.lang.Exception error) {
                 if (error instanceof org.apache.axis2.AxisFault) {
                     org.apache.axis2.AxisFault f = (org.apache.axis2.AxisFault) error;
@@ -353,12 +355,14 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
                 }
             }
 
+            @Override
             public void onFault(org.apache.axis2.context.MessageContext faultContext) {
                 org.apache.axis2.AxisFault fault = org.apache.axis2.util.Utils
                         .getInboundFaultFromMessageContext(faultContext);
                 onError(fault);
             }
 
+            @Override
             public void onComplete() {
                 try {
                     _messageContext.getTransportOut().getSender().cleanup(_messageContext);
@@ -504,6 +508,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
             org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this, MY_QNAME) {
 
+                @Override
                 public void serialize(org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
                         throws javax.xml.stream.XMLStreamException {
                     LaunchWorkflowResponse.this.serialize(MY_QNAME, factory, xmlWriter);
@@ -513,12 +518,14 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
         }
 
+        @Override
         public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
                 org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException {
             serialize(parentQName, factory, xmlWriter, false);
         }
 
+        @Override
         public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
                 org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter, boolean serializeType)
                 throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException {
@@ -748,6 +755,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
          * databinding method to get an XML representation of this object
          * 
          */
+        @Override
         public javax.xml.stream.XMLStreamReader getPullParser(javax.xml.namespace.QName qName)
                 throws org.apache.axis2.databinding.ADBException {
 
@@ -1202,6 +1210,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
             org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this, MY_QNAME) {
 
+                @Override
                 public void serialize(org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
                         throws javax.xml.stream.XMLStreamException {
                     LaunchWorkflow.this.serialize(MY_QNAME, factory, xmlWriter);
@@ -1211,12 +1220,14 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
         }
 
+        @Override
         public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
                 org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
                 throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException {
             serialize(parentQName, factory, xmlWriter, false);
         }
 
+        @Override
         public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
                 org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter, boolean serializeType)
                 throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException {
@@ -1670,6 +1681,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
          * databinding method to get an XML representation of this object
          * 
          */
+        @Override
         public javax.xml.stream.XMLStreamReader getPullParser(javax.xml.namespace.QName qName)
                 throws org.apache.axis2.databinding.ADBException {
 

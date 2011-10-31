@@ -21,6 +21,14 @@
 
 package org.apache.airavata.xbaya.appwrapper;
 
+import java.awt.event.ActionEvent;
+import java.util.regex.Pattern;
+
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
@@ -30,10 +38,6 @@ import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.util.regex.Pattern;
 
 public class HostDescriptionDialog extends JDialog {
 
@@ -60,7 +64,8 @@ public class HostDescriptionDialog extends JDialog {
     private Registry registry;
 
     /**
-     * @param engine XBaya workflow engine
+     * @param engine
+     *            XBaya workflow engine
      */
     public HostDescriptionDialog(XBayaEngine engine) {
         this.engine = engine;
@@ -71,10 +76,12 @@ public class HostDescriptionDialog extends JDialog {
     /**
      * Displays the dialog.
      */
+    @Override
     public void show() {
         this.dialog.show();
     }
 
+    @Override
     public void hide() {
         this.dialog.hide();
     }
@@ -85,7 +92,7 @@ public class HostDescriptionDialog extends JDialog {
         String globusGateKeeperEPR = this.globusGateKeeperTextField.getText();
         String gridFTP = this.GridFTPTextField.getText();
 
-        if((globusGateKeeperEPR != null) || (gridFTP != null)){
+        if ((globusGateKeeperEPR != null) || (gridFTP != null)) {
             isGlobusHostCreated = true;
         }
 
@@ -93,11 +100,11 @@ public class HostDescriptionDialog extends JDialog {
 
         setHostId(hostId);
         setHostLocation(hostAddress);
-        if(globusGateKeeperEPR != null) {
-          setGlobusGateKeeperEPR(globusGateKeeperEPR);
+        if (globusGateKeeperEPR != null) {
+            setGlobusGateKeeperEPR(globusGateKeeperEPR);
         }
-        if(gridFTP != null) {
-          setGridFTPEPR(globusGateKeeperEPR);
+        if (gridFTP != null) {
+            setGridFTPEPR(globusGateKeeperEPR);
         }
 
         saveHostDescription();
@@ -106,13 +113,13 @@ public class HostDescriptionDialog extends JDialog {
 
     private void setGlobusGateKeeperEPR(String epr) {
         if (hostDescription.getType() == GlobusHostType.type) {
-            ((GlobusHostType)hostDescription).addGlobusGateKeeperEndPoint(epr);
+            ((GlobusHostType) hostDescription).addGlobusGateKeeperEndPoint(epr);
         }
     }
 
     private String[] getGlobusGateKeeperEPR(String epr) {
         if (hostDescription.getType() == GlobusHostType.type) {
-            return ((GlobusHostType)hostDescription).getGlobusGateKeeperEndPointArray();
+            return ((GlobusHostType) hostDescription).getGlobusGateKeeperEndPointArray();
         } else {
             return null;
         }
@@ -120,13 +127,13 @@ public class HostDescriptionDialog extends JDialog {
 
     private void setGridFTPEPR(String epr) {
         if (hostDescription.getType() == GlobusHostType.type) {
-            ((GlobusHostType)hostDescription).addGridFTPEndPoint(epr);
+            ((GlobusHostType) hostDescription).addGridFTPEndPoint(epr);
         }
     }
 
     private String[] getGridFTPEPR(String epr) {
         if (hostDescription.getType() == GlobusHostType.type) {
-            return ((GlobusHostType)hostDescription).getGridFTPEndPointArray();
+            return ((GlobusHostType) hostDescription).getGridFTPEndPointArray();
         } else {
             return null;
         }
@@ -143,7 +150,8 @@ public class HostDescriptionDialog extends JDialog {
 
         XBayaLabel hostIdLabel = new XBayaLabel("Host ID", this.hostIdTextField);
         XBayaLabel hostAddressLabel = new XBayaLabel("Host Address", this.hostAddressTextField);
-        XBayaLabel globusGateKeeperLabel = new XBayaLabel("Gloubus Gate Keeper Endpoint", this.globusGateKeeperTextField);
+        XBayaLabel globusGateKeeperLabel = new XBayaLabel("Gloubus Gate Keeper Endpoint",
+                this.globusGateKeeperTextField);
         XBayaLabel gridFTPLabel = new XBayaLabel("Grid FTP Endpoint", this.GridFTPTextField);
 
         GridPanel infoPanel = new GridPanel();
@@ -159,6 +167,7 @@ public class HostDescriptionDialog extends JDialog {
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 ok();
             }
@@ -166,6 +175,7 @@ public class HostDescriptionDialog extends JDialog {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }
@@ -224,13 +234,13 @@ public class HostDescriptionDialog extends JDialog {
         } catch (Exception e) {
             message = e.getLocalizedMessage();
         }
-        //okButton.setEnabled(message == null);
-        //setError(message);
+        // okButton.setEnabled(message == null);
+        // setError(message);
     }
 
-/*    public void close() {
-        getDialog().setVisible(false);
-    }*/
+    /*
+     * public void close() { getDialog().setVisible(false); }
+     */
 
     public boolean isHostCreated() {
         return hostCreated;
@@ -256,13 +266,10 @@ public class HostDescriptionDialog extends JDialog {
         setHostCreated(true);
     }
 
-/*    private void setError(String errorMessage) {
-        if (errorMessage == null || errorMessage.trim().equals("")) {
-            lblError.setText("");
-        } else {
-            lblError.setText(errorMessage.trim());
-        }
-    }*/
+    /*
+     * private void setError(String errorMessage) { if (errorMessage == null || errorMessage.trim().equals("")) {
+     * lblError.setText(""); } else { lblError.setText(errorMessage.trim()); } }
+     */
 
     public Registry getRegistry() {
         return registry;

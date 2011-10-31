@@ -107,6 +107,7 @@ public class ComponentSelector implements XBayaComponent {
     /**
      * @return the Pane
      */
+    @Override
     public JTree getSwingComponent() {
         return this.tree;
     }
@@ -121,14 +122,15 @@ public class ComponentSelector implements XBayaComponent {
     }
 
     public void removeComponentTree(final ComponentTreeNode componentTree) {
-    	SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 ComponentSelector.this.treeModel.removeNodeFromParent(componentTree);
             }
 
         });
     }
-    
+
     /**
      * Adds a new selectedComponent registry to the specified location.
      * 
@@ -139,6 +141,7 @@ public class ComponentSelector implements XBayaComponent {
     public void addComponentTree(final int index, final ComponentTreeNode componentTree) {
 
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 ComponentTreeNode root = ComponentSelector.this.treeModel.getRoot();
                 if (index < 0) {
@@ -161,6 +164,7 @@ public class ComponentSelector implements XBayaComponent {
      */
     public void removeSelectedRegistry() {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 TreePath selectionPath = ComponentSelector.this.tree.getSelectionPath();
                 ComponentTreeNode selectedNode = (ComponentTreeNode) selectionPath.getLastPathComponent();
@@ -178,6 +182,7 @@ public class ComponentSelector implements XBayaComponent {
         final TreePath[] selectionPathHolder = new TreePath[1];
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
                 public void run() {
                     selectionPathHolder[0] = ComponentSelector.this.tree.getSelectionPath();
                 }
@@ -202,6 +207,7 @@ public class ComponentSelector implements XBayaComponent {
             final ComponentTreeNode componentTree = registry.getComponentTree();
 
             SwingUtilities.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     ComponentTreeNode root = ComponentSelector.this.treeModel.getRoot();
                     int index = root.getIndex(selectedNode);
@@ -224,6 +230,7 @@ public class ComponentSelector implements XBayaComponent {
         } else {
             try {
                 SwingUtilities.invokeAndWait(new Runnable() {
+                    @Override
                     public void run() {
                         getRegistries(registries);
                     }
@@ -244,6 +251,7 @@ public class ComponentSelector implements XBayaComponent {
         }
 
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 ComponentTreeNode root = ComponentSelector.this.treeModel.getRoot();
                 ComponentSelector.this.treeModel.removeChildren(root);
@@ -336,6 +344,7 @@ public class ComponentSelector implements XBayaComponent {
                             selectComponent(components.get(0));
                         } else {
                             SwingUtilities.invokeLater(new Runnable() {
+                                @Override
                                 public void run() {
                                     expandTreeLeaf(selectedNode, components);
                                 }
@@ -440,6 +449,7 @@ public class ComponentSelector implements XBayaComponent {
         this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         this.tree.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
             public void valueChanged(TreeSelectionEvent event) {
                 // Doesn't do anything if deselected, which happens during the
                 // update.
@@ -452,6 +462,7 @@ public class ComponentSelector implements XBayaComponent {
 
         // Drag and dtop
         DragGestureListener dragGestureListener = new DragGestureListener() {
+            @Override
             public void dragGestureRecognized(DragGestureEvent event) {
                 ComponentSelector.this.dragGestureRecognized(event);
             }
@@ -479,6 +490,7 @@ public class ComponentSelector implements XBayaComponent {
         this.popup = new JPopupMenu();
         JMenuItem refreshItem = new JMenuItem("Refresh Registry");
         refreshItem.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 new Thread() {
                     @Override

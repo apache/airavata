@@ -175,6 +175,7 @@ public class InstanceConfigurationDialog {
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (InstanceConfigurationDialog.this.idTextField.getText() == null
                         || InstanceConfigurationDialog.this.idTextField.getText().isEmpty()) {
@@ -209,6 +210,7 @@ public class InstanceConfigurationDialog {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

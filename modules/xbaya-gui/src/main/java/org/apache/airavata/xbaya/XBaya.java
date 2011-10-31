@@ -85,8 +85,8 @@ public class XBaya {
                 + " [-topic topic]" + " [-pullMode {true,false}]" + " [-myProxyServer host]" + " [-karmaURL url]"
                 + " [-karmaWorkflowInstanceID]" + " [-myProxyPort port]" + " [-myProxyUsername username]"
                 + " [-myProxyLifetime sec]" + " [-loadMyProxy {true,false}]" + " [-messageBoxURL url]"
-                + " [-width width]" + " [-height height]" + " [-exitOnClose false/true]" + "[-enableProvenance false/true]"
-                + "[-enableProvenanceSmartRun false/true]");
+                + " [-width width]" + " [-height height]" + " [-exitOnClose false/true]"
+                + "[-enableProvenance false/true]" + "[-enableProvenanceSmartRun false/true]");
     }
 
     private void parseArguments(String[] args) {
@@ -238,20 +238,19 @@ public class XBaya {
                     if ("false".equalsIgnoreCase(exit)) {
                         this.config.setCloseOnExit(false);
                     }
-                }  else if ("-enableProvenance".equalsIgnoreCase(arg)) {
+                } else if ("-enableProvenance".equalsIgnoreCase(arg)) {
                     index++;
                     String exit = args[index];
                     if ("true".equalsIgnoreCase(exit)) {
                         this.config.setCollectProvenance(true);
                     }
-                }  else if ("-enableProvenanceSmartRun".equalsIgnoreCase(arg)) {
+                } else if ("-enableProvenanceSmartRun".equalsIgnoreCase(arg)) {
                     index++;
                     String exit = args[index];
                     if ("true".equalsIgnoreCase(exit)) {
                         this.config.setProvenanceSmartRun(true);
                     }
-                }
-                else {
+                } else {
                     String message = "Unknown option: " + arg;
                     logger.error(message);
                     this.config.addError(new XBayaException(message));
@@ -289,4 +288,3 @@ public class XBaya {
         new XBaya(args);
     }
 }
-

@@ -111,6 +111,7 @@ public class WaitDialog {
         JLabel label = new JLabel(this.message, SwingConstants.CENTER);
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 WaitDialog.this.dialog.hide();
                 WaitDialog.this.cancelable.cancel();

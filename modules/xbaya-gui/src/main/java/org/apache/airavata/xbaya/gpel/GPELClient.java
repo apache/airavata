@@ -100,6 +100,7 @@ public class GPELClient extends WorkflowClient {
      * @param userX509Credential
      * @throws WorkflowEngineException
      */
+    @Override
     public void setUserX509Credential(UserX509Credential userX509Credential) throws WorkflowEngineException {
         this.gpelUserX509Credential = userX509Credential;
         connect();
@@ -111,6 +112,7 @@ public class GPELClient extends WorkflowClient {
      * @return The workflow template ID.
      * @throws WorkflowEngineException
      */
+    @Override
     public synchronized URI deploy(Workflow workflow, boolean redeploy) throws WorkflowEngineException {
         if (workflow.getGpelProcess() == null) {
             throw new IllegalStateException("BPEL script has to have been generated.");
@@ -268,6 +270,7 @@ public class GPELClient extends WorkflowClient {
      * @throws WorkflowEngineException
      * @throws ComponentException
      */
+    @Override
     public synchronized Workflow load(URI id, WorkflowType workflowType) throws GraphException,
             WorkflowEngineException, ComponentException {
         logger.debug("ID: " + id.toString() + " Type:" + workflowType);
@@ -413,6 +416,7 @@ public class GPELClient extends WorkflowClient {
      * @return The List of GcSearchResult.
      * @throws WorkflowEngineException
      */
+    @Override
     @SuppressWarnings("boxing")
     public synchronized GcSearchList list(int maxNum, WorkflowType type) throws WorkflowEngineException {
         logger.debug("Maxnum: " + maxNum + " Type: " + type);
@@ -452,6 +456,7 @@ public class GPELClient extends WorkflowClient {
      * @throws ComponentException
      * @throws GraphException
      */
+    @Override
     public synchronized GcInstance instantiate(Workflow workflow, URI dscURL, String name)
             throws WorkflowEngineException, ComponentException, GraphException {
         if (!isConnected()) {
@@ -533,6 +538,7 @@ public class GPELClient extends WorkflowClient {
      * @throws WorkflowEngineException
      * @Deprecated This one doesn't support hierarchical workflows. Use instantiate(workflow, dscURL) instead.
      */
+    @Override
     @Deprecated
     public synchronized GcInstance instantiate(Workflow workflow, Map<String, WsdlDefinitions> wsdlMap)
             throws WorkflowEngineException {
@@ -580,6 +586,7 @@ public class GPELClient extends WorkflowClient {
      * @return The WSDL of the workflow.
      * @throws WorkflowEngineException
      */
+    @Override
     public synchronized WsdlDefinitions start(final GcInstance instance) throws WorkflowEngineException {
         if (!isConnected()) {
             throw new IllegalStateException("The BPEL Engine has not configured.");
@@ -604,6 +611,7 @@ public class GPELClient extends WorkflowClient {
         }
     }
 
+    @Override
     public synchronized void connect() throws WorkflowEngineException {
         if (this.engineURL == null) {
             if (this.client != null) {
@@ -638,10 +646,12 @@ public class GPELClient extends WorkflowClient {
         }
     }
 
+    @Override
     public void setXRegistryUrl(URI xRegistryURL) {
         // nothing to be done here as we don't need Xregistry info for GPEL client
     }
 
+    @Override
     public void setXBayaEngine(XBayaEngine xBayaEngine) {
         // nothing to be done here as we don't need XBayaEngine info for GPEL client
     }

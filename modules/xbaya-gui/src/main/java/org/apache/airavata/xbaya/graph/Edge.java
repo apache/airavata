@@ -30,6 +30,7 @@ public interface Edge extends GraphPiece {
      * 
      * @return the gui
      */
+    @Override
     public EdgeGUI getGUI();
 
     /**

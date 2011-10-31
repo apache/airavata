@@ -91,6 +91,7 @@ public class XbayaEnhancedList<T extends TableRenderable> implements XBayaCompon
     /**
      * @return The swing component.
      */
+    @Override
     public JScrollPane getSwingComponent() {
         return getScrollPane();
     }

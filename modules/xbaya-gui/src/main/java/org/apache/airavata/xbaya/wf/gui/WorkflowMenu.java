@@ -27,19 +27,12 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
-import javax.xml.namespace.QName;
 
-import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.datadriven.WorkflowHarvester;
 import org.apache.airavata.xbaya.graph.dynamic.gui.DynamicWorkflowRunnerWindow;
-import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.gridchem.gui.GridChemRunnerWindow;
 import org.apache.airavata.xbaya.jython.gui.JythonRunnerWindow;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,6 +118,7 @@ public class WorkflowMenu {
         JMenuItem menuItem = new JMenuItem("New Workflow");
         menuItem.setMnemonic(KeyEvent.VK_N);
         menuItem.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 WorkflowMenu.this.engine.getGUI().getGraphCanvas().newWorkflow();
             }
@@ -137,6 +131,7 @@ public class WorkflowMenu {
         menuItem.setMnemonic(KeyEvent.VK_T);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
         menuItem.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 WorkflowMenu.this.engine.getGUI().newGraphCanvas(true);
             }
@@ -149,6 +144,7 @@ public class WorkflowMenu {
         menuItem.setMnemonic(KeyEvent.VK_C);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
         menuItem.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 WorkflowMenu.this.engine.getGUI().closeGraphCanvas();
             }
@@ -164,6 +160,7 @@ public class WorkflowMenu {
         // ActionEvent.CTRL_MASK));
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, ActionEvent.CTRL_MASK));
         menuItem.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 WorkflowMenu.this.engine.getGUI().selectNextGraphCanvas();
             }
@@ -177,6 +174,7 @@ public class WorkflowMenu {
         menuItem.addActionListener(new AbstractAction() {
             private WorkflowPropertyWindow window;
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
                     this.window = WorkflowMenu.this.engine.getWorkflowPropertyWindow();
@@ -193,6 +191,7 @@ public class WorkflowMenu {
         menuItem.addActionListener(new AbstractAction() {
             private ParameterPropertyWindow window;
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
                     this.window = new ParameterPropertyWindow(WorkflowMenu.this.engine);
@@ -209,6 +208,7 @@ public class WorkflowMenu {
         menuItem.addActionListener(new AbstractAction() {
             private JythonRunnerWindow window;
 
+            @Override
             public void actionPerformed(ActionEvent event) {
                 if (this.window == null) {
                     this.window = new JythonRunnerWindow(WorkflowMenu.this.engine);
@@ -225,6 +225,7 @@ public class WorkflowMenu {
         menuItem.addActionListener(new AbstractAction() {
             private DynamicWorkflowRunnerWindow window;
 
+            @Override
             public void actionPerformed(ActionEvent event) {
                 if (this.window == null) {
                     this.window = new DynamicWorkflowRunnerWindow(WorkflowMenu.this.engine);
@@ -240,6 +241,7 @@ public class WorkflowMenu {
         menuItem.addActionListener(new AbstractAction() {
             private GridChemRunnerWindow window;
 
+            @Override
             public void actionPerformed(ActionEvent event) {
                 if (this.window == null) {
                     this.window = new GridChemRunnerWindow(WorkflowMenu.this.engine);

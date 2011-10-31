@@ -41,24 +41,24 @@ import org.apache.airavata.xbaya.registrybrowser.model.OutputParameters;
 import org.apache.airavata.xbaya.registrybrowser.model.ServiceParameters;
 
 public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
-	private ServiceDescription serviceDescription;
+    private ServiceDescription serviceDescription;
 
-	public ServiceDescriptionNode(ServiceDescription serviceDescription, TreeNode parent) {
-		super(parent);
-		setServiceDescription(serviceDescription);
-	}
+    public ServiceDescriptionNode(ServiceDescription serviceDescription, TreeNode parent) {
+        super(parent);
+        setServiceDescription(serviceDescription);
+    }
 
-	@Override
-	protected List<TreeNode> getChildren() {
-		List<ServiceParameters> parameterTypeList=new ArrayList<ServiceParameters>();
-		if (getServiceDescription().getType().getInputParametersArray().length>0){
-			parameterTypeList.add(new InputParameters(getServiceDescription().getType().getInputParametersArray()));
-		}
-		if (getServiceDescription().getType().getOutputParametersArray().length>0){
-			parameterTypeList.add(new OutputParameters(getServiceDescription().getType().getOutputParametersArray()));
-		}
-		return getTreeNodeList(parameterTypeList.toArray(), this);
-	}
+    @Override
+    protected List<TreeNode> getChildren() {
+        List<ServiceParameters> parameterTypeList = new ArrayList<ServiceParameters>();
+        if (getServiceDescription().getType().getInputParametersArray().length > 0) {
+            parameterTypeList.add(new InputParameters(getServiceDescription().getType().getInputParametersArray()));
+        }
+        if (getServiceDescription().getType().getOutputParametersArray().length > 0) {
+            parameterTypeList.add(new OutputParameters(getServiceDescription().getType().getOutputParametersArray()));
+        }
+        return getTreeNodeList(parameterTypeList.toArray(), this);
+    }
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
@@ -83,6 +83,7 @@ public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
         return Arrays.asList(EditAction.ID, DeleteAction.ID);
     }
 
+    @Override
     public boolean triggerAction(JTree tree, String action) throws Exception {
         if (action.equals(DeleteAction.ID)) {
             deleteHostDescription(tree);

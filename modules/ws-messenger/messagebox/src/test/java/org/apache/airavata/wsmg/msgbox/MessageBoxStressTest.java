@@ -54,11 +54,13 @@ public class MessageBoxStressTest extends TestCase {
     public static void tearDownAfterClass() throws Exception {
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
         InMemoryMessageBoxServer.start(null, null);
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
     }

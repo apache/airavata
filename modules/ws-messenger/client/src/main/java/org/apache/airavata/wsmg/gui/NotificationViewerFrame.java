@@ -41,6 +41,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
 
 import org.apache.airavata.wsmg.client.ConsumerServer;
@@ -158,10 +159,10 @@ public class NotificationViewerFrame extends JFrame {
         jButtonStop.setToolTipText("Unsubscribe to the topic and stop listening.");
         jButtonStop.setText("Stop");
         jButtonStop.addActionListener(new NotificationViewerFrame_jButtonStop_actionAdapter(this));
-        jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         jScrollPane1.setAutoscrolls(true);
         jScrollPane1.setToolTipText("Summary of the messages received.");
-        jScrollPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        jScrollPane2.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         jScrollPane2.setAutoscrolls(true);
         jScrollPane2.setToolTipText("Full content of the SOAP messages.");
         jTabbedPane1.add(jScrollPane1, "Brief Messages");

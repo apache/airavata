@@ -57,7 +57,7 @@ public class WSMPublisher extends AbstractPublisher implements NotificationPubli
     public WSMPublisher(int capacity, boolean defaultAsync, String brokerLoc, String topic) throws IOException {
         super(capacity, defaultAsync);
         broker = new WseMsgBrokerClient();
-        brokerEpr = broker.createEndpointReference(brokerLoc, topic);
+        brokerEpr = WseMsgBrokerClient.createEndpointReference(brokerLoc, topic);
         broker.init(brokerEpr.getAddress());
     }
 

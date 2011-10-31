@@ -141,6 +141,7 @@ public class AmazonEC2InvokerWindow {
 
         this.invokeButton = new JButton("Invoke");
         this.invokeButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 execute();
             }
@@ -149,6 +150,7 @@ public class AmazonEC2InvokerWindow {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

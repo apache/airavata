@@ -135,6 +135,7 @@ public abstract class NodeImpl implements Node {
     /**
      * @return the ID of the node
      */
+    @Override
     public String getID() {
         return this.id;
     }
@@ -161,6 +162,7 @@ public abstract class NodeImpl implements Node {
      * 
      * @return The name
      */
+    @Override
     public String getName() {
         return this.name;
     }
@@ -171,6 +173,7 @@ public abstract class NodeImpl implements Node {
      * @param name
      *            The name
      */
+    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -180,6 +183,7 @@ public abstract class NodeImpl implements Node {
      * 
      * @return The component
      */
+    @Override
     public Component getComponent() {
         return this.component;
     }
@@ -190,6 +194,7 @@ public abstract class NodeImpl implements Node {
      * @param component
      *            The component to set.
      */
+    @Override
     public void setComponent(Component component) {
         this.component = component;
     }
@@ -197,6 +202,7 @@ public abstract class NodeImpl implements Node {
     /**
      * @see org.apache.airavata.xbaya.graph.Node#getGraph()
      */
+    @Override
     public Graph getGraph() {
         return this.graph;
     }
@@ -243,6 +249,7 @@ public abstract class NodeImpl implements Node {
      * @param point
      *            The location
      */
+    @Override
     public void setPosition(Point point) {
         this.position.x = point.x;
         this.position.y = point.y;
@@ -251,6 +258,7 @@ public abstract class NodeImpl implements Node {
     /**
      * @see org.apache.airavata.xbaya.graph.Node#getPosition()
      */
+    @Override
     public Point getPosition() {
         return this.position;
     }
@@ -260,6 +268,7 @@ public abstract class NodeImpl implements Node {
      * 
      * @return the List of output ports
      */
+    @Override
     public List<DataPort> getOutputPorts() {
         return this.outputPorts;
     }
@@ -269,6 +278,7 @@ public abstract class NodeImpl implements Node {
      * 
      * @return the List of input ports
      */
+    @Override
     public List<DataPort> getInputPorts() {
         return this.inputPorts;
     }
@@ -280,6 +290,7 @@ public abstract class NodeImpl implements Node {
      *            The specified index
      * @return the uses port of the specified index
      */
+    @Override
     public DataPort getOutputPort(int index) {
         if (index < 0 || index >= this.outputPorts.size()) {
             String message = "index has to be possitive and less than " + this.outputPorts.size();
@@ -295,6 +306,7 @@ public abstract class NodeImpl implements Node {
      *            The specified index
      * @return the input port of the specified index
      */
+    @Override
     public DataPort getInputPort(int index) {
         if (index < 0 || index >= this.inputPorts.size()) {
             throw new IllegalArgumentException();
@@ -305,6 +317,7 @@ public abstract class NodeImpl implements Node {
     /**
      * @return The controlInPort.
      */
+    @Override
     public ControlPort getControlInPort() {
         return this.controlInPort;
     }
@@ -312,6 +325,7 @@ public abstract class NodeImpl implements Node {
     /**
      * @see org.apache.airavata.xbaya.graph.Node#getControlOutPorts()
      */
+    @Override
     public List<ControlPort> getControlOutPorts() {
         return this.controlOutPorts;
     }
@@ -319,6 +333,7 @@ public abstract class NodeImpl implements Node {
     /**
      * @see org.apache.airavata.xbaya.graph.Node#getEPRPort()
      */
+    @Override
     public PortImpl getEPRPort() {
         return this.eprPort;
     }
@@ -328,6 +343,7 @@ public abstract class NodeImpl implements Node {
      * 
      * @return All ports that belong to this node.
      */
+    @Override
     public Collection<PortImpl> getAllPorts() {
         ArrayList<PortImpl> ports = new ArrayList<PortImpl>();
         ports.addAll(this.inputPorts);
@@ -349,6 +365,7 @@ public abstract class NodeImpl implements Node {
      *            The specified port
      * @return true if this node contains port; false otherwise
      */
+    @Override
     public boolean containsPort(Port port) {
         boolean contain = this.inputPorts.contains(port) || this.outputPorts.contains(port);
         return contain;
@@ -603,6 +620,7 @@ public abstract class NodeImpl implements Node {
      * 
      * @return The rate
      */
+    @Override
     public String getRate() {
         if (streamName != null) {
             StreamTableModel model = graph.getStreamModel();
@@ -653,10 +671,12 @@ public abstract class NodeImpl implements Node {
         this.graph.addPort(port);
     }
 
+    @Override
     public boolean isBreak() {
         return this.breakOnExecution;
     }
 
+    @Override
     public void setBreak(boolean breakVal) {
         this.breakOnExecution = breakVal;
     }
@@ -664,6 +684,7 @@ public abstract class NodeImpl implements Node {
     /**
 	 * 
 	 */
+    @Override
     public boolean isAllInPortsConnected() {
         for (Iterator<DataPort> iterator = this.inputPorts.iterator(); iterator.hasNext();) {
             DataPort port = iterator.next();
@@ -676,6 +697,7 @@ public abstract class NodeImpl implements Node {
 
     }
 
+    @Override
     public DataPort getOutputPort(String fromPortID) {
         for (DataPort port : this.outputPorts) {
             if (port.getID().equals(fromPortID)) {
@@ -685,6 +707,7 @@ public abstract class NodeImpl implements Node {
         throw new XBayaRuntimeException("Port with id not found :" + fromPortID);
     }
 
+    @Override
     public DataPort getInputPort(String id) {
         for (DataPort port : this.inputPorts) {
             if (port.getID().equals(id)) {
@@ -715,18 +738,23 @@ public abstract class NodeImpl implements Node {
     /**
      * @return
      */
+    @Override
     public String getLabel() {
         return this.label;
     }
 
+    @Override
     public void setRequireJoin(boolean join) {
         this.requireJoin = join;
     }
 
+    @Override
     public boolean getRequireJoin() {
         return this.requireJoin;
     }
-    public boolean isFinished(){
-		return this.getGUI().getBodyColor() == MonitorEventHandler.NodeState.FINISHED.color;
-	}
+
+    @Override
+    public boolean isFinished() {
+        return this.getGUI().getBodyColor() == MonitorEventHandler.NodeState.FINISHED.color;
+    }
 }

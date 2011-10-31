@@ -21,22 +21,25 @@
 
 package org.apache.airavata.xbaya.component.gui;
 
-import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.globus.GridFTPFileTransferClient;
-import org.globusonline.transfer.JSONTransferAPIClient;
-import org.apache.airavata.xbaya.gui.GridPanel;
-import org.apache.airavata.xbaya.gui.XBayaDialog;
-import org.apache.airavata.xbaya.gui.XBayaLabel;
-import org.apache.airavata.xbaya.gui.XBayaTextField;
-import org.globusonline.transfer.APIError;
-import org.json.JSONException;
-
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+
+import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.globus.GridFTPFileTransferClient;
+import org.apache.airavata.xbaya.gui.GridPanel;
+import org.apache.airavata.xbaya.gui.XBayaDialog;
+import org.apache.airavata.xbaya.gui.XBayaLabel;
+import org.apache.airavata.xbaya.gui.XBayaTextField;
+import org.globusonline.transfer.APIError;
+import org.globusonline.transfer.JSONTransferAPIClient;
+import org.json.JSONException;
 
 public class GlobusFileTransferWindow {
     public static final String GLOBUSONLINE_BASE_URL_V0_10 = "https://transfer.api.globusonline.org/v0.10";
@@ -62,7 +65,8 @@ public class GlobusFileTransferWindow {
     private XBayaTextField destFilePathTextField;
 
     /**
-     * @param engine XBaya workflow engine
+     * @param engine
+     *            XBaya workflow engine
      */
     public GlobusFileTransferWindow(XBayaEngine engine) {
         this.engine = engine;
@@ -178,6 +182,7 @@ public class GlobusFileTransferWindow {
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 ok();
             }
@@ -185,6 +190,7 @@ public class GlobusFileTransferWindow {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

@@ -82,7 +82,7 @@ public class Listener {
         }
 
         WseMsgBrokerClient publisher = new WseMsgBrokerClient();
-        EndpointReference endpointRef = publisher.createEndpointReference(brokerLocation, topic);
+        EndpointReference endpointRef = WseMsgBrokerClient.createEndpointReference(brokerLocation, topic);
         publisher.init(endpointRef.getAddress());
 
         try {

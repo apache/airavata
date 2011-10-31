@@ -21,9 +21,9 @@
 
 package org.apache.airavata.workflow.tracking.common;
 
-import org.apache.airavata.workflow.tracking.types.BaseIDType;
-
 import java.net.URI;
+
+import org.apache.airavata.workflow.tracking.types.BaseIDType;
 
 public interface InvocationEntity {
 

@@ -49,7 +49,11 @@ import org.apache.axis2.util.XMLPrettyPrinter;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.tool.XSTCTester.TestCase;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class SimpleWorkflowExecution extends TestCase {
 
@@ -455,7 +459,7 @@ public class SimpleWorkflowExecution extends TestCase {
                                 "experiment-id-" + System.currentTimeMillis()).set(AnnotationConsts.UserDN,
                                 "/O=IU/OU=Extreme Lab/CN=drlead"));
         if (BROKER_URL != null) {
-            EndpointReference brokerEpr = api.createEndpointReference(BROKER_URL, topic);
+            EndpointReference brokerEpr = WseMsgBrokerClient.createEndpointReference(BROKER_URL, topic);
 
             props.set(ConstructorConsts.BROKER_EPR, brokerEpr.getAddress());
         } else {

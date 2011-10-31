@@ -25,7 +25,8 @@ import java.io.IOException;
 
 import org.apache.airavata.workflow.tracking.impl.publish.WSMPublisher;
 import org.apache.axis2.addressing.EndpointReference;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
 
 public class TestWSMPublisher {
 

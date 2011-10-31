@@ -53,6 +53,7 @@ public class XBayaTextArea implements XBayaTextComponent {
     /**
      * @return The swing component.
      */
+    @Override
     public JScrollPane getSwingComponent() {
         return getScrollPane();
     }
@@ -60,6 +61,7 @@ public class XBayaTextArea implements XBayaTextComponent {
     /**
      * @param text
      */
+    @Override
     public void setText(String text) {
         if (text == null) {
             text = "";
@@ -73,6 +75,7 @@ public class XBayaTextArea implements XBayaTextComponent {
     /**
      * @return The text
      */
+    @Override
     public String getText() {
         return this.textArea.getText().trim();
     }

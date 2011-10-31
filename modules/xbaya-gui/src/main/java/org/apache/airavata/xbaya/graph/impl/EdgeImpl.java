@@ -69,6 +69,7 @@ public abstract class EdgeImpl implements Edge {
     /**
      * @see org.apache.airavata.xbaya.graph.Edge#getGUI()
      */
+    @Override
     public EdgeGUI getGUI() {
         if (this.gui == null) {
             this.gui = new EdgeGUI(this);
@@ -79,6 +80,7 @@ public abstract class EdgeImpl implements Edge {
     /**
      * @see org.apache.airavata.xbaya.graph.Edge#getFromPort()
      */
+    @Override
     public PortImpl getFromPort() {
         return this.fromPort;
     }
@@ -86,6 +88,7 @@ public abstract class EdgeImpl implements Edge {
     /**
      * @see org.apache.airavata.xbaya.graph.Edge#getToPort()
      */
+    @Override
     public PortImpl getToPort() {
         return this.toPort;
     }
@@ -161,6 +164,7 @@ public abstract class EdgeImpl implements Edge {
      * 
      * @return The label
      */
+    @Override
     public String getLabel() {
         return this.label;
     }
@@ -171,6 +175,7 @@ public abstract class EdgeImpl implements Edge {
      * @param label
      *            The label to set.
      */
+    @Override
     public void setLabel(String label) {
         this.label = label;
     }

@@ -21,15 +21,6 @@
 
 package org.apache.airavata.xbaya.pegasus.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-
-import org.apache.airavata.xbaya.XBayaEngine;
-
 public class PegasusMenu {
 
     // private JMenu pegasusMenu;

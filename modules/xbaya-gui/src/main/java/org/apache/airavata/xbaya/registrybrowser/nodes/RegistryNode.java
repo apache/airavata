@@ -21,18 +21,24 @@
 
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.swing.Icon;
+import javax.swing.tree.TreeNode;
+
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
-import org.apache.airavata.xbaya.registrybrowser.model.*;
-
-import javax.swing.*;
-import javax.swing.tree.TreeNode;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.apache.airavata.xbaya.registrybrowser.model.ApplicationDeploymentDescriptions;
+import org.apache.airavata.xbaya.registrybrowser.model.GFacURLs;
+import org.apache.airavata.xbaya.registrybrowser.model.HostDescriptions;
+import org.apache.airavata.xbaya.registrybrowser.model.ServiceDescriptions;
+import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowExperiments;
+import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowTemplates;
 
 public class RegistryNode extends AbstractAiravataTreeNode {
     private Registry registry;
@@ -41,9 +47,10 @@ public class RegistryNode extends AbstractAiravataTreeNode {
     public RegistryNode(XBayaEngine engine, TreeNode parent) {
         super(parent);
         setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
-        this.engine=engine;
+        this.engine = engine;
     }
 
+    @Override
     protected List<TreeNode> getChildren() {
         List<Object> children = new ArrayList<Object>();
         GFacURLs gFacURLs = new GFacURLs(getRegistry());
@@ -62,6 +69,7 @@ public class RegistryNode extends AbstractAiravataTreeNode {
         return getTreeNodeList(children.toArray(), this);
     }
 
+    @Override
     public Registry getRegistry() {
         return registry;
     }

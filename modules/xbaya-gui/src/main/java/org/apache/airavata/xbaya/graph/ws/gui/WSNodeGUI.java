@@ -80,6 +80,7 @@ public class WSNodeGUI extends NodeGUI {
 
     }
 
+    @Override
     protected void calculatePositions(Graphics g) {
         super.calculatePositions(g);
 
@@ -101,6 +102,7 @@ public class WSNodeGUI extends NodeGUI {
 
     }
 
+    @Override
     public void mouseClicked(MouseEvent event, XBayaEngine engine) {
         if (event.getClickCount() >= 2) {
             showWindow(engine);

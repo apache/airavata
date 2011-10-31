@@ -30,6 +30,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
@@ -38,7 +39,6 @@ import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextArea;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
-import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.xmlpull.infoset.XmlElement;
 
@@ -178,6 +178,7 @@ public class WorkflowPropertyWindow {
 
         this.okButton = new JButton("OK");
         this.okButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 setToWorkflow();
 
@@ -186,6 +187,7 @@ public class WorkflowPropertyWindow {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

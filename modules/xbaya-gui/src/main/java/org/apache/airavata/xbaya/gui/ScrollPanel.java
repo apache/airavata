@@ -85,6 +85,7 @@ public class ScrollPanel implements XBayaComponent {
     /**
      * @see org.apache.airavata.xbaya.gui.XBayaComponent#getSwingComponent()
      */
+    @Override
     public JPanel getSwingComponent() {
         return getPanel();
     }

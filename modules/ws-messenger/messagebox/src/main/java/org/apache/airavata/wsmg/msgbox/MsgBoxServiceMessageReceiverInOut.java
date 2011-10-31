@@ -43,6 +43,7 @@ public class MsgBoxServiceMessageReceiverInOut extends AbstractInOutMessageRecei
 
     private static Logger logger = LoggerFactory.getLogger(MsgBoxServiceMessageReceiverInOut.class);
 
+    @Override
     public void invokeBusinessLogic(MessageContext inMsgContext, MessageContext outMsgContext) throws AxisFault {
 
         // get the implementation class for the Web Service

@@ -70,6 +70,7 @@ public class ComponentViewer implements GraphCanvasListener, ComponentSelectorLi
     /**
      * @return the GUI component
      */
+    @Override
     public JEditorPane getSwingComponent() {
         return this.editorPane;
     }
@@ -83,6 +84,7 @@ public class ComponentViewer implements GraphCanvasListener, ComponentSelectorLi
     public void setComponent(final Component component) {
         // logger.entering(component);
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 if (component == null) {
                     ComponentViewer.this.editorPane.setText(DEFAULT_HTML_MESSAGE);
@@ -100,6 +102,7 @@ public class ComponentViewer implements GraphCanvasListener, ComponentSelectorLi
     /**
      * @see org.apache.airavata.xbaya.graph.gui.GraphCanvasListener#graphCanvasChanged(org.apache.airavata.xbaya.graph.gui.GraphCanvasEvent)
      */
+    @Override
     public void graphCanvasChanged(GraphCanvasEvent event) {
         GraphCanvasEventType type = event.getType();
         GraphCanvas graphCanvas = event.getGraphCanvas();
@@ -123,6 +126,7 @@ public class ComponentViewer implements GraphCanvasListener, ComponentSelectorLi
     /**
      * @see org.apache.airavata.xbaya.component.gui.ComponentSelectorListener#componentSelectorChanged(org.apache.airavata.xbaya.component.gui.ComponentSelectorEvent)
      */
+    @Override
     public void componentSelectorChanged(ComponentSelectorEvent event) {
         ComponentSelectorEventType type = event.getType();
         switch (type) {

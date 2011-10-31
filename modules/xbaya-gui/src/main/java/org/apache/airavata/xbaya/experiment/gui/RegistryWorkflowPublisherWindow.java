@@ -111,6 +111,7 @@ public class RegistryWorkflowPublisherWindow {
         JPanel buttonPanel = new JPanel();
         this.okButton = new JButton("OK");
         this.okButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 ok();
             }

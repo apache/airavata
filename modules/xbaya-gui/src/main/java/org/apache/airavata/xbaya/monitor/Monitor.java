@@ -104,6 +104,7 @@ public class Monitor extends EventProducer {
                     /**
                      * @see org.apache.airavata.xbaya.monitor.EventFilter#isAcceptable(org.apache.airavata.xbaya.monitor.MonitorEvent)
                      */
+                    @Override
                     public boolean isAcceptable(MonitorEvent event) {
                         return event != null && event.getNodeID() != null && event.getNodeID().equals(nodeID);
                     }

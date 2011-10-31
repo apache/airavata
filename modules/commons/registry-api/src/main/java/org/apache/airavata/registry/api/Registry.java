@@ -225,8 +225,10 @@ public interface Registry {
     public boolean saveWorkflowInput(WorkflowIOData workflowInputData);
 
     public boolean saveWorkflowOutput(WorkflowIOData workflowOutputData);
-    
-    public List<WorkflowIOData> searchWorkflowInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx);
 
-    public List<WorkflowIOData> searchWorkflowOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx);
+    public List<WorkflowIOData> searchWorkflowInput(String experimentIdRegEx, String workflowNameRegEx,
+            String nodeNameRegEx);
+
+    public List<WorkflowIOData> searchWorkflowOutput(String experimentIdRegEx, String workflowNameRegEx,
+            String nodeNameRegEx);
 }

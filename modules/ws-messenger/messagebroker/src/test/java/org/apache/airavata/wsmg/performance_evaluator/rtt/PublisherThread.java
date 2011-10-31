@@ -23,7 +23,9 @@ package org.apache.airavata.wsmg.performance_evaluator.rtt;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.airavata.wsmg.client.*;
+import org.apache.airavata.wsmg.client.MessageBrokerClient;
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
+import org.apache.airavata.wsmg.client.WsntMsgBrokerClient;
 
 public class PublisherThread extends Thread {
     private String brokerURL;
@@ -64,6 +66,7 @@ public class PublisherThread extends Thread {
 
     }
 
+    @Override
     public void run() {
 
         try {

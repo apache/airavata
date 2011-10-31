@@ -47,6 +47,7 @@ public class XBayaComboBox implements XBayaComponent {
     /**
      * @return The swing component.
      */
+    @Override
     public JComboBox getSwingComponent() {
         return getJComboBox();
     }

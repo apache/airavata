@@ -32,7 +32,6 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
-import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -180,10 +179,10 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
         return rootNode;
     }
 
-    protected XBayaEngine getXBayaEngine(){
-        TreeNode root=getRootNode();
-        if (root instanceof RegistryNode){
-            return ((RegistryNode)root).getEngine();
+    protected XBayaEngine getXBayaEngine() {
+        TreeNode root = getRootNode();
+        if (root instanceof RegistryNode) {
+            return ((RegistryNode) root).getEngine();
         }
         return null;
     }
@@ -212,13 +211,13 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
     public abstract Icon getActionIcon(AbstractBrowserActionItem action);
 
     public abstract String getActionDescription(AbstractBrowserActionItem action);
-    
-    protected String wrapAsHtml(String...data){
-    	String result="<html>";
-    	for (String item : data) {
-			result+=item;
-		}
-    	result+="</html>";
-    	return result;
+
+    protected String wrapAsHtml(String... data) {
+        String result = "<html>";
+        for (String item : data) {
+            result += item;
+        }
+        result += "</html>";
+        return result;
     }
 }

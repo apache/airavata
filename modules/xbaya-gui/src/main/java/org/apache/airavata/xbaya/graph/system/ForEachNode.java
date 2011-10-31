@@ -68,6 +68,7 @@ public class ForEachNode extends SystemNode {
     /**
      * @see org.apache.airavata.xbaya.graph.Node#getGUI()
      */
+    @Override
     public NodeGUI getGUI() {
         if (this.gui == null) {
             this.gui = new ForEachNodeGUI(this);

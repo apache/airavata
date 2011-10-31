@@ -192,7 +192,7 @@ public class ODEWSDLTransformer {
             xmlElement.setNamespace(plinkNs);
             Iterator childItr = xmlElement.children().iterator();
             while (childItr.hasNext()) {
-                Object object = (Object) childItr.next();
+                Object object = childItr.next();
                 if (object instanceof org.xmlpull.infoset.XmlElement) {
                     ((org.xmlpull.infoset.XmlElement) object).setNamespace(plinkNs);
                 }
@@ -285,10 +285,10 @@ public class ODEWSDLTransformer {
 
             Iterator<WsdlBinding> bindingItr = wsdl.bindings().iterator();
             while (bindingItr.hasNext()) {
-                WsdlBinding wsdlBinding = (WsdlBinding) bindingItr.next();
+                WsdlBinding wsdlBinding = bindingItr.next();
                 Iterator<WsdlBindingOperation> operationsItr = wsdlBinding.operations().iterator();
                 while (operationsItr.hasNext()) {
-                    WsdlBindingOperation wsdlBindingOperation = (WsdlBindingOperation) operationsItr.next();
+                    WsdlBindingOperation wsdlBindingOperation = operationsItr.next();
                     org.xmlpull.infoset.XmlElement input = wsdlBindingOperation.xml().element(INPUT);
                     org.xmlpull.infoset.XmlElement body = input.element(BODY);
                     if (body == null) {
@@ -313,7 +313,7 @@ public class ODEWSDLTransformer {
                     Iterable<WsdlMessagePart> parts = wsdlMessage.parts();
                     Iterator<WsdlMessagePart> partsItr = parts.iterator();
                     while (partsItr.hasNext()) {
-                        WsdlMessagePart wsdlMessagePart = (WsdlMessagePart) partsItr.next();
+                        WsdlMessagePart wsdlMessagePart = partsItr.next();
                         if (!LEAD_HEADER.equals(wsdlMessagePart.getName())) {
                             inputPartName = wsdlMessagePart.getName();
                             break;

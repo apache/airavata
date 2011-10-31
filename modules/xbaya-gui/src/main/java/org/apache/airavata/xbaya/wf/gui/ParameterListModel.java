@@ -46,6 +46,7 @@ public class ParameterListModel extends AbstractListModel {
     /**
      * @see javax.swing.ListModel#getElementAt(int)
      */
+    @Override
     public Object getElementAt(int index) {
         return this.parameterNodes.get(index).getName();
     }
@@ -53,6 +54,7 @@ public class ParameterListModel extends AbstractListModel {
     /**
      * @see javax.swing.ListModel#getSize()
      */
+    @Override
     public int getSize() {
         return this.parameterNodes.size();
     }

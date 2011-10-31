@@ -65,6 +65,7 @@ public class GridPanel implements XBayaComponent {
     /**
      * @see org.apache.airavata.xbaya.gui.XBayaComponent#getSwingComponent()
      */
+    @Override
     public JComponent getSwingComponent() {
         return this.rootComponent;
     }

@@ -21,7 +21,14 @@
 package org.apache.airavata.common.workflow.execution.context;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.schemas.wec.*;
+import org.apache.airavata.schemas.wec.ApplicationOutputDataHandlingDocument;
+import org.apache.airavata.schemas.wec.ApplicationSchedulingContextDocument;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
+import org.apache.airavata.schemas.wec.SecurityContextDocument;
+import org.apache.airavata.schemas.wec.SoaServiceEprsDocument;
+import org.apache.airavata.schemas.wec.WorkflowMonitoringContextDocument;
+import org.apache.airavata.schemas.wec.WorkflowOutputDataHandlingDocument;
+import org.apache.airavata.schemas.wec.WorkflowSchedulingContextDocument;
 import org.xmlpull.v1.builder.XmlElement;
 
 public class WorkflowContextHeaderBuilder {

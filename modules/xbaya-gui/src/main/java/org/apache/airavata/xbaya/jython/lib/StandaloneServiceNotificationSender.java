@@ -21,12 +21,9 @@
 
 package org.apache.airavata.xbaya.jython.lib;
 
-import java.awt.Color;
 import java.net.URI;
 
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.graph.Node;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axis2.addressing.EndpointReference;

@@ -366,6 +366,7 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
          * @param type
          * @param message
          */
+        @Override
         public void deliverMessage(String topic, NotificationType type, XmlObject message) {
 
             XmlElement event = XBeansUtil.xmlObjectToXmlElement(message);

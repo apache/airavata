@@ -21,8 +21,6 @@
 
 package org.apache.airavata.wsmg.msgbox.client;
 
-import javax.xml.namespace.QName;
-
 import org.apache.airavata.wsmg.client.util.ClientUtil;
 import org.apache.airavata.wsmg.commons.MsgBoxQNameConstants;
 import org.apache.airavata.wsmg.commons.NameSpaceConstants;

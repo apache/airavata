@@ -53,7 +53,7 @@ public class ApplicationDeploymentDescriptionWrap {
         return service;
     }
 
-    public ServiceDescription getServiceDescription() throws RegistryException{
+    public ServiceDescription getServiceDescription() throws RegistryException {
         return getRegistry().getServiceDescription(getService());
     }
 
@@ -65,7 +65,7 @@ public class ApplicationDeploymentDescriptionWrap {
         return host;
     }
 
-    public HostDescription getHostDescription() throws RegistryException{
+    public HostDescription getHostDescription() throws RegistryException {
         return getRegistry().getHostDescription(getHost());
     }
 

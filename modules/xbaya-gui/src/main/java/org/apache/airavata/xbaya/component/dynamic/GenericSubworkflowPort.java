@@ -29,6 +29,7 @@ public class GenericSubworkflowPort extends CepPort {
 
     }
 
+    @Override
     protected void setID(String id) {
         this.id = id;
 

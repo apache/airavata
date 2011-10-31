@@ -207,7 +207,7 @@ public class BasicTypeMapping {
             // Object output = this.outputMessage.getObjectPart(name);
             // return output;
 
-            XmlElement outputElement = (XmlElement) element;
+            XmlElement outputElement = element;
             Iterator valueElementItr = outputElement.elements(null, name).iterator();
             LinkedList<String> ret = new LinkedList<String>();
             while (valueElementItr.hasNext()) {

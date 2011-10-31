@@ -121,6 +121,7 @@ public class ComponentMenu {
     private JMenuItem createWorkflowItem() {
         JMenuItem item = new JMenuItem("Load Workflow Component");
         item.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 new Thread() {
                     @Override
@@ -153,6 +154,7 @@ public class ComponentMenu {
     private JMenuItem createStreamSourceItem() {
         JMenuItem item = new JMenuItem("Load Stream Sources");
         item.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 new Thread() {
                     @Override
@@ -175,6 +177,7 @@ public class ComponentMenu {
         JMenuItem item = new JMenuItem("Refresh Selected Registry");
         // this.refreshItem.setMnemonic(KeyEvent.VK_R);
         item.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 new Thread() {
                     @Override
@@ -201,6 +204,7 @@ public class ComponentMenu {
         JMenuItem item = new JMenuItem("Refresh All Registries");
         // this.refreshItem.setMnemonic(KeyEvent.VK_E);
         item.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 new Thread() {
                     @Override
@@ -227,6 +231,7 @@ public class ComponentMenu {
         JMenuItem item = new JMenuItem("Remove Selected Registry");
         item.setMnemonic(KeyEvent.VK_R);
         item.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 try {
                     ComponentMenu.this.engine.getGUI().getComponentSelector().removeSelectedRegistry();
@@ -246,6 +251,7 @@ public class ComponentMenu {
         item.addActionListener(new AbstractAction() {
             private WebResigtoryWindow window;
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
                     this.window = new WebResigtoryWindow(ComponentMenu.this.engine);
@@ -262,6 +268,7 @@ public class ComponentMenu {
         item.addActionListener(new AbstractAction() {
             private URLRegistryWindow window;
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
                     this.window = new URLRegistryWindow(ComponentMenu.this.engine);
@@ -278,6 +285,7 @@ public class ComponentMenu {
         item.addActionListener(new AbstractAction() {
             private JCRRegistryWindow window;
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
                     this.window = new JCRRegistryWindow(ComponentMenu.this.engine);
@@ -294,6 +302,7 @@ public class ComponentMenu {
         item.addActionListener(new AbstractAction() {
             private GlobusFileTransferWindow window;
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
                     this.window = new GlobusFileTransferWindow(ComponentMenu.this.engine);
@@ -308,6 +317,7 @@ public class ComponentMenu {
         JMenuItem item = new JMenuItem("Add Local Directory");
         item.setMnemonic(KeyEvent.VK_L);
         item.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 registerComponentLocalDirectory();
             }

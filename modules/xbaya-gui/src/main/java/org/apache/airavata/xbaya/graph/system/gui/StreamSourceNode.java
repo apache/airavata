@@ -72,6 +72,7 @@ public class StreamSourceNode extends ParameterNode {
     /**
      * @see org.apache.airavata.xbaya.graph.Node#getGUI()
      */
+    @Override
     public NodeGUI getGUI() {
         if (this.gui == null) {
             this.gui = new StreamSourceNodeGUI(this);
@@ -166,6 +167,7 @@ public class StreamSourceNode extends ParameterNode {
         return this.label;
     }
 
+    @Override
     public XmlElement toXML() {
         XmlElement xml = super.toXML();
         xml.setAttributeValue(GraphSchema.NS, GraphSchema.NODE_TYPE_ATTRIBUTE, GraphSchema.NODE_TYPE_STREAM_SOURCE);

@@ -44,9 +44,9 @@ import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XbayaEnhancedList;
+import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.airavata.xbaya.registry.RegistryAccesser;
 
 public class RegistryLoaderWindow {
 
@@ -95,6 +95,7 @@ public class RegistryLoaderWindow {
                     final Set<QName> keys = resultList.keySet();
 
                     SwingUtilities.invokeLater(new Runnable() {
+                        @Override
                         public void run() {
                             if (resultList == null || resultList.size() == 0) {
                                 /*
@@ -210,6 +211,7 @@ public class RegistryLoaderWindow {
         JPanel buttonPanel = new JPanel();
         this.okButton = new JButton("Load");
         this.okButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 ok();
             }
@@ -218,6 +220,7 @@ public class RegistryLoaderWindow {
 
         this.deleteButton = new JButton("Delete");
         this.deleteButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 delete();
             }
@@ -226,6 +229,7 @@ public class RegistryLoaderWindow {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

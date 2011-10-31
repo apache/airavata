@@ -207,6 +207,7 @@ public class WorkflowInterpreterLaunchWindow {
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 execute();
             }
@@ -214,6 +215,7 @@ public class WorkflowInterpreterLaunchWindow {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

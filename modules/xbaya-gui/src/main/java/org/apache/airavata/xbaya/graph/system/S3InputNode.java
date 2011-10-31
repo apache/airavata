@@ -76,6 +76,7 @@ public class S3InputNode extends InputNode {
     /**
      * @see org.apache.airavata.xbaya.graph.Node#getGUI()
      */
+    @Override
     public NodeGUI getGUI() {
         if (this.gui == null) {
             this.gui = new S3InputNodeGUI(this);
@@ -120,6 +121,7 @@ public class S3InputNode extends InputNode {
      * 
      * @return The defaultValue.
      */
+    @Override
     public Object getDefaultValue() {
         return this.defaultValue;
     }
@@ -130,6 +132,7 @@ public class S3InputNode extends InputNode {
      * @param defaultValue
      *            The default value to set.
      */
+    @Override
     public void setDefaultValue(Object defaultValue) {
         this.defaultValue = defaultValue;
     }
@@ -163,6 +166,7 @@ public class S3InputNode extends InputNode {
      *            The user input
      * @return true if the user input is valid against the parameter type; false otherwise
      */
+    @Override
     public boolean isInputValid(String input) {
         logger.debug("Input:" + input);
         // TODO type checks

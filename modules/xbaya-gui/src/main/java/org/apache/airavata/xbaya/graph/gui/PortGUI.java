@@ -88,6 +88,7 @@ public class PortGUI implements GraphPieceGUI {
      * @see org.apache.airavata.xbaya.graph.gui.GraphPieceGUI#mouseClicked(java.awt.event.MouseEvent,
      *      org.apache.airavata.xbaya.XBayaEngine)
      */
+    @Override
     public void mouseClicked(MouseEvent event, XBayaEngine engine) {
         // Nothing
     }

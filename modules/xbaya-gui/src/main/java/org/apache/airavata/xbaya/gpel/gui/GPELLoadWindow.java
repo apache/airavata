@@ -90,6 +90,7 @@ public class GPELLoadWindow {
 
                     final GcSearchList resultList = workflowClient.list();
                     SwingUtilities.invokeLater(new Runnable() {
+                        @Override
                         public void run() {
                             if (resultList == null || resultList.size() == 0) {
                                 GPELLoadWindow.this.list.getList().setListData(new String[] { "No workflow" });
@@ -139,6 +140,7 @@ public class GPELLoadWindow {
     private void initGUI() {
         this.list = new XBayaList<GcSearchResult>();
         this.list.addListSelectionListener(new ListSelectionListener() {
+            @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting() == false) {
                     if (GPELLoadWindow.this.list.getSelectedIndex() != -1) {
@@ -184,6 +186,7 @@ public class GPELLoadWindow {
         JPanel buttonPanel = new JPanel();
         this.okButton = new JButton("OK");
         this.okButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 ok();
             }
@@ -192,6 +195,7 @@ public class GPELLoadWindow {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

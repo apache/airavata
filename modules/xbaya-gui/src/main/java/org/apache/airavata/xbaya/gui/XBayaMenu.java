@@ -39,7 +39,6 @@ import org.apache.airavata.xbaya.experiment.gui.ExperimentMenu;
 import org.apache.airavata.xbaya.file.gui.FileMenu;
 import org.apache.airavata.xbaya.gpel.gui.GPELMenu;
 import org.apache.airavata.xbaya.monitor.gui.MonitorMenu;
-import org.apache.airavata.xbaya.myproxy.gui.MyProxyMenu;
 import org.apache.airavata.xbaya.pegasus.gui.PegasusMenu;
 import org.apache.airavata.xbaya.wf.gui.WorkflowMenu;
 
@@ -94,6 +93,7 @@ public class XBayaMenu implements XBayaComponent {
      * 
      * @return The menu bar.
      */
+    @Override
     public JMenuBar getSwingComponent() {
         return this.menuBar;
     }
@@ -131,6 +131,7 @@ public class XBayaMenu implements XBayaComponent {
         aboutItem.addActionListener(new AbstractAction() {
             private AboutWindow window;
 
+            @Override
             public void actionPerformed(ActionEvent event) {
                 if (this.window == null) {
                     this.window = new AboutWindow(XBayaMenu.this.engine);
