@@ -17,17 +17,16 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.xbaya.concurrent;
 
 /**
- * Intended for jobs that are runnable; Way of determining
- * whether a given job is ready to be executed
- *
+ * Intended for jobs that are runnable; Way of determining whether a given job is ready to be executed
+ * 
  * @author Chathura Herath
  */
-public interface PredicatedExecutable extends Runnable{
+public interface PredicatedExecutable extends Runnable {
 
-	public boolean isReady();
+    public boolean isReady();
 
 }

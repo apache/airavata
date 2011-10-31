@@ -39,6 +39,7 @@ public class MultiplierImpl implements Multiplier {
     /**
      * @see org.apache.airavata.xbaya.test.service.multiplier.Multiplier#multiply(org.xmlpull.v1.builder.XmlElement)
      */
+    @Override
     public XmlElement multiply(XmlElement inputElement) {
         logger.info(XMLUtil.xmlElementToString(inputElement));
 

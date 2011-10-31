@@ -48,7 +48,6 @@ import org.apache.airavata.xbaya.gui.XBayaComboBox;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
-import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.ogce.schemas.gfac.beans.HostBean;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -150,6 +149,7 @@ public class HostDescriptionRegistrationWindow {
                 .retrievalXMLDocForParse("http://info.teragrid.org/web-apps/xml/ctss-services-v1/resource/"
                         + this.hostNameComboBox.getText());
         NamespaceContext ctx = new NamespaceContext() {
+            @Override
             public String getNamespaceURI(String prefix) {
                 String uri;
                 if (prefix.equals("tg"))
@@ -162,12 +162,14 @@ public class HostDescriptionRegistrationWindow {
             }
 
             // Dummy implementation - not used!
+            @Override
             @SuppressWarnings("unchecked")
             public Iterator getPrefixes(String val) {
                 return null;
             }
 
             // Dummy implemenation - not used!
+            @Override
             public String getPrefix(String uri) {
                 return null;
             }

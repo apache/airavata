@@ -21,6 +21,13 @@
 
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
+import java.util.Arrays;
+import java.util.List;
+
+import javax.swing.Icon;
+import javax.swing.JTree;
+import javax.swing.tree.TreeNode;
+
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
@@ -31,11 +38,6 @@ import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 import org.apache.airavata.xbaya.registrybrowser.model.ApplicationDeploymentDescriptionWrap;
 import org.apache.airavata.xbaya.registrybrowser.model.ApplicationDeploymentDescriptions;
-
-import javax.swing.*;
-import javax.swing.tree.TreeNode;
-import java.util.Arrays;
-import java.util.List;
 
 public class ApplicationDeploymentDescriptionsNode extends AbstractAiravataTreeNode {
     private ApplicationDeploymentDescriptions applicationDeploymentDescriptions;
@@ -79,12 +81,14 @@ public class ApplicationDeploymentDescriptionsNode extends AbstractAiravataTreeN
         return Arrays.asList(AddAction.ID, RefreshAction.ID, DeleteAction.ID);
     }
 
+    @Override
     public boolean triggerAction(JTree tree, String action) throws Exception {
         if (action.equals(DeleteAction.ID)) {
             deleteApplicationDescription(tree);
             return true;
         } else if (action.equals(AddAction.ID)) {
-            ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(getXBayaEngine());
+            ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(
+                    getXBayaEngine());
             applicationDescriptionDialog.open();
             if (applicationDescriptionDialog.isApplicationDescCreated()) {
                 refresh();

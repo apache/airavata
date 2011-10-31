@@ -38,7 +38,6 @@ import org.apache.airavata.xbaya.gui.XBayaComboBox;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
-import org.apache.airavata.xbaya.registry.RegistryAccesser;
 
 public class RegisterThroughFileWindow {
     private XBayaDialog dialog;

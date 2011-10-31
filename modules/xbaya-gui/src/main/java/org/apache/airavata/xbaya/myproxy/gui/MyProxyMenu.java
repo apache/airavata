@@ -70,6 +70,7 @@ public class MyProxyMenu {
         this.loadMenuItem.addActionListener(new AbstractAction() {
             private MyProxyDialog dialog;
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (this.dialog == null) {
                     this.dialog = new MyProxyDialog(MyProxyMenu.this.engine);

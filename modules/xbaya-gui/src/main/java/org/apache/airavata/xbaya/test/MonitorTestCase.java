@@ -27,7 +27,6 @@ import java.util.Properties;
 
 import org.apache.airavata.workflow.tracking.Notifier;
 import org.apache.airavata.workflow.tracking.NotifierFactory;
-import org.apache.airavata.workflow.tracking.common.InvocationEntity;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 import org.apache.airavata.workflow.tracking.impl.state.DataObjImpl;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;

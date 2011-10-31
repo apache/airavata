@@ -92,6 +92,7 @@ public class MemoConfigurationDialog {
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 setInput();
             }
@@ -99,6 +100,7 @@ public class MemoConfigurationDialog {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

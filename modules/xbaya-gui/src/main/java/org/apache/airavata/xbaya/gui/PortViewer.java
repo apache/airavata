@@ -109,6 +109,7 @@ public class PortViewer implements GraphCanvasListener {
     /**
      * @see org.apache.airavata.xbaya.graph.gui.GraphCanvasListener#graphCanvasChanged(org.apache.airavata.xbaya.graph.gui.GraphCanvasEvent)
      */
+    @Override
     public void graphCanvasChanged(GraphCanvasEvent event) {
         GraphCanvasEventType type = event.getType();
         GraphCanvas graphCanvas = event.getGraphCanvas();

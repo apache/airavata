@@ -52,6 +52,7 @@ public class ComponentSourceTransferable implements Transferable {
     /**
      * @see java.awt.datatransfer.Transferable#getTransferDataFlavors()
      */
+    @Override
     public DataFlavor[] getTransferDataFlavors() {
         return new DataFlavor[] { FLAVOR };
     }
@@ -59,6 +60,7 @@ public class ComponentSourceTransferable implements Transferable {
     /**
      * @see java.awt.datatransfer.Transferable#isDataFlavorSupported(java.awt.datatransfer.DataFlavor)
      */
+    @Override
     public boolean isDataFlavorSupported(DataFlavor flavor) {
         return flavor.equals(FLAVOR);
     }
@@ -66,6 +68,7 @@ public class ComponentSourceTransferable implements Transferable {
     /**
      * @see java.awt.datatransfer.Transferable#getTransferData(java.awt.datatransfer.DataFlavor)
      */
+    @Override
     public ComponentReference getTransferData(DataFlavor flavor) {
         return this.componentReference;
     }

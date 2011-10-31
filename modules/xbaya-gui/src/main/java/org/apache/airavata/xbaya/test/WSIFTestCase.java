@@ -23,7 +23,6 @@ package org.apache.airavata.xbaya.test;
 
 import junit.framework.TestSuite;
 
-import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

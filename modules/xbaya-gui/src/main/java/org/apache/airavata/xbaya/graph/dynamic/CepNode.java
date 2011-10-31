@@ -73,6 +73,7 @@ public class CepNode extends NodeImpl implements PortAddable {
     /**
      * @see org.apache.airavata.xbaya.graph.Node#getGUI()
      */
+    @Override
     public synchronized NodeGUI getGUI() {
         if (this.gui == null) {
             this.gui = new CepNodeGUI(this);
@@ -97,11 +98,13 @@ public class CepNode extends NodeImpl implements PortAddable {
         GraphUtil.validateConnection(edge);
     }
 
+    @Override
     public void setName(String name) {
         super.setName(name);
         this.createID();
     }
 
+    @Override
     public DataPort getFreeInPort() {
         List<DataPort> inputPorts = this.getInputPorts();
         for (DataPort dataPort : inputPorts) {
@@ -136,6 +139,7 @@ public class CepNode extends NodeImpl implements PortAddable {
         return port;
     }
 
+    @Override
     public void removeLastDynamicallyAddedInPort() throws GraphException {
 
         List<DataPort> inputPorts = this.getInputPorts();
@@ -177,6 +181,7 @@ public class CepNode extends NodeImpl implements PortAddable {
     // this.getComponent().setClassName(className);
     // }
 
+    @Override
     public XmlElement toXML() {
         XmlElement nodeElement = XMLUtil.BUILDER.newFragment(GraphSchema.NS, GraphSchema.NODE_TAG);
 

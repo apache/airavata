@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.airavata.commons.LeadCrosscutParametersUtil;
 import org.apache.airavata.workflow.tracking.Notifier;
 import org.apache.airavata.workflow.tracking.common.DataDurationObj;
 import org.apache.airavata.workflow.tracking.common.DataObj;
@@ -35,7 +34,16 @@ import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 import org.apache.airavata.workflow.tracking.impl.state.DataDurationImpl;
 import org.apache.airavata.workflow.tracking.impl.state.DataObjImpl;
 import org.apache.airavata.workflow.tracking.impl.state.DurationImpl;
-import org.apache.airavata.workflow.tracking.types.*;
+import org.apache.airavata.workflow.tracking.types.ApplicationAuditDocument;
+import org.apache.airavata.workflow.tracking.types.ApplicationAuditType;
+import org.apache.airavata.workflow.tracking.types.ComputationDurationDocument;
+import org.apache.airavata.workflow.tracking.types.DataReceiveDurationDocument;
+import org.apache.airavata.workflow.tracking.types.DataSendDurationDocument;
+import org.apache.airavata.workflow.tracking.types.DataTransferDurationType;
+import org.apache.airavata.workflow.tracking.types.JobStatusDocument;
+import org.apache.airavata.workflow.tracking.types.JobStatusType;
+import org.apache.airavata.workflow.tracking.types.ResourceMappingDocument;
+import org.apache.airavata.workflow.tracking.types.ResourceMappingType;
 
 /**
  * DOES NOT SUPPORT MULTI_THREADING -- PUBLISHER QUEUE, DATA CONSUMED/PRODUCED BATCHING * Utility to create and send

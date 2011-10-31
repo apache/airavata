@@ -37,7 +37,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.apache.airavata.xbaya.XBayaConfiguration;
-import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
@@ -110,6 +109,7 @@ public class PegasusInvokerWindow {
 
         this.invokeButton = new JButton("Invoke");
         this.invokeButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 execute();
             }
@@ -117,6 +117,7 @@ public class PegasusInvokerWindow {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

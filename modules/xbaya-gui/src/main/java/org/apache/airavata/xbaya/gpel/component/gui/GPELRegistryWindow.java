@@ -140,6 +140,7 @@ public class GPELRegistryWindow {
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 ok();
             }
@@ -147,6 +148,7 @@ public class GPELRegistryWindow {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

@@ -32,7 +32,6 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
-import org.apache.derby.iapi.sql.ParameterValueSet;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

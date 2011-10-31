@@ -71,6 +71,7 @@ public class ParameterPropertyPanel implements XBayaComponent {
     /**
      * @see org.apache.airavata.xbaya.gui.XBayaComponent#getSwingComponent()
      */
+    @Override
     public JComponent getSwingComponent() {
         return getPanel().getSwingComponent();
     }
@@ -146,6 +147,7 @@ public class ParameterPropertyPanel implements XBayaComponent {
     private void initGUI() {
         this.parameterList = new XBayaList();
         this.parameterList.addListSelectionListener(new ListSelectionListener() {
+            @Override
             public void valueChanged(ListSelectionEvent event) {
                 selectionChanged();
             }
@@ -154,6 +156,7 @@ public class ParameterPropertyPanel implements XBayaComponent {
         this.upButton = new JButton("UP");
         this.upButton.setEnabled(false);
         this.upButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 up();
             }
@@ -162,6 +165,7 @@ public class ParameterPropertyPanel implements XBayaComponent {
         this.downButton = new JButton("DOWN");
         this.downButton.setEnabled(false);
         this.downButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 down();
             }

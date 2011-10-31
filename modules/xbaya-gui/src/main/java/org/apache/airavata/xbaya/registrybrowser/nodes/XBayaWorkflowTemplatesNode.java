@@ -71,6 +71,7 @@ public class XBayaWorkflowTemplatesNode extends AbstractAiravataTreeNode {
         return Arrays.asList(AddAction.ID, RefreshAction.ID);
     }
 
+    @Override
     public boolean triggerAction(JTree tree, String action) throws Exception {
         if (action.equals(AddAction.ID)) {
             JOptionPane.showMessageDialog(null, "TODO");

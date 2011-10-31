@@ -34,8 +34,8 @@ import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowExperiments;
 
 public class XBayaWorkflowExperimentsNode extends AbstractAiravataTreeNode {
-	private XBayaWorkflowExperiments experiments;
-	
+    private XBayaWorkflowExperiments experiments;
+
     public XBayaWorkflowExperimentsNode(XBayaWorkflowExperiments experiments, TreeNode parent) {
         super(parent);
         setExperiments(experiments);
@@ -61,6 +61,7 @@ public class XBayaWorkflowExperimentsNode extends AbstractAiravataTreeNode {
         return Arrays.asList(RefreshAction.ID);
     }
 
+    @Override
     public boolean triggerAction(JTree tree, String action) throws Exception {
         return super.triggerAction(tree, action);
     }
@@ -80,11 +81,11 @@ public class XBayaWorkflowExperimentsNode extends AbstractAiravataTreeNode {
         return null;
     }
 
-	public XBayaWorkflowExperiments getExperiments() {
-		return experiments;
-	}
+    public XBayaWorkflowExperiments getExperiments() {
+        return experiments;
+    }
 
-	public void setExperiments(XBayaWorkflowExperiments experiments) {
-		this.experiments = experiments;
-	}
+    public void setExperiments(XBayaWorkflowExperiments experiments) {
+        this.experiments = experiments;
+    }
 }

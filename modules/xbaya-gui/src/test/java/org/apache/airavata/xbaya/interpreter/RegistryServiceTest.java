@@ -1,5 +1,14 @@
 package org.apache.airavata.xbaya.interpreter;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.jcr.RepositoryException;
+
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -15,16 +24,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import javax.jcr.RepositoryException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
-
 public class RegistryServiceTest {
 
     @Rule
-	public ExpectedException exception = ExpectedException.none();
+    public ExpectedException exception = ExpectedException.none();
 
     public JCRRegistry jcrRegistry = null;
 
@@ -32,9 +35,8 @@ public class RegistryServiceTest {
     public void testExecute() throws RegistryException {
 
         try {
-            jcrRegistry = new JCRRegistry(null,
-                    "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-                    "admin", null);
+            jcrRegistry = new JCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin", "admin",
+                    null);
         } catch (RepositoryException e) {
             fail("Failed creating the JCR Registry");
         }
@@ -48,26 +50,22 @@ public class RegistryServiceTest {
         input.setParameterName("echo_input");
         input.setParameterType(StringParameterType.Factory.newInstance());
         inputList.add(input);
-        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList
-                .size()]);
+        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
 
         List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
         OutputParameterType output = OutputParameterType.Factory.newInstance();
         output.setParameterName("echo_output");
         input.setParameterType(StringParameterType.Factory.newInstance());
         outputList.add(output);
-        OutputParameterType[] outputParamList = outputList
-                .toArray(new OutputParameterType[outputList.size()]);
+        OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
 
         serv.getType().setInputParametersArray(inputParamList);
         serv.getType().setOutputParametersArray(outputParamList);
 
         jcrRegistry.saveHostDescription(host);
-        jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host
-                .getType().getHostName(), appDesc);
+        jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host.getType().getHostName(), appDesc);
         jcrRegistry.saveServiceDescription(serv);
-        jcrRegistry.deployServiceOnHost(serv.getType().getName(), host
-                .getType().getHostName());
+        jcrRegistry.deployServiceOnHost(serv.getType().getName(), host.getType().getHostName());
 
     }
 
@@ -87,7 +85,8 @@ public class RegistryServiceTest {
     private ApplicationDeploymentDescription createAppDeploymentDescription() {
         ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription();
         ApplicationDeploymentDescriptionType app = appDesc.getType();
-        ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+        ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory
+                .newInstance();
         name.setStringValue("EchoLocal");
         app.setApplicationName(name);
         app.setExecutableLocation("/bin/echo");

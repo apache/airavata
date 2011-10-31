@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.common.utils;
 
-import org.apache.airavata.common.utils.XMLUtil;
 import org.junit.Test;
 
 

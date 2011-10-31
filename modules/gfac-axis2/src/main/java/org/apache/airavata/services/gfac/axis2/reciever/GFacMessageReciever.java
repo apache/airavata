@@ -206,7 +206,8 @@ public class GFacMessageReciever implements MessageReceiver {
 
             // List<Parameter> outputs = serviceDescription.getOutputParameters();
             for (OutputParameterType parameter : newOutputs) {
-                outputParam.add(parameter.getParameterName(), new ActualParameter(parameter.getParameterType().schemaType()));
+                outputParam.add(parameter.getParameterName(), new ActualParameter(parameter.getParameterType()
+                        .schemaType()));
             }
 
             invocationContext.setInput(inputParam);
@@ -308,12 +309,12 @@ public class GFacMessageReciever implements MessageReceiver {
      */
     private OMElement getWSDL(ConfigurationContext context, String serviceName) throws XMLStreamException {
         String WSDL = null;
-		try {
-			WSDL = getRegistry(context).getWSDL(serviceName);
-		} catch (RegistryException e) {
-			//TODO this scenario occur if the service is not present in the registry.
-			//someone should handle this 
-		}
+        try {
+            WSDL = getRegistry(context).getWSDL(serviceName);
+        } catch (RegistryException e) {
+            // TODO this scenario occur if the service is not present in the registry.
+            // someone should handle this
+        }
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(WSDL));
         StAXOMBuilder builder = new StAXOMBuilder(reader);
         OMElement wsdlElement = builder.getDocumentElement();

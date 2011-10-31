@@ -28,7 +28,6 @@ import java.util.List;
 import javax.jcr.RepositoryException;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
@@ -76,7 +75,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
      */
     @Override
     public ComponentTreeNode getComponentTree() {
-    	ComponentTreeNode tree = new ComponentTreeNode(this);
+        ComponentTreeNode tree = new ComponentTreeNode(this);
         try {
             List<ServiceDescription> services = this.registry.searchServiceDescription("");
             for (ServiceDescription serviceDescription : services) {

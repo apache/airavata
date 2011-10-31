@@ -141,6 +141,7 @@ public class EndifConfigurationDialog {
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 setInput();
             }
@@ -148,6 +149,7 @@ public class EndifConfigurationDialog {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

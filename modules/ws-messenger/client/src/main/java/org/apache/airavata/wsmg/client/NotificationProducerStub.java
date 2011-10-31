@@ -23,9 +23,8 @@ package org.apache.airavata.wsmg.client;
 
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.wsmg.client.util.ClientUtil;
-import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.commons.NameSpaceConstants;
+import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;

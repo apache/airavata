@@ -25,7 +25,11 @@ import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.apache.airavata.wsmg.client.*;
+import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
+import org.apache.airavata.wsmg.client.MessageBrokerClient;
+import org.apache.airavata.wsmg.client.MsgBrokerClientException;
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
+import org.apache.airavata.wsmg.client.WsntMsgBrokerClient;
 import org.apache.axiom.soap.SOAPEnvelope;
 
 public class NotificationManager implements ConsumerNotificationHandler {

@@ -124,6 +124,7 @@ public class MonitorEventHandler implements ChangeListener {
     /**
      * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
      */
+    @Override
     public void stateChanged(ChangeEvent event) {
         try {
             Object source = event.getSource();

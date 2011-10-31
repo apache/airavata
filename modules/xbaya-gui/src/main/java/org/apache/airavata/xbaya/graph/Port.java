@@ -63,6 +63,7 @@ public interface Port extends GraphPiece {
      * 
      * @return the gui
      */
+    @Override
     public PortGUI getGUI();
 
     /**

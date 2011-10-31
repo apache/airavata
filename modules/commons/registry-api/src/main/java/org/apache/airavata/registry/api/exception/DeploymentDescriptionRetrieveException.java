@@ -29,7 +29,7 @@ public class DeploymentDescriptionRetrieveException extends RegistryException {
     private static final long serialVersionUID = -2849422320139467602L;
 
     public DeploymentDescriptionRetrieveException(Exception e) {
-        super(ERROR_MESSAGE,e);
+        super(ERROR_MESSAGE, e);
     }
 
 }

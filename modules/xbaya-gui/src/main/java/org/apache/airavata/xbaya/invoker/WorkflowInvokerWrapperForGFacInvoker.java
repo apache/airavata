@@ -64,6 +64,7 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#invoke()
      */
+    @Override
     public synchronized boolean invoke() throws XBayaException {
 
         try {
@@ -73,6 +74,7 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
             this.result = executor.submit(new Callable<Boolean>() {
+                @Override
                 @SuppressWarnings("boxing")
                 public Boolean call() {
                     try {
@@ -202,6 +204,7 @@ public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
         }
     }
 
+    @Override
     public Object getOutput(String name) throws XBayaException {
         try {
             waitToFinish();

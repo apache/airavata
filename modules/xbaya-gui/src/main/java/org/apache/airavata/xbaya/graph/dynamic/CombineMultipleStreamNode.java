@@ -55,6 +55,7 @@ public class CombineMultipleStreamNode extends CepNode {
     /**
      * @see org.apache.airavata.xbaya.graph.Node#getGUI()
      */
+    @Override
     public synchronized CombineMultipleStreamNodeGUI getGUI() {
         if (this.gui == null) {
             this.gui = new CombineMultipleStreamNodeGUI(this);

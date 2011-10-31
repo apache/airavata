@@ -69,6 +69,7 @@ public class StreamTableModel extends AbstractTableModel {
     /**
      * @see javax.swing.table.TableModel#getColumnCount()
      */
+    @Override
     public int getColumnCount() {
         // TODO Auto-generated method stub
         return columnNames.length;
@@ -77,6 +78,7 @@ public class StreamTableModel extends AbstractTableModel {
     /**
      * @see javax.swing.table.TableModel#getRowCount()
      */
+    @Override
     public int getRowCount() {
         // TODO Auto-generated method stub
         return data.length;
@@ -85,15 +87,18 @@ public class StreamTableModel extends AbstractTableModel {
     /**
      * @see javax.swing.table.TableModel#getValueAt(int, int)
      */
+    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         // TODO Auto-generated method stub
         return data[rowIndex][columnIndex];
     }
 
+    @Override
     public Class getColumnClass(int c) {
         return getValueAt(0, c).getClass();
     }
 
+    @Override
     public String getColumnName(int col) {
         return columnNames[col];
     }

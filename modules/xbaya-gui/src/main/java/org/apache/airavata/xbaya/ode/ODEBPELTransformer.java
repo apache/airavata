@@ -27,8 +27,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.gpel.model.GpelActivity;
 import org.gpel.model.GpelAssign;
 import org.gpel.model.GpelAssignCopy;
@@ -195,7 +195,7 @@ public class ODEBPELTransformer {
     private String findNamespacePrefix(GpelProcess gpelProcess, QName messageQname) {
         Iterator<XmlNamespace> iterator = gpelProcess.xml().namespaces().iterator();
         while (iterator.hasNext()) {
-            XmlNamespace xmlNamespace = (XmlNamespace) iterator.next();
+            XmlNamespace xmlNamespace = iterator.next();
             if (xmlNamespace.getName().equals(messageQname.getNamespaceURI())) {
                 return xmlNamespace.getPrefix();
             }
@@ -213,7 +213,7 @@ public class ODEBPELTransformer {
             Map<String, WsdlDefinitions> wsdls) {
         Iterator<String> iterator = wsdls.keySet().iterator();
         while (iterator.hasNext()) {
-            String key = (String) iterator.next();
+            String key = iterator.next();
             WsdlDefinitions wsdlDefinitions = wsdls.get(key);
             WsdlPortType pType = wsdlDefinitions.getPortType(portType.getLocalPart());
             WsdlPortTypeOperation operation = null;

@@ -26,12 +26,12 @@ import java.net.URL;
 import java.util.Properties;
 
 import org.apache.airavata.commons.WorkFlowUtils;
+import org.apache.airavata.test.suite.workflowtracking.tests.util.CommonUtils;
+import org.apache.airavata.test.suite.workflowtracking.tests.util.TestConfigKeys;
 import org.apache.airavata.workflow.tracking.client.Callback;
 import org.apache.airavata.workflow.tracking.client.LeadNotificationManager;
 import org.apache.airavata.workflow.tracking.client.NotificationType;
 import org.apache.airavata.workflow.tracking.client.Subscription;
-import org.apache.airavata.test.suite.workflowtracking.tests.util.CommonUtils;
-import org.apache.airavata.test.suite.workflowtracking.tests.util.TestConfigKeys;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;

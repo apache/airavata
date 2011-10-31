@@ -55,6 +55,7 @@ public class YFilterMessageMatcher extends AbstractMessageMatcher {
         super();
     }
 
+    @Override
     public void start(String carrierLocation) {
         currentMessageCache = new Hashtable<String, String>();
     }
@@ -117,6 +118,7 @@ public class YFilterMessageMatcher extends AbstractMessageMatcher {
 
     }
 
+    @Override
     public int handleUnsubscribe(String subscriptionId) {
 
         int ret = 1;
@@ -146,6 +148,7 @@ public class YFilterMessageMatcher extends AbstractMessageMatcher {
         return ret;
     }
 
+    @Override
     public void handleSubscribe(SubscriptionState subscribeRequest, String subscriptionId) {
 
         // Get the write lock

@@ -24,17 +24,21 @@ package org.apache.airavata.test.suite.workflowtracking.tests.messagebox;
 import java.net.URL;
 import java.util.Properties;
 
+import org.apache.airavata.test.suite.workflowtracking.tests.util.TestConfigKeys;
 import org.apache.airavata.workflow.tracking.client.Callback;
 import org.apache.airavata.workflow.tracking.client.LeadNotificationManager;
 import org.apache.airavata.workflow.tracking.client.NotificationType;
 import org.apache.airavata.workflow.tracking.client.Subscription;
-import org.apache.airavata.test.suite.workflowtracking.tests.util.TestConfigKeys;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.impl.tool.XSTCTester.TestCase;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class RenewSubscriptionTest extends TestCase implements Callback {
 

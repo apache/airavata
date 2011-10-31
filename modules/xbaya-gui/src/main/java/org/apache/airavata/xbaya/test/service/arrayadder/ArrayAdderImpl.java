@@ -40,6 +40,7 @@ public class ArrayAdderImpl implements ArrayAdder {
     /**
      * @see org.apache.airavata.xbaya.test.service.arrayadder.ArrayAdder#add(org.xmlpull.v1.builder.XmlElement)
      */
+    @Override
     public XmlElement add(XmlElement inputElement) {
         logger.info(XMLUtil.xmlElementToString(inputElement));
 

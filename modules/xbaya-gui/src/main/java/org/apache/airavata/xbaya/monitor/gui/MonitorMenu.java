@@ -85,6 +85,7 @@ public class MonitorMenu implements EventListener {
     /**
      * @see org.apache.airavata.xbaya.event.EventListener#eventReceived(org.apache.airavata.xbaya.event.Event)
      */
+    @Override
     public void eventReceived(Event event) {
         Type type = event.getType();
         if (type.equals(Event.Type.MONITOR_CONFIGURATION_CHANGED)) {
@@ -128,6 +129,7 @@ public class MonitorMenu implements EventListener {
         item.addActionListener(new AbstractAction() {
             private MonitorConfigurationWindow window;
 
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
                     this.window = new MonitorConfigurationWindow(MonitorMenu.this.engine);
@@ -144,6 +146,7 @@ public class MonitorMenu implements EventListener {
         item.addActionListener(new AbstractAction() {
             private MonitorStarter starter;
 
+            @Override
             public void actionPerformed(ActionEvent event) {
                 if (this.starter == null) {
                     this.starter = new MonitorStarter(MonitorMenu.this.engine);
@@ -160,6 +163,7 @@ public class MonitorMenu implements EventListener {
         JMenuItem item = new JMenuItem("Stop Monitoring");
         item.setMnemonic(KeyEvent.VK_T);
         item.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 try {
                     MonitorMenu.this.engine.getMonitor().asynchronousStop();
@@ -178,6 +182,7 @@ public class MonitorMenu implements EventListener {
         JMenuItem item = new JMenuItem("Reset");
         item.setMnemonic(KeyEvent.VK_R);
         item.addActionListener(new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 try {
                     MonitorMenu.this.engine.getMonitor().reset();
@@ -198,6 +203,7 @@ public class MonitorMenu implements EventListener {
         item.addActionListener(new AbstractAction() {
             private WorkflowModifierGUI modifierGUI;
 
+            @Override
             public void actionPerformed(ActionEvent event) {
                 if (this.modifierGUI == null) {
                     this.modifierGUI = new WorkflowModifierGUI(MonitorMenu.this.engine);

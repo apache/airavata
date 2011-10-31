@@ -16,8 +16,8 @@
  */
 package org.apache.airavata.registry.api.user;
 
-import javax.jcr.RepositoryException;
 import javax.jcr.Credentials;
+import javax.jcr.RepositoryException;
 
 /**
  * User is a special {@link Authorizable} that can be authenticated and impersonated.

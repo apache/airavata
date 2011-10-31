@@ -57,6 +57,7 @@ public class ResourcePaintable implements Paintable {
     /**
      * @see org.apache.airavata.xbaya.graph.gui.Paintable#paint(java.awt.Graphics2D, java.awt.Point)
      */
+    @Override
     public void paint(Graphics2D graphics, Point point) {
         graphics.setColor(Color.BLACK);
         graphics.drawString(this.displayText, point.x, point.y - 10);

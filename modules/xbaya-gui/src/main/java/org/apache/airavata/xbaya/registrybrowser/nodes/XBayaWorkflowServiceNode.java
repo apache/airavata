@@ -44,23 +44,25 @@ public class XBayaWorkflowServiceNode extends AbstractAiravataTreeNode {
 
     @Override
     protected List<TreeNode> getChildren() {
-		List<ServiceParameters> parameterTypeList=new ArrayList<ServiceParameters>();
-		if (getXbayaWorkflowService().getInputParameters()!=null && getXbayaWorkflowService().getInputParameters().getParameters().size()>0){
-			parameterTypeList.add(getXbayaWorkflowService().getInputParameters());
-		}
-		if (getXbayaWorkflowService().getOutputParameters()!=null && getXbayaWorkflowService().getOutputParameters().getParameters().size()>0){
-			parameterTypeList.add(getXbayaWorkflowService().getOutputParameters());
-		}
-		return getTreeNodeList(parameterTypeList.toArray(), this);
+        List<ServiceParameters> parameterTypeList = new ArrayList<ServiceParameters>();
+        if (getXbayaWorkflowService().getInputParameters() != null
+                && getXbayaWorkflowService().getInputParameters().getParameters().size() > 0) {
+            parameterTypeList.add(getXbayaWorkflowService().getInputParameters());
+        }
+        if (getXbayaWorkflowService().getOutputParameters() != null
+                && getXbayaWorkflowService().getOutputParameters().getParameters().size() > 0) {
+            parameterTypeList.add(getXbayaWorkflowService().getOutputParameters());
+        }
+        return getTreeNodeList(parameterTypeList.toArray(), this);
     }
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
         String type = "";
-//        if (selected) {
-//			type = " <font color=\"#D3D3D3\">Service call</font>";
-//		}
-		return wrapAsHtml(getXbayaWorkflowService().getServiceNodeId(),type);
+        // if (selected) {
+        // type = " <font color=\"#D3D3D3\">Service call</font>";
+        // }
+        return wrapAsHtml(getXbayaWorkflowService().getServiceNodeId(), type);
     }
 
     @Override
@@ -73,6 +75,7 @@ public class XBayaWorkflowServiceNode extends AbstractAiravataTreeNode {
         return Arrays.asList();
     }
 
+    @Override
     public boolean triggerAction(JTree tree, String action) throws Exception {
         return super.triggerAction(tree, action);
     }
@@ -92,11 +95,11 @@ public class XBayaWorkflowServiceNode extends AbstractAiravataTreeNode {
         return null;
     }
 
-	public XBayaWorkflowService getXbayaWorkflowService() {
-		return xbayaWorkflowService;
-	}
+    public XBayaWorkflowService getXbayaWorkflowService() {
+        return xbayaWorkflowService;
+    }
 
-	public void setXbayaWorkflowService(XBayaWorkflowService xbayaWorkflowService) {
-		this.xbayaWorkflowService = xbayaWorkflowService;
-	}
+    public void setXbayaWorkflowService(XBayaWorkflowService xbayaWorkflowService) {
+        this.xbayaWorkflowService = xbayaWorkflowService;
+    }
 }

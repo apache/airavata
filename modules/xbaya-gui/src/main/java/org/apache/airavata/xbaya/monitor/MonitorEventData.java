@@ -187,6 +187,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.table.TableModel#getRowCount()
      */
+    @Override
     public int getRowCount() {
         // Only show the events up to the slider value.
         return this.sliderValue;
@@ -195,6 +196,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.table.TableModel#getColumnCount()
      */
+    @Override
     public int getColumnCount() {
         return Column.values().length;
     }
@@ -202,6 +204,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.table.TableModel#getColumnName(int)
      */
+    @Override
     public String getColumnName(int columnIndex) {
         Column[] columns = Column.values();
         if (columnIndex < 0 || columnIndex >= columns.length) {
@@ -214,6 +217,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.table.TableModel#getColumnClass(int)
      */
+    @Override
     public Class<?> getColumnClass(int columnIndex) {
         return String.class;
     }
@@ -221,6 +225,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.table.TableModel#isCellEditable(int, int)
      */
+    @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         return false;
     }
@@ -228,6 +233,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.table.TableModel#getValueAt(int, int)
      */
+    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         String value;
         try {
@@ -245,6 +251,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.table.TableModel#setValueAt(java.lang.Object, int, int)
      */
+    @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         throw new UnsupportedOperationException();
     }
@@ -252,6 +259,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.table.TableModel#addTableModelListener(javax.swing.event.TableModelListener)
      */
+    @Override
     public void addTableModelListener(TableModelListener listener) {
         this.tableModelListeners.add(listener);
     }
@@ -259,6 +267,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.table.TableModel#removeTableModelListener(javax.swing.event.TableModelListener)
      */
+    @Override
     public void removeTableModelListener(TableModelListener listener) {
         this.tableModelListeners.remove(listener);
     }
@@ -268,6 +277,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.BoundedRangeModel#getExtent()
      */
+    @Override
     public int getExtent() {
         return 0;
     }
@@ -275,6 +285,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.BoundedRangeModel#setExtent(int)
      */
+    @Override
     public void setExtent(int newExtent) {
         throw new UnsupportedOperationException();
     }
@@ -282,6 +293,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.BoundedRangeModel#getMaximum()
      */
+    @Override
     public int getMaximum() {
         return getEventSize();
     }
@@ -289,6 +301,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.BoundedRangeModel#setMaximum(int)
      */
+    @Override
     public void setMaximum(int newMaximum) {
         throw new UnsupportedOperationException();
     }
@@ -296,6 +309,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.BoundedRangeModel#getMinimum()
      */
+    @Override
     public int getMinimum() {
         return 0;
     }
@@ -303,6 +317,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.BoundedRangeModel#setMinimum(int)
      */
+    @Override
     public void setMinimum(int newMinimum) {
         throw new UnsupportedOperationException();
     }
@@ -310,6 +325,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.BoundedRangeModel#getValue()
      */
+    @Override
     public int getValue() {
         return this.sliderValue;
     }
@@ -317,6 +333,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.BoundedRangeModel#setValue(int)
      */
+    @Override
     public void setValue(int newValue) {
         if (this.sliderValue == newValue) {
             return;
@@ -348,6 +365,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.BoundedRangeModel#getValueIsAdjusting()
      */
+    @Override
     public boolean getValueIsAdjusting() {
         return this.sliderAdjusting;
     }
@@ -355,6 +373,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.BoundedRangeModel#setValueIsAdjusting(boolean)
      */
+    @Override
     public void setValueIsAdjusting(boolean adjusting) {
         this.sliderAdjusting = adjusting;
         fireSliderChanged();
@@ -363,6 +382,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.BoundedRangeModel#setRangeProperties(int, int, int, int, boolean)
      */
+    @Override
     public void setRangeProperties(int value, int extent, int min, int max, boolean adjusting) {
         throw new UnsupportedOperationException();
     }
@@ -370,6 +390,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.BoundedRangeModel#addChangeListener(javax.swing.event.ChangeListener)
      */
+    @Override
     public void addChangeListener(ChangeListener listener) {
         this.sliderModelListeners.add(listener);
     }
@@ -377,6 +398,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
     /**
      * @see javax.swing.BoundedRangeModel#removeChangeListener(javax.swing.event.ChangeListener)
      */
+    @Override
     public void removeChangeListener(ChangeListener listener) {
         this.sliderModelListeners.remove(listener);
     }

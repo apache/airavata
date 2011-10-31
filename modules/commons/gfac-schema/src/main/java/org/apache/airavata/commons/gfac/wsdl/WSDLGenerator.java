@@ -31,7 +31,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Random;
 import java.util.UUID;
-import java.util.Vector;
 
 import javax.wsdl.Binding;
 import javax.wsdl.BindingOperation;
@@ -61,9 +60,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.builder.XmlInfosetBuilder;
-
-import xsul.XmlConstants;
 
 import com.ibm.wsdl.BindingInputImpl;
 import com.ibm.wsdl.BindingOutputImpl;
@@ -189,8 +185,7 @@ public class WSDLGenerator implements WSDLConstants {
             }
 
             // Create types
-            Types types = ((TypesGenerator) TypesGenerator.addTypes(def, dImpl, serviceDesc, typens, globalTypens))
-                    .addTypes(def, dImpl, serviceDesc, typens, globalTypens);
+            Types types = TypesGenerator.addTypes(def, dImpl, serviceDesc, typens, globalTypens);
             def.setTypes(types);
 
             // if(!abstractWSDL)

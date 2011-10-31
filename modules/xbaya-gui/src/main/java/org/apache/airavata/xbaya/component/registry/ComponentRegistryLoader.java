@@ -47,13 +47,13 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
     private boolean canceled;
 
     private WaitDialog loadingDialog;
-    
+
     private ComponentTreeNode componentTree;
 
     private Observable observableRegistry;
-    
-    private Map<String,ComponentTreeNode> componentTreeNodesMap;
-    
+
+    private Map<String, ComponentTreeNode> componentTreeNodesMap;
+
     /**
      * Constructs a WorkflowLoader.
      * 
@@ -70,6 +70,7 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
     /**
      * @see org.apache.airavata.xbaya.gui.Cancelable#cancel()
      */
+    @Override
     public void cancel() {
         this.canceled = true;
         this.loadThread.interrupt();
@@ -83,7 +84,7 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
      */
     public void load(final ComponentRegistry registry) {
         this.canceled = false;
-        
+
         this.loadThread = new Thread() {
             @Override
             public void run() {
@@ -101,16 +102,17 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
      */
     private void runInThread(ComponentRegistry registry) {
         try {
-        	if (getComponentTreeNodesMap().containsKey(registry.getName())){
-        		this.getEngine().getGUI().getComponentSelector().removeComponentTree(getComponentTreeNodesMap().get(registry.getName()));
-        		getComponentTreeNodesMap().remove(registry.getName());
-        	}
+            if (getComponentTreeNodesMap().containsKey(registry.getName())) {
+                this.getEngine().getGUI().getComponentSelector()
+                        .removeComponentTree(getComponentTreeNodesMap().get(registry.getName()));
+                getComponentTreeNodesMap().remove(registry.getName());
+            }
             componentTree = registry.getComponentTree();
             if (this.canceled) {
                 return;
             }
             this.getEngine().getGUI().getComponentSelector().addComponentTree(componentTree);
-            getComponentTreeNodesMap().put(registry.getName(),componentTree);
+            getComponentTreeNodesMap().put(registry.getName(), componentTree);
             this.loadingDialog.hide();
         } catch (ComponentRegistryException e) {
             if (this.canceled) {
@@ -132,38 +134,38 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
         }
     }
 
-	@Override
-	public void update(Observable observable, Object o) {
-		if ((observable instanceof XBayaConfiguration) && (o instanceof ComponentRegistry)){
-			ComponentRegistry componentRegistry=(ComponentRegistry)o;
-			if (observableRegistry!=null){
-				observableRegistry.deleteObserver(this);
-			}
-			if (componentRegistry instanceof JCRComponentRegistry){
-				Registry registry = ((JCRComponentRegistry)componentRegistry).getRegistry();
-				if (registry!=null && registry instanceof Observable){
-					(observableRegistry=(Observable)registry).addObserver(this);
-				}
-			}
-			load(componentRegistry);
-		}else if (observable instanceof Registry){
-			load(getEngine().getConfiguration().getJcrComponentRegistry());
-		}
-	}
-	
-	public XBayaEngine getEngine() {
-		return engine;
-	}
+    @Override
+    public void update(Observable observable, Object o) {
+        if ((observable instanceof XBayaConfiguration) && (o instanceof ComponentRegistry)) {
+            ComponentRegistry componentRegistry = (ComponentRegistry) o;
+            if (observableRegistry != null) {
+                observableRegistry.deleteObserver(this);
+            }
+            if (componentRegistry instanceof JCRComponentRegistry) {
+                Registry registry = ((JCRComponentRegistry) componentRegistry).getRegistry();
+                if (registry != null && registry instanceof Observable) {
+                    (observableRegistry = (Observable) registry).addObserver(this);
+                }
+            }
+            load(componentRegistry);
+        } else if (observable instanceof Registry) {
+            load(getEngine().getConfiguration().getJcrComponentRegistry());
+        }
+    }
 
-	public void setEngine(XBayaEngine engine) {
-		this.engine = engine;
-	}
+    public XBayaEngine getEngine() {
+        return engine;
+    }
 
-	public Map<String,ComponentTreeNode> getComponentTreeNodesMap() {
-		if (componentTreeNodesMap==null){
-			componentTreeNodesMap=new HashMap<String, ComponentTreeNode>();
-		}
-		return componentTreeNodesMap;
-	}
+    public void setEngine(XBayaEngine engine) {
+        this.engine = engine;
+    }
+
+    public Map<String, ComponentTreeNode> getComponentTreeNodesMap() {
+        if (componentTreeNodesMap == null) {
+            componentTreeNodesMap = new HashMap<String, ComponentTreeNode>();
+        }
+        return componentTreeNodesMap;
+    }
 
 }

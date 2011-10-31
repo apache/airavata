@@ -28,11 +28,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -75,7 +86,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         try {
             ApplicationDescriptionAdvancedOptionDialog dialog = new ApplicationDescriptionAdvancedOptionDialog(null,
                     null);
-            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -98,7 +109,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     }
 
     public void open() {
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setVisible(true);
     }
 
@@ -124,6 +135,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
                 okButton = new JButton("Update");
                 okButton.setActionCommand("OK");
                 okButton.addActionListener(new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         saveApplicationDescriptionAdvancedOptions();
                         close();
@@ -136,6 +148,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
                 JButton cancelButton = new JButton("Cancel");
                 cancelButton.setActionCommand("Cancel");
                 cancelButton.addActionListener(new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         close();
                     }
@@ -213,8 +226,8 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
             rslParameterValue = new JTextField();
             rslParameterValue.setColumns(10);
 
-            this.jobType = new XBayaComboBox(new DefaultComboBoxModel(new String[]
-                    {JobTypeType.OPEN_MP.toString(),JobTypeType.MPI.toString(),JobTypeType.SERIAL.toString()}));
+            this.jobType = new XBayaComboBox(new DefaultComboBoxModel(new String[] { JobTypeType.OPEN_MP.toString(),
+                    JobTypeType.MPI.toString(), JobTypeType.SERIAL.toString() }));
             this.jobType.setEditable(false);
 
             JSeparator separator_1 = new JSeparator();
@@ -227,6 +240,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 
             btnDeleteVariable = new JButton("Delete variable");
             btnDeleteVariable.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     deleteSelectedRows();
                 }
@@ -420,6 +434,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
                     "Value" }) {
                 Class[] columnTypes = new Class[] { String.class, String.class };
 
+                @Override
                 public Class getColumnClass(int columnIndex) {
                     return columnTypes[columnIndex];
                 }
@@ -440,6 +455,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
             selectionModel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
             selectionModel.addListSelectionListener(new ListSelectionListener() {
+                @Override
                 public void valueChanged(ListSelectionEvent e) {
                     btnDeleteVariable.setEnabled(tblEnv.getSelectedRows().length > 0);
                 }
@@ -468,9 +484,9 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     }
 
     public ApplicationDeploymentDescriptionType getShellApplicationDescriptionType() {
-        return (ApplicationDeploymentDescriptionType)shellApplicationDescription.getType();
+        return shellApplicationDescription.getType();
     }
-    
+
     public void setShellApplicationDescription(ApplicationDeploymentDescription shellApplicationDescription) {
         this.shellApplicationDescription = shellApplicationDescription;
     }
@@ -486,22 +502,22 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     }
 
     private void saveApplicationDescriptionAdvancedOptions() {
-    	getShellApplicationDescriptionType().setStaticWorkingDirectory(txtWorkingDir.getText());
-    	getShellApplicationDescriptionType().setInputDataDirectory(txtInputDir.getText());
-    	getShellApplicationDescriptionType().setOutputDataDirectory(txtOutputDir.getText());
-    	getShellApplicationDescriptionType().setStandardInput(txtSTDIN.getText());
-    	getShellApplicationDescriptionType().setStandardOutput(txtSTDOUT.getText());
-    	getShellApplicationDescriptionType().setStandardError(txtSTDERR.getText());
+        getShellApplicationDescriptionType().setStaticWorkingDirectory(txtWorkingDir.getText());
+        getShellApplicationDescriptionType().setInputDataDirectory(txtInputDir.getText());
+        getShellApplicationDescriptionType().setOutputDataDirectory(txtOutputDir.getText());
+        getShellApplicationDescriptionType().setStandardInput(txtSTDIN.getText());
+        getShellApplicationDescriptionType().setStandardOutput(txtSTDOUT.getText());
+        getShellApplicationDescriptionType().setStandardError(txtSTDERR.getText());
 
-//    	getShellApplicationDescriptionType().setEnv(Apll.Factory.newInstance().getEnv());
-//        for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
-//            String varName = (String) defaultTableModel.getValueAt(i, 0);
-//            if (varName != null && !varName.equals("")) {
-//                String varValue = (String) defaultTableModel.getValueAt(i, 1);
-//                getShellApplicationDescriptionType().getEnv().addNewEntry().setKey(varName);
-//                getShellApplicationDescriptionType().getEnv().addNewEntry().setValue(varValue);
-//            }
-//        }
+        // getShellApplicationDescriptionType().setEnv(Apll.Factory.newInstance().getEnv());
+        // for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
+        // String varName = (String) defaultTableModel.getValueAt(i, 0);
+        // if (varName != null && !varName.equals("")) {
+        // String varValue = (String) defaultTableModel.getValueAt(i, 1);
+        // getShellApplicationDescriptionType().getEnv().addNewEntry().setKey(varName);
+        // getShellApplicationDescriptionType().getEnv().addNewEntry().setValue(varValue);
+        // }
+        // }
     }
 
     private void loadApplicationDescriptionAdvancedOptions() {
@@ -512,24 +528,25 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         txtSTDOUT.setText(getShellApplicationDescriptionType().getStandardOutput());
         txtSTDERR.setText(getShellApplicationDescriptionType().getStandardError());
         tableModelChanging = true;
-//      todo handle other parameters previous sent in the Entry Now they are defined
-//        ShellApplicationDeploymentType.Env.Entry[] entry = getShellApplicationDescriptionType().getEnv().getEntryArray();
-//
-//        Map<String, String> env = null;
-//        for (int i = 0; i < entry.length; i++) {
-//            String key = getShellApplicationDescriptionType().getEnv().getEntryArray(i).getKey();
-//            String value = getShellApplicationDescriptionType().getEnv().getEntryArray(i).getValue();
-//            env.put(key, value);
-//        }
+        // todo handle other parameters previous sent in the Entry Now they are defined
+        // ShellApplicationDeploymentType.Env.Entry[] entry =
+        // getShellApplicationDescriptionType().getEnv().getEntryArray();
+        //
+        // Map<String, String> env = null;
+        // for (int i = 0; i < entry.length; i++) {
+        // String key = getShellApplicationDescriptionType().getEnv().getEntryArray(i).getKey();
+        // String value = getShellApplicationDescriptionType().getEnv().getEntryArray(i).getValue();
+        // env.put(key, value);
+        // }
 
-//        while (defaultTableModel.getRowCount() > 0) {
-//            defaultTableModel.removeRow(0);
-//        }
-//        if (env != null) {
-//            for (String varName : env.keySet()) {
-//                defaultTableModel.addRow(new String[] { varName, env.get(varName) });
-//            }
-//        }
+        // while (defaultTableModel.getRowCount() > 0) {
+        // defaultTableModel.removeRow(0);
+        // }
+        // if (env != null) {
+        // for (String varName : env.keySet()) {
+        // defaultTableModel.addRow(new String[] { varName, env.get(varName) });
+        // }
+        // }
         addNewRowIfLastIsNotEmpty();
         tableModelChanging = false;
     }

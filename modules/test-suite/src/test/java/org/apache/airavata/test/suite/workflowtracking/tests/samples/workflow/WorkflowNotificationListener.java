@@ -25,15 +25,19 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Properties;
 
+import org.apache.airavata.test.suite.workflowtracking.tests.util.TestConfigKeys;
 import org.apache.airavata.workflow.tracking.client.Callback;
 import org.apache.airavata.workflow.tracking.client.LeadNotificationManager;
 import org.apache.airavata.workflow.tracking.client.NotificationType;
 import org.apache.airavata.workflow.tracking.client.Subscription;
-import org.apache.airavata.test.suite.workflowtracking.tests.util.TestConfigKeys;
 import org.apache.airavata.workflow.tracking.types.WorkflowTerminatedDocument;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class WorkflowNotificationListener implements Callback {
 

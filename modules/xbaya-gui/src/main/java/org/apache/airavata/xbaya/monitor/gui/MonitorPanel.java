@@ -103,6 +103,7 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
      * 
      * @return The scroll pane
      */
+    @Override
     public JPanel getSwingComponent() {
         return this.panel;
     }
@@ -110,8 +111,10 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
     /**
      * @see javax.swing.event.TableModelListener#tableChanged(javax.swing.event.TableModelEvent)
      */
+    @Override
     public void tableChanged(final TableModelEvent event) {
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 tableChangedInSwingThread(event);
             }
@@ -254,9 +257,9 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
              * @param firstElement
              */
             private void findAndLuanchBrowser(XmlElement firstElement) {
-                Iterator children = ((XmlElement) firstElement).children().iterator();
+                Iterator children = firstElement.children().iterator();
                 while (children.hasNext()) {
-                    Object object = (Object) children.next();
+                    Object object = children.next();
                     if (object instanceof String) {
                         try {
                             new URL(((String) object).trim());

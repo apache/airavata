@@ -144,6 +144,7 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
 
         org.apache.axiom.om.OMDataSource dataSource = new org.apache.axis2.databinding.ADBDataSource(this, parentQName) {
 
+            @Override
             public void serialize(org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
                     throws javax.xml.stream.XMLStreamException {
                 NameValue.this.serialize(parentQName, factory, xmlWriter);
@@ -153,12 +154,14 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
 
     }
 
+    @Override
     public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
             org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter)
             throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException {
         serialize(parentQName, factory, xmlWriter, false);
     }
 
+    @Override
     public void serialize(final javax.xml.namespace.QName parentQName, final org.apache.axiom.om.OMFactory factory,
             org.apache.axis2.databinding.utils.writer.MTOMAwareXMLStreamWriter xmlWriter, boolean serializeType)
             throws javax.xml.stream.XMLStreamException, org.apache.axis2.databinding.ADBException {
@@ -414,6 +417,7 @@ public class NameValue implements org.apache.axis2.databinding.ADBBean {
      * databinding method to get an XML representation of this object
      * 
      */
+    @Override
     public javax.xml.stream.XMLStreamReader getPullParser(javax.xml.namespace.QName qName)
             throws org.apache.axis2.databinding.ADBException {
 

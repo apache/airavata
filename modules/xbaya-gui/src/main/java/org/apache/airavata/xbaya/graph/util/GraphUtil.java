@@ -37,6 +37,7 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.Pair;
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.dynamic.GenericSubWorkflowComponent;
@@ -60,7 +61,6 @@ import org.apache.airavata.xbaya.graph.ws.WSGraph;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
-import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.wf.Workflow;
 
 public class GraphUtil {
@@ -159,6 +159,7 @@ public class GraphUtil {
     public static <T extends Node> List<T> sortByName(Collection<T> nodes) {
         List<T> nodeList = new LinkedList<T>(nodes);
         Comparator<Node> nameComparator = new Comparator<Node>() {
+            @Override
             public int compare(Node node1, Node node2) {
                 String name1 = node1.getName();
                 String name2 = node2.getName();

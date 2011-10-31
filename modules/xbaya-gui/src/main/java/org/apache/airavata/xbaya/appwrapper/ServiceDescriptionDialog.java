@@ -52,6 +52,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListSelectionModel;
+import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -62,7 +63,11 @@ import javax.swing.table.TableColumn;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.schemas.gfac.*;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.ParameterType;
+import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 
 public class ServiceDescriptionDialog extends JDialog {
 
@@ -85,7 +90,7 @@ public class ServiceDescriptionDialog extends JDialog {
     public static void main(String[] args) {
         try {
             ServiceDescriptionDialog dialog = new ServiceDescriptionDialog(null);
-            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,7 +123,7 @@ public class ServiceDescriptionDialog extends JDialog {
     }
 
     public void open() {
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setVisible(true);
     }
 
@@ -159,52 +164,86 @@ public class ServiceDescriptionDialog extends JDialog {
 
         btnDeleteParameter = new JButton("Delete parameter");
         btnDeleteParameter.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent arg0) {
                 deleteSelectedRows();
             }
         });
         btnDeleteParameter.setEnabled(false);
         GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-        gl_contentPanel.setHorizontalGroup(
-        	gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-        		.addGroup(gl_contentPanel.createSequentialGroup()
-        			.addContainerGap(212, Short.MAX_VALUE)
-        			.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-        				.addGroup(gl_contentPanel.createSequentialGroup()
-        					.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        					.addContainerGap())
-        				.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
-        					.addGroup(gl_contentPanel.createSequentialGroup()
-        						.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-        							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE)
-        							.addComponent(btnDeleteParameter))
-        						.addGap(27))
-        					.addGroup(gl_contentPanel.createSequentialGroup()
-        						.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-        							.addComponent(lblInputParameters)
-        							.addGroup(gl_contentPanel.createSequentialGroup()
-        								.addComponent(lblServiceName)
-        								.addGap(18)
-        								.addComponent(txtServiceName, GroupLayout.PREFERRED_SIZE, 309, GroupLayout.PREFERRED_SIZE)))
-        						.addGap(30)))))
-        );
-        gl_contentPanel.setVerticalGroup(
-        	gl_contentPanel.createParallelGroup(Alignment.LEADING)
-        		.addGroup(gl_contentPanel.createSequentialGroup()
-        			.addContainerGap(42, Short.MAX_VALUE)
-        			.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
-        				.addComponent(lblServiceName)
-        				.addComponent(txtServiceName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-        			.addPreferredGap(ComponentPlacement.UNRELATED)
-        			.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-        			.addGap(12)
-        			.addComponent(lblInputParameters)
-        			.addPreferredGap(ComponentPlacement.RELATED)
-        			.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
-        			.addPreferredGap(ComponentPlacement.RELATED)
-        			.addComponent(btnDeleteParameter)
-        			.addGap(78))
-        );
+        gl_contentPanel
+                .setHorizontalGroup(gl_contentPanel
+                        .createParallelGroup(Alignment.TRAILING)
+                        .addGroup(
+                                gl_contentPanel
+                                        .createSequentialGroup()
+                                        .addContainerGap(212, Short.MAX_VALUE)
+                                        .addGroup(
+                                                gl_contentPanel
+                                                        .createParallelGroup(Alignment.LEADING)
+                                                        .addGroup(
+                                                                gl_contentPanel
+                                                                        .createSequentialGroup()
+                                                                        .addComponent(separator,
+                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                GroupLayout.PREFERRED_SIZE)
+                                                                        .addContainerGap())
+                                                        .addGroup(
+                                                                gl_contentPanel
+                                                                        .createParallelGroup(Alignment.TRAILING, false)
+                                                                        .addGroup(
+                                                                                gl_contentPanel
+                                                                                        .createSequentialGroup()
+                                                                                        .addGroup(
+                                                                                                gl_contentPanel
+                                                                                                        .createParallelGroup(
+                                                                                                                Alignment.TRAILING)
+                                                                                                        .addComponent(
+                                                                                                                scrollPane,
+                                                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                                                380,
+                                                                                                                GroupLayout.PREFERRED_SIZE)
+                                                                                                        .addComponent(
+                                                                                                                btnDeleteParameter))
+                                                                                        .addGap(27))
+                                                                        .addGroup(
+                                                                                gl_contentPanel
+                                                                                        .createSequentialGroup()
+                                                                                        .addGroup(
+                                                                                                gl_contentPanel
+                                                                                                        .createParallelGroup(
+                                                                                                                Alignment.LEADING)
+                                                                                                        .addComponent(
+                                                                                                                lblInputParameters)
+                                                                                                        .addGroup(
+                                                                                                                gl_contentPanel
+                                                                                                                        .createSequentialGroup()
+                                                                                                                        .addComponent(
+                                                                                                                                lblServiceName)
+                                                                                                                        .addGap(18)
+                                                                                                                        .addComponent(
+                                                                                                                                txtServiceName,
+                                                                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                                                                309,
+                                                                                                                                GroupLayout.PREFERRED_SIZE)))
+                                                                                        .addGap(30))))));
+        gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(
+                gl_contentPanel
+                        .createSequentialGroup()
+                        .addContainerGap(42, Short.MAX_VALUE)
+                        .addGroup(
+                                gl_contentPanel
+                                        .createParallelGroup(Alignment.BASELINE)
+                                        .addComponent(lblServiceName)
+                                        .addComponent(txtServiceName, GroupLayout.PREFERRED_SIZE,
+                                                GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(ComponentPlacement.UNRELATED)
+                        .addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+                                GroupLayout.PREFERRED_SIZE).addGap(12).addComponent(lblInputParameters)
+                        .addPreferredGap(ComponentPlacement.RELATED)
+                        .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(ComponentPlacement.RELATED).addComponent(btnDeleteParameter).addGap(78)));
 
         tblParameters = new JTable();
         tblParameters.setFillsViewportHeight(true);
@@ -217,7 +256,7 @@ public class ServiceDescriptionDialog extends JDialog {
             public void tableChanged(TableModelEvent arg0) {
                 int selectedRow = tblParameters.getSelectedRow();
                 if (selectedRow != -1) {
-                        Object parameterIOType = defaultTableModel.getValueAt(selectedRow, 0);
+                    Object parameterIOType = defaultTableModel.getValueAt(selectedRow, 0);
                     Object parameterDataType = defaultTableModel.getValueAt(selectedRow, 2);
                     if (parameterIOType == null || parameterIOType.equals("")) {
                         defaultTableModel.setValueAt(getIOStringList()[0], selectedRow, 0);
@@ -245,6 +284,7 @@ public class ServiceDescriptionDialog extends JDialog {
         selectionModel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         selectionModel.addListSelectionListener(new ListSelectionListener() {
+            @Override
             public void valueChanged(ListSelectionEvent e) {
                 btnDeleteParameter.setEnabled(tblParameters.getSelectedRows().length > 0);
             }
@@ -281,6 +321,7 @@ public class ServiceDescriptionDialog extends JDialog {
                 okButton = new JButton("Save");
                 okButton.setEnabled(false);
                 okButton.addActionListener(new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         saveServiceDescription();
                         close();
@@ -293,6 +334,7 @@ public class ServiceDescriptionDialog extends JDialog {
             {
                 JButton cancelButton = new JButton("Cancel");
                 cancelButton.addActionListener(new ActionListener() {
+                    @Override
                     public void actionPerformed(ActionEvent e) {
                         setServiceCreated(false);
                         close();
@@ -313,10 +355,9 @@ public class ServiceDescriptionDialog extends JDialog {
 
     private String[] getDataTypes() {
         String[] type = new String[DataType.Enum.table.lastInt()];
-        for (int i = 1; i <= DataType.Enum.table.lastInt(); i++) 
-        {
-            type[i-1] = DataType.Enum.forInt(i).toString();
-        }        
+        for (int i = 1; i <= DataType.Enum.table.lastInt(); i++) {
+            type[i - 1] = DataType.Enum.forInt(i).toString();
+        }
         return type;
     }
 
@@ -347,6 +388,7 @@ public class ServiceDescriptionDialog extends JDialog {
         getServiceDescription().getType().setName(serviceName);
         updateDialogStatus();
     }
+
     private void updateDialogStatus() {
         String message = null;
         try {
@@ -357,6 +399,7 @@ public class ServiceDescriptionDialog extends JDialog {
         okButton.setEnabled(message == null);
         setError(message);
     }
+
     private void validateDialog() throws Exception {
         if (getServiceName() == null || getServiceName().trim().equals("")) {
             throw new Exception("Name of the service cannot be empty!!!");
@@ -366,30 +409,28 @@ public class ServiceDescriptionDialog extends JDialog {
         try {
             serviceDescription2 = getRegistry().getServiceDescription(Pattern.quote(getServiceName()));
         } catch (RegistryException e) {
-        	if (e.getCause() instanceof PathNotFoundException){
-        		//non-existant name. just want we want
-        	}else{
-        		throw e;
-        	}
+            if (e.getCause() instanceof PathNotFoundException) {
+                // non-existant name. just want we want
+            } else {
+                throw e;
+            }
         }
         if (serviceDescription2 != null) {
             throw new Exception("Service descriptor with the given name already exists!!!");
         }
-	}
+    }
 
-	public void saveServiceDescription() {
-		List<InputParameterType> inputParameters=new ArrayList<InputParameterType>();
-		List<OutputParameterType> outputParameters=new ArrayList<OutputParameterType>();
-		
-		for(int i=0;i<defaultTableModel.getRowCount();i++){
-            String parameterName = (String)defaultTableModel.getValueAt(i, 1);
-            String paramType = (String)defaultTableModel.getValueAt(i, 2);
-            String parameterDescription = (String) defaultTableModel
-                    .getValueAt(i, 3);
-            if (parameterName!=null && !parameterName.trim().equals("")) {
-                //todo how to handle Enum
-                if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i,
-						0))) {
+    public void saveServiceDescription() {
+        List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
+        List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
+
+        for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
+            String parameterName = (String) defaultTableModel.getValueAt(i, 1);
+            String paramType = (String) defaultTableModel.getValueAt(i, 2);
+            String parameterDescription = (String) defaultTableModel.getValueAt(i, 3);
+            if (parameterName != null && !parameterName.trim().equals("")) {
+                // todo how to handle Enum
+                if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i, 0))) {
                     InputParameterType parameter = InputParameterType.Factory.newInstance();
                     parameter.setParameterName(parameterName);
                     parameter.setParameterDescription(parameterDescription);
@@ -397,22 +438,22 @@ public class ServiceDescriptionDialog extends JDialog {
                     parameterType.setName(paramType);
                     inputParameters.add(parameter);
 
-				} else {
+                } else {
                     OutputParameterType parameter = OutputParameterType.Factory.newInstance();
                     parameter.setParameterName(parameterName);
                     parameter.setParameterDescription(parameterDescription);
                     ParameterType parameterType = parameter.addNewParameterType();
                     parameterType.setName(paramType);
-					outputParameters.add(parameter);
-				}
-			}
-		}
-		getServiceDescriptionType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
-		getServiceDescriptionType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
-		
-		getRegistry().saveServiceDescription(getServiceDescription());
-		setServiceCreated(true);
-	}
+                    outputParameters.add(parameter);
+                }
+            }
+        }
+        getServiceDescriptionType().setInputParametersArray(inputParameters.toArray(new InputParameterType[] {}));
+        getServiceDescriptionType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[] {}));
+
+        getRegistry().saveServiceDescription(getServiceDescription());
+        setServiceCreated(true);
+    }
 
     public void close() {
         getDialog().setVisible(false);

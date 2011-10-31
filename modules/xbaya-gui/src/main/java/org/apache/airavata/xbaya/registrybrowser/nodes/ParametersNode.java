@@ -33,59 +33,59 @@ import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.model.ServiceParameters;
 
 public class ParametersNode extends AbstractAiravataTreeNode {
-	private ServiceParameters parametersList;
-	public ParametersNode(ServiceParameters parameters,TreeNode parent) {
-		super(parent);
-		setParametersList(parameters);
-	}
+    private ServiceParameters parametersList;
 
-	@Override
-	protected List<TreeNode> getChildren() {
-		return getTreeNodeList(getParametersList().getParameters().toArray(), this);
-	}
+    public ParametersNode(ServiceParameters parameters, TreeNode parent) {
+        super(parent);
+        setParametersList(parameters);
+    }
 
-	@Override
-	public String getCaption(boolean selected, boolean expanded, boolean leaf,
-			boolean hasFocus) {
-		return "Parameters";
-	}
+    @Override
+    protected List<TreeNode> getChildren() {
+        return getTreeNodeList(getParametersList().getParameters().toArray(), this);
+    }
 
-	@Override
-	public Icon getIcon(boolean selected, boolean expanded, boolean leaf,
-			boolean hasFocus) {
-		return SwingUtil.createImageIcon("parameter.png");
-	}
+    @Override
+    public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+        return "Parameters";
+    }
 
-	@Override
-	public List<String> getSupportedActions() {
-		return Arrays.asList();
-	}
-	
-	public boolean triggerAction(JTree tree,String action) throws Exception{
-		return super.triggerAction(tree, action);
-	}
+    @Override
+    public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
+        return SwingUtil.createImageIcon("parameter.png");
+    }
 
-	@Override
-	public String getActionCaption(AbstractBrowserActionItem action) {
-		return action.getDefaultCaption();
-	}
+    @Override
+    public List<String> getSupportedActions() {
+        return Arrays.asList();
+    }
 
-	@Override
-	public Icon getActionIcon(AbstractBrowserActionItem action) {
-		return null;
-	}
+    @Override
+    public boolean triggerAction(JTree tree, String action) throws Exception {
+        return super.triggerAction(tree, action);
+    }
 
-	@Override
-	public String getActionDescription(AbstractBrowserActionItem action) {
-		return null;
-	}
+    @Override
+    public String getActionCaption(AbstractBrowserActionItem action) {
+        return action.getDefaultCaption();
+    }
 
-	public ServiceParameters getParametersList() {
-		return parametersList;
-	}
+    @Override
+    public Icon getActionIcon(AbstractBrowserActionItem action) {
+        return null;
+    }
 
-	public void setParametersList(ServiceParameters parametersList) {
-		this.parametersList = parametersList;
-	}
+    @Override
+    public String getActionDescription(AbstractBrowserActionItem action) {
+        return null;
+    }
+
+    public ServiceParameters getParametersList() {
+        return parametersList;
+    }
+
+    public void setParametersList(ServiceParameters parametersList) {
+        this.parametersList = parametersList;
+    }
 
 }

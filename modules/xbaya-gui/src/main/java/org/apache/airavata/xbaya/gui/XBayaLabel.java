@@ -55,6 +55,7 @@ public class XBayaLabel implements XBayaComponent {
     /**
      * @see org.apache.airavata.xbaya.gui.XBayaComponent#getSwingComponent()
      */
+    @Override
     public JLabel getSwingComponent() {
         return getJLabel();
     }

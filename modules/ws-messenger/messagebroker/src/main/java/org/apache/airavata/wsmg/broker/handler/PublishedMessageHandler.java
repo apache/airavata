@@ -45,6 +45,7 @@ public class PublishedMessageHandler extends AddressingBasedDispatcher {
 
     private Phase addressingPhase = null;
 
+    @Override
     public InvocationResponse invoke(MessageContext msgContext) throws AxisFault {
 
         InvocationResponse response = InvocationResponse.CONTINUE;

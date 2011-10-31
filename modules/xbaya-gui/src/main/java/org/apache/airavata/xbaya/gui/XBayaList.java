@@ -55,6 +55,7 @@ public class XBayaList<E> implements XBayaComponent {
     /**
      * @return The swing component.
      */
+    @Override
     public JScrollPane getSwingComponent() {
         return getScrollPane();
     }
