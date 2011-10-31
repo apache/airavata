@@ -34,7 +34,6 @@ public interface Graph extends GraphPiece {
      * 
      * @return the gui
      */
-    @Override
     public GraphGUI getGUI();
 
     /**

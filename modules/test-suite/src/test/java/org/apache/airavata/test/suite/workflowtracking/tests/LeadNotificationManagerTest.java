@@ -40,12 +40,9 @@ public class LeadNotificationManagerTest {
     @Test
     public final void testGetBrokerPublishEPR() {
 
-        String endpointRefAsStr = LeadNotificationManager.getBrokerPublishEPR(
-                "http://localhost:8080/axis2/services/EventingService", "testtopic");
+        String endpointRefAsStr = LeadNotificationManager.getBrokerPublishEPR("http://localhost:8080/axis2/services/EventingService", "testtopic");
 
-        Assert.assertEquals(
-                "<EndpointReference><wsa:Address xmlns:wsa=\"http://www.w3.org/2005/08/addressing\">http://localhost:8080/axis2/services/EventingService/topic/testtopic</wsa:Address></EndpointReference>",
-                endpointRefAsStr);
+        Assert.assertEquals("<EndpointReference><wsa:Address xmlns:wsa=\"http://www.w3.org/2005/08/addressing\">http://localhost:8080/axis2/services/EventingService/topic/testtopic</wsa:Address></EndpointReference>",endpointRefAsStr);
 
     }
 

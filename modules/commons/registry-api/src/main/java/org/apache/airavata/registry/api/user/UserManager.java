@@ -20,6 +20,7 @@ import java.security.Principal;
 import java.util.Iterator;
 
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
 
 import org.apache.airavata.registry.api.impl.JCRRegistry;

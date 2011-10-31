@@ -24,17 +24,17 @@ package org.apache.airavata.registry.api;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.exception.RegistryException;
 
-public interface Axis2Registry extends Registry {
+public interface Axis2Registry extends Registry{
 
     /**
      * Load WSDL for Axis2
      * 
      * @param serviceId
      * @return WSDL
-     * @throws RegistryException
+     * @throws RegistryException 
      */
     public String getWSDL(String serviceId) throws RegistryException;
-
+    
     /**
      * Load WSDL for Axis2
      * 

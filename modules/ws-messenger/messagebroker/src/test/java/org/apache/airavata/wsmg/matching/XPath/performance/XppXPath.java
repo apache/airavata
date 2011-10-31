@@ -37,13 +37,12 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import edu.berkeley.cs.db.yfilterplus.queryparser.QueryParser;
+import edu.berkeley.cs.db.yfilterplus.queryparser.XPQueryParser;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMXMLParserWrapper;
 import org.apache.axiom.om.impl.llom.factory.OMXMLBuilderFactory;
 import org.apache.axiom.soap.SOAPEnvelope;
-
-import edu.berkeley.cs.db.yfilterplus.queryparser.QueryParser;
-import edu.berkeley.cs.db.yfilterplus.queryparser.XPQueryParser;
 
 public class XppXPath {
 

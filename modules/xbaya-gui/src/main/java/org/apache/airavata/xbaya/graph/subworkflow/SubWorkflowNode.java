@@ -49,7 +49,6 @@ public class SubWorkflowNode extends NodeImpl {
     /**
      * @see org.apache.airavata.xbaya.graph.ws.WSNode#getGUI()
      */
-    @Override
     public NodeGUI getGUI() {
         if (this.gui == null) {
             this.gui = new SubWorkflowNodeGUI(this);

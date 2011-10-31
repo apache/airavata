@@ -98,7 +98,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getGUI()
      */
-    @Override
     public PortGUI getGUI() {
         if (this.gui == null) {
             this.gui = new PortGUI(this);
@@ -109,7 +108,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getID()
      */
-    @Override
     public String getID() {
         if (this.id == null) {
             // old format
@@ -121,7 +119,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getName()
      */
-    @Override
     public String getName() {
         return this.name;
     }
@@ -129,7 +126,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#setName(java.lang.String)
      */
-    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -137,7 +133,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getNode()
      */
-    @Override
     public NodeImpl getNode() {
         return this.node;
     }
@@ -145,7 +140,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getEdges()
      */
-    @Override
     public List<? extends EdgeImpl> getEdges() {
         return this.edges;
     }
@@ -153,7 +147,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getEdge(int)
      */
-    @Override
     public Edge getEdge(int index) {
         return this.edges.get(index);
     }
@@ -161,7 +154,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getKind()
      */
-    @Override
     public Kind getKind() {
         return this.kind;
     }
@@ -169,7 +161,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getFromPorts()
      */
-    @Override
     public List<Port> getFromPorts() {
         List<Port> fromPorts = new ArrayList<Port>();
         for (EdgeImpl edge : this.edges) {
@@ -181,7 +172,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getFromPort()
      */
-    @Override
     public Port getFromPort() {
         if (this.edges.size() > 0) {
             Edge edge = this.edges.get(0);
@@ -194,7 +184,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getFromNodes()
      */
-    @Override
     public List<Node> getFromNodes() {
         List<Node> fromNodes = new ArrayList<Node>();
         for (Port port : getFromPorts()) {
@@ -206,7 +195,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getFromNode()
      */
-    @Override
     public Node getFromNode() {
         Port fromPort = getFromPort();
         if (fromPort == null) {
@@ -219,7 +207,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getToPorts()
      */
-    @Override
     public List<Port> getToPorts() {
         List<Port> toPorts = new ArrayList<Port>();
         for (Edge edge : this.edges) {
@@ -231,7 +218,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getToNodes()
      */
-    @Override
     public List<Node> getToNodes() {
         List<Node> toNodes = new ArrayList<Node>();
         for (Port port : getToPorts()) {
@@ -243,7 +229,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#setComponentPort(org.apache.airavata.xbaya.component.ComponentPort)
      */
-    @Override
     public void setComponentPort(ComponentPort componentPort) {
         this.componentPort = componentPort;
     }
@@ -251,7 +236,6 @@ public abstract class PortImpl implements Port {
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getComponentPort()
      */
-    @Override
     public ComponentPort getComponentPort() {
         if (this.componentPort == null) {
             int index;

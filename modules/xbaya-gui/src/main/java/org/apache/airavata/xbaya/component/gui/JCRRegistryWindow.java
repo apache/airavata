@@ -32,7 +32,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.SwingConstants;
 
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
@@ -114,7 +113,7 @@ public class JCRRegistryWindow {
         configuration.setRegistryURL(url);
         hide();
 
-        // this.loader.load(registry);
+//        this.loader.load(registry);
     }
 
     private void createNewUser() {
@@ -152,11 +151,10 @@ public class JCRRegistryWindow {
         XBayaLabel nameLabel = new XBayaLabel("Username", this.usernameTextField);
         XBayaLabel passLabel = new XBayaLabel("Password", this.usernameTextField);
         this.newUserButton = new XBayaLinkButton("Create new user...");
-        newUserButton.setHorizontalAlignment(SwingConstants.RIGHT);
+        newUserButton.setHorizontalAlignment(XBayaLinkButton.RIGHT);
         JLabel emptyLabel = new JLabel("");
 
         newUserButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 createNewUser();
             }
@@ -182,7 +180,6 @@ public class JCRRegistryWindow {
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 ok();
             }
@@ -190,7 +187,6 @@ public class JCRRegistryWindow {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

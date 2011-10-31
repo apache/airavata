@@ -122,12 +122,10 @@ public class XBayaLinkButton extends JButton {
         addActionListener(defaultAction);
     }
 
-    @Override
     public void updateUI() {
         setUI(BasicLinkButtonUI.createUI(this));
     }
 
-    @Override
     public String getUIClassID() {
         return "LinkButtonUI";
     }
@@ -237,7 +235,6 @@ public class XBayaLinkButton extends JButton {
         return defaultAction;
     }
 
-    @Override
     protected String paramString() {
         String str;
         if (linkBehavior == ALWAYS_UNDERLINE)
@@ -270,7 +267,6 @@ class BasicLinkButtonUI extends MetalButtonUI {
         return ui;
     }
 
-    @Override
     protected void paintText(Graphics g, JComponent com, Rectangle rect, String s) {
         XBayaLinkButton bn = (XBayaLinkButton) com;
         ButtonModel bnModel = bn.getModel();

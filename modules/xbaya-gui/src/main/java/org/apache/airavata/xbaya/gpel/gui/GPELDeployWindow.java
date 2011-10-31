@@ -178,7 +178,6 @@ public class GPELDeployWindow {
         this.newButton = new JButton("Deploy New");
         this.newButton.setDefaultCapable(true);
         this.newButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 deploy(false);
             }
@@ -187,7 +186,6 @@ public class GPELDeployWindow {
         this.redeployButton = new JButton("Redeploy");
         this.redeployButton.setDefaultCapable(true);
         this.redeployButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 deploy(true);
             }
@@ -195,7 +193,6 @@ public class GPELDeployWindow {
 
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 hide();
             }

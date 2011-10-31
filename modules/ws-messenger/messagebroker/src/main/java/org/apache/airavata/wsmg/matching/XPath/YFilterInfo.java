@@ -134,7 +134,7 @@ public class YFilterInfo {
             return matchingConsumerList;
         }
 
-        Iterator<Integer> it = yfilter.getMatchedQueries().iterator();
+        Iterator<Integer> it = (Iterator<Integer>) yfilter.getMatchedQueries().iterator();
         while (it.hasNext()) {
             Integer qid = it.next();
 

@@ -23,8 +23,8 @@ package org.apache.airavata.wsmg.broker.wsnotification;
 
 import org.apache.airavata.wsmg.broker.AbstractBrokerMsgReceiver;
 import org.apache.airavata.wsmg.broker.context.ProcessingContext;
-import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
+import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
 import org.apache.airavata.wsmg.util.WsNotificationOperations;
 import org.apache.axis2.AxisFault;
@@ -42,7 +42,6 @@ public class WSNotificationMsgReceiver extends AbstractBrokerMsgReceiver {
 
     WSNotificationProcessingContextBuilder builder = new WSNotificationProcessingContextBuilder();
 
-    @Override
     public MessageContext process(MessageContext inMsg, String operationName) throws AxisFault {
 
         WsNotificationOperations msgType = WsNotificationOperations.valueFrom(operationName);

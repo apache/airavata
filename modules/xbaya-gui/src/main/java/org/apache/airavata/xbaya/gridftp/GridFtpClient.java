@@ -80,7 +80,6 @@ public class GridFtpClient implements MarkerListener {
     /**
      * @see org.globus.ftp.MarkerListener#markerArrived(org.globus.ftp.Marker)
      */
-    @Override
     public void markerArrived(Marker arg0) {
         // TODO Auto-generated method stub
 

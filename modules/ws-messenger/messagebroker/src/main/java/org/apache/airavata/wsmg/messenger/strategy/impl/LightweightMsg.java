@@ -47,7 +47,6 @@ class LightweightMsg {
         return header;
     }
 
-    @Override
     public String toString() {
         return String.format("header: %s, consumer: %s, pld: %s", header, consumerInfo.getConsumerEprStr(), payload);
     }

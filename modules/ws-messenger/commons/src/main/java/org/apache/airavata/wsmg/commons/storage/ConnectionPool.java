@@ -321,7 +321,6 @@ public class ConnectionPool {
         }
     }
 
-    @Override
     public synchronized String toString() {
         String info = "ConnectionPool(" + url + "," + username + ")" + ", available=" + availableConnections.size()
                 + ", busy=" + busyConnections.size() + ", max=" + maxConnections;

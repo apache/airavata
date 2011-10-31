@@ -72,7 +72,6 @@ public class HostDescriptionNode extends AbstractAiravataTreeNode {
         return Arrays.asList(EditAction.ID, DeleteAction.ID);
     }
 
-    @Override
     public boolean triggerAction(JTree tree, String action) throws Exception {
         if (action.equals(DeleteAction.ID)) {
             deleteHostDescription(tree);

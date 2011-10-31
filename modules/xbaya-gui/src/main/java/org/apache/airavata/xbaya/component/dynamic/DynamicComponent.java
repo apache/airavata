@@ -60,7 +60,6 @@ public class DynamicComponent extends Component {
         this.outputs.add(new DynamicComponentPort(this));
     }
 
-    @Override
     public Node createNode(Graph graph) {
         DynamicNode node = new DynamicNode(graph);
 

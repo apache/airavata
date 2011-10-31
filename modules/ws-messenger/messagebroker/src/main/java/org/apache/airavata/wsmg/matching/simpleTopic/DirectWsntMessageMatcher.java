@@ -48,12 +48,10 @@ public class DirectWsntMessageMatcher extends AbstractMessageMatcher {
         super();
     }
 
-    @Override
     public void start(String carrierLocation) {
         currentMessageCache = new Hashtable<String, String>();
     }
 
-    @Override
     public void handleSubscribe(SubscriptionState subscribeRequest, String subscriptionId) {
 
         String topicExpression = subscribeRequest.getLocalTopic();
@@ -77,7 +75,6 @@ public class DirectWsntMessageMatcher extends AbstractMessageMatcher {
 
     }
 
-    @Override
     public int handleUnsubscribe(String subscriptionId) {
 
         int ret = 0;

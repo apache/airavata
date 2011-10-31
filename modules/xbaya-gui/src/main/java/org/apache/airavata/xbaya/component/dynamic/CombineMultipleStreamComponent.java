@@ -32,7 +32,6 @@ public class CombineMultipleStreamComponent extends CepComponent {
         super(NAME);
     }
 
-    @Override
     public CombineMultipleStreamNode createNode(Graph graph) {
         CombineMultipleStreamNode node = new CombineMultipleStreamNode(graph);
 

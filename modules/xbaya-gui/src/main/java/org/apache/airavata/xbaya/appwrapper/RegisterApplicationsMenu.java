@@ -28,7 +28,9 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
 import org.apache.airavata.xbaya.myproxy.gui.MyProxyChecker;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 
@@ -154,7 +156,8 @@ public class RegisterApplicationsMenu {
                 if (XBayaUtil.acquireJCRRegistry(engine)) {
                     try {
                         ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(
-                                RegisterApplicationsMenu.this.engine);
+                                RegisterApplicationsMenu.this.engine.getConfiguration().getJcrComponentRegistry()
+                                        .getRegistry());
                         applicationDescriptionDialog.open();
                     } catch (Exception e1) {
                         RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
@@ -176,10 +179,9 @@ public class RegisterApplicationsMenu {
                 if (XBayaUtil.acquireJCRRegistry(engine)) {
                     try {
                         HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(
-                                RegisterApplicationsMenu.this.engine);
-                        // TODO : should remove this
-                        // hostDescriptionDialog.open();
-                        hostDescriptionDialog.show();
+                                RegisterApplicationsMenu.this.engine.getConfiguration().getJcrComponentRegistry()
+                                        .getRegistry());
+                        hostDescriptionDialog.open();
                     } catch (Exception e1) {
                         RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
                     }

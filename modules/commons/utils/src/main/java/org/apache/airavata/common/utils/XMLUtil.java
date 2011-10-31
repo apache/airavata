@@ -495,77 +495,85 @@ public class XMLUtil {
 
     public static boolean isEqual(XmlElement elem1, XmlElement elem2) throws Exception {
 
-        if (elem1 == null && elem2 == null) {
-            return true;
-        } else if (elem1 == null) {
-            return false;
-        } else if (elem2 == null) {
-            return false;
-        }
+            if (elem1 == null && elem2 == null) {
+                return true;
+            } else if (elem1 == null) {
+                return false;
+            } else if (elem2 == null) {
+                return false;
+            }
 
-        if (!elem1.getName().equals(elem2.getName())) {
-            return false;
-        } else {
-            // now check if children are the same
-            Iterator children1 = elem1.children().iterator();
-            Iterator children2 = elem2.children().iterator();
+            if (!elem1.getName().equals(elem2.getName())) {
+                return false;
+            } else {
+                // now check if children are the same
+                Iterator children1 = elem1.children().iterator();
+                Iterator children2 = elem2.children().iterator();
 
-            // check first ones for string
-            Object child1 = null;
-            Object child2 = null;
-            if (children1.hasNext() && children2.hasNext()) {
-                child1 = children1.next();
-                child2 = children2.next();
+                //check first ones for string
+                Object child1 = null;
+                Object child2 = null;
+                if (children1.hasNext() && children2.hasNext()) {
+                    child1 = children1.next();
+                    child2 = children2.next();
 
-                if (!children1.hasNext() && !children2.hasNext()) {
-                    // only one node could be string could be xmlelement
-                    return compareObjs(child1, child2);
-                } else {
-                    // get new iterators
+                    if (!children1.hasNext() && !children2.hasNext()) {
+                        //only one node could be string could be xmlelement
+                        return compareObjs(child1, child2);
+                    } else {
+                          //get new iterators
 
-                    List<XmlElement> elemSet1 = getXmlElementsOnly(elem1.children().iterator());
-                    List<XmlElement> elemSet2 = getXmlElementsOnly(elem2.children().iterator());
+                        List<XmlElement> elemSet1 = getXmlElementsOnly(elem1.children().iterator());
+                        List<XmlElement> elemSet2 = getXmlElementsOnly(elem2.children().iterator());
 
-                    if (elemSet1.size() != elemSet2.size()) {
-                        return false;
-                    }
-                    for (int i = 0; i < elemSet1.size(); ++i) {
-                        if (!isEqual(elemSet1.get(i), elemSet2.get(i))) {
+                        if(elemSet1.size() != elemSet2.size()){
                             return false;
                         }
+                        for(int i =0; i< elemSet1.size(); ++i){
+                            if(!isEqual(elemSet1.get(i), elemSet2.get(i))){
+                                return false;
+                            }
+                        }
+                        return true;
                     }
+
+
+                }else {
+                    //no internal element
+
                     return true;
                 }
+            }
 
+
+        }
+
+
+
+        private static List<XmlElement> getXmlElementsOnly(Iterator itr){
+            LinkedList<XmlElement> list = new LinkedList<XmlElement>();
+            while(itr.hasNext()){
+                Object obj = itr.next();
+                if(obj instanceof XmlElement){
+                    list.add((XmlElement) obj);
+                }
+            }
+            return  list;
+        }
+
+
+
+        private static boolean compareObjs(Object child1, Object child2) throws Exception {
+            if (child1 instanceof String && child2 instanceof String) {
+                return child1.equals(child2);
+
+
+            } else if (child1 instanceof XmlElement && child2 instanceof XmlElement) {
+                return isEqual((XmlElement) child1, (XmlElement) child2);
             } else {
-                // no internal element
-
-                return true;
+                return false;
             }
         }
 
-    }
-
-    private static List<XmlElement> getXmlElementsOnly(Iterator itr) {
-        LinkedList<XmlElement> list = new LinkedList<XmlElement>();
-        while (itr.hasNext()) {
-            Object obj = itr.next();
-            if (obj instanceof XmlElement) {
-                list.add((XmlElement) obj);
-            }
-        }
-        return list;
-    }
-
-    private static boolean compareObjs(Object child1, Object child2) throws Exception {
-        if (child1 instanceof String && child2 instanceof String) {
-            return child1.equals(child2);
-
-        } else if (child1 instanceof XmlElement && child2 instanceof XmlElement) {
-            return isEqual((XmlElement) child1, (XmlElement) child2);
-        } else {
-            return false;
-        }
-    }
 
 }

@@ -62,7 +62,6 @@ public class StreamSourceNodeGUI extends ConfigurableNodeGUI {
         this.configurationWindow.show();
     }
 
-    @Override
     protected void setSelectedFlag(boolean flag) {
         this.selected = flag;
         if (this.selected) {

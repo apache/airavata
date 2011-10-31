@@ -89,8 +89,7 @@ public class WorkflowTest implements HeaderConstants {
 
     private String readWorkflow(String workflowFileNameInClasspath) throws IOException, URISyntaxException {
 
-        this.getClass().getClassLoader();
-        URL url = ClassLoader.getSystemResource(workflowFileNameInClasspath);
+        URL url = this.getClass().getClassLoader().getSystemResource(workflowFileNameInClasspath);
         FileInputStream stream = new FileInputStream(new File(url.toURI()));
         try {
             FileChannel fc = stream.getChannel();

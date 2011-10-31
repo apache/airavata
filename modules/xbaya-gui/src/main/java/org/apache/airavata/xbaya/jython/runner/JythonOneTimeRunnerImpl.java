@@ -41,12 +41,10 @@ public class JythonOneTimeRunnerImpl implements JythonOneTimeRunner {
      * @throws XBayaException
      * @see org.apache.airavata.xbaya.jython.runner.JythonOneTimeRunner#run(java.lang.String, java.lang.String[])
      */
-    @Override
     public void run(final String script, final String[] arguments) throws XBayaException {
 
         try {
             AccessController.doPrivileged(new PrivilegedExceptionAction<Void>() {
-                @Override
                 public Void run() {
                     ClassLoader loader = this.getClass().getClassLoader();
 

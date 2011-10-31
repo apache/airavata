@@ -155,7 +155,7 @@ public class WorkflowInterpreter {
 
     private boolean isoffline = false;
 
-    private PredicatedTaskRunner provenanceWriter;
+	private PredicatedTaskRunner provenanceWriter;
 
     public WorkflowInterpreter(XBayaConfiguration configuration, String topic, Workflow workflow, String username,
             String password) {
@@ -217,7 +217,7 @@ public class WorkflowInterpreter {
     /**
      * 
      * Constructs a WorkflowInterpreter.
-     * 
+     *
      * @param engine
      * @param topic
      * @param workflow
@@ -239,9 +239,10 @@ public class WorkflowInterpreter {
         this.topic = topic;
         // testing
 
-        if (this.configuration.isCollectProvenance()) {
-            provenanceWriter = new PredicatedTaskRunner(1);
-        }
+
+		if (this.configuration.isCollectProvenance()) {
+			provenanceWriter = new PredicatedTaskRunner(1);
+		}
 
     }
 
@@ -392,7 +393,7 @@ public class WorkflowInterpreter {
      * @throws MonitorException
      */
     public void cleanup() throws MonitorException {
-        if (this.configuration.isCollectProvenance()) {
+        if(this.configuration.isCollectProvenance()){
             this.provenanceWriter.shutDown();
         }
         if (this.mode == GUI_MODE) {
@@ -1319,44 +1320,43 @@ public class WorkflowInterpreter {
         return null;
     }
 
-    /**
-     * @param node
-     * @throws XBayaException
-     * @throws java.io.IOException
-     */
-    private void readProvenance(Node node) {
+    	/**
+	 * @param node
+	 * @throws XBayaException
+	 * @throws java.io.IOException
+	 */
+	private void readProvenance(Node node)  {
 
-        try {
-            List<DataPort> inputPorts = node.getInputPorts();
-            Pair<String, String>[] inputs = new Pair[inputPorts.size()];
-            for (int i = 0; i < inputPorts.size(); ++i) {
-                inputs[i] = new Pair<String, String>(inputPorts.get(i).getName(), XBayaUtil.findInputFromPort(
-                        inputPorts.get(i), this.invokerMap).toString());
-            }
+		try {
+			List<DataPort> inputPorts = node.getInputPorts();
+			Pair<String, String>[] inputs = new Pair[inputPorts.size()];
+			for (int i =0; i<inputPorts.size(); ++i) {
+				inputs[i] = new Pair<String, String>(inputPorts.get(i).getName(),  XBayaUtil.findInputFromPort(inputPorts.get(i), this.invokerMap).toString());
+			}
 
-            Object result = new ProvenanceReader().read(node.getID(), inputs);
-            if (result != null) {
-                SystemComponentInvoker invoker = new SystemComponentInvoker();
-                invoker.addOutput(node.getID(), result);
-                this.invokerMap.put(node, invoker);
-                node.getGUI().setBodyColor(NodeState.FINISHED.color);
-            }
-        } catch (Exception e) {
-            throw new XBayaRuntimeException(e);
-        }
+			Object result = new ProvenanceReader().read(node.getID(), inputs);
+			if(result != null){
+				SystemComponentInvoker invoker = new SystemComponentInvoker();
+				invoker.addOutput(node.getID(), result);
+				this.invokerMap.put(node, invoker);
+				node.getGUI().setBodyColor(NodeState.FINISHED.color);
+			}
+		} catch (Exception e) {
+			throw new XBayaRuntimeException(e);
+		}
 
-    }
+	}
 
-    /**
-     * @param node
-     * @throws XBayaException
-     */
-    private void writeProvenanceLater(Node node) throws XBayaException {
+	/**
+	 * @param node
+	 * @throws XBayaException
+	 */
+	private void writeProvenanceLater(Node node) throws XBayaException {
 
-        if (node instanceof ForEachNode) {
-            node = XBayaUtil.findEndForEachFor((ForEachNode) node);
-        }
-        this.provenanceWriter.scedule(new ProvenanceWrite(node, this.workflow.getName(), invokerMap, this.topic,
-                this.configuration.getJcrComponentRegistry().getRegistry()));
-    }
+		if(node instanceof ForEachNode){
+			node = XBayaUtil.findEndForEachFor((ForEachNode)node);
+		}
+		this.provenanceWriter.scedule(new ProvenanceWrite(node,
+				this.workflow.getName(), invokerMap, this.topic,this.configuration.getJcrComponentRegistry().getRegistry()));
+	}
 }

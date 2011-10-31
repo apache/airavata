@@ -24,6 +24,7 @@ package org.apache.airavata.workflow.tracking.impl.state;
 import java.net.URI;
 
 import org.apache.airavata.workflow.tracking.common.InvocationEntity;
+import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 import org.apache.airavata.workflow.tracking.types.BaseIDType;
 
 public class InvocationEntityImpl implements InvocationEntity {

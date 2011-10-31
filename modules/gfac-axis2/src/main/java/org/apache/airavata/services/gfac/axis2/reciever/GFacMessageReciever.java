@@ -23,7 +23,6 @@ package org.apache.airavata.services.gfac.axis2.reciever;
 
 import java.io.StringReader;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,7 +43,6 @@ import org.apache.airavata.core.gfac.notification.impl.WorkflowTrackingNotificat
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
@@ -181,7 +179,7 @@ public class GFacMessageReciever implements MessageReceiver {
             ParameterContextImpl inputParam = new ParameterContextImpl();
             ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
 
-            List<InputParameterType> newInputs = new ArrayList<InputParameterType>();
+            List<Parameter> newInputs = null;
             for (int i = 0; i < serviceDescriptionType.getInputParametersArray().length; i++) {
                 newInputs.add(serviceDescriptionType.getInputParametersArray(i));
             }
@@ -201,15 +199,14 @@ public class GFacMessageReciever implements MessageReceiver {
              */
             ParameterContextImpl outputParam = new ParameterContextImpl();
 
-            List<OutputParameterType> newOutputs = new ArrayList<OutputParameterType>();
+            List<OutputParameterType> newOutputs = null;
             for (int i = 0; i < serviceDescriptionType.getOutputParametersArray().length; i++) {
                 newOutputs.add(serviceDescriptionType.getOutputParametersArray(i));
             }
 
             // List<Parameter> outputs = serviceDescription.getOutputParameters();
             for (OutputParameterType parameter : newOutputs) {
-                outputParam.add(parameter.getParameterName(), new ActualParameter(parameter.getParameterType()
-                        .schemaType()));
+                outputParam.add(parameter.getParameterName(), new ActualParameter(parameter.getParameterType().schemaType()));
             }
 
             invocationContext.setInput(inputParam);
@@ -311,12 +308,12 @@ public class GFacMessageReciever implements MessageReceiver {
      */
     private OMElement getWSDL(ConfigurationContext context, String serviceName) throws XMLStreamException {
         String WSDL = null;
-        try {
-            WSDL = getRegistry(context).getWSDL(serviceName);
-        } catch (RegistryException e) {
-            // TODO this scenario occur if the service is not present in the registry.
-            // someone should handle this
-        }
+		try {
+			WSDL = getRegistry(context).getWSDL(serviceName);
+		} catch (RegistryException e) {
+			//TODO this scenario occur if the service is not present in the registry.
+			//someone should handle this 
+		}
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(WSDL));
         StAXOMBuilder builder = new StAXOMBuilder(reader);
         OMElement wsdlElement = builder.getDocumentElement();

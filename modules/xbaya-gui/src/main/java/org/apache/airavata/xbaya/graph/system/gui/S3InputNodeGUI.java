@@ -69,7 +69,6 @@ public class S3InputNodeGUI extends ConfigurableNodeGUI {
         return this.inputNode;
     }
 
-    @Override
     protected void setSelectedFlag(boolean flag) {
         this.selected = flag;
         if (this.selected) {

@@ -21,6 +21,7 @@
 
 package org.apache.airavata.commons.gfac.wsdl;
 
+import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.MethodType;
 import org.apache.airavata.schemas.gfac.PortTypeType;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;

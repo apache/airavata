@@ -23,6 +23,8 @@ package org.apache.airavata.wsmg.client.msgbox;
 
 import java.rmi.RemoteException;
 
+import javax.xml.namespace.QName;
+
 import org.apache.airavata.wsmg.client.MsgBrokerClientException;
 import org.apache.airavata.wsmg.client.NotificationHandler;
 import org.apache.airavata.wsmg.commons.MsgBoxQNameConstants;

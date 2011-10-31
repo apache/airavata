@@ -57,7 +57,6 @@ public class MessengerServlet extends HttpServlet {
     private DeliveryProcessor proc;
     private ConsumerUrlManager urlManager;
 
-    @Override
     public void init(ServletConfig config) throws ServletException {
         logger.info("Starting messenger servlet");
         System.out.println(String.format("Starting messenger: version: %s , %s",
@@ -123,7 +122,6 @@ public class MessengerServlet extends HttpServlet {
         logger.info(initedmethod + " sending method inited");
     }
 
-    @Override
     public void destroy() {
         logger.info("stoping wsmg-messenger");
         if (proc != null) {
@@ -136,17 +134,14 @@ public class MessengerServlet extends HttpServlet {
         logger.info("wsmg-messenger shut down");
     }
 
-    @Override
     public ServletConfig getServletConfig() {
         return null;
     }
 
-    @Override
     public String getServletInfo() {
         return null;
     }
 
-    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         sendMessengerStats(response);
 
@@ -163,7 +158,6 @@ public class MessengerServlet extends HttpServlet {
         out.flush();
     }
 
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
             IOException {
         sendMessengerStats(response);

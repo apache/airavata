@@ -68,7 +68,6 @@ public class ExitComponent extends SystemComponent {
         return exitNode;
     }
 
-    @Override
     protected void createPorts(NodeImpl node) {
         for (ComponentDataPort input : getInputPorts()) {
             DataPort port = input.createPort();

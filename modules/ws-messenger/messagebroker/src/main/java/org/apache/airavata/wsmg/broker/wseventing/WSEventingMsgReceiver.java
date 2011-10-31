@@ -40,7 +40,6 @@ public class WSEventingMsgReceiver extends AbstractBrokerMsgReceiver {
     private static final Logger log = LoggerFactory.getLogger(WSEventingMsgReceiver.class);
     WSEProcessingContextBuilder builder = new WSEProcessingContextBuilder();
 
-    @Override
     public MessageContext process(MessageContext inMsg, String operationName) throws AxisFault {
 
         WsEventingOperations msgType = WsEventingOperations.valueFrom(operationName);

@@ -229,7 +229,6 @@ public class ErrorWindow {
                     buttonPanel);
 
             okButton.addActionListener(new AbstractAction() {
-                @Override
                 public void actionPerformed(ActionEvent event) {
                     dialog.hide();
                 }

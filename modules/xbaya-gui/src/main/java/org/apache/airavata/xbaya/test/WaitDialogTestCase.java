@@ -45,7 +45,6 @@ public class WaitDialogTestCase extends XBayaTestCase {
     public void testShowHide() throws InterruptedException {
         XBayaEngine engine = new XBayaEngine(this.configuration);
         Cancelable cancelable = new Cancelable() {
-            @Override
             public void cancel() {
                 // Nothing
             }
@@ -74,7 +73,6 @@ public class WaitDialogTestCase extends XBayaTestCase {
     public void testShowShowHide() throws InterruptedException {
         XBayaEngine engine = new XBayaEngine(this.configuration);
         Cancelable cancelable = new Cancelable() {
-            @Override
             public void cancel() {
                 // Nothing
             }
@@ -123,7 +121,6 @@ public class WaitDialogTestCase extends XBayaTestCase {
     public void testShowHideShowHide() throws InterruptedException {
         XBayaEngine engine = new XBayaEngine(this.configuration);
         Cancelable cancelable = new Cancelable() {
-            @Override
             public void cancel() {
                 // Nothing
             }
@@ -185,7 +182,6 @@ public class WaitDialogTestCase extends XBayaTestCase {
     public void testShowHideHide() throws InterruptedException {
         XBayaEngine engine = new XBayaEngine(this.configuration);
         Cancelable cancelable = new Cancelable() {
-            @Override
             public void cancel() {
                 // Nothing
             }
@@ -233,7 +229,6 @@ public class WaitDialogTestCase extends XBayaTestCase {
     public void testShowShowHideHide() throws InterruptedException {
         XBayaEngine engine = new XBayaEngine(this.configuration);
         Cancelable cancelable = new Cancelable() {
-            @Override
             public void cancel() {
                 // Nothing
             }

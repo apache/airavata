@@ -24,13 +24,13 @@ package org.apache.airavata.xbaya.test;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 
 public class WSDLTestCase extends XBayaTestCase {

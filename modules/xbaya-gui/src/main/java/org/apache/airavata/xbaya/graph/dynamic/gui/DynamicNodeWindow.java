@@ -229,7 +229,6 @@ public class DynamicNodeWindow {
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
-            @Override
             public void actionPerformed(ActionEvent e) {
 
                 hide();

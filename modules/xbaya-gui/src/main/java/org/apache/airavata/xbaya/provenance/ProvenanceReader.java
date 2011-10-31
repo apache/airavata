@@ -17,80 +17,81 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
+*/
 package org.apache.airavata.xbaya.provenance;
-
-import java.io.File;
-import java.io.FileFilter;
 
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.xmlpull.infoset.XmlElement;
 
+import java.io.File;
+import java.io.FileFilter;
+
 public class ProvenanceReader {
 
     public String DEFAULT_LIBRARY_FOLDER_NAME = "provenance";
 
-    public ProvenanceReader() {
+	public ProvenanceReader() {
 
-    }
+	}
 
-    public Object read(final String nodeName, Pair<String, String>[] inputs) throws Exception {
+	public Object read(final String nodeName, Pair<String, String>[] inputs)
+			throws Exception {
 
-        File directory = new File(DEFAULT_LIBRARY_FOLDER_NAME);
-        if (!directory.isDirectory()) {
-            return null;
-        }
-        File[] componentMatchFiles = directory.listFiles(new FileFilter() {
+		File directory = new File(DEFAULT_LIBRARY_FOLDER_NAME);
+		if (!directory.isDirectory()) {
+			return null;
+		}
+		File[] componentMatchFiles = directory.listFiles(new FileFilter() {
 
-            @Override
-            public boolean accept(File pathname) {
-                if (pathname.isDirectory()) {
-                    return false;
-                } else {
-                    String fileName = pathname.getName();
-                    return -1 != fileName.indexOf(nodeName);
-                }
-            }
-        });
+			@Override
+			public boolean accept(File pathname) {
+				if (pathname.isDirectory()) {
+					return false;
+				} else {
+					String fileName = pathname.getName();
+					return -1 != fileName.indexOf(nodeName);
+				}
+			}
+		});
 
-        for (File file : componentMatchFiles) {
-            if (!file.isDirectory()) {
-                XmlElement xml = XMLUtil.loadXML(file);
-                XmlElement root = xml;
-                XmlElement wsnode;
+		for (File file : componentMatchFiles) {
+			if (!file.isDirectory()) {
+				XmlElement xml = XMLUtil.loadXML(file);
+				XmlElement root = xml;
+				XmlElement wsnode;
 
-                XmlElement foreach;
-                if (null != (wsnode = root.element("wsnode"))) {
-                    XmlElement inputElems = root.element("inputs");
-                    Iterable inputValElems = inputElems.children();
-                    for (Object object : inputValElems) {
-                        if (object instanceof XmlElement) {
-                            XmlElement inputElem = (XmlElement) object;
-                            for (Pair<String, String> pair : inputs) {
-                                String inputName = pair.getLeft();
-                                // issue "x".equals("CreateCoordinatePortType_createCoordinate_in_0")
-                                if (inputName.equals(inputElem.getName())) {
-                                    // found the input now check whether values are the same
-                                    if (XMLUtil.isEqual(inputElem, XMLUtil.stringToXmlElement(pair.getRight()))) {
-                                        // match found return output
-                                        XmlElement output = root.element("output");
-                                        return output.children().iterator().next();
+				XmlElement foreach;
+				if (null != (wsnode = root.element("wsnode"))) {
+					XmlElement inputElems = root.element("inputs");
+					Iterable inputValElems = inputElems.children();
+					for (Object object : inputValElems) {
+						if (object instanceof XmlElement) {
+							XmlElement inputElem = (XmlElement)object;
+							for (Pair<String, String> pair : inputs) {
+								String inputName = pair.getLeft();
+								//issue "x".equals("CreateCoordinatePortType_createCoordinate_in_0")
+								if(inputName.equals(inputElem.getName())){
+									//found the input now check whether values are the same
+									if(XMLUtil.isEqual(inputElem, XMLUtil.stringToXmlElement(pair.getRight()))){
+										//match found return output
+										XmlElement output = root.element("output");
+										return output.children().iterator().next();
 
-                                    }
-                                }
+									}
+								}
 
-                            }
-                        }
-                    }
+							}
+						}
+					}
 
-                } else if (null != (foreach = root.element("foreach"))) {
+				} else if (null != (foreach = root.element("foreach"))) {
 
-                }
+				}
 
-            }
-        }
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 }

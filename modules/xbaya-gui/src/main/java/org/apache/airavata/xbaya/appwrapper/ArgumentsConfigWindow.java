@@ -31,10 +31,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
+import org.apache.airavata.common.utils.StringUtil;
 import org.ogce.schemas.gfac.beans.utils.ParamObject;
 
 public class ArgumentsConfigWindow {

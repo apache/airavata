@@ -47,7 +47,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -55,7 +54,6 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.XBayaLinkButton;
 
 public class ApplicationDescriptionDialog extends JDialog implements ActionListener {
@@ -78,15 +76,13 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     private JComboBox cmbServiceName;
     private JComboBox cmbHostName;
 
-    private XBayaEngine engine;
-
     /**
      * Launch the application.
      */
     public static void main(String[] args) {
         try {
             ApplicationDescriptionDialog dialog = new ApplicationDescriptionDialog(null);
-            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -96,7 +92,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     /**
      * Create the dialog.
      */
-    public ApplicationDescriptionDialog(XBayaEngine engine) {
+    public ApplicationDescriptionDialog(Registry registry) {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
@@ -104,13 +100,11 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                 int i = 1;
                 String defaultName = baseName + i;
                 try {
-                    List<ApplicationDeploymentDescription> applicationDeploymentDescriptions = getRegistry()
-                            .searchDeploymentDescription(getServiceName(), getHostName());
+                    List<ApplicationDeploymentDescription> applicationDeploymentDescriptions = getRegistry().searchDeploymentDescription(getServiceName(), getHostName());
                     while (true) {
                         boolean notFound = true;
                         for (ApplicationDeploymentDescription deploymentDescription : applicationDeploymentDescriptions) {
-                            if (deploymentDescription.getType().addNewApplicationName().getStringValue()
-                                    .equals(defaultName)) {
+                            if (deploymentDescription.getType().addNewApplicationName().getStringValue().equals(defaultName)) {
                                 notFound = false;
                                 break;
                             }
@@ -126,12 +120,12 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                 setApplicationName(txtAppName.getText());
             }
         });
-        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
+        setRegistry(registry);
         iniGUI();
     }
 
     public void open() {
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setVisible(true);
     }
 
@@ -156,7 +150,6 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             {
                 okButton = new JButton("Save");
                 okButton.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent e) {
                         saveApplicationDescription();
                         close();
@@ -170,7 +163,6 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             {
                 JButton cancelButton = new JButton("Cancel");
                 cancelButton.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent e) {
                         setApplicationDescCreated(false);
                         close();
@@ -213,7 +205,6 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             txtTempDir.setColumns(10);
             JButton btnAdvance = new JButton("Advanced options...");
             btnAdvance.addActionListener(new ActionListener() {
-                @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
                         ApplicationDescriptionAdvancedOptionDialog serviceDescriptionDialog = new ApplicationDescriptionAdvancedOptionDialog(
@@ -230,7 +221,6 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
             XBayaLinkButton blnkbtnCreateNewService = new XBayaLinkButton("New button");
             blnkbtnCreateNewService.addActionListener(new ActionListener() {
-                @Override
                 public void actionPerformed(ActionEvent arg0) {
                     try {
                         ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry());
@@ -258,14 +248,10 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
             XBayaLinkButton bayaLinkButton_1 = new XBayaLinkButton("New button");
             bayaLinkButton_1.addActionListener(new ActionListener() {
-                @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine);
-                        // TODO : do we need this?
-                        // hostDescriptionDialog.open();
-                        hostDescriptionDialog.show();
-
+                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getRegistry());
+                        hostDescriptionDialog.open();
                         if (hostDescriptionDialog.isHostCreated()) {
                             loadHostDescriptions();
                             cmbHostName.setSelectedItem(hostDescriptionDialog.getHostLocation());
@@ -481,23 +467,22 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     }
 
     public ApplicationDeploymentDescription getShellApplicationDescription() {
-        if (shellApplicationDescription == null) {
+        if(shellApplicationDescription == null){
             shellApplicationDescription = new ApplicationDeploymentDescription();
         }
         return shellApplicationDescription;
     }
 
     public ApplicationDeploymentDescriptionType getApplicationDescriptionType() {
-        return getShellApplicationDescription().getType();
+    	return getShellApplicationDescription().getType();
     }
-
+    
     public String getApplicationName() {
         return getApplicationDescriptionType().getApplicationName().getStringValue();
     }
 
     public void setApplicationName(String applicationName) {
-        ApplicationDeploymentDescriptionType.ApplicationName applicationName1 = getApplicationDescriptionType()
-                .addNewApplicationName();
+        ApplicationDeploymentDescriptionType.ApplicationName applicationName1 = getApplicationDescriptionType().addNewApplicationName();
         applicationName1.setStringValue(applicationName);
         updateDialogStatus();
     }
@@ -507,7 +492,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     }
 
     public void setExecutablePath(String executablePath) {
-        getApplicationDescriptionType().setExecutableLocation(executablePath);
+    	getApplicationDescriptionType().setExecutableLocation(executablePath);
         updateDialogStatus();
     }
 
@@ -516,7 +501,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     }
 
     public void setTempDir(String tempDir) {
-        getApplicationDescriptionType().setScratchWorkingDirectory(tempDir);
+    	getApplicationDescriptionType().setScratchWorkingDirectory(tempDir);
         updateDialogStatus();
     }
 

@@ -62,7 +62,6 @@ public class CepComponent extends Component {
         this.outputs.add(new CepComponentPort(this));
     }
 
-    @Override
     public Node createNode(Graph graph) {
         CepNode node = new CepNode(graph);
 

@@ -75,7 +75,6 @@ public class CepPort extends DataPort {
         this.id = id;
     }
 
-    @Override
     public void setComponentPort(ComponentPort componentPort) {
         super.setComponentPort(componentPort);
         this.componentPort = (CepComponentPort) componentPort;
@@ -106,7 +105,6 @@ public class CepPort extends DataPort {
     // return this.uuid;
     // }
 
-    @Override
     protected XmlElement toXML() {
         XmlElement portElement = super.toXML();
         portElement.setAttributeValue(GraphSchema.NS, GraphSchema.PORT_TYPE_ATTRIBUTE, GraphSchema.PORT_TYPE_CEP);
@@ -115,7 +113,6 @@ public class CepPort extends DataPort {
         return portElement;
     }
 
-    @Override
     public void setNode(NodeImpl node) {
         super.setNode(node);
     }

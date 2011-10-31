@@ -60,7 +60,6 @@ public class DynamicPort extends DataPort {
         return getComponentPort().getType();
     }
 
-    @Override
     public void setComponentPort(ComponentPort componentPort) {
         super.setComponentPort(componentPort);
         this.componentPort = (DynamicComponentPort) componentPort;
@@ -83,7 +82,6 @@ public class DynamicPort extends DataPort {
         return this.componentPort;
     }
 
-    @Override
     public void setNode(NodeImpl node) {
         super.setNode(node);
     }

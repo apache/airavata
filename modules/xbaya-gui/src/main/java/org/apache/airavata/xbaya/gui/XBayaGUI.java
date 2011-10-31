@@ -136,7 +136,6 @@ public class XBayaGUI implements EventListener {
         this.engine.getMonitor().addEventListener(this);
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
-                @Override
                 public void run() {
                     init();
                 }
@@ -232,7 +231,6 @@ public class XBayaGUI implements EventListener {
         newGraphCanvas.addGraphCanvasListener(this.portViewer);
         newGraphCanvas.addGraphCanvasListener(new GraphCanvasListener() {
 
-            @Override
             public void graphCanvasChanged(GraphCanvasEvent event) {
                 GraphCanvasEventType type = event.getType();
                 final GraphCanvas graphCanvas = event.getGraphCanvas();
@@ -241,7 +239,6 @@ public class XBayaGUI implements EventListener {
                 case GRAPH_LOADED:
                 case NAME_CHANGED:
                     SwingUtilities.invokeLater(new Runnable() {
-                        @Override
                         public void run() {
                             String name = workflow.getName();
 
@@ -341,7 +338,6 @@ public class XBayaGUI implements EventListener {
             XBayaGUI.this.graphPanelMaximized = true;
 
             SwingUtilities.invokeLater(new Runnable() {
-                @Override
                 public void run() {
                     XBayaGUI.this.previousMainDividerLocation = XBayaGUI.this.mainSplitPane.getDividerLocation();
                     XBayaGUI.this.previousRightDividerLocation = XBayaGUI.this.rightSplitPane.getDividerLocation();
@@ -360,7 +356,6 @@ public class XBayaGUI implements EventListener {
             XBayaGUI.this.graphPanelMaximized = false;
 
             SwingUtilities.invokeLater(new Runnable() {
-                @Override
                 public void run() {
                     XBayaGUI.this.mainSplitPane.setDividerLocation(XBayaGUI.this.previousMainDividerLocation);
                     XBayaGUI.this.rightSplitPane.setDividerLocation(XBayaGUI.this.previousRightDividerLocation);
@@ -379,7 +374,6 @@ public class XBayaGUI implements EventListener {
     /**
      * @see org.apache.airavata.xbaya.event.EventListener#eventReceived(org.apache.airavata.xbaya.event.Event)
      */
-    @Override
     public void eventReceived(Event event) {
         Type type = event.getType();
         if (type == Type.MONITOR_STARTED || type == Type.KARMA_STARTED) {
@@ -443,7 +437,6 @@ public class XBayaGUI implements EventListener {
             }
         });
         this.graphTabbedPane.addChangeListener(new ChangeListener() {
-            @Override
             public void stateChanged(ChangeEvent event) {
                 // Called when the active tab changed.
                 // Note that this is not called when a tab is removed.
@@ -545,7 +538,6 @@ public class XBayaGUI implements EventListener {
                     JMenuItem addMenuItem = new JMenuItem("Add to workspace");
                     addMenuItem.addActionListener(new ActionListener() {
 
-                        @Override
                         public void actionPerformed(ActionEvent e) {
 
                             String stream = model.getStream(row);
@@ -563,7 +555,6 @@ public class XBayaGUI implements EventListener {
                     JMenuItem startMenuItem = new JMenuItem("Refresh All");
                     startMenuItem.addActionListener(new ActionListener() {
 
-                        @Override
                         public void actionPerformed(ActionEvent e) {
                             model.init();
                             model.fireTableDataChanged();
@@ -579,7 +570,6 @@ public class XBayaGUI implements EventListener {
                         /**
                          * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
                          */
-                        @Override
                         public void actionPerformed(ActionEvent e) {
                             model.stopStream(row);
 
@@ -589,12 +579,10 @@ public class XBayaGUI implements EventListener {
                     return popupMenu;
                 }
 
-                @Override
                 public void mousePressed(MouseEvent e) {
                     maybeShowPopup(e);
                 }
 
-                @Override
                 public void mouseReleased(MouseEvent e) {
                     maybeShowPopup(e);
                 }
