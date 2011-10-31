@@ -23,6 +23,7 @@ package org.apache.airavata.services.gfac.axis2.reciever;
 
 import java.io.StringReader;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,6 +44,7 @@ import org.apache.airavata.core.gfac.notification.impl.WorkflowTrackingNotificat
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
@@ -179,7 +181,7 @@ public class GFacMessageReciever implements MessageReceiver {
             ParameterContextImpl inputParam = new ParameterContextImpl();
             ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
 
-            List<Parameter> newInputs = null;
+            List<InputParameterType> newInputs = new ArrayList<InputParameterType>();
             for (int i = 0; i < serviceDescriptionType.getInputParametersArray().length; i++) {
                 newInputs.add(serviceDescriptionType.getInputParametersArray(i));
             }
@@ -199,7 +201,7 @@ public class GFacMessageReciever implements MessageReceiver {
              */
             ParameterContextImpl outputParam = new ParameterContextImpl();
 
-            List<OutputParameterType> newOutputs = null;
+            List<OutputParameterType> newOutputs = new ArrayList<OutputParameterType>();
             for (int i = 0; i < serviceDescriptionType.getOutputParametersArray().length; i++) {
                 newOutputs.add(serviceDescriptionType.getOutputParametersArray(i));
             }
