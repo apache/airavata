@@ -19,10 +19,12 @@
 			<element name="name" type="xsd:string" minOccurs="0" />
 			<element name="description" type="xsd:string" minOccurs="0" maxOccurs="1" />
 			<element name="service" type="gfac:serviceType" minOccurs="1" maxOccurs="1" />
+			<element name="portType" type="gfac:portTypeType" minOccurs="1" maxOccurs="1" />
 			<element name="authorInfo" type="gfac:authorInfoType" minOccurs="0" maxOccurs="unbounded" />
 			<element name="documentInfo" type="gfac:documentInfoType" minOccurs="0" maxOccurs="1" />
 			<element name="inputParameters" type="gfac:inputParameterType" minOccurs="0" maxOccurs="unbounded" nillable="true" />
-			<element name="outputParameters" type="gfac:outputParameterType" minOccurs="0" maxOccurs="unbounded" nillable="true" />
+			<element name="outputParameters" type="gfac:outputParameterType" minOccurs="0" maxOccurs="unbounded"
+				nillable="true" />
 		</sequence>
 	</complexType>
 
@@ -46,6 +48,7 @@
 		<sequence>
 			<element name="parameterName" type="xsd:string" minOccurs="1" maxOccurs="1" />
 			<element name="parameterDescription" type="xsd:string" minOccurs="0" maxOccurs="1" />
+			<element name="parameterType" type="gfac:ParameterType" minOccurs="1" maxOccurs="1" />
 			<element ref="gfac:anyMetadata" minOccurs="0" maxOccurs="1" />
 		</sequence>
 	</complexType>
@@ -54,7 +57,7 @@
 		<complexContent>
 			<extension base="gfac:parameter">
 				<sequence>
-					<element name="parameterType" type="gfac:ParameterType" minOccurs="1" maxOccurs="1" />
+					<element name="parameterValue" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
 				</sequence>
 			</extension>
 		</complexContent>
@@ -64,10 +67,28 @@
 		<complexContent>
 			<extension base="gfac:parameter">
 				<sequence>
-					<element name="parameterType" type="gfac:ParameterType" minOccurs="1" maxOccurs="1" />
 					<element name="stdOutRegExp" type="xsd:string" minOccurs="0" maxOccurs="1" />
 				</sequence>
 			</extension>
 		</complexContent>
-	</complexType>	
+	</complexType>
+
+	<complexType name="portTypeType">
+		<sequence>
+			<element name="portName" type="xsd:QName" minOccurs="0" maxOccurs="1" />
+			<element name="portDescription" type="xsd:string" minOccurs="0" maxOccurs="1" />
+			<!-- Only supporting one operation per wsdl. This is a gfac limitation, not a wsdl one -->
+			<element name="method" type="gfac:methodType" minOccurs="1" maxOccurs="1" />
+			<element ref="gfac:anyMetadata" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<complexType name="methodType">
+		<sequence>
+			<element name="methodName" type="xsd:string" minOccurs="1" maxOccurs="1" />
+			<element name="methodDescription" type="xsd:string" minOccurs="0" maxOccurs="1" />
+			<element ref="gfac:anyMetadata" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
 </schema>
