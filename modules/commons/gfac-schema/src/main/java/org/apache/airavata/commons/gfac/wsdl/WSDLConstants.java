@@ -36,6 +36,8 @@ public interface WSDLConstants {
     public final static String XMLNS = "xmlns";
 
     public final static String TARGET_NAMESPACE = "targetNamespace";
+    
+    public static final String TRANSPORT_LEVEL = "TransportLevel";
 
     public final static String SCHEMA = "schema";
 
