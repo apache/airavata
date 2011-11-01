@@ -79,7 +79,7 @@ public class TypesGenerator implements WSDLConstants {
             inParamNames.add(inputParams[k].getParameterName());
             inParamDesc.add(inputParams[k].getParameterDescription());            
             // XMLBEANS specific way to get type
-            inParamTypes.add(MappingFactory.getActualParameterType(inputParams[k].getParameterType().getType()).getName().getLocalPart());
+            inParamTypes.add(MappingFactory.getActualParameterType(inputParams[k].getParameterType().getType()));
             inputParams[k].getParameterValueArray();
         }
 
@@ -92,7 +92,7 @@ public class TypesGenerator implements WSDLConstants {
             outParamNames.add(outputParams[k].getParameterName());
             outParamDesc.add(outputParams[k].getParameterDescription());
             // XMLBEANS specific way to get type
-            outParamTypes.add(MappingFactory.getActualParameterType(outputParams[k].getParameterType().getType()).getName().getLocalPart());
+            outParamTypes.add(MappingFactory.getActualParameterType(outputParams[k].getParameterType().getType()));
         }
 
         String methodName = serviceDesc.getPortType().getMethod().getMethodName();
@@ -133,8 +133,7 @@ public class TypesGenerator implements WSDLConstants {
             paramName = paramName.replaceAll(HYPHEN, HYPHEN_REPLACEMENT);
             elem.setAttribute("name", paramName);
             String dataType = (String) inParamTypes.get(j);            
-            elem.setAttribute("type", "gfac:" + dataType);
-            
+            elem.setAttribute("type", "gfac:" + dataType);            
 
             Element annotation = doc.createElement(ANNOTATION);
 
