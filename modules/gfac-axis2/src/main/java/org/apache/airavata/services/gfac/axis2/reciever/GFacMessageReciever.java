@@ -23,9 +23,7 @@ package org.apache.airavata.services.gfac.axis2.reciever;
 
 import java.io.StringReader;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -178,21 +176,40 @@ public class GFacMessageReciever implements MessageReceiver {
             ParameterContextImpl inputParam = new ParameterContextImpl();
             ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
 
-            List<InputParameterType> newInputs = new ArrayList<InputParameterType>();
-            for (int i = 0; i < serviceDescriptionType.getInputParametersArray().length; i++) {
-                newInputs.add(serviceDescriptionType.getInputParametersArray(i));
-            }
 
-            for (Parameter parameter : newInputs) {
+            for (Parameter parameter : serviceDescriptionType.getInputParametersArray()) {
                 OMElement element = input.getFirstChildWithName(new QName(parameter.getParameterName()));
 
                 if (element == null) {
                     throw new Exception("Parameter is not found in the message");
                 }
                 ActualParameter actualParameter = new ActualParameter();
-                if("String".equals(parameter.getParameterName())){
-                                 ((StringParameterType)actualParameter).setValue(element.getText());
+                if("String".equals(parameter.getParameterType().getName())){
+                                 ((StringParameterType)actualParameter.getType()).setValue(element.getText());
+                }else if("Double".equals(parameter.getParameterType().getName())){
+                    ((DoubleParameterType)actualParameter.getType()).setValue(new Double(element.getText()));
+                }else if("Integer".equals(parameter.getParameterType().getName())){
+                    ((IntegerParameterType)actualParameter.getType()).setValue(new Integer(element.getText()));
+                }else if("Float".equals(parameter.getParameterType().getName())){
+                    ((FloatParameterType)actualParameter.getType()).setValue(new Float(element.getText()));
+                }else if("Boolean".equals(parameter.getParameterType().getName())){
+                    ((BooleanParameterType)actualParameter.getType()).setValue(new Boolean(element.getText()));
+                }else if("File".equals(parameter.getParameterType().getName())){
+                    ((FileParameterType)actualParameter.getType()).setValue(element.getText());
+                }else if("StringArray".equals(parameter.getParameterType().getName())){
+                    //todo ((StringArrayType)actualParameter.getType()).setValueArray().setValue(new Double(element.getText()));
+                }else if("DoubleArray".equals(parameter.getParameterType().getName())){
+                    //todo ((DoubleParameterType)actualParameter.getType()).setValue(new Double(element.getText()));
+                }else if("IntegerArray".equals(parameter.getParameterType().getName())){
+                    //todo ((DoubleParameterType)actualParameter.getType()).setValue(new Double(element.getText()));
+                }else if("FloatArray".equals(parameter.getParameterType().getName())){
+                    //todo ((DoubleParameterType)actualParameter.getType()).setValue(new Double(element.getText()));
+                }else if("BooleanArray".equals(parameter.getParameterType().getName())){
+                    //todo ((DoubleParameterType)actualParameter.getType()).setValue(new Double(element.getText()));
+                }else if("FileArray".equals(parameter.getParameterType().getName())){
+                    //todo ((DoubleParameterType)actualParameter.getType()).setValue(new Double(element.getText()));
                 }
+//                inputParam.add(parameter.getParameterName(),ActualParameter.fromParameterXml(element.toStringWithConsume()));
                 inputParam.add(parameter.getParameterName(),actualParameter);
             }
 
@@ -201,14 +218,24 @@ public class GFacMessageReciever implements MessageReceiver {
              */
             ParameterContextImpl outputParam = new ParameterContextImpl();
 
-            List<OutputParameterType> newOutputs = new ArrayList<OutputParameterType>();
-            for (int i = 0; i < serviceDescriptionType.getOutputParametersArray().length; i++) {
-                newOutputs.add(serviceDescriptionType.getOutputParametersArray(i));
-            }
 
             // List<Parameter> outputs = serviceDescription.getOutputParameters();
-            for (OutputParameterType parameter : newOutputs) {
-                outputParam.add(parameter.getParameterName(), new ActualParameter(parameter.getParameterType().schemaType()));
+            for (OutputParameterType parameter : serviceDescriptionType.getOutputParametersArray()) {
+                ActualParameter actualParameter = new ActualParameter();
+                if("String".equals(parameter.getParameterType().getName())){
+                   actualParameter.getType().changeType(StringParameterType.type);
+                }else if("Double".equals(parameter.getParameterType().getName())){
+                    actualParameter.getType().changeType(DoubleParameterType.type);
+                }else if("Integer".equals(parameter.getParameterType().getName())){
+                    actualParameter.getType().changeType(IntegerParameterType.type);
+                }else if("Float".equals(parameter.getParameterType().getName())){
+                    actualParameter.getType().changeType(FloatParameterType.type);
+                }else if("Boolean".equals(parameter.getParameterType().getName())){
+                    actualParameter.getType().changeType(BooleanParameterType.type);
+                }else if("File".equals(parameter.getParameterType().getName())){
+                    actualParameter.getType().changeType(FileParameterType.type);
+                }//todo handle all the ParameterTypes
+                outputParam.add(parameter.getParameterName(), new ActualParameter());
             }
 
             invocationContext.setInput(inputParam);
@@ -231,9 +258,10 @@ public class GFacMessageReciever implements MessageReceiver {
                     .<ActualParameter> getMessageContext("output");
             for (Iterator<String> iterator = paramContext.getNames(); iterator.hasNext();) {
                 String name = iterator.next();
-                OMElement ele = fac.createOMElement(name, omNs);
-                ele.setText(paramContext.getValue(name).toXML());
-                outputElement.addChild(ele);
+                String outputString = paramContext.getValue(name).toXML().replaceAll("GFacParameter", name);
+                XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(outputString));
+                StAXOMBuilder builder = new StAXOMBuilder(reader);
+                outputElement.addChild(builder.getDocumentElement());
             }
 
         } catch (Exception e) {
