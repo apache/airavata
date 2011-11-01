@@ -192,11 +192,6 @@
             <version>0.8.3</version>
         </dependency-->
         <dependency>
-            <groupId>gfac</groupId>
-            <artifactId>gfac-schema-utils</artifactId>
-            <version>0.4.3</version>
-        </dependency>
-        <dependency>
             <groupId>lead-security</groupId>
             <artifactId>cryptix32</artifactId>
             <version>versionless</version>
