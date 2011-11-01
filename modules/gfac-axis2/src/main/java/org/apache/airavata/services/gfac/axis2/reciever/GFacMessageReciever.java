@@ -189,9 +189,11 @@ public class GFacMessageReciever implements MessageReceiver {
                 if (element == null) {
                     throw new Exception("Parameter is not found in the message");
                 }
-                GFacParameterDocument gFacParameterDocument = GFacParameterDocument.Factory.newInstance();
-                ParameterType parameterType = gFacParameterDocument.addNewGFacParameter();
-                inputParam.add(parameter.getParameterName(), ActualParameter.fromXML(GFacParameterDocument.Factory.newInstance().element.getText()));
+                ActualParameter actualParameter = new ActualParameter();
+                if("String".equals(parameter.getParameterName())){
+                                 ((StringParameterType)actualParameter).setValue(element.getText());
+                }
+                inputParam.add(parameter.getParameterName(),actualParameter);
             }
 
             /*
