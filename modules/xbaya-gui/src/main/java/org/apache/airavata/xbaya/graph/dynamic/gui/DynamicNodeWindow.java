@@ -55,6 +55,7 @@ import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextArea;
+import org.apache.airavata.xbaya.util.RegistryConstants;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlNamespace;
 import org.xmlpull.v1.builder.XmlBuilderException;
@@ -176,7 +177,7 @@ public class DynamicNodeWindow {
             Thread.sleep(10000);
             registry = new URLComponentRegistry(new URI("http://129.79.246.108:8080/axis2/services/"
                     + getClassName(code) + "?wsdl"));
-            new ComponentRegistryLoader(engine).load(registry);
+            ComponentRegistryLoader.getLoader(this.engine, RegistryConstants.REGISTRY_TYPE_URL).load(registry);
 
             Node newNode = this.engine
                     .getGUI()

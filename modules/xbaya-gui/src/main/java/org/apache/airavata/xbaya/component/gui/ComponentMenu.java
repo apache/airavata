@@ -41,6 +41,7 @@ import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.file.gui.WorkflowFiler;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.streaming.StreamTableModel;
+import org.apache.airavata.xbaya.util.RegistryConstants;
 import org.apache.airavata.xbaya.wf.Workflow;
 
 public class ComponentMenu {
@@ -323,7 +324,7 @@ public class ComponentMenu {
             File directory = fileChooser.getSelectedFile();
             LocalComponentRegistry registry = new LocalComponentRegistry(directory);
             // move to another thread using loader.
-            ComponentRegistryLoader loader = new ComponentRegistryLoader(this.engine);
+            ComponentRegistryLoader loader = ComponentRegistryLoader.getLoader(this.engine, RegistryConstants.REGISTRY_TYPE_LOCAL);
             loader.load(registry);
         }
     }
