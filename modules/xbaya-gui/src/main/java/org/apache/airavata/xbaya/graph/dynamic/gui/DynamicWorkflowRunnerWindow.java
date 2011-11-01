@@ -21,42 +21,15 @@
 
 package org.apache.airavata.xbaya.graph.dynamic.gui;
 
-import java.awt.event.ActionEvent;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
-
-import javax.swing.AbstractAction;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.xml.namespace.QName;
-
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.XBayaConfiguration;
-import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.appwrapper.HostDescriptionRegistrationWindow;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.graph.ws.gui.WSNodeGUI;
-import org.apache.airavata.xbaya.gui.ErrorMessages;
-import org.apache.airavata.xbaya.gui.GridPanel;
-import org.apache.airavata.xbaya.gui.XBayaComboBox;
-import org.apache.airavata.xbaya.gui.XBayaDialog;
-import org.apache.airavata.xbaya.gui.XBayaLabel;
-import org.apache.airavata.xbaya.gui.XBayaTextField;
+import org.apache.airavata.xbaya.gui.*;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
@@ -64,14 +37,19 @@ import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.ogce.schemas.gfac.beans.HostBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
-
 import xsul.XmlConstants;
 import xsul.lead.LeadResourceMapping;
+
+import javax.swing.*;
+import javax.xml.namespace.QName;
+import java.awt.event.ActionEvent;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 
 public class DynamicWorkflowRunnerWindow {
 

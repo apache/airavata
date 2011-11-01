@@ -336,11 +336,6 @@
             <artifactId>layout</artifactId>
             <version>1.0.4</version>
         </dependency>
-        <dependency>
-            <groupId>gfac</groupId>
-            <artifactId>gfac-schema-utils</artifactId>
-            <version>0.4.3</version>
-        </dependency>
 
         <!-- AMAZON STUFFS -->
         <dependency>

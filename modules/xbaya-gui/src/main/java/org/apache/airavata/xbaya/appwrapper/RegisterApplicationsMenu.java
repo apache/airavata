@@ -126,7 +126,6 @@ public class RegisterApplicationsMenu {
         this.registerServiceDesc = new JMenuItem("Register Application Service Description");
 
         this.registerServiceDesc.addActionListener(new AbstractAction() {
-            private ServiceDescriptionRegistrationWindow window;
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -149,7 +148,6 @@ public class RegisterApplicationsMenu {
         this.registerApplicationDesc = new JMenuItem("Register Application Deployment Description");
 
         this.registerApplicationDesc.addActionListener(new AbstractAction() {
-            private ApplicationDescriptionRegistrationWindow window;
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -172,7 +170,6 @@ public class RegisterApplicationsMenu {
         this.registerHostDesc = new JMenuItem("Register Compute/Service Host Description");
 
         this.registerHostDesc.addActionListener(new AbstractAction() {
-            private HostDescriptionRegistrationWindow window;
 
             @Override
             public void actionPerformed(ActionEvent e) {
