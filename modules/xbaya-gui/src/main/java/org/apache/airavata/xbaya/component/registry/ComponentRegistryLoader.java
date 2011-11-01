@@ -54,12 +54,14 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
     
     private Map<String,ComponentTreeNode> componentTreeNodesMap;
     
+    private static Map<String, ComponentRegistryLoader> loaders;
+    
     /**
      * Constructs a WorkflowLoader.
      * 
      * @param engine
      */
-    public ComponentRegistryLoader(XBayaEngine engine) {
+    private ComponentRegistryLoader(XBayaEngine engine) {
         this.setEngine(engine);
 
         this.loadingDialog = new WaitDialog(this, "Loading a Component List.", "Loading a Component List. "
@@ -166,4 +168,17 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
 		return componentTreeNodesMap;
 	}
 
+	protected static Map<String, ComponentRegistryLoader> getLoaders() {
+		if (loaders==null){
+			loaders=new HashMap<String, ComponentRegistryLoader>();
+		}
+		return loaders;
+	}
+
+	public static ComponentRegistryLoader getLoader(XBayaEngine engine, String id){
+		if (!getLoaders().containsKey(id)){
+			getLoaders().put(id, new ComponentRegistryLoader(engine));
+		}
+		return getLoaders().get(id);
+	}
 }

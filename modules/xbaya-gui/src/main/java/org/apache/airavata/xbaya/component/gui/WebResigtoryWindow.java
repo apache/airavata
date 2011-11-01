@@ -38,6 +38,7 @@ import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
+import org.apache.airavata.xbaya.util.RegistryConstants;
 
 public class WebResigtoryWindow {
 
@@ -54,7 +55,7 @@ public class WebResigtoryWindow {
      */
     public WebResigtoryWindow(XBayaEngine engine) {
         this.engine = engine;
-        this.loader = new ComponentRegistryLoader(engine);
+        this.loader = ComponentRegistryLoader.getLoader(this.engine, RegistryConstants.REGISTRY_TYPE_WEB);
         initGUI();
     }
 
