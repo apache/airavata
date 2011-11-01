@@ -49,7 +49,7 @@ public class ParameterNode extends AbstractAiravataTreeNode {
 	public String getCaption(boolean selected, boolean expanded, boolean leaf,
 			boolean hasFocus) {
 		if (getParameter().getValue()!=null){
-			return wrapAsHtml(getParameter().getName(),": ","<i>"+getParameter().getValue().toString()+"</i>");
+			return wrapAsHtml("<b>"+getParameter().getName()+"</b>",": ",""+getParameter().getValue().toString()+"");
 		}else{
 			return getParameter().getName();
 		}
