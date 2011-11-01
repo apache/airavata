@@ -145,6 +145,17 @@ public interface Registry {
             throws RegistryException;
 
     /**
+     * Search deployment description from a service name
+     * 
+     * @param serviceName
+     * @return the deployment descriptions with matched names
+     * @throws PathNotFoundException
+     * @throws DeploymentDescriptionRetrieveException
+     */
+    public Map<HostDescription, List<ApplicationDeploymentDescription>> searchDeploymentDescription(String serviceName)
+            throws RegistryException;
+    
+    /**
      * Search deployment description from a service and/or a hostname
      * 
      * @param serviceName

@@ -541,7 +541,37 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         }
         return result;
     }
-
+	
+	public Map<HostDescription,List<ApplicationDeploymentDescription>> searchDeploymentDescription(String serviceName)
+            throws RegistryException{
+		Session session = null;
+		Map<HostDescription,List<ApplicationDeploymentDescription>> result = new HashMap<HostDescription,List<ApplicationDeploymentDescription>>();
+		try {
+			session = getSession();
+			Node deploymentNode = getDeploymentNode(session);
+			Node serviceNode = deploymentNode.getNode(serviceName);
+			NodeIterator hostNodes = serviceNode.getNodes();
+			for(;hostNodes.hasNext();){
+				Node hostNode = hostNodes.nextNode();
+				HostDescription hostDescriptor = getHostDescription(hostNode.getName());
+				result.put(hostDescriptor, new ArrayList<ApplicationDeploymentDescription>());
+				NodeIterator nodes = hostNode.getNodes();
+				for (; nodes.hasNext();) {
+					Node app = nodes.nextNode();
+					Property prop = app.getProperty(XML_PROPERTY_NAME);
+					result.get(hostDescriptor).add(ApplicationDeploymentDescription.fromXML(prop.getString()));
+				}
+			}
+		}catch (PathNotFoundException e){
+            return result;
+        } catch (Exception e) {
+			throw new DeploymentDescriptionRetrieveException(e);
+		} finally {
+			closeSession(session);
+		}
+		return result;
+	}
+	
     public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName)
             throws RegistryException {
         Session session = null;
