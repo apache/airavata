@@ -22,8 +22,8 @@
 package org.apache.airavata.core.gfac.scheduler.impl;
 
 import java.net.UnknownHostException;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -119,18 +119,33 @@ public class SchedulerImpl implements Scheduler {
     private HostDescription scheduleToHost(Registry regService, String serviceName) {
 
         log.info("Searching registry for some deployed application hosts");
-        List<HostDescription> hosts = regService.getServiceLocation(serviceName);
-        if (hosts != null && hosts.size() > 0) {
-            HostDescription result = null;
-            for (Iterator<HostDescription> iterator = hosts.iterator(); iterator.hasNext();) {
-                result = iterator.next();
-
-                log.info("Found service on: " + result.getType().getHostAddress());
-            }
-            return result;
-        } else {
-            log.warn("Applcation  " + serviceName + " not found in registry");
-            return null;
+        HostDescription result = null;
+        Map<HostDescription, List<ApplicationDeploymentDescription>> deploymentDescription = null;
+		try {
+			deploymentDescription = regService.searchDeploymentDescription(serviceName);
+	        for (HostDescription hostDesc : deploymentDescription.keySet()) {
+	        	result = hostDesc;
+	            log.info("Found service on: " + result.getType().getHostAddress());
+			}
+		} catch (RegistryException e) {
+			e.printStackTrace();
+		}
+        if (result==null){
+        	log.warn("Applcation  " + serviceName + " not found in registry");
         }
+        return result;
+//        List<HostDescription> hosts = regService.getServiceLocation(serviceName);
+//        if (hosts != null && hosts.size() > 0) {
+//            HostDescription result = null;
+//            for (Iterator<HostDescription> iterator = hosts.iterator(); iterator.hasNext();) {
+//                result = iterator.next();
+//
+//                log.info("Found service on: " + result.getType().getHostAddress());
+//            }
+//            return result;
+//        } else {
+//            log.warn("Applcation  " + serviceName + " not found in registry");
+//            return null;
+//        }
     }
 }
