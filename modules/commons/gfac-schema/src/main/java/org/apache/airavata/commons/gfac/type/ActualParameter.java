@@ -60,7 +60,11 @@ public class ActualParameter implements Type {
 		return this.paramDoc.xmlText();
 	}
 
-	public static ActualParameter fromXML(String xml) throws XmlException {
+    public void setParamDoc(GFacParameterDocument paramDoc) {
+        this.paramDoc = paramDoc;
+    }
+
+    public static ActualParameter fromXML(String xml) throws XmlException {
 		ActualParameter param = new ActualParameter();
 		param.paramDoc = GFacParameterDocument.Factory.parse(xml);
 		return param;

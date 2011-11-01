@@ -28,7 +28,6 @@ import org.apache.airavata.schemas.gfac.FileParameterType;
 import org.apache.airavata.schemas.gfac.FloatParameterType;
 import org.apache.airavata.schemas.gfac.IntegerParameterType;
 import org.apache.airavata.schemas.gfac.StringParameterType;
-import org.apache.xmlbeans.SchemaType;
 
 /*
  * TODO use XML meta data instead of static coding
@@ -43,21 +42,21 @@ public class MappingFactory {
      * @param type
      * @return
      */
-    public static SchemaType getActualParameterType(DataType.Enum type) {
+    public static String getActualParameterType(DataType.Enum type) {
         if (type.equals(DataType.STRING)) {
-            return StringParameterType.type;
+            return StringParameterType.class.getSimpleName();
         } else if (type.equals(DataType.INTEGER)) {
-            return IntegerParameterType.type;
+            return IntegerParameterType.class.getSimpleName();
         } else if (type.equals(DataType.DOUBLE)) {
-            return DoubleParameterType.type;
+            return DoubleParameterType.class.getSimpleName();
         } else if (type.equals(DataType.BOOLEAN)) {
-            return BooleanParameterType.type;
+            return BooleanParameterType.class.getSimpleName();
         } else if (type.equals(DataType.FILE)) {
-            return FileParameterType.type;
+            return FileParameterType.class.getSimpleName();
         } else if (type.equals(DataType.FLOAT)) {
-            return FloatParameterType.type;
+            return FloatParameterType.class.getSimpleName();
         }
-        return StringParameterType.type;
+        return StringParameterType.class.getSimpleName();
     }
 
     /**
