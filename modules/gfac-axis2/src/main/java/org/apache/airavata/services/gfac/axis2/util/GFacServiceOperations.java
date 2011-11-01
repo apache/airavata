@@ -22,7 +22,8 @@ package org.apache.airavata.services.gfac.axis2.util;
 
 public enum GFacServiceOperations {
 
-    GETWSDL("getWSDL"), INVOKE("invoke"), GETABSTRACTWSDL("getAbstractWSDL");
+    GETWSDL("getWSDL"), INVOKE("invoke"), GETABSTRACTWSDL("getAbstractWSDL"),
+    INVOKE_SOAP_ACTION("http://schemas.airavata.apache.org/gfac/type/invoke");
 
     private final String name;
 
