@@ -55,6 +55,9 @@ public class GFacURIBasedDispatcher extends AbstractServiceDispatcher {
                         + toEPR.getAddress());
             }
             String filePart = toEPR.getAddress();
+//            if(!filePart.endsWith("/invoke")){
+//                filePart = filePart + "/invoke";
+//            }
             ConfigurationContext configurationContext = messageContext.getConfigurationContext();
             String[] values = Utils.parseRequestURLForServiceAndOperation(filePart, messageContext
                     .getConfigurationContext().getServiceContextPath());
@@ -66,9 +69,10 @@ public class GFacURIBasedDispatcher extends AbstractServiceDispatcher {
                     service = registry.getService("GFacService");
                     if (service != null) {
                         messageContext.setAxisService(service);
-                        if (GFacServiceOperations.INVOKE.toString().equals(values[1])) {
+                        if (GFacServiceOperations.INVOKE_SOAP_ACTION.toString().equals(messageContext.getSoapAction())) {
                             messageContext.setAxisOperation(service.getOperation(new QName(GFacServiceOperations.INVOKE
                                     .toString())));
+                            messageContext.setTo(new EndpointReference(filePart + "/invoke"));
                         } else if (GFacServiceOperations.GETWSDL.toString().equals(values[1])) {
                             messageContext.setAxisOperation(service.getOperation(new QName(
                                     GFacServiceOperations.GETWSDL.toString())));

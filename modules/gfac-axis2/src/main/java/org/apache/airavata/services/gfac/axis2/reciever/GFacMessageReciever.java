@@ -23,6 +23,7 @@ package org.apache.airavata.services.gfac.axis2.reciever;
 
 import java.io.StringReader;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,9 +44,7 @@ import org.apache.airavata.core.gfac.notification.impl.WorkflowTrackingNotificat
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.Parameter;
-import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
+import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.services.gfac.axis2.GFacService;
 import org.apache.airavata.services.gfac.axis2.util.GFacServiceOperations;
@@ -179,7 +178,7 @@ public class GFacMessageReciever implements MessageReceiver {
             ParameterContextImpl inputParam = new ParameterContextImpl();
             ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
 
-            List<Parameter> newInputs = null;
+            List<InputParameterType> newInputs = new ArrayList<InputParameterType>();
             for (int i = 0; i < serviceDescriptionType.getInputParametersArray().length; i++) {
                 newInputs.add(serviceDescriptionType.getInputParametersArray(i));
             }
@@ -190,8 +189,9 @@ public class GFacMessageReciever implements MessageReceiver {
                 if (element == null) {
                     throw new Exception("Parameter is not found in the message");
                 }
-
-                inputParam.add(parameter.getParameterName(), ActualParameter.fromXML(element.getText()));
+                GFacParameterDocument gFacParameterDocument = GFacParameterDocument.Factory.newInstance();
+                ParameterType parameterType = gFacParameterDocument.addNewGFacParameter();
+                inputParam.add(parameter.getParameterName(), ActualParameter.fromXML(GFacParameterDocument.Factory.newInstance().element.getText()));
             }
 
             /*
@@ -199,7 +199,7 @@ public class GFacMessageReciever implements MessageReceiver {
              */
             ParameterContextImpl outputParam = new ParameterContextImpl();
 
-            List<OutputParameterType> newOutputs = null;
+            List<OutputParameterType> newOutputs = new ArrayList<OutputParameterType>();
             for (int i = 0; i < serviceDescriptionType.getOutputParametersArray().length; i++) {
                 newOutputs.add(serviceDescriptionType.getOutputParametersArray(i));
             }
