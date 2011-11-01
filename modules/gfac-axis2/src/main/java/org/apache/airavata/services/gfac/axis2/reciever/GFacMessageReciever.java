@@ -31,6 +31,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
@@ -178,11 +179,23 @@ public class GFacMessageReciever implements MessageReceiver {
 
 
             for (Parameter parameter : serviceDescriptionType.getInputParametersArray()) {
-                OMElement element = input.getFirstChildWithName(new QName(parameter.getParameterName()));
-
+                Iterator childrenWithLocalName = input.getChildrenWithLocalName(parameter.getParameterName());
+                OMElement element = (OMElement)childrenWithLocalName.next();
                 if (element == null) {
                     throw new Exception("Parameter is not found in the message");
                 }
+                //todo this implementation doesn't work when there are n number of nodes connecting .. need to fix
+//                String xmlContent = "";
+//                if(!element.getChildElements().hasNext()){
+//                    xmlContent = "<type:GFacParameter xsi:type=\"type:" + MappingFactory.getActualParameterType(parameter.getParameterType().getType())
+//                        +"\" xmlns:type=\"http://schemas.airavata.apache.org/gfac/type\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" + element.getText() + "</type:GFacParameter>";
+//                }else{
+//                    xmlContent = "<type:GFacParameter xsi:type=\"type:" + MappingFactory.getActualParameterType(parameter.getParameterType().getType())
+//                            +"\" xmlns:type=\"http://schemas.airavata.apache.org/gfac/type\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" + element.toStringWithConsume() + "</type:GFacParameter>";
+//                }
+//                System.out.println(xmlContent);
+//                inputParam.add(parameter.getParameterName(),ActualParameter.fromXML(xmlContent));
+
                 ActualParameter actualParameter = new ActualParameter();
                 if("String".equals(parameter.getParameterType().getName())){
                                  ((StringParameterType)actualParameter.getType()).setValue(element.getText());
@@ -209,7 +222,6 @@ public class GFacMessageReciever implements MessageReceiver {
                 }else if("FileArray".equals(parameter.getParameterType().getName())){
                     //todo ((DoubleParameterType)actualParameter.getType()).setValue(new Double(element.getText()));
                 }
-//                inputParam.add(parameter.getParameterName(),ActualParameter.fromParameterXml(element.toStringWithConsume()));
                 inputParam.add(parameter.getParameterName(),actualParameter);
             }
 
