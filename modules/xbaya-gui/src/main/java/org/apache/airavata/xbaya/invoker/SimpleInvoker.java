@@ -23,6 +23,7 @@ package org.apache.airavata.xbaya.invoker;
 
 import java.util.Iterator;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaException;
 import org.xmlpull.v1.builder.XmlElement;
 
@@ -111,6 +112,11 @@ public class SimpleInvoker implements Invoker {
                 XmlElement valueElement = (XmlElement) value;
                 valueElement.setName(name);
             } else if (value instanceof String) {
+                    if(XMLUtil.isXML((String)value)){
+                     XmlElement valueElement = XMLUtil.stringToXmlElement3((String) value);
+                     valueElement.setName(name);
+                        value = valueElement;
+                }
                 // Simple case.
             } else {
                 // convert int, doule to string.
