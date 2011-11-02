@@ -54,6 +54,7 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.XBayaLinkButton;
 
 public class ApplicationDescriptionDialog extends JDialog implements ActionListener {
@@ -76,6 +77,9 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     private JComboBox cmbServiceName;
     private JComboBox cmbHostName;
 
+    private XBayaEngine engine;
+
+
     /**
      * Launch the application.
      */
@@ -92,7 +96,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     /**
      * Create the dialog.
      */
-    public ApplicationDescriptionDialog(Registry registry) {
+    public ApplicationDescriptionDialog(XBayaEngine engine) {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
@@ -120,7 +124,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                 setApplicationName(txtAppName.getText());
             }
         });
-        setRegistry(registry);
+        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
         iniGUI();
     }
 
@@ -250,8 +254,11 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             bayaLinkButton_1.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getRegistry());
-                        hostDescriptionDialog.open();
+                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine);
+                        // TODO : do we need this?
+                        //hostDescriptionDialog.open();
+                        hostDescriptionDialog.show();
+
                         if (hostDescriptionDialog.isHostCreated()) {
                             loadHostDescriptions();
                             cmbHostName.setSelectedItem(hostDescriptionDialog.getHostLocation());
