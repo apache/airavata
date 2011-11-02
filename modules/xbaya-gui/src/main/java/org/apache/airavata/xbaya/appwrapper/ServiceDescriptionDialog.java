@@ -246,6 +246,7 @@ public class ServiceDescriptionDialog extends JDialog {
                         .addPreferredGap(ComponentPlacement.RELATED).addComponent(btnDeleteParameter).addGap(78)));
 
         tblParameters = new JTable();
+        tblParameters.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         tblParameters.setFillsViewportHeight(true);
         defaultTableModel = new DefaultTableModel(new Object[][] { { null, null, null, null }, }, new String[] { "I/O",
                 "Parameter Name", "Type", "Description" });
