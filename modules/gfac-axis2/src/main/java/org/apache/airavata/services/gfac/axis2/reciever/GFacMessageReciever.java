@@ -30,6 +30,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import com.sun.xml.internal.fastinfoset.util.StringArray;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -100,7 +101,7 @@ public class GFacMessageReciever implements MessageReceiver {
             break;
         case GETWSDL:
             try {
-                log.debug("invoking getAbstractWSDL operation");
+                log.debug("invoking getWSDL operation");
                 processgetWSDLOperation(axisRequestMsgCtx);
                 log.info("getWSDL operation invoked !!");
             } catch (Exception e) {
@@ -177,7 +178,6 @@ public class GFacMessageReciever implements MessageReceiver {
             ParameterContextImpl inputParam = new ParameterContextImpl();
             ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
 
-
             for (Parameter parameter : serviceDescriptionType.getInputParametersArray()) {
                 Iterator childrenWithLocalName = input.getChildrenWithLocalName(parameter.getParameterName());
                 OMElement element = (OMElement)childrenWithLocalName.next();
@@ -185,6 +185,7 @@ public class GFacMessageReciever implements MessageReceiver {
                     throw new Exception("Parameter is not found in the message");
                 }
                 //todo this implementation doesn't work when there are n number of nodes connecting .. need to fix
+
 //                String xmlContent = "";
 //                if(!element.getChildElements().hasNext()){
 //                    xmlContent = "<type:GFacParameter xsi:type=\"type:" + MappingFactory.getActualParameterType(parameter.getParameterType().getType())
@@ -196,39 +197,7 @@ public class GFacMessageReciever implements MessageReceiver {
 //                System.out.println(xmlContent);
 //                inputParam.add(parameter.getParameterName(),ActualParameter.fromXML(xmlContent));
 
-                ActualParameter actualParameter = new ActualParameter();
-                OMElement innerelement = null;
-                if("String".equals(parameter.getParameterType().getName())){
-                    innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
-                    ((StringParameterType)actualParameter.getType()).setValue(innerelement.getText());
-                }else if("Double".equals(parameter.getParameterType().getName())){
-                    innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
-                    ((DoubleParameterType)actualParameter.getType()).setValue(new Double(innerelement.getText()));
-                }else if("Integer".equals(parameter.getParameterType().getName())){
-                    innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
-                    ((IntegerParameterType)actualParameter.getType()).setValue(new Integer(innerelement.getText()));
-                }else if("Float".equals(parameter.getParameterType().getName())){
-                    innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
-                    ((FloatParameterType)actualParameter.getType()).setValue(new Float(innerelement.getText()));
-                }else if("Boolean".equals(parameter.getParameterType().getName())){
-                    innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
-                    ((BooleanParameterType)actualParameter.getType()).setValue(new Boolean(innerelement.getText()));
-                }else if("File".equals(parameter.getParameterType().getName())){
-                    innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
-                    ((FileParameterType)actualParameter.getType()).setValue(innerelement.getText());
-                }else if("StringArray".equals(parameter.getParameterType().getName())){
-                    //todo ((StringArrayType)actualParameter.getType()).setValueArray().setValue(new Double(element.getText()));
-                }else if("DoubleArray".equals(parameter.getParameterType().getName())){
-                    //todo ((DoubleParameterType)actualParameter.getType()).setValue(new Double(element.getText()));
-                }else if("IntegerArray".equals(parameter.getParameterType().getName())){
-                    //todo ((DoubleParameterType)actualParameter.getType()).setValue(new Double(element.getText()));
-                }else if("FloatArray".equals(parameter.getParameterType().getName())){
-                    //todo ((DoubleParameterType)actualParameter.getType()).setValue(new Double(element.getText()));
-                }else if("BooleanArray".equals(parameter.getParameterType().getName())){
-                    //todo ((DoubleParameterType)actualParameter.getType()).setValue(new Double(element.getText()));
-                }else if("FileArray".equals(parameter.getParameterType().getName())){
-                    //todo ((DoubleParameterType)actualParameter.getType()).setValue(new Double(element.getText()));
-                }
+                ActualParameter actualParameter = getInputActualParameter(parameter, element);
                 inputParam.add(parameter.getParameterName(),actualParameter);
             }
 
@@ -253,7 +222,19 @@ public class GFacMessageReciever implements MessageReceiver {
                     actualParameter.getType().changeType(BooleanParameterType.type);
                 }else if("File".equals(parameter.getParameterType().getName())){
                     actualParameter.getType().changeType(FileParameterType.type);
-                }//todo handle all the ParameterTypes
+                }else if("StringArray".equals(parameter.getParameterType().getName())){
+                    actualParameter.getType().changeType(StringArrayType.type);
+                }else if("DoubleArray".equals(parameter.getParameterType().getName())){
+                    actualParameter.getType().changeType(DoubleArrayType.type);
+                }else if("IntegerArray".equals(parameter.getParameterType().getName())){
+                    actualParameter.getType().changeType(IntegerArrayType.type);
+                }else if("FloatArray".equals(parameter.getParameterType().getName())){
+                    actualParameter.getType().changeType(FloatArrayType.type);
+                }else if("BooleanArray".equals(parameter.getParameterType().getName())){
+                    actualParameter.getType().changeType(BooleanArrayType.type);
+                }else if("FileArray".equals(parameter.getParameterType().getName())){
+                    actualParameter.getType().changeType(FileArrayType.type);
+                }
                 outputParam.add(parameter.getParameterName(), new ActualParameter());
             }
 
@@ -288,6 +269,85 @@ public class GFacMessageReciever implements MessageReceiver {
             throw e;
         }
         return outputElement;
+    }
+
+    private ActualParameter getInputActualParameter(Parameter parameter, OMElement element) {
+        OMElement innerelement = null;
+        ActualParameter actualParameter = new ActualParameter();
+        if("String".equals(parameter.getParameterType().getName())){
+            actualParameter = new ActualParameter(StringParameterType.type);
+            innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
+            ((StringParameterType)actualParameter.getType()).setValue(innerelement.getText());
+        }else if("Double".equals(parameter.getParameterType().getName())){
+            actualParameter = new ActualParameter(DoubleParameterType.type);
+            innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
+            ((DoubleParameterType)actualParameter.getType()).setValue(new Double(innerelement.getText()));
+        }else if("Integer".equals(parameter.getParameterType().getName())){
+            actualParameter = new ActualParameter(IntegerParameterType.type);
+            innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
+            ((IntegerParameterType)actualParameter.getType()).setValue(new Integer(innerelement.getText()));
+        }else if("Float".equals(parameter.getParameterType().getName())){
+            actualParameter = new ActualParameter(FloatParameterType.type);
+            innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
+            ((FloatParameterType)actualParameter.getType()).setValue(new Float(innerelement.getText()));
+        }else if("Boolean".equals(parameter.getParameterType().getName())){
+            actualParameter = new ActualParameter(BooleanParameterType.type);
+            innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
+            ((BooleanParameterType)actualParameter.getType()).setValue(new Boolean(innerelement.getText()));
+        }else if("File".equals(parameter.getParameterType().getName())){
+            actualParameter = new ActualParameter(FileParameterType.type);
+            innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
+            ((FileParameterType)actualParameter.getType()).setValue(innerelement.getText());
+        }else if("StringArray".equals(parameter.getParameterType().getName())){
+            actualParameter = new ActualParameter(StringArrayType.type);
+            Iterator value = element.getChildrenWithLocalName("value");
+            int i =0;
+            while(value.hasNext()){
+                innerelement = (OMElement)value.next();
+                ((StringArrayType)actualParameter.getType()).insertValue(i++, innerelement.getText());
+            }
+        }else if("DoubleArray".equals(parameter.getParameterType().getName())){
+            actualParameter = new ActualParameter(DoubleArrayType.type);
+            Iterator value = element.getChildrenWithLocalName("value");
+            int i =0;
+            while(value.hasNext()){
+                innerelement = (OMElement)value.next();
+                ((DoubleArrayType)actualParameter.getType()).insertValue(i++,new Double(innerelement.getText()));
+            }
+        }else if("IntegerArray".equals(parameter.getParameterType().getName())){
+            actualParameter = new ActualParameter(IntegerArrayType.type);
+              Iterator value = element.getChildrenWithLocalName("value");
+            int i =0;
+            while(value.hasNext()){
+                innerelement = (OMElement)value.next();
+                ((IntegerArrayType)actualParameter.getType()).insertValue(i++,new Integer(innerelement.getText()));
+            }
+        }else if("FloatArray".equals(parameter.getParameterType().getName())){
+            actualParameter = new ActualParameter(FloatArrayType.type);
+              Iterator value = element.getChildrenWithLocalName("value");
+            int i =0;
+            while(value.hasNext()){
+                innerelement = (OMElement)value.next();
+                ((FloatArrayType)actualParameter.getType()).insertValue(i++,new Float(innerelement.getText()));
+            }
+        }else if("BooleanArray".equals(parameter.getParameterType().getName())){
+            actualParameter = new ActualParameter(BooleanArrayType.type);
+              Iterator value = element.getChildrenWithLocalName("value");
+            int i =0;
+            while(value.hasNext()){
+                innerelement = (OMElement)value.next();
+                ((BooleanArrayType)actualParameter.getType()).insertValue(i++,new Boolean(innerelement.getText()));
+            }
+        }else if("FileArray".equals(parameter.getParameterType().getName())){
+            actualParameter = new ActualParameter(FileArrayType.type);
+              Iterator value = element.getChildrenWithLocalName("value");
+            int i =0;
+            while(value.hasNext()){
+                innerelement = (OMElement)value.next();
+                ((FileArrayType)actualParameter.getType()).insertValue(i++,innerelement.getText());
+            }
+        }
+        return actualParameter;
     }
 
     private void processgetWSDLOperation(MessageContext messageContext) throws Exception {
@@ -358,7 +418,7 @@ public class GFacMessageReciever implements MessageReceiver {
     private OMElement getWSDL(ConfigurationContext context, String serviceName) throws XMLStreamException {
         String WSDL = null;
 		try {
-			WSDL = getRegistry(context).getWSDL(serviceName);
+ 			WSDL = getRegistry(context).getWSDL(serviceName);
 		} catch (RegistryException e) {
 			//TODO this scenario occur if the service is not present in the registry.
 			//someone should handle this 
