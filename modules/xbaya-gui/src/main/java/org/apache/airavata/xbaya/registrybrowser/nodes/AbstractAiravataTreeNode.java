@@ -21,26 +21,21 @@
 
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
+import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTree;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
-
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 
 public abstract class AbstractAiravataTreeNode implements TreeNode {
 
@@ -51,6 +46,14 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
 
     public AbstractAiravataTreeNode(TreeNode parent) {
         setParent(parent);
+    }
+
+    protected XBayaEngine getXBayaEngine(){
+        TreeNode root=getRootNode();
+        if (root instanceof RegistryNode){
+            return ((RegistryNode)root).getEngine();
+        }
+        return null;
     }
 
     @Override

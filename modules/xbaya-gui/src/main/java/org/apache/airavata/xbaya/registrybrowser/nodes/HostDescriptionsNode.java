@@ -21,13 +21,6 @@
 
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.swing.Icon;
-import javax.swing.JTree;
-import javax.swing.tree.TreeNode;
-
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.Registry;
@@ -38,6 +31,11 @@ import org.apache.airavata.xbaya.registrybrowser.menu.AddAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 import org.apache.airavata.xbaya.registrybrowser.model.HostDescriptions;
+
+import javax.swing.*;
+import javax.swing.tree.TreeNode;
+import java.util.Arrays;
+import java.util.List;
 
 public class HostDescriptionsNode extends AbstractAiravataTreeNode {
     private HostDescriptions hostDescriptions;
@@ -85,8 +83,8 @@ public class HostDescriptionsNode extends AbstractAiravataTreeNode {
             deleteHostDescription(tree);
             return true;
         } else if (action.equals(AddAction.ID)) {
-            HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getRegistry());
-            hostDescriptionDialog.open();
+            HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getXBayaEngine());
+            //hostDescriptionDialog.open();
             if (hostDescriptionDialog.isHostCreated()) {
                 refresh();
                 reloadTreeNode(tree, this);

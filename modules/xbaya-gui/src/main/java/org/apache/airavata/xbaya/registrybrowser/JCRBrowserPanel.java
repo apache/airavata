@@ -82,7 +82,7 @@ public class JCRBrowserPanel extends JPanel implements Observer {
             this.add(scrollPane, BorderLayout.CENTER);
             {
                 tree = new JTree(AiravataTreeNodeFactory.getTreeNode(getJCRRegistry() == null ? "No registry specified"
-                        : getJCRRegistry(), null));
+                         : getEngine(), null));
                 tree.addKeyListener(new KeyAdapter() {
                     @Override
                     public void keyPressed(KeyEvent e) {
