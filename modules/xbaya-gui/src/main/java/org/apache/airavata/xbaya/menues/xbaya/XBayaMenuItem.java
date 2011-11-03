@@ -177,7 +177,6 @@ public class XBayaMenuItem {
         xbayaMenuItem.addSeparator();
 
         xbayaMenuItem.add(this.saveWorkflowItem);
-        xbayaMenuItem.add(this.saveWorkflowtoRegistryItem);
 
         xbayaMenuItem.add(this.saveAsWorkflowItem);
         xbayaMenuItem.add(this.saveAllWorkflowItem);
@@ -188,6 +187,8 @@ public class XBayaMenuItem {
         	importMenu.add(importWorkflowItemFromRegistry);
         	
         JMenu exportMenu = new JMenu("Export");
+        	exportMenu.add(saveWorkflowtoRegistryItem);
+        	exportMenu.addSeparator();
 	        exportMenu.add(exportJythonItem);
 	        exportMenu.add(exportBpelItem);
 	        exportMenu.add(exportODEScriptsItem);
@@ -210,7 +211,7 @@ public class XBayaMenuItem {
     }
 
     private void createSaveWorkflowtoRegistryItem() {
-        this.saveWorkflowtoRegistryItem = new JMenuItem("Save to Registry...");
+        this.saveWorkflowtoRegistryItem = new JMenuItem("To Registry...");
         this.saveWorkflowtoRegistryItem.setMnemonic(KeyEvent.VK_C);
         this.saveWorkflowtoRegistryItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
