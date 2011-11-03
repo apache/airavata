@@ -43,15 +43,7 @@ public class ExperimentMenu {
 
     private JMenuItem configureRegistryItem;
 
-    private JMenuItem loadWorkflowfromRegistryItem;
-
-    private JMenuItem saveWorkflowtoRegistryItem;
-
     private JMenuItem deleteWorkflowfromRegistryItem;
-
-    private JMenuItem launchXBayaInterpreterItem;
-
-    private JMenuItem launchGridChemWorkflowItem;
 
     private XBayaEngine engine;
 
@@ -71,24 +63,16 @@ public class ExperimentMenu {
     private void createExperimentMenu() {
 
         createConfigureRegistryItem();
-        createLoadWorkflowfromRegistryItem();
-        createSaveWorkflowtoRegistryItem();
         createDeleteWorkflowtoRegistryItem();
-        createLaunchXBayaInterpreterItem();
-        createLaunchGridChemWorkflowItem();
 
         this.experimentMenu = new JMenu("Experiment");
         this.experimentMenu.setMnemonic(KeyEvent.VK_F);
 
         this.experimentMenu.add(this.configureRegistryItem);
         this.experimentMenu.addSeparator();
-        this.experimentMenu.add(this.loadWorkflowfromRegistryItem);
-        this.experimentMenu.add(this.saveWorkflowtoRegistryItem);
         this.experimentMenu.add(this.deleteWorkflowfromRegistryItem);
         this.experimentMenu.addSeparator();
-        this.experimentMenu.add(this.launchXBayaInterpreterItem);
         this.experimentMenu.addSeparator();
-        this.experimentMenu.add(this.launchGridChemWorkflowItem);
     }
 
     /**
@@ -113,26 +97,6 @@ public class ExperimentMenu {
         });
     }
 
-    private void createLoadWorkflowfromRegistryItem() {
-        this.loadWorkflowfromRegistryItem = new JMenuItem("Load Workflow from Registry");
-        this.loadWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                new RegistryLoaderWindow(ExperimentMenu.this.engine).show();
-
-            }
-        });
-    }
-
-    private void createSaveWorkflowtoRegistryItem() {
-        this.saveWorkflowtoRegistryItem = new JMenuItem("Save Workflow to Registry");
-        this.saveWorkflowtoRegistryItem.setMnemonic(KeyEvent.VK_C);
-        this.saveWorkflowtoRegistryItem.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                ExperimentMenu.this.registryAccesser.saveWorkflow();
-            }
-        });
-    }
-
     private void createDeleteWorkflowtoRegistryItem() {
         this.deleteWorkflowfromRegistryItem = new JMenuItem("Delete Workflows in Registry");
         this.deleteWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
@@ -147,34 +111,4 @@ public class ExperimentMenu {
         });
     }
 
-    private void createLaunchXBayaInterpreterItem() {
-        this.launchXBayaInterpreterItem = new JMenuItem("Launch Workflow to XBaya Interpreter Server");
-        launchXBayaInterpreterItem.addActionListener(new AbstractAction() {
-            private WorkflowInterpreterLaunchWindow window;
-
-            public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    this.window = new WorkflowInterpreterLaunchWindow(ExperimentMenu.this.engine);
-                }
-                try {
-                    this.window.show();
-                } catch (Exception e1) {
-                    ExperimentMenu.this.engine.getErrorWindow().error(e1);
-                }
-
-            }
-        });
-    }
-
-    /**
-	 * 
-	 */
-    private void createLaunchGridChemWorkflowItem() {
-        this.launchGridChemWorkflowItem = new JMenuItem("Launch Workflow and Register with GridChem");
-        // TODO Add the following operations
-        // First Call OGCE-GridChem-Bridge Service to register an experiment
-        // Set lead context header with all the required notifier context
-        // call launch workflow
-
-    }
 }

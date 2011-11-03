@@ -38,8 +38,12 @@ import org.apache.airavata.xbaya.component.gui.ComponentMenu;
 import org.apache.airavata.xbaya.experiment.gui.ExperimentMenu;
 import org.apache.airavata.xbaya.file.gui.FileMenu;
 import org.apache.airavata.xbaya.gpel.gui.GPELMenu;
+import org.apache.airavata.xbaya.menues.edit.EditMenuItem;
+import org.apache.airavata.xbaya.menues.registry.RegistryMenuItem;
+import org.apache.airavata.xbaya.menues.run.RunMenuItem;
+import org.apache.airavata.xbaya.menues.view.ViewMenuItem;
+import org.apache.airavata.xbaya.menues.xbaya.XBayaMenuItem;
 import org.apache.airavata.xbaya.monitor.gui.MonitorMenu;
-import org.apache.airavata.xbaya.myproxy.gui.MyProxyMenu;
 import org.apache.airavata.xbaya.pegasus.gui.PegasusMenu;
 import org.apache.airavata.xbaya.wf.gui.WorkflowMenu;
 
@@ -69,6 +73,16 @@ public class XBayaMenu implements XBayaComponent {
 
     private RegisterApplicationsMenu registerApplications;
 
+	private XBayaMenuItem xBayaMenuItem;
+
+	private EditMenuItem editMenuItem;
+
+	private ViewMenuItem viewMenuItem;
+
+	private RunMenuItem runMenuItem;
+
+	private RegistryMenuItem registryMenuItem;
+
     /**
      * Constructs an XwfMenu.
      * 
@@ -78,6 +92,13 @@ public class XBayaMenu implements XBayaComponent {
         this.engine = engine;
 
         this.fileMenu = new FileMenu(this.engine);
+        
+        xBayaMenuItem = new XBayaMenuItem(engine);
+        editMenuItem = new EditMenuItem(engine);
+        viewMenuItem = new ViewMenuItem(engine);
+        runMenuItem = new RunMenuItem(engine);
+        registryMenuItem = new RegistryMenuItem(engine);
+        
         this.workflowMenu = new WorkflowMenu(this.engine);
         this.experimentMenu = new ExperimentMenu(this.engine);
         this.amazonEC2Menu = new AmazonEC2Menu(this.engine);
@@ -104,15 +125,20 @@ public class XBayaMenu implements XBayaComponent {
     private void createMenuBar() {
 
         this.menuBar = new JMenuBar();
+        menuBar.add(xBayaMenuItem.getMenu());
+        menuBar.add(editMenuItem.getMenu());
+        menuBar.add(viewMenuItem.getMenu());
+        menuBar.add(runMenuItem.getMenu());
+        menuBar.add(registryMenuItem.getMenu());
 
-        this.menuBar.add(this.fileMenu.getMenu());
-        this.menuBar.add(this.workflowMenu.getMenu());
-        this.menuBar.add(this.componentMenu.getMenu());
-        this.menuBar.add(this.experimentMenu.getMenu());
-        this.menuBar.add(this.amazonEC2Menu.getMenu());
-        // this.menuBar.add(this.myProxyMenu.getMenu());
-        this.menuBar.add(this.monitorMenu.getMenu());
-        this.menuBar.add(this.registerApplications.getMenu());
+//        this.menuBar.add(this.fileMenu.getMenu());
+//        this.menuBar.add(this.workflowMenu.getMenu());
+//        this.menuBar.add(this.componentMenu.getMenu());
+//        this.menuBar.add(this.experimentMenu.getMenu());
+//        this.menuBar.add(this.amazonEC2Menu.getMenu());
+//        // this.menuBar.add(this.myProxyMenu.getMenu());
+//        this.menuBar.add(this.monitorMenu.getMenu());
+//        this.menuBar.add(this.registerApplications.getMenu());
 
         // Space before Help
         this.menuBar.add(Box.createHorizontalGlue());

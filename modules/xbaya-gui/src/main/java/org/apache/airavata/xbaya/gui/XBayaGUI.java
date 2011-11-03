@@ -199,7 +199,11 @@ public class XBayaGUI implements EventListener {
      */
     public GraphCanvas getGraphCanvas() {
         int index = this.graphTabbedPane.getSelectedIndex();
-        return this.graphCanvases.get(index);
+        if (index!=-1) {
+			return this.graphCanvases.get(index);
+		}else{
+			return null;
+		}
     }
 
     /**
@@ -296,17 +300,27 @@ public class XBayaGUI implements EventListener {
      * This method needs to be called by Swing event thread.
      */
     public void closeGraphCanvas() {
-        if (this.graphTabbedPane.getTabCount() == 1) {
-            // Do not remove the last tab. Create a new workflow instead.
-            getGraphCanvas().newWorkflow();
-        } else {
-            int index = this.graphTabbedPane.getSelectedIndex();
-            this.graphCanvases.remove(index);
-            this.graphTabbedPane.removeTabAt(index);
-            activeTabChanged();
-        }
+        removeGraphCanvasFromIndex(this.graphTabbedPane.getSelectedIndex());
+    	//I dont know why but aparently you have to have atleast one tab present
+    	newGraphCanvas(true);
     }
 
+    public void closeAllGraphCanvas(){
+    	while (graphTabbedPane.getTabCount()>0){
+    		removeGraphCanvasFromIndex(0);
+    	}
+    	//I dont know why but aparently you have to have atleast one tab present
+    	newGraphCanvas(true);
+    }
+    
+	private void removeGraphCanvasFromIndex(int index) {
+		if ((graphTabbedPane.getTabCount()>0) && (index<this.graphTabbedPane.getTabCount())){
+			graphCanvases.remove(index);
+			graphTabbedPane.removeTabAt(index);
+			activeTabChanged();
+		}
+	}
+    
     /**
      * Selects the next graph canvas.
      * 
@@ -664,24 +678,26 @@ public class XBayaGUI implements EventListener {
     private void activeTabChanged() {
         GraphCanvas graphPanel = getGraphCanvas();
 
-        // Reset the port viewers.
-        Port inputPort = graphPanel.getSelectedInputPort();
-        Port outputPort = graphPanel.getSelectedOutputPort();
-        this.portViewer.setInputPort(inputPort);
-        this.portViewer.setOutputPort(outputPort);
-
-        // Reset component viewer.
-        Node node = graphPanel.getSelectedNode();
-        Component component;
-        if (node != null) {
-            component = node.getComponent();
-        } else {
-            component = this.componentSelector.getSelectedComponent();
-        }
-        this.componentViewer.setComponent(component);
-
-        String name = graphPanel.getWorkflow().getName();
-        setFrameName(name);
+        if (graphPanel!=null) {
+			// Reset the port viewers.
+			Port inputPort = graphPanel.getSelectedInputPort();
+			Port outputPort = graphPanel.getSelectedOutputPort();
+			this.portViewer.setInputPort(inputPort);
+			this.portViewer.setOutputPort(outputPort);
+			// Reset component viewer.
+			Node node = graphPanel.getSelectedNode();
+			Component component;
+			if (node != null) {
+				component = node.getComponent();
+			} else {
+				component = this.componentSelector.getSelectedComponent();
+			}
+			this.componentViewer.setComponent(component);
+			String name = graphPanel.getWorkflow().getName();
+			setFrameName(name);
+		}else{
+			//TODO what to do when no tabs are present???
+		}
     }
 
     public ComponentViewer getComponentVIewer() {

@@ -38,12 +38,6 @@ public class RegisterApplicationsMenu {
 
     private JMenu registerApplicationsMenu;
 
-    private JMenuItem registerServiceDesc;
-
-    private JMenuItem registerApplicationDesc;
-
-    private JMenuItem registerHostDesc;
-
     private JMenuItem registerThroughFile;
 
     private JMenuItem searchAndEdit;
@@ -71,18 +65,12 @@ public class RegisterApplicationsMenu {
 
     private void createRegsiterApplicationsMenu() {
 
-        createRegisterHostDesc();
-        createRegisterServiceDesc();
-        createRegisterApplicationDesc();
         createRegisterThroughFile();
         createSearchAndEdit();
 
         this.registerApplicationsMenu = new JMenu("Register Applications");
         this.registerApplicationsMenu.setMnemonic(KeyEvent.VK_P);
 
-        this.registerApplicationsMenu.add(this.registerHostDesc);
-        this.registerApplicationsMenu.add(this.registerServiceDesc);
-        this.registerApplicationsMenu.add(this.registerApplicationDesc);
         this.registerApplicationsMenu.add(this.registerThroughFile);
         this.registerApplicationsMenu.addSeparator();
         this.registerApplicationsMenu.add(this.searchAndEdit);
@@ -120,72 +108,6 @@ public class RegisterApplicationsMenu {
                 // }
             }
         });
-    }
-
-    private void createRegisterServiceDesc() {
-        this.registerServiceDesc = new JMenuItem("Register Application Service Description");
-
-        this.registerServiceDesc.addActionListener(new AbstractAction() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (XBayaUtil.acquireJCRRegistry(engine)) {
-                    try {
-                        ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(
-                                RegisterApplicationsMenu.this.engine.getConfiguration().getJcrComponentRegistry()
-                                        .getRegistry());
-                        serviceDescriptionDialog.open();
-                    } catch (Exception e1) {
-                        RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
-                    }
-                }
-            }
-        });
-
-    }
-
-    private void createRegisterApplicationDesc() {
-        this.registerApplicationDesc = new JMenuItem("Register Application Deployment Description");
-
-        this.registerApplicationDesc.addActionListener(new AbstractAction() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (XBayaUtil.acquireJCRRegistry(engine)) {
-                    try {
-                        ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(
-                                RegisterApplicationsMenu.this.engine);
-                        applicationDescriptionDialog.open();
-                    } catch (Exception e1) {
-                        RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
-                    }
-                }
-            }
-        });
-
-    }
-
-    private void createRegisterHostDesc() {
-        this.registerHostDesc = new JMenuItem("Register Compute/Service Host Description");
-
-        this.registerHostDesc.addActionListener(new AbstractAction() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (XBayaUtil.acquireJCRRegistry(engine)) {
-                    try {
-                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(
-                                RegisterApplicationsMenu.this.engine);
-                        // TODO : should remove this
-                        //hostDescriptionDialog.open();
-                        hostDescriptionDialog.show();
-                    } catch (Exception e1) {
-                        RegisterApplicationsMenu.this.engine.getErrorWindow().error(e1);
-                    }
-                }
-            }
-        });
-
     }
 
     private void createSearchAndEdit() {
