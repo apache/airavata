@@ -40,7 +40,7 @@ import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MonitorMenu implements EventListener {
+public class MonitorMenu {
 
     private static final Logger logger = LoggerFactory.getLogger(MonitorMenu.class);
 
@@ -49,14 +49,6 @@ public class MonitorMenu implements EventListener {
     private XBayaGUI gui;
 
     private JMenu monitorMenu;
-
-    private JMenuItem configMenuItem;
-
-    private JMenuItem startMenuItem;
-
-    private JMenuItem stopMenuItem;
-
-    private JMenuItem resetMenuItem;
 
     private JMenuItem differenceMenuItem;
 
@@ -70,9 +62,6 @@ public class MonitorMenu implements EventListener {
         this.gui = engine.getGUI();
         this.monitorMenu = createMonitorMenu();
 
-        Monitor monitor = this.engine.getMonitor();
-        monitor.addEventListener(this);
-        monitor.getConfiguration().addEventListener(this);
     }
 
     /**
@@ -82,114 +71,17 @@ public class MonitorMenu implements EventListener {
         return this.monitorMenu;
     }
 
-    /**
-     * @see org.apache.airavata.xbaya.event.EventListener#eventReceived(org.apache.airavata.xbaya.event.Event)
-     */
-    public void eventReceived(Event event) {
-        Type type = event.getType();
-        if (type.equals(Event.Type.MONITOR_CONFIGURATION_CHANGED)) {
-            MonitorConfiguration configuration = this.engine.getMonitor().getConfiguration();
-            boolean valid = configuration.isValid();
-            this.startMenuItem.setEnabled(valid);
-        } else if (type.equals(Event.Type.MONITOR_STARTED)) {
-            this.startMenuItem.setEnabled(false);
-            this.stopMenuItem.setEnabled(true);
-            this.resetMenuItem.setEnabled(true);
-        } else if (type.equals(Event.Type.MONITOR_STOPED)) {
-            this.startMenuItem.setEnabled(true);
-            this.stopMenuItem.setEnabled(false);
-        }
-    }
-
     private JMenu createMonitorMenu() {
         JMenu menu = new JMenu("Monitoring");
         menu.setMnemonic(KeyEvent.VK_M);
 
-        this.configMenuItem = createConfigItem();
-        this.startMenuItem = createStartItem();
-        this.stopMenuItem = createStopItem();
-        this.resetMenuItem = createResetItem();
         this.differenceMenuItem = createDifferenceItem();
 
-        menu.add(this.configMenuItem);
-        menu.addSeparator();
-        menu.add(this.startMenuItem);
-        menu.add(this.stopMenuItem);
-        menu.add(this.resetMenuItem);
+
         menu.addSeparator();
         menu.addSeparator();
         menu.add(this.differenceMenuItem);
         return menu;
-    }
-
-    private JMenuItem createConfigItem() {
-        JMenuItem item = new JMenuItem("Configure Monitoring");
-        item.setMnemonic(KeyEvent.VK_C);
-        item.addActionListener(new AbstractAction() {
-            private MonitorConfigurationWindow window;
-
-            public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    this.window = new MonitorConfigurationWindow(MonitorMenu.this.engine);
-                }
-                this.window.show();
-            }
-        });
-        return item;
-    }
-
-    private JMenuItem createStartItem() {
-        JMenuItem item = new JMenuItem("Start Monitoring");
-        item.setMnemonic(KeyEvent.VK_S);
-        item.addActionListener(new AbstractAction() {
-            private MonitorStarter starter;
-
-            public void actionPerformed(ActionEvent event) {
-                if (this.starter == null) {
-                    this.starter = new MonitorStarter(MonitorMenu.this.engine);
-                }
-                this.starter.start();
-            }
-        });
-        boolean valid = this.engine.getMonitor().getConfiguration().isValid();
-        item.setEnabled(valid);
-        return item;
-    }
-
-    private JMenuItem createStopItem() {
-        JMenuItem item = new JMenuItem("Stop Monitoring");
-        item.setMnemonic(KeyEvent.VK_T);
-        item.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent event) {
-                try {
-                    MonitorMenu.this.engine.getMonitor().asynchronousStop();
-                } catch (RuntimeException e) {
-                    MonitorMenu.this.gui.getErrorWindow().error(ErrorMessages.MONITOR_ERROR, e);
-                } catch (Error e) {
-                    MonitorMenu.this.gui.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-                }
-            }
-        });
-        item.setEnabled(false);
-        return item;
-    }
-
-    private JMenuItem createResetItem() {
-        JMenuItem item = new JMenuItem("Reset");
-        item.setMnemonic(KeyEvent.VK_R);
-        item.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent event) {
-                try {
-                    MonitorMenu.this.engine.getMonitor().reset();
-                } catch (RuntimeException e) {
-                    MonitorMenu.this.gui.getErrorWindow().error(ErrorMessages.MONITOR_ERROR, e);
-                } catch (Error e) {
-                    MonitorMenu.this.gui.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-                }
-            }
-        });
-        item.setEnabled(false);
-        return item;
     }
 
     private JMenuItem createDifferenceItem() {

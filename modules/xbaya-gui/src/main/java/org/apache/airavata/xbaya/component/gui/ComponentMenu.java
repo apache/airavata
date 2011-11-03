@@ -66,8 +66,6 @@ public class ComponentMenu {
 
     private JMenuItem workflowItem;
 
-    private JMenuItem jcrRegistryItem;
-
     private JMenuItem globusFileTransferItem;
 
     /**
@@ -91,7 +89,6 @@ public class ComponentMenu {
     private void createComponentMenu() {
         this.fileRegistryItem = createFileRegistryMenuItem();
         this.globusFileTransferItem = createGlobusFileTransferItem();
-        this.jcrRegistryItem = createJCRRegistryItem();
         this.webItem = createWebRegistryItem();
         this.urlItem = createURLRegistryItem();
         this.workflowItem = createWorkflowItem();
@@ -102,7 +99,6 @@ public class ComponentMenu {
         this.componentMenu = new JMenu("Component");
         this.componentMenu.setMnemonic(KeyEvent.VK_C);
         this.componentMenu.add(this.fileRegistryItem);
-        this.componentMenu.add(this.jcrRegistryItem);
         this.componentMenu.add(this.globusFileTransferItem);
         this.componentMenu.add(this.webItem);
         this.componentMenu.add(this.urlItem);
@@ -266,22 +262,6 @@ public class ComponentMenu {
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
                     this.window = new URLRegistryWindow(ComponentMenu.this.engine);
-                }
-                this.window.show();
-            }
-        });
-        return item;
-    }
-
-    private JMenuItem createJCRRegistryItem() {
-        JMenuItem item = new JMenuItem("Set Registry");
-        item.setMnemonic(KeyEvent.VK_J);
-        item.addActionListener(new AbstractAction() {
-            private JCRRegistryWindow window;
-
-            public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    this.window = new JCRRegistryWindow(ComponentMenu.this.engine);
                 }
                 this.window.show();
             }
