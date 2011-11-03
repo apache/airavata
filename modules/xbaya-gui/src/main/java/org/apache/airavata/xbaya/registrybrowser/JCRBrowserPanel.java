@@ -182,7 +182,7 @@ public class JCRBrowserPanel extends JPanel implements Observer {
 
     private void resetModel() {
         tree.setModel(new DefaultTreeModel(AiravataTreeNodeFactory.getTreeNode(
-                getJCRRegistry() == null ? "No registry specified" : getJCRRegistry(), null)));
+                getJCRRegistry() == null ? "No registry specified" : getEngine(), null)));
     }
 
     private void addPopup(Component component, final JPopupMenu popup) {

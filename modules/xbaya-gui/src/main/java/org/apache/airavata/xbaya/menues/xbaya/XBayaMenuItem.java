@@ -383,7 +383,7 @@ public class XBayaMenuItem {
     }
 
     private void createImportWorkflowItemFromFileSystem() {
-        importWorkflowItemFromFileSystem = new JMenuItem("File system...");
+        importWorkflowItemFromFileSystem = new JMenuItem("From file system...");
         importWorkflowItemFromFileSystem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 XBayaMenuItem.this.graphFiler.importWorkflow();
@@ -393,7 +393,7 @@ public class XBayaMenuItem {
     }
     
     private void createImportWorkflowItemFromRegistry() {
-        importWorkflowItemFromRegistry = new JMenuItem("Registry...");
+        importWorkflowItemFromRegistry = new JMenuItem("From registry...");
         importWorkflowItemFromRegistry.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 new RegistryLoaderWindow(engine).show();
