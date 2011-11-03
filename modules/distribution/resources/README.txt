@@ -1,12 +1,30 @@
-Airavata 0.0.1-SNAPSHOT
----------------
+Apache Airavata (incubating) - README.txt
+Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
+--------------------------------------------------------------------------------
 
+About
+=====
+Apache Airavata, a software framework to compose, manage, execute, and monitor 
+distributed applications and workflows on computational resources ranging from 
+local resources to computational grids and clouds. Airavata can be used as individual components or 
+as an integrated solution to build science gateways or general-purpose distributed 
+application and workflow management systems. Users can use Airavata back end services 
+and build gadgets to deploy in open social containers such as Apache Rave and modify them 
+to suit their needs. Airavata builds on general concepts of service oriented computing, 
+distributed messaging, and workflow composition and orchestration.
 
-
+Disclaimer
+==========
+Apache Rave is an effort undergoing incubation at The Apache Software
+Foundation (ASF), sponsored by the Apache Incubator PMC. Incubation is required
+of all newly accepted projects until a further review indicates that the
+infrastructure, communications, and decision making process have stabilized in a
+manner consistent with other successful ASF projects. While incubation status is
+not necessarily a reflection of the completeness or stability of the code, it
+does indicate that the project has yet to be fully endorsed by the ASF.
 
 New Features In This Release
 ----------------------------
-
 
 
 Key Features
@@ -24,10 +42,8 @@ For installation and further instructions refer www.airavata.org - Documentation
 contains proper documentation with screenshots.
 
 
-
 Known Issues in This Release
 ----------------------------
-
 
 
 Including External Dependencies
@@ -93,7 +109,3 @@ WS-Messenger Binary Distribution Directory Structure
 
     - INSTALL.txt
           This document will contain information on installing Apache-Airavata.
-
-
-
-
