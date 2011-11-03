@@ -395,9 +395,7 @@ public class XBayaMenuItem {
         importWorkflowItemFromRegistry = new JMenuItem("Registry...");
         importWorkflowItemFromRegistry.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                XBayaMenuItem.this.graphFiler.importWorkflow();
                 new RegistryLoaderWindow(engine).show();
-
             }
         });
     }
