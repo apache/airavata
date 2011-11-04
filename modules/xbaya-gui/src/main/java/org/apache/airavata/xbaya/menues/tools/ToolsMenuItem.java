@@ -21,17 +21,14 @@
 
 package org.apache.airavata.xbaya.menues.tools;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.gui.GlobusFileTransferWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 public class ToolsMenuItem {
 
@@ -73,7 +70,7 @@ public class ToolsMenuItem {
     }
     
     private JMenuItem createGlobusFileTransferItem() {
-        JMenuItem item = new JMenuItem("Globus File Transfer");
+        JMenuItem item = new JMenuItem("Globus File Transfer...");
         item.setMnemonic(KeyEvent.VK_J);
         item.addActionListener(new AbstractAction() {
             private GlobusFileTransferWindow window;
