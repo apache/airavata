@@ -34,6 +34,8 @@ import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.appwrapper.ApplicationDescriptionDialog;
 import org.apache.airavata.xbaya.appwrapper.HostDescriptionDialog;
 import org.apache.airavata.xbaya.appwrapper.ServiceDescriptionDialog;
+import org.apache.airavata.xbaya.component.gui.ComponentMenu;
+import org.apache.airavata.xbaya.component.gui.URLRegistryWindow;
 import org.apache.airavata.xbaya.experiment.gui.RegistryLoaderWindow;
 import org.apache.airavata.xbaya.ode.ODEDeploymentDescriptor;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
@@ -56,6 +58,8 @@ public class XBayaMenuItem {
     private BPELFiler bpelFiler;
 
     private ScuflFiler scuflFiler;
+    
+    private JMenuItem urlItem;
 
     private ODEDeploymentDescriptor odeDeploymentDescription;
 
@@ -145,6 +149,7 @@ public class XBayaMenuItem {
         closeWorkflowItem = createCloseWorkflowTabItem();
         closeAllWorkflowItem = createCloseAllWorkflowTabItem();
         nextWorkflowTabItem = createNextWorkflowTabItem();
+        urlItem = createURLRegistryItem();
         
         createRegisterHostDesc();
         createRegisterServiceDesc();
@@ -185,6 +190,8 @@ public class XBayaMenuItem {
         JMenu importMenu = new JMenu("Import");
         	importMenu.add(importWorkflowItemFromFileSystem);
         	importMenu.add(importWorkflowItemFromRegistry);
+        	importMenu.addSeparator();
+        	importMenu.add(urlItem);	
         	
         JMenu exportMenu = new JMenu("Export");
         	exportMenu.add(saveWorkflowtoRegistryItem);
@@ -218,6 +225,22 @@ public class XBayaMenuItem {
                 registryAccesser.saveWorkflow();
             }
         });
+    }
+    
+    private JMenuItem createURLRegistryItem() {
+        JMenuItem item = new JMenuItem("WSDL from URL");
+        item.setMnemonic(KeyEvent.VK_U);
+        item.addActionListener(new AbstractAction() {
+            private URLRegistryWindow window;
+
+            public void actionPerformed(ActionEvent e) {
+                if (this.window == null) {
+                    this.window = new URLRegistryWindow(engine);
+                }
+                this.window.show();
+            }
+        });
+        return item;
     }
     
     private void createRegisterServiceDesc() {
