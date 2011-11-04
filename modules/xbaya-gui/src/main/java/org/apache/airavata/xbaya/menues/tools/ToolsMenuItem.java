@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.xbaya.menues.registry;
+package org.apache.airavata.xbaya.menues.tools;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -29,27 +29,26 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.component.gui.ComponentMenu;
-import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
+import org.apache.airavata.xbaya.component.gui.GlobusFileTransferWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RegistryMenuItem {
+public class ToolsMenuItem {
 
     private XBayaEngine engine;
 
-    private JMenu registryMenu;
-
-    private JMenuItem jcrRegistryItem;
-
-    private static final Logger logger = LoggerFactory.getLogger(RegistryMenuItem.class);
+    private JMenu toolsMenu;
+    
+    private JMenuItem globusFileTransferItem;
+    
+    private static final Logger logger = LoggerFactory.getLogger(ToolsMenuItem.class);
 
     /**
      * Constructs a WorkflowMenu.
      * 
      * @param engine
      */
-    public RegistryMenuItem(XBayaEngine engine) {
+    public ToolsMenuItem(XBayaEngine engine) {
         this.engine = engine;
         createWorkflowMenu();
     }
@@ -58,32 +57,30 @@ public class RegistryMenuItem {
      * @return The workflow menu.
      */
     public JMenu getMenu() {
-        return this.registryMenu;
+        return this.toolsMenu;
     }
 
     /**
      * Creates workflow menu.
      */
     private void createWorkflowMenu() {
-        this.jcrRegistryItem = createJCRRegistryItem();
+        this.globusFileTransferItem = createGlobusFileTransferItem();
 
-        registryMenu = new JMenu("Registry");
-        registryMenu.setMnemonic(KeyEvent.VK_G);
-
-        registryMenu.add(this.jcrRegistryItem);
+        toolsMenu = new JMenu("Tools");
+        toolsMenu.setMnemonic(KeyEvent.VK_T);
+        toolsMenu.add(this.globusFileTransferItem);
 
     }
     
-
-    private JMenuItem createJCRRegistryItem() {
-        JMenuItem item = new JMenuItem("Setup JCR Registry...");
+    private JMenuItem createGlobusFileTransferItem() {
+        JMenuItem item = new JMenuItem("Globus File Transfer");
         item.setMnemonic(KeyEvent.VK_J);
         item.addActionListener(new AbstractAction() {
-            private JCRRegistryWindow window;
+            private GlobusFileTransferWindow window;
 
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
-                    this.window = new JCRRegistryWindow(engine);
+                    this.window = new GlobusFileTransferWindow(engine);
                 }
                 this.window.show();
             }

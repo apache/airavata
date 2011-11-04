@@ -132,6 +132,8 @@ public class EditMenuItem {
             	//TODO
             }
         });
+        //FIXME enable the menu once this functionality is implemented
+        menuItem.setEnabled(false);
         return menuItem;
     }
     
@@ -142,6 +144,8 @@ public class EditMenuItem {
             	//TODO
             }
         });
+        //FIXME enable the menu once this functionality is implemented
+        menuItem.setEnabled(false);        
         return menuItem;
     }
     
@@ -152,6 +156,8 @@ public class EditMenuItem {
             	//TODO
             }
         });
+        //FIXME enable the menu once this functionality is implemented
+        menuItem.setEnabled(false);        
         return menuItem;
     }
 }

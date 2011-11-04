@@ -151,7 +151,7 @@ public class XBayaMenuItem {
         createRegisterApplicationDesc();
         
         xbayaMenuItem = new JMenu("XBaya");
-        xbayaMenuItem.setMnemonic(KeyEvent.VK_F);
+        xbayaMenuItem.setMnemonic(KeyEvent.VK_X);
         
         JMenu newMenu = new JMenu("New");
 	        newMenu.add(newWorkflowTabItem);
@@ -380,6 +380,8 @@ public class XBayaMenuItem {
                 XBayaMenuItem.this.graphFiler.saveAllWorkflows();
             }
         });
+        //FIXME remove this once save all functionality is fixed
+        saveAllWorkflowItem.setEnabled(false);
     }
 
     private void createImportWorkflowItemFromFileSystem() {
