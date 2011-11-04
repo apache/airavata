@@ -54,8 +54,6 @@ public class ComponentMenu {
 
     private JMenuItem webItem;
 
-    private JMenuItem urlItem;
-
     private JMenuItem removeItem;
 
     private JMenuItem refreshSelectedItem;
@@ -88,7 +86,6 @@ public class ComponentMenu {
     private void createComponentMenu() {
         this.fileRegistryItem = createFileRegistryMenuItem();
         this.webItem = createWebRegistryItem();
-        this.urlItem = createURLRegistryItem();
         this.workflowItem = createWorkflowItem();
         this.removeItem = createRemoveRegistryItem();
         this.refreshSelectedItem = createRefreshSelectedRegistryItem();
@@ -98,7 +95,6 @@ public class ComponentMenu {
         this.componentMenu.setMnemonic(KeyEvent.VK_C);
         this.componentMenu.add(this.fileRegistryItem);
         this.componentMenu.add(this.webItem);
-        this.componentMenu.add(this.urlItem);
         this.componentMenu.add(this.workflowItem);
         this.componentMenu.addSeparator();
         this.componentMenu.add(this.removeItem);
@@ -243,22 +239,6 @@ public class ComponentMenu {
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
                     this.window = new WebResigtoryWindow(ComponentMenu.this.engine);
-                }
-                this.window.show();
-            }
-        });
-        return item;
-    }
-
-    private JMenuItem createURLRegistryItem() {
-        JMenuItem item = new JMenuItem("Add WSDL by URL");
-        item.setMnemonic(KeyEvent.VK_U);
-        item.addActionListener(new AbstractAction() {
-            private URLRegistryWindow window;
-
-            public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    this.window = new URLRegistryWindow(ComponentMenu.this.engine);
                 }
                 this.window.show();
             }
