@@ -1,0 +1,42 @@
+Apache Aiaravata Change Log
+
+See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
+
+Version 0.1 Released 2011-11-7
+===============================
+
+Initial Setup
+=============
+* AIRAVATA-1 to AIRAVATA-10  Accepting Code donation from OGCE, SVN and Website Setup.
+
+CRYPTO REQUIREMENTS & LICENSE COMPATIBILITY
+===========================================
+* AIRAVATA-7 Crypto Requirements for all SSL and GSI Security Dependencies
+* AIRAVATA-23, AIRAVATA-26, AIRAVATA-27, AIRAVATA-28 Remove MySQL jars and integrate with Apache Derby In-Memory database
+
+BUILD, TOOLS, DOCUMENTATION & CODE CLEANUP
+================================================
+* AIRAVATA-38 Improve Eclipse support
+* AIRAVATA-94 Add Airavata to Apache Sonar analysis service
+* AIRAVATA-95 Add Airavata to Apache's Jenkins build system
+* AIRAVATA-42 Providing README.txt and install files in to source
+* AIRAVATA-58 SVN Reorganization
+* AIRAVATA-56 Clean up Workflow-Interpreter pom file and correct the build profile for this module
+* AIRAVATA-86 create complete airavata distribution
+* AIRAVATA-101 Clean up WS-Messenger package
+* AIRAVATA-122 Add Architecture to Website
+
+NEW DEVELOPMENTS
+================
+* AIRAVATA-61 Integration of improved workflow tracking library
+* AIRAVATA-36 Change XBaya event handling to new WS-Messenger Client
+* AIRAVATA-50 Integrate all Airavata components system to use improved WS-Messenger
+* AIRAVATA-171 Improved GFac Application Registration Schema to use XML Beans, change the GFac Architecture
+* AIRAVATA-183 Change GFac architecture to serve incoming request, without starting temporary services each time
+* AIRAVATA-73 Add a Repository interface to GFac to experiment with JCR repository API
+* AIRAVATA-74 Integrate new Registry API to GFAC
+* AIRAVATA-107 to AIRAVATA-110 Switch Logging Library to SLF4J
+* AIRAVATA-102 Simplifying XBaya GUI components
+* AIRAVATA-148 Create a JCR registry browser for XBaya
+* AIRAVATA-161 Reorganize Application Schema to make it extendable.
+* AIRAVATA-183 Changing GFac architecture to better integrate with Axis2
