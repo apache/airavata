@@ -266,7 +266,7 @@ public class RunMenuItem  implements EventListener{
 	 * 
 	 */
     private void createLaunchAndSaveGridChemWorkflowItem() {
-        launchAndSaveInGridChemWorkflowItem = new JMenuItem("Run & Register GridChem...	");
+        launchAndSaveInGridChemWorkflowItem = new JMenuItem("Run & Register in GridChem...	");
         // TODO Add the following operations
         // First Call OGCE-GridChem-Bridge Service to register an experiment
         // Set lead context header with all the required notifier context
