@@ -34,100 +34,109 @@ import org.slf4j.LoggerFactory;
 
 public class ViewMenuItem {
 
-    private XBayaEngine engine;
+	private XBayaEngine engine;
 
-    private JMenu viewMenu;
+	private JMenu viewMenu;
 
-    private JMenuItem jcrRegistryView;
+	private JMenuItem jcrRegistryView;
 
-    private JMenuItem componentsView;
+	private JMenuItem componentsView;
 
 	private JMenuItem monitoringView;
 
 	private JMenuItem parametersView;
 
-    private static final Logger logger = LoggerFactory.getLogger(ViewMenuItem.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(ViewMenuItem.class);
 
-    /**
-     * Constructs a WorkflowMenu.
-     * 
-     * @param engine
-     */
-    public ViewMenuItem(XBayaEngine engine) {
-        this.engine = engine;
-        createWorkflowMenu();
-    }
+	/**
+	 * Constructs a WorkflowMenu.
+	 * 
+	 * @param engine
+	 */
+	public ViewMenuItem(XBayaEngine engine) {
+		this.engine = engine;
+		createWorkflowMenu();
+	}
 
-    /**
-     * @return The workflow menu.
-     */
-    public JMenu getMenu() {
-        return this.viewMenu;
-    }
+	/**
+	 * @return The workflow menu.
+	 */
+	public JMenu getMenu() {
+		return this.viewMenu;
+	}
 
-    /**
-     * Creates workflow menu.
-     */
-    private void createWorkflowMenu() {
-        this.jcrRegistryView = createShpwJCRRegistryView();
-        this.componentsView = createShowComponentsView();
+	/**
+	 * Creates workflow menu.
+	 */
+	private void createWorkflowMenu() {
+		this.jcrRegistryView = createShpwJCRRegistryView();
+		this.componentsView = createShowComponentsView();
 
-        monitoringView = createShowMonitoringView();
-        parametersView = createShowParameterView();
+		monitoringView = createShowMonitoringView();
+		parametersView = createShowParameterView();
 
-        viewMenu = new JMenu("View");
-        viewMenu.setMnemonic(KeyEvent.VK_V);
+		viewMenu = new JMenu("View");
+		viewMenu.setMnemonic(KeyEvent.VK_V);
 
-        viewMenu.add(this.jcrRegistryView);
-        
-        viewMenu.addSeparator();
-        
-        viewMenu.add(this.componentsView);
-        
-        viewMenu.addSeparator();
-        
-        viewMenu.add(monitoringView);
-        viewMenu.add(parametersView);
-    }
+		viewMenu.add(this.jcrRegistryView);
 
-    private JMenuItem createShpwJCRRegistryView() {
-        JMenuItem menuItem = new JMenuItem("JCR Registry");
-        menuItem.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-            	//TODO
-            }
-        });
-        return menuItem;
-    }
+		viewMenu.addSeparator();
 
-    private JMenuItem createShowComponentsView() {
-        JMenuItem menuItem = new JMenuItem("Components");
-        menuItem.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-            	//TODO
-            }
-        });
-        return menuItem;
-    }
+		viewMenu.add(this.componentsView);
 
-    private JMenuItem createShowMonitoringView() {
-        JMenuItem menuItem = new JMenuItem("Monitoring");
-        menuItem.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-            	//TODO
-            }
-        });
-        return menuItem;
-    }
-    
-    private JMenuItem createShowParameterView() {
-        JMenuItem menuItem = new JMenuItem("Parameters");
-        menuItem.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-            	//TODO
-            }
-        });
-        return menuItem;
-    }
-    
+		viewMenu.addSeparator();
+
+		viewMenu.add(monitoringView);
+		viewMenu.add(parametersView);
+	}
+
+	private JMenuItem createShpwJCRRegistryView() {
+		JMenuItem menuItem = new JMenuItem("JCR Registry");
+		menuItem.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				// TODO
+			}
+		});
+		// FIXME remove this once save all functionality is fixed
+		menuItem.setEnabled(false);
+		return menuItem;
+	}
+
+	private JMenuItem createShowComponentsView() {
+		JMenuItem menuItem = new JMenuItem("Components");
+		menuItem.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				// TODO
+			}
+		});
+		// FIXME remove this once save all functionality is fixed
+		menuItem.setEnabled(false);
+		return menuItem;
+	}
+
+	private JMenuItem createShowMonitoringView() {
+		JMenuItem menuItem = new JMenuItem("Monitoring");
+		menuItem.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				// TODO
+			}
+		});
+		// FIXME remove this once save all functionality is fixed
+		menuItem.setEnabled(false);
+		return menuItem;
+	}
+
+	private JMenuItem createShowParameterView() {
+		JMenuItem menuItem = new JMenuItem("Parameters");
+		menuItem.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				// TODO
+			}
+		});
+		// FIXME remove this once save all functionality is fixed
+		menuItem.setEnabled(false);
+		return menuItem;
+	}
+
 }

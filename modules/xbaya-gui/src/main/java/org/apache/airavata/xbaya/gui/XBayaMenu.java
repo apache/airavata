@@ -41,6 +41,7 @@ import org.apache.airavata.xbaya.gpel.gui.GPELMenu;
 import org.apache.airavata.xbaya.menues.edit.EditMenuItem;
 import org.apache.airavata.xbaya.menues.registry.RegistryMenuItem;
 import org.apache.airavata.xbaya.menues.run.RunMenuItem;
+import org.apache.airavata.xbaya.menues.tools.ToolsMenuItem;
 import org.apache.airavata.xbaya.menues.view.ViewMenuItem;
 import org.apache.airavata.xbaya.menues.xbaya.XBayaMenuItem;
 import org.apache.airavata.xbaya.monitor.gui.MonitorMenu;
@@ -83,6 +84,8 @@ public class XBayaMenu implements XBayaComponent {
 
 	private RegistryMenuItem registryMenuItem;
 
+	private ToolsMenuItem toolsMenuItem;
+
     /**
      * Constructs an XwfMenu.
      * 
@@ -98,6 +101,7 @@ public class XBayaMenu implements XBayaComponent {
         viewMenuItem = new ViewMenuItem(engine);
         runMenuItem = new RunMenuItem(engine);
         registryMenuItem = new RegistryMenuItem(engine);
+        toolsMenuItem = new ToolsMenuItem(engine);
         
         this.workflowMenu = new WorkflowMenu(this.engine);
         this.experimentMenu = new ExperimentMenu(this.engine);
@@ -129,6 +133,7 @@ public class XBayaMenu implements XBayaComponent {
         menuBar.add(editMenuItem.getMenu());
         menuBar.add(viewMenuItem.getMenu());
         menuBar.add(runMenuItem.getMenu());
+        menuBar.add(toolsMenuItem.getMenu());
         menuBar.add(registryMenuItem.getMenu());
 
 //        this.menuBar.add(this.fileMenu.getMenu());
