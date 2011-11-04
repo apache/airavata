@@ -34,6 +34,5 @@
             <actionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/Renew</actionMapping>
             <outputActionMapping>http://schemas.xmlsoap.org/ws/2004/08/eventing/RenewResponse</outputActionMapping>
         </operation>
-        <parameter name="EnableChildFirstClassLoading">true</parameter>
     </service>
 </serviceGroup>
