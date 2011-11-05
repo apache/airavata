@@ -22,7 +22,6 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class RegistryServiceTest {
-
     @Rule
 	public ExpectedException exception = ExpectedException.none();
 
