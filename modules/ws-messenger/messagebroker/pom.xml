@@ -1,133 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file 
+	distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under 
+	the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may 
+	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to 
+	in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
+	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
+	the License. -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <parent>
-        <groupId>org.apache.airavata</groupId>
-        <artifactId>ws-messenger</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>org.apache.airavata</groupId>
+		<artifactId>ws-messenger</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.airavata</groupId>
-    <artifactId>messagebroker</artifactId>
-    <name>Message Broker</name>
-    <url>http://incubator.apache.org/airavata/</url>
-    <packaging>jar</packaging>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.apache.airavata</groupId>
+	<artifactId>messagebroker</artifactId>
+	<name>Message Broker</name>
+	<url>http://incubator.apache.org/airavata/</url>
+	<packaging>jar</packaging>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>org.apache.airavata.wsmg.gui.NotificationViewer</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.axis2</groupId>
-                <artifactId>axis2-aar-maven-plugin</artifactId>
-                <version>1.5</version>
-                <configuration>
-                    <servicesXmlFile>src/main/resources/services.xml</servicesXmlFile>
-                    <!--wsdlFile>src/main/resources/services.wsdl</wsdlFile -->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>org.apache.airavata.wsmg.gui.NotificationViewer</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-aar-maven-plugin</artifactId>
+				<version>1.5</version>
+				<configuration>
+					<servicesXmlFile>src/main/resources/services.xml</servicesXmlFile>
+					<!--wsdlFile>src/main/resources/services.wsdl</wsdlFile -->
 
-                    <fileSets>
-                        <fileSet>
-                            <directory>customLibs</directory>
-                            <outputDirectory>lib/</outputDirectory>
-                            <includes>
-                                <include>*.jar</include>
-                            </includes>
-                        </fileSet>
-                        <fileSet>
-                            <directory>customLibs/activeMQ</directory>
-                            <outputDirectory>lib/</outputDirectory>
-                            <includes>
-                                <include>*.jar</include>
-                            </includes>
-                        </fileSet>
-                    </fileSets>
+					<fileSets>
+						<fileSet>
+							<directory>customLibs</directory>
+							<outputDirectory>lib/</outputDirectory>
+							<includes>
+								<include>*.jar</include>
+							</includes>
+						</fileSet>
+						<fileSet>
+							<directory>customLibs/activeMQ</directory>
+							<outputDirectory>lib/</outputDirectory>
+							<includes>
+								<include>*.jar</include>
+							</includes>
+						</fileSet>
+					</fileSets>
 
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>createAAR</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>aar</goal>
-                        </goals>
-                    </execution>
-                </executions>
+				</configuration>
+				<executions>
+					<execution>
+						<id>createAAR</id>
+						<phase>package</phase>
+						<goals>
+							<goal>aar</goal>
+						</goals>
+					</execution>
+				</executions>
 
-            </plugin>
-        </plugins>
-    </build>
+			</plugin>
+		</plugins>
+	</build>
 
-    <dependencies>
+	<dependencies>
 
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>messenger-commons</artifactId>
-            <version>${airavata.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>edu.berkeley</groupId>
-            <artifactId>yfilter</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>wsdl4j</groupId>
-            <artifactId>wsdl4j</artifactId>
-            <version>1.5.2</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis2</groupId>
-            <artifactId>axis2</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>messenger-commons</artifactId>
+			<version>${airavata.version}</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.apache.axis2</groupId>
-            <artifactId>axis2-transport-http</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>edu.berkeley</groupId>
+			<artifactId>yfilter</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>org.apache.axis2</groupId>
-            <artifactId>axis2-transport-local</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-transport-http</artifactId>
+		</dependency>
 
-        <!-- Logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-transport-local</artifactId>
+		</dependency>
 
-        <!-- Test -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>messenger-client</artifactId>
-            <version>${airavata.version}</version>
-            <scope>test</scope>
-        </dependency>
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
 
-    </dependencies>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
+		<!-- Test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>messenger-client</artifactId>
+			<version>${airavata.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
 </project>
