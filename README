@@ -23,38 +23,36 @@ manner consistent with other successful ASF projects. While incubation status is
 not necessarily a reflection of the completeness or stability of the code, it
 does indicate that the project has yet to be fully endorsed by the ASF.
 
-New Features In This Release
-----------------------------
+Release Notes
+=============
+0.1-INCUBATNG is the first release of Airavata. This release focuses on cleaning up
+of donated code, packaging all components into modular architecture, documentation, 
+and removal of non-compatible license dependencies. For detailes tasks list, please
+see RELEASE_NOTES.
 
 
-Key Features
-------------
-
-
-Issues Fixed in This Release
-----------------------------
-
-
-Installation & Running
-----------------------
-
-For installation and further instructions refer www.airavata.org - Documentation section in right hand panel... That
-contains proper documentation with screenshots.
-
+Building from source
+====================
+For brief installation instructions, see INSTALL
+For detailed installation and further instructions refer www.airavata.org - Documentation 
+section in right hand panel. Step by step with proper documentation and screenshots is
+provided.
 
 Known Issues in This Release
-----------------------------
+============================
+This is the base release and is focused on a good foundation and less on features. This 
+version is not recommended for production usage.
 
 
-Including External Dependencies
---------------------------------
-
-
-WS-Messenger Binary Distribution Directory Structure
---------------------------------------------
+Airavata Binary Distribution Directory Structure
+================================================
 
     AIRAVATA_HOME
         |-- bin <folder>
+            |--airavata-server.sh
+            |--jackrabbit-server.sh
+            |--setenv.sh
+            |--xbaya-gui.sh
         |-- samples <folder>
         |-- gui <folder>
         |-- lib <folder>
@@ -65,17 +63,28 @@ WS-Messenger Binary Distribution Directory Structure
         |       -- services <folder>
         |   |-- bin <folder>
                 |-- database_scripts
-        |-- LICENSE.txt <file>
-        |-- README.txt <file>
-        |-- INSTALL.txt <file>
+        |-- DISCLAIMER <file>
+        |-- NOTICE <file>
+        |-- LICENSE <file>
+        |-- README <file>
+        |-- INSTALL <file>
 
 
+How to test and run samples
+===========================
+* If you built Airavata from source, and if you see "BUILD SUCCESS", then the test cases should have passes.
+* The test cases are beyond unit level, they startup embedded services and run through basic workflow use cases.
+* To walk through Airavata features, follow "Airavata in Five Minutes" tutorial at http://incubator.apache.org/airavata/documentation/system/airavata-in-5-minutes.html
+* For intermediate level Airavata features, follow "Airavata in Ten Minutes" tutorial at http://incubator.apache.org/airavata/documentation/system/airavata-in-10-minutes.html 
+* For advanced use cases, please contact mailing lists - http://incubator.apache.org/airavata/community/mailing-lists.html
+
+Description of Directory Structure
+==================================
     - bin
       This contains all the executable scripts to run required applications in Airavata distribution.
         Ex: This contains scripts to run XBaya GUI Application, Airavata Server (Axis2 server with Airavata services which
             include messageBroker and messageBox with GFac Axis2 services), Jackrabbit executables to run.
     - samples
-
       This contains all the system wide samples provided in Airavata distribution. All the sample are having its README file
       So users have to refer each readme file before running each sample.
 
@@ -104,8 +113,8 @@ WS-Messenger Binary Distribution Directory Structure
     - standalone-server - bin - database_scripts
       Contains the database scripts which are used to create tables for messagebox and messagebroker services
 
-    - README.txt
+    - README
       This document.
 
-    - INSTALL.txt
+    - INSTALL
           This document will contain information on installing Apache-Airavata.
