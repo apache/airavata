@@ -6,7 +6,6 @@
 	in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
 	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
 	the License. -->
-
 <xwf:workflow xwf:version="0.1-INCUBATING" xmlns:xwf="http://airavata.apache.org/xbaya/xwf">
   <xgr:graph xgr:version="0.1-INCUBATING" xgr:type="ws" xmlns:xgr="http://airavata.apache.org/xbaya/graph">
     <xgr:id>Workflow</xgr:id>
@@ -18,24 +17,24 @@
 </appinfo>
     </xgr:metadata>
     <xgr:node xgr:type="ws">
-      <xgr:id>SimpleMathServicePortType_greet</xgr:id>
-      <xgr:name>SimpleMathServicePortType:greet</xgr:name>
-      <xgr:outputPort>SimpleMathServicePortType_greet_out_0</xgr:outputPort>
-      <xgr:inputPort>SimpleMathServicePortType_greet_in_0</xgr:inputPort>
-      <xgr:controlInPort>SimpleMathServicePortType_greet_ctrl_in_0</xgr:controlInPort>
-      <xgr:controlOutPort>SimpleMathServicePortType_greet_ctrl_out_0</xgr:controlOutPort>
-      <xgr:x>199</xgr:x>
-      <xgr:y>174</xgr:y>
+      <xgr:id>EchoServicePortType_echo</xgr:id>
+      <xgr:name>EchoServicePortType:echo</xgr:name>
+      <xgr:outputPort>EchoServicePortType_echo_out_0</xgr:outputPort>
+      <xgr:inputPort>EchoServicePortType_echo_in_0</xgr:inputPort>
+      <xgr:controlInPort>EchoServicePortType_echo_ctrl_in_0</xgr:controlInPort>
+      <xgr:controlOutPort>EchoServicePortType_echo_ctrl_out_0</xgr:controlOutPort>
+      <xgr:x>194</xgr:x>
+      <xgr:y>135</xgr:y>
       <xgr:wsdl>_</xgr:wsdl>
-      <xgr:portType>{http://samples.airavata.apache.org}SimpleMathServicePortType</xgr:portType>
-      <xgr:operation>greet</xgr:operation>
+      <xgr:portType>{http://interpreter.xbaya.airavata.apache.org}EchoServicePortType</xgr:portType>
+      <xgr:operation>echo</xgr:operation>
     </xgr:node>
     <xgr:node xgr:type="input">
-      <xgr:id>echo</xgr:id>
-      <xgr:name>echo</xgr:name>
-      <xgr:outputPort>echo_out_0</xgr:outputPort>
-      <xgr:x>50</xgr:x>
-      <xgr:y>100</xgr:y>
+      <xgr:id>input</xgr:id>
+      <xgr:name>input</xgr:name>
+      <xgr:outputPort>input_out_0</xgr:outputPort>
+      <xgr:x>59</xgr:x>
+      <xgr:y>67</xgr:y>
       <xgr:config>
         <xgr:description></xgr:description>
         <xgr:dataType>{http://www.w3.org/2001/XMLSchema}string</xgr:dataType>
@@ -45,37 +44,37 @@
       <xgr:id>return</xgr:id>
       <xgr:name>return</xgr:name>
       <xgr:inputPort>return_in_0</xgr:inputPort>
-      <xgr:x>536</xgr:x>
-      <xgr:y>110</xgr:y>
+      <xgr:x>455</xgr:x>
+      <xgr:y>138</xgr:y>
       <xgr:config>
         <xgr:description></xgr:description>
         <xgr:dataType>{http://www.w3.org/2001/XMLSchema}string</xgr:dataType>
       </xgr:config>
     </xgr:node>
     <xgr:port xgr:type="ws">
-      <xgr:id>SimpleMathServicePortType_greet_in_0</xgr:id>
-      <xgr:name>echo</xgr:name>
-      <xgr:node>SimpleMathServicePortType_greet</xgr:node>
+      <xgr:id>EchoServicePortType_echo_in_0</xgr:id>
+      <xgr:name>input</xgr:name>
+      <xgr:node>EchoServicePortType_echo</xgr:node>
     </xgr:port>
     <xgr:port xgr:type="ws">
-      <xgr:id>SimpleMathServicePortType_greet_out_0</xgr:id>
+      <xgr:id>EchoServicePortType_echo_out_0</xgr:id>
       <xgr:name>return</xgr:name>
-      <xgr:node>SimpleMathServicePortType_greet</xgr:node>
+      <xgr:node>EchoServicePortType_echo</xgr:node>
     </xgr:port>
     <xgr:port xgr:type="control">
-      <xgr:id>SimpleMathServicePortType_greet_ctrl_in_0</xgr:id>
+      <xgr:id>EchoServicePortType_echo_ctrl_in_0</xgr:id>
       <xgr:name>control</xgr:name>
-      <xgr:node>SimpleMathServicePortType_greet</xgr:node>
+      <xgr:node>EchoServicePortType_echo</xgr:node>
     </xgr:port>
     <xgr:port xgr:type="control">
-      <xgr:id>SimpleMathServicePortType_greet_ctrl_out_0</xgr:id>
+      <xgr:id>EchoServicePortType_echo_ctrl_out_0</xgr:id>
       <xgr:name>control</xgr:name>
-      <xgr:node>SimpleMathServicePortType_greet</xgr:node>
+      <xgr:node>EchoServicePortType_echo</xgr:node>
     </xgr:port>
     <xgr:port xgr:type="systemData">
-      <xgr:id>echo_out_0</xgr:id>
+      <xgr:id>input_out_0</xgr:id>
       <xgr:name>Parameter</xgr:name>
-      <xgr:node>echo</xgr:node>
+      <xgr:node>input</xgr:node>
     </xgr:port>
     <xgr:port xgr:type="systemData">
       <xgr:id>return_in_0</xgr:id>
@@ -83,224 +82,52 @@
       <xgr:node>return</xgr:node>
     </xgr:port>
     <xgr:edge xgr:type="data">
-      <xgr:fromPort>echo_out_0</xgr:fromPort>
-      <xgr:toPort>SimpleMathServicePortType_greet_in_0</xgr:toPort>
+      <xgr:fromPort>input_out_0</xgr:fromPort>
+      <xgr:toPort>EchoServicePortType_echo_in_0</xgr:toPort>
     </xgr:edge>
     <xgr:edge xgr:type="data">
-      <xgr:fromPort>SimpleMathServicePortType_greet_out_0</xgr:fromPort>
+      <xgr:fromPort>EchoServicePortType_echo_out_0</xgr:fromPort>
       <xgr:toPort>return_in_0</xgr:toPort>
     </xgr:edge>
   </xgr:graph>
   <xwf:wsdls>
-    <xwf:wsdl xwf:id="_">&lt;wsdl:definitions targetNamespace="http://samples.airavata.apache.org" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://samples.airavata.apache.org"
-    xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-    &lt;wsdl:documentation>
-		Provide Simple Service for Testing Purpose including addition, subtraction, multiplication, array-generator
-	&lt;/wsdl:documentation>
+    <xwf:wsdl xwf:id="_">&lt;wsdl:definitions targetNamespace="http://interpreter.xbaya.airavata.apache.org" xmlns:ns1="http://org.apache.axis2/xsd"
+  xmlns:ns="http://interpreter.xbaya.airavata.apache.org"
+  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
     &lt;wsdl:types>
-        &lt;xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://samples.airavata.apache.org">
-            &lt;xs:element name="subtract">
+        &lt;xs:schema attributeFormDefault="qualified" elementFormDefault="unqualified" targetNamespace="http://interpreter.xbaya.airavata.apache.org">
+            &lt;xs:element name="echo">
                 &lt;xs:complexType>
                     &lt;xs:sequence>
-                        &lt;xs:element minOccurs="0" name="x" type="xs:int" />
-                        &lt;xs:element minOccurs="0" name="y" type="xs:int" />
+                        &lt;xs:element minOccurs="0" name="input" nillable="true" type="xs:string" />
                     &lt;/xs:sequence>
                 &lt;/xs:complexType>
             &lt;/xs:element>
-            &lt;xs:element name="subtractResponse">
-                &lt;xs:complexType>
-                    &lt;xs:sequence>
-                        &lt;xs:element minOccurs="0" name="return" type="xs:int" />
-                    &lt;/xs:sequence>
-                &lt;/xs:complexType>
-            &lt;/xs:element>
-            &lt;xs:element name="stringArrayGenerate">
-                &lt;xs:complexType>
-                    &lt;xs:sequence>
-                        &lt;xs:element minOccurs="0" name="x" nillable="true" type="xs:string" />
-                        &lt;xs:element minOccurs="0" name="size" type="xs:int" />
-                    &lt;/xs:sequence>
-                &lt;/xs:complexType>
-            &lt;/xs:element>
-            &lt;xs:element name="stringArrayGenerateResponse">
-                &lt;xs:complexType>
-                    &lt;xs:sequence>
-                        &lt;xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string" />
-                    &lt;/xs:sequence>
-                &lt;/xs:complexType>
-            &lt;/xs:element>
-            &lt;xs:element name="multiply">
-                &lt;xs:complexType>
-                    &lt;xs:sequence>
-                        &lt;xs:element minOccurs="0" name="x" type="xs:int" />
-                        &lt;xs:element minOccurs="0" name="y" type="xs:int" />
-                    &lt;/xs:sequence>
-                &lt;/xs:complexType>
-            &lt;/xs:element>
-            &lt;xs:element name="multiplyResponse">
-                &lt;xs:complexType>
-                    &lt;xs:sequence>
-                        &lt;xs:element minOccurs="0" name="return" type="xs:int" />
-                    &lt;/xs:sequence>
-                &lt;/xs:complexType>
-            &lt;/xs:element>
-            &lt;xs:element name="intArrayGenerate">
-                &lt;xs:complexType>
-                    &lt;xs:sequence>
-                        &lt;xs:element minOccurs="0" name="x" type="xs:int" />
-                        &lt;xs:element minOccurs="0" name="size" type="xs:int" />
-                    &lt;/xs:sequence>
-                &lt;/xs:complexType>
-            &lt;/xs:element>
-            &lt;xs:element name="intArrayGenerateResponse">
-                &lt;xs:complexType>
-                    &lt;xs:sequence>
-                        &lt;xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="xs:int" />
-                    &lt;/xs:sequence>
-                &lt;/xs:complexType>
-            &lt;/xs:element>
-            &lt;xs:element name="greet">
-                &lt;xs:complexType>
-                    &lt;xs:sequence>
-                        &lt;xs:element minOccurs="0" name="echo" nillable="true" type="xs:string" />
-                    &lt;/xs:sequence>
-                &lt;/xs:complexType>
-            &lt;/xs:element>
-            &lt;xs:element name="greetResponse">
+            &lt;xs:element name="echoResponse">
                 &lt;xs:complexType>
                     &lt;xs:sequence>
                         &lt;xs:element minOccurs="0" name="return" nillable="true" type="xs:string" />
                     &lt;/xs:sequence>
                 &lt;/xs:complexType>
             &lt;/xs:element>
-            &lt;xs:element name="add">
-                &lt;xs:complexType>
-                    &lt;xs:sequence>
-                        &lt;xs:element minOccurs="0" name="x" type="xs:int" />
-                        &lt;xs:element minOccurs="0" name="y" type="xs:int" />
-                    &lt;/xs:sequence>
-                &lt;/xs:complexType>
-            &lt;/xs:element>
-            &lt;xs:element name="addResponse">
-                &lt;xs:complexType>
-                    &lt;xs:sequence>
-                        &lt;xs:element minOccurs="0" name="return" type="xs:int" />
-                    &lt;/xs:sequence>
-                &lt;/xs:complexType>
-            &lt;/xs:element>
         &lt;/xs:schema>
     &lt;/wsdl:types>
-    &lt;wsdl:message name="stringArrayGenerateRequest">
-        &lt;wsdl:part name="parameters" element="ns:stringArrayGenerate" />
+    &lt;wsdl:message name="echoRequest">
+        &lt;wsdl:part name="parameters" element="ns:echo" />
     &lt;/wsdl:message>
-    &lt;wsdl:message name="stringArrayGenerateResponse">
-        &lt;wsdl:part name="parameters" element="ns:stringArrayGenerateResponse" />
+    &lt;wsdl:message name="echoResponse">
+        &lt;wsdl:part name="parameters" element="ns:echoResponse" />
     &lt;/wsdl:message>
-    &lt;wsdl:message name="intArrayGenerateRequest">
-        &lt;wsdl:part name="parameters" element="ns:intArrayGenerate" />
-    &lt;/wsdl:message>
-    &lt;wsdl:message name="intArrayGenerateResponse">
-        &lt;wsdl:part name="parameters" element="ns:intArrayGenerateResponse" />
-    &lt;/wsdl:message>
-    &lt;wsdl:message name="greetRequest">
-        &lt;wsdl:part name="parameters" element="ns:greet" />
-    &lt;/wsdl:message>
-    &lt;wsdl:message name="greetResponse">
-        &lt;wsdl:part name="parameters" element="ns:greetResponse" />
-    &lt;/wsdl:message>
-    &lt;wsdl:message name="multiplyRequest">
-        &lt;wsdl:part name="parameters" element="ns:multiply" />
-    &lt;/wsdl:message>
-    &lt;wsdl:message name="multiplyResponse">
-        &lt;wsdl:part name="parameters" element="ns:multiplyResponse" />
-    &lt;/wsdl:message>
-    &lt;wsdl:message name="addRequest">
-        &lt;wsdl:part name="parameters" element="ns:add" />
-    &lt;/wsdl:message>
-    &lt;wsdl:message name="addResponse">
-        &lt;wsdl:part name="parameters" element="ns:addResponse" />
-    &lt;/wsdl:message>
-    &lt;wsdl:message name="subtractRequest">
-        &lt;wsdl:part name="parameters" element="ns:subtract" />
-    &lt;/wsdl:message>
-    &lt;wsdl:message name="subtractResponse">
-        &lt;wsdl:part name="parameters" element="ns:subtractResponse" />
-    &lt;/wsdl:message>
-    &lt;wsdl:portType name="SimpleMathServicePortType">
-        &lt;wsdl:operation name="stringArrayGenerate">
-            &lt;wsdl:input wsaw:Action="urn:stringArrayGenerate" message="ns:stringArrayGenerateRequest" />
-            &lt;wsdl:output wsaw:Action="urn:stringArrayGenerateResponse" message="ns:stringArrayGenerateResponse" />
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="intArrayGenerate">
-            &lt;wsdl:input wsaw:Action="urn:intArrayGenerate" message="ns:intArrayGenerateRequest" />
-            &lt;wsdl:output wsaw:Action="urn:intArrayGenerateResponse" message="ns:intArrayGenerateResponse" />
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="greet">
-            &lt;wsdl:input wsaw:Action="urn:greet" message="ns:greetRequest" />
-            &lt;wsdl:output wsaw:Action="urn:greetResponse" message="ns:greetResponse" />
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="multiply">
-            &lt;wsdl:input wsaw:Action="urn:multiply" message="ns:multiplyRequest" />
-            &lt;wsdl:output wsaw:Action="urn:multiplyResponse" message="ns:multiplyResponse" />
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="add">
-            &lt;wsdl:input wsaw:Action="urn:add" message="ns:addRequest" />
-            &lt;wsdl:output wsaw:Action="urn:addResponse" message="ns:addResponse" />
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="subtract">
-            &lt;wsdl:input wsaw:Action="urn:subtract" message="ns:subtractRequest" />
-            &lt;wsdl:output wsaw:Action="urn:subtractResponse" message="ns:subtractResponse" />
+    &lt;wsdl:portType name="EchoServicePortType">
+        &lt;wsdl:operation name="echo">
+            &lt;wsdl:input wsaw:Action="urn:echo" message="ns:echoRequest" />
+            &lt;wsdl:output wsaw:Action="urn:echoResponse" message="ns:echoResponse" />
         &lt;/wsdl:operation>
     &lt;/wsdl:portType>
-    &lt;wsdl:binding name="SimpleMathServiceSoap11Binding" type="ns:SimpleMathServicePortType">
+    &lt;wsdl:binding name="EchoServiceSoap11Binding" type="ns:EchoServicePortType">
         &lt;soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-        &lt;wsdl:operation name="stringArrayGenerate">
-            &lt;soap:operation soapAction="urn:stringArrayGenerate" style="document" />
-            &lt;wsdl:input>
-                &lt;soap:body use="literal" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;soap:body use="literal" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="intArrayGenerate">
-            &lt;soap:operation soapAction="urn:intArrayGenerate" style="document" />
-            &lt;wsdl:input>
-                &lt;soap:body use="literal" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;soap:body use="literal" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="greet">
-            &lt;soap:operation soapAction="urn:greet" style="document" />
-            &lt;wsdl:input>
-                &lt;soap:body use="literal" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;soap:body use="literal" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="multiply">
-            &lt;soap:operation soapAction="urn:multiply" style="document" />
-            &lt;wsdl:input>
-                &lt;soap:body use="literal" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;soap:body use="literal" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="add">
-            &lt;soap:operation soapAction="urn:add" style="document" />
-            &lt;wsdl:input>
-                &lt;soap:body use="literal" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;soap:body use="literal" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="subtract">
-            &lt;soap:operation soapAction="urn:subtract" style="document" />
+        &lt;wsdl:operation name="echo">
+            &lt;soap:operation soapAction="urn:echo" style="document" />
             &lt;wsdl:input>
                 &lt;soap:body use="literal" />
             &lt;/wsdl:input>
@@ -309,55 +136,10 @@
             &lt;/wsdl:output>
         &lt;/wsdl:operation>
     &lt;/wsdl:binding>
-    &lt;wsdl:binding name="SimpleMathServiceSoap12Binding" type="ns:SimpleMathServicePortType">
+    &lt;wsdl:binding name="EchoServiceSoap12Binding" type="ns:EchoServicePortType">
         &lt;soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
-        &lt;wsdl:operation name="stringArrayGenerate">
-            &lt;soap12:operation soapAction="urn:stringArrayGenerate" style="document" />
-            &lt;wsdl:input>
-                &lt;soap12:body use="literal" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;soap12:body use="literal" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="intArrayGenerate">
-            &lt;soap12:operation soapAction="urn:intArrayGenerate" style="document" />
-            &lt;wsdl:input>
-                &lt;soap12:body use="literal" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;soap12:body use="literal" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="greet">
-            &lt;soap12:operation soapAction="urn:greet" style="document" />
-            &lt;wsdl:input>
-                &lt;soap12:body use="literal" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;soap12:body use="literal" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="multiply">
-            &lt;soap12:operation soapAction="urn:multiply" style="document" />
-            &lt;wsdl:input>
-                &lt;soap12:body use="literal" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;soap12:body use="literal" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="add">
-            &lt;soap12:operation soapAction="urn:add" style="document" />
-            &lt;wsdl:input>
-                &lt;soap12:body use="literal" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;soap12:body use="literal" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="subtract">
-            &lt;soap12:operation soapAction="urn:subtract" style="document" />
+        &lt;wsdl:operation name="echo">
+            &lt;soap12:operation soapAction="urn:echo" style="document" />
             &lt;wsdl:input>
                 &lt;soap12:body use="literal" />
             &lt;/wsdl:input>
@@ -366,189 +148,128 @@
             &lt;/wsdl:output>
         &lt;/wsdl:operation>
     &lt;/wsdl:binding>
-    &lt;wsdl:binding name="SimpleMathServiceHttpBinding" type="ns:SimpleMathServicePortType">
+    &lt;wsdl:binding name="EchoServiceHttpBinding" type="ns:EchoServicePortType">
         &lt;http:binding verb="POST" />
-        &lt;wsdl:operation name="stringArrayGenerate">
-            &lt;http:operation location="SimpleMathService/stringArrayGenerate" />
+        &lt;wsdl:operation name="echo">
+            &lt;http:operation location="EchoService/echo" />
             &lt;wsdl:input>
-                &lt;mime:content type="text/xml" part="stringArrayGenerate" />
+                &lt;mime:content type="text/xml" part="echo" />
             &lt;/wsdl:input>
             &lt;wsdl:output>
-                &lt;mime:content type="text/xml" part="stringArrayGenerate" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="intArrayGenerate">
-            &lt;http:operation location="SimpleMathService/intArrayGenerate" />
-            &lt;wsdl:input>
-                &lt;mime:content type="text/xml" part="intArrayGenerate" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;mime:content type="text/xml" part="intArrayGenerate" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="greet">
-            &lt;http:operation location="SimpleMathService/greet" />
-            &lt;wsdl:input>
-                &lt;mime:content type="text/xml" part="greet" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;mime:content type="text/xml" part="greet" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="multiply">
-            &lt;http:operation location="SimpleMathService/multiply" />
-            &lt;wsdl:input>
-                &lt;mime:content type="text/xml" part="multiply" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;mime:content type="text/xml" part="multiply" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="add">
-            &lt;http:operation location="SimpleMathService/add" />
-            &lt;wsdl:input>
-                &lt;mime:content type="text/xml" part="add" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;mime:content type="text/xml" part="add" />
-            &lt;/wsdl:output>
-        &lt;/wsdl:operation>
-        &lt;wsdl:operation name="subtract">
-            &lt;http:operation location="SimpleMathService/subtract" />
-            &lt;wsdl:input>
-                &lt;mime:content type="text/xml" part="subtract" />
-            &lt;/wsdl:input>
-            &lt;wsdl:output>
-                &lt;mime:content type="text/xml" part="subtract" />
+                &lt;mime:content type="text/xml" part="echo" />
             &lt;/wsdl:output>
         &lt;/wsdl:operation>
     &lt;/wsdl:binding>
-    &lt;wsdl:service name="SimpleMathService">
-        &lt;wsdl:port name="SimpleMathServiceHttpSoap11Endpoint" binding="ns:SimpleMathServiceSoap11Binding">
-            &lt;soap:address location="http://localhost:8080/axis2/services/SimpleMathService" />
+    &lt;wsdl:service name="EchoService">
+        &lt;wsdl:port name="EchoServiceHttpSoap11Endpoint" binding="ns:EchoServiceSoap11Binding">
+            &lt;soap:address location="http://localhost:6060/axis2/services/EchoService" />
         &lt;/wsdl:port>
-        &lt;wsdl:port name="SimpleMathServiceHttpSoap12Endpoint" binding="ns:SimpleMathServiceSoap12Binding">
-            &lt;soap12:address location="http://localhost:8080/axis2/services/SimpleMathService" />
+        &lt;wsdl:port name="EchoServiceHttpSoap12Endpoint" binding="ns:EchoServiceSoap12Binding">
+            &lt;soap12:address location="http://localhost:6060/axis2/services/EchoService" />
         &lt;/wsdl:port>
-        &lt;wsdl:port name="SimpleMathServiceHttpEndpoint" binding="ns:SimpleMathServiceHttpBinding">
-            &lt;http:address location="http://localhost:8080/axis2/services/SimpleMathService" />
+        &lt;wsdl:port name="EchoServiceHttpEndpoint" binding="ns:EchoServiceHttpBinding">
+            &lt;http:address location="http://localhost:6060/axis2/services/EchoService" />
         &lt;/wsdl:port>
     &lt;/wsdl:service>
 &lt;/wsdl:definitions></xwf:wsdl>
   </xwf:wsdls>
-  <xwf:image>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
-ySQMhSHCEKxQhaHJJAxFIcIQrFSFockkDIUhwhCsUIWhySQMRSHCEKxUm0IY/v3vf0///Oc/vQ6T
-MLQOA2GIKKyEMIwoWrJkSTrppJPSFVdckR577LHidQ899FB6+eWX19sX5+67754uuOCCet32vvvu
-S7feemv6wx/+sNp18fpvu+229fY6yi2jhpwaankXllUsk0WLFqXvfOc7Dfo677333vz4pfzxj39U
-hc00DEUhwhCaeRjut99+aeedd07XXHNNOuKII9LBBx9cvO7QQw9N1113XUWE4U477ZTfwxe/+MVq
-8//0pz+ljh07platWtXrcX74wx+m733ve2v0Osoto4acGmp5x7IaPXp0mjlzZho8eHBeNovjPHNr
-OdVcZqeddlo65phjslGjRqUePXoUL4ff/OY3zT76avscCUMQhtCkw/C9997L0fCTn/ykUb5c1zQM
-u3Xrlvbaa69q8+++++7UtWvXeofhAQcckE499dR6v47GXkZrG4Znnnlm8fKee+6Z9tlnn7V+vNqW
-WWGK+ePHj29xo4HllklzDUNRiDCEZh6GMeqx8cYbpy984Qu1frEdfvjh6XOf+1y1yzfccEM655xz
-Up8+fdLYsWPTu+++m+666640dOjQNHLkyLw5tOrtr7/++vTpT386bbHFFmmrrbbKmzlLBdkvfvGL
-NGPGjBx6W2+9dVq+fHm12DnuuONypP34xz8uzt97773T8ccfXy0M4zXuuuuuqXv37mny5Mnp+eef
-z/MvvfTS1KFDh/z4w4YNSw888EC117FgwYI0YMCANHHixOJ96lpG5V5zvP/Pfvazad68efn6uHzt
-tddWu/+JJ56Ybr755lqX969+9as8Ate3b988KjpmzJh6L6uqYXjCCSfk91V4zHie+Hv06tUrHXnk
-kdVG+Gq+5vPPP7/WZVYuDI866qh09tlnV5t3+umnpyuvvLJen4ty763c9LOf/SwddNBB+X8gYlld
-dNFFady4cSXf2+9///uyz1XqulKfo+YchqIQYQgtZFPyWWedlcMnvsx/+ctflh1Ji8sRExdffHH6
-7ne/myZNmpS/1A877LD09ttv58iJKKl6+379+qWFCxem119/PUfO5ptvnv7xj3/U+vgRcXPmzMlf
-2DfddFPadtttq8VOBOiWW26ZN+nGFIEYj7d06dJqYRj71b322mvpr3/9a5o9e3Y65JBD8vwPPvig
-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
-doa4YgT3AAAAAElFTkSuQmCC
+  <xwf:image>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
+TkSuQmCC
 </xwf:image>
 </xwf:workflow>
