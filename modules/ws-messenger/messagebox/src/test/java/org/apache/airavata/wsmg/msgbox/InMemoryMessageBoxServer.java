@@ -36,7 +36,7 @@ public class InMemoryMessageBoxServer {
 
     private static SimpleHTTPServer receiver;
 
-    public static final int TESTING_PORT = 76309;
+    public static final int TESTING_PORT = 7630;
 
     public static final String FAILURE_MESSAGE = "Intentional Failure";
 
