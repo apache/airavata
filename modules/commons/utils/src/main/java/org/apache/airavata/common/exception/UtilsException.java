@@ -18,6 +18,7 @@
  * under the License.
  *
  */
+
 package org.apache.airavata.common.exception;
 
 public class UtilsException extends Exception {

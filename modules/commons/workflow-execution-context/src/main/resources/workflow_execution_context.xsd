@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema targetNamespace="http://schemas.airavata.apache.org/workflow-execution-context"
-	xmlns="http://www.w3.org/2001/XMLSchema" xmlns:wec="http://schemas.airavata.apache.org/workflow-execution-context"
-	attributeFormDefault="qualified" elementFormDefault="qualified">
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file 
+	distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under 
+	the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may 
+	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to 
+	in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
+	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
+	the License. -->
+
+<schema targetNamespace="http://schemas.airavata.apache.org/workflow-execution-context" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:wec="http://schemas.airavata.apache.org/workflow-execution-context" attributeFormDefault="qualified"
+	elementFormDefault="qualified">
 
 	<element name='context-header'>
 		<annotation>
@@ -15,12 +23,9 @@
 			<sequence>
 				<element minOccurs='0' maxOccurs='1' ref='wec:user-identifier' />
 				<element minOccurs='1' maxOccurs='1' ref='wec:soa-service-eprs' />
-				<element minOccurs='1' maxOccurs='1'
-					ref='wec:workflow-monitoring-context' />
-				<element minOccurs='0' maxOccurs='1'
-					ref='wec:workflow-scheduling-context' />
-				<element minOccurs='0' maxOccurs='1'
-					ref='wec:workflow-output-data-handling' />
+				<element minOccurs='1' maxOccurs='1' ref='wec:workflow-monitoring-context' />
+				<element minOccurs='0' maxOccurs='1' ref='wec:workflow-scheduling-context' />
+				<element minOccurs='0' maxOccurs='1' ref='wec:workflow-output-data-handling' />
 				<element minOccurs='0' maxOccurs='1' ref='wec:security-context' />
 			</sequence>
 		</complexType>
@@ -30,7 +35,8 @@
 		<annotation>
 			<documentation xml:lang="en"> User that the workflow is
 				executed on behalf of,
-				user id is used to catalog data and for
+				user id is used to catalog data
+				and for
 				monitoring purposes
 			</documentation>
 		</annotation>
@@ -45,16 +51,14 @@
 		</annotation>
 		<complexType>
 			<sequence>
-				<element name="gfac-url" type="anyURI" minOccurs='1'
-					maxOccurs='1'>
+				<element name="gfac-url" type="anyURI" minOccurs='1' maxOccurs='1'>
 					<annotation>
 						<documentation xml:lang="en"> Location of GFac factory
 							service to use. (optional)
 						</documentation>
 					</annotation>
 				</element>
-				<element name="registry-url" type="anyURI" minOccurs='1'
-					maxOccurs='1'>
+				<element name="registry-url" type="anyURI" minOccurs='1' maxOccurs='1'>
 					<annotation>
 						<documentation xml:lang="en"> Location of Registry
 							service
@@ -63,8 +67,7 @@
 					</annotation>
 				</element>
 
-				<element name="resource-scheduler-url" type="string"
-					minOccurs='0' maxOccurs='1'>
+				<element name="resource-scheduler-url" type="string" minOccurs='0' maxOccurs='1'>
 					<annotation>
 						<documentation xml:lang="en"> Resource Scheduler to use
 						</documentation>
@@ -78,7 +81,8 @@
 		<annotation>
 			<documentation xml:lang="en">Workflow context for execution
 				of a instance used to
-				relate the specific activity in the context of
+				relate the specific activity
+				in the context of
 				workflow and used for
 				monitoring
 				and illustarting the workflow
@@ -87,8 +91,7 @@
 		</annotation>
 		<complexType>
 			<sequence>
-				<element name="experiment-id" type="string" minOccurs="1"
-					maxOccurs="1">
+				<element name="experiment-id" type="string" minOccurs="1" maxOccurs="1">
 					<annotation>
 						<documentation xml:lang="en"> Experiment ID (REQUIRED in
 							context), Defines
@@ -96,8 +99,7 @@
 						</documentation>
 					</annotation>
 				</element>
-				<element name="workflow-instance-id" type="anyURI"
-					minOccurs="1" maxOccurs="1">
+				<element name="workflow-instance-id" type="anyURI" minOccurs="1" maxOccurs="1">
 					<annotation>
 						<documentation xml:lang="en"> URI that identifies
 							workflow instance that
@@ -109,7 +111,8 @@
 					<annotation>
 						<documentation xml:lang="en"> URI that identifies
 							workflow template that was
-							used to create the workflow instance.
+							used to create the workflow
+							instance.
 							(optional)
 						</documentation>
 					</annotation>
@@ -118,7 +121,8 @@
 					<annotation>
 						<documentation xml:lang="en"> String that identifies
 							uniqueley a node in
-							workflow graph that originated that message.
+							workflow graph that originated
+							that message.
 							(optional)
 						</documentation>
 					</annotation>
@@ -127,7 +131,8 @@
 					<annotation>
 						<documentation xml:lang="en"> Increasing integer
 							representing time in the
-							workflow execution when the message
+							workflow execution when the
+							message
 							originated. (optional)
 						</documentation>
 					</annotation>
@@ -146,31 +151,32 @@
 					<annotation>
 						<documentation xml:lang="en"> URI that identifies the
 							replica of service
-							instance that originated that message, primarly
+							instance that originated that
+							message, primarly
 							used by Fault Tolerance
 							service to overprovision. (optional)
 						</documentation>
 					</annotation>
 				</element>
 
-				<element name="event-publish-epr" type="anyURI" minOccurs="1"
-					maxOccurs="1">
+				<element name="event-publish-epr" type="anyURI" minOccurs="1" maxOccurs="1">
 					<annotation>
 						<documentation xml:lang="en"> EPR for WS-Eventing sink
 							where to send event. (optional)
-							NOTE: currently any XML is
+							NOTE: currently any
+							XML is
 							accepted as there are many versions of
 							WS-Addressing.
 						</documentation>
 					</annotation>
 				</element>
 
-				<element name="notification-topic" type="string" minOccurs="0"
-					maxOccurs="1">
+				<element name="notification-topic" type="string" minOccurs="0" maxOccurs="1">
 					<annotation>
 						<documentation xml:lang="en"> A Unique String to set as
 							the topic for
-							events sent on an experiment. The topic may be
+							events sent on an experiment. The
+							topic may be
 							embedded with the
 							event-publish-epr. An experiment id being unique
 							may be chosen as
@@ -183,7 +189,8 @@
 					<annotation>
 						<documentation xml:lang="en"> EPR for WS-Eventing sink
 							where to send errors (optional)
-							NOTE: designed good for debugging
+							NOTE: designed good
+							for debugging
 							and system level warnings, errors,
 							etc
 						</documentation>
@@ -206,8 +213,7 @@
 		</annotation>
 		<complexType>
 			<sequence>
-				<element minOccurs="1" maxOccurs="unbounded"
-					ref="wec:application-scheduling-context" />
+				<element minOccurs="1" maxOccurs="unbounded" ref="wec:application-scheduling-context" />
 			</sequence>
 		</complexType>
 	</element>
@@ -321,14 +327,14 @@
 				inside
 				workflow context. The purpose of this context is to handle
 				individual
-				activities with different needs like intermediate data
+				activities with different needs like
+				intermediate data
 				need not be persisted.
 			</documentation>
 		</annotation>
 		<complexType>
 			<sequence>
-				<element minOccurs="1" maxOccurs="unbounded"
-					ref="wec:application-output-data-handling" />
+				<element minOccurs="1" maxOccurs="unbounded" ref="wec:application-output-data-handling" />
 			</sequence>
 		</complexType>
 	</element>
@@ -340,7 +346,8 @@
 					<annotation>
 						<documentation xml:lang="en"> (Optional) If a seperate
 							Data
-							Registry is used for catlogging data, the associated location
+							Registry is used for catlogging data, the
+							associated location
 							of the
 							Data registry
 						</documentation>
@@ -350,7 +357,8 @@
 				<element name="output-data-directory" type="anyURI">
 					<annotation>
 						<documentation xml:lang="en">(Optional) If the workflow
-							outputs are to be staged to a pre-specified location, then the
+							outputs are to be staged to a pre-specified
+							location, then the
 							output data staging directory should be provided.
 						</documentation>
 					</annotation>
@@ -360,7 +368,8 @@
 					<annotation>
 						<documentation xml:lang="en">(Optional) If the
 							intermediate workflow
-							outputs are to be discarded after execution,
+							outputs are to be discarded after
+							execution,
 							this flag should be set to
 							false. By defualt this flag should be
 							true assuming all data will
@@ -385,7 +394,8 @@
 					<annotation>
 						<documentation xml:lang="en"> Security context for Grid
 							Security
-							Infrastructure X509 Proxy with trusted chain.
+							Infrastructure X509 Proxy with trusted
+							chain.
 						</documentation>
 					</annotation>
 				</element>
@@ -473,7 +483,8 @@
 								<annotation>
 									<documentation xml:lang="en"> The ID of the session
 										credential
-										to be used for executing grid operations as needed
+										to be used for executing grid operations
+										as needed
 										by the
 										workflow.
 									</documentation>
