@@ -1,3 +1,24 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 package org.apache.airavata.xbaya.interpreter;
 
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
@@ -23,7 +44,7 @@ import static org.junit.Assert.*;
 
 public class RegistryServiceTest {
     @Rule
-	public ExpectedException exception = ExpectedException.none();
+    public ExpectedException exception = ExpectedException.none();
 
     public JCRRegistry jcrRegistry = null;
 
@@ -31,9 +52,8 @@ public class RegistryServiceTest {
     public void testExecute() throws RegistryException {
 
         try {
-            jcrRegistry = new JCRRegistry(null,
-                    "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-                    "admin", null);
+            jcrRegistry = new JCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin", "admin",
+                    null);
         } catch (RepositoryException e) {
             fail("Failed creating the JCR Registry");
         }
@@ -47,26 +67,22 @@ public class RegistryServiceTest {
         input.setParameterName("echo_input");
         input.setParameterType(StringParameterType.Factory.newInstance());
         inputList.add(input);
-        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList
-                .size()]);
+        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
 
         List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
         OutputParameterType output = OutputParameterType.Factory.newInstance();
         output.setParameterName("echo_output");
         input.setParameterType(StringParameterType.Factory.newInstance());
         outputList.add(output);
-        OutputParameterType[] outputParamList = outputList
-                .toArray(new OutputParameterType[outputList.size()]);
+        OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
 
         serv.getType().setInputParametersArray(inputParamList);
         serv.getType().setOutputParametersArray(outputParamList);
 
         jcrRegistry.saveHostDescription(host);
-        jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host
-                .getType().getHostName(), appDesc);
+        jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host.getType().getHostName(), appDesc);
         jcrRegistry.saveServiceDescription(serv);
-        jcrRegistry.deployServiceOnHost(serv.getType().getName(), host
-                .getType().getHostName());
+        jcrRegistry.deployServiceOnHost(serv.getType().getName(), host.getType().getHostName());
 
     }
 
@@ -86,7 +102,8 @@ public class RegistryServiceTest {
     private ApplicationDeploymentDescription createAppDeploymentDescription() {
         ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription();
         ApplicationDeploymentDescriptionType app = appDesc.getType();
-        ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+        ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory
+                .newInstance();
         name.setStringValue("EchoLocal");
         app.setApplicationName(name);
         app.setExecutableLocation("/bin/echo");
