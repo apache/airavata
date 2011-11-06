@@ -14,7 +14,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.airavata</groupId>
 	<artifactId>airavata</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1-incubating</version>
 	<packaging>pom</packaging>
 	<name>Airavata</name>
 	<url>http://incubator.apache.org/airavata/</url>
@@ -22,7 +22,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<airavata.version>0.0.1-SNAPSHOT</airavata.version>
+		<airavata.version>0.1-incubating</airavata.version>
 		<axis2.version>1.5.1</axis2.version>
 		<derby.version>10.7.1.1</derby.version>
 		<jackrabbit.version>2.2.7</jackrabbit.version>
