@@ -19,4 +19,4 @@
 
 . `dirname $0`/setenv.sh
 
-java -jar $AIRAVATA_HOME/lib/jackrabbit-standalone-2.2.7.jar -p 8081 $*
+$JAVA_HOME/bin/java -jar $AIRAVATA_HOME/lib/jackrabbit-standalone-2.2.7.jar -p 8081 $*
