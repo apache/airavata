@@ -43,6 +43,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,6 +62,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
 import org.apache.airavata.common.utils.SwingUtil;
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaExecutionState;
@@ -87,6 +89,8 @@ import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xmlpull.infoset.XmlElement;
+
 
 /**
  * A canvas to display a graph (workflow).
@@ -134,6 +138,8 @@ public class GraphCanvas {
 
     private PortAddable dynamicNodeWithFreePort;
 
+    private File workflowFile;
+    
     /*
      * For multiple selection
      */
@@ -147,6 +153,8 @@ public class GraphCanvas {
 
     private JMenuItem labelNodesItem;
 
+    private XmlElement originalWorkflowElement;
+    
     /**
      * Creates a GraphPanel.
      * 
@@ -164,8 +172,25 @@ public class GraphCanvas {
         this.workflow = new Workflow();
         this.graph = this.workflow.getGraph();
 
+        graph.setName(generateNewWorkflowName());
         initGUI();
     }
+
+	private String generateNewWorkflowName() {
+		String baseName="Workflow";
+        List<GraphCanvas> graphCanvases = this.engine.getGUI().getGraphCanvases();
+        List<String> existingNames=new ArrayList<String>();
+        for (GraphCanvas graphCanvas : graphCanvases) {
+        	existingNames.add(graphCanvas.getWorkflow().getName());
+		}
+        int i=1;
+        String newName=baseName+i;
+        while(existingNames.contains(newName)){
+        	i++;
+        	newName=baseName+i;
+        }
+		return newName;
+	}
 
     /**
      * @return The panel.
@@ -212,6 +237,7 @@ public class GraphCanvas {
         notifyListeners(new GraphCanvasEvent(GraphCanvasEvent.GraphCanvasEventType.GRAPH_LOADED, this, this.workflow));
         updateSize();
         this.panel.repaint();
+        updateOriginalWorkflowElement();
     }
 
     /**
@@ -1103,6 +1129,7 @@ public class GraphCanvas {
             @Override
             public void mouseReleased(MouseEvent event) {
                 GraphCanvas.this.mouseReleased(event);
+                notifyListeners(new GraphCanvasEvent(GraphCanvasEvent.GraphCanvasEventType.WORKFLOW_CHANGED, GraphCanvas.this, GraphCanvas.this.workflow));
             }
         });
 
@@ -1358,4 +1385,33 @@ public class GraphCanvas {
         }
 
     }
+
+	public File getWorkflowFile() {
+		return workflowFile;
+	}
+
+	public void setWorkflowFile(File workflowFile) {
+		this.workflowFile = workflowFile;
+	}
+	
+	public boolean isWorkflowChanged(){
+		try {
+			if (originalWorkflowElement==null){
+				updateOriginalWorkflowElement();
+			}
+			return !XMLUtil.isEqual(originalWorkflowElement, getWorkflow().toXML());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return true;
+		}
+	}
+	
+	public void workflowSaved(){
+		updateOriginalWorkflowElement();
+        notifyListeners(new GraphCanvasEvent(GraphCanvasEvent.GraphCanvasEventType.WORKFLOW_CHANGED, this, this.workflow));
+	}
+
+	private void updateOriginalWorkflowElement() {
+		originalWorkflowElement = getWorkflow().toXML();
+	}
 }

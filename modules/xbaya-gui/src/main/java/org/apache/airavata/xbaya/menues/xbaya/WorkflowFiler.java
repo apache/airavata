@@ -23,6 +23,7 @@ package org.apache.airavata.xbaya.menues.xbaya;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -33,6 +34,7 @@ import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.graph.GraphException;
+import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.graph.ws.WSGraph;
 import org.apache.airavata.xbaya.graph.ws.WSGraphFactory;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
@@ -90,18 +92,6 @@ public class WorkflowFiler {
      */
     public void openWorkflow() {
         Workflow workflow = null;
-        workflow = getWorkflow();
-        if (null != workflow) {
-            this.engine.setWorkflow(workflow);
-        }
-    }
-
-    /**
-     * @param workflow
-     * @return
-     */
-    public Workflow getWorkflow() {
-        Workflow workflow = null;
         int returnVal = this.graphFileChooser.showOpenDialog(this.engine.getGUI().getFrame());
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -118,7 +108,8 @@ public class WorkflowFiler {
                     XmlElement workflowElement = XMLUtil.loadXML(file);
                     workflow = new Workflow(workflowElement);
                 }
-
+                this.engine.setWorkflow(workflow);
+                engine.getGUI().getGraphCanvas().setWorkflowFile(file);
             } catch (IOException e) {
                 this.engine.getErrorWindow().error(ErrorMessages.OPEN_FILE_ERROR, e);
             } catch (GraphException e) {
@@ -131,22 +122,44 @@ public class WorkflowFiler {
                 this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             }
         }
-        return workflow;
+        
     }
 
     /**
      * Saves a current workflow to the local file.
      */
     public void saveWorkflow() {
-        //TODO should chk if this is already in saved. if so save to the same file else save as... 
-    	saveAsWorkflow();
-    }
-    
-    public void saveAllWorkflows(){
-    	//TODO
+		saveWorkflow(engine.getGUI().getGraphCanvas());
     }
 
-	public void saveAsWorkflow() {
+    public void saveAsWorkflow() {
+		GraphCanvas graphCanvas = engine.getGUI().getGraphCanvas();
+		File saveAsWorkflowFile = saveAsWorkflow(graphCanvas);
+		if (saveAsWorkflowFile!=null){
+        	graphCanvas.setWorkflowFile(saveAsWorkflowFile);
+		}
+    }
+    
+	private void saveWorkflow(GraphCanvas graphCanvas) {
+		if (graphCanvas.getWorkflowFile()==null){
+        	File saveAsWorkflowFile = saveAsWorkflow(graphCanvas);
+        	graphCanvas.setWorkflowFile(saveAsWorkflowFile);
+        }else{
+        	saveWorkflow(graphCanvas.getWorkflow(), graphCanvas.getWorkflowFile());
+        }
+		if (graphCanvas.getWorkflowFile()!=null){
+			graphCanvas.workflowSaved();
+		}
+	}
+    
+    public void saveAllWorkflows(){
+    	List<GraphCanvas> graphCanvases = engine.getGUI().getGraphCanvases();
+    	for (GraphCanvas graphCanvas : graphCanvases) {
+    		saveWorkflow(graphCanvas);
+		}
+    }
+
+	public File saveAsWorkflow(GraphCanvas graphCanvas) {
 		int returnVal = this.graphFileChooser.showSaveDialog(this.engine.getGUI().getFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.graphFileChooser.getSelectedFile();
@@ -157,18 +170,22 @@ public class WorkflowFiler {
             if (!path.endsWith(XBayaConstants.WORKFLOW_FILE_SUFFIX)) {
                 file = new File(path + XBayaConstants.WORKFLOW_FILE_SUFFIX);
             }
-
-            Workflow workflow = this.engine.getWorkflow();
-            try {
-                XMLUtil.saveXML(workflow.toXML(), file);
-            } catch (IOException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
-            } catch (RuntimeException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.GRAPH_SAVE_ERROR, e);
-            } catch (Error e) {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-            }
+            saveWorkflow(graphCanvas.getWorkflow(),file);
+            return file;
         }
+        return null;
+	}
+
+	private void saveWorkflow(Workflow workflow, File file) {
+		try {
+		    XMLUtil.saveXML(workflow.toXML(), file);
+		} catch (IOException e) {
+		    this.engine.getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
+		} catch (RuntimeException e) {
+		    this.engine.getErrorWindow().error(ErrorMessages.GRAPH_SAVE_ERROR, e);
+		} catch (Error e) {
+		    this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+		}
 	}
 
     /**

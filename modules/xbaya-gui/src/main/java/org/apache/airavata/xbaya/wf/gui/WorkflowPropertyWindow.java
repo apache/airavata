@@ -23,6 +23,7 @@ package org.apache.airavata.xbaya.wf.gui;
 
 import java.awt.event.ActionEvent;
 import java.net.URI;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -62,6 +63,7 @@ public class WorkflowPropertyWindow {
 
     private XBayaTextArea metadataTextArea;
 
+    
     /**
      * @param engine
      */
@@ -115,9 +117,22 @@ public class WorkflowPropertyWindow {
         this.dialog.hide();
     }
 
+    private boolean isWorkflowNameAlreadyPresent(String name){
+    	List<GraphCanvas> graphCanvases = engine.getGUI().getGraphCanvases();
+    	for (GraphCanvas graphCanvas : graphCanvases) {
+    		if (graphCanvas!=engine.getGUI().getGraphCanvas()){
+				String existingName = graphCanvas.getWorkflow().getGraph().getName();
+				if (name.equals(existingName)){
+					return true;
+				}
+    		}
+		}
+    	return false;
+    }
+    
     private void setToWorkflow() {
         String name = this.nameTextField.getText();
-        if (name != null && name.equals(StringUtil.convertToJavaIdentifier(name))) {
+        if (name != null && name.equals(StringUtil.convertToJavaIdentifier(name)) && (!isWorkflowNameAlreadyPresent(name))) {
             String description = this.descriptionTextArea.getText();
             String metadataText = this.metadataTextArea.getText();
 
@@ -141,7 +156,7 @@ public class WorkflowPropertyWindow {
         } else {
             this.nameTextField.setText(StringUtil.convertToJavaIdentifier(name));
             JOptionPane.showMessageDialog(this.engine.getGUI().getFrame(),
-                    "Invalid Name. Please consider the Name suggsted", "Invalid Name", JOptionPane.OK_OPTION);
+                    "Invalid Name or a Workflow under the same name already exists. Please consider the Name suggsted", "Invalid Name", JOptionPane.OK_OPTION);
         }
     }
 
