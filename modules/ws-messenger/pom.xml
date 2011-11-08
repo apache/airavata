@@ -14,7 +14,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.airavata</groupId>
 	<artifactId>ws-messenger</artifactId>
-	<version>0.1-incubating</version>
+	<version>0.1-incubating-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Airavata-WS-Messenger</name>
 	<url>http://maven.apache.org</url>
@@ -203,7 +203,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<airavata.version>0.1-incubating</airavata.version>
+		<airavata.version>0.1-incubating-SNAPSHOT</airavata.version>
 		<slf4j.version>1.6.1</slf4j.version>
 		<release.version>1.1.1</release.version>
 		<axis2.version>1.5.1</axis2.version>

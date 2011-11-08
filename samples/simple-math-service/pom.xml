@@ -17,14 +17,14 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <version>0.1-incubating</version>
+        <version>0.1-incubating-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.airavata</groupId>
 	<artifactId>simple-math-service</artifactId>
-	<version>0.1-incubating</version>
+	<version>0.1-incubating-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Simple Math Service</name>
 	<description>Sample web services to construct as workflows to test XBaya. </description>
