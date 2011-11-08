@@ -215,6 +215,10 @@ public class XBayaGUI implements EventListener {
         return this.toolbar;
     }
 
+    public GraphCanvas newGraphCanvas(boolean focus) {
+    	return newGraphCanvas(focus, false);
+    }
+    
     /**
      * Creates a new graph tab.
      * 
@@ -224,10 +228,10 @@ public class XBayaGUI implements EventListener {
      * 
      * @return The graph canvas created
      */
-    public GraphCanvas newGraphCanvas(boolean focus) {
+    public GraphCanvas newGraphCanvas(boolean focus, boolean withID) {
         GraphCanvas newGraphCanvas = new GraphCanvas(this.engine);
         this.graphCanvases.add(newGraphCanvas);
-        this.graphTabbedPane.addTab("Workflow", newGraphCanvas.getSwingComponent());
+        this.graphTabbedPane.addTab(newGraphCanvas.getWorkflow().getName(), newGraphCanvas.getSwingComponent());
         if (focus) {
             setFocus(newGraphCanvas);
         }
@@ -247,21 +251,37 @@ public class XBayaGUI implements EventListener {
                             String name = workflow.getName();
 
                             // Change the name of the tab.
-                            int index = XBayaGUI.this.graphTabbedPane.indexOfComponent(graphCanvas.getSwingComponent());
-                            XBayaGUI.this.graphTabbedPane.setTitleAt(index, workflow.getName());
+                            updateTabTitle(graphCanvas, workflow);
 
                             // Change the name of the frame.
                             setFrameName(name);
                         }
+
+						
                     });
                     break;
                 case NODE_SELECTED:
                 case INPUT_PORT_SELECTED:
                 case OUTPUT_PORT_SELECTED:
                     // Do nothing
+                case WORKFLOW_CHANGED:
+                	updateTabTitle(graphCanvas,graphCanvas.getWorkflow());
                 }
             }
+            private void updateTabTitle(
+					final GraphCanvas graphCanvas,
+					final Workflow workflow) {
+				int index = XBayaGUI.this.graphTabbedPane.indexOfComponent(graphCanvas.getSwingComponent());
+                String newTitle = workflow.getName();
+                if (graphCanvas.isWorkflowChanged()){
+                	newTitle="*"+newTitle;
+                }
+				XBayaGUI.this.graphTabbedPane.setTitleAt(index, newTitle);
+			}
         });
+        if (withID){
+        	newGraphCanvas.getWorkflow().getGraph().getID();
+        }
         return newGraphCanvas;
     }
 
@@ -302,7 +322,7 @@ public class XBayaGUI implements EventListener {
     public void closeGraphCanvas() {
         removeGraphCanvasFromIndex(this.graphTabbedPane.getSelectedIndex());
     	//I dont know why but aparently you have to have atleast one tab present
-    	newGraphCanvas(true);
+//    	newGraphCanvas(true);
     }
 
     public void closeAllGraphCanvas(){
@@ -310,7 +330,7 @@ public class XBayaGUI implements EventListener {
     		removeGraphCanvasFromIndex(0);
     	}
     	//I dont know why but aparently you have to have atleast one tab present
-    	newGraphCanvas(true);
+//    	newGraphCanvas(true);
     }
     
 	private void removeGraphCanvasFromIndex(int index) {
@@ -408,7 +428,7 @@ public class XBayaGUI implements EventListener {
         initPane();
 
         // Create an empty graph canvas.
-        newGraphCanvas(true);
+//        newGraphCanvas(true);
 
         this.frame.setVisible(true);
     }

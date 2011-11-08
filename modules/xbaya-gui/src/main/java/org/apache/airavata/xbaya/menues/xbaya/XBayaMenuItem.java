@@ -28,6 +28,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
@@ -37,6 +39,7 @@ import org.apache.airavata.xbaya.appwrapper.ServiceDescriptionDialog;
 import org.apache.airavata.xbaya.component.gui.ComponentMenu;
 import org.apache.airavata.xbaya.component.gui.URLRegistryWindow;
 import org.apache.airavata.xbaya.experiment.gui.RegistryLoaderWindow;
+import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.ode.ODEDeploymentDescriptor;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.apache.airavata.xbaya.util.XBayaUtil;
@@ -208,6 +211,21 @@ public class XBayaMenuItem {
         xbayaMenuItem.addSeparator();
         
         xbayaMenuItem.add(exitItem);
+        
+        xbayaMenuItem.addMenuListener(new MenuListener() {
+			
+			@Override
+			public void menuSelected(MenuEvent e) {
+				GraphCanvas graphCanvas = engine.getGUI().getGraphCanvas();
+				saveAsWorkflowItem.setEnabled(graphCanvas!=null && graphCanvas.getWorkflowFile()!=null);
+				saveWorkflowItem.setEnabled(graphCanvas!=null && (graphCanvas.getWorkflowFile()==null || graphCanvas.isWorkflowChanged()));
+				saveAllWorkflowItem.setEnabled(engine.getGUI().getGraphCanvases().size()>0);
+			}
+			@Override
+			public void menuDeselected(MenuEvent e) {}
+			@Override
+			public void menuCanceled(MenuEvent e) {}
+		});
     }
 
     /**
@@ -228,7 +246,7 @@ public class XBayaMenuItem {
     }
     
     private JMenuItem createURLRegistryItem() {
-        JMenuItem item = new JMenuItem("WSDL from URL");
+        JMenuItem item = new JMenuItem("WSDL from URL...");
         item.setMnemonic(KeyEvent.VK_U);
         item.addActionListener(new AbstractAction() {
             private URLRegistryWindow window;
@@ -323,7 +341,7 @@ public class XBayaMenuItem {
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         menuItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                engine.getGUI().newGraphCanvas(true);
+                engine.getGUI().newGraphCanvas(true, true);
             }
         });
         return menuItem;
@@ -369,6 +387,7 @@ public class XBayaMenuItem {
     private void createOpenWorkflowMenuItem() {
         this.openWorkflowItem = new JMenuItem("Open...");
         this.openWorkflowItem.setMnemonic(KeyEvent.VK_O);
+        openWorkflowItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
         this.openWorkflowItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent event) {
                 XBayaMenuItem.this.graphFiler.openWorkflow();

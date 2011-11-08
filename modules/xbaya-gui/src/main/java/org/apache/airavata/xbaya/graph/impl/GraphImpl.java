@@ -111,8 +111,8 @@ public abstract class GraphImpl implements Graph {
             // No other choice but to prompt
             // the user to pick an id
             final XBayaEngine engine = XBayaEngine.getInstance();
-            JOptionPane.showMessageDialog(engine.getGUI().getFrame(), "Provide a relatively unique workflow name",
-                    "Workflow Name", JOptionPane.OK_OPTION);
+//            JOptionPane.showMessageDialog(engine.getGUI().getFrame(), "Provide a relatively unique workflow name",
+//                    "Workflow Name", JOptionPane.OK_OPTION);
             engine.getWorkflowPropertyWindow().show();
             this.id = this.name;
             // If its still null

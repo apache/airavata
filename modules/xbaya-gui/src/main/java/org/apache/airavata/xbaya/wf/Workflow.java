@@ -553,6 +553,10 @@ public class Workflow {
         return XMLUtil.xmlElementToString(toXML());
     }
 
+    public void setGraphID(String id){
+    	getGraph().setID(id);
+    }
+    
     /**
      * Returns the XmlElement of the workflow.
      * 

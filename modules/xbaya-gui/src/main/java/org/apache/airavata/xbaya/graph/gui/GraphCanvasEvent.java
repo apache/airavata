@@ -48,7 +48,12 @@ public class GraphCanvasEvent {
         /**
          * An output port is selected.
          */
-        OUTPUT_PORT_SELECTED
+        OUTPUT_PORT_SELECTED,
+        
+        /**
+         * Event when the workflow was changed
+         */
+        WORKFLOW_CHANGED
     }
 
     private GraphCanvasEventType type;
