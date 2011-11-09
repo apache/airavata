@@ -1,0 +1,36 @@
+Apache Airavata
+Copyright 2011 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+=========================================================================
+This product includes unmodified, binary redistributions of software (XPP3) 
+developed by Indiana University (http://www.extreme.indiana.edu/).
+
+=========================================================================
+This product includes unmodified, binary redistributions of software (slf4j) 
+developed by QOS.ch (http://slf4j.org), which is licensed under the MIT license.
+An original copy of the license can be found at http://slf4j.org/license.html
+
+=========================================================================
+==  Derby Notice                                                       ==
+=========================================================================
+
+Portions of Apache Derby were orginally developed by
+International Business Machines Corporation and are
+licensed to the Apache Software Foundation under the
+"Software Grant and Corporate Contribution License Agreement",
+informally known as the "Derby CLA".
+
+The portion of the functionTests under 'nist' was originally 
+developed by the National Institute of Standards and Technology (NIST), 
+an agency of the United States Department of Commerce, and adapted by
+International Business Machines Corporation in accordance with the NIST
+Software Acknowledgment and Redistribution document at
+http://www.itl.nist.gov/div897/ctg/sql_form.htm
+
+=========================================================================
+
+This product includes software developed by the Dom4j project 
+(http://www.dom4j.org), licensed under BSD style license:
