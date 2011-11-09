@@ -75,7 +75,7 @@
 				<inherited>true</inherited>
 				<configuration>
 					<schemaDirectory>schemas</schemaDirectory>
-					<outputJar>target/airavata-workflowtrackingtypes-${airavata.version}.jar</outputJar>
+					<outputJar>target/airavata-workflowtrackingtypes-${project.version}.jar</outputJar>
 					<xmlConfigs>
 						<xmlConfig implementation="java.io.File">schemas/workflow_tracking_types.xsdconfig</xmlConfig>
 					</xmlConfigs>
@@ -106,7 +106,7 @@
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>messenger-client</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>

@@ -56,7 +56,7 @@
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>messagebroker</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.derby</groupId>
