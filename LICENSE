@@ -200,13 +200,4 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-   
-   =======================================================================
-	Third-party build and run time dependency licenses are in included in
-	the jar files of binary distributions.
-	The build time dependencies include:
-    * CDDL licensed: Javax activation, JSR311, Portlet-API, Servlet-API
-    * Apache V2 licensed: cog-jglobus, globus, caster, Woodstox, xmpp, xsul.
-    * BSD licensed: puretls, 
-    * MIT licensed: dom4j, slf4j 
-    * PSFL licensed: Jython
+ 
