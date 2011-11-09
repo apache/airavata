@@ -34,7 +34,6 @@
 
 	<fileSets>
 		<!-- ********************** copy axis2 distribution from messenger folder ********************** -->
-
 		<fileSet>
 			<directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
 			<outputDirectory>standalone-server/lib</outputDirectory>
@@ -42,7 +41,6 @@
 				<include>**/*</include>
 			</includes>
 		</fileSet>
-
 		<fileSet>
 			<directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
 			<outputDirectory>standalone-server/repository</outputDirectory>
@@ -51,7 +49,6 @@
 				<include>modules/*</include>
 			</includes>
 		</fileSet>
-
 		<fileSet>
 			<directory>target/axis2-${used.axis2.release}/WEB-INF/classes</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
@@ -61,9 +58,7 @@
 			</includes>
 		</fileSet>
 
-
 		<!-- ********************** copymessagebrokeraar ********************** -->
-
 		<fileSet>
 			<directory>../ws-messenger/messagebroker/target</directory>
 			<outputDirectory>standalone-server/repository/services
@@ -74,7 +69,6 @@
 		</fileSet>
 
 		<!-- ********************** copy messagebox aar ********************** -->
-
 		<fileSet>
 			<directory>../ws-messenger/messagebox/target</directory>
 			<outputDirectory>standalone-server/repository/services
@@ -86,7 +80,6 @@
 
 
 		<!-- ********************** copy wsmg.broker and messagebox property files ********************** -->
-
 		<fileSet>
 			<directory>../ws-messenger/distribution/resources</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
@@ -97,7 +90,6 @@
 
 
 		<!-- ********************** replace bin directory ********************** -->
-
 		<fileSet>
 			<directory>../ws-messenger/distribution/resources/bin</directory>
 			<outputDirectory>standalone-server/bin</outputDirectory>
@@ -107,7 +99,6 @@
 		</fileSet>
 
 		<!-- ********************** copymessagebrokerjar ********************** -->
-
 		<fileSet>
 			<directory>../ws-messenger/messagebroker/target</directory>
 			<outputDirectory>lib</outputDirectory>
@@ -117,7 +108,6 @@
 		</fileSet>
 
 		<!-- ********************** copy messagebox jar ********************** -->
-
 		<fileSet>
 			<directory>../ws-messenger/messagebox/target</directory>
 			<outputDirectory>lib</outputDirectory>
@@ -127,7 +117,6 @@
 		</fileSet>
 
 		<!-- ********************** copy commons and client jar ********************** -->
-
 		<fileSet>
 			<directory>../ws-messenger/commons/target</directory>
 			<outputDirectory>lib</outputDirectory>
@@ -135,7 +124,6 @@
 				<include>messenger-commons*.jar</include>
 			</includes>
 		</fileSet>
-
 		<fileSet>
 			<directory>../ws-messenger/client/target</directory>
 			<outputDirectory>lib</outputDirectory>
@@ -143,7 +131,6 @@
 				<include>messenger-client*.jar</include>
 			</includes>
 		</fileSet>
-
 		<fileSet>
 			<directory>../ws-messenger/client/target/</directory>
 			<outputDirectory>standalone-server/lib</outputDirectory>
@@ -158,7 +145,6 @@
 				<include>*.jar</include>
 			</includes>
 		</fileSet>
-
 		<fileSet>
 			<directory>../ws-messenger/client/target/</directory>
 			<outputDirectory>standalone-server/lib</outputDirectory>
@@ -175,7 +161,6 @@
 		</fileSet>
 
 		<!-- ********************** copy messagebroker+ messagebox samples ********************** -->
-
 		<fileSet>
 			<directory>../ws-messenger/samples</directory>
 			<outputDirectory>samples</outputDirectory>
@@ -186,7 +171,6 @@
 
 
 		<!-- ********************** copy gui start up script ********************** -->
-
 		<fileSet>
 			<directory>../ws-messenger/distribution/resources</directory>
 			<outputDirectory>gui</outputDirectory>
@@ -197,7 +181,6 @@
 
 
 		<!-- ********************** copy messenger servlet ********************** -->
-
 		<fileSet>
 			<directory>../ws-messenger/messenger/target</directory>
 			<outputDirectory>messenger</outputDirectory>
@@ -207,20 +190,29 @@
 		</fileSet>
 
 
-		<!-- ********************** copy licenses ********************** -->
-
+		<!-- ********************** copy readme files ********************** -->
 		<fileSet>
 			<directory>../../</directory>
 			<outputDirectory>.</outputDirectory>
 			<includes>
-				<include>LICENSE*</include>
-				<include>NOTICE*</include>
+				<include>DISCLAIMER</include>
+				<include>INSTALL</include>
+				<include>README</include>
+				<include>RELEASE_NOTES</include>
+			</includes>
+		</fileSet>
+		<!-- ********************** copy binary licenses ********************** -->
+		<fileSet>
+			<directory>resources/</directory>
+			<outputDirectory>.</outputDirectory>
+			<includes>
+				<include>LICENSE</include>
+				<include>NOTICE</include>
 			</includes>
 		</fileSet>
 
 
 		<!-- ********************** copy database scripts ********************** -->
-
 		<fileSet>
 			<directory>../ws-messenger/messagebroker/src/main/resources/database_scripts</directory>
 			<outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
@@ -228,7 +220,6 @@
 				<include>*sql*</include>
 			</includes>
 		</fileSet>
-
 		<fileSet>
 			<directory>../ws-messenger/messagebox/src/main/resources/database_scripts</directory>
 			<outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
@@ -243,7 +234,6 @@
 				<include>*.jar</include>
 			</includes>
 		</fileSet>
-
 		<fileSet>
 			<directory>../commons/workflow-tracking/target</directory>
 			<outputDirectory>lib</outputDirectory>
@@ -314,7 +304,6 @@
 				<include>*.jar</include>
 			</includes>
 		</fileSet>
-
 		<fileSet>
 			<directory>../gfac-axis2/src/main/resources/</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
@@ -337,19 +326,6 @@
 			</includes>
 		</fileSet>
 
-		<!-- ********************** copy database scripts ********************** -->
-		<fileSet>
-			<directory>../../</directory>
-			<outputDirectory>.</outputDirectory>
-			<includes>
-				<include>DISCLAIMER</include>
-				<include>INSTALL</include>
-				<include>LICENSE</include>
-				<include>NOTICE</include>
-				<include>README</include>
-				<include>RELEASE_NOTES</include>
-			</includes>
-		</fileSet>
 	</fileSets>
 
 	<dependencySets>
@@ -390,7 +366,6 @@
 				<include>org.apache.jackrabbit:jackrabbit-standalone:jar</include>
 				<include>xsul:xsul:jar</include>
 				<include>xsul5-ogce:xsul5-2007-02-27:jar</include>
-				<!--include>xregistry:xregistry-client</include> <include>xregistry:xregistry-generated</include -->
 				<include>gfac:gfac-schema-utils</include>
 				<include>lead-security:cryptix32</include>
 				<include>lead-security:jce</include>
