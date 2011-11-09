@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>messenger-commons</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<!-- Logging -->
@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>messenger-client</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- Axis2 for test only -->
