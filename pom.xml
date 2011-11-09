@@ -12,17 +12,50 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
+
+	<prerequisites>
+		<maven>3.0</maven>
+	</prerequisites>
+
+	<parent>
+		<groupId>org.apache</groupId>
+		<artifactId>apache</artifactId>
+		<version>10</version>
+		<relativePath />
+	</parent>
+
 	<groupId>org.apache.airavata</groupId>
 	<artifactId>airavata</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Airavata</name>
+	<version>0.1-incubating-SNAPSHOT</version>
+
 	<url>http://incubator.apache.org/airavata/</url>
+	<inceptionYear>2011</inceptionYear>
+
+	<scm>
+		<connection>scm:svn:http://svn.apache.org/repos/asf/incubator/airavata/trunk</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/airavata/trunk</developerConnection>
+		<url>http://svn.apache.org/viewvc/incubator/airavata/trunk/</url>
+	</scm>
+
+	<mailingLists>
+		<mailingList>
+			<name>Airavata Developer List</name>
+			<subscribe>airavata-dev-subscribe@incubator.apache.org</subscribe>
+			<unsubscribe>airavata-dev-unsubscribe@incubator.apache.org</unsubscribe>
+			<post>mailto:airavata-dev@incubator.apache.org</post>
+			<archive>http://mail-archives.apache.org/mod_mbox/incubator-airavata-dev/</archive>
+		</mailingList>
+	</mailingLists>
+
+	<issueManagement>
+		<url>https://issues.apache.org/jira/browse/AIRAVATA</url>
+	</issueManagement>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<airavata.version>0.0.1-SNAPSHOT</airavata.version>
 		<axis2.version>1.5.1</axis2.version>
 		<derby.version>10.7.1.1</derby.version>
 		<jackrabbit.version>2.2.7</jackrabbit.version>
@@ -32,6 +65,204 @@
 		<axiom.version>1.2.8</axiom.version>
 		<surefire.version>2.10</surefire.version>
 	</properties>
+
+	<developers>
+		<developer>
+			<id>chinthaka</id>
+			<name>Eran Chinthaka</name>
+			<email>chinthaka@apache.org</email>
+			<timezone>-8</timezone>
+			<organization>Nextag</organization>
+			<organizationUrl>http://www.nextag.com/</organizationUrl>
+			<roles>
+				<role>committer</role>
+				<role>PPMC member</role>
+				<role>IPMC member</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>ate</id>
+			<name>Ate Douma</name>
+			<email>ate@douma.nu</email>
+			<timezone>+1</timezone>
+			<organization>Hippo</organization>
+			<organizationUrl>http://www.onehippo.com</organizationUrl>
+			<roles>
+				<role>mentor</role>
+				<role>IPMC member</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>rgardler</id>
+			<name>Ross Gardler</name>
+			<email>rgardler@apache.org</email>
+			<organization>OpenDirective</organization>
+			<organizationUrl>http://www.opendirective.com/</organizationUrl>
+			<roles>
+				<role>champion</role>
+				<role>mentor</role>
+				<role>IPMC member</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>lahiru</id>
+			<name>Lahiru Gunathilake</name>
+			<email>glahiru@gmail.com</email>
+			<timezone>-5</timezone>
+			<organization>Indiana University</organization>
+			<organizationUrl>http://www.iub.edu</organizationUrl>
+			<roles>
+				<role>committer</role>
+				<role>PPMC member</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>thilina</id>
+			<name>Thilina Gunaratne</name>
+			<email>thilina@apache.org</email>
+			<timezone>-5</timezone>
+			<organization>Indiana University</organization>
+			<organizationUrl>http://www.iub.edu</organizationUrl>
+			<roles>
+				<role>committer</role>
+				<role>PPMC member</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>barbara</id>
+			<name>Barbara Hallock</name>
+			<email>bahalloc@apache.org</email>
+			<timezone>-5</timezone>
+			<organization>Indiana University</organization>
+			<organizationUrl>http://www.iub.edu</organizationUrl>
+			<roles>
+				<role>committer</role>
+				<role>PPMC member</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>chathura</id>
+			<name>Chathura Herath</name>
+			<email>chathura@apache.org</email>
+			<timezone>-5</timezone>
+			<organization>Indiana University</organization>
+			<organizationUrl>http://www.iub.edu</organizationUrl>
+			<roles>
+				<role>committer</role>
+				<role>PPMC member</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>chris</id>
+			<name>Chris Mattmann</name>
+			<email>chris.a.mattmann@jpl.nasa.gov</email>
+			<timezone>-5</timezone>
+			<organization>NASA JPL</organization>
+			<organizationUrl>http://www.jpl.nasa.gov/</organizationUrl>
+			<roles>
+				<role>mentor</role>
+				<role>IPMC member</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>smarru</id>
+			<name>Suresh Marru</name>
+			<email>smarru@apache.org</email>
+			<timezone>-5</timezone>
+			<organization>Indiana University</organization>
+			<organizationUrl>http://www.iub.edu</organizationUrl>
+			<roles>
+				<role>committer</role>
+				<role>PPMC member</role>
+				<role>release manager</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>hemapani</id>
+			<name>Srinath Perera</name>
+			<email>hemapani@apache.org</email>
+			<timezone>+1</timezone>
+			<organization>Lanka Software Foundation</organization>
+			<organizationUrl>http://opensource.lk</organizationUrl>
+			<roles>
+				<role>committer</role>
+				<role>PPMC member</role>
+				<role>IPMC member</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>mpierce</id>
+			<name>Marlon Pierce</name>
+			<email>mpierce@apache.org</email>
+			<timezone>-5</timezone>
+			<organization>Indiana University</organization>
+			<organizationUrl>http://www.iub.edu</organizationUrl>
+			<roles>
+				<role>committer</role>
+				<role>PPMC member</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>raminder</id>
+			<name>Raminderjeet Singh</name>
+			<email>ramifnu@indiana.edu</email>
+			<timezone>-5</timezone>
+			<organization>Indiana University</organization>
+			<organizationUrl>http://www.iub.edu</organizationUrl>
+			<roles>
+				<role>committer</role>
+				<role>PPMC member</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>aslom</id>
+			<name>Aleksander Slominski</name>
+			<email>aslom@us.ibm.com</email>
+			<timezone>-5</timezone>
+			<organization>IBM</organization>
+			<organizationUrl>http://www.ibm.com/us/en/</organizationUrl>
+			<roles>
+				<role>committer</role>
+				<role>mentor</role>
+				<role>PPMC member</role>
+				<role>IPMC member</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>heshan</id>
+			<name>Heshan Suriyarachchi</name>
+			<email>heshan.suriyaarachchi@gmail.com</email>
+			<timezone>-5</timezone>
+			<organization>Indiana University</organization>
+			<organizationUrl>http://www.iub.edu</organizationUrl>
+			<roles>
+				<role>committer</role>
+				<role>PPMC member</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>patanachai</id>
+			<name>Patanachai Tangchaisin</name>
+			<email>patanachai@apache.org</email>
+			<timezone>-5</timezone>
+			<organization>Indiana University</organization>
+			<organizationUrl>http://www.iub.edu</organizationUrl>
+			<roles>
+				<role>committer</role>
+				<role>PPMC member</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Sanjiva Weerawarana</name>
+			<id>sanjiva</id>
+			<email>sanjiva@wso2.com</email>
+			<organization>WSO2</organization>
+			<roles>
+				<role>mentor</role>
+				<role>IPMC member</role>
+			</roles>
+		</developer>
+	</developers>
 
 	<dependencyManagement>
 		<dependencies>
@@ -223,6 +454,19 @@
 		</profile>
 		<profile>
 			<id>default</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>2.3.2</version>
+						<configuration>
+							<source>1.6</source>
+							<target>1.6</target>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
@@ -236,6 +480,34 @@
 				<module>modules/distribution</module>
 				<module>modules/test-suite</module>
 			</modules>
+		</profile>
+		<profile>
+			<id>pedantic</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>2.3.2</version>
+						<configuration>
+							<source>1.6</source>
+							<target>1.6</target>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.rat</groupId>
+						<artifactId>apache-rat-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>verify</phase>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 </project>
