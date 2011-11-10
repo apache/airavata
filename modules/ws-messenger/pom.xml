@@ -13,7 +13,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.airavata</groupId>
 	<artifactId>ws-messenger</artifactId>
-	<version>0.1-incubating</version>
+	<version>0.2-incubating-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Airavata-WS-Messenger</name>
 	<url>http://maven.apache.org</url>
