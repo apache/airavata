@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.samples;
+package main.java.org.apache.airavata.samples;
 
 public class SimpleMathService {
     /**
