@@ -8,7 +8,15 @@
 	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
 	the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<parent>
+		<groupId>org.apache.airavata</groupId>
+		<artifactId>airavata</artifactId>
+		<version>0.2-incubating-SNAPSHOT</version>
+		<relativePath>../../pom.xml</relativePath>
+	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.apache.airavata</groupId>
@@ -17,6 +25,12 @@
 	<packaging>pom</packaging>
 	<name>Airavata-WS-Messenger</name>
 	<url>http://maven.apache.org</url>
+
+	<scm>
+		<connection>scm:svn:http://svn.apache.org/repos/asf/incubator/airavata/trunk/modules/ws-messenger</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/airavata/trunk/modules/ws-messenger</developerConnection>
+		<url>http://svn.apache.org/viewvc/incubator/airavata/trunk/modules/ws-messenger/</url>
+	</scm>
 
 	<repositories>
 		<repository>
