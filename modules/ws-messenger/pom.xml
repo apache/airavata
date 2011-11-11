@@ -14,23 +14,15 @@
 	<parent>
 		<groupId>org.apache.airavata</groupId>
 		<artifactId>airavata</artifactId>
-		<version>0.2-incubating-SNAPSHOT</version>
+		<version>0.1-incubating-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.apache.airavata</groupId>
 	<artifactId>ws-messenger</artifactId>
-	<version>0.2-incubating-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Airavata-WS-Messenger</name>
 	<url>http://maven.apache.org</url>
-
-	<scm>
-		<connection>scm:svn:http://svn.apache.org/repos/asf/incubator/airavata/trunk/modules/ws-messenger</connection>
-		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/airavata/trunk/modules/ws-messenger</developerConnection>
-		<url>http://svn.apache.org/viewvc/incubator/airavata/trunk/modules/ws-messenger/</url>
-	</scm>
 
 	<repositories>
 		<repository>
