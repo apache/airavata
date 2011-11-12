@@ -28,10 +28,14 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.util.LinkedList;
@@ -39,6 +43,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -70,6 +75,7 @@ import org.apache.airavata.xbaya.graph.gui.GraphCanvasEvent;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvasEvent.GraphCanvasEventType;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvasListener;
 import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
+import org.apache.airavata.xbaya.menues.xbaya.WorkflowFiler;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.gui.MonitorPanel;
 import org.apache.airavata.xbaya.registrybrowser.JCRBrowserPanel;
@@ -232,6 +238,47 @@ public class XBayaGUI implements EventListener {
         GraphCanvas newGraphCanvas = new GraphCanvas(this.engine);
         this.graphCanvases.add(newGraphCanvas);
         this.graphTabbedPane.addTab(newGraphCanvas.getWorkflow().getName(), newGraphCanvas.getSwingComponent());
+        final int index = graphTabbedPane.getTabCount()-1;
+		TabLabelButton tabLabelButton = new TabLabelButton(graphTabbedPane);
+		graphTabbedPane.setTabComponentAt(index, tabLabelButton); 
+		tabLabelButton.setCloseButtonListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removeGraphCanvasFromIndex(index);				
+			}
+		});
+        graphTabbedPane.addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent event) {
+				System.out.print(event.getPropertyName());
+				System.out.println("=>"+engine.getGUI().getGraphCanvases().size());
+			}
+        	
+        });
+        graphTabbedPane.addContainerListener(new ContainerListener(){
+
+			@Override
+			public void componentAdded(ContainerEvent event) {
+			}
+
+			@Override
+			public void componentRemoved(ContainerEvent event) {
+				List<GraphCanvas> graphCanvases = engine.getGUI().getGraphCanvases();
+				for (GraphCanvas graphCanvas : graphCanvases) {
+					if (graphCanvas.getSwingComponent()==event.getComponent()){
+						if (graphCanvas.isWorkflowChanged()){
+							setFocus(graphCanvas);
+							if (JOptionPane.showConfirmDialog(null, "The workflow '"+graphCanvas.getWorkflow().getName()+"' has been modified. Save changes?", "Save Workflow", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
+								(new WorkflowFiler(engine)).saveWorkflow(graphCanvas);
+							}
+						}
+						break;
+					}
+				}
+			}
+        	
+        });
         if (focus) {
             setFocus(newGraphCanvas);
         }
@@ -266,6 +313,7 @@ public class XBayaGUI implements EventListener {
                     // Do nothing
                 case WORKFLOW_CHANGED:
                 	updateTabTitle(graphCanvas,graphCanvas.getWorkflow());
+                	setFrameName(workflow.getName());
                 }
             }
             private void updateTabTitle(

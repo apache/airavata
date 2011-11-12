@@ -1112,6 +1112,7 @@ public class GraphCanvas {
 
         this.panel.setLayout(null);
         this.panel.setOpaque(true); // To make the background color visible.
+        this.panel.setBackground(new Color(255, 255, 255));
         this.panel.setDoubleBuffered(true);
 
         this.panel.addMouseListener(new MouseAdapter() {
