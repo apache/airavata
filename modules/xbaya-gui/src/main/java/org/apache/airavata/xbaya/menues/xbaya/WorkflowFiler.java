@@ -140,7 +140,7 @@ public class WorkflowFiler {
 		}
     }
     
-	private void saveWorkflow(GraphCanvas graphCanvas) {
+	public void saveWorkflow(GraphCanvas graphCanvas) {
 		if (graphCanvas.getWorkflowFile()==null){
         	File saveAsWorkflowFile = saveAsWorkflow(graphCanvas);
         	graphCanvas.setWorkflowFile(saveAsWorkflowFile);
