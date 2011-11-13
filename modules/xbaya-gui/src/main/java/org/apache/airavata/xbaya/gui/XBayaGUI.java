@@ -34,10 +34,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -218,6 +217,9 @@ public class XBayaGUI implements EventListener {
      * @return The toolbar
      */
     public XBayaToolBar getToolbar() {
+    	if (toolbar==null){
+    		this.toolbar = new XBayaToolBar(this.engine);
+    	}
         return this.toolbar;
     }
 
@@ -247,15 +249,6 @@ public class XBayaGUI implements EventListener {
 				removeGraphCanvasFromIndex(index);				
 			}
 		});
-        graphTabbedPane.addPropertyChangeListener(new PropertyChangeListener() {
-
-			@Override
-			public void propertyChange(PropertyChangeEvent event) {
-				System.out.print(event.getPropertyName());
-				System.out.println("=>"+engine.getGUI().getGraphCanvases().size());
-			}
-        	
-        });
         graphTabbedPane.addContainerListener(new ContainerListener(){
 
 			@Override
@@ -314,6 +307,13 @@ public class XBayaGUI implements EventListener {
                 case WORKFLOW_CHANGED:
                 	updateTabTitle(graphCanvas,graphCanvas.getWorkflow());
                 	setFrameName(workflow.getName());
+                	for (ChangeListener listener:tabChangeListeners){
+                		try{
+                			listener.stateChanged(null);
+                		}catch(Exception e){
+                			e.printStackTrace();
+                		}
+                	}
                 }
             }
             private void updateTabTitle(
@@ -361,7 +361,19 @@ public class XBayaGUI implements EventListener {
             setFocus(graphCanvas);
         }
     }
-
+    
+    private List<ChangeListener> tabChangeListeners=new ArrayList<ChangeListener>();
+    
+    public void addWorkflowTabChangeListener(ChangeListener listener){
+		graphTabbedPane.addChangeListener(listener);
+		tabChangeListeners.add(listener);
+		
+    }
+    
+    public void removeWorkflowTabChangeListener(ChangeListener listener){
+		graphTabbedPane.removeChangeListener(listener);
+		tabChangeListeners.remove(listener);
+    }
     /**
      * Closes the selected graph canvas.
      * 
@@ -470,7 +482,7 @@ public class XBayaGUI implements EventListener {
     private void init() {
         createFrame();
 
-        this.menu = new XBayaMenu(this.engine);
+        this.menu = new XBayaMenu(this.engine, getToolbar());
         this.frame.setJMenuBar(this.menu.getSwingComponent());
 
         initPane();
@@ -490,8 +502,7 @@ public class XBayaGUI implements EventListener {
         // Error window
         this.errorWindow = new ErrorWindow(contentPane);
 
-        this.toolbar = new XBayaToolBar(this.engine);
-        contentPane.add(this.toolbar.getSwingComponent(), BorderLayout.PAGE_START);
+        contentPane.add(getToolbar().getSwingComponent(), BorderLayout.PAGE_START);
 
         this.portViewer = new PortViewer();
         this.componentViewer = new ComponentViewer();
@@ -778,11 +789,11 @@ public class XBayaGUI implements EventListener {
     }
 
     public void addDynamicExecutionToolsToToolbar() {
-        this.toolbar.addDynamicExecutionTools();
+        getToolbar().addDynamicExecutionTools();
     }
 
     public void removeDynamicExecutionToolsFromToolbar() {
-        this.toolbar.removeDynamicExecutionTools();
+        getToolbar().removeDynamicExecutionTools();
     }
 
     /**

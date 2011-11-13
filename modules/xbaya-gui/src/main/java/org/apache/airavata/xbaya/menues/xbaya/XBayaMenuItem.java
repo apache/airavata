@@ -28,6 +28,9 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -36,10 +39,12 @@ import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.appwrapper.ApplicationDescriptionDialog;
 import org.apache.airavata.xbaya.appwrapper.HostDescriptionDialog;
 import org.apache.airavata.xbaya.appwrapper.ServiceDescriptionDialog;
-import org.apache.airavata.xbaya.component.gui.ComponentMenu;
 import org.apache.airavata.xbaya.component.gui.URLRegistryWindow;
 import org.apache.airavata.xbaya.experiment.gui.RegistryLoaderWindow;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
+import org.apache.airavata.xbaya.gui.ToolbarButton;
+import org.apache.airavata.xbaya.gui.XBayaToolBar;
+import org.apache.airavata.xbaya.menues.MenuIcons;
 import org.apache.airavata.xbaya.ode.ODEDeploymentDescriptor;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.apache.airavata.xbaya.util.XBayaUtil;
@@ -110,14 +115,21 @@ public class XBayaMenuItem {
 
 	private RegistryAccesser registryAccesser;
 
+	private XBayaToolBar toolBar;
+
+	private ToolbarButton saveToolBarButton;
+	
+	private static final String FILE_ACTIONS="file";
+	
     /**
      * Constructs a FileMenu.
      * 
      * @param engine
      * 
      */
-    public XBayaMenuItem(XBayaEngine engine) {
+    public XBayaMenuItem(XBayaEngine engine, XBayaToolBar toolBar) {
         this.engine = engine;
+        this.toolBar=toolBar;
         this.registryAccesser = new RegistryAccesser(engine);
 
         this.graphFiler = new WorkflowFiler(engine);
@@ -218,7 +230,7 @@ public class XBayaMenuItem {
 			public void menuSelected(MenuEvent e) {
 				GraphCanvas graphCanvas = engine.getGUI().getGraphCanvas();
 				saveAsWorkflowItem.setEnabled(graphCanvas!=null && graphCanvas.getWorkflowFile()!=null);
-				saveWorkflowItem.setEnabled(graphCanvas!=null && (graphCanvas.getWorkflowFile()==null || graphCanvas.isWorkflowChanged()));
+				saveWorkflowItem.setEnabled(isSaveShouldBeActive());
 				saveAllWorkflowItem.setEnabled(engine.getGUI().getGraphCanvases().size()>0);
 			}
 			@Override
@@ -337,13 +349,16 @@ public class XBayaMenuItem {
     }
 
     private JMenuItem createNewWorkflowTabMenuItem() {
-        JMenuItem menuItem = new JMenuItem("Workflow");
+        
+		JMenuItem menuItem = new JMenuItem("Workflow", MenuIcons.NEW_ICON);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-        menuItem.addActionListener(new AbstractAction() {
+        AbstractAction action = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 engine.getGUI().newGraphCanvas(true, true);
             }
-        });
+        };
+		menuItem.addActionListener(action);
+		getToolBar().addToolbarButton(FILE_ACTIONS,menuItem.getText(), MenuIcons.NEW_ICON, "Create new workflow", action,1);
         return menuItem;
     }
 
@@ -385,25 +400,45 @@ public class XBayaMenuItem {
     }
     
     private void createOpenWorkflowMenuItem() {
-        this.openWorkflowItem = new JMenuItem("Open...");
+		this.openWorkflowItem = new JMenuItem("Open...", MenuIcons.OPEN_ICON);
         this.openWorkflowItem.setMnemonic(KeyEvent.VK_O);
         openWorkflowItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-        this.openWorkflowItem.addActionListener(new AbstractAction() {
+        AbstractAction action = new AbstractAction() {
             public void actionPerformed(ActionEvent event) {
                 XBayaMenuItem.this.graphFiler.openWorkflow();
             }
-        });
+        };
+		this.openWorkflowItem.addActionListener(action);
+		getToolBar().addToolbarButton(FILE_ACTIONS,openWorkflowItem.getText(), MenuIcons.OPEN_ICON, "Open workflow", action,2);
     }
 
     private void createSaveWorkflowItem() {
-        saveWorkflowItem = new JMenuItem("Save");
+		saveWorkflowItem = new JMenuItem("Save", MenuIcons.SAVE_ICON);
         saveWorkflowItem.setMnemonic(KeyEvent.VK_S);
         saveWorkflowItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-        saveWorkflowItem.addActionListener(new AbstractAction() {
+        AbstractAction action = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 XBayaMenuItem.this.graphFiler.saveWorkflow();
+                saveToolBarButton.setEnabled(isSaveShouldBeActive());
+            }
+        };
+		saveWorkflowItem.addActionListener(action);
+        saveToolBarButton = getToolBar().addToolbarButton(FILE_ACTIONS,saveWorkflowItem.getText(), MenuIcons.SAVE_ICON, "Save workflow", action,3);
+        saveToolBarButton.setEnabled(false);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            	while(engine.getGUI()==null){
+            		Thread.yield();
+            	}
+                engine.getGUI().addWorkflowTabChangeListener(new ChangeListener(){
+					@Override
+					public void stateChanged(ChangeEvent event) {
+						saveToolBarButton.setEnabled(isSaveShouldBeActive());						
+					}
+                });
             }
         });
+        
     }
     
     private void createSaveAsWorkflowItem() {
@@ -475,16 +510,6 @@ public class XBayaMenuItem {
         });
     }
 
-    // private void createExportScuflScriptItem(){
-    // this.exportScuflItem = new JMenuItem("Export Taverna Scufl");
-    // this.exportScuflItem.setMnemonic(KeyEvent.VK_T);
-    // this.exportScuflItem.addActionListener(new AbstractAction() {
-    // public void actionPerformed(ActionEvent e) {
-    // FileMenu.this.scuflFiler.exportScuflScript();
-    // }
-    // });
-    // }
-
     private void createExportODEScriptsItem() {
         this.exportODEScriptsItem = new JMenuItem("ODE Scripts...");
         this.exportODEScriptsItem.addActionListener(new AbstractAction() {
@@ -512,4 +537,17 @@ public class XBayaMenuItem {
         });
         return menuItem;
     }
+
+	public XBayaToolBar getToolBar() {
+		return toolBar;
+	}
+
+	public void setToolBar(XBayaToolBar toolBar) {
+		this.toolBar = toolBar;
+	}
+
+	private boolean isSaveShouldBeActive() {
+		GraphCanvas graphCanvas = engine.getGUI().getGraphCanvas();
+		return graphCanvas !=null && (graphCanvas.getWorkflowFile()==null || graphCanvas.isWorkflowChanged());
+	}
 }
