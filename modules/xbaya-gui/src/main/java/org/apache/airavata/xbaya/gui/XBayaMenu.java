@@ -86,33 +86,50 @@ public class XBayaMenu implements XBayaComponent {
 
 	private ToolsMenuItem toolsMenuItem;
 
+	private XBayaGUI gui;
+
+	private XBayaToolBar toolBar;
+	
     /**
      * Constructs an XwfMenu.
      * 
      * @param engine
      */
-    public XBayaMenu(XBayaEngine engine) {
-        this.engine = engine;
-
-        this.fileMenu = new FileMenu(this.engine);
-        
-        xBayaMenuItem = new XBayaMenuItem(engine);
-        editMenuItem = new EditMenuItem(engine);
-        viewMenuItem = new ViewMenuItem(engine);
-        runMenuItem = new RunMenuItem(engine);
-        registryMenuItem = new RegistryMenuItem(engine);
-        toolsMenuItem = new ToolsMenuItem(engine);
-        
-        this.workflowMenu = new WorkflowMenu(this.engine);
-        this.experimentMenu = new ExperimentMenu(this.engine);
-        this.amazonEC2Menu = new AmazonEC2Menu(this.engine);
-        this.componentMenu = new ComponentMenu(this.engine);
-        this.monitorMenu = new MonitorMenu(this.engine);
-        // this.myProxyMenu = new MyProxyMenu(this.engine);
-        this.registerApplications = new RegisterApplicationsMenu(this.engine);
-
-        createMenuBar();
+    public XBayaMenu(XBayaEngine engine, XBayaToolBar toolBar) {
+        this.setEngine(engine);
+        setToolBar(toolBar);
+        initMenu();
+//        SwingUtilities.invokeLater(new Runnable() {
+//            public void run() {
+//                try {
+//                    initMenu();
+//                } catch (Exception exception) {
+//                    exception.printStackTrace();
+//                }
+//            }
+//        });
     }
+    
+	private void initMenu() {
+		fileMenu = new FileMenu(getEngine());
+		
+		xBayaMenuItem = new XBayaMenuItem(getEngine(),getToolBar());
+		editMenuItem = new EditMenuItem(getEngine());
+		viewMenuItem = new ViewMenuItem(getEngine());
+		runMenuItem = new RunMenuItem(getEngine(), getToolBar());
+		registryMenuItem = new RegistryMenuItem(getEngine());
+		toolsMenuItem = new ToolsMenuItem(getEngine());
+		
+		workflowMenu = new WorkflowMenu(getEngine());
+		experimentMenu = new ExperimentMenu(getEngine());
+		amazonEC2Menu = new AmazonEC2Menu(getEngine());
+		componentMenu = new ComponentMenu(getEngine());
+		monitorMenu = new MonitorMenu(getEngine());
+		// this.myProxyMenu = new MyProxyMenu(this.engine);
+		registerApplications = new RegisterApplicationsMenu(getEngine());
+
+		createMenuBar();
+	}
 
     /**
      * Returns the menu bar.
@@ -164,7 +181,7 @@ public class XBayaMenu implements XBayaComponent {
 
             public void actionPerformed(ActionEvent event) {
                 if (this.window == null) {
-                    this.window = new AboutWindow(XBayaMenu.this.engine);
+                    this.window = new AboutWindow(XBayaMenu.this.getEngine());
                 }
                 this.window.show();
             }
@@ -173,5 +190,21 @@ public class XBayaMenu implements XBayaComponent {
 
         return helpMenu;
     }
+
+	public XBayaEngine getEngine() {
+		return engine;
+	}
+
+	public void setEngine(XBayaEngine engine) {
+		this.engine = engine;
+	}
+
+	public XBayaToolBar getToolBar() {
+		return toolBar;
+	}
+
+	public void setToolBar(XBayaToolBar toolBar) {
+		this.toolBar = toolBar;
+	}
 
 }

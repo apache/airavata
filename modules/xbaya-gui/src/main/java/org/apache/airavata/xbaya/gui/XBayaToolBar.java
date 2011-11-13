@@ -22,9 +22,16 @@
 package org.apache.airavata.xbaya.gui;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -48,6 +55,8 @@ public class XBayaToolBar implements XBayaComponent {
     private JButton step;
 
     private JButton stop;
+    
+    private Map<String,List<ToolbarButton>> toolbarButtons = new HashMap<String,List<ToolbarButton>>();
 
     /**
      * IMAGES_STOP_JPEG
@@ -225,12 +234,50 @@ public class XBayaToolBar implements XBayaComponent {
         };
         this.stop.setAction(stopAction);
 
-        this.toolbar.add(addNodeButton);
-        this.toolbar.add(removeNodeButton);
-        this.toolbar.addSeparator();
-        this.toolbar.add(connectEdgeButton);
+//        this.toolbar.add(addNodeButton);
+//        this.toolbar.add(removeNodeButton);
+//        this.toolbar.addSeparator();
+//        this.toolbar.add(connectEdgeButton);
+        
+//        addToolbarButton("test", SwingUtil.createImageIcon("test.png"), "my description", stopAction);
     }
 
+    public ToolbarButton addToolbarButton(String group, String caption, Icon icon, String description, ActionListener onClick, int order){
+    	ToolbarButton toolbarButton = new ToolbarButton(icon, caption, description, order);
+    	toolbarButton.setButtonClickListener(onClick);
+    	getToolBarButtonList(group).add(toolbarButton);
+    	rearrangeToolbarButtons();
+    	return toolbarButton;
+    }
+    
+    private void sortButtons(List<ToolbarButton> buttons){
+    	ToolbarButton[] buttonList=buttons.toArray(new ToolbarButton[]{});
+    	ToolbarButton temp;
+    	for (int i=0;i<buttonList.length-1;i++) {
+			for(int j=i+1;j<buttonList.length;j++){
+				if (buttonList[i].getOrder()!=-1){
+					if (buttonList[i].getOrder()>buttonList[j].getOrder()){
+						temp=buttonList[i];
+						buttonList[i]=buttonList[j];
+						buttonList[j]=temp;
+					}
+				}
+			}
+		}
+    	buttons.clear();
+    	buttons.addAll(Arrays.asList(buttonList));
+    }
+    private void rearrangeToolbarButtons(){
+    	toolbar.removeAll();
+    	for (String groupId : toolbarButtons.keySet()) {
+    		sortButtons(toolbarButtons.get(groupId));
+			for (ToolbarButton button : toolbarButtons.get(groupId)) {
+				toolbar.add(button);
+			}
+			toolbar.addSeparator();
+		}
+    }
+    
     public void addDynamicExecutionTools() {
         this.toolbar.add(this.play);
         this.toolbar.add(this.step);
@@ -272,4 +319,10 @@ public class XBayaToolBar implements XBayaComponent {
         return this.stopAction;
     }
 
+    private List<ToolbarButton> getToolBarButtonList(String group){
+    	if (!toolbarButtons.containsKey(group)){
+    		toolbarButtons.put(group, new ArrayList<ToolbarButton>());
+    	}
+    	return toolbarButtons.get(group);
+    }
 }
