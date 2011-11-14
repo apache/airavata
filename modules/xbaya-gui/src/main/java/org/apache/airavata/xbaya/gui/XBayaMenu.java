@@ -117,7 +117,7 @@ public class XBayaMenu implements XBayaComponent {
 		editMenuItem = new EditMenuItem(getEngine());
 		viewMenuItem = new ViewMenuItem(getEngine());
 		runMenuItem = new RunMenuItem(getEngine(), getToolBar());
-		registryMenuItem = new RegistryMenuItem(getEngine());
+		registryMenuItem = new RegistryMenuItem(getEngine(),getToolBar());
 		toolsMenuItem = new ToolsMenuItem(getEngine());
 		
 		workflowMenu = new WorkflowMenu(getEngine());

@@ -241,7 +241,7 @@ public class XBayaGUI implements EventListener {
         this.graphCanvases.add(newGraphCanvas);
         this.graphTabbedPane.addTab(newGraphCanvas.getWorkflow().getName(), newGraphCanvas.getSwingComponent());
         final int index = graphTabbedPane.getTabCount()-1;
-		TabLabelButton tabLabelButton = new TabLabelButton(graphTabbedPane);
+		TabLabelButton tabLabelButton = new TabLabelButton(graphTabbedPane,"Close this workflow");
 		graphTabbedPane.setTabComponentAt(index, tabLabelButton); 
 		tabLabelButton.setCloseButtonListener(new ActionListener(){
 			@Override
@@ -363,6 +363,8 @@ public class XBayaGUI implements EventListener {
     }
     
     private List<ChangeListener> tabChangeListeners=new ArrayList<ChangeListener>();
+
+	private JCRBrowserPanel jcrBrowserPanel;
     
     public void addWorkflowTabChangeListener(ChangeListener listener){
 		graphTabbedPane.addChangeListener(listener);
@@ -556,9 +558,6 @@ public class XBayaGUI implements EventListener {
         this.componentTabbedPane.add(this.compTreeXBayapanel.getSwingComponent());
         this.componentTabbedPane.setTitleAt(0, "Component");
 
-        this.componentTabbedPane.add(new JCRBrowserPanel(engine));
-        this.componentTabbedPane.setTitleAt(1, "JCR Registry Browser");
-
         this.leftSplitPane.setBottomComponent(compViewXBayaPanel.getSwingComponent());
         this.rightSplitPane.setTopComponent(this.graphTabbedPane);
         this.rightSplitPane.setBottomComponent(this.rightBottomTabbedPane);
@@ -586,6 +585,32 @@ public class XBayaGUI implements EventListener {
 
     }
 
+    public void viewJCRBrowserPanel(){
+    	if (jcrBrowserPanel!=null){
+    		jcrBrowserPanel=componentTabbedPane.indexOfComponent(jcrBrowserPanel)==-1? null:jcrBrowserPanel;
+    	}
+    	if (jcrBrowserPanel==null) {
+			jcrBrowserPanel = new JCRBrowserPanel(engine);
+			this.componentTabbedPane.add(jcrBrowserPanel);
+			int index=this.componentTabbedPane.getTabCount()-1;
+			this.componentTabbedPane.setTitleAt(1, "JCR Registry Browser");
+			TabLabelButton tabLabelButton = new TabLabelButton(componentTabbedPane, "Close JCR Browser");
+			tabLabelButton.setCloseButtonListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					componentTabbedPane.remove(jcrBrowserPanel);
+				}
+				
+			});
+			this.componentTabbedPane.setTabComponentAt(index, tabLabelButton);
+		}
+		componentTabbedPane.setSelectedComponent(jcrBrowserPanel);
+    }
+    
+    public void viewComponentTree(){
+    	componentTabbedPane.setSelectedComponent(compTreeXBayapanel.getSwingComponent());
+    }
+    
     /**
      * @param model
      * @throws MalformedURLException

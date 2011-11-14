@@ -25,9 +25,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -44,6 +46,8 @@ import org.apache.airavata.xbaya.XBayaExecutionState;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.wf.Workflow;
 
+import com.amazonaws.transform.MapEntry;
+
 public class XBayaToolBar implements XBayaComponent {
 
     private XBayaEngine engine;
@@ -58,6 +62,7 @@ public class XBayaToolBar implements XBayaComponent {
     
     private Map<String,List<ToolbarButton>> toolbarButtons = new HashMap<String,List<ToolbarButton>>();
 
+    private static Map<String,Integer> groupOrder;
     /**
      * IMAGES_STOP_JPEG
      */
@@ -267,16 +272,44 @@ public class XBayaToolBar implements XBayaComponent {
     	buttons.clear();
     	buttons.addAll(Arrays.asList(buttonList));
     }
+    
     private void rearrangeToolbarButtons(){
     	toolbar.removeAll();
-    	for (String groupId : toolbarButtons.keySet()) {
-    		sortButtons(toolbarButtons.get(groupId));
-			for (ToolbarButton button : toolbarButtons.get(groupId)) {
-				toolbar.add(button);
-			}
-			toolbar.addSeparator();
+    	String[] groupIds = getSortedGroupIdList();
+    	Map<String, List<ToolbarButton>> tempToolbarButtons=new HashMap<String, List<ToolbarButton>>();
+    	tempToolbarButtons.putAll(toolbarButtons);
+    	for (String groupId : groupIds) {
+    		tempToolbarButtons.remove(groupId);
+    		List<ToolbarButton> buttons = toolbarButtons.get(groupId);
+			addButtonsToToolbar(buttons);
+		}
+    	for (String groupId : tempToolbarButtons.keySet()) {
+    		List<ToolbarButton> buttons = tempToolbarButtons.get(groupId);
+			addButtonsToToolbar(buttons);
 		}
     }
+
+	private void addButtonsToToolbar(List<ToolbarButton> buttons) {
+		sortButtons(buttons);
+		for (ToolbarButton button : buttons) {
+			toolbar.add(button);
+		}
+		toolbar.addSeparator();
+	}
+
+	private String[] getSortedGroupIdList() {
+		String[] groupIds = getGroupOrder().keySet().toArray(new String[]{});
+    	for(int i=0;i<groupIds.length-1;i++){
+    		for(int j=i+1;j<groupIds.length;j++){
+        		if (getGroupOrder().get(groupIds[i])>getGroupOrder().get(groupIds[j])){
+        			String temp=groupIds[i];
+        			groupIds[i]=groupIds[j];
+        			groupIds[j]=temp;
+        		}
+        	}	
+    	}
+		return groupIds;
+	}
     
     public void addDynamicExecutionTools() {
         this.toolbar.add(this.play);
@@ -325,4 +358,16 @@ public class XBayaToolBar implements XBayaComponent {
     	}
     	return toolbarButtons.get(group);
     }
+    
+    public static void setGroupOrder(String groupId, int order){
+    	getGroupOrder().put(groupId, order);
+    }
+
+	public static Map<String,Integer> getGroupOrder() {
+		if (groupOrder==null){
+    		groupOrder=new HashMap<String, Integer>();
+    	}
+		return groupOrder;
+	}
+
 }

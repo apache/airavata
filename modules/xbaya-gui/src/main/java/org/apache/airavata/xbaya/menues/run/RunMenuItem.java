@@ -27,6 +27,9 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.event.Event;
@@ -36,6 +39,7 @@ import org.apache.airavata.xbaya.experiment.gui.WorkflowInterpreterLaunchWindow;
 import org.apache.airavata.xbaya.graph.dynamic.gui.DynamicWorkflowRunnerWindow;
 import org.apache.airavata.xbaya.gridchem.gui.GridChemRunnerWindow;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
+import org.apache.airavata.xbaya.gui.ToolbarButton;
 import org.apache.airavata.xbaya.gui.XBayaToolBar;
 import org.apache.airavata.xbaya.jython.gui.JythonRunnerWindow;
 import org.apache.airavata.xbaya.menues.MenuIcons;
@@ -75,6 +79,12 @@ public class RunMenuItem  implements EventListener{
 	private static final String EXECUTE_ACTIONS = "run_actions";
 
     private XBayaToolBar toolBar;
+
+	private ToolbarButton runWorkflowButton;
+
+	private ToolbarButton pauseMonitorButton;
+
+	private ToolbarButton resumeMonitorButton;
     
     /**
      * Constructs a WorkflowMenu.
@@ -88,6 +98,7 @@ public class RunMenuItem  implements EventListener{
         Monitor monitor = this.engine.getMonitor();
         monitor.addEventListener(this);
         monitor.getConfiguration().addEventListener(this);
+        XBayaToolBar.setGroupOrder(EXECUTE_ACTIONS, 5);
     }
 
     /**
@@ -129,7 +140,31 @@ public class RunMenuItem  implements EventListener{
         runMenu.add(this.resetMonitoringItem);
         runMenu.add(this.configMonitorItem);
         
+        setupMonitors();
+        
     }
+
+	private void setupMonitors() {
+		SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            	while(engine.getGUI()==null){
+            		Thread.yield();
+            	}
+                engine.getGUI().addWorkflowTabChangeListener(new ChangeListener(){
+					@Override
+					public void stateChanged(ChangeEvent event) {
+						boolean runShouldBeActive = isRunShouldBeActive();
+						runWorkflowButton.setEnabled(runShouldBeActive);	
+						launchDynamicWorkflowItem.setEnabled(runShouldBeActive);
+						runJythonWorkflowItem.setEnabled(runShouldBeActive);
+						launchXBayaInterpreterItem.setEnabled(runShouldBeActive);
+						launchGridChemWorkflowItem.setEnabled(runShouldBeActive);
+						launchAndSaveInGridChemWorkflowItem.setEnabled(runShouldBeActive);
+					}
+                });
+            }
+        });
+	}
     
     private JMenuItem createConfigMonitoring() {
         JMenuItem item = new JMenuItem("Configure Monitoring...");
@@ -163,7 +198,8 @@ public class RunMenuItem  implements EventListener{
 		item.addActionListener(action);
         boolean valid = this.engine.getMonitor().getConfiguration().isValid();
         item.setVisible(valid);
-        getToolBar().addToolbarButton(EXECUTE_ACTIONS,item.getText(), MenuIcons.MONITOR_RESUME_ICON, "Resume monitoring", action,3);
+        resumeMonitorButton = getToolBar().addToolbarButton(EXECUTE_ACTIONS,item.getText(), MenuIcons.MONITOR_RESUME_ICON, "Resume monitoring", action,3);
+        resumeMonitorButton.setEnabled(false);
         return item;
     }
 
@@ -183,7 +219,8 @@ public class RunMenuItem  implements EventListener{
         };
 		item.addActionListener(action);
         item.setVisible(false);
-        getToolBar().addToolbarButton(EXECUTE_ACTIONS,item.getText(), MenuIcons.MONITOR_PAUSE_ICON, "Pause monitoring", action,2);
+        pauseMonitorButton = getToolBar().addToolbarButton(EXECUTE_ACTIONS,item.getText(), MenuIcons.MONITOR_PAUSE_ICON, "Pause monitoring", action,2);
+        pauseMonitorButton.setEnabled(false);
         return item;
     }
 
@@ -219,11 +256,12 @@ public class RunMenuItem  implements EventListener{
                 this.window.show();
             }
         });
+        menuItem.setEnabled(false);
         return menuItem;
     }
 
     private JMenuItem createLaunchDynamicWorkflowItem() {
-        JMenuItem menuItem = new JMenuItem("Run workflow...");
+        JMenuItem menuItem = new JMenuItem("Run workflow...", MenuIcons.RUN_ICON);
         menuItem.setMnemonic(KeyEvent.VK_D);
         AbstractAction action = new AbstractAction() {
             private DynamicWorkflowRunnerWindow window;
@@ -236,11 +274,16 @@ public class RunMenuItem  implements EventListener{
             }
         };
 		menuItem.addActionListener(action);
-        getToolBar().addToolbarButton(EXECUTE_ACTIONS,menuItem.getText(), MenuIcons.RUN_ICON, "Run workflow", action,1);
+		menuItem.setEnabled(false);
+        runWorkflowButton = getToolBar().addToolbarButton(EXECUTE_ACTIONS,menuItem.getText(), MenuIcons.RUN_ICON, "Run workflow", action,1);
+        runWorkflowButton.setEnabled(menuItem.isEnabled());
         return menuItem;
     }
     
-
+    private boolean isRunShouldBeActive() {
+		return engine.getGUI().getGraphCanvas() !=null;
+	}
+    
     private JMenuItem createLaunchGridChemWorkflowItem() {
         JMenuItem menuItem = new JMenuItem("Run as GridChem Workflow...");
         menuItem.addActionListener(new AbstractAction() {
@@ -253,6 +296,7 @@ public class RunMenuItem  implements EventListener{
                 this.window.show();
             }
         });
+        menuItem.setEnabled(false);
         return menuItem;
     }
     
@@ -273,6 +317,7 @@ public class RunMenuItem  implements EventListener{
 
             }
         });
+        launchXBayaInterpreterItem.setEnabled(false);
     }
 
     /**
@@ -284,7 +329,7 @@ public class RunMenuItem  implements EventListener{
         // First Call OGCE-GridChem-Bridge Service to register an experiment
         // Set lead context header with all the required notifier context
         // call launch workflow
-
+        launchAndSaveInGridChemWorkflowItem.setEnabled(false);
     }
     
     /**
@@ -307,6 +352,8 @@ public class RunMenuItem  implements EventListener{
             pauseMonitoringItem.setVisible(false);
             resetMonitoringItem.setVisible(false);
         }
+        pauseMonitorButton.setEnabled(pauseMonitoringItem.isVisible());
+        resumeMonitorButton.setEnabled(resumeMonitoringItem.isVisible());
     }
 
 	public XBayaToolBar getToolBar() {
