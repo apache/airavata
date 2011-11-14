@@ -82,7 +82,7 @@ public class TestWseXpathAndTopicSubscription extends TestCase implements Consum
             String validMsg = String.format(validMsgFormat, value);
             String invalidMsg = String.format(invalidMsgFormat, value);
 
-            int consumerPort = new Integer(configs.getProperty(ConfigKeys.CONSUMER_PORT));
+            int consumerPort = TestUtilServer.getAvailablePort();
 
             String brokerEPR = "http://localhost:" + TestUtilServer.TESTING_PORT + "/axis2/services/EventingService";
             WseMsgBrokerClient msgBrokerClient = new WseMsgBrokerClient();

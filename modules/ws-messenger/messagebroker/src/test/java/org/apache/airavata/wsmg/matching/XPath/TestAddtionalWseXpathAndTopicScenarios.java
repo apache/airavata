@@ -92,7 +92,7 @@ public class TestAddtionalWseXpathAndTopicScenarios extends TestCase {
             String matchingMsg = String.format(msgFormat, value);
             String unmatchingMsg = String.format(msgFormat, value + 1);
 
-            int consumerPort = new Integer(configs.getProperty(ConfigKeys.CONSUMER_PORT));
+            int consumerPort = TestUtilServer.getAvailablePort();
 
             String brokerEpr = "http://localhost:" + TestUtilServer.TESTING_PORT + "/axis2/services/EventingService";
 

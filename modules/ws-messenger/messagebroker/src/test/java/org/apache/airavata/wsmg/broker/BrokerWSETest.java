@@ -58,13 +58,13 @@ public class BrokerWSETest extends TestCase implements ConsumerNotificationHandl
 
         try {
 
-            String brokerEPR = "http://localhost:" + port + "/axis2/services/EventingService";
+            String brokerEPR = "http://localhost:" + TestUtilServer.TESTING_PORT + "/axis2/services/EventingService";
             long value = System.currentTimeMillis();
             String msg = String.format("<msg> current time is : %d </msg>", value);
 
             WseMsgBrokerClient wseMsgBrokerClient = new WseMsgBrokerClient();
             wseMsgBrokerClient.init(brokerEPR);
-            int consumerPort = 6767;
+            int consumerPort = TestUtilServer.getAvailablePort();
 
             String[] consumerEPRs = wseMsgBrokerClient.startConsumerService(consumerPort, this);
 
