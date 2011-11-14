@@ -36,7 +36,6 @@ import org.junit.Test;
 
 public class BrokerWSNTTest extends TestCase implements ConsumerNotificationHandler {
 
-    private static int port = TestUtilServer.TESTING_PORT;
     static Properties configs = new Properties();
 
     public void handleNotification(SOAPEnvelope msgEnvelope) {
@@ -64,7 +63,7 @@ public class BrokerWSNTTest extends TestCase implements ConsumerNotificationHand
 
             int consumerPort = 6767;
 
-            String brokerEPR = "http://localhost:" + port + "/axis2/services/NotificationService";
+            String brokerEPR = "http://localhost:" + TestUtilServer.TESTING_PORT + "/axis2/services/NotificationService";
             wsntMsgBrokerClient.init(brokerEPR);
             String[] consumerEPRs = wsntMsgBrokerClient.startConsumerService(consumerPort, this);
 
