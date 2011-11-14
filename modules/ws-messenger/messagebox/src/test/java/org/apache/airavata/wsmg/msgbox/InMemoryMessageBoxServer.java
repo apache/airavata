@@ -31,12 +31,15 @@ import org.apache.axis2.description.InOutAxisOperation;
 import org.apache.axis2.engine.MessageReceiver;
 import org.apache.axis2.transport.http.SimpleHTTPServer;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+
 public class InMemoryMessageBoxServer {
     private static int count = 0;
 
     private static SimpleHTTPServer receiver;
 
-    public static final int TESTING_PORT = 7630;
+    public static int TESTING_PORT = 7630;
 
     public static final String FAILURE_MESSAGE = "Intentional Failure";
 
@@ -51,7 +54,7 @@ public class InMemoryMessageBoxServer {
     public static synchronized void start(String repository, String axis2xml) throws Exception {
         if (count == 0) {
             ConfigurationContext er = getNewConfigurationContext(repository, axis2xml);
-
+            TESTING_PORT = getAvailablePort();
             receiver = new SimpleHTTPServer(er, TESTING_PORT);
 
             try {
@@ -138,6 +141,17 @@ public class InMemoryMessageBoxServer {
 
     public static String prefixBaseDirectory(String path) {
         return path;
+    }
+
+      public static int getAvailablePort(){
+        ServerSocket serverSocket = null;
+        try {
+             serverSocket = new ServerSocket(0);
+             serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return serverSocket.getLocalPort();
     }
 
 }

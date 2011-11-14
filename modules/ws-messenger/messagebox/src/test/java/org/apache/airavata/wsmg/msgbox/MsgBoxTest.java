@@ -65,7 +65,7 @@ public class MsgBoxTest extends TestCase {
 
         MsgBoxClient user = new MsgBoxClient();
         StringBuilder builder = new StringBuilder();
-
+        port = InMemoryMessageBoxServer.TESTING_PORT;
         EndpointReference msgBoxEpr = user.createMessageBox("http://localhost:" + port
                 + "/axis2/services/MsgBoxService", timeout);
 
