@@ -44,7 +44,21 @@
 			</extension>
 		</complexContent>
 	</complexType>
-	
+
+    <!-- EC2 Host Description -->
+    <complexType name="ec2HostType">
+        <complexContent>
+            <extension base="gfac:hostDescriptionType">
+                <sequence>
+                    <element name="imageID" type="xsd:string"
+                             minOccurs="1" maxOccurs="unbounded" />
+                    <element name="instanceID" type="xsd:string"
+                             minOccurs="1" maxOccurs="unbounded" />
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
 		<!-- GSISSH Host Description -->
 	<complexType name="gsisshHostType">
 		<complexContent>
