@@ -67,7 +67,7 @@ public class MessageBoxStressTest extends TestCase {
     public void testMessageBox() throws Exception {
 
         MsgBoxClient user = new MsgBoxClient();
-
+        port = InMemoryMessageBoxServer.TESTING_PORT;
         // test publish with Epr
         EndpointReference msgBoxEpr = user.createMessageBox("http://localhost:" + port
                 + "/axis2/services/MsgBoxService", timeout);
