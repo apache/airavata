@@ -74,6 +74,19 @@
 			<version>${project.version}</version>
 		</dependency>
 
+        <dependency>
+            <groupId>j2ssh</groupId>
+            <artifactId>j2ssh-core</artifactId>
+            <version>0.2.9</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>j2ssh</groupId>
+            <artifactId>j2ssh-common</artifactId>
+            <version>0.2.9</version>
+            <type>jar</type>
+        </dependency>
+
 		<!-- Workflow Tracking -->
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
