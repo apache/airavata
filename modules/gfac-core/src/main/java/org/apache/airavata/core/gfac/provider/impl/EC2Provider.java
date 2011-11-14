@@ -1,4 +1,24 @@
 /*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 package org.apache.airavata.core.gfac.provider.impl;
 
 import com.amazonaws.AmazonClientException;
@@ -23,16 +43,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 // TODO
-//import com.sshtools.j2ssh.util.Base64;
-
-*/
-/**
- * Created by IntelliJ IDEA.
- * User: heshan
- * Date: 11/11/11
- * Time: 10:50 AM
- * To change this template use File | Settings | File Templates.
- *//*
+// import com.sshtools.j2ssh.util.Base64;
 
 public class EC2Provider extends SSHProvider{
 
@@ -52,9 +63,7 @@ public class EC2Provider extends SSHProvider{
 
     private String username;
 
-    public EC2Provider(InvocationContext invocationContext*/
-/*ExectionContext execContext*//*
-) throws ProviderException {
+    public EC2Provider(InvocationContext invocationContext/*ExectionContext execContext*/) throws ProviderException {
         ExecutionContext execContext = invocationContext.getExecutionContext();
 
         LeadResourceMapping mapping = null;
@@ -74,11 +83,9 @@ public class EC2Provider extends SSHProvider{
         log.info("INS_TYPE:" + ins_type);
         log.info("USERNAME:" + username);
 
-        */
-/*
+        /*
          * Validation
-         *//*
-
+         */
         if (access_key == null || access_key.isEmpty())
             throw new ProviderException("Access Key is empty");
         if (secret_key == null || secret_key.isEmpty())
@@ -88,20 +95,16 @@ public class EC2Provider extends SSHProvider{
         if (this.username == null || this.username.isEmpty())
             throw new ProviderException("Username is empty");
 
-        */
-/*
+        /*
          * Need to start EC2 instance before running it
-         *//*
-
+         */
         AWSCredentials credential = new BasicAWSCredentials(access_key, secret_key);
         AmazonEC2Client ec2client = new AmazonEC2Client(credential);
 
         try {
-            */
-/*
+            /*
              * Build key pair before start instance
-             *//*
-
+             */
             buildKeyPair(ec2client);
 
             // right now, we can run it on one host
@@ -128,11 +131,9 @@ public class EC2Provider extends SSHProvider{
             //execContext.getNotificationService().sendResourceMappingNotifications(this.instance.getPublicDnsName(), "EC2 Instance " + this.instance.getInstanceId() + " is running with public name " + this.instance.getPublicDnsName(), this.instance.getInstanceId());
 
 
-            */
-/*
+            /*
              * Make sure port 22 is connectable
-             *//*
-
+             */
             for (GroupIdentifier g : this.instance.getSecurityGroups()) {
                 IpPermission ip = new IpPermission();
                 ip.setIpProtocol("tcp");
@@ -144,11 +145,9 @@ public class EC2Provider extends SSHProvider{
                 try {
                     ec2client.authorizeSecurityGroupIngress(r);
                 } catch (AmazonServiceException as) {
-                    */
-/*
+                    /*
                      * If exception is from duplicate room, ignore it.
-                     *//*
-
+                     */
                     if (!as.getErrorCode().equals("InvalidPermission.Duplicate"))
                         throw as;
                 }
@@ -169,20 +168,16 @@ public class EC2Provider extends SSHProvider{
         invocationContext.addSecurityContext(SSH_SECURITY_CONTEXT, sshContext);
 
         //set to super class
-        */
-/*setUsername(username);
+        /*setUsername(username);
         setPassword("");
         setKnownHostsFileName(null);
-        setKeyFileName(privateKeyFilePath);*//*
-
+        setKeyFileName(privateKeyFilePath);*/
 
         // we need to erase gridftp URL since we will forcefully use SFTP
         // TODO
-        */
-/*execContext.setHost(this.instance.getPublicDnsName());
+        /*execContext.setHost(this.instance.getPublicDnsName());
         execContext.getHostDesc().getHostConfiguration().setGridFTPArray(null);
-        execContext.setFileTransferService(new SshFileTransferService(execContext, this.username, privateKeyFilePath));*//*
-
+        execContext.setFileTransferService(new SshFileTransferService(execContext, this.username, privateKeyFilePath));*/
     }
 
     private List<Instance> startInstances(AmazonEC2Client ec2, String AMI_ID, String INS_TYPE, ExecutionContext executionContext) throws AmazonServiceException {
@@ -232,11 +227,9 @@ public class EC2Provider extends SSHProvider{
         File privateKeyFile = new File(privateKeyFilePath);
         File publicKeyFile = new File(privateKeyFilePath + ".pub");
 
-        */
-/*
+        /*
          * Check if Keypair already created on the server
-         *//*
-
+         */
         if (!privateKeyFile.exists()) {
 
             // check folder and create if it does not exist
@@ -274,11 +267,9 @@ public class EC2Provider extends SSHProvider{
                 fos = new FileOutputStream(privateKeyFilePath);
                 StringWriter stringWriter = new StringWriter();
 
-                */
-/*
+                /*
                  * Write in PEM format (openssl support)
-                 *//*
-
+                 */
                 PEMWriter pemFormatWriter = new PEMWriter(stringWriter);
                 pemFormatWriter.writeObject(keypair.getPrivate());
                 pemFormatWriter.close();
@@ -306,11 +297,9 @@ public class EC2Provider extends SSHProvider{
             newKey = true;
         }
 
-        */
-/*
+        /*
          * Read Public Key
-         *//*
-
+         */
         String encodedPublicKey = null;
         BufferedReader br = null;
         try {
@@ -329,26 +318,20 @@ public class EC2Provider extends SSHProvider{
             }
         }
 
-        */
-/*
+        /*
          * Generate key pair in Amazon if necessary
-         *//*
-
+         */
         try {
-            */
-/*
+            /*
              * Get current key pair in Amazon
-             *//*
-
+             */
             DescribeKeyPairsRequest describeKeyPairsRequest = new DescribeKeyPairsRequest();
             ec2.describeKeyPairs(describeKeyPairsRequest.withKeyNames(KEY_PAIR_NAME));
 
-            */
-/*
+            /*
              * If key exists and new key is created, delete old key and replace
              * with new one. Else, do nothing
-             *//*
-
+             */
 
             if (newKey) {
                 DeleteKeyPairRequest deleteKeyPairRequest = new DeleteKeyPairRequest(KEY_PAIR_NAME);
@@ -358,11 +341,9 @@ public class EC2Provider extends SSHProvider{
             }
 
         } catch (AmazonServiceException ase) {
-            */
-/*
+            /*
              * Key doesn't exists, import new key.
-             *//*
-
+             */
             if(ase.getErrorCode().equals("InvalidKeyPair.NotFound")){
                 ImportKeyPairRequest importKeyPairRequest = new ImportKeyPairRequest(KEY_PAIR_NAME, encodedPublicKey);
                 ec2.importKeyPair(importKeyPairRequest);
@@ -410,4 +391,3 @@ public class EC2Provider extends SSHProvider{
     }
 
 }
-*/
