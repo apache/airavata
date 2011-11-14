@@ -29,12 +29,16 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.component.gui.ComponentMenu;
 import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
+import org.apache.airavata.xbaya.gui.ToolbarButton;
+import org.apache.airavata.xbaya.gui.XBayaToolBar;
+import org.apache.airavata.xbaya.menues.MenuIcons;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RegistryMenuItem {
+
+	private static final String REGISTRY_ACTIONS = "registry_actions";
 
     private XBayaEngine engine;
 
@@ -44,13 +48,18 @@ public class RegistryMenuItem {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryMenuItem.class);
 
+    private XBayaToolBar toolBar;
+
+	private ToolbarButton jcrButton;
+    
     /**
      * Constructs a WorkflowMenu.
      * 
      * @param engine
      */
-    public RegistryMenuItem(XBayaEngine engine) {
+    public RegistryMenuItem(XBayaEngine engine, XBayaToolBar toolBar) {
         this.engine = engine;
+        setToolBar(toolBar);
         createWorkflowMenu();
     }
 
@@ -76,9 +85,9 @@ public class RegistryMenuItem {
     
 
     private JMenuItem createJCRRegistryItem() {
-        JMenuItem item = new JMenuItem("Setup JCR Registry...");
+        JMenuItem item = new JMenuItem("Setup JCR Registry...",MenuIcons.JCR_ICON);
         item.setMnemonic(KeyEvent.VK_J);
-        item.addActionListener(new AbstractAction() {
+        AbstractAction action = new AbstractAction() {
             private JCRRegistryWindow window;
 
             public void actionPerformed(ActionEvent e) {
@@ -87,7 +96,17 @@ public class RegistryMenuItem {
                 }
                 this.window.show();
             }
-        });
+        };
+		item.addActionListener(action);
+		jcrButton = getToolBar().addToolbarButton(REGISTRY_ACTIONS, item.getText(), MenuIcons.JCR_ICON, item.getText(), action, 1);
         return item;
     }
+
+	public XBayaToolBar getToolBar() {
+		return toolBar;
+	}
+
+	public void setToolBar(XBayaToolBar toolBar) {
+		this.toolBar = toolBar;
+	}
 }

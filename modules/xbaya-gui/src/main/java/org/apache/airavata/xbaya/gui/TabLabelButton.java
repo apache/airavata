@@ -45,7 +45,8 @@ public class TabLabelButton extends JPanel implements ActionListener{
 	
 	private ActionListener closeButtonListener;
 	
-	public TabLabelButton(final JTabbedPane pane) {
+	
+	public TabLabelButton(final JTabbedPane pane, String closeButtonTip) {
         super();
         setTabPanel(pane);
         FlowLayout layout = new FlowLayout(FlowLayout.LEFT);
@@ -95,7 +96,7 @@ public class TabLabelButton extends JPanel implements ActionListener{
             }
         };
         button.setPreferredSize(new Dimension(20, 20));
-        button.setToolTipText("Close this workflow");
+        button.setToolTipText(closeButtonTip);
         button.setUI(new BasicButtonUI());
         button.setContentAreaFilled(false);
         button.setFocusable(false);

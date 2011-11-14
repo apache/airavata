@@ -142,6 +142,8 @@ public class XBayaMenuItem {
         this.exitItem = createExitItem();
 
         createFileMenu();
+        
+        XBayaToolBar.setGroupOrder(FILE_ACTIONS, 1);
     }
 
     private void createFileMenu() {
@@ -172,7 +174,6 @@ public class XBayaMenuItem {
         
         xbayaMenuItem = new JMenu("XBaya");
         xbayaMenuItem.setMnemonic(KeyEvent.VK_X);
-        
         JMenu newMenu = new JMenu("New");
 	        newMenu.add(newWorkflowTabItem);
 	        
@@ -229,9 +230,14 @@ public class XBayaMenuItem {
 			@Override
 			public void menuSelected(MenuEvent e) {
 				GraphCanvas graphCanvas = engine.getGUI().getGraphCanvas();
-				saveAsWorkflowItem.setEnabled(graphCanvas!=null && graphCanvas.getWorkflowFile()!=null);
+				saveAsWorkflowItem.setEnabled(isWorkflowTabPresent() && graphCanvas.getWorkflowFile()!=null);
 				saveWorkflowItem.setEnabled(isSaveShouldBeActive());
 				saveAllWorkflowItem.setEnabled(engine.getGUI().getGraphCanvases().size()>0);
+				saveWorkflowtoRegistryItem.setEnabled(isWorkflowTabPresent());
+				exportJythonItem.setEnabled(isWorkflowTabPresent());
+				exportBpelItem.setEnabled(isWorkflowTabPresent());
+				exportODEScriptsItem.setEnabled(isWorkflowTabPresent());
+				saveImageItem.setEnabled(isWorkflowTabPresent());
 			}
 			@Override
 			public void menuDeselected(MenuEvent e) {}
@@ -438,7 +444,6 @@ public class XBayaMenuItem {
                 });
             }
         });
-        
     }
     
     private void createSaveAsWorkflowItem() {
@@ -548,6 +553,10 @@ public class XBayaMenuItem {
 
 	private boolean isSaveShouldBeActive() {
 		GraphCanvas graphCanvas = engine.getGUI().getGraphCanvas();
-		return graphCanvas !=null && (graphCanvas.getWorkflowFile()==null || graphCanvas.isWorkflowChanged());
+		return isWorkflowTabPresent() && (graphCanvas.getWorkflowFile()==null || graphCanvas.isWorkflowChanged());
+	}
+
+	private boolean isWorkflowTabPresent() {
+		return engine.getGUI().getGraphCanvas() !=null;
 	}
 }

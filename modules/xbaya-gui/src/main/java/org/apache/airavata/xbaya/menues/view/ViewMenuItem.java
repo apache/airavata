@@ -95,11 +95,9 @@ public class ViewMenuItem {
 		JMenuItem menuItem = new JMenuItem("JCR Registry");
 		menuItem.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO
+				engine.getGUI().viewJCRBrowserPanel();
 			}
 		});
-		// FIXME remove this once save all functionality is fixed
-		menuItem.setEnabled(false);
 		return menuItem;
 	}
 
@@ -107,11 +105,9 @@ public class ViewMenuItem {
 		JMenuItem menuItem = new JMenuItem("Components");
 		menuItem.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO
+				engine.getGUI().viewComponentTree();
 			}
 		});
-		// FIXME remove this once save all functionality is fixed
-		menuItem.setEnabled(false);
 		return menuItem;
 	}
 
