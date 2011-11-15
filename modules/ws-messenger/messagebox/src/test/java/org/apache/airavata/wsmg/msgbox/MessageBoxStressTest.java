@@ -85,11 +85,11 @@ public class MessageBoxStressTest extends TestCase {
                 System.out.println(iterator.next().toStringWithConsume());
             }
 
-        System.out.println("Delete message box response :  " + user.deleteMsgBox(msgBoxEpr, timeout));
 
         // test invocations with id encoded in the Url
-        user = new MsgBoxClient();
-        msgBoxEpr = user.createMessageBox("http://localhost:" + port + "/axis2/services/MsgBoxService", timeout);
+//        port = InMemoryMessageBoxServer.getAvailablePort();
+//        user = new MsgBoxClient();
+//        msgBoxEpr = user.createMessageBox("http://localhost:" + port + "/axis2/services/MsgBoxService", timeout);
         String msgBoxId = UUID.randomUUID().toString();
         String address = msgBoxEpr.getAddress();
         int biginIndex = address.indexOf("clientid");
@@ -122,6 +122,7 @@ public class MessageBoxStressTest extends TestCase {
         }
         assertFalse(iterator.hasNext());
 
+        System.out.println("Delete message box response :  " + user.deleteMsgBox(msgBoxEpr, timeout));
         System.out.println("All tests Done");
 
     }
