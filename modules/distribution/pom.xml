@@ -160,16 +160,10 @@
 			<artifactId>gpel_client</artifactId>
 			<version>1.0.7-BETA</version>
 		</dependency>
-
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>${logback.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>${logback.version}</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${org.slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.jcr</groupId>
