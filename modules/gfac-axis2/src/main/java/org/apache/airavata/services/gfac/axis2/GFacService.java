@@ -22,6 +22,7 @@
 package org.apache.airavata.services.gfac.axis2;
 
 import java.lang.reflect.Constructor;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -69,6 +70,7 @@ public class GFacService implements ServiceLifeCycle {
     public static final String JCR_CLASS = "jcr.class";
     public static final String JCR_USER = "jcr.user";
     public static final String JCR_PASS = "jcr.pass";
+    public static final String ORG_APACHE_JACKRABBIT_REPOSITORY_URI = "org.apache.jackrabbit.repository.uri";
 
     /*
      * Heart beat thread
@@ -104,13 +106,7 @@ public class GFacService implements ServiceLifeCycle {
             URL url = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
             properties.load(url.openStream());
             Map<String, String> map = new HashMap<String, String>((Map) properties);
-            Class registryRepositoryFactory = Class.forName(map.get(JCR_CLASS));
-            Constructor c = registryRepositoryFactory.getConstructor();
-            RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
-            Repository repository = repositoryFactory.getRepository(map);
-            Credentials credentials = new SimpleCredentials(map.get(JCR_USER), map.get(JCR_PASS).toCharArray());
-
-            Registry registry = new JCRRegistry(repository, credentials);
+            Registry registry = new JCRRegistry(new URI(map.get(ORG_APACHE_JACKRABBIT_REPOSITORY_URI)),map.get(JCR_CLASS),map.get(JCR_USER),map.get(JCR_PASS), map);
             String localAddress = Utils.getIpAddress(context.getAxisConfiguration());
             TransportInDescription transportInDescription = context.getAxisConfiguration().getTransportsIn()
                     .get("http");
