@@ -22,6 +22,7 @@
 package org.apache.airavata.registry.api.impl;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -95,6 +96,9 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
     private UserManager userManager;
     private String username;
     private URI repositoryURI;
+    private Class registryRepositoryFactory;
+    private Map<String,String> connectionMap;
+    private String password;
 
     private static Logger log = LoggerFactory.getLogger(JCRRegistry.class);
 
@@ -104,12 +108,14 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
             /*
              * Load the configuration from properties file at this level and create the object
              */
-            Class registryRepositoryFactory = Class.forName(className);
+            connectionMap = map;
+            registryRepositoryFactory = Class.forName(className);
             Constructor c = registryRepositoryFactory.getConstructor();
             RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
             setRepositoryURI(repositoryURI);
-            repository = repositoryFactory.getRepository(map);
+            repository = repositoryFactory.getRepository(connectionMap);
             setUsername(user);
+            setPassword(pass);
             credentials = new SimpleCredentials(getUsername(), new String(pass).toCharArray());
         } catch (ClassNotFoundException e) {
             log.error("Error class path settting", e);
@@ -127,7 +133,39 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
     }
 
     public Session getSession() throws RepositoryException {
-        return repository.login(credentials);
+        Session session = null;
+        try {
+            session = repository.login(credentials);
+            if (session == null) {
+                session = resetSession(session);
+            }
+        } catch (Exception e) {
+            session = resetSession(session);
+        }
+        return session;
+    }
+
+    private Session resetSession(Session session){
+        try {
+            Constructor c = registryRepositoryFactory.getConstructor();
+            RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
+            setRepositoryURI(repositoryURI);
+            repository = repositoryFactory.getRepository(connectionMap);
+            setUsername(username);
+            credentials = new SimpleCredentials(getUsername(), getPassword().toCharArray());
+            session = repository.login(credentials);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (InstantiationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (RepositoryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return session;
     }
 
     private Node getServiceNode(Session session) throws RepositoryException {
@@ -215,7 +253,7 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
             Node node = serviceNode.getNode(serviceId);
             Property prop = node.getProperty(XML_PROPERTY_NAME);
             result = ServiceDescription.fromXML(prop.getString());
-        } catch (Exception e) {
+            } catch (Exception e) {
             throw new ServiceDescriptionRetrieveException(e);
         } finally {
             closeSession(session);
@@ -891,6 +929,14 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
     protected void triggerObservers(Object o) {
         setChanged();
         notifyObservers(o);
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getName() {
