@@ -28,7 +28,6 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
@@ -64,7 +63,7 @@ public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
 
     @Override
     public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return SwingUtil.createImageIcon("services.png");
+        return JCRBrowserIcons.SERVICES_ICON;
     }
 
     public ServiceDescriptions getServiceDescriptions() {
