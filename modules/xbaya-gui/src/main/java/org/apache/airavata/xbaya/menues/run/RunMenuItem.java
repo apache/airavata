@@ -156,10 +156,13 @@ public class RunMenuItem  implements EventListener{
 						boolean runShouldBeActive = isRunShouldBeActive();
 						runWorkflowButton.setEnabled(runShouldBeActive);	
 						launchDynamicWorkflowItem.setEnabled(runShouldBeActive);
-						runJythonWorkflowItem.setEnabled(runShouldBeActive);
+//						runJythonWorkflowItem.setEnabled(runShouldBeActive);
+                        runJythonWorkflowItem.setEnabled(false);
 						launchXBayaInterpreterItem.setEnabled(runShouldBeActive);
-						launchGridChemWorkflowItem.setEnabled(runShouldBeActive);
-						launchAndSaveInGridChemWorkflowItem.setEnabled(runShouldBeActive);
+//						launchGridChemWorkflowItem.setEnabled(runShouldBeActive);
+                        launchGridChemWorkflowItem.setEnabled(false);
+                        launchAndSaveInGridChemWorkflowItem.setEnabled(false);
+//						launchAndSaveInGridChemWorkflowItem.setEnabled(runShouldBeActive);
 					}
                 });
             }
