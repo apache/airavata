@@ -28,7 +28,6 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflow;
 
@@ -52,7 +51,7 @@ public class XBayaWorkflowNode extends AbstractAiravataTreeNode {
 
     @Override
     public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return SwingUtil.createImageIcon("workflow.png");
+        return JCRBrowserIcons.WORKFLOW_ICON;
     }
 
     public XBayaWorkflow getXbayaWorkflow() {

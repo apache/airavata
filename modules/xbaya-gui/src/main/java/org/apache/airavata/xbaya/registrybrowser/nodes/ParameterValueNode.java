@@ -28,7 +28,6 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 
@@ -54,7 +53,7 @@ public class ParameterValueNode extends AbstractAiravataTreeNode {
 	@Override
 	public Icon getIcon(boolean selected, boolean expanded, boolean leaf,
 			boolean hasFocus) {
-		return SwingUtil.createImageIcon("parameter.png");
+		return JCRBrowserIcons.PARAMETER_VALUE_ICON;
 	}
 
 	@Override

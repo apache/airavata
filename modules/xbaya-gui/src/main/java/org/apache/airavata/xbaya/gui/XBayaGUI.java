@@ -131,6 +131,8 @@ public class XBayaGUI implements EventListener {
 
     private StreamTableModel streamModel;
 
+	private WorkflowFiler graphFiler;
+
     /**
      * Constructs an XBayaEngine.
      * 
@@ -139,6 +141,8 @@ public class XBayaGUI implements EventListener {
     public XBayaGUI(XBayaEngine engine) {
         this.engine = engine;
         this.engine.getMonitor().addEventListener(this);
+        graphFiler = new WorkflowFiler(engine);
+
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
                 public void run() {
@@ -152,6 +156,17 @@ public class XBayaGUI implements EventListener {
             // Shouldn't happen.
             throw new XBayaRuntimeException(e);
         }
+        
+        // Following suppsed to jump in the middle to save unsaved workflows when exiting xbaya
+        // but its not working because the UI is already disposed it seems :(
+//        Runtime.getRuntime().addShutdownHook(new Thread(){
+//        	@Override
+//        	public void run() {
+//        		while (getGraphCanvases().size()>0){
+//        			removeGraphCanvasFromIndex(0);
+//        		}
+//        	}
+//        });
     }
 
     /**
@@ -263,7 +278,7 @@ public class XBayaGUI implements EventListener {
 						if (graphCanvas.isWorkflowChanged()){
 							setFocus(graphCanvas);
 							if (JOptionPane.showConfirmDialog(null, "The workflow '"+graphCanvas.getWorkflow().getName()+"' has been modified. Save changes?", "Save Workflow", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
-								(new WorkflowFiler(engine)).saveWorkflow(graphCanvas);
+								graphFiler.saveWorkflow(graphCanvas);
 							}
 						}
 						break;
@@ -397,6 +412,20 @@ public class XBayaGUI implements EventListener {
     
 	private void removeGraphCanvasFromIndex(int index) {
 		if ((graphTabbedPane.getTabCount()>0) && (index<this.graphTabbedPane.getTabCount())){
+			GraphCanvas graphCanvas = graphCanvases.get(index);
+			if (graphCanvas.isWorkflowChanged()){
+				int result = JOptionPane.showConfirmDialog(frame, "'"+graphCanvas.getWorkflow().getName()+"' has been modified. Save changes?", "Save Workflow", JOptionPane.YES_NO_CANCEL_OPTION);
+				if (result==JOptionPane.YES_OPTION){
+					graphFiler.saveWorkflow(graphCanvas);
+					if (graphCanvas.isWorkflowChanged()){
+						//if cancelled while trying to save
+						return;
+					}
+				}else if (result!=JOptionPane.NO_OPTION){
+					//if cancel clicked
+					return;
+				}
+			}
 			graphCanvases.remove(index);
 			graphTabbedPane.removeTabAt(index);
 			activeTabChanged();
@@ -831,11 +860,9 @@ public class XBayaGUI implements EventListener {
         this.streamModel.init();
         this.streamModel.fireTableDataChanged();
         engine.getWorkflow().getGraph().setStreamModel(this.streamModel);
-
     }
 
     public String getStreamRate(String newStreamName) {
-
         this.streamModel.init();
         this.streamModel.fireTableDataChanged();
         engine.getWorkflow().getGraph().setStreamModel(this.streamModel);

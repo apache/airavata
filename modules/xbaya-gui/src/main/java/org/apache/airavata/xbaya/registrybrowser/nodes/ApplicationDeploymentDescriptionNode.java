@@ -29,7 +29,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
@@ -57,7 +56,7 @@ public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNo
 
     @Override
     public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return SwingUtil.createImageIcon("application.png");
+        return JCRBrowserIcons.APPLICATION_ICON;
     }
 
     public ApplicationDeploymentDescriptionWrap getApplicationDeploymentDescriptionWrap() {

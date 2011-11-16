@@ -21,7 +21,13 @@
 
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
-import org.apache.airavata.common.utils.SwingUtil;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.swing.Icon;
+import javax.swing.JTree;
+import javax.swing.tree.TreeNode;
+
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.appwrapper.ApplicationDescriptionDialog;
@@ -31,11 +37,6 @@ import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 import org.apache.airavata.xbaya.registrybrowser.model.ApplicationDeploymentDescriptionWrap;
 import org.apache.airavata.xbaya.registrybrowser.model.ApplicationDeploymentDescriptions;
-
-import javax.swing.*;
-import javax.swing.tree.TreeNode;
-import java.util.Arrays;
-import java.util.List;
 
 public class ApplicationDeploymentDescriptionsNode extends AbstractAiravataTreeNode {
     private ApplicationDeploymentDescriptions applicationDeploymentDescriptions;
@@ -63,7 +64,7 @@ public class ApplicationDeploymentDescriptionsNode extends AbstractAiravataTreeN
 
     @Override
     public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return SwingUtil.createImageIcon("applications.png");
+        return JCRBrowserIcons.APPLICATIONS_ICON;
     }
 
     public ApplicationDeploymentDescriptions getApplicationDeploymentDescriptions() {

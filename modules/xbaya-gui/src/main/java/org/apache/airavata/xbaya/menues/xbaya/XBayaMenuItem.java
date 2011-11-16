@@ -45,7 +45,6 @@ import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.gui.ToolbarButton;
 import org.apache.airavata.xbaya.gui.XBayaToolBar;
 import org.apache.airavata.xbaya.menues.MenuIcons;
-import org.apache.airavata.xbaya.ode.ODEDeploymentDescriptor;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.slf4j.Logger;
@@ -65,11 +64,11 @@ public class XBayaMenuItem {
 
     private BPELFiler bpelFiler;
 
-    private ScuflFiler scuflFiler;
+//    private ScuflFiler scuflFiler;
     
     private JMenuItem urlItem;
 
-    private ODEDeploymentDescriptor odeDeploymentDescription;
+//    private ODEDeploymentDescriptor odeDeploymentDescription;
 
     private JMenuItem openWorkflowItem;
 
@@ -136,8 +135,8 @@ public class XBayaMenuItem {
         this.jythonFiler = new JythonFiler(engine);
         this.imageFiler = new ImageFiler(engine);
         this.bpelFiler = new BPELFiler(engine);
-        this.scuflFiler = new ScuflFiler(engine);
-        this.odeDeploymentDescription = new ODEDeploymentDescriptor();
+//        this.scuflFiler = new ScuflFiler(engine);
+//        this.odeDeploymentDescription = new ODEDeploymentDescriptor();
 
         this.exitItem = createExitItem();
 
@@ -257,6 +256,7 @@ public class XBayaMenuItem {
         this.saveWorkflowtoRegistryItem = new JMenuItem("To Registry...");
         this.saveWorkflowtoRegistryItem.setMnemonic(KeyEvent.VK_C);
         this.saveWorkflowtoRegistryItem.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 registryAccesser.saveWorkflow();
             }
@@ -267,8 +267,8 @@ public class XBayaMenuItem {
         JMenuItem item = new JMenuItem("WSDL from URL...");
         item.setMnemonic(KeyEvent.VK_U);
         item.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             private URLRegistryWindow window;
-
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
                     this.window = new URLRegistryWindow(engine);
@@ -283,7 +283,7 @@ public class XBayaMenuItem {
         this.registerServiceDesc = new JMenuItem("Service Description...");
 
         this.registerServiceDesc.addActionListener(new AbstractAction() {
-
+			private static final long serialVersionUID = 1L;
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (XBayaUtil.acquireJCRRegistry(engine)) {
@@ -305,7 +305,7 @@ public class XBayaMenuItem {
         this.registerApplicationDesc = new JMenuItem("Application Description...");
 
         this.registerApplicationDesc.addActionListener(new AbstractAction() {
-
+			private static final long serialVersionUID = 1L;
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (XBayaUtil.acquireJCRRegistry(engine)) {
@@ -326,15 +326,13 @@ public class XBayaMenuItem {
         this.registerHostDesc = new JMenuItem("Host Description...");
 
         this.registerHostDesc.addActionListener(new AbstractAction() {
-
+			private static final long serialVersionUID = 1L;
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (XBayaUtil.acquireJCRRegistry(engine)) {
                     try {
                         HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(
                                 engine);
-                        // TODO : should remove this
-                        //hostDescriptionDialog.open();
                         hostDescriptionDialog.show();
                     } catch (Exception e1) {
                         engine.getErrorWindow().error(e1);
@@ -347,7 +345,8 @@ public class XBayaMenuItem {
     private JMenuItem createClearWorkflowItem() {
         JMenuItem menuItem = new JMenuItem("Clear Workflow");
         menuItem.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
+			private static final long serialVersionUID = 1L;
+			public void actionPerformed(ActionEvent e) {
                 engine.getGUI().getGraphCanvas().newWorkflow();
             }
         });
@@ -359,6 +358,7 @@ public class XBayaMenuItem {
 		JMenuItem menuItem = new JMenuItem("Workflow", MenuIcons.NEW_ICON);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         AbstractAction action = new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 engine.getGUI().newGraphCanvas(true, true);
             }
@@ -373,6 +373,7 @@ public class XBayaMenuItem {
         menuItem.setMnemonic(KeyEvent.VK_C);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.CTRL_MASK));
         menuItem.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 engine.getGUI().closeGraphCanvas();
             }
@@ -383,6 +384,7 @@ public class XBayaMenuItem {
     private JMenuItem createCloseAllWorkflowTabItem() {
         JMenuItem menuItem = new JMenuItem("Close all");
         menuItem.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 engine.getGUI().closeAllGraphCanvas();
             }
@@ -398,6 +400,7 @@ public class XBayaMenuItem {
         // ActionEvent.CTRL_MASK));
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, ActionEvent.CTRL_MASK));
         menuItem.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 engine.getGUI().selectNextGraphCanvas();
             }
@@ -410,6 +413,7 @@ public class XBayaMenuItem {
         this.openWorkflowItem.setMnemonic(KeyEvent.VK_O);
         openWorkflowItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
         AbstractAction action = new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent event) {
                 XBayaMenuItem.this.graphFiler.openWorkflow();
             }
@@ -423,6 +427,7 @@ public class XBayaMenuItem {
         saveWorkflowItem.setMnemonic(KeyEvent.VK_S);
         saveWorkflowItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         AbstractAction action = new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 XBayaMenuItem.this.graphFiler.saveWorkflow();
                 saveToolBarButton.setEnabled(isSaveShouldBeActive());
@@ -449,6 +454,7 @@ public class XBayaMenuItem {
     private void createSaveAsWorkflowItem() {
         saveAsWorkflowItem = new JMenuItem("Save as...");
         saveAsWorkflowItem.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 XBayaMenuItem.this.graphFiler.saveAsWorkflow();
             }
@@ -458,20 +464,20 @@ public class XBayaMenuItem {
     private void createSaveAllWorkflowItem() {
         saveAllWorkflowItem = new JMenuItem("Save all");
         saveAllWorkflowItem.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 XBayaMenuItem.this.graphFiler.saveAllWorkflows();
             }
         });
-        //FIXME remove this once save all functionality is fixed
         saveAllWorkflowItem.setEnabled(false);
     }
 
     private void createImportWorkflowItemFromFileSystem() {
         importWorkflowItemFromFileSystem = new JMenuItem("From file system...");
         importWorkflowItemFromFileSystem.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 XBayaMenuItem.this.graphFiler.importWorkflow();
-
             }
         });
     }
@@ -479,6 +485,7 @@ public class XBayaMenuItem {
     private void createImportWorkflowItemFromRegistry() {
         importWorkflowItemFromRegistry = new JMenuItem("From registry...");
         importWorkflowItemFromRegistry.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 new RegistryLoaderWindow(engine).show();
             }
@@ -489,6 +496,7 @@ public class XBayaMenuItem {
         this.exportJythonItem = new JMenuItem("Jython Script...");
         this.exportJythonItem.setMnemonic(KeyEvent.VK_J);
         this.exportJythonItem.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 XBayaMenuItem.this.jythonFiler.exportJythonScript();
             }
@@ -499,6 +507,7 @@ public class XBayaMenuItem {
         this.exportBpelItem = new JMenuItem("BPEL2 Script...");
         this.exportBpelItem.setMnemonic(KeyEvent.VK_B);
         this.exportBpelItem.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 XBayaMenuItem.this.bpelFiler.exportBPEL();
             }
@@ -509,6 +518,7 @@ public class XBayaMenuItem {
         this.saveImageItem = new JMenuItem("Image...");
         this.saveImageItem.setMnemonic(KeyEvent.VK_I);
         this.saveImageItem.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 XBayaMenuItem.this.imageFiler.saveWorkflowImage();
             }
@@ -518,6 +528,7 @@ public class XBayaMenuItem {
     private void createExportODEScriptsItem() {
         this.exportODEScriptsItem = new JMenuItem("ODE Scripts...");
         this.exportODEScriptsItem.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 new ODEScriptFiler(XBayaMenuItem.this.engine).save();
 
@@ -530,6 +541,7 @@ public class XBayaMenuItem {
         menuItem.setMnemonic(KeyEvent.VK_X);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
         menuItem.addActionListener(new AbstractAction() {
+			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent event) {
                 try {
                     XBayaMenuItem.this.engine.dispose();
