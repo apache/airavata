@@ -300,7 +300,6 @@ public class XMLUtil {
             stringToXmlElement(string);
             return true;
         } catch (RuntimeException e) {
-            logger.error(e.getMessage(), e);
             return false;
         }
     }
