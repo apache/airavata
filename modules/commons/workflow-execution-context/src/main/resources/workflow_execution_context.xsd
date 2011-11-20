@@ -517,6 +517,34 @@
 									</documentation>
 								</annotation>
 							</element>
+                            <element name="ami-id" type="string">
+								<annotation>
+									<documentation xml:lang="en"> Amazon Web Services AWS
+                                        Amazon Machine Image (AMI) ID
+									</documentation>
+								</annotation>
+							</element>
+                            <element name="instance-id" type="string">
+								<annotation>
+									<documentation xml:lang="en"> Amazon Web Services AWS
+										Instance ID.
+									</documentation>
+								</annotation>
+							</element>
+                            <element name="instance-type" type="string">
+								<annotation>
+									<documentation xml:lang="en"> Amazon Web Services AWS
+										Instance Type.
+									</documentation>
+								</annotation>
+							</element>
+                            <element name="username" type="string">
+								<annotation>
+									<documentation xml:lang="en"> Amazon Web Services AWS
+										Username.
+									</documentation>
+								</annotation>
+							</element>
 						</sequence>
 					</complexType>
 				</element>
