@@ -21,17 +21,7 @@ package org.apache.airavata.services.gfac.axis2.reciever;
  *
  */
 
-import java.io.StringReader;
-import java.net.URI;
-import java.util.Iterator;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
@@ -68,6 +58,14 @@ import org.apache.axis2.util.Utils;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.StringReader;
+import java.net.URI;
+import java.util.Iterator;
 
 public class GFacMessageReciever implements MessageReceiver {
 
@@ -156,6 +154,7 @@ public class GFacMessageReciever implements MessageReceiver {
             invocationContext.setExecutionContext(new DefaultExecutionContext());
             invocationContext.setServiceName(serviceName);
             invocationContext.getExecutionContext().setRegistryService(getRegistry(context));
+            invocationContext.getExecutionContext().setSecurityContextHeader(getHeader(messageContext));
             invocationContext.getExecutionContext().addNotifiable(workflowNotification);
             invocationContext.getExecutionContext().addNotifiable(loggingNotification);
 
@@ -480,6 +479,13 @@ public class GFacMessageReciever implements MessageReceiver {
         }
         topic = topic.substring(1);
         return topic.replaceAll("_", "-");
+    }
+
+    private OMElement getHeader(MessageContext context) {
+        SOAPHeader header = context.getEnvelope().getHeader();
+        OMElement contextHeader = header.getFirstChildWithName(new QName(
+                "http://schemas.airavata.apache.org/workflow-execution-context", "context-header"));
+        return contextHeader;
     }
 
 }
