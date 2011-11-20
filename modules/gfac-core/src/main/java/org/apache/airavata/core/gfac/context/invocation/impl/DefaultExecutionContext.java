@@ -21,11 +21,12 @@
 
 package org.apache.airavata.core.gfac.context.invocation.impl;
 
-import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.core.gfac.context.invocation.ExecutionContext;
 import org.apache.airavata.core.gfac.notification.GFacNotifiable;
 import org.apache.airavata.core.gfac.notification.GFacNotifier;
 import org.apache.airavata.core.gfac.notification.impl.DefaultNotifier;
+import org.apache.airavata.registry.api.Registry;
+import org.apache.axiom.om.OMElement;
 
 /**
  * DefaultExecutionContext is a simple implementation of ExecutionContext. It uses DefaultNotifier as its base notifier.
@@ -35,6 +36,7 @@ public class DefaultExecutionContext implements ExecutionContext {
 
     private GFacNotifier notificationService = new DefaultNotifier();
     private Registry registryService;
+    private OMElement header;
 
     public GFacNotifier getNotifier() {
         return this.notificationService;
@@ -50,5 +52,13 @@ public class DefaultExecutionContext implements ExecutionContext {
 
     public void setRegistryService(Registry registryService) {
         this.registryService = registryService;
+    }
+
+    public OMElement getSecurityContextHeader() {
+        return header;
+    }
+
+    public void setSecurityContextHeader(OMElement header) {
+        this.header = header;
     }
 }
