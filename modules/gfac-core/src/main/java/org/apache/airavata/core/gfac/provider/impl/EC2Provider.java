@@ -32,9 +32,13 @@ import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.security.impl.SSHSecurityContextImpl;
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.exception.ProviderException;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
+import org.apache.airavata.schemas.wec.SecurityContextDocument;
+import org.apache.axiom.om.OMElement;
+import org.apache.xmlbeans.XmlException;
 import org.bouncycastle.openssl.PEMWriter;
-import xsul.lead.LeadResourceMapping;
 
+import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -63,18 +67,27 @@ public class EC2Provider extends SSHProvider{
 
     private String username;
 
-    public EC2Provider(InvocationContext invocationContext/*ExectionContext execContext*/) throws ProviderException {
+    public EC2Provider(InvocationContext invocationContext) throws ProviderException {
         ExecutionContext execContext = invocationContext.getExecutionContext();
+        OMElement omSecurityContextHeader = execContext.getSecurityContextHeader();
 
-        LeadResourceMapping mapping = null;
-        // TODO
-        //mapping = execContext.getLeadHeader().getResourceMapping();
-        String access_key = mapping.getAttributeValue(null, "ACCESS_KEY");
-        String secret_key = mapping.getAttributeValue(null, "SECRET_KEY");
-        String ami_id = mapping.getAttributeValue(null, "AMI_ID");
-        String ins_id = mapping.getAttributeValue(null, "INS_ID");
-        String ins_type = mapping.getAttributeValue(null, "INS_TYPE");
-        this.username = mapping.getAttributeValue(null, "USERNAME");
+        ContextHeaderDocument document = null;
+        try {
+            document = ContextHeaderDocument.Factory.parse(omSecurityContextHeader.toStringWithConsume());
+        } catch (XMLStreamException e) {
+            e.printStackTrace();
+        } catch (XmlException e) {
+            e.printStackTrace();
+        }
+        SecurityContextDocument.SecurityContext.AmazonWebservices amazonWebservices =
+                document.getContextHeader().getSecurityContext().getAmazonWebservices();
+
+        String access_key = amazonWebservices.getAccessKeyId();
+        String secret_key = amazonWebservices.getSecretAccessKey();
+        String ami_id = amazonWebservices.getAmiId();
+        String ins_id = amazonWebservices.getInstanceId();
+        String ins_type = amazonWebservices.getInstanceType();
+        this.username = amazonWebservices.getUsername();
 
         log.info("ACCESS_KEY:" + access_key);
         log.info("SECRET_KEY:" + secret_key);

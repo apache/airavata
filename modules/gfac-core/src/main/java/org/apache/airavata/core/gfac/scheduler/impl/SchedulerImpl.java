@@ -21,25 +21,32 @@
 
 package org.apache.airavata.core.gfac.scheduler.impl;
 
-import java.net.UnknownHostException;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionDescription;
+import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.exception.SchedulerException;
 import org.apache.airavata.core.gfac.provider.Provider;
+import org.apache.airavata.core.gfac.provider.impl.EC2Provider;
 import org.apache.airavata.core.gfac.provider.impl.GramProvider;
 import org.apache.airavata.core.gfac.provider.impl.LocalProvider;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
+import org.apache.airavata.schemas.wec.SecurityContextDocument;
+import org.apache.axiom.om.OMElement;
+import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.stream.XMLStreamException;
+import java.net.UnknownHostException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class selects {@link Provider} based on information in {@link Registry}
@@ -100,6 +107,19 @@ public class SchedulerImpl implements Scheduler {
         context.getExecutionDescription().setService(serviceDesc);
         context.getExecutionDescription().setApp(app);
 
+        OMElement omSecurityContextHeader = context.getExecutionContext().getSecurityContextHeader();
+
+        ContextHeaderDocument document = null;
+        try {
+            document = ContextHeaderDocument.Factory.parse(omSecurityContextHeader.toStringWithConsume());
+        } catch (XMLStreamException e) {
+            e.printStackTrace();
+        } catch (XmlException e) {
+            e.printStackTrace();
+        }
+        SecurityContextDocument.SecurityContext.AmazonWebservices amazonWebservices =
+                document.getContextHeader().getSecurityContext().getAmazonWebservices();
+
         /*
          * Determine provider
          */
@@ -107,6 +127,18 @@ public class SchedulerImpl implements Scheduler {
         try {
             if (GfacUtils.isLocalHost(hostName)) {
                 return new LocalProvider();
+            } else if (amazonWebservices != null && hostName != null) {
+                log.info("host name: " + hostName);
+
+                // Amazon Provider
+                if (hostName.equalsIgnoreCase("AMAZON")){
+                    log.info("EC2 Provider Selected");
+                    try {
+                        return new EC2Provider(context);
+                    } catch (ProviderException e) {
+                        throw new SchedulerException("Unable to select the EC2Provider", e);
+                    }
+                }
             } else {
                 return new GramProvider();
             }
@@ -114,6 +146,7 @@ public class SchedulerImpl implements Scheduler {
             throw new SchedulerException("Cannot get IP for current host", e);
         }
 
+        return null;
     }
 
     private HostDescription scheduleToHost(Registry regService, String serviceName) {
