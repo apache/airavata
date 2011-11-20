@@ -111,14 +111,19 @@ public class SchedulerImpl implements Scheduler {
 
         ContextHeaderDocument document = null;
         try {
-            document = ContextHeaderDocument.Factory.parse(omSecurityContextHeader.toStringWithConsume());
+            if (omSecurityContextHeader != null) {
+                document = ContextHeaderDocument.Factory.parse(omSecurityContextHeader.toStringWithConsume());
+            }
         } catch (XMLStreamException e) {
             e.printStackTrace();
         } catch (XmlException e) {
             e.printStackTrace();
         }
-        SecurityContextDocument.SecurityContext.AmazonWebservices amazonWebservices =
-                document.getContextHeader().getSecurityContext().getAmazonWebservices();
+
+        SecurityContextDocument.SecurityContext.AmazonWebservices amazonWebservices = null;
+        if (document != null) {
+            amazonWebservices = document.getContextHeader().getSecurityContext().getAmazonWebservices();
+        }
 
         /*
          * Determine provider
