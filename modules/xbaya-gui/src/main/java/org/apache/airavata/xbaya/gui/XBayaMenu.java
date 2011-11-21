@@ -21,15 +21,6 @@
 
 package org.apache.airavata.xbaya.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-
-import javax.swing.AbstractAction;
-import javax.swing.Box;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.amazonEC2.gui.AmazonEC2Menu;
@@ -47,6 +38,10 @@ import org.apache.airavata.xbaya.menues.xbaya.XBayaMenuItem;
 import org.apache.airavata.xbaya.monitor.gui.MonitorMenu;
 import org.apache.airavata.xbaya.pegasus.gui.PegasusMenu;
 import org.apache.airavata.xbaya.wf.gui.WorkflowMenu;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 public class XBayaMenu implements XBayaComponent {
 
@@ -157,7 +152,7 @@ public class XBayaMenu implements XBayaComponent {
 //        this.menuBar.add(this.workflowMenu.getMenu());
 //        this.menuBar.add(this.componentMenu.getMenu());
 //        this.menuBar.add(this.experimentMenu.getMenu());
-//        this.menuBar.add(this.amazonEC2Menu.getMenu());
+        menuBar.add(this.amazonEC2Menu.getMenu());
 //        // this.menuBar.add(this.myProxyMenu.getMenu());
 //        this.menuBar.add(this.monitorMenu.getMenu());
 //        this.menuBar.add(this.registerApplications.getMenu());
