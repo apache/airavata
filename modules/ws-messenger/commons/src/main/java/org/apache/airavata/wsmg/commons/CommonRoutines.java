@@ -65,7 +65,7 @@ public class CommonRoutines {
     // Format date to string like "2004-06-26T21:07:00.000-08:00"
     public static String getXsdDateTime(Date time) {
         Date now = time;
-        DateFormat ISO8601Local = new SimpleDateFormat("yyyy-MM-dd'TestNotificationHandler'HH:mm:ss.SSS");
+        DateFormat ISO8601Local = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
         TimeZone timeZone = TimeZone.getDefault();
         ISO8601Local.setTimeZone(timeZone);
         int offset = timeZone.getOffset(now.getTime());
