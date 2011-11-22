@@ -63,7 +63,7 @@ public class BasicTypeMapping {
 
     private static String[] VAR_NAMES = new String[NUM * 2];
 
-    public static QName STRING_QNAME = new QName("http://www.w3.org/2001/XMLSchema", "string");
+    public static final QName STRING_QNAME = new QName("http://www.w3.org/2001/XMLSchema", "string");
     public static QName INT_QNAME = new QName("http://www.w3.org/2001/XMLSchema", "int");
 
     /**

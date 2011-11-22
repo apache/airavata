@@ -75,7 +75,7 @@ public class GenericNotifierImpl extends AbstractNotifier implements GenericNoti
 
     public void debug(WorkflowTrackingContext context, String... descriptionAndAnnotation) {
         LogDebugDocument logMsg = LogDebugDocument.Factory.newInstance();
-        BaseNotificationType log = logMsg.addNewLogDebug();
+
         // add timestamp and notification source; add description, and
         // annotation if present
         sendNotification(context, logMsg, descriptionAndAnnotation, null);

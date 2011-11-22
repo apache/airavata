@@ -35,38 +35,38 @@ public class ContextParameters {
 
     public static ContextParameterInfo<String> RESOURCE_ID = createParam(String.class, "resourceID");
 
-    public static ContextParameterInfo<String> SUB_ID = createParam(String.class, "subID");
+    public static final ContextParameterInfo<String> SUB_ID = createParam(String.class, "subID");
 
-    public static ContextParameterInfo<String> TOPIC_FROM_URL = createParam(String.class, "topicFromUrl");
+    public static final ContextParameterInfo<String> TOPIC_FROM_URL = createParam(String.class, "topicFromUrl");
 
-    public static ContextParameterInfo<String> SOAP_ACTION = createParam(String.class, "soapAction");
+    public static final ContextParameterInfo<String> SOAP_ACTION = createParam(String.class, "soapAction");
 
-    public static ContextParameterInfo<SubscriptionState> SUBSCRIPTION = createParam(SubscriptionState.class,
+    public static final ContextParameterInfo<SubscriptionState> SUBSCRIPTION = createParam(SubscriptionState.class,
             "subscription");
 
-    public static ContextParameterInfo<String> SUBSCRIBER_EXPIRES = createParam(String.class, "subscriberExpires");
+    public static final ContextParameterInfo<String> SUBSCRIBER_EXPIRES = createParam(String.class, "subscriberExpires");
 
     public ContextParameterInfo<String> USE_NOTIFY_TEXT = createParam(String.class, "useNotifyText");
 
-    public static ContextParameterInfo<OMElement> USE_NOTIFY_ELEMENT = createParam(OMElement.class, "useNotifyEl");
+    public static final ContextParameterInfo<OMElement> USE_NOTIFY_ELEMENT = createParam(OMElement.class, "useNotifyEl");
 
-    public static ContextParameterInfo<OMElement> NOTIFY_TO_ELEMENT = createParam(OMElement.class, "NotifyTo");
+    public static final ContextParameterInfo<OMElement> NOTIFY_TO_ELEMENT = createParam(OMElement.class, "NotifyTo");
 
-    public static ContextParameterInfo<EndpointReference> NOTIFY_TO_EPR = createParam(EndpointReference.class,
+    public static final ContextParameterInfo<EndpointReference> NOTIFY_TO_EPR = createParam(EndpointReference.class,
             "NotifyToEPR");
 
-    public static ContextParameterInfo<OMElement> SUB_POLICY = createParam(OMElement.class, "subPolicy");
+    public static final ContextParameterInfo<OMElement> SUB_POLICY = createParam(OMElement.class, "subPolicy");
 
-    public static ContextParameterInfo<OMElement> FILTER_ELEMENT = createParam(OMElement.class, "filterElement");
+    public static final ContextParameterInfo<OMElement> FILTER_ELEMENT = createParam(OMElement.class, "filterElement");
 
-    public static ContextParameterInfo<OMElement> TOPIC_EXPRESSION_ELEMENT = createParam(OMElement.class,
+    public static final ContextParameterInfo<OMElement> TOPIC_EXPRESSION_ELEMENT = createParam(OMElement.class,
             "topicExpressionEl");
 
-    public static ContextParameterInfo<OMElement> XPATH_ELEMENT = createParam(OMElement.class, "xpathEl");
+    public static final ContextParameterInfo<OMElement> XPATH_ELEMENT = createParam(OMElement.class, "xpathEl");
 
-    public static ContextParameterInfo<OMElement> SUBSCRIBE_ELEMENT = createParam(OMElement.class, "subscribeElement");
+    public static final ContextParameterInfo<OMElement> SUBSCRIBE_ELEMENT = createParam(OMElement.class, "subscribeElement");
 
-    public static ContextParameterInfo<EndpointReference> SUBSCRIBE_ELEMENT_EPR = createParam(EndpointReference.class,
+    public static final ContextParameterInfo<EndpointReference> SUBSCRIBE_ELEMENT_EPR = createParam(EndpointReference.class,
             "subscribeElement");
 
 }

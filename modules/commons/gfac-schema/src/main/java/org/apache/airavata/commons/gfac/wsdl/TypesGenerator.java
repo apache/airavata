@@ -44,9 +44,6 @@ public class TypesGenerator implements WSDLConstants {
 
     public static Types addTypes(Definition def, DOMImplementation dImpl, ServiceDescriptionType serviceDesc,
             String typens, String globalTypens) {
-        ArrayList<Element> schemaTable = new ArrayList<Element>();
-        Vector complexTypes = new Vector();
-        HashMap<String, String> knownTypes = new HashMap<String, String>();
 
         Element documentation = null;
 

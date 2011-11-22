@@ -129,11 +129,11 @@ public class SSHProvider extends AbstractProvider {
             Command cmd = session.exec(commandString.toString());
             cmd.join(COMMAND_EXECUTION_TIMEOUT, TimeUnit.SECONDS);
         } catch (ConnectionException e) {
-            new ProviderException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e);
         } catch (TransportException e) {
-            new ProviderException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e);
         } catch (IOException e) {
-            new ProviderException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e);
         } finally {
             closeSession(session);
         }

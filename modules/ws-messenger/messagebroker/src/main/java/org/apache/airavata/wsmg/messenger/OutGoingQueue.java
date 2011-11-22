@@ -47,18 +47,17 @@ public class OutGoingQueue {
 
         boolean loop = false;
         do {
-
             // this outgoing Queue is created inside the messenger which is
             // intended to send the notification message to the consumer.
             WSMGParameter.OUT_GOING_QUEUE.enqueue(outGoingMessage, outGoingMessage.getAdditionalMessageContent()
                     .getTrackId());
-
             if (WSMGParameter.measureMessageRate) {
                 storeToOutQueueCounter.addCounter();
             }
-
             if (WSMGParameter.testOutGoingQueueMaxiumLength && storeToOutQueueCounter.getCounterValue() < 1000000) {
                 loop = true;
+            }else{
+                loop = false;
             }
         } while (loop);
 

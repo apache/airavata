@@ -42,8 +42,6 @@ public class SubWorkflowNode extends NodeImpl {
      */
     public SubWorkflowNode(Graph graph) {
         super(graph);
-        this.workflow = workflow;
-
     }
 
     /**
