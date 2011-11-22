@@ -108,9 +108,12 @@ public class GramRSLGenerator {
             log.info("Setting project to " + app.getProjectAccount().getProjectAccountNumber());
             jobAttr.setProject(app.getProjectAccount().getProjectAccountNumber());
         }
+        if(app.getQueue() != null){
         if (app.getQueue().getQueueName() != null) {
+            System.out.println("Testing");
             log.info("Setting job queue to " + app.getQueue().getQueueName());
             jobAttr.setQueue(app.getQueue().getQueueName());
+        }
         }
 
         String jobType = JobType.SINGLE.toString();
