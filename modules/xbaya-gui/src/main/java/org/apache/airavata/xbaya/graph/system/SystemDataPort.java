@@ -143,7 +143,7 @@ public class SystemDataPort extends DataPort {
                     DataPort toPort = edge.getToPort();
                     toPort.copyType(this);
                 } else {
-                    new XBayaRuntimeException();
+                    throw new XBayaRuntimeException();
                 }
             }
         }

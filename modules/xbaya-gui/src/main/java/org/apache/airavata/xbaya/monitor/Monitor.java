@@ -41,7 +41,7 @@ public class Monitor extends EventProducer {
 
     protected MonitorConfiguration configuration;
 
-    protected static String DEFAULT_MODEL_KEY = "_DEFAULT_MODEL_KEY";
+    protected static final String DEFAULT_MODEL_KEY = "_DEFAULT_MODEL_KEY";
 
     protected Map<String, MonitorEventData> eventDataMap = new HashMap<String, MonitorEventData>();
 

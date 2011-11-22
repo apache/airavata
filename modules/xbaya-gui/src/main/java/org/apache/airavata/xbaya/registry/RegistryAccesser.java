@@ -212,7 +212,7 @@ public class RegistryAccesser {
 
     public void main() {
 
-        XBayaConfiguration config = null;
+        XBayaConfiguration config = new XBayaConfiguration();
         config.setMyProxyServer("myproxy.teragrid.org");
         config.setMyProxyUsername("USER");
         config.setMyProxyPassphrase("PASSWORD");

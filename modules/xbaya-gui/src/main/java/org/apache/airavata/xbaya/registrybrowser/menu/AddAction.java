@@ -22,7 +22,7 @@
 package org.apache.airavata.xbaya.registrybrowser.menu;
 
 public class AddAction extends AbstractBrowserActionItem {
-    public static String ID = "action.add";
+    public static final String ID = "action.add";
 
     public AddAction() {
         setCaption(getDefaultCaption());

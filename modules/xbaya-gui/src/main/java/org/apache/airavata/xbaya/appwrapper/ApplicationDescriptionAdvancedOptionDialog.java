@@ -147,13 +147,13 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
             JPanel panel = new JPanel();
             getContentPane().add(panel, BorderLayout.CENTER);
             JLabel lblWorkingDirectory = new JLabel("Working Directory");
-            JLabel lbljobType = new JLabel("Job Type");
-            JLabel lblProjectAccountNumber = new JLabel("Project Account Number");
-            JLabel lblProjectAccountDescription = new JLabel("Project Account Description");
-            JLabel lblQueueType = new JLabel("Queue Type");
-            JLabel lblQueueName = new JLabel("Queue Name");
-            JLabel lblRSLParameterName = new JLabel("RSL Parameter Name");
-            JLabel lslRSLParameterValue = new JLabel("RSL Parameter Value");
+//            JLabel lbljobType = new JLabel("Job Type");
+//            JLabel lblProjectAccountNumber = new JLabel("Project Account Number");
+//            JLabel lblProjectAccountDescription = new JLabel("Project Account Description");
+//            JLabel lblQueueType = new JLabel("Queue Type");
+//            JLabel lblQueueName = new JLabel("Queue Name");
+//            JLabel lblRSLParameterName = new JLabel("RSL Parameter Name");
+//            JLabel lslRSLParameterValue = new JLabel("RSL Parameter Value");
             JLabel lblInputDirectory = new JLabel("Input directory");
 
             txtInputDir = new JTextField();

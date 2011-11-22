@@ -80,12 +80,14 @@ public class NotificationHandler extends BaseHandler {
         URI myWorkflowID = null;
         URI myServiceID = URI.create(XBayaConstants.APPLICATION_SHORT_NAME);
         String userDN = this.leadContext.getUserDn();
-        if (userDN != null || userDN.trim().length() == 0) {
-            String serviceIDAsString = XBayaConstants.APPLICATION_SHORT_NAME + ":" + userDN.trim();
-            try {
-                myServiceID = new URI(null, null, serviceIDAsString, null);
-            } catch (URISyntaxException e) {
-                logger.error(e.getMessage(), e);
+        if (userDN != null ){
+            if(userDN.trim().length() == 0) {
+                String serviceIDAsString = XBayaConstants.APPLICATION_SHORT_NAME + ":" + userDN.trim();
+                try {
+                    myServiceID = new URI(null, null, serviceIDAsString, null);
+                } catch (URISyntaxException e) {
+                    logger.error(e.getMessage(), e);
+                }
             }
         }
         String myNodeID = null;
@@ -133,16 +135,15 @@ public class NotificationHandler extends BaseHandler {
         if (serviceServiceID == null) {
             serviceServiceID = URI.create("NoWorkflowIDSet");
         }
-        String serviceNodeID = this.builder.getWorkflowMonitoringContext().getWorkflowNodeId();
-        Integer serviceTimestep = null;
-        String timeStep = Integer.toString(this.builder.getWorkflowMonitoringContext().getWorkflowTimeStep());
+//        Integer serviceTimestep = null;
+/*        String timeStep = Integer.toString(this.builder.getWorkflowMonitoringContext().getWorkflowTimeStep());
         if (timeStep != null) {
             try {
                 serviceTimestep = new Integer(this.builder.getWorkflowMonitoringContext().getWorkflowTimeStep());
             } catch (NumberFormatException e) {
                 logger.error(e.getMessage(), e);
             }
-        }
+        }*/
         XmlElement soapHeader = soapEnvelope.element(null, XmlConstants.S_HEADER);
         XmlElement soapBody = soapEnvelope.element(null, XmlConstants.S_BODY);
         XmlObject headerObject = null;

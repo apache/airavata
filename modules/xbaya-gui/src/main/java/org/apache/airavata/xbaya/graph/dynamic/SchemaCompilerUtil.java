@@ -90,7 +90,6 @@ public class SchemaCompilerUtil extends SchemaCompiler {
             return;
         }
 
-        args = cl.args();
         boolean verbose = (cl.getOpt("verbose") != null);
         boolean quiet = (cl.getOpt("quiet") != null);
         if (verbose)

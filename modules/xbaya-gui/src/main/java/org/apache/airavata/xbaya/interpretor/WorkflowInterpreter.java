@@ -264,6 +264,7 @@ public class WorkflowInterpreter {
             ArrayList<Node> inputNodes = this.getInputNodesDynamically();
             Object[] values = new Object[inputNodes.size()];
             String[] keywords = new String[inputNodes.size()];
+            //Once workflow starts read the input nodes and set the Finished color to all the input nodes.
             for (int i = 0; i < inputNodes.size(); ++i) {
                 Node node = inputNodes.get(i);
                 node.getGUI().setBodyColor(NodeState.FINISHED.color);
@@ -274,7 +275,10 @@ public class WorkflowInterpreter {
                 values[i] = ((InputNode) node).getDefaultValue();
             }
             this.notifier.workflowStarted(values, keywords);
+
+
             while (this.workflow.getExecutionState() != XBayaExecutionState.STOPPED) {
+                //When all nodes get processed.. set workflow execution
                 if (getRemainNodesDynamically() == 0) {
                     if (this.mode == GUI_MODE) {
                         this.notifyPause();
