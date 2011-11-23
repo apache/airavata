@@ -105,23 +105,21 @@ public class HostDescriptionDialog extends JDialog {
     }
 
     private void setGlobusGateKeeperEPR(String epr) {
-        if (hostDescription.getType() == GlobusHostType.type) {
-            ((GlobusHostType)hostDescription).addGlobusGateKeeperEndPoint(epr);
-        }
+        hostDescription.getType().changeType(GlobusHostType.type);
+            ((GlobusHostType)hostDescription.getType()).addGlobusGateKeeperEndPoint(epr);
     }
 
     private String[] getGlobusGateKeeperEPR(String epr) {
-        if (hostDescription.getType() == GlobusHostType.type) {
-            return ((GlobusHostType)hostDescription).getGlobusGateKeeperEndPointArray();
+        if (hostDescription.getType() instanceof GlobusHostType) {
+            return ((GlobusHostType)hostDescription.getType()).getGlobusGateKeeperEndPointArray();
         } else {
             return null;
         }
     }
 
     private void setGridFTPEPR(String epr) {
-        if (hostDescription.getType() == GlobusHostType.type) {
-            ((GlobusHostType)hostDescription).addGridFTPEndPoint(epr);
-        }
+        hostDescription.getType().changeType(GlobusHostType.type);
+        ((GlobusHostType)hostDescription.getType()).addGridFTPEndPoint(epr);
     }
 
     private String[] getGridFTPEPR(String epr) {
