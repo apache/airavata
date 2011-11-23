@@ -343,7 +343,7 @@ public class XBayaGUI implements EventListener {
 			}
         });
         if (withID){
-        	newGraphCanvas.getWorkflow().getGraph().getID();
+        	engine.getWorkflowPropertyWindow().show();
         }
         return newGraphCanvas;
     }
