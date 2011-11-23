@@ -299,7 +299,6 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
         Integer serviceTimestep = null;
         InvocationEntity serviceEntity = notifier.createEntity(serviceWorkflowID, serviceServiceID, serviceNodeID,
                 serviceTimestep);
-        EndpointReference epr = new EndpointReference(this.configuration.getBrokerURL().toASCIIString());
         WorkflowTrackingContext workflowContext = notifier.createTrackingContext(new Properties(), this.configuration
                 .getBrokerURL().toASCIIString(), myWorkflowID, myServiceID, myNodeID, myTimestep);
 
