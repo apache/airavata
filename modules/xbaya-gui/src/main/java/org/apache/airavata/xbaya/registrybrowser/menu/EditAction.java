@@ -22,7 +22,7 @@
 package org.apache.airavata.xbaya.registrybrowser.menu;
 
 public class EditAction extends AbstractBrowserActionItem {
-    public static String ID = "action.edit";
+    public static final String ID = "action.edit";
 
     @Override
     public String getID() {

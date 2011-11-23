@@ -151,9 +151,9 @@ public class TestWorkflowInterpreter {
     public static Pair<String, String> invoker(String userName, String password, String workflowAsAString,
             Pair<String, String>[] inputs, Workflow workflow) throws IOException, GSSException {
 
-        WorkflowClient wfClient = null;
-        WorkflowContext context = null;
-        String topic = UUID.randomUUID().toString();
+//        WorkflowClient wfClient = null;
+//        WorkflowContext context = null;
+//        String topic = UUID.randomUUID().toString();
 
         // context = new GPELWorkflowContext(topic, userName, password);
         // wfClient = new GPELWorkflowClient(context, workflow);
@@ -166,7 +166,8 @@ public class TestWorkflowInterpreter {
         // throw new RuntimeException(e);
         // }
 
-        return wfClient.invoke(inputs);
+//        return wfClient.invoke(inputs);
+        return null;
 
     }
 

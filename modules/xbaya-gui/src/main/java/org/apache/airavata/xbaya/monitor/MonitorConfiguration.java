@@ -29,7 +29,7 @@ import org.apache.airavata.xbaya.event.Event.Type;
 import org.apache.airavata.xbaya.event.EventProducer;
 import org.apache.airavata.common.utils.StringUtil;
 
-public class MonitorConfiguration extends EventProducer {
+public class MonitorConfiguration extends EventProducer implements Cloneable{
 
     // private static final Logger logger = LoggerFactory.getLogger();
 

@@ -222,11 +222,11 @@ public class SSHProvider extends AbstractProvider {
             }
 
         } catch (ConnectionException e) {
-            new ProviderException(e.getMessage(), e);
+            throw new  ProviderException(e.getMessage(), e);
         } catch (TransportException e) {
-            new ProviderException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e);
         } catch (IOException e) {
-            new ProviderException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e);
         } finally {
             closeSession(session);
         }

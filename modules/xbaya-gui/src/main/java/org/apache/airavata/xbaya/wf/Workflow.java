@@ -82,7 +82,7 @@ import org.xmlpull.infoset.XmlNamespace;
 import xsul5.XmlConstants;
 import xsul5.wsdl.WsdlDefinitions;
 
-public class Workflow {
+public class Workflow implements Cloneable {
 
     /**
      * Namespace prefix
