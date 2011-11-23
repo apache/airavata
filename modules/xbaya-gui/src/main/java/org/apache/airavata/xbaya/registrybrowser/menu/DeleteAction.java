@@ -22,7 +22,7 @@
 package org.apache.airavata.xbaya.registrybrowser.menu;
 
 public class DeleteAction extends AbstractBrowserActionItem {
-    public static String ID = "action.delete";
+    public static final String ID = "action.delete";
 
     public DeleteAction() {
         setCaption(getDefaultCaption());
