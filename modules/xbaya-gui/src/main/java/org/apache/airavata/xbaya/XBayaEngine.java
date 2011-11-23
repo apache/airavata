@@ -76,16 +76,14 @@ public class XBayaEngine {
 
     private SystemComponentRegistry componentRegistry;
 
-    private static XBayaEngine engine;
 
     /**
      * Constructs a ApplicationClient.
-     * 
+     *
      * @param configuration
      */
     public XBayaEngine(XBayaConfiguration configuration) {
         this.configuration = configuration;
-        this.engine = this;
 
         // Creates some essential objects.
 
@@ -117,17 +115,8 @@ public class XBayaEngine {
     }
 
     /**
-     * Static get instance method
-     * 
-     * @return
-     */
-    public static XBayaEngine getInstance() {
-        return engine;
-    }
-
-    /**
      * Returns the configuration.
-     * 
+     *
      * @return The configuration
      */
     public XBayaConfiguration getConfiguration() {
@@ -137,7 +126,7 @@ public class XBayaEngine {
     /**
      * Returns the XwfGui. The XwfGui is either XwfAppletGui in case of the applet, or XwfApplicationGui in case of the
      * application.
-     * 
+     *
      * @return the XwfGui
      */
     public XBayaGUI getGUI() {
@@ -146,7 +135,7 @@ public class XBayaEngine {
 
     /**
      * Returns the Workflow Client.
-     * 
+     *
      * @return the Workflow Client
      */
     public WorkflowClient getWorkflowClient() {
@@ -155,7 +144,7 @@ public class XBayaEngine {
 
     /**
      * Returns the subWorkflowUpdater.
-     * 
+     *
      * @return The subWorkflowUpdater
      */
     public SubWorkflowUpdater getSubWorkflowUpdater() {
@@ -164,7 +153,7 @@ public class XBayaEngine {
 
     /**
      * Sets the workflow.
-     * 
+     *
      * @param workflow
      *            The workflow
      */
@@ -174,7 +163,7 @@ public class XBayaEngine {
 
     /**
      * Return the current workflow.
-     * 
+     *
      * @return The current workflow
      */
     public Workflow getWorkflow() {
@@ -183,7 +172,7 @@ public class XBayaEngine {
 
     /**
      * Returns the ErrorWindow. The ErrorWindow is used to show error messages.
-     * 
+     *
      * @return the ErrorWindow
      */
     public ErrorWindow getErrorWindow() {
@@ -192,7 +181,7 @@ public class XBayaEngine {
 
     /**
      * Returns the monitor.
-     * 
+     *
      * @return The monitor
      */
     public Monitor getMonitor() {
@@ -208,7 +197,7 @@ public class XBayaEngine {
 
     /**
      * Disposes on exit.
-     * 
+     *
      * @throws XBayaException
      */
     public void dispose() throws XBayaException {
@@ -384,7 +373,7 @@ public class XBayaEngine {
      */
     public WorkflowPropertyWindow getWorkflowPropertyWindow() {
         if (this.workflowPropertiesWindow == null) {
-            this.workflowPropertiesWindow = new WorkflowPropertyWindow(this.engine);
+            this.workflowPropertiesWindow = new WorkflowPropertyWindow(this);
         }
         return this.workflowPropertiesWindow;
     }
