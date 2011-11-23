@@ -383,7 +383,7 @@
 				<include>wsmg:wsmg</include>
 				<include>ode-proxy:weps-beans</include>
 				<include>atomixmiser:atomixmiser</include>
-				<include>globus:tranfer-api-client</include>
+                <include>globus:transfer-api-client</include>
 			</includes>
 
 		</dependencySet>
