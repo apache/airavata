@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 public class JCRComponentRegistry extends ComponentRegistry {
 
     private static final Logger log = LoggerFactory.getLogger(JCRComponentRegistry.class);
-    private static final String NAME = "JCR Components";
+    private static final String NAME = "Application Services";
 
     private JCRRegistry registry;
 
