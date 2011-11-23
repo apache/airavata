@@ -106,17 +106,24 @@ public abstract class GraphImpl implements Graph {
 
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#getID()
-     */
-    public String gtID() throws XBayaException{
-        if (this.id == null) {
-            this.id = this.name;
-            // If its still null
-            if (null == this.id) {
-                throw new XBayaException("The workflow ID is null");
-            }
+    */
+        public String getID() {
+             if (this.id == null) {
+                // No other choice but to prompt
+                // the user to pick an id
+                final XBayaEngine engine = XBayaEngine.getInstance();
+    //            JOptionPane.showMessageDialog(engine.getGUI().getFrame(), "Provide a relatively unique workflow name",
+    //                    "Workflow Name", JOptionPane.OK_OPTION);
+                engine.getWorkflowPropertyWindow().show();
+                 this.id = this.name;
+                 // If its still null
+                 if (null == this.id) {
+                    throw new XBayaRuntimeException("The workflow ID is null");
+                 }
+             }
+            return this.id;
         }
-        return this.id;
-    }
+
 
     /**
      * This will only be done for the ODE
