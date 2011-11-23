@@ -417,7 +417,7 @@ public class ODEWSDLTransformer {
                         uri = new URI(ODEEprEndingWithPort + "/ode/processes/"
                                 + StringUtil.convertToJavaIdentifier(workflowName));
                     } catch (URISyntaxException e) {
-                        new RuntimeException(e);
+                        throw new RuntimeException(e);
                     }
                     address.setAttributeValue("location", uri.toString());
                 } else {

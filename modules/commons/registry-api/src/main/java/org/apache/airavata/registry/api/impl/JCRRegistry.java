@@ -462,7 +462,7 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
                 }
             }
         } catch (Exception e) {
-            new ServiceDescriptionRetrieveException(e);
+            throw new ServiceDescriptionRetrieveException(e);
         } finally {
             closeSession(session);
         }

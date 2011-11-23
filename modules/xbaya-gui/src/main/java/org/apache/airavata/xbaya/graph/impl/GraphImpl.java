@@ -32,6 +32,7 @@ import javax.swing.JOptionPane;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.XBayaVersion;
 import org.apache.airavata.xbaya.graph.ControlPort;
@@ -106,18 +107,12 @@ public abstract class GraphImpl implements Graph {
     /**
      * @see org.apache.airavata.xbaya.graph.Graph#getID()
      */
-    public String getID() {
+    public String gtID() throws XBayaException{
         if (this.id == null) {
-            // No other choice but to prompt
-            // the user to pick an id
-            final XBayaEngine engine = XBayaEngine.getInstance();
-//            JOptionPane.showMessageDialog(engine.getGUI().getFrame(), "Provide a relatively unique workflow name",
-//                    "Workflow Name", JOptionPane.OK_OPTION);
-            engine.getWorkflowPropertyWindow().show();
             this.id = this.name;
             // If its still null
             if (null == this.id) {
-                throw new XBayaRuntimeException("The workflow ID is null");
+                throw new XBayaException("The workflow ID is null");
             }
         }
         return this.id;

@@ -108,10 +108,11 @@ public class PublishedMessageHandler extends AddressingBasedDispatcher {
         if (addPhase == null) {
             logger.error("unable to locate addressing phase object");
         }
-
-        if (msgContext.getCurrentPhaseIndex() + 1 == addPhase.getHandlerCount()) {
-            if (msgContext.getAxisService() == null || msgContext.getAxisOperation() == null)
-                AddressingFaultsHelper.triggerActionNotSupportedFault(msgContext, msgContext.getWSAAction());
+        if (msgContext != null) {
+            if (msgContext.getCurrentPhaseIndex() + 1 == addPhase.getHandlerCount()) {
+                if (msgContext.getAxisService() == null || msgContext.getAxisOperation() == null)
+                    AddressingFaultsHelper.triggerActionNotSupportedFault(msgContext, msgContext.getWSAAction());
+            }
         }
 
     }

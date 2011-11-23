@@ -105,12 +105,14 @@ public class NotificationHandler extends BaseHandler {
         URI myWorkflowID = null;
         URI myServiceID = URI.create(XBayaConstants.APPLICATION_SHORT_NAME);
         String userDN = this.builder.getUserIdentifier();
-        if (userDN != null || userDN.trim().length() == 0) {
-            String serviceIDAsString = XBayaConstants.APPLICATION_SHORT_NAME + ":" + userDN.trim();
-            try {
-                myServiceID = new URI(null, null, serviceIDAsString, null);
-            } catch (URISyntaxException e) {
-                logger.error(e.getMessage(), e);
+        if (userDN != null) {
+            if (userDN.trim().length() == 0) {
+                String serviceIDAsString = XBayaConstants.APPLICATION_SHORT_NAME + ":" + userDN.trim();
+                try {
+                    myServiceID = new URI(null, null, serviceIDAsString, null);
+                } catch (URISyntaxException e) {
+                    logger.error(e.getMessage(), e);
+                }
             }
         }
         String myNodeID = null;

@@ -46,7 +46,7 @@ public class RunTimeStatistics {
     public static long maxSuccessfulDeliveryTime = 0;
     public static long minFailedDeliveryTime = Long.MAX_VALUE;
     public static long maxFailedDeliveryTime = 0;
-    public static HashMap<String, Integer> failConsumerList = new HashMap<String, Integer>();
+    public static final HashMap<String, Integer> failConsumerList = new HashMap<String, Integer>();
 
     // public static TreeSet currentBlackList=new TreeSet();
     // public static TreeSet previousBlackList=new TreeSet();
