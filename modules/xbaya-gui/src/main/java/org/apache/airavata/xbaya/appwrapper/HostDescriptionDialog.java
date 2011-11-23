@@ -122,9 +122,9 @@ public class HostDescriptionDialog extends JDialog {
         ((GlobusHostType)hostDescription.getType()).addGridFTPEndPoint(epr);
     }
 
-    private String[] getGridFTPEPR(String epr) {
-        if (hostDescription.getType() == GlobusHostType.type) {
-            return ((GlobusHostType)hostDescription).getGridFTPEndPointArray();
+    private String[] getGridFTPEPR() {
+        if (hostDescription.getType() instanceof GlobusHostType) {
+            return ((GlobusHostType)hostDescription.getType()).getGridFTPEndPointArray();
         } else {
             return null;
         }
