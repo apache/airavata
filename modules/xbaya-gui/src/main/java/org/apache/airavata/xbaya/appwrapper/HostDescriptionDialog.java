@@ -97,7 +97,7 @@ public class HostDescriptionDialog extends JDialog {
           setGlobusGateKeeperEPR(globusGateKeeperEPR);
         }
         if(gridFTP != null) {
-          setGridFTPEPR(globusGateKeeperEPR);
+          setGridFTPEPR(gridFTP);
         }
 
         saveHostDescription();
