@@ -30,6 +30,7 @@ public class WorkflowContextHeaderBuilder {
 
     private SecurityContextDocument.SecurityContext securityContext = null;
 
+
     private SoaServiceEprsDocument.SoaServiceEprs soaServiceEprs = null;
 
     private String userIdentifier = null;
@@ -190,7 +191,7 @@ public class WorkflowContextHeaderBuilder {
     }
 
     public WorkflowContextHeaderBuilder setGridMyProxyRepository(String myProxyServer, String userName,
-            String password, int lifeTimeInHours) {
+            String password, int lifeTimeInHours,String trustCertLocation) {
         if (this.securityContext == null) {
             this.securityContext = SecurityContextDocument.SecurityContext.Factory.newInstance();
         }
@@ -200,6 +201,7 @@ public class WorkflowContextHeaderBuilder {
         gridMyproxyRepository.setUsername(userName);
         gridMyproxyRepository.setPassword(password);
         gridMyproxyRepository.setLifeTimeInhours(lifeTimeInHours);
+        gridMyproxyRepository.setTrustCertLocation(trustCertLocation);
         return this;
     }
 
