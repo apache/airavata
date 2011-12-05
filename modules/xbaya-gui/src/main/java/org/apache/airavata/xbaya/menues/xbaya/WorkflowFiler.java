@@ -108,7 +108,9 @@ public class WorkflowFiler {
                     XmlElement workflowElement = XMLUtil.loadXML(file);
                     workflow = new Workflow(workflowElement);
                 }
-                this.engine.setWorkflow(workflow);
+                GraphCanvas newGraphCanvas = engine.getGUI().newGraphCanvas(true);
+                newGraphCanvas.setWorkflow(workflow);
+                //this.engine.setWorkflow(workflow);
                 engine.getGUI().getGraphCanvas().setWorkflowFile(file);
             } catch (IOException e) {
                 this.engine.getErrorWindow().error(ErrorMessages.OPEN_FILE_ERROR, e);
