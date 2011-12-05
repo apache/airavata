@@ -21,45 +21,52 @@
 
 package org.apache.airavata.xbaya.appwrapper;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Map;
 
-import javax.swing.*;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.JobTypeType;
+import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaComboBox;
+import org.apache.airavata.xbaya.gui.XBayaLabel;
+import org.apache.airavata.xbaya.gui.XBayaTextField;
 
 public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private static final long serialVersionUID = 3920479739097405014L;
-    private JTextField txtInputDir;
-    private JTextField txtWorkingDir;
-    private JTextField txtOutputDir;
-    private JTextField txtSTDIN;
-    private JTextField txtSTDOUT;
-    private JTextField txtSTDERR;
+    private XBayaTextField txtInputDir;
+    private XBayaTextField txtWorkingDir;
+    private XBayaTextField txtOutputDir;
+    private XBayaTextField txtSTDIN;
+    private XBayaTextField txtSTDOUT;
+    private XBayaTextField txtSTDERR;
     private XBayaComboBox jobType;
-    private JTextField projectAccountNumber;
-    private JTextField projectAccountDescription;
-    private JTextField queueType;
-    private JTextField queueName;
-    private JTextField rslParameterName;
-    private JTextField rslParameterValue;
+    private XBayaTextField projectAccountNumber;
+    private XBayaTextField projectAccountDescription;
+    private XBayaTextField queueType;
+    private XBayaTextField queueName;
+    private XBayaTextField rslParameterName;
+    private XBayaTextField rslParameterValue;
     private JTable tblEnv;
     private ApplicationDeploymentDescription shellApplicationDescription;
     private DefaultTableModel defaultTableModel;
@@ -115,38 +122,30 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         setModal(true);
         setBounds(100, 100, 654, 417);
         setLocationRelativeTo(null);
-        getContentPane().setLayout(new BorderLayout());
-        {
-            JPanel buttonPane = new JPanel();
-            buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-            getContentPane().add(buttonPane, BorderLayout.SOUTH);
-            {
-                okButton = new JButton("Update");
-                okButton.setActionCommand("OK");
-                okButton.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        saveApplicationDescriptionAdvancedOptions();
-                        close();
-                    }
-                });
-                buttonPane.add(okButton);
-                getRootPane().setDefaultButton(okButton);
+        GridPanel buttonPane = new GridPanel();
+        okButton = new JButton("Update");
+        okButton.setActionCommand("OK");
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                saveApplicationDescriptionAdvancedOptions();
+                close();
             }
-            {
-                JButton cancelButton = new JButton("Cancel");
-                cancelButton.setActionCommand("Cancel");
-                cancelButton.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        close();
-                    }
-                });
-                buttonPane.add(cancelButton);
+        });
+        getRootPane().setDefaultButton(okButton);
+    
+    
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.setActionCommand("Cancel");
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                close();
             }
-        }
-        {
-            JPanel panel = new JPanel();
-            getContentPane().add(panel, BorderLayout.CENTER);
-            JLabel lblWorkingDirectory = new JLabel("Working Directory");
+        });
+            
+        
+        
+    	GridPanel panel = new GridPanel();
+        
 //            JLabel lbljobType = new JLabel("Job Type");
 //            JLabel lblProjectAccountNumber = new JLabel("Project Account Number");
 //            JLabel lblProjectAccountDescription = new JLabel("Project Account Description");
@@ -154,301 +153,142 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 //            JLabel lblQueueName = new JLabel("Queue Name");
 //            JLabel lblRSLParameterName = new JLabel("RSL Parameter Name");
 //            JLabel lslRSLParameterValue = new JLabel("RSL Parameter Value");
-            JLabel lblInputDirectory = new JLabel("Input directory");
+    	
+        txtInputDir = new XBayaTextField();
+        txtWorkingDir = new XBayaTextField();
+        
+        XBayaLabel lblWorkingDirectory = new XBayaLabel("Working Directory",txtWorkingDir);
+        XBayaLabel lblInputDirectory = new XBayaLabel("Input directory",txtInputDir);
 
-            txtInputDir = new JTextField();
-            txtInputDir.setColumns(10);
-            txtWorkingDir = new JTextField();
-            txtWorkingDir.setColumns(10);
-            JLabel lblLocations = new JLabel("Locations");
-            lblLocations.setFont(new Font("Tahoma", Font.BOLD, 11));
+        JLabel lblLocations = new JLabel("Locations");
+        lblLocations.setFont(new Font("Tahoma", Font.BOLD, 11));
 
-            txtOutputDir = new JTextField();
-            txtOutputDir.setColumns(10);
+        txtOutputDir = new XBayaTextField();
 
-            JLabel lblOutputDirectory = new JLabel("Output directory");
+        XBayaLabel lblOutputDirectory = new XBayaLabel("Output directory",txtOutputDir);
 
-            JSeparator separator = new JSeparator();
+        JSeparator separator = new JSeparator();
 
-            JLabel label = new JLabel("Program data");
-            label.setFont(new Font("Tahoma", Font.BOLD, 11));
+        JLabel lblProgramData = new JLabel("Program data");
+        lblProgramData.setFont(new Font("Tahoma", Font.BOLD, 11));
 
-            JLabel lblStdin = new JLabel("STDIN");
-            lblStdin.setHorizontalAlignment(SwingConstants.TRAILING);
 
-            txtSTDIN = new JTextField();
-            txtSTDIN.setColumns(10);
+        txtSTDIN = new XBayaTextField();
+        XBayaLabel lblStdin = new XBayaLabel("STDIN",txtSTDIN);
 
-            JLabel lblStdout = new JLabel("STDOUT");
-            lblStdout.setHorizontalAlignment(SwingConstants.TRAILING);
 
-            txtSTDOUT = new JTextField();
-            txtSTDOUT.setColumns(10);
+        txtSTDOUT = new XBayaTextField();
+        XBayaLabel lblStdout = new XBayaLabel("STDOUT",txtSTDOUT);
 
-            JLabel lblStderr = new JLabel("STDERR");
-            lblStderr.setHorizontalAlignment(SwingConstants.TRAILING);
 
-            txtSTDERR = new JTextField();
-            txtSTDERR.setColumns(10);
+        txtSTDERR = new XBayaTextField();
+        XBayaLabel lblStderr = new XBayaLabel("STDERR",txtSTDERR);
 
-            JLabel other = new JLabel("Other");
-            other.setFont(new Font("Tahoma", Font.BOLD, 11));
-            lblStdin.setHorizontalAlignment(SwingConstants.TRAILING);
+        JLabel other = new JLabel("Other");
+        other.setFont(new Font("Tahoma", Font.BOLD, 11));
 
-            projectAccountNumber = new JTextField();
-            projectAccountNumber.setColumns(10);
+        projectAccountNumber = new XBayaTextField();
 
-            projectAccountDescription = new JTextField();
-            projectAccountDescription.setColumns(10);
+        projectAccountDescription = new XBayaTextField();
 
-            queueName = new JTextField();
-            queueName.setColumns(10);
+        queueName = new XBayaTextField();
 
-            queueType = new JTextField();
-            queueType.setColumns(10);
+        queueType = new XBayaTextField();
 
-            rslParameterName = new JTextField();
-            rslParameterName.setColumns(10);
+        rslParameterName = new XBayaTextField();
+        rslParameterValue = new XBayaTextField();
 
-            rslParameterValue = new JTextField();
-            rslParameterValue.setColumns(10);
+        this.jobType = new XBayaComboBox(new DefaultComboBoxModel(new String[]
+                {JobTypeType.OPEN_MP.toString(),JobTypeType.MPI.toString(),JobTypeType.SERIAL.toString()}));
+        this.jobType.setEditable(false);
 
-            this.jobType = new XBayaComboBox(new DefaultComboBoxModel(new String[]
-                    {JobTypeType.OPEN_MP.toString(),JobTypeType.MPI.toString(),JobTypeType.SERIAL.toString()}));
-            this.jobType.setEditable(false);
+        JSeparator separator_1 = new JSeparator();
+        separator_1.setOrientation(SwingConstants.VERTICAL);
 
-            JSeparator separator_1 = new JSeparator();
-            separator_1.setOrientation(SwingConstants.VERTICAL);
+        JLabel lblEnvironmentalVariables = new JLabel("Environmental Variables");
+        lblEnvironmentalVariables.setFont(new Font("Tahoma", Font.BOLD, 11));
 
-            JLabel lblEnvironmentalVariables = new JLabel("Environmental Variables");
-            lblEnvironmentalVariables.setFont(new Font("Tahoma", Font.BOLD, 11));
+        JScrollPane scrollPane = new JScrollPane();
 
-            JScrollPane scrollPane = new JScrollPane();
+        btnDeleteVariable = new JButton("Delete variable");
+        btnDeleteVariable.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                deleteSelectedRows();
+            }
+        });
+        btnDeleteVariable.setEnabled(false);
+        tblEnv = new JTable();
+        tblEnv.setFillsViewportHeight(true);
+        scrollPane.setViewportView(tblEnv);
+        tblEnv.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        defaultTableModel = new DefaultTableModel(new Object[][] { { null, null }, }, new String[] { "Name",
+                "Value" }) {
+            Class[] columnTypes = new Class[] { String.class, String.class };
 
-            btnDeleteVariable = new JButton("Delete variable");
-            btnDeleteVariable.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    deleteSelectedRows();
+            public Class getColumnClass(int columnIndex) {
+                return columnTypes[columnIndex];
+            }
+        };
+        tblEnv.setModel(defaultTableModel);
+        defaultTableModel.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent arg0) {
+                if (!tableModelChanging) {
+                    addNewRowIfLastIsNotEmpty();
                 }
-            });
-            btnDeleteVariable.setEnabled(false);
-            GroupLayout gl_panel = new GroupLayout(panel);
-            gl_panel.setHorizontalGroup(gl_panel
-                    .createParallelGroup(Alignment.LEADING)
-                    .addGroup(
-                            gl_panel.createSequentialGroup()
-                                    .addContainerGap()
-                                    .addGroup(
-                                            gl_panel.createParallelGroup(Alignment.LEADING)
-                                                    .addGroup(
-                                                            gl_panel.createSequentialGroup()
-                                                                    .addComponent(lblLocations,
-                                                                            GroupLayout.DEFAULT_SIZE, 190,
-                                                                            Short.MAX_VALUE).addGap(135))
-                                                    .addGroup(
-                                                            gl_panel.createSequentialGroup()
-                                                                    .addGroup(
-                                                                            gl_panel.createParallelGroup(
-                                                                                    Alignment.TRAILING)
-                                                                                    .addGroup(
-                                                                                            gl_panel.createSequentialGroup()
-                                                                                                    .addComponent(
-                                                                                                            lblStderr,
-                                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                                            80,
-                                                                                                            GroupLayout.PREFERRED_SIZE)
-                                                                                                    .addGap(18)
-                                                                                                    .addComponent(
-                                                                                                            txtSTDERR,
-                                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                                            181,
-                                                                                                            GroupLayout.PREFERRED_SIZE))
-                                                                                    .addGroup(
-                                                                                            gl_panel.createSequentialGroup()
-                                                                                                    .addComponent(
-                                                                                                            lblStdout,
-                                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                                            72,
-                                                                                                            GroupLayout.PREFERRED_SIZE)
-                                                                                                    .addGap(18)
-                                                                                                    .addComponent(
-                                                                                                            txtSTDOUT,
-                                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                                            181,
-                                                                                                            GroupLayout.PREFERRED_SIZE))
-                                                                                    .addGroup(
-                                                                                            gl_panel.createSequentialGroup()
-                                                                                                    .addComponent(
-                                                                                                            lblStdin,
-                                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                                            86,
-                                                                                                            GroupLayout.PREFERRED_SIZE)
-                                                                                                    .addGap(18)
-                                                                                                    .addComponent(
-                                                                                                            txtSTDIN,
-                                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                                            181,
-                                                                                                            GroupLayout.PREFERRED_SIZE)))
-                                                                    .addPreferredGap(ComponentPlacement.UNRELATED))
-                                                    .addComponent(separator, GroupLayout.PREFERRED_SIZE, 293,
-                                                            GroupLayout.PREFERRED_SIZE)
-                                                    .addGroup(
-                                                            gl_panel.createSequentialGroup()
-                                                                    .addGroup(
-                                                                            gl_panel.createParallelGroup(
-                                                                                    Alignment.TRAILING)
-                                                                                    .addGroup(
-                                                                                            gl_panel.createSequentialGroup()
-                                                                                                    .addComponent(
-                                                                                                            lblWorkingDirectory)
-                                                                                                    .addGap(18))
-                                                                                    .addGroup(
-                                                                                            gl_panel.createSequentialGroup()
-                                                                                                    .addComponent(
-                                                                                                            lblInputDirectory)
-                                                                                                    .addGap(17))
-                                                                                    .addGroup(
-                                                                                            gl_panel.createSequentialGroup()
-                                                                                                    .addComponent(
-                                                                                                            lblOutputDirectory)
-                                                                                                    .addGap(18)))
-                                                                    .addGroup(
-                                                                            gl_panel.createParallelGroup(
-                                                                                    Alignment.LEADING, false)
-                                                                                    .addComponent(txtOutputDir)
-                                                                                    .addComponent(txtInputDir)
-                                                                                    .addComponent(txtWorkingDir,
-                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                            179,
-                                                                                            GroupLayout.PREFERRED_SIZE)))
-                                                    .addComponent(label, GroupLayout.PREFERRED_SIZE, 227,
-                                                            GroupLayout.PREFERRED_SIZE))
-                                    .addGap(2)
-                                    .addComponent(separator_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                                            GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(ComponentPlacement.UNRELATED)
-                                    .addGroup(
-                                            gl_panel.createParallelGroup(Alignment.TRAILING)
-                                                    .addGroup(
-                                                            gl_panel.createParallelGroup(Alignment.LEADING)
-                                                                    .addComponent(lblEnvironmentalVariables)
-                                                                    .addGroup(
-                                                                            gl_panel.createSequentialGroup()
-                                                                                    .addGap(10)
-                                                                                    .addComponent(scrollPane,
-                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                            258,
-                                                                                            GroupLayout.PREFERRED_SIZE)))
-                                                    .addComponent(btnDeleteVariable)).addContainerGap()));
-            gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(
-                    gl_panel.createSequentialGroup()
-                            .addGroup(
-                                    gl_panel.createParallelGroup(Alignment.LEADING)
-                                            .addComponent(separator_1, GroupLayout.PREFERRED_SIZE, 212,
-                                                    GroupLayout.PREFERRED_SIZE)
-                                            .addGroup(
-                                                    gl_panel.createSequentialGroup()
-                                                            .addComponent(lblLocations)
-                                                            .addPreferredGap(ComponentPlacement.RELATED)
-                                                            .addGroup(
-                                                                    gl_panel.createParallelGroup(Alignment.BASELINE)
-                                                                            .addComponent(lblWorkingDirectory)
-                                                                            .addComponent(txtWorkingDir,
-                                                                                    GroupLayout.PREFERRED_SIZE,
-                                                                                    GroupLayout.DEFAULT_SIZE,
-                                                                                    GroupLayout.PREFERRED_SIZE))
-                                                            .addPreferredGap(ComponentPlacement.RELATED)
-                                                            .addGroup(
-                                                                    gl_panel.createParallelGroup(Alignment.BASELINE)
-                                                                            .addComponent(lblInputDirectory)
-                                                                            .addComponent(txtInputDir,
-                                                                                    GroupLayout.PREFERRED_SIZE,
-                                                                                    GroupLayout.DEFAULT_SIZE,
-                                                                                    GroupLayout.PREFERRED_SIZE))
-                                                            .addPreferredGap(ComponentPlacement.RELATED)
-                                                            .addGroup(
-                                                                    gl_panel.createParallelGroup(Alignment.BASELINE)
-                                                                            .addComponent(txtOutputDir,
-                                                                                    GroupLayout.PREFERRED_SIZE,
-                                                                                    GroupLayout.DEFAULT_SIZE,
-                                                                                    GroupLayout.PREFERRED_SIZE)
-                                                                            .addComponent(lblOutputDirectory))
-                                                            .addPreferredGap(ComponentPlacement.RELATED)
-                                                            .addComponent(separator, GroupLayout.PREFERRED_SIZE, 2,
-                                                                    GroupLayout.PREFERRED_SIZE)
-                                                            .addPreferredGap(ComponentPlacement.RELATED)
-                                                            .addComponent(label)
-                                                            .addGap(3)
-                                                            .addGroup(
-                                                                    gl_panel.createParallelGroup(Alignment.BASELINE)
-                                                                            .addComponent(lblStdin)
-                                                                            .addComponent(txtSTDIN,
-                                                                                    GroupLayout.PREFERRED_SIZE,
-                                                                                    GroupLayout.DEFAULT_SIZE,
-                                                                                    GroupLayout.PREFERRED_SIZE))
-                                                            .addGap(9)
-                                                            .addGroup(
-                                                                    gl_panel.createParallelGroup(Alignment.BASELINE)
-                                                                            .addComponent(lblStdout)
-                                                                            .addComponent(txtSTDOUT,
-                                                                                    GroupLayout.PREFERRED_SIZE,
-                                                                                    GroupLayout.DEFAULT_SIZE,
-                                                                                    GroupLayout.PREFERRED_SIZE))
-                                                            .addGap(9)
-                                                            .addGroup(
-                                                                    gl_panel.createParallelGroup(Alignment.BASELINE)
-                                                                            .addComponent(lblStderr)
-                                                                            .addComponent(txtSTDERR,
-                                                                                    GroupLayout.PREFERRED_SIZE,
-                                                                                    GroupLayout.DEFAULT_SIZE,
-                                                                                    GroupLayout.PREFERRED_SIZE)))
-                                            .addGroup(
-                                                    gl_panel.createSequentialGroup()
-                                                            .addComponent(lblEnvironmentalVariables)
-                                                            .addPreferredGap(ComponentPlacement.RELATED)
-                                                            .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 153,
-                                                                    GroupLayout.PREFERRED_SIZE)
-                                                            .addPreferredGap(ComponentPlacement.RELATED)
-                                                            .addComponent(btnDeleteVariable)))
-                            .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+            }
 
-            tblEnv = new JTable();
-            tblEnv.setFillsViewportHeight(true);
-            scrollPane.setViewportView(tblEnv);
-            tblEnv.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            defaultTableModel = new DefaultTableModel(new Object[][] { { null, null }, }, new String[] { "Name",
-                    "Value" }) {
-                Class[] columnTypes = new Class[] { String.class, String.class };
+        });
+        tblEnv.getColumnModel().getColumn(0).setPreferredWidth(67);
+        tblEnv.getColumnModel().getColumn(1).setPreferredWidth(158);
+        ListSelectionModel selectionModel = tblEnv.getSelectionModel();
+        selectionModel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
-                public Class getColumnClass(int columnIndex) {
-                    return columnTypes[columnIndex];
-                }
-            };
-            tblEnv.setModel(defaultTableModel);
-            defaultTableModel.addTableModelListener(new TableModelListener() {
-                @Override
-                public void tableChanged(TableModelEvent arg0) {
-                    if (!tableModelChanging) {
-                        addNewRowIfLastIsNotEmpty();
-                    }
-                }
+        selectionModel.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                btnDeleteVariable.setEnabled(tblEnv.getSelectedRows().length > 0);
+            }
 
-            });
-            tblEnv.getColumnModel().getColumn(0).setPreferredWidth(67);
-            tblEnv.getColumnModel().getColumn(1).setPreferredWidth(158);
-            ListSelectionModel selectionModel = tblEnv.getSelectionModel();
-            selectionModel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
-            selectionModel.addListSelectionListener(new ListSelectionListener() {
-                public void valueChanged(ListSelectionEvent e) {
-                    btnDeleteVariable.setEnabled(tblEnv.getSelectedRows().length > 0);
-                }
-
-            });
-            gl_panel.setAutoCreateGaps(true);
-            gl_panel.setAutoCreateContainerGaps(true);
-            panel.setLayout(gl_panel);
-        }
+        });
+        
+        GridPanel leftPanel = new GridPanel();
+        leftPanel.add(lblLocations);
+        leftPanel.add(new JLabel());
+        leftPanel.add(lblWorkingDirectory);
+        leftPanel.add(txtWorkingDir);
+        leftPanel.add(lblInputDirectory);
+        leftPanel.add(txtInputDir);
+        leftPanel.add(lblOutputDirectory);
+        leftPanel.add(txtOutputDir);
+        leftPanel.add(lblProgramData);
+        leftPanel.add(new JLabel());
+        leftPanel.add(lblStdin);
+        leftPanel.add(txtSTDIN);
+        leftPanel.add(lblStdout);
+        leftPanel.add(txtSTDOUT);
+        leftPanel.add(lblStderr);
+        leftPanel.add(txtSTDERR);
+        
+        SwingUtil.layoutToGrid(leftPanel.getSwingComponent(), 8, 2, SwingUtil.WEIGHT_NONE, 1);
+        
+        GridPanel rightPanel = new GridPanel();
+        rightPanel.add(lblEnvironmentalVariables);
+        rightPanel.add(scrollPane);
+        rightPanel.add(btnDeleteVariable);
+        
+        SwingUtil.layoutToGrid(rightPanel.getSwingComponent(), 3, 1, 1, 0);
+        
+        panel.add(leftPanel);
+        panel.add(rightPanel);
+        
+        SwingUtil.layoutToGrid(panel.getSwingComponent(), 1, 2, SwingUtil.WEIGHT_NONE, SwingUtil.WEIGHT_EQUALLY);
+        
+        buttonPane.add(okButton);
+        buttonPane.add(cancelButton);
+        
+        getContentPane().add(panel.getSwingComponent());
+        getContentPane().add(buttonPane.getSwingComponent());
+        SwingUtil.layoutToGrid(getContentPane(), 2, 1, 0, 0);
         setResizable(false);
         getRootPane().setDefaultButton(okButton);
     }
