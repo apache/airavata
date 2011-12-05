@@ -432,6 +432,12 @@
 									</documentation>
 								</annotation>
 							</element>
+                            <element name="trust-cert-location" type="string">
+								<annotation>
+									<documentation xml:lang="en"> MyProxy Proxy Life time.
+									</documentation>
+								</annotation>
+							</element>
 						</sequence>
 					</complexType>
 				</element>
