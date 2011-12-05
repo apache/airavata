@@ -21,9 +21,7 @@
 
 package org.apache.airavata.xbaya.appwrapper;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,19 +33,15 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.swing.DefaultListCellRenderer;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JSeparator;
-import javax.swing.JTextField;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 
+import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -55,16 +49,19 @@ import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.gui.GridPanel;
+import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaLinkButton;
+import org.apache.airavata.xbaya.gui.XBayaTextField;
 
 public class ApplicationDescriptionDialog extends JDialog implements ActionListener {
     /**
 	 * 
 	 */
     private static final long serialVersionUID = -2745085755585610025L;
-    private JTextField txtExecPath;
-    private JTextField txtAppName;
-    private JTextField txtTempDir;
+    private XBayaTextField txtExecPath;
+    private XBayaTextField txtAppName;
+    private XBayaTextField txtTempDir;
 
     private Registry registry;
     private ApplicationDeploymentDescription shellApplicationDescription;
@@ -142,11 +139,12 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         setBounds(100, 100, 671, 454);
         setModal(true);
         setLocationRelativeTo(null);
-        getContentPane().setLayout(new BorderLayout());
+        GridPanel buttonPane = new GridPanel();
+//        getContentPane().setLayout(new BorderLayout());
         {
-            JPanel buttonPane = new JPanel();
-            buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-            getContentPane().add(buttonPane, BorderLayout.SOUTH);
+        	
+//            buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+//            getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
             lblError = new JLabel("");
             lblError.setForeground(Color.RED);
@@ -177,36 +175,38 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             }
         }
         {
-            JPanel panel = new JPanel();
-            getContentPane().add(panel, BorderLayout.CENTER);
-            JLabel lblApplicationName = new JLabel("Application name");
-            JLabel lblExecutablePatyh = new JLabel("Executable path");
-            txtExecPath = new JTextField();
-            txtExecPath.addKeyListener(new KeyAdapter() {
+//            JPanel panel = new JPanel();
+//            getContentPane().add(panel, BorderLayout.CENTER);
+            
+            txtExecPath = new XBayaTextField();
+            txtExecPath.getTextField().addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyReleased(KeyEvent e) {
                     setExecutablePath(txtExecPath.getText());
                 }
             });
             txtExecPath.setColumns(10);
-            txtAppName = new JTextField();
-            txtAppName.addKeyListener(new KeyAdapter() {
+            txtAppName = new XBayaTextField();
+            txtAppName.getTextField().addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyReleased(KeyEvent arg0) {
                     setApplicationName(txtAppName.getText());
                 }
             });
             txtAppName.setColumns(10);
+            XBayaLabel lblApplicationName = new XBayaLabel("Application name",txtAppName);
+            XBayaLabel lblExecutablePath = new XBayaLabel("Executable path",txtExecPath);
             JSeparator separator_1 = new JSeparator();
-            JLabel lblTemporaryDirectory = new JLabel("Temporary directory");
-            txtTempDir = new JTextField();
-            txtTempDir.addKeyListener(new KeyAdapter() {
+            txtTempDir = new XBayaTextField();
+            txtTempDir.getTextField().addKeyListener(new KeyAdapter() {
                 @Override
                 public void keyReleased(KeyEvent e) {
                     setTempDir(txtTempDir.getText());
                 }
             });
             txtTempDir.setColumns(10);
+            XBayaLabel lblTemporaryDirectory = new XBayaLabel("Temporary directory",txtTempDir);
+
             JButton btnAdvance = new JButton("Advanced options...");
             btnAdvance.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -223,8 +223,8 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
             JSeparator separator = new JSeparator();
 
-            XBayaLinkButton blnkbtnCreateNewService = new XBayaLinkButton("New button");
-            blnkbtnCreateNewService.addActionListener(new ActionListener() {
+            XBayaLinkButton lnkNewService = new XBayaLinkButton("New button");
+            lnkNewService.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent arg0) {
                     try {
                         ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry());
@@ -239,8 +239,8 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                     }
                 }
             });
-            blnkbtnCreateNewService.setText("Create new service...");
-            blnkbtnCreateNewService.setHorizontalAlignment(SwingConstants.TRAILING);
+            lnkNewService.setText("Create new service...");
+            lnkNewService.setHorizontalAlignment(SwingConstants.TRAILING);
 
             cmbServiceName = new JComboBox();
             cmbServiceName.addActionListener(this);
@@ -248,15 +248,13 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             cmbHostName = new JComboBox();
             cmbHostName.addActionListener(this);
 
-            JLabel label_1 = new JLabel("Host");
+            XBayaLabel lblHostName = new XBayaLabel("Host",cmbHostName);
 
-            XBayaLinkButton bayaLinkButton_1 = new XBayaLinkButton("New button");
-            bayaLinkButton_1.addActionListener(new ActionListener() {
+            XBayaLinkButton lnkNewHost = new XBayaLinkButton("New button");
+            lnkNewHost.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine);
-                        // TODO : do we need this?
-                        //hostDescriptionDialog.open();
                         hostDescriptionDialog.show();
 
                         if (hostDescriptionDialog.isHostCreated()) {
@@ -269,171 +267,38 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                     }
                 }
             });
-            bayaLinkButton_1.setText("Create new host...");
-            bayaLinkButton_1.setHorizontalAlignment(SwingConstants.TRAILING);
+            lnkNewHost.setText("Create new host...");
+            lnkNewHost.setHorizontalAlignment(SwingConstants.TRAILING);
 
-            JLabel lblService = new JLabel("Service");
+            XBayaLabel lblService = new XBayaLabel("Service",cmbServiceName);
 
             JLabel lblBindThisDeployment = new JLabel("Bind this deployment description to:");
             lblBindThisDeployment.setFont(new Font("Tahoma", Font.BOLD, 11));
-            GroupLayout gl_panel = new GroupLayout(panel);
-            gl_panel.setHorizontalGroup(gl_panel
-                    .createParallelGroup(Alignment.TRAILING)
-                    .addGroup(
-                            gl_panel.createSequentialGroup()
-                                    .addContainerGap()
-                                    .addGroup(
-                                            gl_panel.createParallelGroup(Alignment.LEADING)
-                                                    .addGroup(
-                                                            gl_panel.createSequentialGroup()
-                                                                    .addGroup(
-                                                                            gl_panel.createParallelGroup(
-                                                                                    Alignment.LEADING)
-                                                                                    .addGroup(
-                                                                                            gl_panel.createSequentialGroup()
-                                                                                                    .addGap(12)
-                                                                                                    .addGroup(
-                                                                                                            gl_panel.createParallelGroup(
-                                                                                                                    Alignment.TRAILING)
-                                                                                                                    .addComponent(
-                                                                                                                            lblApplicationName)
-                                                                                                                    .addComponent(
-                                                                                                                            lblExecutablePatyh))
-                                                                                                    .addGap(18)
-                                                                                                    .addGroup(
-                                                                                                            gl_panel.createParallelGroup(
-                                                                                                                    Alignment.LEADING,
-                                                                                                                    false)
-                                                                                                                    .addComponent(
-                                                                                                                            txtExecPath)
-                                                                                                                    .addComponent(
-                                                                                                                            txtAppName,
-                                                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                                                            309,
-                                                                                                                            GroupLayout.PREFERRED_SIZE)))
-                                                                                    .addComponent(separator_1,
-                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                            425,
-                                                                                            GroupLayout.PREFERRED_SIZE)
-                                                                                    .addComponent(separator,
-                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                            425,
-                                                                                            GroupLayout.PREFERRED_SIZE)
-                                                                                    .addGroup(
-                                                                                            gl_panel.createSequentialGroup()
-                                                                                                    .addGap(10)
-                                                                                                    .addGroup(
-                                                                                                            gl_panel.createParallelGroup(
-                                                                                                                    Alignment.TRAILING)
-                                                                                                                    .addComponent(
-                                                                                                                            btnAdvance)
-                                                                                                                    .addGroup(
-                                                                                                                            gl_panel.createSequentialGroup()
-                                                                                                                                    .addComponent(
-                                                                                                                                            lblTemporaryDirectory)
-                                                                                                                                    .addPreferredGap(
-                                                                                                                                            ComponentPlacement.RELATED)
-                                                                                                                                    .addComponent(
-                                                                                                                                            txtTempDir,
-                                                                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                                                                            305,
-                                                                                                                                            GroupLayout.PREFERRED_SIZE))))
-                                                                                    .addGroup(
-                                                                                            gl_panel.createSequentialGroup()
-                                                                                                    .addGap(20)
-                                                                                                    .addGroup(
-                                                                                                            gl_panel.createParallelGroup(
-                                                                                                                    Alignment.LEADING)
-                                                                                                                    .addComponent(
-                                                                                                                            lblService)
-                                                                                                                    .addComponent(
-                                                                                                                            label_1,
-                                                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                                                            77,
-                                                                                                                            GroupLayout.PREFERRED_SIZE))
-                                                                                                    .addPreferredGap(
-                                                                                                            ComponentPlacement.RELATED,
-                                                                                                            51,
-                                                                                                            Short.MAX_VALUE)
-                                                                                                    .addGroup(
-                                                                                                            gl_panel.createParallelGroup(
-                                                                                                                    Alignment.LEADING)
-                                                                                                                    .addComponent(
-                                                                                                                            cmbServiceName,
-                                                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                                                            313,
-                                                                                                                            GroupLayout.PREFERRED_SIZE)
-                                                                                                                    .addComponent(
-                                                                                                                            cmbHostName,
-                                                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                                                            313,
-                                                                                                                            GroupLayout.PREFERRED_SIZE))
-                                                                                                    .addGap(10))
-                                                                                    .addComponent(lblBindThisDeployment))
-                                                                    .addContainerGap())
-                                                    .addGroup(
-                                                            Alignment.TRAILING,
-                                                            gl_panel.createSequentialGroup()
-                                                                    .addComponent(blnkbtnCreateNewService,
-                                                                            GroupLayout.PREFERRED_SIZE, 185,
-                                                                            GroupLayout.PREFERRED_SIZE)
-                                                                    .addContainerGap())
-                                                    .addGroup(
-                                                            Alignment.TRAILING,
-                                                            gl_panel.createSequentialGroup()
-                                                                    .addComponent(bayaLinkButton_1,
-                                                                            GroupLayout.PREFERRED_SIZE, 176,
-                                                                            GroupLayout.PREFERRED_SIZE).addGap(2)))));
-            gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(
-                    gl_panel.createSequentialGroup()
-                            .addContainerGap()
-                            .addGroup(
-                                    gl_panel.createParallelGroup(Alignment.BASELINE)
-                                            .addComponent(txtAppName, GroupLayout.PREFERRED_SIZE,
-                                                    GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(lblApplicationName))
-                            .addPreferredGap(ComponentPlacement.RELATED)
-                            .addGroup(
-                                    gl_panel.createParallelGroup(Alignment.BASELINE)
-                                            .addComponent(txtExecPath, GroupLayout.PREFERRED_SIZE,
-                                                    GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(lblExecutablePatyh))
-                            .addPreferredGap(ComponentPlacement.UNRELATED)
-                            .addComponent(separator_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                                    GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(ComponentPlacement.UNRELATED)
-                            .addGroup(
-                                    gl_panel.createParallelGroup(Alignment.BASELINE)
-                                            .addComponent(lblTemporaryDirectory)
-                                            .addComponent(txtTempDir, GroupLayout.PREFERRED_SIZE,
-                                                    GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                            .addPreferredGap(ComponentPlacement.RELATED)
-                            .addComponent(btnAdvance)
-                            .addPreferredGap(ComponentPlacement.UNRELATED)
-                            .addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-                                    GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(ComponentPlacement.UNRELATED)
-                            .addComponent(lblBindThisDeployment)
-                            .addPreferredGap(ComponentPlacement.RELATED)
-                            .addGroup(
-                                    gl_panel.createParallelGroup(Alignment.BASELINE)
-                                            .addComponent(cmbServiceName, GroupLayout.PREFERRED_SIZE,
-                                                    GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(lblService))
-                            .addGap(2)
-                            .addComponent(blnkbtnCreateNewService, GroupLayout.PREFERRED_SIZE, 23,
-                                    GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(ComponentPlacement.RELATED)
-                            .addGroup(
-                                    gl_panel.createParallelGroup(Alignment.BASELINE)
-                                            .addComponent(cmbHostName, GroupLayout.PREFERRED_SIZE,
-                                                    GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(label_1)).addPreferredGap(ComponentPlacement.RELATED)
-                            .addComponent(bayaLinkButton_1, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-                            .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
-            gl_panel.setAutoCreateGaps(true);
-            gl_panel.setAutoCreateContainerGaps(true);
-            panel.setLayout(gl_panel);
+
+            GridPanel infoPanel = new GridPanel();
+            infoPanel.add(lblApplicationName);
+            infoPanel.add(txtAppName);
+            infoPanel.add(lblExecutablePath);
+            infoPanel.add(txtExecPath);
+            infoPanel.add(lblTemporaryDirectory);
+            infoPanel.add(txtTempDir);
+            infoPanel.add(new JLabel());
+            infoPanel.add(btnAdvance);
+            infoPanel.add(lblBindThisDeployment);
+            infoPanel.add(new JLabel());
+            infoPanel.add(lblService);
+            infoPanel.add(cmbServiceName);
+            infoPanel.add(new JLabel());
+            infoPanel.add(lnkNewService);
+            infoPanel.add(lblHostName);
+            infoPanel.add(cmbHostName);
+            infoPanel.add(new JLabel());
+            infoPanel.add(lnkNewHost);
+            
+            SwingUtil.layoutToGrid(infoPanel.getSwingComponent(), 9, 2, SwingUtil.WEIGHT_NONE, 1);
+            getContentPane().add(infoPanel.getSwingComponent());
+            getContentPane().add(buttonPane.getSwingComponent());
+            SwingUtil.layoutToGrid(getContentPane(), 2, 1, -1, 0);
             loadServiceDescriptions();
             loadHostDescriptions();
         }
