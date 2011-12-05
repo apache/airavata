@@ -38,6 +38,8 @@
 			<enumeration value="FileArray" />
 			<enumeration value="DataID" />
 			<enumeration value="DataIDArray" />
+            <enumeration value="URIArray" />
+            <enumeration value="URI" />
 		</restriction>
 	</simpleType>
 
@@ -48,6 +50,17 @@
 					<element name="value" nillable="true" type="xsd:string" />
 				</sequence>
 				<attribute name="type" fixed="String" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+    <complexType name="URIParameterType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" type="xsd:anyURI" />
+				</sequence>
+				<attribute name="type" fixed="URI" />
 			</extension>
 		</complexContent>
 	</complexType>
@@ -126,6 +139,17 @@
 					<element name="value" nillable="true" maxOccurs="unbounded" type="xsd:string"/>
 				</sequence>
 				<attribute name="type" fixed="StringArray" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+    <complexType name="URIArrayType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence >
+					<element name="value" nillable="true" maxOccurs="unbounded" type="xsd:anyURI"/>
+				</sequence>
+				<attribute name="type" fixed="URIArray" />
 			</extension>
 		</complexContent>
 	</complexType>

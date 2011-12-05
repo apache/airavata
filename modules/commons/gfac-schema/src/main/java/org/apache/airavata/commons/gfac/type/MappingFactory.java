@@ -21,13 +21,10 @@
 
 package org.apache.airavata.commons.gfac.type;
 
-import org.apache.airavata.schemas.gfac.BooleanParameterType;
-import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.DoubleParameterType;
-import org.apache.airavata.schemas.gfac.FileParameterType;
-import org.apache.airavata.schemas.gfac.FloatParameterType;
-import org.apache.airavata.schemas.gfac.IntegerParameterType;
-import org.apache.airavata.schemas.gfac.StringParameterType;
+import com.sun.xml.internal.fastinfoset.util.StringArray;
+import org.apache.airavata.schemas.gfac.*;
+
+import java.net.URI;
 
 /*
  * TODO use XML meta data instead of static coding
@@ -55,6 +52,22 @@ public class MappingFactory {
             return FileParameterType.class.getSimpleName();
         } else if (type.equals(DataType.FLOAT)) {
             return FloatParameterType.class.getSimpleName();
+        } else if (type.equals(DataType.URI)) {
+            return URIParameterType.class.getSimpleName();
+        } else if (type.equals(DataType.STRING_ARRAY)) {
+            return StringArrayType.class.getSimpleName();
+        } else if (type.equals(DataType.INTEGER_ARRAY)) {
+            return IntegerArrayType.class.getSimpleName();
+        } else if (type.equals(DataType.DOUBLE_ARRAY)) {
+            return DoubleArrayType.class.getSimpleName();
+        } else if (type.equals(DataType.BOOLEAN_ARRAY)) {
+            return BooleanArrayType.class.getSimpleName();
+        } else if (type.equals(DataType.FILE_ARRAY)) {
+            return FileArrayType.class.getSimpleName();
+        } else if (type.equals(DataType.FLOAT_ARRAY)) {
+            return FloatArrayType.class.getSimpleName();
+        } else if (type.equals(DataType.URI_ARRAY)) {
+            return URIArrayType.class.getSimpleName();
         }
         return StringParameterType.class.getSimpleName();
     }
@@ -79,6 +92,22 @@ public class MappingFactory {
             return ((FileParameterType) param.getType()).getValue();
         } else if (param.hasType(DataType.FLOAT)) {
             return String.valueOf(((FloatParameterType) param.getType()).getValue());
+        } else if (param.hasType(DataType.URI)) {
+            return String.valueOf(((URIParameterType) param.getType()).getValue());
+        } else if (param.hasType(DataType.STRING_ARRAY)) {
+            return String.valueOf(((StringArrayType) param.getType()).getValueArray());
+        } else if (param.hasType(DataType.INTEGER_ARRAY)) {
+            return String.valueOf(((IntegerArrayType) param.getType()).getValueArray());
+        } else if (param.hasType(DataType.DOUBLE_ARRAY)) {
+            return String.valueOf(((DoubleArrayType) param.getType()).getValueArray());
+        } else if (param.hasType(DataType.BOOLEAN_ARRAY)) {
+            return String.valueOf(((BooleanArrayType) param.getType()).getValueArray());
+        } else if (param.hasType(DataType.FILE_ARRAY)) {
+            return String.valueOf(((FileArrayType) param.getType()).getValueArray());
+        } else if (param.hasType(DataType.FLOAT_ARRAY)) {
+            return String.valueOf(((FloatArrayType) param.getType()).getValueArray());
+        } else if (param.hasType(DataType.URI_ARRAY)) {
+            return String.valueOf(((URIArrayType) param.getType()).getValueArray());
         }
         return null;
     }
@@ -102,6 +131,8 @@ public class MappingFactory {
             ((FileParameterType) param.getType()).setValue(val);
         } else if (param.hasType(DataType.FLOAT)) {
             ((FloatParameterType) param.getType()).setValue(Float.parseFloat(val));
+        } else if (param.hasType(DataType.URI)) {
+            ((URIParameterType) param.getType()).setValue((val));
         }
     }
 }
