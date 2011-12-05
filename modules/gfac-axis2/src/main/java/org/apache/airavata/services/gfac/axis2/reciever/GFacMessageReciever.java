@@ -21,20 +21,48 @@ package org.apache.airavata.services.gfac.axis2.reciever;
  *
  */
 
+import java.io.StringReader;
+import java.net.URI;
+import java.util.Iterator;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.context.message.impl.WorkflowContextImpl;
+import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.factory.PropertyServiceFactory;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.notification.impl.WorkflowTrackingNotification;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.schemas.gfac.*;
+import org.apache.airavata.schemas.gfac.BooleanArrayType;
+import org.apache.airavata.schemas.gfac.BooleanParameterType;
+import org.apache.airavata.schemas.gfac.DoubleArrayType;
+import org.apache.airavata.schemas.gfac.DoubleParameterType;
+import org.apache.airavata.schemas.gfac.FileArrayType;
+import org.apache.airavata.schemas.gfac.FileParameterType;
+import org.apache.airavata.schemas.gfac.FloatArrayType;
+import org.apache.airavata.schemas.gfac.FloatParameterType;
+import org.apache.airavata.schemas.gfac.IntegerArrayType;
+import org.apache.airavata.schemas.gfac.IntegerParameterType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.Parameter;
+import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
+import org.apache.airavata.schemas.gfac.StringArrayType;
+import org.apache.airavata.schemas.gfac.StringParameterType;
+import org.apache.airavata.schemas.gfac.URIArrayType;
+import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
+import org.apache.airavata.schemas.wec.SecurityContextDocument;
 import org.apache.airavata.services.gfac.axis2.GFacService;
 import org.apache.airavata.services.gfac.axis2.util.GFacServiceOperations;
 import org.apache.airavata.services.gfac.axis2.util.WSConstants;
@@ -58,14 +86,6 @@ import org.apache.axis2.util.Utils;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.io.StringReader;
-import java.net.URI;
-import java.util.Iterator;
 
 public class GFacMessageReciever implements MessageReceiver {
 
@@ -158,6 +178,18 @@ public class GFacMessageReciever implements MessageReceiver {
             invocationContext.getExecutionContext().addNotifiable(workflowNotification);
             invocationContext.getExecutionContext().addNotifiable(loggingNotification);
 
+            GSISecurityContext gssContext = new GSISecurityContext();
+            SecurityContextDocument parse =
+                    SecurityContextDocument.Factory.parse(getHeader(messageContext).getFirstChildWithName
+                            (new QName("http://schemas.airavata.apache.org/workflow-execution-context", "security-context")).toStringWithConsume());
+            SecurityContextDocument.SecurityContext.GridMyproxyRepository gridMyproxyRepository = parse.getSecurityContext().getGridMyproxyRepository();
+            gssContext.setMyproxyPasswd(gridMyproxyRepository.getPassword());
+            gssContext.setMyproxyUserName(gridMyproxyRepository.getUsername());
+            gssContext.setMyproxyLifetime(gridMyproxyRepository.getLifeTimeInhours());
+            gssContext.setMyproxyServer(gridMyproxyRepository.getMyproxyServer());
+            gssContext.setTrustedCertLoc(gridMyproxyRepository.getTrustCertLocation());
+            invocationContext.addSecurityContext("myproxy",gssContext);
+
             /*
              * Add workflow context
              */
@@ -220,6 +252,8 @@ public class GFacMessageReciever implements MessageReceiver {
                     actualParameter.getType().changeType(BooleanParameterType.type);
                 }else if("File".equals(parameter.getParameterType().getName())){
                     actualParameter.getType().changeType(FileParameterType.type);
+                }else if("URI".equals(parameter.getParameterType().getName())){
+                    actualParameter.getType().changeType(URIParameterType.type);
                 }else if("StringArray".equals(parameter.getParameterType().getName())){
                     actualParameter.getType().changeType(StringArrayType.type);
                 }else if("DoubleArray".equals(parameter.getParameterType().getName())){
@@ -232,6 +266,8 @@ public class GFacMessageReciever implements MessageReceiver {
                     actualParameter.getType().changeType(BooleanArrayType.type);
                 }else if("FileArray".equals(parameter.getParameterType().getName())){
                     actualParameter.getType().changeType(FileArrayType.type);
+                }else if("URIArray".equals(parameter.getParameterType().getName())){
+                    actualParameter.getType().changeType(URIArrayType.type);
                 }
                 outputParam.add(parameter.getParameterName(), new ActualParameter());
             }
@@ -296,6 +332,12 @@ public class GFacMessageReciever implements MessageReceiver {
             actualParameter = new ActualParameter(FileParameterType.type);
             innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
             ((FileParameterType)actualParameter.getType()).setValue(innerelement.getText());
+        }else if("URI".equals(parameter.getParameterType().getName())){
+            actualParameter = new ActualParameter(URIParameterType.type);
+            innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
+            System.out.println(actualParameter.getType().toString());
+            log.debug(actualParameter.getType().toString());
+            ((URIParameterType)actualParameter.getType()).setValue(innerelement.getText());
         }else if("StringArray".equals(parameter.getParameterType().getName())){
             actualParameter = new ActualParameter(StringArrayType.type);
             Iterator value = element.getChildrenWithLocalName("value");
@@ -344,6 +386,14 @@ public class GFacMessageReciever implements MessageReceiver {
                 innerelement = (OMElement)value.next();
                 ((FileArrayType)actualParameter.getType()).insertValue(i++,innerelement.getText());
             }
+        }else if("URIArray".equals(parameter.getParameterType().getName())){
+            actualParameter = new ActualParameter(URIArrayType.type);
+            Iterator value = element.getChildrenWithLocalName("value");
+          int i =0;
+          while(value.hasNext()){
+              innerelement = (OMElement)value.next();
+              ((URIArrayType)actualParameter.getType()).insertValue(i++,innerelement.getText());
+          }
         }
         return actualParameter;
     }
