@@ -37,6 +37,7 @@ import javax.wsdl.Port;
 import javax.wsdl.PortType;
 import javax.wsdl.Service;
 import javax.wsdl.WSDLException;
+import javax.wsdl.extensions.UnknownExtensibilityElement;
 import javax.wsdl.extensions.soap.SOAPAddress;
 import javax.wsdl.extensions.soap.SOAPBinding;
 import javax.wsdl.extensions.soap.SOAPOperation;
@@ -45,8 +46,12 @@ import javax.wsdl.xml.WSDLReader;
 import javax.wsdl.xml.WSDLWriter;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.commons.gfac.wsdl.GFacWSDLException;
+import org.apache.airavata.commons.gfac.wsdl.WSDLConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 import com.ibm.wsdl.extensions.soap.SOAPAddressImpl;
@@ -106,6 +111,24 @@ public class WSDLUtil {
             soapbinding.setTransportURI("http://schemas.xmlsoap.org/soap/http");
             soapbinding.setStyle("document");
             binding.addExtensibilityElement(soapbinding);
+
+             javax.xml.parsers.DocumentBuilderFactory domfactory = javax.xml.parsers.DocumentBuilderFactory
+                    .newInstance();
+            javax.xml.parsers.DocumentBuilder builder = null;
+
+            try {
+                builder = domfactory.newDocumentBuilder();
+            } catch (javax.xml.parsers.ParserConfigurationException e) {
+                throw new WSDLException("Parser configuration exception: ",e.getMessage(),e);
+            }
+
+            DOMImplementation dImpl = builder.getDOMImplementation();
+            Document doc = dImpl.createDocument(WSDLConstants.WSP_NAMESPACE, "Misc", null);
+
+            UnknownExtensibilityElement exEle = new UnknownExtensibilityElement();
+            exEle.setElement(doc.createElementNS("http://www.w3.org/2006/05/addressing/wsdl", "wsaw:UsingAddressing"));
+            exEle.setElementType(new QName("http://www.w3.org/2006/05/addressing/wsdl", "wsaw:UsingAddressing"));
+            binding.addExtensibilityElement(exEle);
 
             while (opIt.hasNext()) {
                 Operation operation = (Operation) opIt.next();
