@@ -92,6 +92,7 @@ import org.slf4j.LoggerFactory;
 public class GFacMessageReciever implements MessageReceiver {
 
     private static final Logger log = LoggerFactory.getLogger(GFacMessageReciever.class);
+    public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
     private GenericService service;
     private Axis2Registry registry;
 
@@ -192,7 +193,7 @@ public class GFacMessageReciever implements MessageReceiver {
             gssContext.setMyproxyUserName(gridMyproxyRepository.getUsername());
             gssContext.setMyproxyLifetime(gridMyproxyRepository.getLifeTimeInhours());
             gssContext.setMyproxyServer(gridMyproxyRepository.getMyproxyServer());
-            gssContext.setTrustedCertLoc(gridMyproxyRepository.getTrustCertLocation());
+            gssContext.setTrustedCertLoc((String)messageContext.getConfigurationContext().getProperty(TRUSTED_CERT_LOCATION));
             invocationContext.addSecurityContext("myproxy",gssContext);
 
             /*
