@@ -71,6 +71,7 @@ public class GFacService implements ServiceLifeCycle {
     public static final String JCR_USER = "jcr.user";
     public static final String JCR_PASS = "jcr.pass";
     public static final String ORG_APACHE_JACKRABBIT_REPOSITORY_URI = "org.apache.jackrabbit.repository.uri";
+    public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
 
     /*
      * Heart beat thread
@@ -121,6 +122,7 @@ public class GFacService implements ServiceLifeCycle {
             log.debug("GFAC_ADDRESS:" + localAddress);
             context.setProperty(CONFIGURATION_CONTEXT_REGISTRY, registry);
             context.setProperty(GFAC_URL, localAddress);
+            context.setProperty(TRUSTED_CERT_LOCATION,properties.getProperty(TRUSTED_CERT_LOCATION));
 
             /*
              * Heart beat message to registry
