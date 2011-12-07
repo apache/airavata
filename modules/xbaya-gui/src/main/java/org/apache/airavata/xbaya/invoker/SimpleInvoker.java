@@ -25,6 +25,7 @@ import java.util.Iterator;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaException;
+import org.apache.jackrabbit.core.cache.ConcurrentCache;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.wsdl.WsdlDefinitions;
@@ -47,9 +48,11 @@ public class SimpleInvoker implements Invoker {
 
     private WSIFMessage inputMessage;
 
-    private WSIFMessage outputMessage;
+    private volatile WSIFMessage outputMessage;
 
     private WSIFMessage faultMessage;
+
+    private boolean lock = false;
 
     static {
         WSIFProviderManager.getInstance().addProvider(new xsul.wsif_xsul_soap_http.Provider());
@@ -72,6 +75,7 @@ public class SimpleInvoker implements Invoker {
             WSIFService service = WSIFServiceFactory.newInstance().getService(this.definitions);
             WSIFPort port = service.getPort();
             this.client = WSIFRuntime.getDefault().newClientFor(port);
+            this.client.setAsyncResponseTimeoutInMs(999999999);
         } catch (RuntimeException e) {
             String message = "The WSDL is in the wrong format";
             throw new XBayaException(message, e);
@@ -143,6 +147,9 @@ public class SimpleInvoker implements Invoker {
         try {
             boolean success = this.operation.executeRequestResponseOperation(this.inputMessage, this.outputMessage,
                     this.faultMessage);
+            while(this.outputMessage == null){
+
+            }
             return success;
         } catch (RuntimeException e) {
             String message = "Error in invoking a service.";
@@ -154,8 +161,16 @@ public class SimpleInvoker implements Invoker {
      * @see org.apache.airavata.xbaya.invoker.Invoker#getOutputs()
      */
     public WSIFMessage getOutputs() {
+         if (lock) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return this.outputMessage;
     }
+
 
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#getOutput(java.lang.String)
@@ -196,5 +211,38 @@ public class SimpleInvoker implements Invoker {
      */
     public WSIFMessage getFault() {
         return this.faultMessage;
+    }
+
+    public WsdlDefinitions getDefinitions() {
+        return definitions;
+    }
+
+    public WSIFOperation getOperation() {
+        return operation;
+    }
+
+    public WSIFMessage getInputMessage() {
+        return inputMessage;
+    }
+
+    public synchronized WSIFMessage getOutputMessage() {
+        return outputMessage;
+    }
+
+    public WSIFMessage getFaultMessage() {
+        return faultMessage;
+    }
+
+    public synchronized void setOutputMessage(WSIFMessage outputMessage) {
+        System.out.println("Setting output message");
+        this.outputMessage = outputMessage;
+    }
+
+    public void setLock(boolean lock) {
+        this.lock = lock;
+    }
+
+    public boolean isLock() {
+        return lock;
     }
 }

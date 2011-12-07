@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import xsul.wsdl.WsdlDefinitions;
+import xsul.wsif.WSIFMessage;
+import xsul.wsif.WSIFOperation;
 import xsul.xwsif_runtime_async.WSIFAsyncResponsesCorrelator;
 import xsul.xwsif_runtime_async_http.XsulSoapHttpWsaResponsesCorrelator;
 import xsul.xwsif_runtime_async_msgbox.XsulMsgBoxWsaResponsesCorrelator;
@@ -62,16 +64,42 @@ public class AsynchronousInvoker extends SimpleInvoker {
     @Override
     public void setup() throws XBayaException {
         super.setup();
-
+        /* Set the output message to null to set teh output from async Listener */
         WSIFAsyncResponsesCorrelator correlator;
         if (this.messageBoxURL == null || this.messageBoxURL.length() == 0) {
             correlator = new XsulSoapHttpWsaResponsesCorrelator();
             String serverLoc = ((XsulSoapHttpWsaResponsesCorrelator) correlator).getServerLocation();
             logger.info("using async correlator at " + serverLoc);
         } else {
-            correlator = new XsulMsgBoxWsaResponsesCorrelator(this.messageBoxURL);
+            correlator = new MsgBoxWsaResponsesCorrelator(this.messageBoxURL,this);
             logger.info("using message box at " + this.messageBoxURL);
         }
         this.client.useAsyncMessaging(correlator);
+    }
+
+     public boolean invoke() throws XBayaException {
+         final WSIFOperation  operation = this.getOperation();
+         final WSIFMessage inputMessage = this.getInputMessage();
+         this.setOutputMessage(null);
+        try {
+              new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        operation.executeInputOnlyOperation(inputMessage);
+                    } catch (Exception e) {
+                        // Ignore the error.
+                        logger.error("Error invoking GFac Service",e);
+                    }
+                }
+            }.start();
+
+            while(this.getOutputMessage() == null){
+            }
+            return true;
+        } catch (RuntimeException e) {
+            String message = "Error in invoking a service.";
+            throw new XBayaException(message, e);
+        }
     }
 }
