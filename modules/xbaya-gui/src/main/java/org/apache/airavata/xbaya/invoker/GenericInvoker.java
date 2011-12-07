@@ -231,7 +231,12 @@ public class GenericInvoker implements Invoker {
         builder.getWorkflowMonitoringContext().setWorkflowInstanceId(this.notifier.getWorkflowID().toASCIIString());
         builder.getWorkflowMonitoringContext().setWorkflowTimeStep(1);
         builder.setUserIdentifier("xbaya-user");
+        //todo write a UI component to collect this information and pass it through Header
+        builder.setGridMyProxyRepository("myproxy.nersc.gov","fangliu","",14000);
         StickySoapHeaderHandler handler = new StickySoapHeaderHandler("use-workflowcontext-header", builder.getXml());
+
+
+
 
         // Create Invoker
         this.invoker = InvokerFactory.createInvoker(this.portTypeQName, definitions, this.gfacURL, this.messageBoxURL,
@@ -490,5 +495,4 @@ public class GenericInvoker implements Invoker {
     public WSIFMessage getFault() throws XBayaException {
         return null;
     }
-
 }
