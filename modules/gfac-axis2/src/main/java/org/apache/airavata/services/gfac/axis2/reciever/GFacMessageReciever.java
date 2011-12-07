@@ -67,6 +67,8 @@ import org.apache.airavata.services.gfac.axis2.GFacService;
 import org.apache.airavata.services.gfac.axis2.util.GFacServiceOperations;
 import org.apache.airavata.services.gfac.axis2.util.WSConstants;
 import org.apache.airavata.services.gfac.axis2.util.WSDLUtil;
+import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
+import org.apache.airavata.wsmg.client.WsntMsgBrokerClient;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
@@ -129,36 +131,39 @@ public class GFacMessageReciever implements MessageReceiver {
     }
 
     private void processInvokeOperation(MessageContext messageContext) throws Exception {
+        final MessageContext finalMessageContext = messageContext;
         MessageContext response = null;
-        String serviceName = getOriginalServiceName(messageContext);
+        final String serviceName = getOriginalServiceName(messageContext);
+        final EndpointReference replyTo = messageContext.getReplyTo();
         try {
             /*
              * We assume that input likes <invoke> <input_param_name1>value</input_param_name1>
              * <input_param_name2>value</input_param_name2> <input_param_name3>value</input_param_name3> </invoke>
              */
-            OMElement invoke = messageContext.getEnvelope().getBody().getFirstElement();
+            final OMElement invoke = messageContext.getEnvelope().getBody().getFirstElement();
 
             /*
              * We assume that output likes <invokeResponse> <output_param_name1>value</output_param_name1>
              * <output_param_name2>value</output_param_name2> <output_param_name3>value</output_param_name3>
              * </invokeResponse>
              */
-            OMElement output = invokeApplication(serviceName, invoke, messageContext);
-
-            SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
-            SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
-            sf.createSOAPBody(responseEnv);
-            responseEnv.getBody().addChild(output);
-            response = MessageContextBuilder.createOutMessageContext(messageContext);
-            response.setEnvelope(responseEnv);
-            response.getOperationContext().addMessageContext(response);
-            AxisEngine.send(response);
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        invokeApplication(replyTo,serviceName, invoke, finalMessageContext);
+                    } catch (Exception e) {
+                        // Ignore the error.
+                        log.error("Error invoking GFac Service",e);
+                    }
+                }
+            }.start();
         } catch (Exception e) {
             throw e;
         }
     }
 
-    private OMElement invokeApplication(String serviceName, OMElement input, MessageContext messageContext)
+    private OMElement invokeApplication(EndpointReference msgBoxAddr,String serviceName, OMElement input, MessageContext messageContext)
             throws Exception {
         ConfigurationContext context = messageContext.getConfigurationContext();
         String brokerURL = getEventBrokerURL(messageContext);
@@ -209,8 +214,7 @@ public class GFacMessageReciever implements MessageReceiver {
             ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
 
             for (Parameter parameter : serviceDescriptionType.getInputParametersArray()) {
-                Iterator childrenWithLocalName = input.getChildrenWithLocalName(parameter.getParameterName());
-                OMElement element = (OMElement)childrenWithLocalName.next();
+                OMElement element = input.getFirstChildWithName(new QName(null,parameter.getParameterName()));
                 if (element == null) {
                     throw new Exception("Parameter is not found in the message");
                 }
@@ -302,6 +306,14 @@ public class GFacMessageReciever implements MessageReceiver {
             log.error("Error in invoking service", e);
             throw e;
         }
+
+        SOAPFactory sf = OMAbstractFactory.getSOAP11Factory();
+        SOAPEnvelope responseEnv = sf.createSOAPEnvelope();
+        sf.createSOAPBody(responseEnv);
+        responseEnv.getBody().addChild(outputElement);
+        MessageContext outMessageContext = MessageContextBuilder.createOutMessageContext(messageContext);
+        outMessageContext.setEnvelope(responseEnv);
+        AxisEngine.send(outMessageContext);
         return outputElement;
     }
 
