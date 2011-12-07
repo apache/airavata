@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.security.SecurityContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.exception.JobSubmissionFault;
 import org.apache.airavata.core.gfac.exception.ProviderException;
@@ -68,9 +69,8 @@ public class GramProvider extends AbstractProvider {
         GridFtp ftp = new GridFtp();
 
         try {
-            gssContext = (GSISecurityContext) invocationContext.getSecurityContext(MYPROXY_SECURITY_CONTEXT);
+            gssContext = (GSISecurityContext)invocationContext.getSecurityContext(MYPROXY_SECURITY_CONTEXT);
             GSSCredential gssCred = gssContext.getGssCredentails();
-
             String[] hostgridFTP = host.getGridFTPEndPointArray();
             if (hostgridFTP == null || hostgridFTP.length == 0) {
                 hostgridFTP = new String[] { host.getHostAddress() };
