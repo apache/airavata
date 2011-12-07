@@ -191,7 +191,7 @@ public class WorkflowContextHeaderBuilder {
     }
 
     public WorkflowContextHeaderBuilder setGridMyProxyRepository(String myProxyServer, String userName,
-            String password, int lifeTimeInHours,String trustCertLocation) {
+            String password, int lifeTimeInHours) {
         if (this.securityContext == null) {
             this.securityContext = SecurityContextDocument.SecurityContext.Factory.newInstance();
         }
@@ -201,7 +201,6 @@ public class WorkflowContextHeaderBuilder {
         gridMyproxyRepository.setUsername(userName);
         gridMyproxyRepository.setPassword(password);
         gridMyproxyRepository.setLifeTimeInhours(lifeTimeInHours);
-        gridMyproxyRepository.setTrustCertLocation(trustCertLocation);
         return this;
     }
 
