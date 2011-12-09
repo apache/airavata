@@ -27,6 +27,8 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -211,6 +213,27 @@ public class XBayaDialog {
      */
     public void setDefaultButton(JButton button) {
         this.dialog.getRootPane().setDefaultButton(button);
+    }
+    
+    public void setCancelButton(final JButton button){
+    	this.dialog.getRootPane().addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent event) {
+				if (event.getKeyCode()==27){
+					button.getAction().actionPerformed(null);
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent arg0) {
+			}
+
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+			}
+    		
+    	});
     }
 
     private void init() {

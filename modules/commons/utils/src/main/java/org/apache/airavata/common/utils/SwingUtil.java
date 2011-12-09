@@ -28,7 +28,9 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.net.URL;
 import java.util.List;
 
@@ -81,14 +83,34 @@ public class SwingUtil {
      */
     public static ImageIcon createImageIcon(String filename) {
         ImageIcon icon = null;
-        String path = "/images/" + filename;
-        URL imgURL = SwingUtil.class.getResource(path);
+        URL imgURL = getImageURL(filename);
         if (imgURL != null) {
             icon = new ImageIcon(imgURL);
         }
         return icon;
     }
 
+    /**
+     * Creates an image from an image contained in the "images" directory.
+     * 
+     * @param filename
+     * @return the Image created
+     */
+    public static Image createImage(String filename) {
+    	Image icon = null;
+        URL imgURL = getImageURL(filename);
+        if (imgURL != null) {
+            icon = Toolkit.getDefaultToolkit().getImage(imgURL);
+        }
+        return icon;
+    }
+
+	public static URL getImageURL(String filename) {
+		String path = "/images/" + filename;
+        URL imgURL = SwingUtil.class.getResource(path);
+		return imgURL;
+	}
+    
     /**
      * Return the Frame of a specified component if any.
      * 
