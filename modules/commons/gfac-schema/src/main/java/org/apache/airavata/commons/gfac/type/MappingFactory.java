@@ -21,10 +21,21 @@
 
 package org.apache.airavata.commons.gfac.type;
 
-import com.sun.xml.internal.fastinfoset.util.StringArray;
-import org.apache.airavata.schemas.gfac.*;
-
-import java.net.URI;
+import org.apache.airavata.schemas.gfac.BooleanArrayType;
+import org.apache.airavata.schemas.gfac.BooleanParameterType;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.DoubleArrayType;
+import org.apache.airavata.schemas.gfac.DoubleParameterType;
+import org.apache.airavata.schemas.gfac.FileArrayType;
+import org.apache.airavata.schemas.gfac.FileParameterType;
+import org.apache.airavata.schemas.gfac.FloatArrayType;
+import org.apache.airavata.schemas.gfac.FloatParameterType;
+import org.apache.airavata.schemas.gfac.IntegerArrayType;
+import org.apache.airavata.schemas.gfac.IntegerParameterType;
+import org.apache.airavata.schemas.gfac.StringArrayType;
+import org.apache.airavata.schemas.gfac.StringParameterType;
+import org.apache.airavata.schemas.gfac.URIArrayType;
+import org.apache.airavata.schemas.gfac.URIParameterType;
 
 /*
  * TODO use XML meta data instead of static coding
