@@ -33,5 +33,5 @@ public class MenuIcons {
     public static final ImageIcon RUN_ICON = SwingUtil.createImageIcon("menu/play4.png");
     public static final ImageIcon MONITOR_PAUSE_ICON = SwingUtil.createImageIcon("menu/pause_monitor1.png");
     public static final ImageIcon MONITOR_RESUME_ICON = SwingUtil.createImageIcon("menu/resume_monitoring1.png");;
-    public static final ImageIcon JCR_ICON = SwingUtil.createImageIcon("menu/jcr.png");;
+    public static final ImageIcon JCR_ICON = SwingUtil.createImageIcon("jcr-repo.png");;
 }

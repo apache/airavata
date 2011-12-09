@@ -244,7 +244,6 @@ public class XBayaToolBar implements XBayaComponent {
 //        this.toolbar.addSeparator();
 //        this.toolbar.add(connectEdgeButton);
         
-//        addToolbarButton("test", SwingUtil.createImageIcon("test.png"), "my description", stopAction);
     }
 
     public ToolbarButton addToolbarButton(String group, String caption, Icon icon, String description, ActionListener onClick, int order){
