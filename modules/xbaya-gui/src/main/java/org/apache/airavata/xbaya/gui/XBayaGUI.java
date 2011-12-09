@@ -806,6 +806,7 @@ public class XBayaGUI implements EventListener {
                 }
             }
         });
+        this.frame.setIconImage(SwingUtil.createImage("airavata-2.png"));
     }
 
     private void activeTabChanged() {
