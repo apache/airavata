@@ -28,10 +28,11 @@ import org.apache.airavata.common.utils.SwingUtil;
 public class JCRBrowserIcons {
 	public static final Icon APPLICATION_ICON=SwingUtil.createImageIcon("application.png");
 	public static final Icon APPLICATIONS_ICON=SwingUtil.createImageIcon("applications.png");
-	public static final Icon REGISTRY_ICON=SwingUtil.createImageIcon("registry.png");
+	public static final Icon REGISTRY_ICON=SwingUtil.createImageIcon("jcr-repo.png");
 	public static final Icon GFAC_URLS_ICON=SwingUtil.createImageIcon("gfac_urls.png");
+	public static final Icon GFAC_URL_ICON=SwingUtil.createImageIcon("gfac_url.png");
 	public static final Icon HOST_ICON=SwingUtil.createImageIcon("host.png");
-	public static final Icon HOSTS_ICON=SwingUtil.createImageIcon("cloud.png");
+	public static final Icon HOSTS_ICON=SwingUtil.createImageIcon("hosts.png");
 	public static final Icon INPUT_PARAMETERS_ICON=SwingUtil.createImageIcon("input_para.png");
 	public static final Icon OUTPUT_PARAMETERS_ICON=SwingUtil.createImageIcon("output_para.png");
 	public static final Icon PARAMETER_ICON=SwingUtil.createImageIcon("parameter.png");
@@ -39,10 +40,10 @@ public class JCRBrowserIcons {
 	public static final Icon PARAMETER_VALUE_ICON=SwingUtil.createImageIcon("parameter.png");
 	public static final Icon SERVICE_ICON=SwingUtil.createImageIcon("service.png");
 	public static final Icon SERVICES_ICON=SwingUtil.createImageIcon("services.png");
-	public static final Icon WORKFLOW_EXPERIMENT_ICON=SwingUtil.createImageIcon("workflows.png");
-	public static final Icon WORKFLOW_EXPERIMENTS_ICON=SwingUtil.createImageIcon("workflows.png");
+	public static final Icon WORKFLOW_EXPERIMENT_ICON=SwingUtil.createImageIcon("experiment.png");
+	public static final Icon WORKFLOW_EXPERIMENTS_ICON=SwingUtil.createImageIcon("experiments.png");
 	public static final Icon WORKFLOW_ICON=SwingUtil.createImageIcon("workflow.png");
-	public static final Icon WORKFLOW_SERVICE_ICON=SwingUtil.createImageIcon("workflow.png");
+	public static final Icon WORKFLOW_SERVICE_ICON=SwingUtil.createImageIcon("service.png");
 	public static final Icon WORKFLOW_TEMPLATE_ICON=SwingUtil.createImageIcon("workflow.png");
-	public static final Icon WORKFLOW_TEMPLATES_ICON=SwingUtil.createImageIcon("workflows.png");
+	public static final Icon WORKFLOW_TEMPLATES_ICON=SwingUtil.createImageIcon("workflow_templates.png");
 }

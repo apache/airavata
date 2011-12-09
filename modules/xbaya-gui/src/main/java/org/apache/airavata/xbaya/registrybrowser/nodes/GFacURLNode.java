@@ -50,7 +50,7 @@ public class GFacURLNode extends AbstractAiravataTreeNode {
 
     @Override
     public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return JCRBrowserIcons.REGISTRY_ICON;
+        return JCRBrowserIcons.GFAC_URL_ICON;
     }
 
     public GFacURL getGfacURL() {
