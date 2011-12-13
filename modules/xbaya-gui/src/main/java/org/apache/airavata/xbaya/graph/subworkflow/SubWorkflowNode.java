@@ -22,6 +22,7 @@
 package org.apache.airavata.xbaya.graph.subworkflow;
 
 import org.apache.airavata.xbaya.component.SubWorkflowComponent;
+import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.Edge;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
@@ -29,6 +30,8 @@ import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
+
+import java.util.List;
 
 public class SubWorkflowNode extends NodeImpl {
 
@@ -80,6 +83,28 @@ public class SubWorkflowNode extends NodeImpl {
 
     public Workflow getWorkflow() {
         return this.workflow;
+    }
+
+     public DataPort assignInputPortID(String id, int index) {
+        List<DataPort> ports = this.getInputPorts();
+        for (DataPort d : ports) {
+            if (null == d.getID()) {
+                d.setID(id);
+            }
+        }
+
+        return ports.get(index);
+    }
+
+    public DataPort assignOutputPortID(String id, int index) {
+        List<DataPort> ports = this.getOutputPorts();
+        for (DataPort d : ports) {
+            if (null == d.getID()) {
+                d.setID(id);
+            }
+        }
+
+        return ports.get(index);
     }
 
 }

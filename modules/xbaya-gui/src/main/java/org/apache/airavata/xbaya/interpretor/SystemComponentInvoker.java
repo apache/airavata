@@ -44,7 +44,7 @@ public class SystemComponentInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutput(java.lang.String)
+     * @see org.apache.airavata.xbaya.invoker.Invoker#getOutput(java.lang.String)
      */
     @Override
     public Object getOutput(String name) {
@@ -61,7 +61,7 @@ public class SystemComponentInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutputs()
+     * @see org.apache.airavata.xbaya.invoker.Invoker#getOutputs()
      */
     @Override
     public WSIFMessage getOutputs() {
@@ -69,7 +69,7 @@ public class SystemComponentInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#invoke()
+     * @see org.apache.airavata.xbaya.invoker.Invoker#invoke()
      */
     @Override
     public boolean invoke() {
@@ -77,21 +77,21 @@ public class SystemComponentInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setInput(java.lang.String, java.lang.Object)
+     * @see org.apache.airavata.xbaya.invoker.Invoker#setInput(java.lang.String, java.lang.Object)
      */
     @Override
     public void setInput(String name, Object value) {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.wXPath Operatorsorkflow.WorkflowInvoker#setOperation(java.lang.String)
+     * @see org.apache.airavata.xbaya.wXPath Operatorsorkflow.Invoker#setOperation(java.lang.String)
      */
     @Override
     public void setOperation(String operationName) {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setup()
+     * @see org.apache.airavata.xbaya.invoker.Invoker#setup()
      */
     @Override
     public void setup() {

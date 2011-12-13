@@ -99,8 +99,6 @@ public class GenericInvoker implements Invoker {
      *            The URL of WSDL of the service to invoke
      * @param nodeID
      *            The ID of the service
-     * @param gfacURL
-     *            The URL of GFac service.
      * @param notifier
      *            The notification sender
      */
@@ -179,7 +177,8 @@ public class GenericInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setup()
+     *
+     * @throws XBayaException
      */
     public void setup() throws XBayaException {
         try {
@@ -213,7 +212,7 @@ public class GenericInvoker implements Invoker {
             String message = "Error in processing the WSDL: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
             throw new XBayaException(message, e);
-        } catch (Error e) {
+        }catch (Error e) {
             logger.error(e.getMessage(), e);
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
@@ -260,7 +259,10 @@ public class GenericInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setOperation(java.lang.String)
+     *
+     * @param operationName
+     *            The name of the operation
+     * @throws XBayaException
      */
     public void setOperation(String operationName) throws XBayaException {
         try {
@@ -284,7 +286,12 @@ public class GenericInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setInput(java.lang.String, java.lang.Object)
+     *
+     * @param name
+     *            The name of the input parameter
+     * @param value
+     *            The value of the input parameter
+     * @throws XBayaException
      */
     public void setInput(String name, Object value) throws XBayaException {
         try {
@@ -313,7 +320,9 @@ public class GenericInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#invoke()
+     *
+     * @return
+     * @throws XBayaException
      */
     public synchronized boolean invoke() throws XBayaException {
         try {
@@ -399,7 +408,8 @@ public class GenericInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#waitToFinish()
+     *
+     * @throws XBayaException
      */
     @SuppressWarnings("boxing")
     public synchronized void waitToFinish() throws XBayaException {
@@ -444,7 +454,11 @@ public class GenericInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutput(java.lang.String)
+     *
+     * @param name
+     *            The name of the output parameter
+     * @return
+     * @throws XBayaException
      */
     public Object getOutput(String name) throws XBayaException {
         try {
@@ -475,7 +489,9 @@ public class GenericInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutputs()
+     *
+     * @return
+     * @throws XBayaException
      */
     public WSIFMessage getOutputs() throws XBayaException {
         return this.invoker.getOutputs();

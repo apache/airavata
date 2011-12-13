@@ -175,4 +175,14 @@ public interface WSConstants {
      * schemaLocation
      */
     public static final String SCHEMA_LOCATION_ATTRIBUTE = "schemaLocation";
+
+    public static final String LEAD_NS_URI = "http://www.extreme.indiana.edu/lead";
+
+    /**
+     * The any type.
+     */
+    public static final QName LEAD_ANY_TYPE = new QName(LEAD_NS_URI, "any",
+            XSD_NS_PREFIX);
+
+
 }

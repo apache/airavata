@@ -1244,6 +1244,9 @@ public class GraphCanvas {
 
                 } catch (GraphException e1) {
                     GraphCanvas.this.engine.getErrorWindow().error(e1);
+                }  catch (ComponentException e1) {
+
+                    GraphCanvas.this.engine.getErrorWindow().error(e1);
                 }
 
             }
