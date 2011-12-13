@@ -86,7 +86,7 @@ public class XBaya {
                 + " [-karmaWorkflowInstanceID]" + " [-myProxyPort port]" + " [-myProxyUsername username]"
                 + " [-myProxyLifetime sec]" + " [-loadMyProxy {true,false}]" + " [-messageBoxURL url]"
                 + " [-width width]" + " [-height height]" + " [-exitOnClose false/true]" + "[-enableProvenance false/true]"
-                + "[-enableProvenanceSmartRun false/true]");
+                + "[-enableProvenanceSmartRun false/true]" + "[-runWithCrossProduct true/false]");
     }
 
     private void parseArguments(String[] args) {
@@ -249,6 +249,12 @@ public class XBaya {
                     String exit = args[index];
                     if ("true".equalsIgnoreCase(exit)) {
                         this.config.setProvenanceSmartRun(true);
+                    }
+                }  else if ("-runWithCrossProduct".equalsIgnoreCase(arg)) {
+                    index++;
+                    String exit = args[index];
+                    if ("false".equalsIgnoreCase(exit)) {
+                        this.config.setRunWithCrossProduct(false);
                     }
                 }
                 else {

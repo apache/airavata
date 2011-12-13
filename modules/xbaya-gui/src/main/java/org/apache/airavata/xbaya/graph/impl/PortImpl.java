@@ -430,4 +430,8 @@ public abstract class PortImpl implements Port {
         }
         return index;
     }
+
+    public void setID(String id) {
+        this.id = id;
+    }
 }

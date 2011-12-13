@@ -128,6 +128,8 @@ public class XBayaConfiguration extends Observable implements Observer {
 
     private boolean provenanceSmartRun = false;
 
+    private boolean runWithCrossProduct = true;
+
     /**
      * Constructs an XwfConfiguration.
      */
@@ -825,4 +827,11 @@ public class XBayaConfiguration extends Observable implements Observer {
         this.provenanceSmartRun = provenanceSmartRun;
     }
 
+    public void setRunWithCrossProduct(boolean runWithCrossProduct) {
+        this.runWithCrossProduct = runWithCrossProduct;
+    }
+
+    public boolean isRunWithCrossProduct() {
+        return runWithCrossProduct;
+    }
 }

@@ -44,11 +44,13 @@ import org.xmlpull.infoset.XmlElement;
 
 public class ForEachNode extends SystemNode {
 
+    // private static final MLogger logger = MLogger.getLogger();
+
     private ForEachNodeGUI gui;
 
     /**
      * Creates a InputNode.
-     * 
+     *
      * @param graph
      */
     public ForEachNode(Graph graph) {
@@ -57,7 +59,7 @@ public class ForEachNode extends SystemNode {
 
     /**
      * Constructs a InputNode.
-     * 
+     *
      * @param nodeElement
      * @throws GraphException
      */
@@ -66,9 +68,11 @@ public class ForEachNode extends SystemNode {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
+     *
+     * @return
      */
-    public NodeGUI getGUI() {
+    @Override
+	public NodeGUI getGUI() {
         if (this.gui == null) {
             this.gui = new ForEachNodeGUI(this);
         }
@@ -76,7 +80,8 @@ public class ForEachNode extends SystemNode {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.graph.impl.NodeImpl#getComponent()
+     *
+     * @return
      */
     @Override
     public ForEachComponent getComponent() {
@@ -99,17 +104,25 @@ public class ForEachNode extends SystemNode {
         addInputPort(port);
     }
 
-    /**
-     * Removes the last input port.
-     * 
-     * @throws GraphException
-     */
+    public DataPort addInputPortAndReturn() {
+        ForEachComponent component = getComponent();
+        ComponentDataPort input = component.getInputPort();
+        DataPort port = input.createPort();
+        addInputPort(port);
+        return port;
+    }
+
+
+
     public void removeInputPort() throws GraphException {
         List<DataPort> inputPorts = getInputPorts();
         // Remove the last one.
         DataPort inputPort = inputPorts.get(inputPorts.size() - 1);
         removeInputPort(inputPort);
     }
+
+
+
 
     /**
      * Adds additional output port.
@@ -123,7 +136,7 @@ public class ForEachNode extends SystemNode {
 
     /**
      * Removes the last output port.
-     * 
+     *
      * @throws GraphException
      */
     public void removeOutputPort() throws GraphException {
@@ -133,10 +146,13 @@ public class ForEachNode extends SystemNode {
         removeOutputPort(outputPort);
     }
 
+
     /**
+     *
+     * @param edge
      * @throws GraphException
-     * @see org.apache.airavata.xbaya.graph.impl.NodeImpl#edgeWasAdded(org.apache.airavata.xbaya.graph.Edge)
      */
+
     @Override
     protected void edgeWasAdded(Edge edge) throws GraphException {
         // XXX cannot detect if the type is array or not from WSDL at this
@@ -162,7 +178,8 @@ public class ForEachNode extends SystemNode {
                     fromDataPort.copyType(toDataPort);
                 }
             } else if (toDataPort.getNode() == this) {
-                if (!(fromType == null || fromType.equals(WSConstants.XSD_ANY_TYPE))) {
+                if (!(fromType == null || fromType
+                        .equals(WSConstants.XSD_ANY_TYPE))) {
                     toDataPort.copyType(fromDataPort);
                 }
             } else {
@@ -172,8 +189,11 @@ public class ForEachNode extends SystemNode {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.graph.system.SystemNode#portTypeChanged(org.apache.airavata.xbaya.graph.system.SystemDataPort)
+     *
+     * @param port
+     * @throws GraphException
      */
+
     @Override
     protected void portTypeChanged(SystemDataPort port) throws GraphException {
         super.portTypeChanged(port);
@@ -206,7 +226,7 @@ public class ForEachNode extends SystemNode {
         if (port == inputPort) {
             // input -> output
             if (outputType.equals(WSConstants.XSD_ANY_TYPE)) {
-                outputPort.copyType(port, -1);
+              //  outputPort.copyType(port, -1);
             } else if (outputType.equals(portType)) {
                 // Do nothing.
             } else {
@@ -221,7 +241,7 @@ public class ForEachNode extends SystemNode {
         } else if (port == outputPort) {
             // output -> input1
             if (inputType.equals(WSConstants.XSD_ANY_TYPE)) {
-                inputPort.copyType(port, 1);
+               // inputPort.copyType(port, 1);
             } else if (inputType.equals(portType)) {
                 // Do nothing.
             } else {
@@ -237,6 +257,50 @@ public class ForEachNode extends SystemNode {
         }
     }
 
+    public DataPort getFreeInPort() {
+        List<DataPort> inputPorts = this.getInputPorts();
+        for (DataPort dataPort : inputPorts) {
+            if (null == dataPort.getFromNode()) {
+                return dataPort;
+            }
+        }
+        addOutputPort();
+        return addInputPortAndReturn();
+    }
+
+
+    public void removeLastDynamicallyAddedInPort() throws GraphException {
+
+        List<DataPort> inputPorts = this.getInputPorts();
+        List<DataPort> outputPorts = this.getOutputPorts();
+        if (inputPorts.size() == 1) {
+            //This is the initial port, so leave it alone
+            return;
+        }
+        if (outputPorts.size() == 1) {
+            return;
+        }
+        DataPort portToBeRemoved = null;
+        for (DataPort dataPort : inputPorts) {
+            if (null == dataPort.getFromNode()) {
+                removeInputPort(dataPort);
+                portToBeRemoved = dataPort;
+                break;
+            }
+        }
+
+        if(outputPorts.size() == this.getInputPorts().size()){
+            return;
+        }
+        for (DataPort dataPort : outputPorts) {
+            if (0 == dataPort.getToNodes().size()) {
+                removeOutputPort(dataPort);
+                portToBeRemoved = dataPort;
+                break;
+            }
+        }
+    }
+
     @Override
     protected void parseConfiguration(XmlElement configElement) {
         super.parseConfiguration(configElement);
@@ -245,13 +309,15 @@ public class ForEachNode extends SystemNode {
     @Override
     protected XmlElement toXML() {
         XmlElement nodeElement = super.toXML();
-        nodeElement.setAttributeValue(GraphSchema.NS, GraphSchema.NODE_TYPE_ATTRIBUTE, GraphSchema.NODE_TYPE_SPLIT);
+        nodeElement.setAttributeValue(GraphSchema.NS,
+                GraphSchema.NODE_TYPE_ATTRIBUTE, GraphSchema.NODE_TYPE_SPLIT);
         return nodeElement;
     }
 
     @Override
     protected XmlElement addConfigurationElement(XmlElement nodeElement) {
-        XmlElement configElement = nodeElement.addElement(GraphSchema.NS, GraphSchema.NODE_CONFIG_TAG);
+        XmlElement configElement = nodeElement.addElement(GraphSchema.NS,
+                GraphSchema.NODE_CONFIG_TAG);
         return configElement;
     }
 }
