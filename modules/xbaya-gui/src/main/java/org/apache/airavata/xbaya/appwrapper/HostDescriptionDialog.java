@@ -25,6 +25,7 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
@@ -55,8 +56,6 @@ public class HostDescriptionDialog extends JDialog {
 
     private boolean hostCreated = false;
 
-    private boolean isGlobusHostCreated = false;
-
     private Registry registry;
 
     /**
@@ -85,28 +84,28 @@ public class HostDescriptionDialog extends JDialog {
         String globusGateKeeperEPR = this.globusGateKeeperTextField.getText();
         String gridFTP = this.GridFTPTextField.getText();
 
-        if((globusGateKeeperEPR != null) || (gridFTP != null)){
-            isGlobusHostCreated = true;
-        }
-
-        // TODO the logic here
-
         setHostId(hostId);
         setHostLocation(hostAddress);
-        if(globusGateKeeperEPR != null) {
-          setGlobusGateKeeperEPR(globusGateKeeperEPR);
-        }
-        if(gridFTP != null) {
-          setGridFTPEPR(gridFTP);
+        if(isGlobusHostType()) {
+        	getHostDescription().getType().changeType(GlobusHostType.type);
+        	setGlobusGateKeeperEPR(globusGateKeeperEPR);
+        	setGridFTPEPR(gridFTP);
+        }else{
+        	getHostDescription().getType().changeType(HostDescriptionType.type);
         }
 
         saveHostDescription();
         hide();
     }
 
+	private boolean isGlobusHostType() {
+		String globusGateKeeperEPR = this.globusGateKeeperTextField.getText();
+        String gridFTP = this.GridFTPTextField.getText();
+		return (!globusGateKeeperEPR.equals("") || !gridFTP.equals(""));
+	}
+
     private void setGlobusGateKeeperEPR(String epr) {
-        hostDescription.getType().changeType(GlobusHostType.type);
-            ((GlobusHostType)hostDescription.getType()).addGlobusGateKeeperEndPoint(epr);
+        ((GlobusHostType)hostDescription.getType()).addGlobusGateKeeperEndPoint(epr);
     }
 
     private String[] getGlobusGateKeeperEPR(String epr) {
@@ -118,7 +117,6 @@ public class HostDescriptionDialog extends JDialog {
     }
 
     private void setGridFTPEPR(String epr) {
-        hostDescription.getType().changeType(GlobusHostType.type);
         ((GlobusHostType)hostDescription.getType()).addGridFTPEndPoint(epr);
     }
 
@@ -240,17 +238,14 @@ public class HostDescriptionDialog extends JDialog {
 
     public HostDescription getHostDescription() {
         if (hostDescription == null) {
-            if (isGlobusHostCreated) {
-                hostDescription = new HostDescription(GlobusHostType.type);
-            } else {
-                hostDescription = new HostDescription();
-            }
+            hostDescription = new HostDescription(GlobusHostType.type);
         }
         return hostDescription;
     }
 
     public void saveHostDescription() {
-        getRegistry().saveHostDescription(getHostDescription());
+        HostDescription desc = getHostDescription();
+		getRegistry().saveHostDescription(desc);
         setHostCreated(true);
     }
 
