@@ -311,17 +311,17 @@ public class XBayaToolBar implements XBayaComponent {
 	}
     
     public void addDynamicExecutionTools() {
-        this.toolbar.add(this.play);
-        this.toolbar.add(this.step);
-        this.toolbar.add(this.stop);
-        this.toolbar.repaint();
+//        this.toolbar.add(this.play);
+//        this.toolbar.add(this.step);
+//        this.toolbar.add(this.stop);
+//        this.toolbar.repaint();
     }
 
     public void removeDynamicExecutionTools() {
-        this.toolbar.remove(this.play);
-        this.toolbar.remove(this.step);
-        this.toolbar.remove(this.stop);
-        this.toolbar.repaint();
+//        this.toolbar.remove(this.play);
+//        this.toolbar.remove(this.step);
+//        this.toolbar.remove(this.stop);
+//        this.toolbar.repaint();
     }
 
     /**
