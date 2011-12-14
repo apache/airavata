@@ -105,7 +105,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                     while (true) {
                         boolean notFound = true;
                         for (ApplicationDeploymentDescription deploymentDescription : applicationDeploymentDescriptions) {
-                            if (deploymentDescription.getType().addNewApplicationName().getStringValue().equals(defaultName)) {
+                            if (deploymentDescription.getType().getApplicationName().getStringValue().equals(defaultName)) {
                                 notFound = false;
                                 break;
                             }
@@ -354,8 +354,12 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     }
 
     public void setApplicationName(String applicationName) {
-        ApplicationDeploymentDescriptionType.ApplicationName applicationName1 = getApplicationDescriptionType().addNewApplicationName();
-        applicationName1.setStringValue(applicationName);
+//        ApplicationDeploymentDescriptionType.ApplicationName applicationName1 = getApplicationDescriptionType().addNewApplicationName();
+//        applicationName1.setStringValue(applicationName);
+    	if (getApplicationDescriptionType().getApplicationName()==null){
+    		getApplicationDescriptionType().addNewApplicationName();
+    	}
+    	getApplicationDescriptionType().getApplicationName().setStringValue(applicationName);
         updateDialogStatus();
     }
 
