@@ -27,6 +27,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -45,6 +46,7 @@ import org.apache.airavata.xbaya.jython.gui.JythonRunnerWindow;
 import org.apache.airavata.xbaya.menues.MenuIcons;
 import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
+import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.gui.MonitorConfigurationWindow;
 import org.apache.airavata.xbaya.monitor.gui.MonitorStarter;
 import org.slf4j.Logger;
@@ -232,13 +234,7 @@ public class RunMenuItem  implements EventListener{
         item.setMnemonic(KeyEvent.VK_R);
         item.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent event) {
-                try {
-                    engine.getMonitor().reset();
-                } catch (RuntimeException e) {
-                    engine.getErrorWindow().error(ErrorMessages.MONITOR_ERROR, e);
-                } catch (Error e) {
-                    engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-                }
+                stopMonitoring();
             }
         });
         item.setVisible(false);
@@ -270,6 +266,13 @@ public class RunMenuItem  implements EventListener{
             private DynamicWorkflowRunnerWindow window;
 
             public void actionPerformed(ActionEvent event) {
+            	if (lastEvent!=null && lastEvent.getType()!=Event.Type.MONITOR_STOPED){
+            		if (JOptionPane.showConfirmDialog(null, "A previous workflow excution data needs to be cleared before launching another workflow. Do you wish to continue?", "Run Dynamic Workflow", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
+            			stopMonitoring();
+            		}else{
+            			return;
+            		}
+            	}
                 if (this.window == null) {
                     this.window = new DynamicWorkflowRunnerWindow(engine);
                 }
@@ -340,6 +343,7 @@ public class RunMenuItem  implements EventListener{
      */
     public void eventReceived(Event event) {
         Type type = event.getType();
+        lastEvent=event;
         if (type.equals(Event.Type.MONITOR_CONFIGURATION_CHANGED)) {
             MonitorConfiguration configuration = this.engine.getMonitor().getConfiguration();
             boolean valid = configuration.isValid();
@@ -366,4 +370,19 @@ public class RunMenuItem  implements EventListener{
 	public void setToolBar(XBayaToolBar toolBar) {
 		this.toolBar = toolBar;
 	}
+	
+	private void stopMonitoring() {
+		try {
+		    engine.getMonitor().reset();
+		    engine.getMonitor().stop();
+		} catch (RuntimeException e) {
+		    engine.getErrorWindow().error(ErrorMessages.MONITOR_ERROR, e);
+		} catch (Error e) {
+		    engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+		} catch (MonitorException e) {
+		    engine.getErrorWindow().error(e.getLocalizedMessage(), e);
+		}
+	}
+
+	private Event lastEvent=null;
 }
