@@ -60,7 +60,7 @@ public class RunMenuItem  implements EventListener{
     
     private JMenuItem launchDynamicWorkflowItem;
     
-    private JMenuItem runJythonWorkflowItem;
+//    private JMenuItem runJythonWorkflowItem;
 
     private JMenuItem launchGridChemWorkflowItem;
 
@@ -115,7 +115,7 @@ public class RunMenuItem  implements EventListener{
      */
     private void createWorkflowMenu() {
         this.launchDynamicWorkflowItem = createLaunchDynamicWorkflowItem();
-        this.runJythonWorkflowItem = createRunJythonWorkflowItem();
+//        this.runJythonWorkflowItem = createRunJythonWorkflowItem();
         this.launchGridChemWorkflowItem = createLaunchGridChemWorkflowItem();
         createLaunchXBayaInterpreterItem();
         createLaunchAndSaveGridChemWorkflowItem();
@@ -128,7 +128,7 @@ public class RunMenuItem  implements EventListener{
         runMenu.setMnemonic(KeyEvent.VK_R);
 
         runMenu.add(launchDynamicWorkflowItem);
-        runMenu.add(runJythonWorkflowItem);
+//        runMenu.add(runJythonWorkflowItem);
         runMenu.add(launchXBayaInterpreterItem);
 
         runMenu.addSeparator();
@@ -159,7 +159,7 @@ public class RunMenuItem  implements EventListener{
 						runWorkflowButton.setEnabled(runShouldBeActive);	
 						launchDynamicWorkflowItem.setEnabled(runShouldBeActive);
 //						runJythonWorkflowItem.setEnabled(runShouldBeActive);
-                        runJythonWorkflowItem.setEnabled(false);
+//                        runJythonWorkflowItem.setEnabled(false);
 						launchXBayaInterpreterItem.setEnabled(runShouldBeActive);
 //						launchGridChemWorkflowItem.setEnabled(runShouldBeActive);
                         launchGridChemWorkflowItem.setEnabled(false);
