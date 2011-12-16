@@ -93,6 +93,11 @@ public class GFacMessageReciever implements MessageReceiver {
 
     private static final Logger log = LoggerFactory.getLogger(GFacMessageReciever.class);
     public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
+    public static final String MYPROXY_SERVER = "myproxy.server";
+    public static final String MYPROXY_USER = "myproxy.user";
+    public static final String MYPROXY_PASS = "myproxy.pass";
+    public static final String MYPROXY_LIFE = "myproxy.life";
+    
     private GenericService service;
     private Axis2Registry registry;
 
@@ -189,11 +194,19 @@ public class GFacMessageReciever implements MessageReceiver {
                     SecurityContextDocument.Factory.parse(getHeader(messageContext).getFirstChildWithName
                             (new QName("http://schemas.airavata.apache.org/workflow-execution-context", "security-context")).toStringWithConsume());
             SecurityContextDocument.SecurityContext.GridMyproxyRepository gridMyproxyRepository = parse.getSecurityContext().getGridMyproxyRepository();
-            gssContext.setMyproxyPasswd(gridMyproxyRepository.getPassword());
-            gssContext.setMyproxyUserName(gridMyproxyRepository.getUsername());
-            gssContext.setMyproxyLifetime(gridMyproxyRepository.getLifeTimeInhours());
-            gssContext.setMyproxyServer(gridMyproxyRepository.getMyproxyServer());
+            if (gridMyproxyRepository==null){
+            	gssContext.setMyproxyPasswd((String)messageContext.getConfigurationContext().getProperty(MYPROXY_PASS));
+                gssContext.setMyproxyUserName((String)messageContext.getConfigurationContext().getProperty(MYPROXY_USER));
+                gssContext.setMyproxyLifetime(Integer.parseInt(messageContext.getConfigurationContext().getProperty(MYPROXY_LIFE).toString()));
+                gssContext.setMyproxyServer((String)messageContext.getConfigurationContext().getProperty(MYPROXY_SERVER));	
+            }else{
+	            gssContext.setMyproxyPasswd(gridMyproxyRepository.getPassword());
+	            gssContext.setMyproxyUserName(gridMyproxyRepository.getUsername());
+	            gssContext.setMyproxyLifetime(gridMyproxyRepository.getLifeTimeInhours());
+	            gssContext.setMyproxyServer(gridMyproxyRepository.getMyproxyServer());
+            }
             gssContext.setTrustedCertLoc((String)messageContext.getConfigurationContext().getProperty(TRUSTED_CERT_LOCATION));
+            
             invocationContext.addSecurityContext("myproxy",gssContext);
 
             /*
