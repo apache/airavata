@@ -21,22 +21,12 @@
 
 package org.apache.airavata.xbaya.monitor.gui;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.event.Event;
-import org.apache.airavata.xbaya.event.Event.Type;
-import org.apache.airavata.xbaya.event.EventListener;
-import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.XBayaGUI;
-import org.apache.airavata.xbaya.modifier.gui.WorkflowModifierGUI;
-import org.apache.airavata.xbaya.monitor.Monitor;
-import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +40,6 @@ public class MonitorMenu {
 
     private JMenu monitorMenu;
 
-    private JMenuItem differenceMenuItem;
 
     /**
      * Constructs a MonitorMenu.
@@ -75,29 +64,12 @@ public class MonitorMenu {
         JMenu menu = new JMenu("Monitoring");
         menu.setMnemonic(KeyEvent.VK_M);
 
-        this.differenceMenuItem = createDifferenceItem();
 
 
         menu.addSeparator();
         menu.addSeparator();
-        menu.add(this.differenceMenuItem);
         return menu;
     }
 
-    private JMenuItem createDifferenceItem() {
-        JMenuItem item = new JMenuItem("Create Difference");
-        item.setMnemonic(KeyEvent.VK_D);
-        item.addActionListener(new AbstractAction() {
-            private WorkflowModifierGUI modifierGUI;
-
-            public void actionPerformed(ActionEvent event) {
-                if (this.modifierGUI == null) {
-                    this.modifierGUI = new WorkflowModifierGUI(MonitorMenu.this.engine);
-                }
-                // Errors are handled inside.
-                this.modifierGUI.createDifference();
-            }
-        });
-        return item;
-    }
+  
 }
