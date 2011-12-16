@@ -111,7 +111,7 @@ public class ErrorWindow {
      */
     public void error(Component parent, String title, String message, Throwable e) {
 
-        logger.error(e.getMessage(), e);
+        logger.error(e==null? message:e.getMessage(), e);
 
         // If the parent component is not specified, set the frame the one.
         if (parent == null) {

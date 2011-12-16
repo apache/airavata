@@ -234,7 +234,7 @@ public class RunMenuItem  implements EventListener{
         item.setMnemonic(KeyEvent.VK_R);
         item.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent event) {
-                stopMonitoring();
+                cleanup();
             }
         });
         item.setVisible(false);
@@ -266,9 +266,10 @@ public class RunMenuItem  implements EventListener{
             private DynamicWorkflowRunnerWindow window;
 
             public void actionPerformed(ActionEvent event) {
-            	if (lastEvent!=null && lastEvent.getType()!=Event.Type.MONITOR_STOPED){
+//            	lastEvent!=null && lastEvent.getType()!=Event.Type.MONITOR_STOPED
+            	if (engine.getWorkflowInterpreter()!=null){
             		if (JOptionPane.showConfirmDialog(null, "A previous workflow excution data needs to be cleared before launching another workflow. Do you wish to continue?", "Run Dynamic Workflow", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
-            			stopMonitoring();
+            			cleanup();
             		}else{
             			return;
             		}
@@ -371,16 +372,11 @@ public class RunMenuItem  implements EventListener{
 		this.toolBar = toolBar;
 	}
 	
-	private void stopMonitoring() {
+	private void cleanup() {
 		try {
-		    engine.getMonitor().reset();
-		    engine.getMonitor().stop();
-		} catch (RuntimeException e) {
-		    engine.getErrorWindow().error(ErrorMessages.MONITOR_ERROR, e);
-		} catch (Error e) {
-		    engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+			engine.getWorkflowInterpreter().cleanup();
 		} catch (MonitorException e) {
-		    engine.getErrorWindow().error(e.getLocalizedMessage(), e);
+			this.engine.getErrorWindow().error(e);
 		}
 	}
 

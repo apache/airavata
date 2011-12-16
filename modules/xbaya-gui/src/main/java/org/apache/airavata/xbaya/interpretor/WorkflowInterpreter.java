@@ -26,7 +26,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,7 +43,11 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.*;
+import org.apache.airavata.xbaya.XBayaConfiguration;
+import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.xbaya.XBayaExecutionState;
+import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.amazonEC2.gui.AmazonCredential;
 import org.apache.airavata.xbaya.component.Component;
 import org.apache.airavata.xbaya.component.ComponentException;
@@ -66,7 +69,10 @@ import org.apache.airavata.xbaya.component.system.S3InputComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
-import org.apache.airavata.xbaya.graph.*;
+import org.apache.airavata.xbaya.graph.ControlPort;
+import org.apache.airavata.xbaya.graph.DataPort;
+import org.apache.airavata.xbaya.graph.GraphException;
+import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
 import org.apache.airavata.xbaya.graph.dynamic.BasicTypeMapping;
 import org.apache.airavata.xbaya.graph.dynamic.DynamicNode;
@@ -91,7 +97,6 @@ import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
-import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
@@ -181,7 +186,7 @@ public class WorkflowInterpreter {
         this.username = username;
         this.password = password;
         this.topic = topic;
-        this.workflow = workflow;
+        this.workflow=workflow;
         this.notifier = new NotificationSender(
                 this.configuration.getBrokerURL(), topic);
         this.mode = SERVER_MODE;
@@ -214,7 +219,7 @@ public class WorkflowInterpreter {
         this.engine = engine;
         this.configuration = engine.getConfiguration();
         this.myProxyChecker = new MyProxyChecker(this.engine);
-        this.workflow = workflow;
+        this.workflow=workflow;
         this.isSubWorkflow = subWorkflow;
         this.mode = GUI_MODE;
         this.notifier = new NotificationSender(
@@ -223,6 +228,7 @@ public class WorkflowInterpreter {
         this.actOnProvenance = actOnProvenance;
         this.runWithCrossProduct = this.configuration.isRunWithCrossProduct();
         provenanceWriter = new PredicatedTaskRunner(1);
+        engine.registerWorkflowInterpreter(this);
 
     }
 
@@ -236,12 +242,12 @@ public class WorkflowInterpreter {
     public void scheduleDynamically() throws XBayaException {
         try {
             if (!this.isSubWorkflow
-                    && this.workflow.getExecutionState() != XBayaExecutionState.NONE) {
+                    && this.getWorkflow().getExecutionState() != XBayaExecutionState.NONE) {
                 throw new WorkFlowInterpreterException(
                         "XBaya is already running a workflow");
             }
 
-            this.workflow.setExecutionState(XBayaExecutionState.RUNNING);
+            this.getWorkflow().setExecutionState(XBayaExecutionState.RUNNING);
 
             ArrayList<Node> inputNodes = this.getInputNodesDynamically();
             Object[] values = new Object[inputNodes.size()];
@@ -256,17 +262,17 @@ public class WorkflowInterpreter {
                 values[i] = ((InputNode) node).getDefaultValue();
             }
             this.notifier.workflowStarted(values, keywords);
-                while (this.workflow.getExecutionState() != XBayaExecutionState.STOPPED) {
+                while (this.getWorkflow().getExecutionState() != XBayaExecutionState.STOPPED) {
                 if (getRemainNodesDynamically() == 0) {
                     if (this.mode == GUI_MODE) {
                         this.notifyPause();
                     } else {
-                        this.workflow
+                        this.getWorkflow()
                                 .setExecutionState(XBayaExecutionState.STOPPED);
                     }
                 }
                 // ok we have paused sleep
-                while (this.workflow.getExecutionState() == XBayaExecutionState.PAUSED) {
+                while (this.getWorkflow().getExecutionState() == XBayaExecutionState.PAUSED) {
                     try {
                         Thread.sleep(400);
                     } catch (InterruptedException e) {
@@ -280,8 +286,8 @@ public class WorkflowInterpreter {
                         this.notifyPause();
                         break;
                     }
-                    if (this.workflow.getExecutionState() == XBayaExecutionState.PAUSED
-                            || this.workflow.getExecutionState() == XBayaExecutionState.STOPPED) {
+                    if (this.getWorkflow().getExecutionState() == XBayaExecutionState.PAUSED
+                            || this.getWorkflow().getExecutionState() == XBayaExecutionState.STOPPED) {
                         break;
                         // stop executing and sleep in the outer loop cause we
                         // want
@@ -298,8 +304,8 @@ public class WorkflowInterpreter {
 //                    if (!nodeOutputLoadedFromProvenance) {
                         executeDynamically(node);
 //                    }
-                    if (this.workflow.getExecutionState() == XBayaExecutionState.STEP) {
-                        this.workflow
+                    if (this.getWorkflow().getExecutionState() == XBayaExecutionState.STEP) {
+                        this.getWorkflow()
                                 .setExecutionState(XBayaExecutionState.PAUSED);
                         break;
                     }
@@ -415,7 +421,7 @@ public class WorkflowInterpreter {
         if (node instanceof ForEachNode) {
             node = InterpreterUtil.findEndForEachFor((ForEachNode) node);
         }
-        this.provenanceWriter.scedule(new ProvenanceWrite(node, this.workflow
+        this.provenanceWriter.scedule(new ProvenanceWrite(node, this.getWorkflow()
                 .getName(), invokerMap,this.topic,this.configuration.getJcrComponentRegistry().getRegistry()));
     }
 
@@ -437,8 +443,8 @@ public class WorkflowInterpreter {
     private void notifyPause() {
         if (this.mode == GUI_MODE) {
 
-            if (this.workflow.getExecutionState() == XBayaExecutionState.RUNNING
-                    || this.workflow.getExecutionState() == XBayaExecutionState.STEP) {
+            if (this.getWorkflow().getExecutionState() == XBayaExecutionState.RUNNING
+                    || this.getWorkflow().getExecutionState() == XBayaExecutionState.STEP) {
                 this.engine.getGUI().getToolbar().getPlayAction()
                         .actionPerformed(null);
             } else {
@@ -451,11 +457,15 @@ public class WorkflowInterpreter {
      * @throws MonitorException
      */
     public void cleanup() throws MonitorException {
-        if (this.mode == GUI_MODE) {
-            this.engine.getMonitor().stop();
-            this.engine.getGUI().removeDynamicExecutionToolsFromToolbar();
-        }
         this.workflow.setExecutionState(XBayaExecutionState.NONE);
+		if (this.mode == GUI_MODE) {
+			this.engine.resetWorkflowInterpreter();
+	        try {
+			    this.engine.getMonitor().stop();
+			} finally  {
+				this.engine.getMonitor().reset();
+			}
+		}
     }
 
     private void sendOutputsDynamically() throws XBayaException {
@@ -493,7 +503,7 @@ public class WorkflowInterpreter {
 
     private void finish() throws XBayaException {
         ArrayList<Node> outoutNodes = new ArrayList<Node>();
-        List<NodeImpl> nodes = this.workflow.getGraph().getNodes();
+        List<NodeImpl> nodes = this.getWorkflow().getGraph().getNodes();
         for (Node node : nodes) {
             if (node instanceof OutputNode) {
                 if (node.getInputPort(0).getFromNode().getGUI().getBodyColor() == NodeState.FINISHED.color) {
@@ -652,11 +662,11 @@ public class WorkflowInterpreter {
                 LeadContextHeader leadCtxHeader = null;
                 try {
                      if (this.mode == GUI_MODE) {
-                            leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.workflow, this.configuration,
+                            leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.getWorkflow(), this.configuration,
                                     new MonitorConfiguration(this.configuration.getBrokerURL(), this.topic, true,
                                             this.configuration.getMessageBoxURL()), wsNode.getID(), null);
                         } else {
-                            leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.workflow, this.configuration,
+                            leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.getWorkflow(), this.configuration,
                                     new MonitorConfiguration(this.configuration.getBrokerURL(), this.topic, true,
                                             this.configuration.getMessageBoxURL()), wsNode.getID(), null);
                         }
@@ -667,7 +677,7 @@ public class WorkflowInterpreter {
                 leadCtxHeader.setServiceId(node.getID());
                 try {
                     leadCtxHeader
-                            .setWorkflowId(new URI(this.workflow.getName()));
+                            .setWorkflowId(new URI(this.getWorkflow().getName()));
 
                     // We do this so that the wsdl resolver can is setup
                     // wsdlresolver.getInstance is static so once this is
@@ -1152,11 +1162,11 @@ public class WorkflowInterpreter {
                 LeadContextHeader leadCtxHeader = null;
                 try {
                     if (this.mode == GUI_MODE) {
-                        leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.workflow, this.configuration,
+                        leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.getWorkflow(), this.configuration,
                                 new MonitorConfiguration(this.configuration.getBrokerURL(), this.topic, true,
                                         this.configuration.getMessageBoxURL()), foreachWSNode.getID(), null);
                     } else {
-                        leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.workflow, this.configuration,
+                        leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.getWorkflow(), this.configuration,
                                 new MonitorConfiguration(this.configuration.getBrokerURL(), this.topic, true,
                                         this.configuration.getMessageBoxURL()), foreachWSNode.getID(), null);
                     }
@@ -1417,7 +1427,7 @@ public class WorkflowInterpreter {
 
     private ArrayList<Node> getReadyOutputNodesDynamically() {
         ArrayList<Node> list = new ArrayList<Node>();
-        List<NodeImpl> nodes = this.workflow.getGraph().getNodes();
+        List<NodeImpl> nodes = this.getWorkflow().getGraph().getNodes();
         for (Node node : nodes) {
             if (node instanceof OutputNode
                     && node.getGUI().getBodyColor() == NodeGUI.DEFAULT_BODY_COLOR
@@ -1440,7 +1450,7 @@ public class WorkflowInterpreter {
     }
 
     private ArrayList<Node> getInputNodesDynamically() {
-        return getInputNodes(this.workflow);
+        return getInputNodes(this.getWorkflow());
     }
 
     private ArrayList<Node> getInputNodes(Workflow wf) {
@@ -1569,7 +1579,7 @@ public class WorkflowInterpreter {
                         if (this.mode == GUI_MODE) {
                             this.notifyPause();
                         } else {
-                            this.workflow
+                            this.getWorkflow()
                                     .setExecutionState(XBayaExecutionState.STOPPED);
                         }
                     }
@@ -1598,7 +1608,7 @@ public class WorkflowInterpreter {
 
     private ArrayList<Node> getNodesWithBodyColor(Color color) {
         ArrayList<Node> list = new ArrayList<Node>();
-        List<NodeImpl> nodes = this.workflow.getGraph().getNodes();
+        List<NodeImpl> nodes = this.getWorkflow().getGraph().getNodes();
         for (Node node : nodes) {
             if (node.getGUI().getBodyColor() == color) {
                 list.add(node);
@@ -1635,7 +1645,7 @@ public class WorkflowInterpreter {
 
     private int getNodeCountWithBodyColor(Color color) {
         int sum = 0;
-        List<NodeImpl> nodes = this.workflow.getGraph().getNodes();
+        List<NodeImpl> nodes = this.getWorkflow().getGraph().getNodes();
         for (Node node : nodes) {
             if (node.getGUI().getBodyColor() == color) {
                 ++sum;
@@ -1726,7 +1736,7 @@ public class WorkflowInterpreter {
                             if (middleNode !=null && node2 !=null) {
                                 nodeSet.add(0, middleNode);
                                 nodeSet.add(1, node2);
-                                GraphUtil.createSubworkflow(this.workflow, nodeSet, this.engine, "sub-workflow-1");
+                                GraphUtil.createSubworkflow(this.getWorkflow(), nodeSet, this.engine, "sub-workflow-1");
                                 //return;
                             }
                         }
@@ -1743,4 +1753,9 @@ public class WorkflowInterpreter {
     public void setRunWithCrossProduct(boolean runWithCrossProduct) {
         this.runWithCrossProduct = runWithCrossProduct;
     }
+
+	public Workflow getWorkflow() {
+		return workflow;
+	}
+
 }

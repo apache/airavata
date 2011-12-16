@@ -364,8 +364,6 @@ public class DynamicWorkflowRunnerWindow {
                     notifConfig.setTopic(topicString);
                     DynamicWorkflowRunnerWindow.this.engine.getMonitor().start();
 
-                    DynamicWorkflowRunnerWindow.this.engine.getGUI().addDynamicExecutionToolsToToolbar();
-
                     if (resourceMapping != null)
                         workflowInterpreter.setResourceMapping(resourceMapping);
 

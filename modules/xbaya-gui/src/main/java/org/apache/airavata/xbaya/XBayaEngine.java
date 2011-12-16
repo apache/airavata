@@ -40,6 +40,7 @@ import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.ErrorWindow;
 import org.apache.airavata.xbaya.gui.XBayaGUI;
+import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.gui.MonitorStarter;
@@ -76,6 +77,7 @@ public class XBayaEngine {
 
     private SystemComponentRegistry componentRegistry;
 
+    private WorkflowInterpreter workflowInterpreter;
 
     /**
      * Constructs a ApplicationClient.
@@ -405,5 +407,21 @@ public class XBayaEngine {
     public StreamTableModel getStreamModel() {
         return this.getGUI().getStreamModel();
     }
+
+    public void resetWorkflowInterpreter() {
+		this.workflowInterpreter = null;
+	}
+    
+    
+	public WorkflowInterpreter getWorkflowInterpreter() {
+		return workflowInterpreter;
+	}
+
+	public void registerWorkflowInterpreter(WorkflowInterpreter workflowInterpreter) {
+		if (getWorkflowInterpreter()!=null){
+			throw new XBayaRuntimeException("Critical Error!!! Workflow interpretter already running. Cleanup first");
+		}
+		this.workflowInterpreter = workflowInterpreter;
+	}
 
 }

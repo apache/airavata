@@ -28,6 +28,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -104,7 +105,7 @@ public class JCRRegistryWindow {
         try {
             registry = new JCRComponentRegistry(url, username, password);
         } catch (Exception e) {
-            this.engine.getErrorWindow().error(ErrorMessages.CREDENTIALS_WRONG, e);
+            this.engine.getErrorWindow().error(e.getMessage());
             return;
         }
         XBayaConfiguration configuration = this.engine.getConfiguration();
@@ -164,13 +165,6 @@ public class JCRRegistryWindow {
         GridPanel infoPanel = new GridPanel();
         infoPanel.add(urlLabel);
         infoPanel.add(this.urlTextField);
-        // GridBagConstraints c = new GridBagConstraints();
-        // c.fill = GridBagConstraints.HORIZONTAL;
-        // c.gridwidth = 2;
-        // c.gridx = 0;
-        // c.gridy = 1;
-        // infoPanel.getContentPanel().add(new JSeparator(SwingConstants.HORIZONTAL),c);
-        // infoPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
         infoPanel.add(nameLabel);
         infoPanel.add(this.usernameTextField);
         infoPanel.add(passLabel);
@@ -178,6 +172,8 @@ public class JCRRegistryWindow {
         infoPanel.add(emptyLabel);
         infoPanel.add(this.newUserButton);
         infoPanel.layout(4, 2, GridPanel.WEIGHT_NONE, 1);
+        
+        infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {
@@ -193,9 +189,10 @@ public class JCRRegistryWindow {
             }
         });
 
-        JPanel buttonPanel = new JPanel();
+        GridPanel buttonPanel = new GridPanel();
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
+        buttonPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
         this.dialog = new XBayaDialog(this.engine, "JCR Registry", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);

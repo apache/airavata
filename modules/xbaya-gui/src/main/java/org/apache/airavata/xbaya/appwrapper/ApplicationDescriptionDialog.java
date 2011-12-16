@@ -32,6 +32,7 @@ import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -48,6 +49,8 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
@@ -75,6 +78,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     private JComboBox cmbHostName;
 
     private XBayaEngine engine;
+	private JButton btnHostAdvanceOptions;
 
 
     /**
@@ -121,6 +125,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                 setApplicationName(txtAppName.getText());
             }
         });
+        this.engine=engine;
         setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
         iniGUI();
     }
@@ -136,7 +141,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
     private void iniGUI() {
         setTitle("New Deployment Description");
-        setBounds(100, 100, 671, 454);
+        setBounds(100, 100, 500, 450);
         setModal(true);
         setLocationRelativeTo(null);
         GridPanel buttonPane = new GridPanel();
@@ -275,29 +280,68 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             JLabel lblBindThisDeployment = new JLabel("Bind this deployment description to:");
             lblBindThisDeployment.setFont(new Font("Tahoma", Font.BOLD, 11));
 
-            GridPanel infoPanel = new GridPanel();
-            infoPanel.add(lblApplicationName);
-            infoPanel.add(txtAppName);
-            infoPanel.add(lblExecutablePath);
-            infoPanel.add(txtExecPath);
-            infoPanel.add(lblTemporaryDirectory);
-            infoPanel.add(txtTempDir);
-            infoPanel.add(new JLabel());
-            infoPanel.add(btnAdvance);
-            infoPanel.add(lblBindThisDeployment);
-            infoPanel.add(new JLabel());
-            infoPanel.add(lblService);
-            infoPanel.add(cmbServiceName);
-            infoPanel.add(new JLabel());
-            infoPanel.add(lnkNewService);
-            infoPanel.add(lblHostName);
-            infoPanel.add(cmbHostName);
-            infoPanel.add(new JLabel());
-            infoPanel.add(lnkNewHost);
+            btnHostAdvanceOptions=new JButton("Advanced Options...");
+            btnHostAdvanceOptions.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					try {
+						ApplicationDescriptionHostAdvancedOptionDialog hostAdvancedOptionsDialog = new ApplicationDescriptionHostAdvancedOptionDialog(getRegistry(),getShellApplicationDescription());
+                        hostAdvancedOptionsDialog.open();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                        JOptionPane.showMessageDialog(null, e1.getLocalizedMessage());
+                    }
+				}
+			});
             
-            SwingUtil.layoutToGrid(infoPanel.getSwingComponent(), 9, 2, SwingUtil.WEIGHT_NONE, 1);
+            GridPanel hostPanel=new GridPanel();
+            hostPanel.add(cmbHostName);
+            hostPanel.add(btnHostAdvanceOptions);
+            
+            SwingUtil.layoutToGrid(hostPanel.getSwingComponent(), 1, 2, 0, 0);
+            GridPanel infoPanel1 = new GridPanel();
+
+            infoPanel1.add(lblApplicationName);
+            infoPanel1.add(txtAppName);
+            infoPanel1.add(lblExecutablePath);
+            infoPanel1.add(txtExecPath);
+            infoPanel1.add(lblTemporaryDirectory);
+            infoPanel1.add(txtTempDir);
+            infoPanel1.add(new JLabel());
+            infoPanel1.add(btnAdvance);
+            
+            GridPanel infoPanel2 = new GridPanel();
+            infoPanel2.add(new JSeparator());
+            infoPanel2.add(lblBindThisDeployment);
+            
+            GridPanel infoPanel3 = new GridPanel();
+
+            infoPanel3.add(lblService);
+            infoPanel3.add(cmbServiceName);
+            infoPanel3.add(new JLabel());
+            infoPanel3.add(lnkNewService);
+            infoPanel3.add(lblHostName);
+            infoPanel3.add(hostPanel);
+            infoPanel3.add(new JLabel());
+            infoPanel3.add(lnkNewHost);
+            
+            SwingUtil.layoutToGrid(infoPanel1.getSwingComponent(), 4, 2, SwingUtil.WEIGHT_NONE, 1);
+            SwingUtil.layoutToGrid(infoPanel2.getSwingComponent(), 2, 1, SwingUtil.WEIGHT_NONE, 0);
+            SwingUtil.layoutToGrid(infoPanel3.getSwingComponent(), 4, 2, SwingUtil.WEIGHT_NONE, 1);
+
+            GridPanel infoPanel = new GridPanel();
+            infoPanel.add(infoPanel1);
+            infoPanel.add(infoPanel2);
+            infoPanel.add(infoPanel3);
+            
+            SwingUtil.layoutToGrid(infoPanel.getSwingComponent(), 3, 1, SwingUtil.WEIGHT_NONE, 0);
+            
             getContentPane().add(infoPanel.getSwingComponent());
             getContentPane().add(buttonPane.getSwingComponent());
+            
+            buttonPane.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
+            infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
+
             SwingUtil.layoutToGrid(getContentPane(), 2, 1, -1, 0);
             loadServiceDescriptions();
             loadHostDescriptions();
@@ -466,6 +510,19 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
+        HostDescription hostDescription;
+		try {
+			hostDescription = registry.getHostDescription(hostName);
+			if (hostDescription.getType() instanceof GlobusHostType){
+	        	getShellApplicationDescription().getType().changeType(GramApplicationDeploymentType.type);
+	        }else{
+	        	getShellApplicationDescription().getType().changeType(ApplicationDeploymentDescriptionType.type);
+	        }
+			btnHostAdvanceOptions.setVisible(hostDescription.getType() instanceof GlobusHostType);
+		} catch (RegistryException e) {
+			//not there - ouch
+		}
+        
         updateDialogStatus();
     }
 

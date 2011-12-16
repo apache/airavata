@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.PathNotFoundException;
+import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -166,80 +167,6 @@ public class ServiceDescriptionDialog extends JDialog {
             }
         });
         btnDeleteParameter.setEnabled(false);
-//        GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-//        gl_contentPanel
-//                .setHorizontalGroup(gl_contentPanel
-//                        .createParallelGroup(Alignment.TRAILING)
-//                        .addGroup(
-//                                gl_contentPanel
-//                                        .createSequentialGroup()
-//                                        .addContainerGap(212, Short.MAX_VALUE)
-//                                        .addGroup(
-//                                                gl_contentPanel
-//                                                        .createParallelGroup(Alignment.LEADING)
-//                                                        .addGroup(
-//                                                                gl_contentPanel
-//                                                                        .createSequentialGroup()
-//                                                                        .addComponent(separator,
-//                                                                                GroupLayout.PREFERRED_SIZE,
-//                                                                                GroupLayout.DEFAULT_SIZE,
-//                                                                                GroupLayout.PREFERRED_SIZE)
-//                                                                        .addContainerGap())
-//                                                        .addGroup(
-//                                                                gl_contentPanel
-//                                                                        .createParallelGroup(Alignment.TRAILING, false)
-//                                                                        .addGroup(
-//                                                                                gl_contentPanel
-//                                                                                        .createSequentialGroup()
-//                                                                                        .addGroup(
-//                                                                                                gl_contentPanel
-//                                                                                                        .createParallelGroup(
-//                                                                                                                Alignment.TRAILING)
-//                                                                                                        .addComponent(
-//                                                                                                                scrollPane,
-//                                                                                                                GroupLayout.PREFERRED_SIZE,
-//                                                                                                                380,
-//                                                                                                                GroupLayout.PREFERRED_SIZE)
-//                                                                                                        .addComponent(
-//                                                                                                                btnDeleteParameter))
-//                                                                                        .addGap(27))
-//                                                                        .addGroup(
-//                                                                                gl_contentPanel
-//                                                                                        .createSequentialGroup()
-//                                                                                        .addGroup(
-//                                                                                                gl_contentPanel
-//                                                                                                        .createParallelGroup(
-//                                                                                                                Alignment.LEADING)
-//                                                                                                        .addComponent(
-//                                                                                                                lblInputParameters)
-//                                                                                                        .addGroup(
-//                                                                                                                gl_contentPanel
-//                                                                                                                        .createSequentialGroup()
-//                                                                                                                        .addComponent(
-//                                                                                                                                lblServiceName)
-//                                                                                                                        .addGap(18)
-//                                                                                                                        .addComponent(
-//                                                                                                                                txtServiceName,
-//                                                                                                                                GroupLayout.PREFERRED_SIZE,
-//                                                                                                                                309,
-//                                                                                                                                GroupLayout.PREFERRED_SIZE)))
-//                                                                                        .addGap(30))))));
-//        gl_contentPanel.setVerticalGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING).addGroup(
-//                gl_contentPanel
-//                        .createSequentialGroup()
-//                        .addContainerGap(42, Short.MAX_VALUE)
-//                        .addGroup(
-//                                gl_contentPanel
-//                                        .createParallelGroup(Alignment.BASELINE)
-//                                        .addComponent(lblServiceName)
-//                                        .addComponent(txtServiceName, GroupLayout.PREFERRED_SIZE,
-//                                                GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-//                        .addPreferredGap(ComponentPlacement.UNRELATED)
-//                        .addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-//                                GroupLayout.PREFERRED_SIZE).addGap(12).addComponent(lblInputParameters)
-//                        .addPreferredGap(ComponentPlacement.RELATED)
-//                        .addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 182, GroupLayout.PREFERRED_SIZE)
-//                        .addPreferredGap(ComponentPlacement.RELATED).addComponent(btnDeleteParameter).addGap(78)));
 
         tblParameters = new JTable();
         tblParameters.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
@@ -288,9 +215,6 @@ public class ServiceDescriptionDialog extends JDialog {
 
         });
 
-//        gl_contentPanel.setAutoCreateContainerGaps(true);
-//        gl_contentPanel.setAutoCreateGaps(true);
-//        contentPanel.setLayout(gl_contentPanel);
         GridPanel buttonPane = new GridPanel();
         {
             GridBagLayout gbl_buttonPane = new GridBagLayout();
@@ -350,11 +274,15 @@ public class ServiceDescriptionDialog extends JDialog {
         
         SwingUtil.layoutToGrid(contentPanel.getSwingComponent(), 1, 2, SwingUtil.WEIGHT_NONE, 1);
         SwingUtil.layoutToGrid(parameterPanel.getSwingComponent(), 3, 1, 1, 0);
-        
-        getContentPane().add(contentPanel.getSwingComponent());
-        getContentPane().add(parameterPanel.getSwingComponent());
+        GridPanel infoPanel = new GridPanel();
+        infoPanel.add(contentPanel);
+        infoPanel.add(parameterPanel);
+        infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
+        infoPanel.layout(2, 1, 1, 0);
+        getContentPane().add(infoPanel.getSwingComponent());
         getContentPane().add(buttonPane.getSwingComponent());
-        SwingUtil.layoutToGrid(getContentPane(), 3, 1, 1, 0);
+        buttonPane.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
+        SwingUtil.layoutToGrid(getContentPane(), 2, 1, 0, 0);
         setResizable(false);
         getRootPane().setDefaultButton(okButton);
     }
