@@ -21,6 +21,15 @@
 
 package org.apache.airavata.xbaya.gui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.Box;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.amazonEC2.gui.AmazonEC2Menu;
@@ -28,7 +37,6 @@ import org.apache.airavata.xbaya.appwrapper.RegisterApplicationsMenu;
 import org.apache.airavata.xbaya.component.gui.ComponentMenu;
 import org.apache.airavata.xbaya.experiment.gui.ExperimentMenu;
 import org.apache.airavata.xbaya.file.gui.FileMenu;
-import org.apache.airavata.xbaya.gpel.gui.GPELMenu;
 import org.apache.airavata.xbaya.menues.edit.EditMenuItem;
 import org.apache.airavata.xbaya.menues.registry.RegistryMenuItem;
 import org.apache.airavata.xbaya.menues.run.RunMenuItem;
@@ -38,10 +46,6 @@ import org.apache.airavata.xbaya.menues.xbaya.XBayaMenuItem;
 import org.apache.airavata.xbaya.monitor.gui.MonitorMenu;
 import org.apache.airavata.xbaya.pegasus.gui.PegasusMenu;
 import org.apache.airavata.xbaya.wf.gui.WorkflowMenu;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 
 public class XBayaMenu implements XBayaComponent {
 
@@ -54,8 +58,6 @@ public class XBayaMenu implements XBayaComponent {
     private FileMenu fileMenu;
 
     private ExperimentMenu experimentMenu;
-
-    private GPELMenu gpelMenu;
 
     private PegasusMenu pegasusMenu;
 
