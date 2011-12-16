@@ -37,6 +37,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
@@ -141,7 +142,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
     private void iniGUI() {
         setTitle("New Deployment Description");
-        setBounds(100, 100, 500, 450);
+        setBounds(100, 100, 500, 520);
         setModal(true);
         setLocationRelativeTo(null);
         GridPanel buttonPane = new GridPanel();
@@ -182,7 +183,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         {
 //            JPanel panel = new JPanel();
 //            getContentPane().add(panel, BorderLayout.CENTER);
-            
+        	GridPanel execPath=new GridPanel();
             txtExecPath = new XBayaTextField();
             txtExecPath.getTextField().addKeyListener(new KeyAdapter() {
                 @Override
@@ -191,6 +192,20 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                 }
             });
             txtExecPath.setColumns(10);
+            JButton execBrowse=new JButton("Browse...");
+            execBrowse.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					JFileChooser c = new JFileChooser();
+					int rVal = c.showOpenDialog(null);
+					if (rVal == JFileChooser.APPROVE_OPTION) {
+						txtExecPath.setText(c.getSelectedFile().toString());
+					}
+				}
+            });
+            execPath.add(txtExecPath);
+            execPath.add(execBrowse);
+            execPath.layout(1, 2, 0, 0);
             txtAppName = new XBayaTextField();
             txtAppName.getTextField().addKeyListener(new KeyAdapter() {
                 @Override
@@ -201,7 +216,8 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             txtAppName.setColumns(10);
             XBayaLabel lblApplicationName = new XBayaLabel("Application name",txtAppName);
             XBayaLabel lblExecutablePath = new XBayaLabel("Executable path",txtExecPath);
-            JSeparator separator_1 = new JSeparator();
+        	GridPanel tmpDirPath=new GridPanel();
+
             txtTempDir = new XBayaTextField();
             txtTempDir.getTextField().addKeyListener(new KeyAdapter() {
                 @Override
@@ -210,6 +226,22 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                 }
             });
             txtTempDir.setColumns(10);
+            JButton tmpDirBrowse=new JButton("Browse...");
+            tmpDirBrowse.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					JFileChooser c = new JFileChooser();
+					c.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+					int rVal = c.showOpenDialog(null);
+					if (rVal == JFileChooser.APPROVE_OPTION) {
+						txtTempDir.setText(c.getSelectedFile().toString());
+					}
+				}
+            });
+            tmpDirPath.add(txtTempDir);
+            tmpDirPath.add(tmpDirBrowse);
+            tmpDirPath.layout(1, 2, 0, 0);
+
             XBayaLabel lblTemporaryDirectory = new XBayaLabel("Temporary directory",txtTempDir);
 
             JButton btnAdvance = new JButton("Advanced options...");
@@ -225,8 +257,6 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                     }
                 }
             });
-
-            JSeparator separator = new JSeparator();
 
             XBayaLinkButton lnkNewService = new XBayaLinkButton("New button");
             lnkNewService.addActionListener(new ActionListener() {
@@ -280,7 +310,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             JLabel lblBindThisDeployment = new JLabel("Bind this deployment description to:");
             lblBindThisDeployment.setFont(new Font("Tahoma", Font.BOLD, 11));
 
-            btnHostAdvanceOptions=new JButton("Advanced Options...");
+            btnHostAdvanceOptions=new JButton("Options...");
             btnHostAdvanceOptions.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -299,19 +329,23 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             hostPanel.add(btnHostAdvanceOptions);
             
             SwingUtil.layoutToGrid(hostPanel.getSwingComponent(), 1, 2, 0, 0);
+            GridPanel infoPanel0 = new GridPanel();
+
+            infoPanel0.add(lblApplicationName);
+            infoPanel0.add(txtAppName);
+            
             GridPanel infoPanel1 = new GridPanel();
 
-            infoPanel1.add(lblApplicationName);
-            infoPanel1.add(txtAppName);
+            
             infoPanel1.add(lblExecutablePath);
-            infoPanel1.add(txtExecPath);
+            infoPanel1.add(execPath);
             infoPanel1.add(lblTemporaryDirectory);
-            infoPanel1.add(txtTempDir);
-            infoPanel1.add(new JLabel());
-            infoPanel1.add(btnAdvance);
+            infoPanel1.add(tmpDirPath);
+//            infoPanel1.add(new JLabel());
+//            infoPanel1.add(btnAdvance);
             
             GridPanel infoPanel2 = new GridPanel();
-            infoPanel2.add(new JSeparator());
+//            infoPanel2.add(new JSeparator());
             infoPanel2.add(lblBindThisDeployment);
             
             GridPanel infoPanel3 = new GridPanel();
@@ -325,16 +359,28 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             infoPanel3.add(new JLabel());
             infoPanel3.add(lnkNewHost);
             
-            SwingUtil.layoutToGrid(infoPanel1.getSwingComponent(), 4, 2, SwingUtil.WEIGHT_NONE, 1);
-            SwingUtil.layoutToGrid(infoPanel2.getSwingComponent(), 2, 1, SwingUtil.WEIGHT_NONE, 0);
+            GridPanel infoPanel4=new GridPanel();
+            infoPanel4.add(new JLabel());
+            infoPanel4.add(btnAdvance);
+            infoPanel4.layout(1, 2, 0, 0);
+            
+            SwingUtil.layoutToGrid(infoPanel0.getSwingComponent(), 1, 2, SwingUtil.WEIGHT_NONE, 1);
+
+            SwingUtil.layoutToGrid(infoPanel1.getSwingComponent(), 2, 2, SwingUtil.WEIGHT_NONE, 1);
+            SwingUtil.layoutToGrid(infoPanel2.getSwingComponent(), 1, 1, SwingUtil.WEIGHT_NONE, 0);
             SwingUtil.layoutToGrid(infoPanel3.getSwingComponent(), 4, 2, SwingUtil.WEIGHT_NONE, 1);
 
             GridPanel infoPanel = new GridPanel();
+            infoPanel.add(infoPanel0);
+            infoPanel.add(new JSeparator());
             infoPanel.add(infoPanel1);
+            infoPanel.add(new JSeparator());
             infoPanel.add(infoPanel2);
             infoPanel.add(infoPanel3);
+            infoPanel.add(new JSeparator());
+            infoPanel.add(infoPanel4);
             
-            SwingUtil.layoutToGrid(infoPanel.getSwingComponent(), 3, 1, SwingUtil.WEIGHT_NONE, 0);
+            SwingUtil.layoutToGrid(infoPanel.getSwingComponent(), 8, 1, SwingUtil.WEIGHT_NONE, 0);
             
             getContentPane().add(infoPanel.getSwingComponent());
             getContentPane().add(buttonPane.getSwingComponent());
