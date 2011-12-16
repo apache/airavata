@@ -253,7 +253,7 @@ public class DynamicWorkflowRunnerWindow {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Invoke  workflow", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine, "Invoke workflow", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 
