@@ -27,7 +27,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -46,9 +46,7 @@ import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.JobTypeType;
 import org.apache.airavata.xbaya.gui.GridPanel;
-import org.apache.airavata.xbaya.gui.XBayaComboBox;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
 
@@ -60,13 +58,6 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private XBayaTextField txtSTDIN;
     private XBayaTextField txtSTDOUT;
     private XBayaTextField txtSTDERR;
-    private XBayaComboBox jobType;
-    private XBayaTextField projectAccountNumber;
-    private XBayaTextField projectAccountDescription;
-    private XBayaTextField queueType;
-    private XBayaTextField queueName;
-    private XBayaTextField rslParameterName;
-    private XBayaTextField rslParameterValue;
     private JTable tblEnv;
     private ApplicationDeploymentDescription shellApplicationDescription;
     private DefaultTableModel defaultTableModel;
@@ -120,7 +111,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private void initGUI() {
         setTitle("Application Description Advance Options");
         setModal(true);
-        setBounds(100, 100, 654, 417);
+        setBounds(100, 100, 600, 350);
         setLocationRelativeTo(null);
         GridPanel buttonPane = new GridPanel();
         okButton = new JButton("Update");
@@ -146,14 +137,6 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         
     	GridPanel panel = new GridPanel();
         
-//            JLabel lbljobType = new JLabel("Job Type");
-//            JLabel lblProjectAccountNumber = new JLabel("Project Account Number");
-//            JLabel lblProjectAccountDescription = new JLabel("Project Account Description");
-//            JLabel lblQueueType = new JLabel("Queue Type");
-//            JLabel lblQueueName = new JLabel("Queue Name");
-//            JLabel lblRSLParameterName = new JLabel("RSL Parameter Name");
-//            JLabel lslRSLParameterValue = new JLabel("RSL Parameter Value");
-    	
         txtInputDir = new XBayaTextField();
         txtWorkingDir = new XBayaTextField();
         
@@ -186,21 +169,6 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 
         JLabel other = new JLabel("Other");
         other.setFont(new Font("Tahoma", Font.BOLD, 11));
-
-        projectAccountNumber = new XBayaTextField();
-
-        projectAccountDescription = new XBayaTextField();
-
-        queueName = new XBayaTextField();
-
-        queueType = new XBayaTextField();
-
-        rslParameterName = new XBayaTextField();
-        rslParameterValue = new XBayaTextField();
-
-        this.jobType = new XBayaComboBox(new DefaultComboBoxModel(new String[]
-                {JobTypeType.OPEN_MP.toString(),JobTypeType.MPI.toString(),JobTypeType.SERIAL.toString()}));
-        this.jobType.setEditable(false);
 
         JSeparator separator_1 = new JSeparator();
         separator_1.setOrientation(SwingConstants.VERTICAL);
@@ -275,17 +243,25 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         rightPanel.add(lblEnvironmentalVariables);
         rightPanel.add(scrollPane);
         rightPanel.add(btnDeleteVariable);
-        
+        rightPanel.getSwingComponent().setSize(150, -1);
+        leftPanel.getSwingComponent().setSize(150, -1);
         SwingUtil.layoutToGrid(rightPanel.getSwingComponent(), 3, 1, 1, 0);
         
-        panel.add(leftPanel);
+//        panel.add(leftPanel);
+        GridPanel p=new GridPanel();
+        p.add(leftPanel);
+        p.add(new JSeparator(JSeparator.VERTICAL));
+        p.layout(1,2, 0,0);
+        panel.add(p);
         panel.add(rightPanel);
-        
+        panel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
+
         SwingUtil.layoutToGrid(panel.getSwingComponent(), 1, 2, SwingUtil.WEIGHT_NONE, SwingUtil.WEIGHT_EQUALLY);
         
         buttonPane.add(okButton);
         buttonPane.add(cancelButton);
-        
+        buttonPane.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
+
         getContentPane().add(panel.getSwingComponent());
         getContentPane().add(buttonPane.getSwingComponent());
         SwingUtil.layoutToGrid(getContentPane(), 2, 1, 0, 0);

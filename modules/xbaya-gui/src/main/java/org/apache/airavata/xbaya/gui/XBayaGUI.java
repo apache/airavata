@@ -843,14 +843,6 @@ public class XBayaGUI implements EventListener {
         this.frame.setTitle(workflowName + " - " + title);
     }
 
-    public void addDynamicExecutionToolsToToolbar() {
-        getToolbar().addDynamicExecutionTools();
-    }
-
-    public void removeDynamicExecutionToolsFromToolbar() {
-        getToolbar().removeDynamicExecutionTools();
-    }
-
     /**
      * @param newStreamName
      * @return

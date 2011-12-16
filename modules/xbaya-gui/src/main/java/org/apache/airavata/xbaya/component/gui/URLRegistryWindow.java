@@ -39,6 +39,11 @@ import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
 import org.apache.airavata.xbaya.util.RegistryConstants;
 
+/**
+ * 
+ * Adds components to the component browser through a URL (eg: add service from a WSDL) 
+ *
+ */
 public class URLRegistryWindow {
 
     private XBayaEngine engine;

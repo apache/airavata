@@ -264,7 +264,6 @@ public class TavernaRunnerWindow {
                     MonitorConfiguration notifConfig = TavernaRunnerWindow.this.engine.getMonitor().getConfiguration();
                     TavernaRunnerWindow.this.engine.getMonitor().start();
                     notifConfig.setTopic(topicString);
-                    TavernaRunnerWindow.this.engine.getGUI().addDynamicExecutionToolsToToolbar();
                     new WorkflowInterpreter(TavernaRunnerWindow.this.engine, topicString).scheduleDynamically();
                 } catch (XBayaException e) {
                     TavernaRunnerWindow.this.engine.getErrorWindow().error(e);

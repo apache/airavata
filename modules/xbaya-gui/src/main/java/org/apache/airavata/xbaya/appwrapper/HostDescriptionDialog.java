@@ -21,6 +21,18 @@
 
 package org.apache.airavata.xbaya.appwrapper;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.regex.Pattern;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+
+import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.registry.api.exception.RegistryException;
@@ -31,10 +43,6 @@ import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.util.regex.Pattern;
 
 public class HostDescriptionDialog extends JDialog {
 
@@ -57,6 +65,12 @@ public class HostDescriptionDialog extends JDialog {
     private boolean hostCreated = false;
 
     private Registry registry;
+
+	private JCheckBox chkGobusHost;
+
+	private XBayaLabel globusGateKeeperLabel;
+
+	private XBayaLabel gridFTPLabel;
 
     /**
      * @param engine XBaya workflow engine
@@ -87,11 +101,8 @@ public class HostDescriptionDialog extends JDialog {
         setHostId(hostId);
         setHostLocation(hostAddress);
         if(isGlobusHostType()) {
-        	getHostDescription().getType().changeType(GlobusHostType.type);
         	setGlobusGateKeeperEPR(globusGateKeeperEPR);
         	setGridFTPEPR(gridFTP);
-        }else{
-        	getHostDescription().getType().changeType(HostDescriptionType.type);
         }
 
         saveHostDescription();
@@ -99,9 +110,7 @@ public class HostDescriptionDialog extends JDialog {
     }
 
 	private boolean isGlobusHostType() {
-		String globusGateKeeperEPR = this.globusGateKeeperTextField.getText();
-        String gridFTP = this.GridFTPTextField.getText();
-		return (!globusGateKeeperEPR.equals("") || !gridFTP.equals(""));
+		return getHostDescription().getType() instanceof GlobusHostType;
 	}
 
     private void setGlobusGateKeeperEPR(String epr) {
@@ -139,40 +148,59 @@ public class HostDescriptionDialog extends JDialog {
 
         XBayaLabel hostIdLabel = new XBayaLabel("Host ID", this.hostIdTextField);
         XBayaLabel hostAddressLabel = new XBayaLabel("Host Address", this.hostAddressTextField);
-        XBayaLabel globusGateKeeperLabel = new XBayaLabel("Gloubus Gate Keeper Endpoint", this.globusGateKeeperTextField);
-        XBayaLabel gridFTPLabel = new XBayaLabel("Grid FTP Endpoint", this.GridFTPTextField);
+        globusGateKeeperLabel = new XBayaLabel("Globus Gate Keeper Endpoint", this.globusGateKeeperTextField);
+        gridFTPLabel = new XBayaLabel("Grid FTP Endpoint", this.GridFTPTextField);
+        chkGobusHost=new JCheckBox("Define this host as a Globus host");
+        chkGobusHost.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				updateGlobusHostTypeAndControls();
+			}
+        });
+        GridPanel infoPanel1 = new GridPanel();
+        infoPanel1.add(hostIdLabel);
+        infoPanel1.add(this.hostIdTextField);
+        infoPanel1.add(hostAddressLabel);
+        infoPanel1.add(this.hostAddressTextField);
+        infoPanel1.add(chkGobusHost);
+        GridPanel infoPanel2 = new GridPanel();
+        infoPanel2.add(globusGateKeeperLabel);
+        infoPanel2.add(globusGateKeeperTextField);
+        infoPanel2.add(gridFTPLabel);
+        infoPanel2.add(GridFTPTextField);
+        SwingUtil.layoutToGrid(infoPanel1.getSwingComponent(), 2, 2, SwingUtil.WEIGHT_NONE, 1);
+        SwingUtil.layoutToGrid(infoPanel2.getSwingComponent(), 2, 2, SwingUtil.WEIGHT_NONE, 1);
 
         GridPanel infoPanel = new GridPanel();
-        infoPanel.add(hostIdLabel);
-        infoPanel.add(this.hostIdTextField);
-        infoPanel.add(hostAddressLabel);
-        infoPanel.add(this.hostAddressTextField);
-        infoPanel.add(globusGateKeeperLabel);
-        infoPanel.add(globusGateKeeperTextField);
-        infoPanel.add(gridFTPLabel);
-        infoPanel.add(this.GridFTPTextField);
-        infoPanel.layout(4, 2, GridPanel.WEIGHT_NONE, 1);
+
+        infoPanel.add(infoPanel1);
+        infoPanel.add(chkGobusHost);
+        infoPanel.add(infoPanel2);
+        infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
+        SwingUtil.layoutToGrid(infoPanel.getSwingComponent(), 3, 1, SwingUtil.WEIGHT_NONE, 0);
 
         JButton okButton = new JButton("OK");
-        okButton.addActionListener(new AbstractAction() {
+        okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ok();
             }
         });
 
         JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(new AbstractAction() {
+        cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 hide();
             }
         });
 
-        JPanel buttonPanel = new JPanel();
+        GridPanel buttonPanel = new GridPanel();
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
-
+        buttonPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         this.dialog = new XBayaDialog(this.engine, "New Host Description", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
+        chkGobusHost.setSelected(false);
+        updateGlobusHostTypeAndControls();
     }
 
     public String getHostId() {
@@ -185,7 +213,7 @@ public class HostDescriptionDialog extends JDialog {
     }
 
     public String getHostLocation() {
-        return getHostDescription().getType().getHostAddress();
+        return getHostDescription().getType().getHostName();
     }
 
     public void setHostLocation(String hostLocation) {
@@ -264,4 +292,16 @@ public class HostDescriptionDialog extends JDialog {
     public void setRegistry(Registry registry) {
         this.registry = registry;
     }
+
+	private void updateGlobusHostTypeAndControls() {
+		if(chkGobusHost.isSelected()) {
+			getHostDescription().getType().changeType(GlobusHostType.type);
+		}else{
+			getHostDescription().getType().changeType(HostDescriptionType.type);
+		}
+		globusGateKeeperLabel.getSwingComponent().setEnabled(isGlobusHostType());
+		globusGateKeeperTextField.setEnabled(isGlobusHostType());
+		gridFTPLabel.getSwingComponent().setEnabled(isGlobusHostType());
+		GridFTPTextField.setEnabled(isGlobusHostType());
+	}
 }
