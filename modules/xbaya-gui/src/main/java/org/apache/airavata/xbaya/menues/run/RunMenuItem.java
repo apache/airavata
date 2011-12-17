@@ -59,8 +59,6 @@ public class RunMenuItem  implements EventListener{
     private JMenu runMenu;
     
     private JMenuItem launchDynamicWorkflowItem;
-    
-//    private JMenuItem runJythonWorkflowItem;
 
     private JMenuItem launchGridChemWorkflowItem;
 
@@ -115,7 +113,6 @@ public class RunMenuItem  implements EventListener{
      */
     private void createWorkflowMenu() {
         this.launchDynamicWorkflowItem = createLaunchDynamicWorkflowItem();
-//        this.runJythonWorkflowItem = createRunJythonWorkflowItem();
         this.launchGridChemWorkflowItem = createLaunchGridChemWorkflowItem();
         createLaunchXBayaInterpreterItem();
         createLaunchAndSaveGridChemWorkflowItem();
@@ -128,7 +125,6 @@ public class RunMenuItem  implements EventListener{
         runMenu.setMnemonic(KeyEvent.VK_R);
 
         runMenu.add(launchDynamicWorkflowItem);
-//        runMenu.add(runJythonWorkflowItem);
         runMenu.add(launchXBayaInterpreterItem);
 
         runMenu.addSeparator();
@@ -158,13 +154,9 @@ public class RunMenuItem  implements EventListener{
 						boolean runShouldBeActive = isRunShouldBeActive();
 						runWorkflowButton.setEnabled(runShouldBeActive);	
 						launchDynamicWorkflowItem.setEnabled(runShouldBeActive);
-//						runJythonWorkflowItem.setEnabled(runShouldBeActive);
-//                        runJythonWorkflowItem.setEnabled(false);
 						launchXBayaInterpreterItem.setEnabled(runShouldBeActive);
-//						launchGridChemWorkflowItem.setEnabled(runShouldBeActive);
                         launchGridChemWorkflowItem.setEnabled(false);
                         launchAndSaveInGridChemWorkflowItem.setEnabled(false);
-//						launchAndSaveInGridChemWorkflowItem.setEnabled(runShouldBeActive);
 					}
                 });
             }
@@ -266,7 +258,6 @@ public class RunMenuItem  implements EventListener{
             private DynamicWorkflowRunnerWindow window;
 
             public void actionPerformed(ActionEvent event) {
-//            	lastEvent!=null && lastEvent.getType()!=Event.Type.MONITOR_STOPED
             	if (engine.getWorkflowInterpreter()!=null){
             		if (JOptionPane.showConfirmDialog(null, "A previous workflow excution data needs to be cleared before launching another workflow. Do you wish to continue?", "Run Dynamic Workflow", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
             			cleanup();
