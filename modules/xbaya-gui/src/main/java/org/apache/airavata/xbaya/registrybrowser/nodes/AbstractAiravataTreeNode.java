@@ -56,7 +56,8 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
         return null;
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Enumeration children() {
         this.children = listOfChildren();
         Collections.enumeration(children);
