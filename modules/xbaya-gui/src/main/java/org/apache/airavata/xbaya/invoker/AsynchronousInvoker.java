@@ -30,7 +30,6 @@ import xsul.wsif.WSIFMessage;
 import xsul.wsif.WSIFOperation;
 import xsul.xwsif_runtime_async.WSIFAsyncResponsesCorrelator;
 import xsul.xwsif_runtime_async_http.XsulSoapHttpWsaResponsesCorrelator;
-import xsul.xwsif_runtime_async_msgbox.XsulMsgBoxWsaResponsesCorrelator;
 
 public class AsynchronousInvoker extends SimpleInvoker {
 
