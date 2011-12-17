@@ -102,7 +102,8 @@ public class AmazonS3UtilsWindow {
         return s3Service;
     }
 
-    protected void initGUI() {
+    @SuppressWarnings("serial")
+	protected void initGUI() {
 
         /*
          * Upload Panel
