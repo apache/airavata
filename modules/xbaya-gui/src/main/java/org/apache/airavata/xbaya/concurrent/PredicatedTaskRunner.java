@@ -98,9 +98,6 @@ public class PredicatedTaskRunner {
 					try {
 
 
-
-
-
 						synchronized (jobQueue) {
 							while(jobQueue.size() == 0 || allTasksAreWaiting(jobQueue)){
 								jobQueue.wait(50);
@@ -115,9 +112,6 @@ public class PredicatedTaskRunner {
 							// add to end if not ready to run
 							jobQueue.add(job);
 						}
-
-
-
 
 
 
