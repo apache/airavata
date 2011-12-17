@@ -53,8 +53,6 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     private XBayaTextField txtProjectAccountDescription;
     private XBayaTextField txtQueueType;
     private XBayaTextField txtQueueName;
-    private XBayaTextField txtRslParameterName;
-    private XBayaTextField txtRslParameterValue;
     private JButton okButton;
     private Registry registry;
     private ApplicationDeploymentDescription descriptor;
@@ -121,8 +119,6 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		
 		txtQueueType = new XBayaTextField();
 		
-		txtRslParameterName = new XBayaTextField();
-		txtRslParameterValue = new XBayaTextField();
 		
 		cmbJobType = new XBayaComboBox(new DefaultComboBoxModel(getJobTypesAsStrings()));
 		cmbJobType.setEditable(false);
@@ -132,8 +128,6 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		XBayaLabel lblProjectAccountDescription = new XBayaLabel("Project Account Description",txtProjectAccountDescription);
 		XBayaLabel lblQueueType = new XBayaLabel("Queue Type",txtQueueType);
 		XBayaLabel lblQueueName = new XBayaLabel("Queue Name",txtQueueName);
-		XBayaLabel lblRSLParameterName = new XBayaLabel("RSL Parameter Name",txtRslParameterName);
-		XBayaLabel lslRSLParameterValue = new XBayaLabel("RSL Parameter Value",txtRslParameterValue);
     	
 		panel.add(lbljobType);
 		panel.add(cmbJobType);
@@ -145,8 +139,6 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		panel.add(txtQueueType);
 		panel.add(lblQueueName);
 		panel.add(txtQueueName);
-//		panel.add(lblRSLParameterName);
-//		panel.add(lslRSLParameterValue);
 		panel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         buttonPane.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
