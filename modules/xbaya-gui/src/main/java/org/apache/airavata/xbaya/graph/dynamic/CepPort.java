@@ -97,19 +97,10 @@ public class CepPort extends DataPort {
         return this.componentPort;
     }
 
-    // public void setNode(NodeImpl node) {
-    // super.setNode(node);
-    // }
-    //
-    // public String getUniqueID(){
-    // return this.uuid;
-    // }
 
     protected XmlElement toXML() {
         XmlElement portElement = super.toXML();
         portElement.setAttributeValue(GraphSchema.NS, GraphSchema.PORT_TYPE_ATTRIBUTE, GraphSchema.PORT_TYPE_CEP);
-        // portElement.setAttributeValue(GraphSchema.NS,
-        // GraphSchema.PORT_TYPE_UUID, this.uuid);
         return portElement;
     }
 
