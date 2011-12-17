@@ -108,7 +108,8 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         getDialog().setVisible(false);
     }
 
-    private void initGUI() {
+    @SuppressWarnings("serial")
+	private void initGUI() {
         setTitle("Application Description Advance Options");
         setModal(true);
         setBounds(100, 100, 600, 350);
@@ -150,8 +151,6 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 
         XBayaLabel lblOutputDirectory = new XBayaLabel("Output directory",txtOutputDir);
 
-        JSeparator separator = new JSeparator();
-
         JLabel lblProgramData = new JLabel("Program data");
         lblProgramData.setFont(new Font("Tahoma", Font.BOLD, 11));
 
@@ -191,9 +190,11 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         tblEnv.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         defaultTableModel = new DefaultTableModel(new Object[][] { { null, null }, }, new String[] { "Name",
                 "Value" }) {
-            Class[] columnTypes = new Class[] { String.class, String.class };
+            @SuppressWarnings("rawtypes")
+			Class[] columnTypes = new Class[] { String.class, String.class };
 
-            public Class getColumnClass(int columnIndex) {
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+			public Class getColumnClass(int columnIndex) {
                 return columnTypes[columnIndex];
             }
         };
@@ -247,7 +248,6 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         leftPanel.getSwingComponent().setSize(150, -1);
         SwingUtil.layoutToGrid(rightPanel.getSwingComponent(), 3, 1, 1, 0);
         
-//        panel.add(leftPanel);
         GridPanel p=new GridPanel();
         p.add(leftPanel);
         p.add(new JSeparator(JSeparator.VERTICAL));
@@ -309,15 +309,6 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     	getShellApplicationDescriptionType().setStandardOutput(txtSTDOUT.getText());
     	getShellApplicationDescriptionType().setStandardError(txtSTDERR.getText());
 
-//    	getShellApplicationDescriptionType().setEnv(Apll.Factory.newInstance().getEnv());
-//        for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
-//            String varName = (String) defaultTableModel.getValueAt(i, 0);
-//            if (varName != null && !varName.equals("")) {
-//                String varValue = (String) defaultTableModel.getValueAt(i, 1);
-//                getShellApplicationDescriptionType().getEnv().addNewEntry().setKey(varName);
-//                getShellApplicationDescriptionType().getEnv().addNewEntry().setValue(varValue);
-//            }
-//        }
     }
 
     private void loadApplicationDescriptionAdvancedOptions() {
@@ -328,39 +319,11 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         txtSTDOUT.setText(getShellApplicationDescriptionType().getStandardOutput());
         txtSTDERR.setText(getShellApplicationDescriptionType().getStandardError());
         tableModelChanging = true;
-//      todo handle other parameters previous sent in the Entry Now they are defined
-//        ShellApplicationDeploymentType.Env.Entry[] entry = getShellApplicationDescriptionType().getEnv().getEntryArray();
-//
-//        Map<String, String> env = null;
-//        for (int i = 0; i < entry.length; i++) {
-//            String key = getShellApplicationDescriptionType().getEnv().getEntryArray(i).getKey();
-//            String value = getShellApplicationDescriptionType().getEnv().getEntryArray(i).getValue();
-//            env.put(key, value);
-//        }
-
-//        while (defaultTableModel.getRowCount() > 0) {
-//            defaultTableModel.removeRow(0);
-//        }
-//        if (env != null) {
-//            for (String varName : env.keySet()) {
-//                defaultTableModel.addRow(new String[] { varName, env.get(varName) });
-//            }
-//        }
         addNewRowIfLastIsNotEmpty();
         tableModelChanging = false;
     }
 
-    private String getNotNullValue(String value) {
-        return value == null ? "" : value;
-    }
 
-    // private void setError(String errorMessage){
-    // if (errorMessage==null || errorMessage.trim().equals("")){
-    // lblError.setText("");
-    // }else{
-    // lblError.setText(errorMessage.trim());
-    // }
-    // }
 
     public Registry getRegistry() {
         return registry;
@@ -370,51 +333,5 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         this.registry = registry;
     }
 
-    // private void updateDialogStatus(){
-    // String message=null;
-    // try {
-    // validateDialog();
-    // } catch (Exception e) {
-    // message=e.getLocalizedMessage();
-    // }
-    // okButton.setEnabled(message==null);
-    // setError(message);
-    // }
-    //
-    // private void validateDialog() throws Exception{
-    // if (getApplicationName()==null || getApplicationName().trim().equals("")){
-    // throw new Exception("Name of the application cannot be empty!!!");
-    // }
-    //
-    // List<ApplicationDeploymentDescription> deploymentDescriptions=null;
-    // try {
-    // deploymentDescriptions = getJCRComponentRegistry().getRegistry().searchDeploymentDescription(getServiceName(),
-    // getHostName(), Pattern.quote(getApplicationName()));
-    // } catch (PathNotFoundException e) {
-    // //what we want
-    // } catch (Exception e){
-    // throw e;
-    // }
-    // if (deploymentDescriptions.size()>0){
-    // throw new Exception("Application descriptor with the given name already exists!!!");
-    // }
-    //
-    // if (getExecutablePath()==null || getExecutablePath().trim().equals("")){
-    // throw new Exception("Executable path cannot be empty!!!");
-    // }
-    //
-    // if (getTempDir()==null || getTempDir().trim().equals("")){
-    // throw new Exception("Temporary directory location cannot be empty!!!");
-    // }
-    //
-    // if (getServiceName()==null || getServiceName().trim().equals("")){
-    // throw new Exception("Please select/create service to bind to this deployment description");
-    // }
-    //
-    // if (getHostName()==null || getHostName().trim().equals("")){
-    // throw new Exception("Please select/create host to bind to this deployment description");
-    // }
-    //
-    // }
 
 }
