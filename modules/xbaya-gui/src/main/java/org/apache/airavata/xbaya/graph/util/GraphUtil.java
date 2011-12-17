@@ -551,8 +551,6 @@ public class GraphUtil {
 		Workflow subWorkflow = Workflow.getWorkflow(parentWorkflow, nodeSet,
 				subworkflowName);
 
-//		GraphCanvas newGraphCanvas = engine.getGUI().newGraphCanvas(false);
-//		newGraphCanvas.setWorkflow(subWorkflow);
 
 		SubWorkflowNode newNode = (SubWorkflowNode) parentWorkflow.addNode( SubWorkflowComponent.getInstance(
                 subWorkflow));
