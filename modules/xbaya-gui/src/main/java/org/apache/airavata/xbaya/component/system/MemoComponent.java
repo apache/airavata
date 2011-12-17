@@ -58,17 +58,5 @@ public class MemoComponent extends SystemComponent {
         return node;
     }
 
-    // /**
-    // * @see org.apache.airavata.xbaya.component.Component#toHTML()
-    // */
-    // @Override
-    // public String toHTML() {
-    // StringBuffer buf = new StringBuffer();
-    // buf.append("<html> <h1>" + NAME + " Component</h1>");
-    // buf.append("<h2>Description:</h2> " + DESCRIPTION);
-    //
-    // buf.append("</html>");
-    //
-    // return buf.toString();
-    // }
+  
 }
