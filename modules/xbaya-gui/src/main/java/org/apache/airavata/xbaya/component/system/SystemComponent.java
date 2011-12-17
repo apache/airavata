@@ -86,8 +86,6 @@ public abstract class SystemComponent extends Component {
             buf.append("<h3>Output" + (i + 1) + "</h3>");
             buf.append("<strong>Name: </strong>");
             buf.append("" + port.getName() + "<br>");
-            // buf.append("<strong>Type: </strong>");
-            // buf.append("" + port.getType().getLocalPart() + "<br>");
             buf.append("<strong>Description: </strong>");
             buf.append("" + port.getDescription());
         }
