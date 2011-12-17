@@ -35,7 +35,6 @@ import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
 import org.apache.airavata.xbaya.component.registry.LocalComponentRegistry;
 import org.apache.airavata.xbaya.component.registry.SystemComponentReference;
 import org.apache.airavata.xbaya.component.registry.SystemComponentRegistry;
-import org.apache.airavata.xbaya.gpel.component.SubWorkflowUpdater;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.ErrorWindow;
@@ -62,8 +61,6 @@ public class XBayaEngine {
     private XBayaGUI gui;
 
     private WorkflowClient workflowClient;
-
-    private SubWorkflowUpdater subWorkflowUpdater;
 
     private Monitor monitor;
 
@@ -102,7 +99,6 @@ public class XBayaEngine {
         // this.workflowClient = WorkflowEngineManager.getWorkflowClient();
         // this.workflowClient.setXBayaEngine(this);
 
-        this.subWorkflowUpdater = new SubWorkflowUpdater(this);
 
         // Set up the GUI.
         XBayaEngine.this.gui = new XBayaGUI(XBayaEngine.this);
@@ -144,14 +140,6 @@ public class XBayaEngine {
         return this.workflowClient;
     }
 
-    /**
-     * Returns the subWorkflowUpdater.
-     *
-     * @return The subWorkflowUpdater
-     */
-    public SubWorkflowUpdater getSubWorkflowUpdater() {
-        return this.subWorkflowUpdater;
-    }
 
     /**
      * Sets the workflow.
@@ -268,9 +256,6 @@ public class XBayaEngine {
 
             componentTreeViewer.addComponentTree(1, new AmazonComponentRegistry().getComponentTree());
 
-            // this.wsComponnetRegistry = new WSComponentRegistry();
-            // this.wsComponentTree = wsComponnetRegistry.getComponentTree();
-            // componentTreeViewer.addComponentTree(wsComponentTree);
         } catch (RuntimeException e) {
             // This should not happen
             e.printStackTrace();
