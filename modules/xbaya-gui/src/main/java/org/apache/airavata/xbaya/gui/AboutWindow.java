@@ -72,7 +72,8 @@ public class AboutWindow {
         this.dialog.hide();
     }
 
-    private void init() {
+    @SuppressWarnings("serial")
+	private void init() {
         JPanel buttonPanel = new JPanel();
         JButton okButton = new JButton("OK");
         okButton.setDefaultCapable(true);
