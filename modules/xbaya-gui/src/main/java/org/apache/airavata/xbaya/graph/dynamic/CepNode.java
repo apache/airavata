@@ -156,27 +156,7 @@ public class CepNode extends NodeImpl implements PortAddable {
         }
     }
 
-    // /**
-    // * @param url
-    // */
-    // public void setImplURL(URL url) {
-    // this.getComponent().setImplJarLocation(url);
-    // }
-    //
-    // /**
-    // * @param operationName
-    // */
-    // public void setOperationName(String operationName) {
-    // this.getComponent().setOperationName(operationName);
-    // }
-    //
-    // /**
-    // * @param className
-    // */
-    // public void setClassName(String className) {
-    // this.getComponent().setClassName(className);
-    // }
-
+   
     public XmlElement toXML() {
         XmlElement nodeElement = XMLUtil.BUILDER.newFragment(GraphSchema.NS, GraphSchema.NODE_TAG);
 
