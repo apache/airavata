@@ -46,6 +46,7 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.xbaya.XBayaExecutionState;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.amazonEC2.gui.AmazonCredential;
 import org.apache.airavata.xbaya.component.Component;
@@ -462,11 +463,11 @@ public class WorkflowInterpreter {
 		}
 	}
 
-	/**
-	 * @throws MonitorException
-	 */
-	public void cleanup() throws MonitorException {
-		this.workflow.setExecutionState(XBayaExecutionState.NONE);
+    /**
+     * @throws MonitorException
+     */
+    public void cleanup() throws MonitorException {
+        this.workflow.setExecutionState(XBayaExecutionState.STOPPED);
 		if (this.mode == GUI_MODE) {
 			this.engine.resetWorkflowInterpreter();
 			try {
