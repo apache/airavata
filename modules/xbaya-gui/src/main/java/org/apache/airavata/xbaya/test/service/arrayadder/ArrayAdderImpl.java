@@ -48,7 +48,8 @@ public class ArrayAdderImpl implements ArrayAdder {
         XmlElement arrayElement = inputElement.requiredElement(null, "input");
 
         int sum = 0;
-        Iterator valueIt = arrayElement.elements(null, "value").iterator();
+        @SuppressWarnings("rawtypes")
+		Iterator valueIt = arrayElement.elements(null, "value").iterator();
         while (valueIt.hasNext()) {
             XmlElement valueElement = (XmlElement) valueIt.next();
             String valueString = valueElement.requiredTextContent();
