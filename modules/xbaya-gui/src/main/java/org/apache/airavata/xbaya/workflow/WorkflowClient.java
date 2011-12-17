@@ -25,9 +25,9 @@ import java.net.URI;
 import java.util.Map;
 
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.event.EventProducer;
-import org.apache.airavata.xbaya.gpel.GPELLinksFilter;
 import org.apache.airavata.xbaya.gpel.script.BPELScript;
 import org.apache.airavata.xbaya.gpel.script.BPELScriptType;
 import org.apache.airavata.xbaya.graph.GraphException;
@@ -69,12 +69,6 @@ public abstract class WorkflowClient extends EventProducer {
     protected final static Logger logger = LoggerFactory.getLogger(WorkflowClient.class);
 
     protected URI engineURL;
-
-    protected GpelClient client;
-
-    protected GPELLinksFilter linksFilter = new GPELLinksFilter();
-
-    protected GpelUserX509Credential gpelUserX509Credential;
 
     String xregistryURL;
 
@@ -187,7 +181,7 @@ public abstract class WorkflowClient extends EventProducer {
      * @return true if the client is connected to the BPEL engine; false otherwise.
      */
     protected synchronized boolean isConnected() {
-        return (this.client != null);
+        throw new XBayaRuntimeException("Critical Error: Called a unsupported API");
     }
 
     // ===========================================================================
