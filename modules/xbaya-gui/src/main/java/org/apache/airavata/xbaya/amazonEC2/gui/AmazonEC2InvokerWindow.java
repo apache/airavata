@@ -68,7 +68,8 @@ public class AmazonEC2InvokerWindow {
         initGUI();
     }
 
-    protected void initGUI() {
+    @SuppressWarnings("serial")
+	protected void initGUI() {
 
         this.accessKeyIDTextField = new XBayaTextField();
         XBayaLabel accessKeyIDLabel = new XBayaLabel("Access Key", this.accessKeyIDTextField);
