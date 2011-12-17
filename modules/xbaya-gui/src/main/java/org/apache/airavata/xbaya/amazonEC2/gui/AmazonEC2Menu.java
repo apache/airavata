@@ -73,7 +73,8 @@ public class AmazonEC2Menu {
         this.amazonEC2Menu.add(this.configAndDeploy);
     }
 
-    private void createAmazonAuthenticationItem() {
+    @SuppressWarnings("serial")
+	private void createAmazonAuthenticationItem() {
         this.amazonAuthenticationItem = new JMenuItem("Security Credentials");
         this.amazonAuthenticationItem.addActionListener(new AbstractAction() {
             private ChangeCredentialWindow window;
@@ -92,7 +93,8 @@ public class AmazonEC2Menu {
         });
     }
 
-    private void createAmazonEC2ToolItem() {
+    @SuppressWarnings("serial")
+	private void createAmazonEC2ToolItem() {
         this.amazonEC2ToolItem = new JMenuItem("EC2 Instances Management");
         this.amazonEC2ToolItem.addActionListener(new AbstractAction() {
             private EC2InstancesManagementWindow window;
@@ -111,7 +113,8 @@ public class AmazonEC2Menu {
         });
     }
 
-    private void createAmazonS3ToolItem() {
+    @SuppressWarnings("serial")
+	private void createAmazonS3ToolItem() {
         this.amazonS3ToolItem = new JMenuItem("S3 Upload/Download Tool");
         this.amazonS3ToolItem.addActionListener(new AbstractAction() {
             private AmazonS3UtilsWindow window;
@@ -133,7 +136,8 @@ public class AmazonEC2Menu {
     /**
 	 * 
 	 */
-    private void createConfigAndRunItem() {
+    @SuppressWarnings("serial")
+	private void createConfigAndRunItem() {
         this.configAndDeploy = new JMenuItem("Config and Deploy Job Flow");
         this.configAndDeploy.addActionListener(new AbstractAction() {
             private AmazonEC2InvokerWindow window;
