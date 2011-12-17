@@ -174,11 +174,9 @@ public class MyProxyDialog {
         XBayaLabel portLabel = new XBayaLabel("MyProxy Server Port", this.portField);
 
         this.usernameField = new XBayaTextField();
-        // this.usernameField.setText("biovlab");
         XBayaLabel userLabel = new XBayaLabel("Username", this.usernameField);
 
         this.passphraseField = new JPasswordField(XBayaTextField.DEFAULT_COLUMNS);
-        // this.passphraseField.setText("biovlab100");
         XBayaLabel passphraseLabel = new XBayaLabel("Passphrase", this.passphraseField);
 
         this.lifetimeField = new XBayaTextField();
@@ -215,8 +213,6 @@ public class MyProxyDialog {
         buttonPanel.add(this.okButton);
         buttonPanel.add(cancelButton);
 
-        // this.dialog = new XBayaDialog(this.engine, TITLE, mainPanel,
-        // buttonPanel);
         this.dialog = new XBayaDialog(this.engine, TITLE, DESCRIPTION, mainPanel, buttonPanel);
         this.dialog.setDefaultButton(this.okButton);
     }
