@@ -46,7 +46,6 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.XBayaExecutionState;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.amazonEC2.gui.AmazonCredential;
 import org.apache.airavata.xbaya.component.Component;
