@@ -55,7 +55,6 @@ import org.apache.airavata.xbaya.component.amazon.InstanceComponent;
 import org.apache.airavata.xbaya.component.amazon.TerminateInstanceComponent;
 import org.apache.airavata.xbaya.component.dynamic.DynamicComponent;
 import org.apache.airavata.xbaya.component.dynamic.DynamicInvoker;
-import org.apache.airavata.xbaya.component.dynamic.GenericSubWorkflowComponent;
 import org.apache.airavata.xbaya.component.system.ConstantComponent;
 import org.apache.airavata.xbaya.component.system.EndForEachComponent;
 import org.apache.airavata.xbaya.component.system.EndifComponent;
@@ -1535,8 +1534,7 @@ public class WorkflowInterpreter {
 					|| component instanceof ForEachComponent
 					|| component instanceof EndForEachComponent
 					|| component instanceof IfComponent
-					|| component instanceof InstanceComponent
-					|| component instanceof GenericSubWorkflowComponent) {
+					|| component instanceof InstanceComponent) {
 
 				/*
 				 * Check for control ports from other node
@@ -1761,54 +1759,7 @@ public class WorkflowInterpreter {
 		return null;
 	}
 
-	public void createSubWorkflowFromForEach(Node node)
-			throws ComponentException, GraphException {
-		if (node instanceof ForEachNode) {
-
-			final ForEachNode forEachNode = (ForEachNode) node;
-			EndForEachNode endForEachNode = null;
-			Collection<Node> repeatNodes = node.getOutputPort(0).getToNodes();
-			// we will support only one for now
-			if (repeatNodes.size() != 1) {
-				throw new WorkFlowInterpreterException(
-						"Only one node allowed inside foreach");
-			} else {
-				Iterator<Node> iterator = repeatNodes.iterator();
-				if (iterator.hasNext()) {
-
-					Node middleNode = iterator.next();
-
-					// forEachNode should point to a WSNode and should have only
-					// one
-					// output
-					if ((!(middleNode instanceof WSNode))
-							&& (!(middleNode instanceof SubWorkflowNode))) {
-						throw new WorkFlowInterpreterException(
-								"Encountered Node inside foreach that is not a WSNode"
-										+ middleNode);
-					}
-
-					// First node after foreach should end with EndForEachNode
-					Iterator<Node> endForEachNodeItr1 = middleNode
-							.getOutputPort(0).getToNodes().iterator();
-					while (endForEachNodeItr1.hasNext()) {
-						Node node2 = endForEachNodeItr1.next();
-						if (node2 instanceof WSNode) {
-							List<Node> nodeSet = new LinkedList<Node>();
-							if (middleNode != null && node2 != null) {
-								nodeSet.add(0, middleNode);
-								nodeSet.add(1, node2);
-								GraphUtil.createSubworkflow(this.getWorkflow(),
-										nodeSet, this.engine, "sub-workflow-1");
-								// return;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
+	
 	public boolean isRunWithCrossProduct() {
 		return runWithCrossProduct;
 	}
