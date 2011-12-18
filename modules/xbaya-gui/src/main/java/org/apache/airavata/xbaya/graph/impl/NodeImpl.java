@@ -41,7 +41,6 @@ import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.Port.Kind;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler;
-import org.apache.airavata.xbaya.streaming.StreamTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
@@ -76,8 +75,6 @@ public abstract class NodeImpl implements Node {
     private GraphImpl graph;
 
     private Point position;
-
-    protected String streamName;
 
     // The followings are used only during parsing the XML.
 
@@ -579,39 +576,7 @@ public abstract class NodeImpl implements Node {
         return nodeElement;
     }
 
-    /**
-     * Returns the streamName.
-     * 
-     * @return The streamName
-     */
-    public String getStreamName() {
-        return this.streamName;
-    }
 
-    /**
-     * Sets streamName.
-     * 
-     * @param streamName
-     *            The streamName to set.
-     */
-    public void setStreamName(String streamName) {
-        this.streamName = streamName;
-    }
-
-    /**
-     * Returns the rate.
-     * 
-     * @return The rate
-     */
-    public String getRate() {
-        if (streamName != null) {
-            StreamTableModel model = graph.getStreamModel();
-            if (model != null) {
-                return model.getRate(streamName);
-            }
-        }
-        return "";
-    }
 
     /**
      * Adds a configuration element to a specified node element.
@@ -694,23 +659,7 @@ public abstract class NodeImpl implements Node {
         throw new XBayaRuntimeException("Port with id not found :" + id);
     }
 
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#setLabel(java.lang.String)
-     */
-    @Override
-    public void setLabel(String label) {
-        this.label = label;
 
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#inventLabel(java.lang.String)
-     */
-    @Override
-    public void inventLabel(String seed) {
-        this.label = this.streamName + "(" + seed + ")";
-
-    }
 
     /**
      * @return
