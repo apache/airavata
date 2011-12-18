@@ -22,7 +22,6 @@
 package org.apache.airavata.xbaya.ode;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,8 +41,6 @@ import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
 import org.apache.airavata.xbaya.lead.LEADTypes;
 import org.apache.airavata.xbaya.lead.LEADWorkflowInvoker;
-import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
-import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.ietf.jgss.GSSCredential;
@@ -51,7 +48,6 @@ import org.ietf.jgss.GSSCredential;
 import xsul.XmlConstants;
 import xsul.invoker.gsi.GsiInvoker;
 import xsul.lead.LeadContextHeader;
-import xsul.lead.LeadResourceMapping;
 import xsul5.wsdl.WsdlDefinitions;
 
 public class ODEClient {
@@ -142,7 +138,11 @@ public class ODEClient {
             value = valueString;
         } else {
             try {
-                value = XMLUtil.stringToXmlElement3(valueString);
+                if(XBayaConstants.HTTP_SCHEMAS_AIRAVATA_APACHE_ORG_GFAC_TYPE.equals(input.getType().getNamespaceURI())){
+                    value = XMLUtil.stringToXmlElement3(ODEClientUtil.createInputForGFacService(input,valueString));
+                }else {
+                    throw new XBayaRuntimeException("Input parameter, " + name + ", Unkown Type");
+                }
             } catch (RuntimeException e) {
                 throw new XBayaRuntimeException("Input parameter, " + name + ", is not valid XML", e);
             }
