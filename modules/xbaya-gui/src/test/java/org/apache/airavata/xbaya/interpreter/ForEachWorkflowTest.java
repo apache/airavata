@@ -17,26 +17,24 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
-
+*/
 package org.apache.airavata.xbaya.interpreter;
+
+import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.xbaya.graph.system.InputNode;
+import org.apache.airavata.xbaya.interpreter.utils.WorkflowTestUtils;
+import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
+import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.axis2.engine.ListenerManager;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.UUID;
 
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.interpreter.utils.WorkflowTestUtils;
-import org.apache.airavata.xbaya.interpretor.*;
-import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.axis2.engine.ListenerManager;
-import org.junit.Test;
-
-public class WorkflowTest{
-
-      @Test
+public class ForEachWorkflowTest {
+       @Test
     public void testScheduleDynamically() throws IOException, URISyntaxException, XBayaException {
         URL systemResource = this.getClass().getClassLoader().getSystemResource("SimpleEcho.xwf");
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
