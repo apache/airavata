@@ -21,17 +21,6 @@
 
 package org.apache.airavata.xbaya.appwrapper;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.regex.Pattern;
-
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.Registry;
@@ -43,6 +32,14 @@ import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.regex.Pattern;
 
 public class HostDescriptionDialog extends JDialog {
 
@@ -72,6 +69,12 @@ public class HostDescriptionDialog extends JDialog {
 
 	private XBayaLabel gridFTPLabel;
 
+    private JLabel lblError;
+
+    private String hostId;
+
+    JButton okButton = new JButton("OK");
+
     /**
      * @param engine XBaya workflow engine
      */
@@ -93,7 +96,7 @@ public class HostDescriptionDialog extends JDialog {
     }
 
     private void ok() {
-        String hostId = this.hostIdTextField.getText();
+        hostId = this.hostIdTextField.getText();
         String hostAddress = this.hostAddressTextField.getText();
         String globusGateKeeperEPR = this.globusGateKeeperTextField.getText();
         String gridFTP = this.GridFTPTextField.getText();
@@ -123,6 +126,10 @@ public class HostDescriptionDialog extends JDialog {
         } else {
             return null;
         }
+    }
+
+    private String getServiceName() {
+        return this.hostId;
     }
 
     private void setGridFTPEPR(String epr) {
@@ -157,6 +164,17 @@ public class HostDescriptionDialog extends JDialog {
 				updateGlobusHostTypeAndControls();
 			}
         });
+        hostIdTextField.getSwingComponent().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                try {
+                    validateDialog();
+                } catch (Exception e1) {
+                    setError(e1.getMessage());
+                }
+                setError(null);
+            }
+        });
         GridPanel infoPanel1 = new GridPanel();
         infoPanel1.add(hostIdLabel);
         infoPanel1.add(this.hostIdTextField);
@@ -179,7 +197,6 @@ public class HostDescriptionDialog extends JDialog {
         infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         SwingUtil.layoutToGrid(infoPanel.getSwingComponent(), 3, 1, SwingUtil.WEIGHT_NONE, 0);
 
-        JButton okButton = new JButton("OK");
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ok();
@@ -194,8 +211,13 @@ public class HostDescriptionDialog extends JDialog {
         });
 
         GridPanel buttonPanel = new GridPanel();
+        lblError = new JLabel("xcf");
+        lblError.setForeground(Color.RED);
+        buttonPanel.add(lblError);
+
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
+        buttonPanel.layout(1,3,SwingUtil.WEIGHT_NONE,0);
         buttonPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         this.dialog = new XBayaDialog(this.engine, "New Host Description", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
@@ -248,13 +270,18 @@ public class HostDescriptionDialog extends JDialog {
         } catch (Exception e) {
             message = e.getLocalizedMessage();
         }
-        //okButton.setEnabled(message == null);
-        //setError(message);
+        okButton.setEnabled(message == null);
+        setError(message);
     }
 
-/*    public void close() {
-        getDialog().setVisible(false);
-    }*/
+    private void setError(String errorMessage) {
+        if (errorMessage == null || errorMessage.trim().equals("")) {
+            lblError.setText("");
+        } else {
+            lblError.setText(errorMessage.trim());
+        }
+
+    }
 
     public boolean isHostCreated() {
         return hostCreated;
@@ -276,14 +303,6 @@ public class HostDescriptionDialog extends JDialog {
 		getRegistry().saveHostDescription(desc);
         setHostCreated(true);
     }
-
-/*    private void setError(String errorMessage) {
-        if (errorMessage == null || errorMessage.trim().equals("")) {
-            lblError.setText("");
-        } else {
-            lblError.setText(errorMessage.trim());
-        }
-    }*/
 
     public Registry getRegistry() {
         return registry;
