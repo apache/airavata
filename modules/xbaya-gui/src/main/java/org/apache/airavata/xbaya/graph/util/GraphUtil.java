@@ -22,17 +22,24 @@
 package org.apache.airavata.xbaya.graph.util;
 
 import java.awt.Point;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.common.utils.Pair;
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.SubWorkflowComponent;
-import org.apache.airavata.xbaya.component.dynamic.GenericSubWorkflowComponent;
 import org.apache.airavata.xbaya.graph.ControlEdge;
 import org.apache.airavata.xbaya.graph.ControlPort;
 import org.apache.airavata.xbaya.graph.DataEdge;
@@ -43,8 +50,6 @@ import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.graph.dynamic.CepNode;
-import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.xbaya.graph.system.InputNode;
@@ -54,7 +59,6 @@ import org.apache.airavata.xbaya.graph.ws.WSGraph;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
-import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.wf.Workflow;
 
 public class GraphUtil {
@@ -337,21 +341,6 @@ public class GraphUtil {
 
 	}
 
-	/**
-	 * @param graph
-	 * @return
-	 */
-	public static LinkedList<NodeImpl> getGenericSubWorkflowNodes(WSGraph graph) {
-		final List<NodeImpl> nodes = graph.getNodes();
-		final LinkedList<NodeImpl> ret = new LinkedList<NodeImpl>();
-		for (NodeImpl nodeImpl : nodes) {
-			if (nodeImpl.getComponent() instanceof GenericSubWorkflowComponent) {
-				ret.add(nodeImpl);
-
-			}
-		}
-		return ret;
-	}
 
     /**
      *
@@ -474,46 +463,7 @@ public class GraphUtil {
 		return ret;
 	}
 
-	/**
-	 * @param processingNode
-	 * @return
-	 */
-	public static boolean isCEPNode(Node processingNode) {
-		return processingNode instanceof CepNode;
-	}
 
-	/**
-	 * @param node
-	 * @param newCEPJoinNode
-	 * @param wsGraph
-	 * @return
-	 */
-	public static String introduceDynamicNode(Node node,
-			CepNode newCEPJoinNode, WSGraph wsGraph) {
-
-		List<DataPort> inputPorts = node.getInputPorts();
-		for (DataPort dataPort : inputPorts) {
-			DataEdge edge = dataPort.getEdges().get(0);
-
-			Pair<DataPort, DataPort> oldEdge = new Pair<DataPort, DataPort>(
-					edge.getFromPort(), edge.getToPort());
-			try {
-				String inEdgeLabel = edge.getLabel();
-				wsGraph.removeEdge(edge);
-				Edge inEdge = wsGraph.addEdge(oldEdge.getLeft(),
-						newCEPJoinNode.getFreeInPort());
-				inEdge.setLabel(inEdgeLabel);
-				wsGraph.addEdge(newCEPJoinNode.getFreeOutPort(),
-						oldEdge.getRight());
-			} catch (GraphException e) {
-				throw new XBayaRuntimeException(e);
-			}
-		}
-		String nodeLabel = GraphUtil.getEncodedInputLabels(newCEPJoinNode)
-				+ "#join";
-		newCEPJoinNode.inventLabel(nodeLabel);
-		return nodeLabel;
-	}
 
 	/**
 	 * @param wsGraph
@@ -545,173 +495,7 @@ public class GraphUtil {
 				|| node instanceof OutputNode;
 	}
 
-	public static void createSubworkflow(Workflow parentWorkflow,
-			List<Node> nodeSet, XBayaEngine engine, String subworkflowName)
-            throws GraphException, ComponentException {
-		Workflow subWorkflow = Workflow.getWorkflow(parentWorkflow, nodeSet,
-				subworkflowName);
-
-
-		SubWorkflowNode newNode = (SubWorkflowNode) parentWorkflow.addNode( SubWorkflowComponent.getInstance(
-                subWorkflow));
-
-		List<Node> removeList = nodeSet;
-		Set<Node> lookupMap = new HashSet<Node>();
-		for (Node node : removeList) {
-			lookupMap.add(node);
-		}
-
-        List<DataPort> newNodeInputs = newNode.getInputPorts();
-        List<DataPort> newNodeOutputs = newNode.getOutputPorts();
-        int inPortCount = 0;
-        int outPortCount = 0;
-
-        /* replace the subworkflow components with newNode and change the original  workflow*/
-		for (Node node : removeList) {
-			List<DataPort> inputPorts = node.getInputPorts();
-			for (DataPort dataPort : inputPorts) {
-				if (!lookupMap.contains(dataPort.getFromNode())) {
-					// not in this set
-					final Port fromPort = dataPort.getFromPort();
-                    Object defaultValue = null;
-                    if(fromPort.getNode() instanceof InputNode) {
-                        defaultValue = ((InputNode) fromPort.getNode()).getDefaultValue();
-
-                    }
-					parentWorkflow.getGraph().removeEdge(fromPort, dataPort);
-                    DataPort newtoPort  = newNode.assignInputPortID(dataPort.getID(), inPortCount);
-					parentWorkflow.getGraph().addEdge(fromPort,
-                            newtoPort);
-                    // we do this because if the edge is removed, the input node value gets reset. So we need to save
-                    // it and set it again.
-                     if(fromPort.getNode() instanceof InputNode) {
-                        ((InputNode) fromPort.getNode()).setDefaultValue(defaultValue);
-                     }
-                    ++inPortCount;
-
-				}
-			}
-
-			List<DataPort> outputPorts = node.getOutputPorts();
-			for (int i = 0; i < outputPorts.size(); ++i) {
-
-				DataPort dataPort = outputPorts.get(i);
-				List<Port> toNodes = dataPort.getToPorts();
-				for (Port toPort : toNodes) {
-					if (! lookupMap.contains(toPort.getNode())) {
-						// not in this set
-						parentWorkflow.getGraph().removeEdge(dataPort, toPort);
-                        DataPort newFromPort = newNode.assignOutputPortID(dataPort.getID(), outPortCount) ;
-						parentWorkflow.getGraph().addEdge(newFromPort,
-                                toPort);
-
-                        ++outPortCount;
-					}
-				}
-			}
-		}
-		newNode.setPosition(new Point(removeList.get(0).getPosition()));
-		for (Node node : removeList) {
-			parentWorkflow.removeNode(node);
-		}
-	}
-
-	/**
-	 * @param nodeSets
-	 */
-	public static void clusterCEPSubGraph(
-			HashMap<String, LinkedList<Node>> nodeSets) {
-		Set<String> keys = nodeSets.keySet();
-		for (String key : keys) {
-			LinkedList<Node> subGraph = nodeSets.get(key);
-			if (subGraph != null && subGraph.size() > 0
-					&& isAllCEPNodes(subGraph)) {
-				LinkedList<Node> workQueue = new LinkedList<Node>(subGraph);
-				while (workQueue.size() > 0) {
-					Node currentNode = workQueue.remove();
-					List<DataPort> outputPorts = currentNode.getOutputPorts();
-					for (DataPort dataPort : outputPorts) {
-						List<Node> nextNodes = dataPort.getToNodes();
-						for (Node nextNode : nextNodes) {
-							if (isCEPNode(nextNode)
-									&& nodeSets.get(nextNode.getLabel()) != null) {
-								// it wasnt consumed
-								LinkedList<Node> adjoiningNodeSet = nodeSets
-										.get(nextNode.getLabel());
-								if (isAllCEPNodes(adjoiningNodeSet)
-										&& !key.equals(nextNode.getLabel())) {
-									// consume
-									nodeSets.put(nextNode.getLabel(), null);
-									// add to this list
-									subGraph.addAll(adjoiningNodeSet);
-									// add thses for work queue;
-									workQueue.addAll(adjoiningNodeSet);
-								}
-							}
-						}
-					}
-
-					List<DataPort> inputPorts = currentNode.getInputPorts();
-					for (DataPort dataPort : inputPorts) {
-						Node fromNode = dataPort.getFromNode();
-						if (isCEPNode(fromNode)
-								&& nodeSets.get(fromNode.getLabel()) != null) {
-							// it wasnt consumed
-							LinkedList<Node> adjoiningNodeSet = nodeSets
-									.get(fromNode.getLabel());
-							if (isAllCEPNodes(adjoiningNodeSet)
-									&& !key.equals(fromNode.getLabel())) {
-								// consume
-								nodeSets.put(fromNode.getLabel(), null);
-								// add to this list
-								subGraph.addAll(adjoiningNodeSet);
-								// add thses for work queue;
-								workQueue.addAll(adjoiningNodeSet);
-							}
-						}
-					}
-
-				}
-			}
-
-		}
-		Iterator<Entry<String, LinkedList<Node>>> iterator = nodeSets
-				.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Map.Entry<String, LinkedList<Node>> entry = iterator.next();
-			if (entry.getValue() == null) {
-				iterator.remove();
-			}
-		}
-	}
-
-	/**
-	 * @param subGraph
-	 * @return
-	 */
-	private static boolean isAllCEPNodes(LinkedList<Node> subGraph) {
-		for (Node node : subGraph) {
-			if (!isCEPNode(node)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * @param wsGraph
-	 * @return
-	 */
-	public static LinkedList<CepNode> getCEPNodes(WSGraph wsGraph) {
-		List<NodeImpl> nodes = wsGraph.getNodes();
-		LinkedList<CepNode> ret = new LinkedList<CepNode>();
-		for (NodeImpl nodeImpl : nodes) {
-			if (nodeImpl instanceof CepNode) {
-				ret.add((CepNode) nodeImpl);
-			}
-		}
-		return ret;
-	}
+	
 
 	/**
 	 * @param name
@@ -734,17 +518,4 @@ public class GraphUtil {
 		return ret;
 	}
 
-    /**
-     *
-     * @param multipleSelectedNodes
-     * @param label
-     */
-	public static void setLabelsToNodes(List<Node> multipleSelectedNodes,
-			String label) {
-
-		for (Node node : multipleSelectedNodes) {
-			node.setLabel(label);
-		}
-
-	}
 }
