@@ -45,7 +45,6 @@ import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.gui.MonitorStarter;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
-import org.apache.airavata.xbaya.streaming.StreamTableModel;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.wf.gui.WorkflowPropertyWindow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
@@ -378,20 +377,6 @@ public class XBayaEngine {
 
     }
 
-    /**
-     * @param newStreamName
-     * @return
-     */
-    public String getStreamRate(String newStreamName) {
-        return this.getGUI().getStreamRate(newStreamName);
-    }
-
-    /**
-     * @return
-     */
-    public StreamTableModel getStreamModel() {
-        return this.getGUI().getStreamModel();
-    }
 
     public void resetWorkflowInterpreter() {
 		this.workflowInterpreter = null;
