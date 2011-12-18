@@ -399,8 +399,4 @@ public class EC2Provider extends SSHProvider{
         return ret;
     }
 
-    public static void main(String[] args) throws Exception {
-        new EC2Provider(null);
-    }
-
 }
