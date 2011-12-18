@@ -189,25 +189,8 @@ public interface Node extends GraphPiece {
      */
     public DataPort getInputPort(String id);
 
-    /**
-     * @return
-     */
-    public String getRate();
-
-    /**
-     * @param sameLabel
-     */
-    public void setLabel(String sameLabel);
-
-    /**
-     * @param sameLabel
-     */
-    public void inventLabel(String sameLabel);
-
-    /**
-     * @return
-     */
-    public String getLabel();
+   
+  
 
     /**
      * @param b
