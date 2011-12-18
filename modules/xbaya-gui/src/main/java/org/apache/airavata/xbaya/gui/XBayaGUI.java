@@ -24,7 +24,6 @@ package org.apache.airavata.xbaya.gui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,19 +34,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JFrame;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -61,7 +55,6 @@ import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.Component;
-import org.apache.airavata.xbaya.component.StreamSourceComponent;
 import org.apache.airavata.xbaya.component.gui.ComponentSelector;
 import org.apache.airavata.xbaya.component.gui.ComponentViewer;
 import org.apache.airavata.xbaya.event.Event;
@@ -73,12 +66,10 @@ import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvasEvent;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvasEvent.GraphCanvasEventType;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvasListener;
-import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 import org.apache.airavata.xbaya.menues.xbaya.WorkflowFiler;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.gui.MonitorPanel;
 import org.apache.airavata.xbaya.registrybrowser.JCRBrowserPanel;
-import org.apache.airavata.xbaya.streaming.StreamTableModel;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,8 +119,6 @@ public class XBayaGUI implements EventListener {
     private JTabbedPane componentTabbedPane;
 
     private ScrollPanel compTreeXBayapanel;
-
-    private StreamTableModel streamModel;
 
 	private WorkflowFiler graphFiler;
 
@@ -640,104 +629,7 @@ public class XBayaGUI implements EventListener {
     	componentTabbedPane.setSelectedComponent(compTreeXBayapanel.getSwingComponent());
     }
     
-    /**
-     * @param model
-     * @throws MalformedURLException
-     */
-    public void addStreamSources(final StreamTableModel model) throws MalformedURLException {
-        this.streamModel = model;
-        this.engine.getWorkflow().getGraph().setStreamModel(model);
-        if (this.componentTabbedPane == null) {
-            this.leftSplitPane.remove(this.compTreeXBayapanel.getSwingComponent());
-            this.componentTabbedPane = new JTabbedPane();
-            this.componentTabbedPane.setMinimumSize(SwingUtil.MINIMUM_SIZE);
-            this.leftSplitPane.setTopComponent(this.componentTabbedPane);
-            this.componentTabbedPane.add(this.compTreeXBayapanel.getSwingComponent());
-            this.componentTabbedPane.setTitleAt(0, "Component");
-            model.init();
-            final JTable table = new JTable(model);
-
-            JScrollPane scrollPane = new JScrollPane(table);
-            this.componentTabbedPane.add(scrollPane, 1);
-            this.componentTabbedPane.setTitleAt(1, "Streams");
-            table.getColumnModel().getColumn(0).setMaxWidth(20);
-            this.componentTabbedPane.setSelectedIndex(1);
-            table.addMouseListener(new MouseAdapter() {
-
-                private void maybeShowPopup(MouseEvent e) {
-                    if (e.isPopupTrigger() && table.isEnabled()) {
-                        Point p = new Point(e.getX(), e.getY());
-                        int col = table.columnAtPoint(p);
-                        int row = table.rowAtPoint(p);
-                        int mcol = table.getColumn(table.getColumnName(col)).getModelIndex();
-                        if (row >= 0 && row < table.getRowCount()) {
-                            JPopupMenu contextMenu = createContextMenu(row, mcol);
-                            if (contextMenu != null && contextMenu.getComponentCount() > 0) {
-                                contextMenu.show(table, p.x, p.y);
-                            }
-                        }
-                    }
-                }
-
-                private JPopupMenu createContextMenu(final int row, int mcol) {
-                    JPopupMenu popupMenu = new JPopupMenu();
-
-                    JMenuItem addMenuItem = new JMenuItem("Add to workspace");
-                    addMenuItem.addActionListener(new ActionListener() {
-
-                        public void actionPerformed(ActionEvent e) {
-
-                            String stream = model.getStream(row);
-                            String rate = model.getStreamRate(row);
-
-                            StreamSourceNode node = new StreamSourceComponent(stream, rate).createNode(engine
-                                    .getWorkflow().getGraph());
-                            engine.getGUI().getGraphCanvas().repaint();
-                            node.setStreamName(stream);
-                            engine.getWorkflow().getGraph().setStreamModel(model);
-                        }
-                    });
-                    popupMenu.add(addMenuItem);
-
-                    JMenuItem startMenuItem = new JMenuItem("Refresh All");
-                    startMenuItem.addActionListener(new ActionListener() {
-
-                        public void actionPerformed(ActionEvent e) {
-                            model.init();
-                            model.fireTableDataChanged();
-                            engine.getWorkflow().getGraph().setStreamModel(model);
-                            engine.getGUI().getGraphCanvas().repaint();
-                        }
-                    });
-                    popupMenu.add(startMenuItem);
-
-                    JMenuItem stopMenuItem = new JMenuItem("Stop");
-                    stopMenuItem.addActionListener(new ActionListener() {
-
-                        /**
-                         * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-                         */
-                        public void actionPerformed(ActionEvent e) {
-                            model.stopStream(row);
-
-                        }
-                    });
-                    popupMenu.add(stopMenuItem);
-                    return popupMenu;
-                }
-
-                public void mousePressed(MouseEvent e) {
-                    maybeShowPopup(e);
-                }
-
-                public void mouseReleased(MouseEvent e) {
-                    maybeShowPopup(e);
-                }
-            });
-
-        }
-    }
-
+  
     /**
      * Creates a frame.
      */
@@ -843,30 +735,6 @@ public class XBayaGUI implements EventListener {
         this.frame.setTitle(workflowName + " - " + title);
     }
 
-    /**
-     * @param newStreamName
-     * @return
-     * @throws MalformedURLException
-     * 
-     */
-    public void reloadStreams() {
-        this.streamModel.init();
-        this.streamModel.fireTableDataChanged();
-        engine.getWorkflow().getGraph().setStreamModel(this.streamModel);
-    }
 
-    public String getStreamRate(String newStreamName) {
-        this.streamModel.init();
-        this.streamModel.fireTableDataChanged();
-        engine.getWorkflow().getGraph().setStreamModel(this.streamModel);
-        return this.streamModel.getRate(newStreamName);
-    }
-
-    /**
-     * @return
-     */
-    public StreamTableModel getStreamModel() {
-        return this.streamModel;
-    }
 
 }
