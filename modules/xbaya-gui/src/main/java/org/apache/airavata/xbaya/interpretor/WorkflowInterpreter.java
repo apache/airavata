@@ -95,6 +95,7 @@ import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
+import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
@@ -133,7 +134,7 @@ public class WorkflowInterpreter {
 
 	private Map<Node, Invoker> invokerMap = new HashMap<Node, Invoker>();
 
-	private NotificationSender notifier;
+	private WorkflowNotifiable notifier;
 
 	private boolean retryFailed = false;
 
@@ -160,6 +161,8 @@ public class WorkflowInterpreter {
 	private PredicatedTaskRunner provenanceWriter;
 
 	private boolean runWithCrossProduct = true;
+
+    private boolean isoffline = false;
 
 	// public WorkflowInterpreter(XBayaConfiguration configuration, String
 	// topic,
@@ -192,6 +195,34 @@ public class WorkflowInterpreter {
 		this.retryFailed = false;
 		this.runWithCrossProduct = this.configuration.isRunWithCrossProduct();
 	}
+
+
+/**
+         *
+         * Constructs a WorkflowInterpreter.
+         *
+         * @param configuration
+         * @param topic
+         * @param workflow
+         * @param username
+         * @param password
+         */
+        public WorkflowInterpreter(XBayaConfiguration configuration, String topic,
+                        Workflow workflow, String username, String password, boolean offline){
+                this.isoffline = offline;
+                this.configuration = configuration;
+                this.username = username;
+                this.password = password;
+                this.topic = topic;
+                this.workflow = workflow;
+                if (this.isoffline) {
+                        this.notifier = new StandaloneNotificationSender(topic, this.workflow);
+                } else {
+                        throw new Error("Cannot Initialize workflow with offline false");
+                }
+                this.mode = SERVER_MODE;
+                this.retryFailed = false;
+        }
 
 	/**
 	 * 
