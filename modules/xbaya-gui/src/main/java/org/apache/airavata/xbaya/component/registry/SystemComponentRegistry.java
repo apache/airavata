@@ -27,8 +27,6 @@ import java.util.Map;
 import org.apache.airavata.xbaya.component.Component;
 import org.apache.airavata.xbaya.component.StreamSourceComponent;
 import org.apache.airavata.xbaya.component.SubWorkflowComponent;
-import org.apache.airavata.xbaya.component.dynamic.CepComponent;
-import org.apache.airavata.xbaya.component.dynamic.CombineMultipleStreamComponent;
 import org.apache.airavata.xbaya.component.dynamic.DynamicComponent;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 import org.apache.airavata.xbaya.component.system.BlockComponent;
@@ -69,8 +67,6 @@ public class SystemComponentRegistry extends ComponentRegistry {
         this.componentMap.put(BlockComponent.NAME, new BlockComponent());
         this.componentMap.put(EndBlockComponent.NAME, new EndBlockComponent());
         this.componentMap.put(DynamicComponent.NAME, new DynamicComponent());
-        this.componentMap.put(CepComponent.NAME, new CepComponent());
-        this.componentMap.put(CombineMultipleStreamComponent.NAME, new CombineMultipleStreamComponent());
         this.componentMap.put(StreamSourceComponent.NAME, new StreamSourceComponent());
         this.componentMap.put(ExitComponent.NAME, new ExitComponent());
 
