@@ -64,7 +64,11 @@ public class ActivityTime implements Comparable {
 
     @Override
     public boolean equals(Object o) {
-        return compareTo(o) == 0;
+        if (o != null) {
+            return compareTo(o) == 0;
+        } else {
+            return false;
+        }
     }
 
     @Override
