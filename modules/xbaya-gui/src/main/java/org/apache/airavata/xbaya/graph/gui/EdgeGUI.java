@@ -32,10 +32,7 @@ import java.awt.geom.CubicCurve2D;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.ControlEdge;
 import org.apache.airavata.xbaya.graph.Edge;
-import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.graph.dynamic.CepNode;
-import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 
 public class EdgeGUI implements GraphPieceGUI {
 
@@ -104,23 +101,12 @@ public class EdgeGUI implements GraphPieceGUI {
         Point point1 = getFromPosition();
         Point point2 = getToPosition();
 
-        if (isStream()) {
-            g.setColor(STREAM_EDGE_COLOR);
-            Node fromNode = this.edge.getFromPort().getNode();
-            if (fromNode instanceof StreamSourceNode || fromNode instanceof CepNode) {
-                String rate = fromNode.getRate();
-                g.drawString(rate, (point1.x + point2.x) / 2, (point1.y + point2.y) / 2);
-            }
-        } else {
             g.setColor(lineColor);
-        }
 
         Stroke originalStroke = g.getStroke();
         if (this.edge instanceof ControlEdge) {
             g.setStroke(EdgeGUI.CONTROL_EDGE_STROKE);
-        } else if (isStream()) {
-            g.setStroke(EdgeGUI.STREAM_EDGE_STROKE);
-        }
+        } 
         paintLine(point1, point2, g);
         g.setStroke(originalStroke);
 
@@ -130,10 +116,6 @@ public class EdgeGUI implements GraphPieceGUI {
         g.fillArc(midPoint.x - POINT_SIZE / 2, midPoint.y - POINT_SIZE / 2, POINT_SIZE, POINT_SIZE, 0, 360);
     }
 
-    private boolean isStream() {
-        return this.edge.getFromPort().getNode() instanceof StreamSourceNode
-                || this.edge.getFromPort().getNode() instanceof CepNode;
-    }
 
     protected static void paintLine(Point point1, Point point2, Graphics2D g) {
         int d = 100;
