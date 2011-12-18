@@ -28,11 +28,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.XBayaVersion;
 import org.apache.airavata.xbaya.graph.ControlPort;
@@ -53,7 +49,6 @@ import org.apache.airavata.xbaya.graph.system.SystemDataPort;
 import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
-import org.apache.airavata.xbaya.streaming.StreamTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
@@ -87,7 +82,6 @@ public abstract class GraphImpl implements Graph {
 
     private GraphGUI gui;
 
-    private StreamTableModel streamModel;
 
     /**
      * @param factory
@@ -643,20 +637,4 @@ public abstract class GraphImpl implements Graph {
         }
     }
 
-    /**
-     * @return
-     * 
-     */
-    public StreamTableModel getStreamModel() {
-
-        return this.streamModel;
-    }
-
-    /**
-     * @param model
-     */
-    public void setStreamModel(StreamTableModel model) {
-        this.streamModel = model;
-
-    }
 }
