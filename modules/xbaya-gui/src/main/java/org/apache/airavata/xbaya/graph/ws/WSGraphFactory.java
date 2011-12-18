@@ -24,6 +24,7 @@ package org.apache.airavata.xbaya.graph.ws;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.graph.ControlEdge;
@@ -38,8 +39,6 @@ import org.apache.airavata.xbaya.graph.Port.Kind;
 import org.apache.airavata.xbaya.graph.amazon.InstanceDataPort;
 import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
 import org.apache.airavata.xbaya.graph.amazon.TerminateInstanceNode;
-import org.apache.airavata.xbaya.graph.dynamic.CepNode;
-import org.apache.airavata.xbaya.graph.dynamic.CepPort;
 import org.apache.airavata.xbaya.graph.impl.EdgeImpl;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.impl.PortImpl;
@@ -57,7 +56,6 @@ import org.apache.airavata.xbaya.graph.system.ReceiveNode;
 import org.apache.airavata.xbaya.graph.system.SystemDataPort;
 import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
-import org.apache.airavata.common.utils.IOUtil;
 import org.xmlpull.infoset.XmlElement;
 
 /**
@@ -133,8 +131,6 @@ public class WSGraphFactory implements GraphFactory {
             node = new WSNode(nodeElement);
         } else if (GraphSchema.NODE_TYPE_STREAM_SOURCE.equals(type)) {
             node = new StreamSourceNode(nodeElement);
-        } else if (GraphSchema.NODE_TYPE_CEP.equals(type)) {
-            node = new CepNode(nodeElement);
         } else if (GraphSchema.NODE_TYPE_WORKFLOW.equals(type)) {
             node = new WorkflowNode(nodeElement);
         } else if (GraphSchema.NODE_TYPE_INPUT.equals(type)) {
@@ -182,8 +178,6 @@ public class WSGraphFactory implements GraphFactory {
         PortImpl port;
         if (GraphSchema.PORT_TYPE_WS_DATA.equals(type)) {
             port = new WSPort(portElement);
-        } else if (GraphSchema.PORT_TYPE_CEP.equals(type)) {
-            port = new CepPort(portElement);
         } else if (GraphSchema.PORT_TYPE_SYSTEM_DATA.equals(type)) {
             port = new SystemDataPort(portElement);
         } else if (GraphSchema.PORT_TYPE_CONTROL.equals(type)) {
