@@ -46,17 +46,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -64,7 +61,6 @@ import javax.swing.JScrollPane;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.Component;
 import org.apache.airavata.xbaya.component.ComponentException;
@@ -148,10 +144,6 @@ public class GraphCanvas {
     private Point mousePointForSelection;
 
     private List<Node> multipleSelectedNodes;
-
-    private JMenuItem subworkflowItem;
-
-    private JMenuItem labelNodesItem;
 
     private XmlElement originalWorkflowElement;
     
@@ -1231,63 +1223,7 @@ public class GraphCanvas {
 
             }
         });
-
-        this.subworkflowItem = new JMenuItem("create subworkflow");
-        this.subworkflowItem.addActionListener(new AbstractAction() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-
-                    GraphUtil.createSubworkflow(GraphCanvas.this.workflow, GraphCanvas.this.multipleSelectedNodes,
-                            GraphCanvas.this.engine, null);
-
-                } catch (GraphException e1) {
-                    GraphCanvas.this.engine.getErrorWindow().error(e1);
-                }  catch (ComponentException e1) {
-
-                    GraphCanvas.this.engine.getErrorWindow().error(e1);
-                }
-
-            }
-        });
-
-        this.labelNodesItem = new JMenu("Manually Label");
-        JMenuItem labelBPEL = new JMenuItem("Label BPEL");
-        this.labelNodesItem.add(labelBPEL);
-        labelBPEL.addActionListener(new AbstractAction() {
-
-            public void actionPerformed(ActionEvent e) {
-
-                GraphUtil.setLabelsToNodes(GraphCanvas.this.multipleSelectedNodes, "BPEL"
-                        + UUID.randomUUID().toString());
-            }
-        });
-
-        JMenuItem xbayaLabel = new JMenuItem("Label XBaya");
-        this.labelNodesItem.add(xbayaLabel);
-        xbayaLabel.addActionListener(new AbstractAction() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                GraphUtil.setLabelsToNodes(GraphCanvas.this.multipleSelectedNodes, "XBAYA"
-                        + UUID.randomUUID().toString());
-
-            }
-        });
-
-        JMenuItem customLabelItem = new JMenuItem("Custom Label");
-        this.labelNodesItem.add(customLabelItem);
-        customLabelItem.addActionListener(new AbstractAction() {
-
-            public void actionPerformed(ActionEvent e) {
-                String label = JOptionPane.showInputDialog("Enter the label");
-                if (null == label || "".equals(label)) {
-                    GraphCanvas.this.engine.getErrorWindow().error("Label cannot be null");
-                }
-                GraphUtil.setLabelsToNodes(GraphCanvas.this.multipleSelectedNodes, label);
-            }
-        });
+  
 
     }
 
@@ -1320,7 +1256,6 @@ public class GraphCanvas {
     private void prepareNodePopupMenu(Node node) {
         this.nodePopup.remove(rerunItem);
         this.nodePopup.remove(breakPointItem);
-        this.nodePopup.remove(this.subworkflowItem);
 
         if (this.engine.getWorkflow().getExecutionState() == XBayaExecutionState.PAUSED && !(node instanceof InputNode)) {
             this.nodePopup.add(rerunItem);
@@ -1334,10 +1269,7 @@ public class GraphCanvas {
             }
             this.nodePopup.add(breakPointItem);
         }
-        if (this.multipleSelectedNodes != null && this.multipleSelectedNodes.size() > 1) {
-            this.nodePopup.add(this.subworkflowItem);
-            this.nodePopup.add(this.labelNodesItem);
-        }
+       
     }
 
     private void createEdgePopupMenu() {
@@ -1366,29 +1298,6 @@ public class GraphCanvas {
         }
     }
 
-    /**
-     * @throws XBayaException
-     * 
-     */
-    public void partition() throws XBayaException {
-
-        HashMap<String, LinkedList<Node>> nodeSets = this.workflow.partition();
-        GraphUtil.clusterCEPSubGraph(nodeSets);
-        Set<String> keySet = nodeSets.keySet();
-        for (String key : keySet) {
-            LinkedList<Node> nodeList = nodeSets.get(key);
-            try {
-                // we need to check if its an empty list
-                if (nodeList.size() > 0) {
-                    GraphUtil.createSubworkflow(this.workflow, nodeList, this.engine,
-                            GraphUtil.getSubWorkflowName(this.workflow.getName(), nodeList, key));
-                }
-            } catch (GraphException e) {
-                this.engine.getErrorWindow().error(e);
-            }
-        }
-
-    }
 
 	public File getWorkflowFile() {
 		return workflowFile;
