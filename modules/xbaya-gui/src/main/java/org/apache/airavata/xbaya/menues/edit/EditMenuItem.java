@@ -29,6 +29,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.appwrapper.DescriptorEditorDialog;
+import org.apache.airavata.xbaya.appwrapper.DescriptorEditorDialog.DescriptorType;
+import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.gui.ParameterPropertyWindow;
 import org.apache.airavata.xbaya.wf.gui.WorkflowPropertyWindow;
 import org.slf4j.Logger;
@@ -129,11 +132,12 @@ public class EditMenuItem {
         JMenuItem menuItem = new JMenuItem("Host Descriptions...");
         menuItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-            	//TODO
-            }
+            	if (XBayaUtil.acquireJCRRegistry(engine)) {
+					DescriptorEditorDialog dialog = new DescriptorEditorDialog(engine,DescriptorType.HOST);
+					dialog.show();
+				}
+        	}
         });
-        //FIXME enable the menu once this functionality is implemented
-        menuItem.setEnabled(false);
         return menuItem;
     }
     
@@ -141,11 +145,12 @@ public class EditMenuItem {
         JMenuItem menuItem = new JMenuItem("Service Descriptions...");
         menuItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-            	//TODO
+            	if (XBayaUtil.acquireJCRRegistry(engine)) {
+					DescriptorEditorDialog dialog = new DescriptorEditorDialog(engine,DescriptorType.SERVICE);
+					dialog.show();
+				}
             }
         });
-        //FIXME enable the menu once this functionality is implemented
-        menuItem.setEnabled(false);        
         return menuItem;
     }
     
@@ -153,11 +158,12 @@ public class EditMenuItem {
         JMenuItem menuItem = new JMenuItem("Application Descriptions...");
         menuItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-            	//TODO
-            }
+            	if (XBayaUtil.acquireJCRRegistry(engine)) {
+					DescriptorEditorDialog dialog = new DescriptorEditorDialog(engine,DescriptorType.APPLICATION);
+					dialog.show();
+				}
+        	}
         });
-        //FIXME enable the menu once this functionality is implemented
-        menuItem.setEnabled(false);        
         return menuItem;
     }
 }

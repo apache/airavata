@@ -29,6 +29,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -125,7 +126,14 @@ public class JCRBrowserPanel extends JPanel implements Observer {
                         triggerNodeAction(EditAction.ID);
                     }
                 });
-
+                tree.addMouseListener(new MouseAdapter(){
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						if (e.getClickCount() == 2){
+							triggerNodeAction(null);
+						}
+					}
+                });
                 browserActions.add(actionRefresh);
                 browserActions.add(actionAdd);
                 browserActions.add(actionDelete);
@@ -232,6 +240,9 @@ public class JCRBrowserPanel extends JPanel implements Observer {
         if (o instanceof AbstractAiravataTreeNode) {
             AbstractAiravataTreeNode node = ((AbstractAiravataTreeNode) o);
             try {
+            	if (action==null){
+            		action=node.getDefaultAction();
+            	}
                 node.triggerAction(tree, action);
             } catch (Exception e) {
                 e.printStackTrace();

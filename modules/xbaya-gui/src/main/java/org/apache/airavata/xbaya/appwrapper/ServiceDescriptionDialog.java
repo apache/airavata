@@ -45,7 +45,6 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
@@ -79,17 +78,20 @@ public class ServiceDescriptionDialog extends JDialog {
     private boolean serviceCreated = false;
     private JLabel lblError;
     private ServiceDescription serviceDescription;
+    private ServiceDescription orginalServiceDescription;
     private JButton okButton;
     private JButton btnDeleteParameter;
     private DefaultTableModel defaultTableModel;
     private Registry registry;
+    private boolean newDescription;
+    private boolean ignoreTableChanges=false;
 
     /**
      * Launch the application.
      */
     public static void main(String[] args) {
         try {
-            ServiceDescriptionDialog dialog = new ServiceDescriptionDialog(null);
+            ServiceDescriptionDialog dialog = new ServiceDescriptionDialog(null,true,null);
             dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
         } catch (Exception e) {
@@ -97,24 +99,32 @@ public class ServiceDescriptionDialog extends JDialog {
         }
     }
 
+    public ServiceDescriptionDialog(Registry registry) {
+    	this(registry,true,null);
+    }
+    
     /**
      * Create the dialog.
      */
-    public ServiceDescriptionDialog(Registry registry) {
+    public ServiceDescriptionDialog(Registry registry, boolean newDescription, ServiceDescription serviceDescription) {
+    	setNewDescription(newDescription);
+    	this.setOrginalServiceDescription(serviceDescription);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
-                String baseName = "Service";
-                int i = 1;
-                String defaultName = baseName + i;
-                try {
-                    while (getRegistry().getServiceDescription(defaultName) != null) {
-                        defaultName = baseName + (++i);
-                    }
-                } catch (Exception e) {
-                }
-                txtServiceName.setText(defaultName);
-                setServiceName(txtServiceName.getText());
+                if (isNewDescription()) {
+					String baseName = "Service";
+					int i = 1;
+					String defaultName = baseName + i;
+					try {
+						while (getRegistry().getServiceDescription(defaultName) != null) {
+							defaultName = baseName + (++i);
+						}
+					} catch (Exception e) {
+					}
+					txtServiceName.setText(defaultName);
+					setServiceName(txtServiceName.getText());
+				}
             }
         });
         setRegistry(registry);
@@ -132,16 +142,18 @@ public class ServiceDescriptionDialog extends JDialog {
     }
 
     private void initGUI() {
-        setTitle("New Service Description");
-        setBounds(100, 100, 463, 459);
+        if (isNewDescription()) {
+			setTitle("New Service Description");
+		}else{
+			setTitle("Update Service Description: "+getOrginalServiceDescription().getType().getName());
+		}
+		setBounds(100, 100, 463, 459);
         setModal(true);
         setLocationRelativeTo(null);
         BorderLayout borderLayout = new BorderLayout();
         borderLayout.setVgap(5);
         borderLayout.setHgap(5);
         getContentPane().setLayout(borderLayout);
-//        contentPanel.setBorder(null);
-//        getContentPane().add(contentPanel, BorderLayout.EAST);
 
         txtServiceName = new XBayaTextField();
         txtServiceName.getSwingComponent().addKeyListener(new KeyAdapter() {
@@ -152,7 +164,6 @@ public class ServiceDescriptionDialog extends JDialog {
         });
         txtServiceName.setColumns(10);
         lblServiceName = new XBayaLabel("Service name",txtServiceName);
-        JSeparator separator = new JSeparator();
 
         JLabel lblInputParameters = new JLabel("Service Parameters");
         lblInputParameters.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -178,18 +189,27 @@ public class ServiceDescriptionDialog extends JDialog {
 
             @Override
             public void tableChanged(TableModelEvent arg0) {
-                int selectedRow = tblParameters.getSelectedRow();
-                if (selectedRow != -1 && defaultTableModel.getRowCount()>0) {
-                    Object parameterIOType = defaultTableModel.getValueAt(selectedRow, 0);
-                    Object parameterDataType = defaultTableModel.getValueAt(selectedRow, 2);
-                    if (parameterIOType == null || parameterIOType.equals("")) {
-                        defaultTableModel.setValueAt(getIOStringList()[0], selectedRow, 0);
-                    }
-                    if (parameterDataType == null || parameterDataType.equals("")) {
-                        defaultTableModel.setValueAt(getDataTypes()[0], selectedRow, 2);
-                    }
-                }
-                addNewRowIfLastIsNotEmpty();
+                if (!ignoreTableChanges) {
+					int selectedRow = tblParameters.getSelectedRow();
+					if (selectedRow != -1
+							&& defaultTableModel.getRowCount() > 0) {
+						Object parameterIOType = defaultTableModel.getValueAt(
+								selectedRow, 0);
+						Object parameterDataType = defaultTableModel
+								.getValueAt(selectedRow, 2);
+						if (parameterIOType == null
+								|| parameterIOType.equals("")) {
+							defaultTableModel.setValueAt(getIOStringList()[0],
+									selectedRow, 0);
+						}
+						if (parameterDataType == null
+								|| parameterDataType.equals("")) {
+							defaultTableModel.setValueAt(getDataTypes()[0],
+									selectedRow, 2);
+						}
+					}
+					addNewRowIfLastIsNotEmpty();
+				}
             }
 
         });
@@ -238,7 +258,20 @@ public class ServiceDescriptionDialog extends JDialog {
             gbc_panel.gridy = 0;
             buttonPane.add(panel);
             {
+            	JButton resetButton = new JButton("Reset");
+                resetButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                    	loadData();
+                    }
+                });
+                panel.add(resetButton);
+            }
+            {
                 okButton = new JButton("Save");
+                if (!isNewDescription()){
+                	okButton.setText("Update");
+                }
                 okButton.setEnabled(false);
                 okButton.addActionListener(new ActionListener() {
                     @Override
@@ -285,7 +318,34 @@ public class ServiceDescriptionDialog extends JDialog {
         SwingUtil.layoutToGrid(getContentPane(), 2, 1, 0, 0);
         setResizable(false);
         getRootPane().setDefaultButton(okButton);
+        if (!isNewDescription()){
+        	loadData();
+        }
+        
     }
+
+    private void loadData() {
+    	txtServiceName.setText(getOrginalServiceDescription().getType().getName());
+		setServiceName(txtServiceName.getText());
+
+    	if (!isNewDescription()){
+    		txtServiceName.setEditable(false);
+    	}
+    	ignoreTableChanges=true;
+    	while(defaultTableModel.getRowCount()>0){
+    		defaultTableModel.removeRow(0);
+    	}
+    	InputParameterType[] iparameters = getOrginalServiceDescription().getType().getInputParametersArray();
+    	for (InputParameterType parameter : iparameters) {
+    		defaultTableModel.addRow(new Object[] { getIOStringList()[0], parameter.getParameterName(),parameter.getParameterType().getName(),parameter.getParameterDescription()});	
+		}
+    	OutputParameterType[] oparameters = getOrginalServiceDescription().getType().getOutputParametersArray();
+    	for (OutputParameterType parameter : oparameters) {
+    		defaultTableModel.addRow(new Object[] { getIOStringList()[1], parameter.getParameterName(), parameter.getParameterType().getName(),parameter.getParameterDescription()});	
+		}
+    	addNewRowIfLastIsNotEmpty();
+    	ignoreTableChanges=false;
+	}
 
     private String[] getIOStringList() {
         String[] ioStringList = new String[] { "Input", "Output" };
@@ -354,7 +414,7 @@ public class ServiceDescriptionDialog extends JDialog {
                 throw e;
             }
         }
-        if (serviceDescription2 != null) {
+        if (isNewDescription() && serviceDescription2 != null) {
             throw new Exception("Service descriptor with the given name already exists!!!");
         }
     }
@@ -443,7 +503,23 @@ public class ServiceDescriptionDialog extends JDialog {
         this.registry = registry;
     }
 
-    private class StringArrayComboBoxEditor extends DefaultCellEditor {
+    public boolean isNewDescription() {
+		return newDescription;
+	}
+
+	public void setNewDescription(boolean newDescription) {
+		this.newDescription = newDescription;
+	}
+
+	public ServiceDescription getOrginalServiceDescription() {
+		return orginalServiceDescription;
+	}
+
+	public void setOrginalServiceDescription(ServiceDescription orginalServiceDescription) {
+		this.orginalServiceDescription = orginalServiceDescription;
+	}
+
+	private class StringArrayComboBoxEditor extends DefaultCellEditor {
         private static final long serialVersionUID = -304464739219209395L;
 
         public StringArrayComboBoxEditor(Object[] items) {
