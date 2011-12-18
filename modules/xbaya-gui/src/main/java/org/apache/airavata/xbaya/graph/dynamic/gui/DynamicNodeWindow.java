@@ -74,10 +74,6 @@ public class DynamicNodeWindow {
      */
     private static final String SRC_DIR = "src";
 
-    /**
-     * SKELETON_FOLDER_NAME
-     */
-    private static final String SKELETON_FOLDER_NAME = SRC_DIR;
 
     /**
      * CLASS
