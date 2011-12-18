@@ -163,63 +163,7 @@ public class Workflow implements Cloneable {
         this.graph = WSGraphFactory.createGraph();
     }
 
-    public static Workflow getWorkflow(Workflow parentWorkflow, List<Node> subworkflowNodes, String subworkflowName)
-            throws GraphException {
-        HashMap<String, Node> nodeMap = new HashMap<String, Node>();
-        for (Node node : subworkflowNodes) {
-            nodeMap.put(node.getID(), node);
-        }
-
-        Workflow subWorkflow = parentWorkflow.clone();
-        final LinkedList<NodeImpl> genericSubWorkflowNodes = GraphUtil.getGenericSubWorkflowNodes(parentWorkflow
-                .getGraph());
-        if (null == subworkflowName) {
-            subWorkflow.setName(subWorkflow.getName() + "_subWorkflow_" + genericSubWorkflowNodes.size());
-        } else {
-            subWorkflow.setName(subworkflowName);
-        }
-        List<NodeImpl> allOldNodes = subWorkflow.getGraph().getNodes();
-        LinkedList<NodeImpl> removeList = new LinkedList<NodeImpl>();
-        for (NodeImpl nodeImpl : allOldNodes) {
-            if (null == nodeMap.get(nodeImpl.getID())) {
-                removeList.add(nodeImpl);
-            }
-        }
-        for (NodeImpl nodeImpl : removeList) {
-            subWorkflow.removeNode(nodeImpl);
-        }
-
-        List<NodeImpl> nodes = subWorkflow.getGraph().getNodes();
-        for (int i = 0; i < nodes.size(); ++i) {
-            NodeImpl nodeImpl = nodes.get(i);
-            List<DataPort> inputPorts = nodeImpl.getInputPorts();
-            int count = 0;
-            for (DataPort dataPort : inputPorts) {
-                if (dataPort.getFromNode() == null) {
-                    Node inputNode = subWorkflow.addNode(new InputComponent());
-                    inputNode.setPosition(new Point(Math.max(0, nodeImpl.getPosition().x - 200),
-                            nodeImpl.getPosition().y + count * 50));
-                    subWorkflow.getGraph().addEdge(inputNode.getOutputPort(0), dataPort);
-                    ++count;
-                }
-            }
-            count = 0;
-            List<DataPort> outputPorts = nodeImpl.getOutputPorts();
-            for (DataPort dataPort : outputPorts) {
-                if (dataPort.getToNodes().size() == 0) {
-                    Node outputNode = subWorkflow.addNode(new OutputComponent());
-                    outputNode.setPosition(new Point(nodeImpl.getPosition().x + 200, nodeImpl.getPosition().y + count
-                            * 50));
-                    subWorkflow.getGraph().addEdge(dataPort, outputNode.getInputPort(0));
-                    ++count;
-                }
-            }
-
-        }
-
-        return subWorkflow;
-    }
-
+   
     /**
      * Constructs a Workflow.
      * 
@@ -251,11 +195,6 @@ public class Workflow implements Cloneable {
         parse(workflowElement);
     }
 
-    public HashMap<String, LinkedList<Node>> partition() throws XBayaException {
-        HashMap<String, LinkedList<Node>> partitionSets = this.graph.labelIntroduceJoinsAndGetSubSets();
-        return partitionSets;
-
-    }
 
     /**
      * This is used for ODE
