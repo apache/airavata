@@ -21,21 +21,26 @@
 
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
-
-import javax.swing.*;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+
+import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 
 public abstract class AbstractAiravataTreeNode implements TreeNode {
 
@@ -157,6 +162,10 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
     }
 
     public abstract List<String> getSupportedActions();
+    
+	public String getDefaultAction() {
+		return null;
+	}
 
     public boolean isActionSupported(AbstractBrowserActionItem action) {
         return getSupportedActions().contains(action.getID());

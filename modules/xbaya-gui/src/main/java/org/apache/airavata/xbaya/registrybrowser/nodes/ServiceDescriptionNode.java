@@ -26,12 +26,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Icon;
-import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.xbaya.appwrapper.ServiceDescriptionDialog;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
@@ -84,22 +84,31 @@ public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
 
     public boolean triggerAction(JTree tree, String action) throws Exception {
         if (action.equals(DeleteAction.ID)) {
-            deleteHostDescription(tree);
-            return true;
+        	return deleteServiceDescription(tree);
         } else if (action.equals(EditAction.ID)) {
-            JOptionPane.showMessageDialog(null, "TODO");
-            return true;
+        	return editServiceDescription(tree);
         }
         return super.triggerAction(tree, action);
     }
 
-    private void deleteHostDescription(JTree tree) throws RegistryException {
+	private boolean editServiceDescription(JTree tree) {
+		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry(),false,getServiceDescription());
+		serviceDescriptionDialog.open();
+		if (serviceDescriptionDialog.isServiceCreated()) {
+		    refresh();
+		    reloadTreeNode(tree, this);
+		}
+		return true;
+	}
+
+    private boolean deleteServiceDescription(JTree tree) throws RegistryException {
         if (askQuestion("Service description", "Are you sure that you want to remove the service description \""
                 + getServiceDescription().getType().getName() + "\"?")) {
             getRegistry().deleteServiceDescription(getServiceDescription().getType().getName());
             ((AbstractAiravataTreeNode) getParent()).refresh();
             reloadTreeNode(tree, getParent());
         }
+        return true;
     }
 
     @Override
@@ -107,7 +116,7 @@ public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
         if (action.getID().equals(DeleteAction.ID)) {
             return "Remove";
         } else if (action.getID().equals(EditAction.ID)) {
-            return "Edit";
+            return "View/Edit";
         }
         return action.getDefaultCaption();
     }
@@ -121,4 +130,9 @@ public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
     public String getActionDescription(AbstractBrowserActionItem action) {
         return null;
     }
+
+	@Override
+	public String getDefaultAction() {
+		return EditAction.ID;
+	}
 }
