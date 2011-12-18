@@ -24,7 +24,6 @@ package org.apache.airavata.xbaya.component.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.net.MalformedURLException;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
@@ -40,7 +39,6 @@ import org.apache.airavata.xbaya.component.registry.LocalComponentRegistry;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.file.gui.WorkflowFiler;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
-import org.apache.airavata.xbaya.streaming.StreamTableModel;
 import org.apache.airavata.xbaya.util.RegistryConstants;
 import org.apache.airavata.xbaya.wf.Workflow;
 
@@ -59,8 +57,6 @@ public class ComponentMenu {
     private JMenuItem refreshSelectedItem;
 
     private JMenuItem refreshAllItem;
-
-    private JMenuItem streamSourceItem;
 
     private JMenuItem workflowItem;
 
@@ -90,7 +86,6 @@ public class ComponentMenu {
         this.removeItem = createRemoveRegistryItem();
         this.refreshSelectedItem = createRefreshSelectedRegistryItem();
         this.refreshAllItem = createRefreshAllRegistriesItem();
-        this.streamSourceItem = createStreamSourceItem();
         this.componentMenu = new JMenu("Component");
         this.componentMenu.setMnemonic(KeyEvent.VK_C);
         this.componentMenu.add(this.fileRegistryItem);
@@ -102,7 +97,6 @@ public class ComponentMenu {
         this.componentMenu.add(this.refreshSelectedItem);
         this.componentMenu.add(this.refreshAllItem);
         this.componentMenu.addSeparator();
-        this.componentMenu.add(this.streamSourceItem);
     }
 
     /**
@@ -137,29 +131,7 @@ public class ComponentMenu {
         return item;
     }
 
-    /**
-     * @return
-     */
-    private JMenuItem createStreamSourceItem() {
-        JMenuItem item = new JMenuItem("Load Stream Sources");
-        item.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent event) {
-                new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            ComponentMenu.this.engine.getGUI().addStreamSources(
-                                    new StreamTableModel(ComponentMenu.this.engine));
-                            ComponentMenu.this.streamSourceItem.setEnabled(false);
-                        } catch (MalformedURLException e) {
-                            ComponentMenu.this.engine.getErrorWindow().error(e);
-                        }
-                    }
-                }.start();
-            }
-        });
-        return item;
-    }
+   
 
     private JMenuItem createRefreshSelectedRegistryItem() {
         JMenuItem item = new JMenuItem("Refresh Selected Registry");
