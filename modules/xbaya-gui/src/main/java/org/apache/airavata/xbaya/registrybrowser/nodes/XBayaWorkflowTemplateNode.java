@@ -26,16 +26,18 @@ import java.util.List;
 
 import javax.jcr.PathNotFoundException;
 import javax.swing.Icon;
-import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
+import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
+import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
-import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
+import org.apache.airavata.xbaya.registrybrowser.menu.ImportAction;
 import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowTemplate;
+import org.apache.airavata.xbaya.wf.Workflow;
 
 public class XBayaWorkflowTemplateNode extends AbstractAiravataTreeNode {
     private XBayaWorkflowTemplate xbayaWorkflow;
@@ -70,16 +72,18 @@ public class XBayaWorkflowTemplateNode extends AbstractAiravataTreeNode {
 
     @Override
     public List<String> getSupportedActions() {
-        return Arrays.asList(DeleteAction.ID);
+        return Arrays.asList(ImportAction.ID,DeleteAction.ID);
     }
 
     public boolean triggerAction(JTree tree, String action) throws Exception {
         if (action.equals(DeleteAction.ID)) {
             deleteHostDescription(tree);
             return true;
-        } else if (action.equals(EditAction.ID)) {
-            JOptionPane.showMessageDialog(null, "TODO");
-            // TODO
+        } else if (action.equals(ImportAction.ID)) {
+        	Workflow workflow = new RegistryAccesser(getXBayaEngine()).getWorkflow(getXbayaWorkflow().getWorkflowName());
+            GraphCanvas newGraphCanvas = getXBayaEngine().getGUI().newGraphCanvas(true);
+            newGraphCanvas.setWorkflow(workflow);
+            getXBayaEngine().getGUI().getGraphCanvas().setWorkflowFile(null);
             return true;
         }
         return super.triggerAction(tree, action);
@@ -98,8 +102,8 @@ public class XBayaWorkflowTemplateNode extends AbstractAiravataTreeNode {
     public String getActionCaption(AbstractBrowserActionItem action) {
         if (action.getID().equals(DeleteAction.ID)) {
             return "Remove";
-        } else if (action.getID().equals(EditAction.ID)) {
-            return "Edit";
+        } else if (action.getID().equals(ImportAction.ID)) {
+            return "Import";
         }
         return action.getDefaultCaption();
     }
@@ -112,5 +116,10 @@ public class XBayaWorkflowTemplateNode extends AbstractAiravataTreeNode {
     @Override
     public String getActionDescription(AbstractBrowserActionItem action) {
         return null;
+    }
+    
+    @Override
+    public String getDefaultAction() {
+    	return ImportAction.ID;
     }
 }

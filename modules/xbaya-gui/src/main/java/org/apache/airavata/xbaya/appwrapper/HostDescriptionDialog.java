@@ -44,6 +44,7 @@ import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
+import org.apache.tika.parser.txt.TXTParser;
 
 public class HostDescriptionDialog extends JDialog {
 
@@ -76,12 +77,22 @@ public class HostDescriptionDialog extends JDialog {
     private String hostId;
 
     private JButton okButton;
-
+    
+    private boolean newHost;
+    
+    private HostDescription originalHostDescription;
+    
+    public HostDescriptionDialog(XBayaEngine engine) {
+    	this(engine,true,null);
+    }
+    
     /**
      * @param engine XBaya workflow engine
      */
-    public HostDescriptionDialog(XBayaEngine engine) {
+    public HostDescriptionDialog(XBayaEngine engine, boolean newHost, HostDescription originalHostDescription) {
         this.engine = engine;
+        setNewHost(newHost);
+        setOriginalHostDescription(originalHostDescription);
         setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
         initGUI();
     }
@@ -216,8 +227,33 @@ public class HostDescriptionDialog extends JDialog {
         getRootPane().setDefaultButton(okButton);
         chkGobusHost.setSelected(false);
         updateGlobusHostTypeAndControls();
+        if (!isNewHost()) {
+			loadData();
+		}
     }
 
+    private String arrayToString(String[] list) {
+    	String result="";
+		for (String s : list) {
+			if (result.equals("")){
+				result=s;
+			}else{
+				result+=","+s;
+			}
+		}
+		return result;
+	}
+    private void loadData() {
+    	HostDescriptionType t = getOriginalHostDescription().getType();
+    	hostIdTextField.setText(t.getHostName());
+		hostAddressTextField.setText(t.getHostAddress());
+		if (t instanceof GlobusHostType){
+			globusGateKeeperTextField.setText(arrayToString(((GlobusHostType) t).getGlobusGateKeeperEndPointArray()));
+			GridFTPTextField.setText(arrayToString(((GlobusHostType) t).getGridFTPEndPointArray()));
+		}
+		hostIdTextField.setEditable(isNewHost());
+	}
+    
     public String getHostId() {
         return getHostDescription().getType().getHostName();
     }
@@ -315,5 +351,21 @@ public class HostDescriptionDialog extends JDialog {
 		globusGateKeeperTextField.setEnabled(isGlobusHostType());
 		gridFTPLabel.getSwingComponent().setEnabled(isGlobusHostType());
 		GridFTPTextField.setEnabled(isGlobusHostType());
+	}
+
+	public boolean isNewHost() {
+		return newHost;
+	}
+
+	public void setNewHost(boolean newHost) {
+		this.newHost = newHost;
+	}
+
+	public HostDescription getOriginalHostDescription() {
+		return originalHostDescription;
+	}
+
+	public void setOriginalHostDescription(HostDescription originalHostDescription) {
+		this.originalHostDescription = originalHostDescription;
 	}
 }

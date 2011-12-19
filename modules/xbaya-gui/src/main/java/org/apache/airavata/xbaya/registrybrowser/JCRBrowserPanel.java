@@ -29,7 +29,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -50,6 +49,7 @@ import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.AddAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
+import org.apache.airavata.xbaya.registrybrowser.menu.ImportAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
 import org.apache.airavata.xbaya.registrybrowser.nodes.AbstractAiravataTreeNode;
 import org.apache.airavata.xbaya.registrybrowser.nodes.AiravataTreeNodeFactory;
@@ -126,6 +126,12 @@ public class JCRBrowserPanel extends JPanel implements Observer {
                         triggerNodeAction(EditAction.ID);
                     }
                 });
+                ImportAction actionImport = new ImportAction();
+                actionImport.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        triggerNodeAction(ImportAction.ID);
+                    }
+                });
                 tree.addMouseListener(new MouseAdapter(){
 					@Override
 					public void mouseClicked(MouseEvent e) {
@@ -134,10 +140,11 @@ public class JCRBrowserPanel extends JPanel implements Observer {
 						}
 					}
                 });
-                browserActions.add(actionRefresh);
                 browserActions.add(actionAdd);
-                browserActions.add(actionDelete);
+                browserActions.add(actionImport);
                 browserActions.add(actionEdit);
+                browserActions.add(actionRefresh);
+                browserActions.add(actionDelete);
 
 //                popupMenu.add(actionAdd.getMenuItem());
 //                popupMenu.add(actionDelete.getMenuItem());
@@ -243,7 +250,9 @@ public class JCRBrowserPanel extends JPanel implements Observer {
             	if (action==null){
             		action=node.getDefaultAction();
             	}
-                node.triggerAction(tree, action);
+                if (action!=null) {
+					node.triggerAction(tree, action);
+				}
             } catch (Exception e) {
                 e.printStackTrace();
                 getEngine().getErrorWindow().error(e);

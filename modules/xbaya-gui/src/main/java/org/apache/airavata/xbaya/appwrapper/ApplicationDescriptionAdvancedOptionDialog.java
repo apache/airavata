@@ -53,7 +53,6 @@ import org.apache.airavata.xbaya.gui.XBayaTextField;
 public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private static final long serialVersionUID = 3920479739097405014L;
     private XBayaTextField txtInputDir;
-    private XBayaTextField txtWorkingDir;
     private XBayaTextField txtOutputDir;
     private XBayaTextField txtSTDIN;
     private XBayaTextField txtSTDOUT;
@@ -112,7 +111,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 	private void initGUI() {
         setTitle("Application Description Advance Options");
         setModal(true);
-        setBounds(100, 100, 600, 350);
+        setBounds(100, 100, 600, 320);
         setLocationRelativeTo(null);
         GridPanel buttonPane = new GridPanel();
         okButton = new JButton("Update");
@@ -139,9 +138,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     	GridPanel panel = new GridPanel();
         
         txtInputDir = new XBayaTextField();
-        txtWorkingDir = new XBayaTextField();
         
-        XBayaLabel lblWorkingDirectory = new XBayaLabel("Working Directory",txtWorkingDir);
         XBayaLabel lblInputDirectory = new XBayaLabel("Input directory",txtInputDir);
 
         JLabel lblLocations = new JLabel("Locations");
@@ -223,8 +220,6 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         GridPanel leftPanel = new GridPanel();
         leftPanel.add(lblLocations);
         leftPanel.add(new JLabel());
-        leftPanel.add(lblWorkingDirectory);
-        leftPanel.add(txtWorkingDir);
         leftPanel.add(lblInputDirectory);
         leftPanel.add(txtInputDir);
         leftPanel.add(lblOutputDirectory);
@@ -238,7 +233,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         leftPanel.add(lblStderr);
         leftPanel.add(txtSTDERR);
         
-        SwingUtil.layoutToGrid(leftPanel.getSwingComponent(), 8, 2, SwingUtil.WEIGHT_NONE, 1);
+        SwingUtil.layoutToGrid(leftPanel.getSwingComponent(), 7, 2, SwingUtil.WEIGHT_NONE, 1);
         
         GridPanel rightPanel = new GridPanel();
         rightPanel.add(lblEnvironmentalVariables);
@@ -302,7 +297,6 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     }
 
     private void saveApplicationDescriptionAdvancedOptions() {
-    	getShellApplicationDescriptionType().setStaticWorkingDirectory(txtWorkingDir.getText());
     	getShellApplicationDescriptionType().setInputDataDirectory(txtInputDir.getText());
     	getShellApplicationDescriptionType().setOutputDataDirectory(txtOutputDir.getText());
     	getShellApplicationDescriptionType().setStandardInput(txtSTDIN.getText());
@@ -312,7 +306,6 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     }
 
     private void loadApplicationDescriptionAdvancedOptions() {
-        txtWorkingDir.setText(getShellApplicationDescriptionType().getScratchWorkingDirectory());
         txtInputDir.setText(getShellApplicationDescriptionType().getInputDataDirectory());
         txtOutputDir.setText(getShellApplicationDescriptionType().getOutputDataDirectory());
         txtSTDIN.setText(getShellApplicationDescriptionType().getStandardInput());
