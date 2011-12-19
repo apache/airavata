@@ -21,6 +21,20 @@
 
 package org.apache.airavata.xbaya.appwrapper;
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.Registry;
@@ -32,18 +46,9 @@ import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-
 public class HostDescriptionDialog extends JDialog {
 
 	private static final long serialVersionUID = -2910634296292034085L;
-
-	private XBayaEngine engine;
 
     private XBayaTextField hostIdTextField;
 
@@ -83,9 +88,25 @@ public class HostDescriptionDialog extends JDialog {
      * @param engine XBaya workflow engine
      */
     public HostDescriptionDialog(XBayaEngine engine, boolean newHost, HostDescription originalHostDescription) {
-        this.engine = engine;
         setNewHost(newHost);
         setOriginalHostDescription(originalHostDescription);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowOpened(WindowEvent arg0) {
+                if (isNewHost()) {
+					String baseName = "Host";
+					int i = 1;
+					String defaultName = baseName + i;
+					try {
+						while (getRegistry().getServiceDescription(defaultName) != null) {
+							defaultName = baseName + (++i);
+						}
+					} catch (Exception e) {
+					}
+					hostIdTextField.setText(defaultName);
+				}
+            }
+        });
         setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
         initGUI();
     }
@@ -138,8 +159,12 @@ public class HostDescriptionDialog extends JDialog {
     	setBounds(100, 100, 400, 280);
     	setModal(true);
         setLocationRelativeTo(null);
-        setTitle("New Host Description");
-        this.hostIdTextField = new XBayaTextField();
+        if (isNewHost()) {
+			setTitle("New Host Description");
+		}else{
+			setTitle("Update Host Description: "+getOriginalHostDescription().getType().getHostName());
+		}
+		this.hostIdTextField = new XBayaTextField();
         this.hostAddressTextField = new XBayaTextField();
         this.globusGateKeeperTextField = new XBayaTextField();
         this.GridFTPTextField = new XBayaTextField();
@@ -158,12 +183,13 @@ public class HostDescriptionDialog extends JDialog {
         hostIdTextField.getSwingComponent().addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                try {
-                    validateDialog();
-                    setError(null);
-                } catch (Exception e1) {
-                    setError(e1.getMessage());
-                }
+            	updateDialogStatus();
+            }
+        });
+        hostAddressTextField.getSwingComponent().addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+            	updateDialogStatus();
             }
         });
         GridPanel infoPanel1 = new GridPanel();
@@ -192,8 +218,11 @@ public class HostDescriptionDialog extends JDialog {
         lblError = new JLabel();
         lblError.setForeground(Color.RED);
         buttonPanel.add(lblError);
-        okButton = new JButton("OK");
-        okButton.addActionListener(new ActionListener() {
+        okButton = new JButton("Save");
+        if (!isNewHost()) {
+			okButton.setText("Update");
+		}
+		okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ok();
             }
@@ -240,11 +269,14 @@ public class HostDescriptionDialog extends JDialog {
     	HostDescriptionType t = getOriginalHostDescription().getType();
     	hostIdTextField.setText(t.getHostName());
 		hostAddressTextField.setText(t.getHostAddress());
-		if (t instanceof GlobusHostType){
+		boolean isGlobus = t instanceof GlobusHostType;
+		chkGobusHost.setSelected(isGlobus);
+		if (isGlobus){
 			globusGateKeeperTextField.setText(arrayToString(((GlobusHostType) t).getGlobusGateKeeperEndPointArray()));
 			GridFTPTextField.setText(arrayToString(((GlobusHostType) t).getGridFTPEndPointArray()));
 		}
 		hostIdTextField.setEditable(isNewHost());
+		updateGlobusHostTypeAndControls();
 	}
     
     public String getHostId() {
@@ -266,22 +298,26 @@ public class HostDescriptionDialog extends JDialog {
     }
 
     private void validateDialog() throws Exception {
-        okButton.setEnabled(true);
-        if (this.hostIdTextField.getText() == null ||  this.hostIdTextField.getText().trim().equals("")) {
-            throw new Exception("Id of the host cannot be empty!!!");
-        }
-
-        HostDescription hostDescription2 = null;
-        try {
-            hostDescription2 = getRegistry().getHostDescription(this.hostIdTextField.getText());
-        } catch (RegistryException e) {
-            throw e;
-        }
-        if (hostDescription2 != null) {
-            throw new Exception("Host descriptor with the given id already exists!!!");
-        }
-
-        if (getHostLocation() == null || getHostLocation().trim().equals("")) {
+        if (isNewHost()) {
+			String hostName = this.hostIdTextField.getText();
+			if (hostName == null
+					|| hostName.trim().equals("")) {
+				throw new Exception("Id of the host cannot be empty!!!");
+			}
+			HostDescription hostDescription2 = null;
+			try {
+				hostDescription2 = getRegistry().getHostDescription(
+						hostName);
+			} catch (RegistryException e) {
+				throw e;
+			}
+			if (hostDescription2 != null) {
+				throw new Exception(
+						"Host descriptor with the given id already exists!!!");
+			}
+		}
+        String hostAddress = this.hostAddressTextField.getText();
+		if (hostAddress == null || hostAddress.trim().equals("")) {
             throw new Exception("Host location/ip cannot be empty!!!");
         }
     }
