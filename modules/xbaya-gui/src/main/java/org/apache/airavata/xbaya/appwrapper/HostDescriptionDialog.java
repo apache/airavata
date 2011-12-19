@@ -21,19 +21,6 @@
 
 package org.apache.airavata.xbaya.appwrapper;
 
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.regex.Pattern;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.Registry;
@@ -44,7 +31,13 @@ import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
-import org.apache.tika.parser.txt.TXTParser;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class HostDescriptionDialog extends JDialog {
 
@@ -156,15 +149,15 @@ public class HostDescriptionDialog extends JDialog {
         globusGateKeeperLabel = new XBayaLabel("Globus Gate Keeper Endpoint", this.globusGateKeeperTextField);
         gridFTPLabel = new XBayaLabel("Grid FTP Endpoint", this.GridFTPTextField);
         chkGobusHost=new JCheckBox("Define this host as a Globus host");
-        chkGobusHost.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				updateGlobusHostTypeAndControls();
-			}
+        chkGobusHost.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                updateGlobusHostTypeAndControls();
+            }
         });
         hostIdTextField.getSwingComponent().addKeyListener(new KeyAdapter() {
             @Override
-            public void keyPressed(KeyEvent e) {
+            public void keyReleased(KeyEvent e) {
                 try {
                     validateDialog();
                     setError(null);
@@ -273,13 +266,14 @@ public class HostDescriptionDialog extends JDialog {
     }
 
     private void validateDialog() throws Exception {
-        if (getHostId() == null || getHostId().trim().equals("")) {
+        okButton.setEnabled(true);
+        if (this.hostIdTextField.getText() == null ||  this.hostIdTextField.getText().trim().equals("")) {
             throw new Exception("Id of the host cannot be empty!!!");
         }
 
         HostDescription hostDescription2 = null;
         try {
-            hostDescription2 = getRegistry().getHostDescription(Pattern.quote(getHostId()));
+            hostDescription2 = getRegistry().getHostDescription(this.hostIdTextField.getText());
         } catch (RegistryException e) {
             throw e;
         }
