@@ -1027,4 +1027,7 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         return workflowIODataList;
     }
 
+    public Repository getRepository() {
+        return repository;
+    }
 }
