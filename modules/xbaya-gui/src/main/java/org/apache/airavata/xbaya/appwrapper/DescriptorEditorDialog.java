@@ -187,6 +187,12 @@ public class DescriptorEditorDialog extends JDialog {
     private void editDescriptor() {
     	switch (descriptorType){
 	    	case HOST:
+	    		HostDescription h = (HostDescription) getSelected();
+	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine,false,h);
+	    		hostDescriptionDialog.open();
+	    		if (hostDescriptionDialog.isHostCreated()) {
+					loadDescriptors();
+				}
 	    		break;
 	    	case SERVICE:
 	    		ServiceDescription d = (ServiceDescription) getSelected();

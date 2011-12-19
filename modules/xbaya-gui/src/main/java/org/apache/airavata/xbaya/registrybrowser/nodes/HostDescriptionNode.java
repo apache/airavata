@@ -25,12 +25,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Icon;
-import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.xbaya.appwrapper.HostDescriptionDialog;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
@@ -73,22 +73,36 @@ public class HostDescriptionNode extends AbstractAiravataTreeNode {
 
     public boolean triggerAction(JTree tree, String action) throws Exception {
         if (action.equals(DeleteAction.ID)) {
-            deleteHostDescription(tree);
-            return true;
+        	return deleteHostDescription(tree);
         } else if (action.equals(EditAction.ID)) {
-            JOptionPane.showMessageDialog(null, "TODO");
-            return true;
+            return editHostDescription(tree);
         }
         return super.triggerAction(tree, action);
     }
+    
+    @Override
+    public String getDefaultAction() {
+    	return EditAction.ID;
+    }
+    
+	private boolean editHostDescription(JTree tree) {
+		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getXBayaEngine(),false,getHostDescription());
+		hostDescriptionDialog.open();
+		if (hostDescriptionDialog.isHostCreated()) {
+		    refresh();
+		    reloadTreeNode(tree, this);
+		}
+		return true;
+	}
 
-    private void deleteHostDescription(JTree tree) throws RegistryException {
+    private boolean deleteHostDescription(JTree tree) throws RegistryException {
         if (askQuestion("Host description", "Are you sure that you want to remove the host description \""
                 + getHostDescription().getType().getHostName() + "\"?")) {
             getRegistry().deleteHostDescription(getHostDescription().getType().getHostName());
             ((AbstractAiravataTreeNode) getParent()).refresh();
             reloadTreeNode(tree, getParent());
         }
+        return true;
     }
 
     @Override
@@ -96,7 +110,7 @@ public class HostDescriptionNode extends AbstractAiravataTreeNode {
         if (action.getID().equals(DeleteAction.ID)) {
             return "Remove";
         } else if (action.getID().equals(EditAction.ID)) {
-            return "Edit";
+            return "View/Edit";
         }
         return action.getDefaultCaption();
     }
