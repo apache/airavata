@@ -38,11 +38,12 @@ import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.Port.Kind;
+import org.apache.airavata.xbaya.graph.dynamic.PortAddable;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.system.gui.ForEachNodeGUI;
 import org.xmlpull.infoset.XmlElement;
 
-public class ForEachNode extends SystemNode {
+public class ForEachNode extends SystemNode implements PortAddable{
 
     // private static final MLogger logger = MLogger.getLogger();
 

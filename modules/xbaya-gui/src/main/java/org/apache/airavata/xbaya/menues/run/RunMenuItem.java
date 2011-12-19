@@ -35,6 +35,8 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.event.Event;
 import org.apache.airavata.xbaya.event.Event.Type;
 import org.apache.airavata.xbaya.event.EventListener;
@@ -44,6 +46,7 @@ import org.apache.airavata.xbaya.gridchem.gui.GridChemRunnerWindow;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.ToolbarButton;
 import org.apache.airavata.xbaya.gui.XBayaToolBar;
+import org.apache.airavata.xbaya.interpretor.XBayaExecutionState;
 import org.apache.airavata.xbaya.jython.gui.JythonRunnerWindow;
 import org.apache.airavata.xbaya.menues.MenuIcons;
 import org.apache.airavata.xbaya.monitor.Monitor;
@@ -51,6 +54,7 @@ import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.gui.MonitorConfigurationWindow;
 import org.apache.airavata.xbaya.monitor.gui.MonitorStarter;
+import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -298,11 +302,25 @@ public class RunMenuItem  implements EventListener{
             	if (isWorkflowRunning()){
             		if (JOptionPane.showConfirmDialog(null, "A previous workflow excution data needs to be cleared before launching another workflow. Do you wish to continue?", "Run Dynamic Workflow", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
             			cleanup();
-            		}else{
+                    }else{
             			return;
             		}
             	}
                 if (this.window == null) {
+                    int count = 0;
+                    //there is a possibility the ealier run is not yet cleanedup yet.. so wait until it finishes
+                    // and sets the execution state to NONE as the last task of scheduleDynamically
+                    while(engine.getWorkflow().getExecutionState() != XBayaExecutionState.NONE){
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+                        count++;
+                        if(count > 20){
+                            throw new XBayaRuntimeException("Error stopping previous workflow Execution");
+                        }
+                    }
                     this.window = new DynamicWorkflowRunnerWindow(engine);
                 }
                 this.window.show();
