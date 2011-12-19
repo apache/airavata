@@ -290,7 +290,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                 public void actionPerformed(ActionEvent e) {
                     try {
                         HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine);
-                        hostDescriptionDialog.show();
+                        hostDescriptionDialog.open();
 
                         if (hostDescriptionDialog.isHostCreated()) {
                             loadHostDescriptions();
