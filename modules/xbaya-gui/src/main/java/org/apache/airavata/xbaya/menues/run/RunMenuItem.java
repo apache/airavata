@@ -416,8 +416,8 @@ public class RunMenuItem  implements EventListener{
 			@Override
 			public void run() {
 				while(true){
-					stopWorkflowButton.setEnabled(engine.getWorkflowInterpreter()!=null);
-					if (engine.getWorkflowInterpreter()==null){
+					stopWorkflowButton.setEnabled(isWorkflowRunning());
+					if (!isWorkflowRunning()){
 						pauseMonitorButton.setEnabled(false);
 						resumeMonitorButton.setEnabled(false);
 					}
