@@ -29,6 +29,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.registry.api.Registry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
@@ -39,7 +40,6 @@ import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.experiment.gui.RegistryWorkflowPublisherWindow;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
-import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.ietf.jgss.GSSCredential;
@@ -103,7 +103,7 @@ public class RegistryAccesser {
     /**
      * Save workflow in to Registry
      */
-    public void saveWorkflow() {
+    public boolean saveWorkflow() {
         if (XBayaUtil.acquireJCRRegistry(this.engine)) {
             try {
 
@@ -120,7 +120,7 @@ public class RegistryAccesser {
                         buf.append("\n");
                     }
                     this.engine.getErrorWindow().warning(buf.toString());
-                    return;
+                    return false;
                 }
                 RegistryWorkflowPublisherWindow registryPublishingWindow = new RegistryWorkflowPublisherWindow(
                         this.engine);
@@ -157,14 +157,15 @@ public class RegistryAccesser {
                 String owner = this.engine.getConfiguration().getRegigstryUserName();
 
                 Registry registry = this.connectToRegistry();
-                registry.saveWorkflow(workflowQName, workflow.getName(), workflow.getDescription(), workflowAsString,
+                boolean result = registry.saveWorkflow(workflowQName, workflow.getName(), workflow.getDescription(), workflowAsString,
                         owner, registryPublishingWindow.isMakePublic());
                 registryPublishingWindow.hide();
-
+                return result;
             } catch (Exception e) {
                 this.engine.getErrorWindow().error(e.getMessage(), e);
             }
         }
+		return false;
     }
 
     /**

@@ -40,6 +40,7 @@ import javax.swing.border.TitledBorder;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
@@ -154,7 +155,11 @@ public class RegistryLoaderWindow {
 
         try {
             Workflow workflow = new RegistryAccesser(this.engine).getWorkflow(result.getResourceName());
-            RegistryLoaderWindow.this.engine.setWorkflow(workflow);
+            GraphCanvas newGraphCanvas = engine.getGUI().newGraphCanvas(true);
+            newGraphCanvas.setWorkflow(workflow);
+            //this.engine.setWorkflow(workflow);
+            engine.getGUI().getGraphCanvas().setWorkflowFile(null);
+//            RegistryLoaderWindow.this.engine.setWorkflow(workflow);
         } catch (Exception e) {
             RegistryLoaderWindow.this.engine.getErrorWindow().error(e);
         }

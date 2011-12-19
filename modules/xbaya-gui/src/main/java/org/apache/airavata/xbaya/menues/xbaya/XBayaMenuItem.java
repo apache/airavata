@@ -258,7 +258,11 @@ public class XBayaMenuItem {
         this.saveWorkflowtoRegistryItem.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
-                registryAccesser.saveWorkflow();
+                if (registryAccesser.saveWorkflow()){
+                	if (engine.getGUI().getGraphCanvas().getWorkflowFile()==null){
+                		engine.getGUI().getGraphCanvas().workflowSaved();
+                	}
+                }
             }
         });
     }
