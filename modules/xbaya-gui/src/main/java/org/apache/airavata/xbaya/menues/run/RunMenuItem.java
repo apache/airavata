@@ -31,6 +31,8 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.event.Event;
@@ -77,6 +79,7 @@ public class RunMenuItem  implements EventListener{
     private static final Logger logger = LoggerFactory.getLogger(RunMenuItem.class);
 
 	private static final String EXECUTE_ACTIONS = "run_actions";
+	private static final String EXECUTE_MONITOR_ACTIONS = "monitor_actions";
 
     private XBayaToolBar toolBar;
 
@@ -85,6 +88,10 @@ public class RunMenuItem  implements EventListener{
 	private ToolbarButton pauseMonitorButton;
 
 	private ToolbarButton resumeMonitorButton;
+
+	private JMenuItem stopWorkflowItem;
+
+	private ToolbarButton stopWorkflowButton;
     
     /**
      * Constructs a WorkflowMenu.
@@ -99,6 +106,7 @@ public class RunMenuItem  implements EventListener{
         monitor.addEventListener(this);
         monitor.getConfiguration().addEventListener(this);
         XBayaToolBar.setGroupOrder(EXECUTE_ACTIONS, 5);
+        XBayaToolBar.setGroupOrder(EXECUTE_MONITOR_ACTIONS, 6);
     }
 
     /**
@@ -119,14 +127,18 @@ public class RunMenuItem  implements EventListener{
         this.configMonitorItem = createConfigMonitoring();
         this.resumeMonitoringItem = createResumeMonitoring();
         this.pauseMonitoringItem = createPauseMonitoring();
-        this.resetMonitoringItem = createStopMonitoring();
+        this.resetMonitoringItem = createResetMonitoring();
+        stopWorkflowItem = createStopWorkflow();
         
         runMenu = new JMenu("Run");
         runMenu.setMnemonic(KeyEvent.VK_R);
 
         runMenu.add(launchDynamicWorkflowItem);
         runMenu.add(launchXBayaInterpreterItem);
-
+        
+        runMenu.addSeparator();
+        runMenu.add(stopWorkflowItem);
+        
         runMenu.addSeparator();
         runMenu.add(launchGridChemWorkflowItem);
         runMenu.add(launchAndSaveInGridChemWorkflowItem);
@@ -138,8 +150,19 @@ public class RunMenuItem  implements EventListener{
         runMenu.add(this.resetMonitoringItem);
         runMenu.add(this.configMonitorItem);
         
-        setupMonitors();
+        runMenu.addMenuListener(new MenuListener(){
+			@Override
+			public void menuCanceled(MenuEvent e) {}
+			@Override
+			public void menuDeselected(MenuEvent e) {}
+			@Override
+			public void menuSelected(MenuEvent e) {
+				stopWorkflowItem.setEnabled(isWorkflowRunning());
+			}
+        });
         
+        setupMonitors();
+        startStopButtonStateUpdater();
     }
 
 	private void setupMonitors() {
@@ -195,7 +218,7 @@ public class RunMenuItem  implements EventListener{
 		item.addActionListener(action);
         boolean valid = this.engine.getMonitor().getConfiguration().isValid();
         item.setVisible(valid);
-        resumeMonitorButton = getToolBar().addToolbarButton(EXECUTE_ACTIONS,item.getText(), MenuIcons.MONITOR_RESUME_ICON, "Resume monitoring", action,3);
+        resumeMonitorButton = getToolBar().addToolbarButton(EXECUTE_MONITOR_ACTIONS,item.getText(), MenuIcons.MONITOR_RESUME_ICON, "Resume monitoring", action,4);
         resumeMonitorButton.setEnabled(false);
         return item;
     }
@@ -216,23 +239,37 @@ public class RunMenuItem  implements EventListener{
         };
 		item.addActionListener(action);
         item.setVisible(false);
-        pauseMonitorButton = getToolBar().addToolbarButton(EXECUTE_ACTIONS,item.getText(), MenuIcons.MONITOR_PAUSE_ICON, "Pause monitoring", action,2);
+        pauseMonitorButton = getToolBar().addToolbarButton(EXECUTE_MONITOR_ACTIONS,item.getText(), MenuIcons.MONITOR_PAUSE_ICON, "Pause monitoring", action,3);
         pauseMonitorButton.setEnabled(false);
         return item;
     }
 
-    private JMenuItem createStopMonitoring() {
+    private JMenuItem createResetMonitoring() {
         JMenuItem item = new JMenuItem("Reset monitoring");
         item.setMnemonic(KeyEvent.VK_R);
         item.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent event) {
-                cleanup();
+                engine.getMonitor().reset();
             }
         });
         item.setVisible(false);
         return item;
     }
 
+    private JMenuItem createStopWorkflow() {
+        JMenuItem item = new JMenuItem("Stop running workflow",MenuIcons.STOP_ICON);
+        item.setMnemonic(KeyEvent.VK_S);
+        AbstractAction action = new AbstractAction() {
+            public void actionPerformed(ActionEvent event) {
+                cleanup();
+            }
+        };
+		item.addActionListener(action);
+        item.setEnabled(false);
+        stopWorkflowButton = getToolBar().addToolbarButton(EXECUTE_ACTIONS,item.getText(), MenuIcons.STOP_ICON, "Stop workflow", action,2);
+        stopWorkflowButton.setEnabled(item.isEnabled());
+        return item;
+    }
     
     private JMenuItem createRunJythonWorkflowItem() {
         JMenuItem menuItem = new JMenuItem("Run workflow as Jython...");
@@ -258,7 +295,7 @@ public class RunMenuItem  implements EventListener{
             private DynamicWorkflowRunnerWindow window;
 
             public void actionPerformed(ActionEvent event) {
-            	if (engine.getWorkflowInterpreter()!=null){
+            	if (isWorkflowRunning()){
             		if (JOptionPane.showConfirmDialog(null, "A previous workflow excution data needs to be cleared before launching another workflow. Do you wish to continue?", "Run Dynamic Workflow", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
             			cleanup();
             		}else{
@@ -335,7 +372,6 @@ public class RunMenuItem  implements EventListener{
      */
     public void eventReceived(Event event) {
         Type type = event.getType();
-        lastEvent=event;
         if (type.equals(Event.Type.MONITOR_CONFIGURATION_CHANGED)) {
             MonitorConfiguration configuration = this.engine.getMonitor().getConfiguration();
             boolean valid = configuration.isValid();
@@ -371,5 +407,27 @@ public class RunMenuItem  implements EventListener{
 		}
 	}
 
-	private Event lastEvent=null;
+	private boolean isWorkflowRunning() {
+		return engine.getWorkflowInterpreter()!=null;
+	}
+
+	private void startStopButtonStateUpdater() {
+		Thread t=new Thread(){
+			@Override
+			public void run() {
+				while(true){
+					stopWorkflowButton.setEnabled(engine.getWorkflowInterpreter()!=null);
+					if (engine.getWorkflowInterpreter()==null){
+						pauseMonitorButton.setEnabled(false);
+						resumeMonitorButton.setEnabled(false);
+					}
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+					}
+				}
+			}
+		};
+		t.start();
+	}
 }

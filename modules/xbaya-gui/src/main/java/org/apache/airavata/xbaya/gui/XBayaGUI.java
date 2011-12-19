@@ -373,7 +373,6 @@ public class XBayaGUI implements EventListener {
     public void addWorkflowTabChangeListener(ChangeListener listener){
 		graphTabbedPane.addChangeListener(listener);
 		tabChangeListeners.add(listener);
-		
     }
     
     public void removeWorkflowTabChangeListener(ChangeListener listener){
