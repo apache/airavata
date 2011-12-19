@@ -164,11 +164,6 @@ public class WorkflowInterpreter {
 
     private boolean isoffline = false;
 
-	// public WorkflowInterpreter(XBayaConfiguration configuration, String
-	// topic,
-	// Workflow workflow, String username, String password) {
-	// this(configuration, topic, workflow, username, password, false);
-	// }
 
 	/**
 	 * 
@@ -388,11 +383,13 @@ public class WorkflowInterpreter {
 			} else {
 				finish();
 			}
+            this.workflow.setExecutionState(XBayaExecutionState.NONE);
 		} catch (RuntimeException e) {
 			// we reset all the state
 			cleanup();
-			raiseException(e);
-		}
+            this.workflow.setExecutionState(XBayaExecutionState.NONE);
+            raiseException(e);
+        }
 	}
 
 	/**
