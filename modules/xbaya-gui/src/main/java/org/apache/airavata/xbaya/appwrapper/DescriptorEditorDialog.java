@@ -24,6 +24,8 @@ package org.apache.airavata.xbaya.appwrapper;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -108,6 +110,14 @@ public class DescriptorEditorDialog extends JDialog {
     	descriptorList.setCellRenderer(new DescriptorListCellRenderer(descriptorType));
     	JScrollPane pane = new JScrollPane(descriptorList);
     	
+    	descriptorList.addMouseListener(new MouseAdapter(){
+    		@Override
+    		public void mouseClicked(MouseEvent e) {
+    			if (e.getClickCount()==2){
+    				editDescriptor();
+    			}
+    		}
+    	});
     	GridPanel infoPanel=new GridPanel();
         infoPanel.add(pane);
         infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
@@ -182,9 +192,19 @@ public class DescriptorEditorDialog extends JDialog {
 	    		ServiceDescription d = (ServiceDescription) getSelected();
 	    		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry(),false,d);
 	    		serviceDescriptionDialog.open();
+	    		if (serviceDescriptionDialog.isServiceCreated()) {
+					loadDescriptors();
+				}
 	    		break;
 	    	case APPLICATION:
-	    		break;
+	    		ApplicationDeploymentDescription a = (ApplicationDeploymentDescription) getSelected();
+	    		String[] s = dlist.get(a).split("\\$");
+	    		ApplicationDescriptionDialog aDescriptionDialog = new ApplicationDescriptionDialog(engine,false,a,s[1],s[0]);
+	    		aDescriptionDialog.open();
+			if (aDescriptionDialog.isApplicationDescCreated()) {
+				loadDescriptors();
+			}
+			break;
     	}
 	}
 
@@ -259,7 +279,7 @@ public class DescriptorEditorDialog extends JDialog {
 	    	    		break;
 	    	    	case APPLICATION:
 	    	    		ApplicationDeploymentDescription a = (ApplicationDeploymentDescription) getSelected();
-	    	    		String[] s = dlist.get(a).split("$");
+	    	    		String[] s = dlist.get(a).split("\\$");
 	    	        	getRegistry().deleteDeploymentDescription(s[0], s[1], a.getType().getApplicationName().getStringValue());
 	    	    		break;
             	}
@@ -272,7 +292,7 @@ public class DescriptorEditorDialog extends JDialog {
     }
     
     private void loadDescriptors() {
-    	descriptorList.removeAll();
+    	((DefaultListModel)descriptorList.getModel()).removeAllElements();
     	try {
     		List<?> descriptors=null;
 			switch (descriptorType){

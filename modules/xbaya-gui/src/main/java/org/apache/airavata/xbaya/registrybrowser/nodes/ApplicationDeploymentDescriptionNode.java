@@ -25,11 +25,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Icon;
-import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.xbaya.appwrapper.ApplicationDescriptionDialog;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
@@ -73,18 +73,30 @@ public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNo
         return Arrays.asList(EditAction.ID, DeleteAction.ID);
     }
 
+    @Override
+    public String getDefaultAction() {
+    	return EditAction.ID;
+    }
     public boolean triggerAction(JTree tree, String action) throws Exception {
         if (action.equals(DeleteAction.ID)) {
-            deleteApplicationDescription(tree);
-            return true;
+        	return deleteApplicationDescription(tree);
         } else if (action.equals(EditAction.ID)) {
-            JOptionPane.showMessageDialog(null, "TODO");
-            return true;
+        	return editDescriptor(tree);
         }
         return super.triggerAction(tree, action);
     }
 
-    private void deleteApplicationDescription(JTree tree) throws RegistryException {
+	private boolean editDescriptor(JTree tree) {
+		ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(getXBayaEngine(),false,getApplicationDeploymentDescriptionWrap().getDescription(),getApplicationDeploymentDescriptionWrap().getHost(),getApplicationDeploymentDescriptionWrap().getService());
+		applicationDescriptionDialog.open();
+		if (applicationDescriptionDialog.isApplicationDescCreated()) {
+		    refresh();
+		    reloadTreeNode(tree, this);
+		}
+		return true;
+	}
+
+    private boolean deleteApplicationDescription(JTree tree) throws RegistryException {
         if (askQuestion("Application description",
                 "Are you sure that you want to remove the application description \""
                         + getApplicationDeploymentDescriptionWrap().getDescription().getType().getApplicationName().getStringValue() + "\"?")) {
@@ -94,6 +106,7 @@ public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNo
             ((AbstractAiravataTreeNode) getParent()).refresh();
             reloadTreeNode(tree, getParent());
         }
+        return true;
     }
 
     @Override
@@ -101,7 +114,7 @@ public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNo
         if (action.getID().equals(DeleteAction.ID)) {
             return "Remove";
         } else if (action.getID().equals(EditAction.ID)) {
-            return "Edit";
+            return "View/Edit";
         }
         return action.getDefaultCaption();
     }

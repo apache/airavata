@@ -201,9 +201,6 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		projectAccount.setProjectAccountNumber(txtProjectAccountNumber.getText());
 		projectAccount.setProjectAccountDescription(txtProjectAccountDescription.getText());
 		
-		projectAccount.setProjectAccountNumber(txtProjectAccountNumber.getText());
-		projectAccount.setProjectAccountNumber(txtProjectAccountNumber.getText());
-		
 		QueueType queueName = getQueueName();
 		queueName.setQueueName(txtQueueType.getText());
 		queueName.setQueueDescription(txtQueueName.getText());
@@ -234,31 +231,9 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		txtProjectAccountNumber.setText(projectAccount.getProjectAccountNumber()==null? "":projectAccount.getProjectAccountNumber());
 		txtProjectAccountDescription.setText(projectAccount.getProjectAccountDescription()==null? "":projectAccount.getProjectAccountDescription());
 		
-//        txtWorkingDir.setText(getGramApplicationDescriptionType().getScratchWorkingDirectory());
-//        txtInputDir.setText(getGramApplicationDescriptionType().getInputDataDirectory());
-//        txtOutputDir.setText(getGramApplicationDescriptionType().getOutputDataDirectory());
-//        txtSTDIN.setText(getGramApplicationDescriptionType().getStandardInput());
-//        txtSTDOUT.setText(getGramApplicationDescriptionType().getStandardOutput());
-//        txtSTDERR.setText(getGramApplicationDescriptionType().getStandardError());
-//        tableModelChanging = true;
-//      todo handle other parameters previous sent in the Entry Now they are defined
-//        ShellApplicationDeploymentType.Env.Entry[] entry = getShellApplicationDescriptionType().getEnv().getEntryArray();
-//
-//        Map<String, String> env = null;
-//        for (int i = 0; i < entry.length; i++) {
-//            String key = getShellApplicationDescriptionType().getEnv().getEntryArray(i).getKey();
-//            String value = getShellApplicationDescriptionType().getEnv().getEntryArray(i).getValue();
-//            env.put(key, value);
-//        }
-
-//        while (defaultTableModel.getRowCount() > 0) {
-//            defaultTableModel.removeRow(0);
-//        }
-//        if (env != null) {
-//            for (String varName : env.keySet()) {
-//                defaultTableModel.addRow(new String[] { varName, env.get(varName) });
-//            }
-//        }
+		QueueType queueName = getQueueName();
+		txtQueueType.setText(queueName.getQueueName()==null?"":queueName.getQueueName());
+		txtQueueName.setText(queueName.getQueueDescription()==null?"":queueName.getQueueDescription());
     }
 
     public Registry getRegistry() {

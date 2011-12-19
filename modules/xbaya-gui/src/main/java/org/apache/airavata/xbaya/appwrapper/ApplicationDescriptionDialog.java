@@ -57,6 +57,7 @@ import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaLinkButton;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
+import org.apache.xmlbeans.XmlException;
 
 public class ApplicationDescriptionDialog extends JDialog implements ActionListener {
     /**
@@ -80,7 +81,10 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
     private XBayaEngine engine;
 	private JButton btnHostAdvanceOptions;
-
+	private boolean newDescritor;
+	private ApplicationDeploymentDescription originalDeploymentDescription;
+	private String originalHost; 
+	private String originalService;
 
     /**
      * Launch the application.
@@ -95,35 +99,48 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         }
     }
 
+    public ApplicationDescriptionDialog(XBayaEngine engine) {
+    	this(engine,true,null,null,null);
+    }
     /**
      * Create the dialog.
      */
-    public ApplicationDescriptionDialog(XBayaEngine engine) {
+    public ApplicationDescriptionDialog(XBayaEngine engine, boolean newDescritor, ApplicationDeploymentDescription originalDeploymentDescription, String originalHost, String originalService) {
+    	setNewDescritor(newDescritor);
+    	setOriginalDeploymentDescription(originalDeploymentDescription);
+    	setOriginalHost(originalHost);
+    	setOriginalService(originalService);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
-                String baseName = "Application";
-                int i = 1;
-                String defaultName = baseName + i;
-                try {
-                    List<ApplicationDeploymentDescription> applicationDeploymentDescriptions = getRegistry().searchDeploymentDescription(getServiceName(), getHostName());
-                    while (true) {
-                        boolean notFound = true;
-                        for (ApplicationDeploymentDescription deploymentDescription : applicationDeploymentDescriptions) {
-                            if (deploymentDescription.getType().getApplicationName().getStringValue().equals(defaultName)) {
-                                notFound = false;
-                                break;
-                            }
-                        }
-                        if (notFound) {
-                            break;
-                        }
-                        defaultName = baseName + (++i);
-                    }
-                } catch (Exception e) {
-                }
-                txtAppName.setText(defaultName);
-                setApplicationName(txtAppName.getText());
+                if (isNewDescritor()) {
+					String baseName = "Application";
+					int i = 1;
+					String defaultName = baseName + i;
+					try {
+						List<ApplicationDeploymentDescription> applicationDeploymentDescriptions = getRegistry()
+								.searchDeploymentDescription(getServiceName(),
+										getHostName());
+						while (true) {
+							boolean notFound = true;
+							for (ApplicationDeploymentDescription deploymentDescription : applicationDeploymentDescriptions) {
+								if (deploymentDescription.getType()
+										.getApplicationName().getStringValue()
+										.equals(defaultName)) {
+									notFound = false;
+									break;
+								}
+							}
+							if (notFound) {
+								break;
+							}
+							defaultName = baseName + (++i);
+						}
+					} catch (Exception e) {
+					}
+					txtAppName.setText(defaultName);
+					setApplicationName(txtAppName.getText());
+				}
             }
         });
         this.engine=engine;
@@ -141,8 +158,12 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     }
 
     private void iniGUI() {
-        setTitle("New Deployment Description");
-        setBounds(100, 100, 500, 520);
+        if (isNewDescritor()) {
+			setTitle("New Deployment Description");
+		}else{
+			setTitle("Update Deployment Description: "+getOriginalDeploymentDescription().getType().getApplicationName().getStringValue());
+		}
+		setBounds(100, 100, 500, 520);
         setModal(true);
         setLocationRelativeTo(null);
         GridPanel buttonPane = new GridPanel();
@@ -155,8 +176,20 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             lblError = new JLabel("");
             lblError.setForeground(Color.RED);
             buttonPane.add(lblError);
+            if (!isNewDescritor()){
+            	JButton resetButton = new JButton("Reset");
+                resetButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        loadData();
+                    }
+                });
+                buttonPane.add(resetButton);
+            }
             {
                 okButton = new JButton("Save");
+                if (!isNewDescritor()){
+                	okButton.setText("Update");
+                }
                 okButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         saveApplicationDescription();
@@ -394,6 +427,9 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         }
         setResizable(false);
         getRootPane().setDefaultButton(okButton);
+        if (!isNewDescritor()){
+        	loadData();
+        }
     }
 
     private void loadServiceDescriptions() {
@@ -410,6 +446,21 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         updateServiceName();
     }
 
+    private void loadData(){
+    	txtAppName.setText(getOriginalDeploymentDescription().getType().getApplicationName().getStringValue());
+    	setApplicationName(txtAppName.getText());
+    	txtExecPath.setText(getOriginalDeploymentDescription().getType().getExecutableLocation());
+    	setExecutablePath(txtExecPath.getText());
+    	txtTempDir.setText(getOriginalDeploymentDescription().getType().getScratchWorkingDirectory());
+    	setTempDir(txtTempDir.getText());
+
+    	cmbHostName.setSelectedItem(getOriginalHost());
+    	setHostName(cmbHostName.getSelectedItem().toString());
+    	cmbServiceName.setSelectedItem(getOriginalService());
+    	setServiceName(cmbServiceName.getSelectedItem().toString());
+    	txtAppName.setEditable(isNewDescritor());
+    }
+    
     private void loadHostDescriptions() {
         cmbHostName.removeAllItems();
         setHostName(null);
@@ -430,7 +481,15 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
     public ApplicationDeploymentDescription getShellApplicationDescription() {
         if(shellApplicationDescription == null){
-            shellApplicationDescription = new ApplicationDeploymentDescription();
+            if (isNewDescritor()) {
+				shellApplicationDescription = new ApplicationDeploymentDescription();
+			}else{
+				try {
+					shellApplicationDescription=ApplicationDeploymentDescription.fromXML(getOriginalDeploymentDescription().toXML());
+				} catch (XmlException e) {
+					//shouldn't happen (hopefully)
+				}
+			}
         }
         return shellApplicationDescription;
     }
@@ -477,7 +536,16 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
     public void saveApplicationDescription() {
         getRegistry().saveDeploymentDescription(getServiceName(), getHostName(), getShellApplicationDescription());
-        setApplicationDescCreated(true);
+        if (!isNewDescritor() && (!getServiceName().equals(getOriginalService()) || !getHostName().equals(getOriginalHost()))) {
+			try {
+				getRegistry().deleteDeploymentDescription(getOriginalService(),
+						getOriginalHost(),getOriginalDeploymentDescription().getType()
+						.getApplicationName().getStringValue());
+			} catch (RegistryException e) {
+				engine.getErrorWindow().error(e);
+			}
+		}
+		setApplicationDescCreated(true);
     }
 
     public boolean isApplicationDescCreated() {
@@ -519,8 +587,8 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         } catch (RegistryException e) {
             throw e;
         }
-        if (deploymentDescriptions.size() > 0) {
-            throw new Exception("Application descriptor with the given name already exists!!!");
+        if (deploymentDescriptions.size() > 0 && (isNewDescritor() || (!getServiceName().equals(getOriginalService()) || !getHostName().equals(getOriginalHost())))) {
+            throw new Exception("Application name already exists for the selected service & host!!!");
         }
 
         if (getExecutablePath() == null || getExecutablePath().trim().equals("")) {
@@ -610,5 +678,38 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     public void setRegistry(Registry registry) {
         this.registry = registry;
     }
+
+	public boolean isNewDescritor() {
+		return newDescritor;
+	}
+
+	public void setNewDescritor(boolean newDescritor) {
+		this.newDescritor = newDescritor;
+	}
+
+	public ApplicationDeploymentDescription getOriginalDeploymentDescription() {
+		return originalDeploymentDescription;
+	}
+
+	public void setOriginalDeploymentDescription(
+			ApplicationDeploymentDescription originalDeploymentDescription) {
+		this.originalDeploymentDescription = originalDeploymentDescription;
+	}
+
+	public String getOriginalService() {
+		return originalService;
+	}
+
+	public void setOriginalService(String originalService) {
+		this.originalService = originalService;
+	}
+
+	public String getOriginalHost() {
+		return originalHost;
+	}
+
+	public void setOriginalHost(String originalHost) {
+		this.originalHost = originalHost;
+	}
 
 }
