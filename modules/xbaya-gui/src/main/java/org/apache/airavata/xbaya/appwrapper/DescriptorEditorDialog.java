@@ -192,7 +192,7 @@ public class DescriptorEditorDialog extends JDialog {
     	switch (descriptorType){
 	    	case HOST:
 	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine);
-	    		hostDescriptionDialog.show();
+	    		hostDescriptionDialog.open();
 	    		if (hostDescriptionDialog.isHostCreated()){
 	    			loadDescriptors();
 	    		}

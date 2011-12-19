@@ -333,7 +333,7 @@ public class XBayaMenuItem {
                     try {
                         HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(
                                 engine);
-                        hostDescriptionDialog.show();
+                        hostDescriptionDialog.open();
                     } catch (Exception e1) {
                         engine.getErrorWindow().error(e1);
                     }

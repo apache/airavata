@@ -21,6 +21,19 @@
 
 package org.apache.airavata.xbaya.appwrapper;
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.regex.Pattern;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.Registry;
@@ -29,23 +42,14 @@ import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
-import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.util.regex.Pattern;
-
 public class HostDescriptionDialog extends JDialog {
 
-    private XBayaEngine engine;
+	private static final long serialVersionUID = -2910634296292034085L;
 
-    private XBayaDialog dialog;
+	private XBayaEngine engine;
 
     private XBayaTextField hostIdTextField;
 
@@ -56,8 +60,6 @@ public class HostDescriptionDialog extends JDialog {
     private XBayaTextField GridFTPTextField;
 
     private HostDescription hostDescription;
-
-    private GlobusHostType globusHostType;
 
     private boolean hostCreated = false;
 
@@ -73,7 +75,7 @@ public class HostDescriptionDialog extends JDialog {
 
     private String hostId;
 
-    JButton okButton = new JButton("OK");
+    private JButton okButton;
 
     /**
      * @param engine XBaya workflow engine
@@ -87,12 +89,13 @@ public class HostDescriptionDialog extends JDialog {
     /**
      * Displays the dialog.
      */
-    public void show() {
-        this.dialog.show();
+    public void open() {
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setVisible(true);
     }
 
-    public void hide() {
-        this.dialog.hide();
+    public void close() {
+    	setVisible(false);
     }
 
     private void ok() {
@@ -109,7 +112,7 @@ public class HostDescriptionDialog extends JDialog {
         }
 
         saveHostDescription();
-        hide();
+        close();
     }
 
 	private boolean isGlobusHostType() {
@@ -120,34 +123,18 @@ public class HostDescriptionDialog extends JDialog {
         ((GlobusHostType)hostDescription.getType()).addGlobusGateKeeperEndPoint(epr);
     }
 
-    private String[] getGlobusGateKeeperEPR(String epr) {
-        if (hostDescription.getType() instanceof GlobusHostType) {
-            return ((GlobusHostType)hostDescription.getType()).getGlobusGateKeeperEndPointArray();
-        } else {
-            return null;
-        }
-    }
-
-    private String getServiceName() {
-        return this.hostId;
-    }
-
     private void setGridFTPEPR(String epr) {
         ((GlobusHostType)hostDescription.getType()).addGridFTPEndPoint(epr);
-    }
-
-    private String[] getGridFTPEPR() {
-        if (hostDescription.getType() instanceof GlobusHostType) {
-            return ((GlobusHostType)hostDescription.getType()).getGridFTPEndPointArray();
-        } else {
-            return null;
-        }
     }
 
     /**
      * Initializes the GUI.
      */
     private void initGUI() {
+    	setBounds(100, 100, 400, 280);
+    	setModal(true);
+        setLocationRelativeTo(null);
+        setTitle("New Host Description");
         this.hostIdTextField = new XBayaTextField();
         this.hostAddressTextField = new XBayaTextField();
         this.globusGateKeeperTextField = new XBayaTextField();
@@ -169,10 +156,10 @@ public class HostDescriptionDialog extends JDialog {
             public void keyPressed(KeyEvent e) {
                 try {
                     validateDialog();
+                    setError(null);
                 } catch (Exception e1) {
                     setError(e1.getMessage());
                 }
-                setError(null);
             }
         });
         GridPanel infoPanel1 = new GridPanel();
@@ -197,30 +184,36 @@ public class HostDescriptionDialog extends JDialog {
         infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         SwingUtil.layoutToGrid(infoPanel.getSwingComponent(), 3, 1, SwingUtil.WEIGHT_NONE, 0);
 
+        GridPanel buttonPanel = new GridPanel();
+        lblError = new JLabel();
+        lblError.setForeground(Color.RED);
+        buttonPanel.add(lblError);
+        okButton = new JButton("OK");
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ok();
             }
         });
 
+        buttonPanel.add(okButton);
+
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                hide();
+                close();
             }
         });
-
-        GridPanel buttonPanel = new GridPanel();
-        lblError = new JLabel("xcf");
-        lblError.setForeground(Color.RED);
-        buttonPanel.add(lblError);
-
-        buttonPanel.add(okButton);
+        
         buttonPanel.add(cancelButton);
         buttonPanel.layout(1,3,SwingUtil.WEIGHT_NONE,0);
         buttonPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
-        this.dialog = new XBayaDialog(this.engine, "New Host Description", infoPanel, buttonPanel);
-        this.dialog.setDefaultButton(okButton);
+        
+        getContentPane().add(infoPanel.getSwingComponent());
+        getContentPane().add(buttonPanel.getSwingComponent());
+        
+        SwingUtil.layoutToGrid(getContentPane(), 2, 1, 0, 0);
+        
+        getRootPane().setDefaultButton(okButton);
         chkGobusHost.setSelected(false);
         updateGlobusHostTypeAndControls();
     }
