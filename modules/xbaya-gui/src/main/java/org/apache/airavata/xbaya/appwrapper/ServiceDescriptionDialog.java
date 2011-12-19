@@ -328,9 +328,7 @@ public class ServiceDescriptionDialog extends JDialog {
     	txtServiceName.setText(getOrginalServiceDescription().getType().getName());
 		setServiceName(txtServiceName.getText());
 
-    	if (!isNewDescription()){
-    		txtServiceName.setEditable(false);
-    	}
+		txtServiceName.setEditable(isNewDescription());
     	ignoreTableChanges=true;
     	while(defaultTableModel.getRowCount()>0){
     		defaultTableModel.removeRow(0);
