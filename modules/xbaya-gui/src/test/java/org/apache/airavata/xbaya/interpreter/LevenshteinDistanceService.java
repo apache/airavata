@@ -22,7 +22,7 @@
 package org.apache.airavata.xbaya.interpreter;
 
 public class LevenshteinDistanceService {
-    public static int computeDistance(String sequence1, String sequence2) {
+    public int computeDistance(String sequence1, String sequence2) {
         int[][] distance = new int[sequence1.length() + 1][sequence2.length() + 1];
 
         for (int i = 0; i <= sequence1.length(); i++) {
@@ -41,11 +41,8 @@ public class LevenshteinDistanceService {
          return distance[sequence1.length()][sequence2.length()];
     }
 
-    private static int min(int a, int b, int c) {
+    private int min(int a, int b, int c) {
         return Math.min(Math.min(a, b), c);
     }
 
-    public static void main(String[] args) {
-        System.out.println(computeDistance("abcccdsfgsfdg", "fq"));
-    }
 }
