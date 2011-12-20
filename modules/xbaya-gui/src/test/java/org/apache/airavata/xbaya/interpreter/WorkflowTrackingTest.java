@@ -21,25 +21,15 @@
 package org.apache.airavata.xbaya.interpreter;
 
 
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 import junit.framework.Assert;
-import junit.framework.TestCase;
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.xbaya.interpreter.utils.ConfigKeys;
 import org.apache.airavata.xbaya.interpreter.utils.TestUtilServer;
 import org.apache.axiom.soap.SOAPEnvelope;
-import org.apache.axis2.AxisFault;
-
-import org.apache.airavata.wsmg.client.msgbox.MessagePuller;
-import org.apache.axis2.addressing.EndpointReference;
-
-import java.io.IOException;
-import java.util.Properties;
-
-import java.io.*;
-
 import org.junit.Test;
+
+import java.util.Properties;
 
 public class WorkflowTrackingTest implements ConsumerNotificationHandler{
 
