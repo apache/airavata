@@ -39,8 +39,6 @@ public class CrossProductWorkflowTest {
         URL systemResource = this.getClass().getClassLoader().getSystemResource("foreach-cross-product-levenshtein-distance.xwf");
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
         ListenerManager manager = WorkflowTestUtils.axis2ServiceStarter();
-//        ((InputNode) workflow.getGraph().getNode("Input")).setDefaultValue("abc");
-//        ((InputNode) workflow.getGraph().getNode("Input_2")).setDefaultValue("def");
         WorkflowInterpreter interpretor = new WorkflowInterpreter(WorkflowTestUtils.getConfiguration(), UUID.randomUUID().toString(),
                 workflow, "NA", "NA",true);
         interpretor.scheduleDynamically();
