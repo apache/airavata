@@ -149,7 +149,7 @@ public class Workflow implements Cloneable {
 
     private QName qname;
 
-    private XBayaExecutionState executionState = XBayaExecutionState.NONE;
+    private volatile XBayaExecutionState executionState = XBayaExecutionState.NONE;
 
     private WsdlDefinitions tridentWSDL;
 
