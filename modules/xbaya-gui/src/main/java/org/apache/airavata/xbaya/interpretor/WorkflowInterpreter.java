@@ -21,25 +21,6 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
-import java.awt.Color;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.xml.namespace.QName;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
@@ -49,27 +30,17 @@ import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.amazonEC2.gui.AmazonCredential;
 import org.apache.airavata.xbaya.component.Component;
-import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.SubWorkflowComponent;
 import org.apache.airavata.xbaya.component.amazon.InstanceComponent;
 import org.apache.airavata.xbaya.component.amazon.TerminateInstanceComponent;
 import org.apache.airavata.xbaya.component.dynamic.DynamicComponent;
 import org.apache.airavata.xbaya.component.dynamic.DynamicInvoker;
-import org.apache.airavata.xbaya.component.system.ConstantComponent;
-import org.apache.airavata.xbaya.component.system.EndForEachComponent;
-import org.apache.airavata.xbaya.component.system.EndifComponent;
-import org.apache.airavata.xbaya.component.system.ForEachComponent;
-import org.apache.airavata.xbaya.component.system.IfComponent;
-import org.apache.airavata.xbaya.component.system.InputComponent;
-import org.apache.airavata.xbaya.component.system.MemoComponent;
-import org.apache.airavata.xbaya.component.system.OutputComponent;
-import org.apache.airavata.xbaya.component.system.S3InputComponent;
+import org.apache.airavata.xbaya.component.system.*;
 import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
 import org.apache.airavata.xbaya.graph.ControlPort;
 import org.apache.airavata.xbaya.graph.DataPort;
-import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
 import org.apache.airavata.xbaya.graph.dynamic.BasicTypeMapping;
@@ -79,14 +50,7 @@ import org.apache.airavata.xbaya.graph.impl.EdgeImpl;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.xbaya.graph.subworkflow.SubWorkflowNodeGUI;
-import org.apache.airavata.xbaya.graph.system.ConstantNode;
-import org.apache.airavata.xbaya.graph.system.EndForEachNode;
-import org.apache.airavata.xbaya.graph.system.EndifNode;
-import org.apache.airavata.xbaya.graph.system.ForEachNode;
-import org.apache.airavata.xbaya.graph.system.IfNode;
-import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.graph.system.OutputNode;
-import org.apache.airavata.xbaya.graph.util.GraphUtil;
+import org.apache.airavata.xbaya.graph.system.*;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.apache.airavata.xbaya.gui.Cancelable;
@@ -113,12 +77,24 @@ import org.apache.airavata.xbaya.wf.Workflow;
 import org.ietf.jgss.GSSCredential;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.impl.XmlElementWithViewsImpl;
-
 import xsul.lead.LeadContextHeader;
 import xsul.lead.LeadResourceMapping;
 import xsul5.XmlConstants;
 import xsul5.wsdl.WsdlPort;
 import xsul5.wsdl.WsdlService;
+
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.awt.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.*;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class WorkflowInterpreter {
 
@@ -1293,7 +1269,7 @@ public class WorkflowInterpreter {
 			for (Iterator<String> iterator = inputValues.iterator(); iterator
 					.hasNext();) {
 				String input = iterator.next();
-				final String gfacURLString = this.engine.getConfiguration()
+				final String gfacURLString = this.configuration
 						.getGFacURL().toString();
 
 				if (middleNode instanceof WSNode) {
