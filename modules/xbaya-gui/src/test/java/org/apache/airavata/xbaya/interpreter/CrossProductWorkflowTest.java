@@ -36,7 +36,7 @@ import java.util.UUID;
 public class CrossProductWorkflowTest {
     @Test
     public void testScheduleDynamically() throws IOException, URISyntaxException, XBayaException {
-        URL systemResource = this.getClass().getClassLoader().getSystemResource("foreach-cross-product-levenshtein-distance.xwf");
+        URL systemResource = this.getClass().getClassLoader().getSystemResource("ForeachCrossProductLevenshteinDistance.xwf");
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
         ListenerManager manager = WorkflowTestUtils.axis2ServiceStarter();
         WorkflowInterpreter interpretor = new WorkflowInterpreter(WorkflowTestUtils.getConfiguration(), UUID.randomUUID().toString(),
