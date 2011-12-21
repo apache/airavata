@@ -24,7 +24,7 @@ import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.interpreter.EchoService;
 import org.apache.airavata.xbaya.interpreter.LevenshteinDistanceService;
-import org.apache.airavata.xbaya.interpreter.MathService;
+import org.apache.airavata.xbaya.interpreter.ComplexMathService;
 import org.apache.airavata.xbaya.interpretor.HeaderConstants;
 import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorSkeleton;
@@ -95,7 +95,7 @@ public class WorkflowTestUtils implements HeaderConstants{
             AxisService distanceService = AxisService.createService(LevenshteinDistanceService.class.getName(),
                     configContext.getAxisConfiguration());
             configContext.deployService(distanceService);
-            AxisService mathService = AxisService.createService(MathService.class.getName(),
+            AxisService mathService = AxisService.createService(ComplexMathService.class.getName(),
                     configContext.getAxisConfiguration());
             configContext.deployService(mathService);
 
