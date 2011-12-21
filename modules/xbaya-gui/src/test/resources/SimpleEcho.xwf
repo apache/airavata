@@ -162,13 +162,13 @@
     &lt;/wsdl:binding>
     &lt;wsdl:service name="EchoService">
         &lt;wsdl:port name="EchoServiceHttpSoap11Endpoint" binding="ns:EchoServiceSoap11Binding">
-            &lt;soap:address location="http://localhost:6060/axis2/services/EchoService" />
+            &lt;soap:address location="http://localhost:8080/axis2/services/EchoService" />
         &lt;/wsdl:port>
         &lt;wsdl:port name="EchoServiceHttpSoap12Endpoint" binding="ns:EchoServiceSoap12Binding">
-            &lt;soap12:address location="http://localhost:6060/axis2/services/EchoService" />
+            &lt;soap12:address location="http://localhost:8080/axis2/services/EchoService" />
         &lt;/wsdl:port>
         &lt;wsdl:port name="EchoServiceHttpEndpoint" binding="ns:EchoServiceHttpBinding">
-            &lt;http:address location="http://localhost:6060/axis2/services/EchoService" />
+            &lt;http:address location="http://localhost:8080/axis2/services/EchoService" />
         &lt;/wsdl:port>
     &lt;/wsdl:service>
 &lt;/wsdl:definitions></xwf:wsdl>
