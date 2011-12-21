@@ -20,18 +20,25 @@
 */
 package org.apache.airavata.registry.api.impl;
 
+import com.sun.source.tree.AssertTree;
 import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.jackrabbit.core.TransientRepository;
 import org.junit.Assert;
 import org.junit.Test;
 
 import javax.jcr.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.fail;
 
 public class JCRRegistryDeleteTest {
     @Test
-       public void testJCRRegistryDelete() {
+       public void testHostDescriptionDelete() {
            try {
                /*
                 * Create database
@@ -54,9 +61,53 @@ public class JCRRegistryDeleteTest {
 
                HostDescription hostR = jcrRegistry.getHostDescription(hostId);
                Assert.assertNull(hostR);
+
+
            } catch (Exception e) {
                e.printStackTrace();
                fail(e.getMessage());
            }
        }
+
+    @Test
+    public void testServiceDescriptionDelete() {
+        try {
+            /*
+            * Create database
+            */
+            JCRRegistry jcrRegistry = new JCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
+                    "admin", "admin", null);
+
+            ServiceDescription serv = new ServiceDescription();
+            serv.getType().setName("SimpleEcho");
+
+            InputParameterType input = InputParameterType.Factory.newInstance();
+            input.setParameterName("echo_input");
+            List<InputParameterType> inputList = new ArrayList<InputParameterType>();
+            inputList.add(input);
+            InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList
+                    .size()]);
+
+            OutputParameterType output = OutputParameterType.Factory.newInstance();
+            output.setParameterName("echo_output");
+            List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
+            outputList.add(output);
+            OutputParameterType[] outputParamList = outputList
+                    .toArray(new OutputParameterType[outputList.size()]);
+            serv.getType().setInputParametersArray(inputParamList);
+            serv.getType().setOutputParametersArray(outputParamList);
+
+            /*
+             * Save to registry
+             */
+            jcrRegistry.saveServiceDescription(serv);
+
+            jcrRegistry.deleteServiceDescription(serv.getType().getName());
+            jcrRegistry.getServiceDescription(serv.getType().getName());
+        } catch (Exception e) {
+            junit.framework.Assert.assertTrue(true);
+            return;
+        }
+        Assert.assertTrue(false);
+    }
 }
