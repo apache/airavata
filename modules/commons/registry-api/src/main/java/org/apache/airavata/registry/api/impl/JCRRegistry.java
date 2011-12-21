@@ -200,31 +200,31 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         }
     }
 
-    public List<HostDescription> getServiceLocation(String serviceId) {
-        Session session = null;
-        ArrayList<HostDescription> result = new ArrayList<HostDescription>();
-        try {
-            session = getSession();
-            Node node = getServiceNode(session);
-            Node serviceNode = node.getNode(serviceId);
-            if (serviceNode.hasProperty(LINK_NAME)) {
-                Property prop = serviceNode.getProperty(LINK_NAME);
-                Value[] vals = prop.getValues();
-                for (Value val : vals) {
-                    Node host = session.getNodeByIdentifier(val.getString());
-                    Property hostProp = host.getProperty(XML_PROPERTY_NAME);
-                    result.add(HostDescription.fromXML(hostProp.getString()));
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            e.printStackTrace();
-            // TODO propagate
-        } finally {
-            closeSession(session);
-        }
-        return result;
-    }
+//    public List<HostDescription> getServiceLocation(String serviceId) {
+//        Session session = null;
+//        ArrayList<HostDescription> result = new ArrayList<HostDescription>();
+//        try {
+//            session = getSession();
+//            Node node = getServiceNode(session);
+//            Node serviceNode = node.getNode(serviceId);
+//            if (serviceNode.hasProperty(LINK_NAME)) {
+//                Property prop = serviceNode.getProperty(LINK_NAME);
+//                Value[] vals = prop.getValues();
+//                for (Value val : vals) {
+//                    Node host = session.getNodeByIdentifier(val.getString());
+//                    Property hostProp = host.getProperty(XML_PROPERTY_NAME);
+//                    result.add(HostDescription.fromXML(hostProp.getString()));
+//                }
+//            }
+//        } catch (Exception e) {
+//            System.out.println(e);
+//            e.printStackTrace();
+//            // TODO propagate
+//        } finally {
+//            closeSession(session);
+//        }
+//        return result;
+//    }
 
     public void deleteServiceDescription(String serviceId) throws ServiceDescriptionRetrieveException {
         Session session = null;

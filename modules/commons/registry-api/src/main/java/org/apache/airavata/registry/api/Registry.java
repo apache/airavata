@@ -45,7 +45,7 @@ public interface Registry {
      * @param serviceId
      * @return List of HostDescription having the service
      */
-    public List<HostDescription> getServiceLocation(String serviceId);
+//    public List<HostDescription> getServiceLocation(String serviceId);
 
     /**
      * Retrieve a service description i.e. name, description, parameters
