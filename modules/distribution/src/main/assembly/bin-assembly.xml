@@ -269,6 +269,20 @@
 				<include>*.aar</include>
 			</includes>
 		</fileSet>
+        <fileSet>
+			<directory>../../samples/complex-math-service/target</directory>
+			<outputDirectory>standalone-server/repository/services</outputDirectory>
+			<includes>
+				<include>*.aar</include>
+			</includes>
+		</fileSet>
+        <fileSet>
+			<directory>../../samples/levenshtein-distance-service/target</directory>
+			<outputDirectory>standalone-server/repository/services</outputDirectory>
+			<includes>
+				<include>*.aar</include>
+			</includes>
+		</fileSet>
 		<fileSet>
 			<directory>../commons/gfac-schema/target</directory>
 			<outputDirectory>standalone-server/lib</outputDirectory>
