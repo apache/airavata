@@ -21,6 +21,7 @@
 package org.apache.airavata.registry.api.impl;
 
 import junit.framework.Assert;
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -29,12 +30,15 @@ import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.StringParameterType;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.jcr.RepositoryException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class JCRRegistrySearchTest {
     @Before
@@ -109,12 +113,14 @@ public class JCRRegistrySearchTest {
         */
         jcrRegistry.saveHostDescription(host);
         jcrRegistry.saveHostDescription(host1);
+
         jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host
                 .getType().getHostName(), appDesc);
         jcrRegistry.saveDeploymentDescription(serv1.getType().getName(), host
                         .getType().getHostName(), appDesc);
         jcrRegistry.saveDeploymentDescription(serv1.getType().getName(), host1
                         .getType().getHostName(), appDesc);
+
         jcrRegistry.saveServiceDescription(serv);
         jcrRegistry.saveServiceDescription(serv1);
         jcrRegistry.deployServiceOnHost(serv.getType().getName(), host
@@ -146,24 +152,31 @@ public class JCRRegistrySearchTest {
         Assert.assertTrue(true);
     }
 
-//     @Test
-//    public void searchDeploymentDescriptorTest() {
-//        try {
-//            JCRRegistry jcrRegistry = new JCRRegistry(null,
-//                   "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-//                   "admin", null);
-//            jcrRegistry.searchDeploymentDescription();
-//            List<ServiceDescription> simpleEcho = jcrRegistry.searchServiceDescription("SimpleEchoSearch");
-//            if(simpleEcho.size() == 0){
-//                Assert.assertTrue(false);
-//            }else{
-//                Assert.assertEquals("SimpleEchoSearch",simpleEcho.get(0).getType().getName());
-//            }
-//        } catch (RepositoryException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        } catch (RegistryException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        }
-//        Assert.assertTrue(true);
-//    }
+     @Test
+    public void searchDeploymentDescriptorTest() {
+        try {
+            JCRRegistry jcrRegistry = new JCRRegistry(null,
+                   "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
+                   "admin", null);
+            Map<ApplicationDeploymentDescription,String> applicationDeploymentDescriptionStringMap = jcrRegistry.searchDeploymentDescription();
+            if(applicationDeploymentDescriptionStringMap.size() == 0){
+                Assert.assertTrue(false);
+            }else{
+                Assert.assertEquals(3,applicationDeploymentDescriptionStringMap.size());
+            }
+        } catch (RepositoryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (RegistryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        Assert.assertTrue(true);
+    }
+
+     @After
+    public void cleanup(){
+        File jackrabbit = new File(".");
+           String s = jackrabbit.getAbsolutePath() + File.separator +
+                    "jackrabbit";
+           IOUtil.deleteDirectory(new File(s));
+    }
 }
