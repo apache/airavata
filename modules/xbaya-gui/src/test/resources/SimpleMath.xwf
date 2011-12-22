@@ -627,13 +627,13 @@
     &lt;/wsdl:binding>
     &lt;wsdl:service name="MathService">
         &lt;wsdl:port name="MathServiceHttpSoap11Endpoint" binding="ns:MathServiceSoap11Binding">
-            &lt;soap:address location="http://localhost:8080/axis2/services/MathService/" />
+            &lt;soap:address location="http://localhost:8080/axis2/services/ComplexMathService/" />
         &lt;/wsdl:port>
         &lt;wsdl:port name="MathServiceHttpSoap12Endpoint" binding="ns:MathServiceSoap12Binding">
-            &lt;soap12:address location="http://localhost:8080/axis2/services/MathService/" />
+            &lt;soap12:address location="http://localhost:8080/axis2/services/ComplexMathService/" />
         &lt;/wsdl:port>
         &lt;wsdl:port name="MathServiceHttpEndpoint" binding="ns:MathServiceHttpBinding">
-            &lt;http:address location="http://localhost:8080/axis2/services/MathService/" />
+            &lt;http:address location="http://localhost:8080/axis2/services/ComplexMathService/" />
         &lt;/wsdl:port>
     &lt;/wsdl:service>
 &lt;/wsdl:definitions></xwf:wsdl>
