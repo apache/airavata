@@ -20,16 +20,12 @@
 */
 package org.apache.airavata.registry.api.impl;
 
-import com.sun.source.tree.AssertTree;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.jackrabbit.core.TransientRepository;
 import org.junit.Assert;
 import org.junit.Test;
-
-import javax.jcr.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
