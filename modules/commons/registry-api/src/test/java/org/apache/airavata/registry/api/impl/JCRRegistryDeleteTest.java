@@ -20,13 +20,16 @@
 */
 package org.apache.airavata.registry.api.impl;
 
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,5 +108,13 @@ public class JCRRegistryDeleteTest {
             return;
         }
         Assert.assertTrue(false);
+    }
+
+        @After
+    public void cleanup(){
+        File jackrabbit = new File(".");
+           String s = jackrabbit.getAbsolutePath() + File.separator +
+                   "modules" + File.separator + "registry-api" + File.separator +"jackrabbit";
+           IOUtil.deleteDirectory(new File(s));
     }
 }

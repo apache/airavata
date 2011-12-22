@@ -23,9 +23,11 @@ package org.apache.airavata.registry.api.impl;
 
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -33,6 +35,7 @@ import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.xmlbeans.XmlString;
+import org.junit.After;
 import org.junit.Test;
 
 public class JCRRegistryTest {
@@ -226,6 +229,13 @@ public class JCRRegistryTest {
             e.printStackTrace();
             fail(e.getMessage());
         }
+    }
+       @After
+    public void cleanup(){
+        File jackrabbit = new File(".");
+           String s = jackrabbit.getAbsolutePath() + File.separator +
+                   "modules" + File.separator + "registry-api" + File.separator +"jackrabbit";
+           IOUtil.deleteDirectory(new File(s));
     }
     
 }
