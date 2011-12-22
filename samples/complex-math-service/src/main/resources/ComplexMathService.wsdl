@@ -121,13 +121,13 @@
     </wsdl:binding>
     <wsdl:service name="ComplexMathService">
         <wsdl:port name="ComplexMathServiceHttpSoap11Endpoint" binding="ns:ComplexMathServiceSoap11Binding">
-            <soap:address location="http://localhost:8080/axis2/services/ComplexMathService.ComplexMathServiceHttpSoap11Endpoint/"/>
+            <soap:address location="http://localhost:8080/axis2/services/ComplexMathService/"/>
         </wsdl:port>
         <wsdl:port name="ComplexMathServiceHttpSoap12Endpoint" binding="ns:ComplexMathServiceSoap12Binding">
-            <soap12:address location="http://localhost:8080/axis2/services/ComplexMathService.ComplexMathServiceHttpSoap12Endpoint/"/>
+            <soap12:address location="http://localhost:8080/axis2/services/ComplexMathService/"/>
         </wsdl:port>
         <wsdl:port name="ComplexMathServiceHttpEndpoint" binding="ns:ComplexMathServiceHttpBinding">
-            <http:address location="http://localhost:8080/axis2/services/ComplexMathService.ComplexMathServiceHttpEndpoint/"/>
+            <http:address location="http://localhost:8080/axis2/services/ComplexMathService/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
