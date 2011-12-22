@@ -69,13 +69,13 @@
     </wsdl:binding>
     <wsdl:service name="LevenshteinDistanceService">
         <wsdl:port name="LevenshteinDistanceServiceHttpSoap11Endpoint" binding="ns:LevenshteinDistanceServiceSoap11Binding">
-            <soap:address location="http://localhost:8080/axis2/services/LevenshteinDistanceService.LevenshteinDistanceServiceHttpSoap11Endpoint/"/>
+            <soap:address location="http://localhost:8080/axis2/services/LevenshteinDistanceService/"/>
         </wsdl:port>
         <wsdl:port name="LevenshteinDistanceServiceHttpSoap12Endpoint" binding="ns:LevenshteinDistanceServiceSoap12Binding">
-            <soap12:address location="http://localhost:8080/axis2/services/LevenshteinDistanceService.LevenshteinDistanceServiceHttpSoap12Endpoint/"/>
+            <soap12:address location="http://localhost:8080/axis2/services/LevenshteinDistanceService/"/>
         </wsdl:port>
         <wsdl:port name="LevenshteinDistanceServiceHttpEndpoint" binding="ns:LevenshteinDistanceServiceHttpBinding">
-            <http:address location="http://localhost:8080/axis2/services/LevenshteinDistanceService.LevenshteinDistanceServiceHttpEndpoint/"/>
+            <http:address location="http://localhost:8080/axis2/services/LevenshteinDistanceService/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
