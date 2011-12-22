@@ -475,11 +475,11 @@
 				<module>modules/ws-messenger</module>
 				<module>modules/xbaya-gui</module>
 				<module>modules/commons</module>
-				<module>modules/distribution</module>
-                <module>modules/test-suite</module>
                 <module>samples/simple-math-service</module>
                 <module>samples/complex-math-service</module>
                 <module>samples/levenshtein-distance-service</module>
+                <module>modules/distribution</module>
+                <module>modules/test-suite</module>
             </modules>
 		</profile>
 		<profile>
