@@ -318,6 +318,13 @@
 				<include>*.jar</include>
 			</includes>
 		</fileSet>
+        <fileSet>
+			<directory>../xbaya-gui/src/test/resources/</directory>
+			<outputDirectory>samples/workflows</outputDirectory>
+			<includes>
+				<include>*.xwf</include>
+			</includes>
+		</fileSet>
 		<fileSet>
 			<directory>../gfac-axis2/src/main/resources/</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
