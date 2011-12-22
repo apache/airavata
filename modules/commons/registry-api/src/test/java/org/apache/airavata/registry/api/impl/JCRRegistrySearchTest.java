@@ -152,7 +152,7 @@ public class JCRRegistrySearchTest {
         Assert.assertTrue(true);
     }
 
-     @Test
+    @Test
     public void searchDeploymentDescriptorTest() {
         try {
             JCRRegistry jcrRegistry = new JCRRegistry(null,
@@ -163,6 +163,70 @@ public class JCRRegistrySearchTest {
                 Assert.assertTrue(false);
             }else{
                 Assert.assertEquals(3,applicationDeploymentDescriptionStringMap.size());
+            }
+        } catch (RepositoryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (RegistryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        Assert.assertTrue(true);
+    }
+
+    @Test
+    public void searchDeploymentDescriptorWithAllTest() {
+        try {
+            JCRRegistry jcrRegistry = new JCRRegistry(null,
+                   "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
+                   "admin", null);
+
+            List<ApplicationDeploymentDescription> applicationDeploymentDescriptions =
+                    jcrRegistry.searchDeploymentDescription("SimpleEchoSearch", "localhostsearch", "EchoLocalSearch");
+            if((applicationDeploymentDescriptions).size() == 0){
+                Assert.assertTrue(false);
+            }else{
+                Assert.assertEquals(1,applicationDeploymentDescriptions.size());
+            }
+        } catch (RepositoryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (RegistryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        Assert.assertTrue(true);
+    }
+
+    @Test
+    public void searchDeploymentDescriptorWithServiceNameTest() {
+        try {
+            JCRRegistry jcrRegistry = new JCRRegistry(null,
+                   "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
+                   "admin", null);
+            Map<HostDescription, List<ApplicationDeploymentDescription>> simpleEchoSearch =
+                    jcrRegistry.searchDeploymentDescription("MathService");
+            if((simpleEchoSearch).size() == 0){
+                Assert.assertTrue(false);
+            }else{
+                Assert.assertEquals(2,simpleEchoSearch.size());
+            }
+        } catch (RepositoryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (RegistryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        Assert.assertTrue(true);
+    }
+
+     @Test
+    public void searchDeploymentDescriptorWithServiceAndHostTest() {
+        try {
+            JCRRegistry jcrRegistry = new JCRRegistry(null,
+                   "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
+                   "admin", null);
+            List<ApplicationDeploymentDescription> applicationDeploymentDescriptions =
+                    jcrRegistry.searchDeploymentDescription("MathService", "localhostsearch");
+            if((applicationDeploymentDescriptions).size() == 0){
+                Assert.assertTrue(false);
+            }else{
+                Assert.assertEquals(1,applicationDeploymentDescriptions.size());
             }
         } catch (RepositoryException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
