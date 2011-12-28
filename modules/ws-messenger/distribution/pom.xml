@@ -67,6 +67,7 @@
 							<descriptors>
 								<descriptor>src/main/assembly/bin-assembly.xml</descriptor>
 							</descriptors>
+							<attach>false</attach>
 						</configuration>
 					</execution>
 				</executions>
