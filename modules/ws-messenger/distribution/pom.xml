@@ -21,7 +21,7 @@
 	<artifactId>ws-messenger-distribution</artifactId>
 	<name>distribution</name>
 	<url>http://incubator.apache.org/airavata</url>
-
+	<packaging>pom</packaging>
 	<build>
 		<plugins>
 			<plugin>
