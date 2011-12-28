@@ -39,16 +39,6 @@
 			<outputDirectory>standalone-server/lib</outputDirectory>
 			<includes>
                 <include>*.jar</include>
-                <include>activation-LICENSE.txt</include>
-                <include>jalopy-LICENSE.txt</include>
-                <include>jaxb-api-LICENSE.txt</include>
-                <include>jaxb-impl-LICENSE.txt</include>
-                <include>jaxb-xjc-LICENSE.txt</include>
-                <include>jaxen-LICENSE.txt</include>
-                <include>jibx-bind-LICENSE.txt</include>
-                <include>jibx-run-LICENSE.txt</include>
-                <include>mail-LICENSE.txt</include>
-                <include>wsdl4j-LICENSE.txt</include>
 			</includes>
 		</fileSet>
 		<fileSet>
