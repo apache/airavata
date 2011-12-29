@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor 
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor
 	license agreements. See the NOTICE file distributed with this work for additional 
 	information regarding copyright ownership. The ASF licenses this file to 
 	you under the Apache License, Version 2.0 (theÏ "License"); you may not use 
@@ -12,13 +12,19 @@
 	language governing permissions and limitations under the License. -->
 
 
+<!-- This file was auto-generated from WSDL -->
+<!-- by the Apache Axis2 version: 1.4  Built on : Apr 26, 2008 (06:24:30 EDT) -->
 <serviceGroup>
-    <service name="XBayaService">
-        <Description>XBaya Service</Description>
+    <service name="WorkflowInterpretor">
         <messageReceivers>
-		<messageReceiver mep="http://www.w3.org/2004/08/wsdl/in-only" class="org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver" />
-		<messageReceiver  mep="http://www.w3.org/2004/08/wsdl/in-out"  class="org.apache.axis2.rpc.receivers.RPCMessageReceiver"/>
-	</messageReceivers>
-	<parameter locked="true" name="ServiceClass">org.apache.airavata.xbaya.interpretor.WorkflowInterpretorSkeleton</parameter>
+            <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="org.apache.airavata.xbaya.interpretor.WorkflowInterpretorMessageReceiverInOut"/>
+        </messageReceivers>
+        <parameter name="ServiceClass">org.apache.airavata.xbaya.interpretor.WorkflowInterpretorSkeleton</parameter>
+        <parameter name="useOriginalwsdl">true</parameter>
+        <parameter name="modifyUserWSDLPortAddress">true</parameter>
+        <operation name="launchWorkflow" mep="http://www.w3.org/ns/wsdl/in-out" namespace="http://xbaya.extreme.indiana.edu">
+            <actionMapping>urn:launchWorkflow</actionMapping>
+            <outputActionMapping>urn:launchWorkflowResponse</outputActionMapping>
+        </operation>
     </service>
 </serviceGroup>
