@@ -435,10 +435,10 @@ public class RunMenuItem  implements EventListener{
 			public void run() {
 				while(true){
 					stopWorkflowButton.setEnabled(isWorkflowRunning());
-					if (!isWorkflowRunning()){
-						pauseMonitorButton.setEnabled(false);
-						resumeMonitorButton.setEnabled(false);
-					}
+//					if (!isWorkflowRunning()){
+//						pauseMonitorButton.setEnabled(false);
+//						resumeMonitorButton.setEnabled(false);
+//					}
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
