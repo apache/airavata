@@ -6,7 +6,7 @@ The Apache Software Foundation (http://www.apache.org/).
 
 =========================================================================
 This product includes unmodified, binary redistributions of software (XPP3,
-weps-beans, pegasuswebservice, mapReduce-service-client, xsul)
+weps-beans, pegasuswebservice, mapReduce-service-client, xsul, xutil, wsmg)
 developed by Indiana University (http://www.extreme.indiana.edu/).
 
 =========================================================================
