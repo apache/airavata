@@ -158,6 +158,7 @@
 				<version>${axis2.version}</version>
 				<configuration>
 					<servicesXmlFile>src/main/resources/services.xml</servicesXmlFile>
+                    <wsdlFile>src/main/resources/WorkflowInterpretor.wsdl</wsdlFile>
 				</configuration>
 				<executions>
 					<execution>

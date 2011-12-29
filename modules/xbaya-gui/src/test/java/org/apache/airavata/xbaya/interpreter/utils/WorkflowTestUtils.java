@@ -69,7 +69,7 @@ public class WorkflowTestUtils implements HeaderConstants{
         configurations[5] = new NameValue();
         configurations[5].setName(HEADER_ELEMENT_BROKER);
         configurations[5].setValue(XBayaConstants.DEFAULT_BROKER_URL.toString());
-        return WorkflowInterpretorSkeleton.getConfiguration(configurations);
+        return (new WorkflowInterpretorSkeleton()).getConfiguration(configurations);
     }
 
     public static String readWorkflow(URL url) throws IOException, URISyntaxException {
