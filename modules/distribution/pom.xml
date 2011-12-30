@@ -256,11 +256,6 @@
 			<version>2.5.0</version>
 		</dependency>
 		<dependency>
-			<groupId>xmlbeans-ogce</groupId>
-			<artifactId>jsr173_api</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
 			<groupId>xbaya</groupId>
 			<artifactId>pegasuswebservice</artifactId>
 			<version>1.0</version>
