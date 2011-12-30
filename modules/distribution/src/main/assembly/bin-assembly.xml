@@ -397,7 +397,6 @@
 				<include>xmlbeans:xbean</include>
 				<include>xmlbeans-ogce:jsr173_api</include>
 				<include>xbaya:pegasuswebservice</include>
-				<include>swing:layout</include>
 				<include>com.amazonaws:aws-java-sdk</include>
 				<include>amazon:MapReduce.Service.Client</include>
 				<include>net.java.dev.jets3t:jets3t</include>

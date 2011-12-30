@@ -327,11 +327,6 @@
 			<artifactId>axis2-transport-http</artifactId>
 			<version>${axis2.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>swing</groupId>
-			<artifactId>layout</artifactId>
-			<version>1.0.4</version>
-		</dependency>
 
 		<!-- AMAZON STUFFS -->
 		<dependency>
