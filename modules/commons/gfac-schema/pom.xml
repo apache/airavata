@@ -124,9 +124,9 @@
 				</executions>
 				<inherited>true</inherited>
 				<configuration>
-					<schemaDirectory>schemas</schemaDirectory>
+					<schemaDirectory>src/main/resources/schemas</schemaDirectory>
 					<xmlConfigs>
-						<xmlConfig implementation="java.io.File">schemas/gfac-schemas.xsdconfig</xmlConfig>
+						<xmlConfig implementation="java.io.File">src/main/resources/schemas/gfac-schemas.xsdconfig</xmlConfig>
 					</xmlConfigs>
 					<outputJar>target/generated/${project.artifactId}-${project.version}.jar</outputJar>
 				</configuration>
