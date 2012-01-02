@@ -48,12 +48,10 @@ public class XBayaClient {
     private static final MLogger log = MLogger.getLogger();
 
     public static final String GFAC = "gfac";
-    public static final String XREGISTRY = "xregistry";
     public static final String PROXYSERVER = "proxyserver";
     public static final String MSGBOX = "msgbox";
     public static final String BROKER = "broker";
     public static final String DEFAULT_GFAC_URL = "gfac.url";
-    public static final String DEFAULT_XREGISTRY_URL = "xregistry.url";
     public static final String DEFAULT_MYPROXY_SERVER = "myproxy.url";
     public static final String DEFAULT_MESSAGE_BOX_URL = "messagebox.url";
     public static final String DEFAULT_BROKER_URL = "messagebroker.url";
@@ -62,7 +60,7 @@ public class XBayaClient {
     public static final String WORKFLOWSERVICEURL = "xbaya.service.url";
     private static String workflow = "";
 
-    private NameValue[] configurations = new NameValue[8];
+    private NameValue[] configurations = new NameValue[7];
 
     public XBayaClient(NameValue[] configuration) {
         configurations = configuration;
@@ -78,32 +76,28 @@ public class XBayaClient {
         configurations[0].setValue(properties.getProperty(DEFAULT_GFAC_URL));
 
         configurations[1] = new NameValue();
-        configurations[1].setName(XREGISTRY);
-        configurations[1].setValue(properties.getProperty(DEFAULT_XREGISTRY_URL));
+        configurations[1].setName(PROXYSERVER);
+        configurations[1].setValue(properties.getProperty(DEFAULT_MYPROXY_SERVER));
 
         configurations[2] = new NameValue();
-        configurations[2].setName(PROXYSERVER);
-        configurations[2].setValue(properties.getProperty(DEFAULT_MYPROXY_SERVER));
+        configurations[2].setName(MSGBOX);
+        configurations[2].setValue(properties.getProperty(DEFAULT_MESSAGE_BOX_URL));
 
         configurations[3] = new NameValue();
-        configurations[3].setName(MSGBOX);
-        configurations[3].setValue(properties.getProperty(DEFAULT_MESSAGE_BOX_URL));
+        configurations[3].setName(BROKER);
+        configurations[3].setValue(properties.getProperty(DEFAULT_BROKER_URL));
 
         configurations[4] = new NameValue();
-        configurations[4].setName(BROKER);
-        configurations[4].setValue(properties.getProperty(DEFAULT_BROKER_URL));
+        configurations[4].setName(MYPROXYUSERNAME);
+        configurations[4].setValue(properties.getProperty(MYPROXYUSERNAME));
 
         configurations[5] = new NameValue();
-        configurations[5].setName(MYPROXYUSERNAME);
-        configurations[5].setValue(properties.getProperty(MYPROXYUSERNAME));
+        configurations[5].setName(MYPROXYPASS);
+        configurations[5].setValue(properties.getProperty(MYPROXYPASS));
 
         configurations[6] = new NameValue();
-        configurations[6].setName(MYPROXYPASS);
-        configurations[6].setValue(properties.getProperty(MYPROXYPASS));
-
-        configurations[7] = new NameValue();
-        configurations[7].setName(WORKFLOWSERVICEURL);
-        configurations[7].setValue(properties.getProperty(WORKFLOWSERVICEURL));
+        configurations[6].setName(WORKFLOWSERVICEURL);
+        configurations[6].setValue(properties.getProperty(WORKFLOWSERVICEURL));
 
     }
 
@@ -178,8 +172,8 @@ public class XBayaClient {
     public String runWorkflow(String topic){
 		String worflowoutput= null;
 		try {
-			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(configurations[5].getValue());
-		    worflowoutput = stub.launchWorkflow(workflow, topic, configurations[6].getValue(), configurations[7].getValue(), null,
+			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(configurations[4].getValue());
+		    worflowoutput = stub.launchWorkflow(workflow, topic, configurations[5].getValue(), configurations[6].getValue(), null,
 					configurations);
 		    log.info("Workflow output : " + worflowoutput);
 		} catch (AxisFault e) {
@@ -195,8 +189,8 @@ public class XBayaClient {
         public String runWorkflow(String topic, NameValue[] inputs){
 		String worflowoutput= null;
 		try {
-			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(configurations[7].getValue());
-		    worflowoutput = stub.launchWorkflow(workflow, topic, configurations[6].getValue(), configurations[5].getValue(), inputs,
+			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(configurations[6].getValue());
+		    worflowoutput = stub.launchWorkflow(workflow, topic, configurations[5].getValue(), configurations[4].getValue(), inputs,
 					configurations);
 		    log.info("Workflow output : " + worflowoutput);
 		} catch (AxisFault e) {
