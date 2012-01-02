@@ -73,10 +73,10 @@
 				</executions>
 				<inherited>true</inherited>
 				<configuration>
-					<schemaDirectory>schemas</schemaDirectory>
+					<schemaDirectory>src/main/resources/schemas</schemaDirectory>
 					<outputJar>target/airavata-workflowtrackingtypes-${project.version}.jar</outputJar>
 					<xmlConfigs>
-						<xmlConfig implementation="java.io.File">schemas/workflow_tracking_types.xsdconfig</xmlConfig>
+						<xmlConfig implementation="java.io.File">src/main/resources/schemas/workflow_tracking_types.xsdconfig</xmlConfig>
 					</xmlConfigs>
 				</configuration>
 			</plugin>
