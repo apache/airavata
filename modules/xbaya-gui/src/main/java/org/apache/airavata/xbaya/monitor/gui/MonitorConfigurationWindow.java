@@ -129,6 +129,9 @@ public class MonitorConfigurationWindow {
         }
 
         this.configuration.set(brokerURL, topic, pull, messageBoxURL);
+        this.engine.getConfiguration().setMessageBoxURL(messageBoxURL);
+        this.engine.getConfiguration().setBrokerURL(brokerURL);
+        this.engine.getConfiguration().setTopic(topic);
         hide();
     }
 
