@@ -25,6 +25,13 @@ package org.apache.airavata.xbaya.interpretor;
  *  WorkflowInterpretorStub java implementation
  */
 
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.Constants;
+import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+
 public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
     protected org.apache.axis2.description.AxisOperation[] _operations;
 
@@ -87,14 +94,19 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
         // To populate AxisService
         populateAxisService();
         populateFaults();
-
+        MultiThreadedHttpConnectionManager httpConnectionManager = new MultiThreadedHttpConnectionManager();
+        httpConnectionManager.getParams().setMaxTotalConnections(10000);
+        httpConnectionManager.getParams().setMaxConnectionsPerHost(HostConfiguration.ANY_HOST_CONFIGURATION, 100);
+        httpConnectionManager.getParams().setDefaultMaxConnectionsPerHost(200);
+        HttpClient httpClient = new HttpClient(httpConnectionManager);
         _serviceClient = new org.apache.axis2.client.ServiceClient(configurationContext, _service);
 
         configurationContext = _serviceClient.getServiceContext().getConfigurationContext();
-
+        configurationContext.setProperty(HTTPConstants.REUSE_HTTP_CLIENT, true);
+        configurationContext.setProperty(HTTPConstants.CACHED_HTTP_CLIENT, httpClient);
+        configurationContext.setProperty(HTTPConstants.AUTO_RELEASE_CONNECTION, true);
         _serviceClient.getOptions().setTo(new org.apache.axis2.addressing.EndpointReference(targetEndpoint));
         _serviceClient.getOptions().setUseSeparateListener(useSeparateListener);
-
     }
 
     /**
@@ -161,6 +173,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
             // adding SOAP soap_headers
             _serviceClient.addHeadersToEnvelope(env);
+            _serviceClient.getOptions().setTimeOutInMilliSeconds(90000000);
             // set the message context with that soap envelope
             _messageContext.setEnvelope(env);
 
@@ -179,8 +192,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
             return getLaunchWorkflowResponse_return((WorkflowInterpretorStub.LaunchWorkflowResponse) object);
 
-        } catch (org.apache.axis2.AxisFault f) {
-
+        } catch (AxisFault f) {
             org.apache.axiom.om.OMElement faultElt = f.getDetail();
             if (faultElt != null) {
                 if (faultExceptionNameMap.containsKey(faultElt.getQName())) {
@@ -195,8 +207,8 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
                         java.lang.Class messageClass = java.lang.Class.forName(messageClassName);
                         java.lang.Object messageObject = fromOM(faultElt, messageClass, null);
                         java.lang.reflect.Method m = exceptionClass.getMethod("setFaultMessage",
-                                new java.lang.Class[] { messageClass });
-                        m.invoke(ex, new java.lang.Object[] { messageObject });
+                                new java.lang.Class[]{messageClass});
+                        m.invoke(ex, new java.lang.Object[]{messageObject});
 
                         throw new java.rmi.RemoteException(ex.getMessage(), ex);
                     } catch (java.lang.ClassCastException e) {
@@ -231,6 +243,8 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
                 throw f;
             }
         } finally {
+            _serviceClient.cleanup();
+            _serviceClient.cleanupTransport();
             _messageContext.getTransportOut().getSender().cleanup(_messageContext);
         }
     }
