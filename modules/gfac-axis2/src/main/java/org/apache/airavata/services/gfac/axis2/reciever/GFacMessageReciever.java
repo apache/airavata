@@ -119,6 +119,7 @@ public class GFacMessageReciever implements MessageReceiver {
             try {
                 log.debug("invoking Invoke operation");
                 processInvokeOperation(axisRequestMsgCtx);
+                log.info(axisRequestMsgCtx.getEnvelope().getBody().getFirstElement().toStringWithConsume());
                 log.info("Invoke operation invoked !!");
             } catch (Exception e) {
                 throw new AxisFault("Error Invoking the service", e);
@@ -197,7 +198,7 @@ public class GFacMessageReciever implements MessageReceiver {
             if (gridMyproxyRepository==null){
             	gssContext.setMyproxyPasswd((String)messageContext.getConfigurationContext().getProperty(MYPROXY_PASS));
                 gssContext.setMyproxyUserName((String)messageContext.getConfigurationContext().getProperty(MYPROXY_USER));
-                gssContext.setMyproxyLifetime(Integer.parseInt(messageContext.getConfigurationContext().getProperty(MYPROXY_LIFE).toString()));
+                gssContext.setMyproxyLifetime(Integer.parseInt((String)messageContext.getConfigurationContext().getProperty(MYPROXY_LIFE)));
                 gssContext.setMyproxyServer((String)messageContext.getConfigurationContext().getProperty(MYPROXY_SERVER));	
             }else{
 	            gssContext.setMyproxyPasswd(gridMyproxyRepository.getPassword());
