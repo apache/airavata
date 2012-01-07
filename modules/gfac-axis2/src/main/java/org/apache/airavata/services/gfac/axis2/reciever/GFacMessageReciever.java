@@ -119,7 +119,7 @@ public class GFacMessageReciever implements MessageReceiver {
             try {
                 log.debug("invoking Invoke operation");
                 processInvokeOperation(axisRequestMsgCtx);
-                log.info(axisRequestMsgCtx.getEnvelope().getBody().getFirstElement().toStringWithConsume());
+                log.info(axisRequestMsgCtx.getEnvelope().getBody().getFirstElement().toString());
                 log.info("Invoke operation invoked !!");
             } catch (Exception e) {
                 throw new AxisFault("Error Invoking the service", e);
@@ -148,7 +148,6 @@ public class GFacMessageReciever implements MessageReceiver {
              * <input_param_name2>value</input_param_name2> <input_param_name3>value</input_param_name3> </invoke>
              */
             final OMElement invoke = messageContext.getEnvelope().getBody().getFirstElement();
-
             /*
              * We assume that output likes <invokeResponse> <output_param_name1>value</output_param_name1>
              * <output_param_name2>value</output_param_name2> <output_param_name3>value</output_param_name3>
@@ -197,9 +196,9 @@ public class GFacMessageReciever implements MessageReceiver {
             SecurityContextDocument.SecurityContext.GridMyproxyRepository gridMyproxyRepository = parse.getSecurityContext().getGridMyproxyRepository();
             if (gridMyproxyRepository==null){
             	gssContext.setMyproxyPasswd((String)messageContext.getConfigurationContext().getProperty(MYPROXY_PASS));
-                gssContext.setMyproxyUserName((String)messageContext.getConfigurationContext().getProperty(MYPROXY_USER));
-                gssContext.setMyproxyLifetime(Integer.parseInt((String)messageContext.getConfigurationContext().getProperty(MYPROXY_LIFE)));
-                gssContext.setMyproxyServer((String)messageContext.getConfigurationContext().getProperty(MYPROXY_SERVER));	
+                gssContext.setMyproxyUserName((String) messageContext.getConfigurationContext().getProperty(MYPROXY_USER));
+                gssContext.setMyproxyLifetime(Integer.parseInt((String) messageContext.getConfigurationContext().getProperty(MYPROXY_LIFE)));
+                gssContext.setMyproxyServer((String)messageContext.getConfigurationContext().getProperty(MYPROXY_SERVER));
             }else{
 	            gssContext.setMyproxyPasswd(gridMyproxyRepository.getPassword());
 	            gssContext.setMyproxyUserName(gridMyproxyRepository.getUsername());
