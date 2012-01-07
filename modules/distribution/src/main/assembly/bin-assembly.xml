@@ -326,7 +326,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../gfac-axis2/src/main/resources/</directory>
+			<directory>../distribution/src/resources/conf</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
 			<includes>
 				<include>repository.properties</include>
