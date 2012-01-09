@@ -70,21 +70,21 @@ public class RegistryDataService extends DataServiceChain {
             /*
              * Input and Output Directory
              */
-            if (appDesc.getInputDataDirectory() == null) {
+            if (appDesc.getInputDataDirectory() == null || "".equals(appDesc.getInputDataDirectory())) {
                 appDesc.setInputDataDirectory(appDesc.getStaticWorkingDirectory() + File.separator + "inputData");
             }
-            if (appDesc.getOutputDataDirectory() == null) {
+            if (appDesc.getOutputDataDirectory() == null || "".equals(appDesc.getOutputDataDirectory())) {
                 appDesc.setOutputDataDirectory(appDesc.getStaticWorkingDirectory() + File.separator + "outputData");
             }
 
             /*
              * Stdout and Stderr for Shell
              */
-            if (appDesc.getStandardOutput() == null) {
+            if (appDesc.getStandardOutput() == null || "".equals(appDesc.getStandardOutput())) {
                 appDesc.setStandardOutput(appDesc.getStaticWorkingDirectory() + File.separator
                         + appDesc.getApplicationName().getStringValue() + ".stdout");
             }
-            if (appDesc.getStandardError() == null) {
+            if (appDesc.getStandardError() == null || "".equals(appDesc.getStandardError())) {
                 appDesc.setStandardError(appDesc.getStaticWorkingDirectory() + File.separator
                         + appDesc.getApplicationName().getStringValue() + ".stderr");
             }
