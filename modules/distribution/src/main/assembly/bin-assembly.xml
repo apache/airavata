@@ -332,6 +332,13 @@
 				<include>repository.properties</include>
 			</includes>
 		</fileSet>
+        <fileSet>
+			<directory>../distribution/src/resources/conf</directory>
+			<outputDirectory>standalone-server/conf</outputDirectory>
+			<includes>
+				<include>xbaya.properties</include>
+			</includes>
+		</fileSet>
 		<fileSet>
 			<directory>../../samples</directory>
 			<outputDirectory>samples</outputDirectory>
