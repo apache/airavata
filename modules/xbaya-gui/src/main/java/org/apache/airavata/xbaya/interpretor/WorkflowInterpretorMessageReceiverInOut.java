@@ -22,6 +22,8 @@ package org.apache.airavata.xbaya.interpretor;
 
 
 public class WorkflowInterpretorMessageReceiverInOut extends org.apache.axis2.receivers.AbstractInOutMessageReceiver{
+    public static final String MYPROXY_USER = "myproxy.user";
+    public static final String MYPROXY_PASS = "myproxy.password";
      public void invokeBusinessLogic(org.apache.axis2.context.MessageContext msgContext, org.apache.axis2.context.MessageContext newMsgContext)
         throws org.apache.axis2.AxisFault{
 
@@ -62,9 +64,9 @@ public class WorkflowInterpretorMessageReceiverInOut extends org.apache.axis2.re
                                 ,
                                 getTopic(wrappedParam)
                                 ,
-                                getPassword(wrappedParam)
+                                (String) msgContext.getConfigurationContext().getProperty(MYPROXY_PASS)
                                 ,
-                                getUsername(wrappedParam)
+                                (String) msgContext.getConfigurationContext().getProperty(MYPROXY_USER)
                                 ,
                                 getInputs(wrappedParam)
                                 ,
