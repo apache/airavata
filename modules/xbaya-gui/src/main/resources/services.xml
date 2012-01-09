@@ -15,7 +15,7 @@
 <!-- This file was auto-generated from WSDL -->
 <!-- by the Apache Axis2 version: 1.4  Built on : Apr 26, 2008 (06:24:30 EDT) -->
 <serviceGroup>
-    <service name="WorkflowInterpretor">
+    <service name="WorkflowInterpretor" class="org.apache.airavata.xbaya.interpretor.WorkflowInterpretorSkeleton">
         <messageReceivers>
             <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="org.apache.airavata.xbaya.interpretor.WorkflowInterpretorMessageReceiverInOut"/>
         </messageReceivers>

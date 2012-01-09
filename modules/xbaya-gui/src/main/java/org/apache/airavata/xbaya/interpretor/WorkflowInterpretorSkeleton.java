@@ -21,9 +21,12 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
@@ -35,18 +38,34 @@ import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.description.AxisService;
+import org.apache.axis2.engine.ServiceLifeCycle;
 
 /**
  * WorkflowInterpretorSkeleton java skeleton for the axisService
  */
-public class WorkflowInterpretorSkeleton {
+public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 
 	public static final String PROXYSERVER = "proxyserver";
 	public static final String MSGBOX = "msgbox";
 	public static final String GFAC = "gfac";
 	public static final String DSC = "dsc";
 	public static final String BROKER = "broker";
+    public static final String MYPROXY_USER = "myproxy.user";
+    public static final String MYPROXY_PASS = "myproxy.password";
 
+    public void startUp(ConfigurationContext configctx, AxisService service) {
+        URL url = this.getClass().getClassLoader().getResource("xbaya.properties");
+        Properties properties = new Properties();
+        try {
+            properties.load(url.openStream());
+            configctx.setProperty(MYPROXY_PASS, properties.get(MYPROXY_PASS));
+            configctx.setProperty(MYPROXY_USER, properties.get(MYPROXY_USER));
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
 	/**
 	 * Auto generated method signature
 	 *
@@ -166,4 +185,7 @@ public class WorkflowInterpretorSkeleton {
 
 		return defaultVal;
 	}
+     public void shutDown(ConfigurationContext configctx, AxisService service) {
+
+    }
 }
