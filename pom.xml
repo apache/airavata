@@ -17,10 +17,10 @@
 	</prerequisites>
 
 	<parent>
-		<groupId>org.apache</groupId>
-		<artifactId>apache</artifactId>
-		<version>10</version>
-		<relativePath />
+		<groupId>org.apache.airavata</groupId>
+		<artifactId>airavata-master</artifactId>
+		<version>0.2-incubating-SNAPSHOT</version>
+		<relativePath>../../airavata-master-pom/branches/0.2-incubating-SNAPSHOT/pom.xml</relativePath>
 	</parent>
 
 	<groupId>org.apache.airavata</groupId>
