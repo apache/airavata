@@ -87,7 +87,7 @@ public class GramRSLGenerator {
             jobAttr.setMaxWallTime(29);
         }
 
-        if (app.getStandardInput() != null && "".equals(app.getStandardInput())) {
+        if (app.getStandardInput() != null && !"".equals(app.getStandardInput())) {
             jobAttr.setStdin(app.getStandardInput());
         } else {
             // input parameter
