@@ -104,9 +104,11 @@ public class GramRSLGenerator {
             log.info("Setting number of procs to " + app.getCpuCount());
             jobAttr.setNumProcs(app.getCpuCount());
         }
-        if (app.getProjectAccount().getProjectAccountNumber() != null) {
-            log.info("Setting project to " + app.getProjectAccount().getProjectAccountNumber());
-            jobAttr.setProject(app.getProjectAccount().getProjectAccountNumber());
+        if (app.getProjectAccount() != null) {
+            if (app.getProjectAccount().getProjectAccountNumber() != null) {
+                log.info("Setting project to " + app.getProjectAccount().getProjectAccountNumber());
+                jobAttr.setProject(app.getProjectAccount().getProjectAccountNumber());
+            }
         }
         if(app.getQueue() != null){
         if (app.getQueue().getQueueName() != null) {
