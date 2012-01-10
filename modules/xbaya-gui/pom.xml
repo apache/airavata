@@ -236,11 +236,6 @@
 		</dependency>
 		<dependency>
 			<groupId>lead-security</groupId>
-			<artifactId>jce</artifactId>
-			<version>jdk13-131</version>
-		</dependency>
-		<dependency>
-			<groupId>lead-security</groupId>
 			<artifactId>cryptix-asn1</artifactId>
 			<version>versionless</version>
 		</dependency>
