@@ -751,8 +751,8 @@ public class WorkflowInterpreter {
 				}
 
 				invoker = new WorkflowInvokerWrapperForGFacInvoker(
-						portTypeQName, gfacURLString, this.configuration
-								.getMessageBoxURL().toString(), leadCtxHeader,
+						portTypeQName, gfacURLString,
+                        this.engine.getMonitor().getConfiguration().getMessageBoxURL().toString(), leadCtxHeader,
 						this.notifier.createServiceNotificationSender(node
 								.getID()));
 
@@ -760,7 +760,7 @@ public class WorkflowInterpreter {
 				invoker = new GenericInvoker(portTypeQName,
 						WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
 								.getComponent().getWSDL()), node.getID(),
-						this.configuration.getMessageBoxURL().toString(),
+						this.engine.getMonitor().getConfiguration().getMessageBoxURL().toASCIIString(),
 						gfacURLString, this.notifier);
 			}
 
@@ -1326,7 +1326,7 @@ public class WorkflowInterpreter {
 			for (Iterator<String> iterator = listOfValues.iterator(); iterator
 					.hasNext();) {
 				String input = iterator.next();
-				final String gfacURLString = this.engine.getConfiguration()
+				final String gfacURLString = this.configuration
 						.getGFacURL().toString();
 
 				if (middleNode instanceof WSNode) {
