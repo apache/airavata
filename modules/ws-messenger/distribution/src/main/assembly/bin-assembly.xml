@@ -105,7 +105,7 @@
 		-->
 
 		<fileSet>
-			<directory>resources</directory>
+			<directory>src/main/resources</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
 			<includes>
 				<include>*properties*</include>
@@ -121,7 +121,7 @@
 		-->
 
 		<fileSet>
-			<directory>resources/bin</directory>
+			<directory>src/main/resources/bin</directory>
 			<outputDirectory>standalone-server/bin</outputDirectory>
 			<includes>
 				<include>**/*</include>
@@ -226,7 +226,7 @@
 		-->
 
 		<fileSet>
-			<directory>resources</directory>
+			<directory>src/main/resources</directory>
 			<outputDirectory>gui</outputDirectory>
 			<includes>
 				<include>*sh</include>
