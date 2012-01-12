@@ -161,6 +161,11 @@ public class MyProxyDialog {
             hide();
             this.myProxyLoader.load();
         }
+        this.engine.getConfiguration().setMyProxyLifetime(lifetime);
+        this.engine.getConfiguration().setMyProxyPassphrase(passphrase);
+        this.engine.getConfiguration().setMyProxyPort(port);
+        this.engine.getConfiguration().setMyProxyServer(server);
+        this.engine.getConfiguration().setMyProxyUsername(username);
     }
 
     /**
