@@ -21,7 +21,7 @@
     <includeBaseDirectory>true</includeBaseDirectory> 
     <baseDirectory>${archieve.name}-${version}</baseDirectory>
     <formats>
-        <!--<format>tar.gz</format>  //uncomment,if tar.gz archive needed-->
+        <format>tar.gz</format>  //uncomment,if tar.gz archive needed
         <format>zip</format>
     </formats>
 
