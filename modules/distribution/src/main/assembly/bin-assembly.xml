@@ -81,7 +81,7 @@
 
 		<!-- ********************** copy wsmg.broker and messagebox property files ********************** -->
 		<fileSet>
-			<directory>../ws-messenger/distribution/resources</directory>
+			<directory>../ws-messenger/distribution/src/main/resources</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
 			<includes>
 				<include>*properties*</include>
@@ -91,7 +91,7 @@
 
 		<!-- ********************** replace bin directory ********************** -->
 		<fileSet>
-			<directory>../ws-messenger/distribution/resources/bin</directory>
+			<directory>../ws-messenger/distribution/src/main/resources/bin</directory>
 			<outputDirectory>standalone-server/bin</outputDirectory>
 			<includes>
 				<include>**/*</include>
@@ -172,7 +172,7 @@
 
 		<!-- ********************** copy gui start up script ********************** -->
 		<fileSet>
-			<directory>../ws-messenger/distribution/resources</directory>
+			<directory>../ws-messenger/distribution/src/main/resources</directory>
 			<outputDirectory>gui</outputDirectory>
 			<includes>
 				<include>*sh</include>
@@ -203,7 +203,7 @@
 		</fileSet>
 		<!-- ********************** copy binary licenses ********************** -->
 		<fileSet>
-			<directory>resources/</directory>
+			<directory>src/main/resources/</directory>
 			<outputDirectory>.</outputDirectory>
 			<includes>
 				<include>LICENSE</include>
@@ -242,7 +242,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>resources/bin</directory>
+			<directory>src/main/resources/bin</directory>
 			<outputDirectory>bin</outputDirectory>
 			<includes>
 				<include>*.sh</include>
@@ -326,14 +326,14 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>../distribution/src/resources/conf</directory>
+			<directory>../distribution/src/main/resources/conf</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
 			<includes>
 				<include>repository.properties</include>
 			</includes>
 		</fileSet>
         <fileSet>
-			<directory>../distribution/src/resources/conf</directory>
+			<directory>../distribution/src/main/resources/conf</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
 			<includes>
 				<include>xbaya.properties</include>
@@ -347,7 +347,7 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>resources/conf</directory>
+			<directory>src/main/resources/conf</directory>
 			<outputDirectory>standalone-server/conf</outputDirectory>
 			<includes>
 				<include>axis2.xml</include>
