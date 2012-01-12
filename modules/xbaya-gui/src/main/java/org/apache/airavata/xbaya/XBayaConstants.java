@@ -163,7 +163,7 @@ public class XBayaConstants {
      * WorkflowInterpreter URL
      */
     public static final URI DEFAULT_WORKFLOW_INTERPRETER_URL = URI
-            .create("http://localhost:8080/axis2/services/XBayaService?wsdl");
+            .create("http://localhost:8080/axis2/services/WorkflowInterpretor?wsdl");
 
     /**
      * 
