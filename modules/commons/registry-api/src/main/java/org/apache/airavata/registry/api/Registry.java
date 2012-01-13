@@ -240,4 +240,8 @@ public interface Registry {
     public List<WorkflowIOData> searchWorkflowInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx);
 
     public List<WorkflowIOData> searchWorkflowOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx);
+
+    public boolean saveWorkflowStatus(String experimentId,String status);
+
+    public String getWorkflowStatus(String experimentId);
 }
