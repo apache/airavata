@@ -90,6 +90,7 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
     public static final String WORKFLOW_DATA = "experiments";
     public static final String INPUT = "Input";
     public static final String OUTPUT = "Output";
+    public static final String WORKFLOW_STATUS_PROPERTY = "Status";
 
     private Repository repository;
     private Credentials credentials;
@@ -951,6 +952,7 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         return saveWorkflowIO(workflowOutputData, OUTPUT);
     }
 
+
     private boolean saveWorkflowIO(WorkflowIOData workflowOutputData, String type) {
         Session session = null;
         boolean isSaved = true;
@@ -1029,5 +1031,42 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
 
     public Repository getRepository() {
         return repository;
+    }
+
+    public boolean saveWorkflowStatus(String experimentId,String status){
+        Session session = null;
+        boolean isSaved = true;
+        try {
+            session = getSession();
+            Node workflowDataNode = getOrAddNode(
+                    getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOW_DATA),
+                            experimentId),experimentId);
+            workflowDataNode.setProperty(WORKFLOW_STATUS_PROPERTY,status);
+            session.save();
+        } catch (Exception e) {
+            isSaved = false;
+            e.printStackTrace();
+        } finally {
+            closeSession(session);
+        }
+        return isSaved;
+    }
+
+    public String getWorkflowStatus(String experimentId){
+       Session session = null;
+        boolean isSaved = true;
+        String property = null;
+        try {
+            session = getSession();
+            Node workflowDataNode = getOrAddNode(getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOW_DATA),
+                            experimentId),experimentId);
+            property = workflowDataNode.getProperty(WORKFLOW_STATUS_PROPERTY).getString();
+            session.save();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeSession(session);
+        }
+        return property;
     }
 }
