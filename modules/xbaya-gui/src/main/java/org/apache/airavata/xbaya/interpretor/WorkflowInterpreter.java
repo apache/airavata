@@ -102,9 +102,12 @@ public class WorkflowInterpreter {
 
 	private static final int SERVER_MODE = 2;
 
-	private static final int MAXIMUM_RETRY_TIME = 2;
+    private static final int MAXIMUM_RETRY_TIME = 2;
 
-	private XBayaEngine engine;
+    public static final String WORKFLOW_STARTED = "Workflow Started";
+    public static final String WORKFLOW_FINISHED = "Workflow Finished";
+
+    private XBayaEngine engine;
 
 	private Map<Node, Integer> retryCounter = new HashMap<Node, Integer>();
 
@@ -154,7 +157,6 @@ public class WorkflowInterpreter {
 	public WorkflowInterpreter(XBayaConfiguration configuration, String topic,
 			Workflow workflow, String username, String password) {
 		this.configuration = configuration;
-
 		// this.isSubWorkflow = isSubWorkflow;
 		this.username = username;
 		this.password = password;
@@ -249,7 +251,7 @@ public class WorkflowInterpreter {
 			}
 
 			this.getWorkflow().setExecutionState(XBayaExecutionState.RUNNING);
-
+            this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowStatus(this.topic, WORKFLOW_STARTED);
 			ArrayList<Node> inputNodes = this.getInputNodesDynamically();
 			Object[] values = new Object[inputNodes.size()];
 			String[] keywords = new String[inputNodes.size()];
@@ -510,6 +512,9 @@ public class WorkflowInterpreter {
 			}
 			this.notifier.sendingPartialResults(outputValues.toArray(),
 					outputKeywords.toArray(new String[outputKeywords.size()]));
+            System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
+            this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowStatus(this.topic, WORKFLOW_FINISHED);
+            System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
 		}
 	}
 
@@ -1776,4 +1781,7 @@ public class WorkflowInterpreter {
 		return workflow;
 	}
 
+    public void setActOnProvenance(boolean actOnProvenance) {
+        this.actOnProvenance = actOnProvenance;
+    }
 }
