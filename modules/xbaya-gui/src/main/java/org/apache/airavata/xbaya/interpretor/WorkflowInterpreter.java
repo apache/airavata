@@ -765,11 +765,21 @@ public class WorkflowInterpreter {
 								.getID()));
 
 			} else {
-				invoker = new GenericInvoker(portTypeQName,
+                if(this.mode == GUI_MODE){
+                    //if user configure the msgBox url using the UI we have to pick the latest one which
+                    //set by the UI
+				    invoker = new GenericInvoker(portTypeQName,
 						WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
 								.getComponent().getWSDL()), node.getID(),
 						this.engine.getMonitor().getConfiguration().getMessageBoxURL().toASCIIString(),
 						gfacURLString, this.notifier);
+                }else{
+                    invoker = new GenericInvoker(portTypeQName,
+						WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
+								.getComponent().getWSDL()), node.getID(),
+						this.configuration.getMessageBoxURL().toASCIIString(),
+						gfacURLString, this.notifier);
+                }
 			}
 
 		} else {
