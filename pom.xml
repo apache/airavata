@@ -16,12 +16,18 @@
 		<maven>3.0</maven>
 	</prerequisites>
 
-	<parent>
+	<!--parent>
 		<groupId>org.apache.airavata</groupId>
 		<artifactId>airavata-master</artifactId>
 		<version>0.2-incubating-SNAPSHOT</version>
 		<relativePath>../airavata-master-pom/trunk/pom.xml</relativePath>
-	</parent>
+	</parent-->
+	<parent>
+    		<groupId>org.apache</groupId>
+    		<artifactId>apache</artifactId>
+    		<version>10</version>
+    		<relativePath />
+  	</parent>
 
 	<groupId>org.apache.airavata</groupId>
 	<artifactId>airavata</artifactId>
@@ -334,7 +340,8 @@
 			<id>ogce.m2.all</id>
 			<url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
 			<snapshots>
-				<updatePolicy>daily</updatePolicy>
+				<!--updatePolicy>daily</updatePolicy-->
+				<enabled>false</enabled>
 			</snapshots>
 		</repository>
 		<repository>
