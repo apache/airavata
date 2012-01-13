@@ -104,7 +104,7 @@ public class WorkflowInterpreter {
 
     private static final int MAXIMUM_RETRY_TIME = 2;
 
-    public static final String WORKFLOW_STARTED = "Workflow Started";
+    public static final String WORKFLOW_STARTED = "Workflow Running";
     public static final String WORKFLOW_FINISHED = "Workflow Finished";
 
     private XBayaEngine engine;
@@ -135,7 +135,7 @@ public class WorkflowInterpreter {
 
 	private LeadResourceMapping resourceMapping;
 
-	private boolean actOnProvenance;
+	private boolean actOnProvenance = false;
 
 	private PredicatedTaskRunner provenanceWriter;
 
@@ -195,6 +195,8 @@ public class WorkflowInterpreter {
                 }
                 this.mode = SERVER_MODE;
                 this.retryFailed = false;
+            provenanceWriter = new PredicatedTaskRunner(1);
+
         }
 
 	/**
@@ -205,7 +207,7 @@ public class WorkflowInterpreter {
 	 * @param topic
 	 */
 	public WorkflowInterpreter(XBayaEngine engine, String topic) {
-		this(engine, topic, engine.getWorkflow(), false, false);
+		this(engine, topic, engine.getWorkflow(), false, engine.getConfiguration().isCollectProvenance());
 	}
 
 	/**
@@ -297,15 +299,15 @@ public class WorkflowInterpreter {
 						// recalculate the execution stack
 					}
 
-					// boolean nodeOutputLoadedFromProvenance = false;
-					// if (this.actOnProvenance) {
-					// nodeOutputLoadedFromProvenance = readProvenance(node);
-					// } else {
-					// writeProvenanceLater(node);
-					// }
-					// if (!nodeOutputLoadedFromProvenance) {
-					executeDynamically(node);
-					// }
+//					boolean nodeOutputLoadedFromProvenance = false;
+					if (this.actOnProvenance) {
+//					    nodeOutputLoadedFromProvenance = readProvenance(node);
+//					} else {
+					    writeProvenanceLater(node);
+					}
+//					if (!nodeOutputLoadedFromProvenance) {
+					    executeDynamically(node);
+//					}
 					if (this.getWorkflow().getExecutionState() == XBayaExecutionState.STEP) {
 						this.getWorkflow().setExecutionState(
 								XBayaExecutionState.PAUSED);
@@ -961,6 +963,8 @@ public class WorkflowInterpreter {
 														systemInvoker, counter,
 														inputNumbers);
 											} catch (XBayaException e) {
+
+
 												WorkflowInterpreter.this.engine
 														.getErrorWindow()
 														.error(e);

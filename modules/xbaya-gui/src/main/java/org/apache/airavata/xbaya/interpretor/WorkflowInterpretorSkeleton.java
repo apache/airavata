@@ -33,6 +33,7 @@ import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentException;
+import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.monitor.MonitorException;
@@ -41,6 +42,8 @@ import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.ServiceLifeCycle;
+
+import javax.jcr.RepositoryException;
 
 /**
  * WorkflowInterpretorSkeleton java skeleton for the axisService
@@ -54,6 +57,15 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	public static final String BROKER = "broker";
     public static final String MYPROXY_USER = "myproxy.user";
     public static final String MYPROXY_PASS = "myproxy.password";
+    public static final String JCR_USER = "jcr.user";
+    public static final String JCR_PASS = "jcr.password";
+    public static final String JCR_URL = "jcr.url";
+    public static boolean provenance = false;
+    public static final String PROVENANCE = "PROVENANCE";
+    public static  String jcrUserName = "";
+    public static  String jcrPassword = "";
+    public static  String jcrURL = "";
+
 
     public void startUp(ConfigurationContext configctx, AxisService service) {
         URL url = this.getClass().getClassLoader().getResource("xbaya.properties");
@@ -62,6 +74,14 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             properties.load(url.openStream());
             configctx.setProperty(MYPROXY_PASS, properties.get(MYPROXY_PASS));
             configctx.setProperty(MYPROXY_USER, properties.get(MYPROXY_USER));
+            if("true".equals(properties.get(PROVENANCE))){
+                provenance = true;
+            }else{
+                provenance = false;
+            }
+            jcrUserName = (String)properties.get(JCR_USER);
+            jcrPassword = (String) properties.get(JCR_PASS);
+            jcrURL = (String) properties.get(JCR_URL);
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -125,7 +145,15 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             e1.printStackTrace();
         }
 
+        try {
+            conf.setJcrComponentRegistry(new JCRComponentRegistry(new URI(jcrURL),jcrUserName,jcrPassword));
+        } catch (RepositoryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (URISyntaxException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
         final WorkflowInterpreter interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password);
+        interpreter.setActOnProvenance(provenance);
         System.err.println("Created the interpreter");
         if(inNewThread){
             runInThread(interpreter,listener);
