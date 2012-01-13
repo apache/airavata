@@ -167,6 +167,7 @@ public class WorkflowInterpreter {
 		this.mode = SERVER_MODE;
 		this.retryFailed = false;
 		this.runWithCrossProduct = this.configuration.isRunWithCrossProduct();
+        provenanceWriter = new PredicatedTaskRunner(1);
 	}
 
 
@@ -195,7 +196,7 @@ public class WorkflowInterpreter {
                 }
                 this.mode = SERVER_MODE;
                 this.retryFailed = false;
-            provenanceWriter = new PredicatedTaskRunner(1);
+                provenanceWriter = new PredicatedTaskRunner(1);
 
         }
 
