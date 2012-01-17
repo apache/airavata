@@ -83,6 +83,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
     public static final String WORKFLOW_DATA = "experiments";
     public static final String INPUT = "Input";
     public static final String OUTPUT = "Output";
+    public static final String RESULT = "Result";
     public static final String WORKFLOW_STATUS_PROPERTY = "Status";
 
     private static Logger log = LoggerFactory.getLogger(AiravataJCRRegistry.class);
@@ -821,9 +822,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         boolean isSaved = true;
         try {
             session = getSession();
-            Node workflowDataNode = getOrAddNode(
-                    getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOW_DATA),
-                            workflowOutputData.getExperimentId()), workflowOutputData.getExperimentId());
+            Node workflowDataNode = getWorkflowExperimentDataNode(workflowOutputData.getExperimentId(),session);
             workflowDataNode.setProperty(PROPERTY_WORKFLOW_NAME, workflowOutputData.getWorkflowName());
             workflowDataNode = getOrAddNode(getOrAddNode(workflowDataNode, workflowOutputData.getNodeId()), type);
             workflowDataNode.setProperty(PROPERTY_WORKFLOW_IO_CONTENT, workflowOutputData.getData());
@@ -897,9 +896,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         boolean isSaved = true;
         try {
             session = getSession();
-            Node workflowDataNode = getOrAddNode(
-                    getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOW_DATA),
-                            experimentId),experimentId);
+            Node workflowDataNode = getWorkflowExperimentDataNode(experimentId, session);
             workflowDataNode.setProperty(WORKFLOW_STATUS_PROPERTY,status);
             session.save();
         } catch (Exception e) {
@@ -913,12 +910,10 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 
     public String getWorkflowStatus(String experimentId){
        Session session = null;
-        boolean isSaved = true;
         String property = null;
         try {
             session = getSession();
-            Node workflowDataNode = getOrAddNode(getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOW_DATA),
-                            experimentId),experimentId);
+            Node workflowDataNode = getWorkflowExperimentDataNode(experimentId, session);
             property = workflowDataNode.getProperty(WORKFLOW_STATUS_PROPERTY).getString();
             session.save();
         } catch (Exception e) {
@@ -928,15 +923,73 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         }
         return property;
     }
-     public boolean saveWorkflowOutputData(String experimentId,String outputNodeName,String output){
-         return true;
-     }
+
+	private Node getWorkflowExperimentDataNode(String experimentId,
+			Session session) throws RepositoryException {
+		return getOrAddNode(getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOW_DATA),
+		                experimentId),experimentId);
+	}
+    
+	public boolean saveWorkflowOutputData(String experimentId,String outputNodeName,String output){
+		Session session=null;
+		try {
+			session = getSession();
+			Node resultNode = getWorkflowExperimentResultNode(experimentId,
+					session);
+			resultNode.setProperty(outputNodeName, output);
+			session.save();
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+			return false;
+		}finally{
+			closeSession(session);
+		}
+	    return true;
+	}
 
     public String getWorkflowOutputData(String experimentId,String outputNodeName){
-        return "";
+		Session session=null;
+		try {
+			session = getSession();
+			Node resultNode = getWorkflowExperimentResultNode(experimentId,
+					session);
+			Property outputProperty = resultNode.getProperty(outputNodeName);
+			if (outputProperty==null){
+				return null;
+			}
+			return outputProperty.getString();
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+			return null;
+		}finally{
+			closeSession(session);
+		}
     }
 
-    public String[] getWorkflowOutputNames(String exeperimentId){
-        return new String[4];
+    public String[] getWorkflowOutputNames(String experimentId){
+    	Session session=null;
+    	List<String> outputNames=new ArrayList<String>();
+		try {
+			session = getSession();
+			Node resultNode = getWorkflowExperimentResultNode(experimentId,
+					session);
+			PropertyIterator properties = resultNode.getProperties();
+			for (;properties.hasNext();) {
+				Property nextProperty = properties.nextProperty();
+				outputNames.add(nextProperty.getName());
+			}
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		}finally{
+			closeSession(session);
+		}
+        return outputNames.toArray(new String[]{});
     }
+
+	private Node getWorkflowExperimentResultNode(String experimentId,
+			Session session) throws RepositoryException {
+		Node workflowExperimentDataNode = getWorkflowExperimentDataNode(experimentId, session);
+		Node resultNode = getOrAddNode(workflowExperimentDataNode,RESULT);
+		return resultNode;
+	}
 }
