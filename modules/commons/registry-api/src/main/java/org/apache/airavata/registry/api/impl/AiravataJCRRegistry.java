@@ -976,7 +976,9 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 			PropertyIterator properties = resultNode.getProperties();
 			for (;properties.hasNext();) {
 				Property nextProperty = properties.nextProperty();
-				outputNames.add(nextProperty.getName());
+                if(!"jcr:primaryType".equals(nextProperty.getName())){
+				    outputNames.add(nextProperty.getName());
+                }
 			}
 		} catch (RepositoryException e) {
 			e.printStackTrace();
