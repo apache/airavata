@@ -21,6 +21,7 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
@@ -254,9 +255,9 @@ public class WorkflowInterpreter {
 			}
 
 			this.getWorkflow().setExecutionState(XBayaExecutionState.RUNNING);
-            System.out.println(actOnProvenance);
             if(actOnProvenance){
                 this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowStatus(this.topic, WORKFLOW_STARTED);
+                System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
             }
 			ArrayList<Node> inputNodes = this.getInputNodesDynamically();
 			Object[] values = new Object[inputNodes.size()];
@@ -332,24 +333,23 @@ public class WorkflowInterpreter {
                                 XBayaExecutionState.PAUSED);
 					}
 
-                    if (getFailedNodeCountDynamically() == 0) {
-                        if (actOnProvenance) {
-                            System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
-                            this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowStatus(this.topic, WORKFLOW_FINISHED);
-                            System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
-                        }
-                    }
 					try {
-						Thread.sleep(400);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
+                        Thread.sleep(400);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
 
-			this.notifier.workflowTerminated();
-			if (this.mode == GUI_MODE) {
-				final WaitDialog waitDialog = new WaitDialog(new Cancelable() {
+            if (getFailedNodeCountDynamically() == 0) {
+                if (actOnProvenance) {
+                    this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowStatus(this.topic, WORKFLOW_FINISHED);
+                    System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
+                }
+            }
+            this.notifier.workflowTerminated();
+            if (this.mode == GUI_MODE) {
+                final WaitDialog waitDialog = new WaitDialog(new Cancelable() {
 					@Override
 					public void cancel() {
 						// Do nothing
@@ -505,6 +505,7 @@ public class WorkflowInterpreter {
 				// Change it to processing state so we will not pic it up in the
 				// next run
 				// even if the next run runs before the notification arrives
+
 				node.getGUI().setBodyColor(NodeState.EXECUTING.color);
 				// OutputNode node = (OutputNode) outputNode;
 				List<DataPort> inputPorts = node.getInputPorts();
@@ -513,7 +514,8 @@ public class WorkflowInterpreter {
 					Object val = InterpreterUtil.findInputFromPort(dataPort,
 							this.invokerMap);
 					;
-					if (null == val) {
+
+								if (null == val) {
 						throw new WorkFlowInterpreterException(
 								"Unable to find output for the node:"
 										+ node.getID());
@@ -521,6 +523,13 @@ public class WorkflowInterpreter {
 					// This is ok because the outputnodes always got only one
 					// input
 					((OutputNode) node).setDescription(val.toString());
+                     if(actOnProvenance){
+                        try {
+                            this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowOutputData(this.topic,node.getName(),val.toString());
+                        } catch (RegistryException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+                    }
 					node.getGUI().setBodyColor(NodeState.FINISHED.color);
 				}
 			}
@@ -561,6 +570,13 @@ public class WorkflowInterpreter {
 				}
 				// Some node not yet updated
 				if (node.getGUI().getBodyColor() != NodeState.FINISHED.color) {
+                    if(actOnProvenance){
+                        try {
+                            this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowOutputData(this.topic,node.getName(),val.toString());
+                        } catch (RegistryException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+                    }
 					node.setDescription(val.toString());
 					node.getGUI().setBodyColor(NodeState.FINISHED.color);
 				}
