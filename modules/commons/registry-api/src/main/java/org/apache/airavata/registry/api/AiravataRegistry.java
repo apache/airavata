@@ -212,7 +212,7 @@ public interface AiravataRegistry extends Registry{
 
     public void deleteHostDescription(String hostId) throws RegistryException;
 
-    public boolean saveWorkflowInput(WorkflowIOData workflowInputData);
+    public boolean saveWorkflowInput(WorkflowIOData workflowInputData) ;
 
     public boolean saveWorkflowOutput(WorkflowIOData workflowOutputData);
     
@@ -224,9 +224,9 @@ public interface AiravataRegistry extends Registry{
 
     public String getWorkflowStatus(String experimentId);
 
-    public boolean saveWorkflowOutputData(String experimentId,String outputNodeName,String output);
+    public boolean saveWorkflowOutputData(String experimentId,String outputNodeName,String output) throws RegistryException;
 
-    public String getWorkflowOutputData(String experimentId,String outputNodeName);
+    public String getWorkflowOutputData(String experimentId,String outputNodeName) throws RegistryException;
 
-    public String[] getWorkflowOutputNames(String exeperimentId);
+    public String[] getWorkflowOutputNames(String exeperimentId) throws RegistryException;
 }

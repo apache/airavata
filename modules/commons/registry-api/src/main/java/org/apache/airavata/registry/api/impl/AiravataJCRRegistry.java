@@ -930,7 +930,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 		                experimentId),experimentId);
 	}
     
-	public boolean saveWorkflowOutputData(String experimentId,String outputNodeName,String output){
+	public boolean saveWorkflowOutputData(String experimentId,String outputNodeName,String output) throws RegistryException{
 		Session session=null;
 		try {
 			session = getSession();
@@ -940,14 +940,14 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 			session.save();
 		} catch (RepositoryException e) {
 			e.printStackTrace();
-			return false;
+			throw new RegistryException(e);
 		}finally{
 			closeSession(session);
 		}
 	    return true;
 	}
 
-    public String getWorkflowOutputData(String experimentId,String outputNodeName){
+    public String getWorkflowOutputData(String experimentId,String outputNodeName) throws RegistryException{
 		Session session=null;
 		try {
 			session = getSession();
@@ -960,13 +960,13 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 			return outputProperty.getString();
 		} catch (RepositoryException e) {
 			e.printStackTrace();
-			return null;
+			throw new RegistryException(e);
 		}finally{
 			closeSession(session);
 		}
     }
 
-    public String[] getWorkflowOutputNames(String experimentId){
+    public String[] getWorkflowOutputNames(String experimentId) throws RegistryException{
     	Session session=null;
     	List<String> outputNames=new ArrayList<String>();
 		try {
@@ -980,6 +980,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 			}
 		} catch (RepositoryException e) {
 			e.printStackTrace();
+			throw new RegistryException(e);
 		}finally{
 			closeSession(session);
 		}
