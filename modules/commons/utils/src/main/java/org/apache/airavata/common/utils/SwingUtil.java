@@ -21,6 +21,7 @@
 
 package org.apache.airavata.common.utils;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -31,10 +32,13 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.net.URL;
 import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JTextField;
 import javax.swing.Spring;
 import javax.swing.SpringLayout;
 
@@ -323,5 +327,31 @@ public class SwingUtil {
         SpringLayout layout = (SpringLayout) parent.getLayout();
         Component c = parent.getComponent(row * cols + col);
         return layout.getConstraints(c);
+    }
+    
+    public static void addPlaceHolder(final JTextField field,final String placeHolderText){
+    	field.addFocusListener(new FocusListener(){
+    		private Color fontColor=field.getForeground();
+    		private String previousText=field.getText();
+    		
+			public void focusGained(FocusEvent arg0) {
+				if (field.getText().equals(placeHolderText)){
+					field.setText("");
+				}
+				field.setForeground(fontColor);
+			}
+
+			public void focusLost(FocusEvent arg0) {
+				if (field.getText().trim().equals("")){
+					fontColor=field.getForeground();
+					field.setForeground(Color.GRAY);
+					field.setText(placeHolderText);
+				}
+			}
+    	});
+    	if (field.getText().trim().equals("")){
+    		field.setText(placeHolderText);
+    		field.setForeground(Color.GRAY);
+    	}
     }
 }

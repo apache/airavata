@@ -298,6 +298,13 @@
 			</includes>
 		</fileSet>
 		<fileSet>
+			<directory>../commons/common-registry-api/target</directory>
+			<outputDirectory>lib</outputDirectory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+		</fileSet>
+		<fileSet>
 			<directory>../commons/registry-api/target</directory>
 			<outputDirectory>lib</outputDirectory>
 			<includes>

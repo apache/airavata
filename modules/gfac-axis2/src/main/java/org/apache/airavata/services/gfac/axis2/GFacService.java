@@ -35,8 +35,8 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryFactory;
 import javax.jcr.SimpleCredentials;
 
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.impl.JCRRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.services.gfac.axis2.dispatchers.GFacURIBasedDispatcher;
 import org.apache.airavata.services.gfac.axis2.handlers.AmazonSecurityHandler;
 import org.apache.airavata.services.gfac.axis2.handlers.MyProxySecurityHandler;
@@ -110,7 +110,7 @@ public class GFacService implements ServiceLifeCycle {
             URL url = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
             properties.load(url.openStream());
             Map<String, String> map = new HashMap<String, String>((Map) properties);
-            Registry registry = new JCRRegistry(new URI(map.get(ORG_APACHE_JACKRABBIT_REPOSITORY_URI)),map.get(JCR_CLASS),map.get(JCR_USER),map.get(JCR_PASS), map);
+            AiravataRegistry registry = new AiravataJCRRegistry(new URI(map.get(ORG_APACHE_JACKRABBIT_REPOSITORY_URI)),map.get(JCR_CLASS),map.get(JCR_USER),map.get(JCR_PASS), map);
             String localAddress = Utils.getIpAddress(context.getAxisConfiguration());
             TransportInDescription transportInDescription = context.getAxisConfiguration().getTransportsIn()
                     .get("http");
@@ -143,7 +143,7 @@ public class GFacService implements ServiceLifeCycle {
     }
 
     public void shutDown(ConfigurationContext configctx, AxisService service) {
-        Registry registry = (JCRRegistry) configctx.getProperty(CONFIGURATION_CONTEXT_REGISTRY);
+        AiravataRegistry registry = (AiravataJCRRegistry) configctx.getProperty(CONFIGURATION_CONTEXT_REGISTRY);
         String gfacURL = (String) configctx.getProperty(GFAC_URL);
         registry.deleteGFacDescriptor(gfacURL);
         thread.interrupt();
@@ -164,7 +164,7 @@ public class GFacService implements ServiceLifeCycle {
         public void run() {
             try {
                 while (true) {
-                    Registry registry = (Registry) this.context.getProperty(CONFIGURATION_CONTEXT_REGISTRY);
+                    AiravataRegistry registry = (AiravataRegistry) this.context.getProperty(CONFIGURATION_CONTEXT_REGISTRY);
                     String localAddress = (String) this.context.getProperty(GFAC_URL);
                     registry.saveGFacDescriptor(localAddress);
                     log.info("Updated the GFac URL in to Repository");

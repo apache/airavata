@@ -27,13 +27,12 @@ import java.util.List;
 
 import javax.jcr.RepositoryException;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.impl.JCRRegistry;
-import org.apache.airavata.registry.api.user.UserManager;
+import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
+import org.apache.airavata.common.registry.api.user.UserManager;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,13 +42,13 @@ public class JCRComponentRegistry extends ComponentRegistry {
     private static final Logger log = LoggerFactory.getLogger(JCRComponentRegistry.class);
     private static final String NAME = "Application Services";
 
-    private JCRRegistry registry;
+    private AiravataJCRRegistry registry;
 
     public JCRComponentRegistry(URI url, String username, String password) throws RepositoryException {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("org.apache.jackrabbit.repository.uri", url.toString());
         try {
-            this.registry = new JCRRegistry(url, "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", username,
+            this.registry = new AiravataJCRRegistry(url, "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", username,
                     password, map);
         } catch (RepositoryException e) {
             throw e;
@@ -115,7 +114,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
         return registry.saveDeploymentDescription(service, host, app);
     }
 
-    public Registry getRegistry() {
+    public AiravataRegistry getRegistry() {
         return registry;
     }
 }

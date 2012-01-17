@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
@@ -142,13 +142,13 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
 				observableRegistry.deleteObserver(this);
 			}
 			if (componentRegistry instanceof JCRComponentRegistry){
-				Registry registry = ((JCRComponentRegistry)componentRegistry).getRegistry();
+				AiravataRegistry registry = ((JCRComponentRegistry)componentRegistry).getRegistry();
 				if (registry!=null && registry instanceof Observable){
 					(observableRegistry=(Observable)registry).addObserver(this);
 				}
 			}
 			load(componentRegistry);
-		}else if (observable instanceof Registry){
+		}else if (observable instanceof AiravataRegistry){
 			load(getEngine().getConfiguration().getJcrComponentRegistry());
 		}
 	}

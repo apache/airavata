@@ -34,7 +34,7 @@ import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionCon
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
-import org.apache.airavata.registry.api.impl.JCRRegistry;
+import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType.ApplicationName;
 import org.apache.airavata.schemas.gfac.InputParameterType;
@@ -50,7 +50,7 @@ public class PropertiesBasedServiceImplTest {
 		/*
 		 * Create database
 		 */
-		JCRRegistry jcrRegistry = new JCRRegistry(null,
+		AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
 				"org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
 				"admin", null);
 

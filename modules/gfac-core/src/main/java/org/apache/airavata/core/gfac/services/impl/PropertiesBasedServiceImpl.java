@@ -27,7 +27,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
@@ -40,7 +40,7 @@ import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.utils.LogUtils;
-import org.apache.airavata.registry.api.impl.JCRRegistry;
+import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -101,7 +101,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     private PreExecuteChain[] preChain;
     private PostExecuteChain[] postChain;
     private DataServiceChain[] dataChain;
-    private Registry registryService;
+    private AiravataRegistry registryService;
 
     private String fileName = DEFAULT_FILENAME;
     private Configuration config;
@@ -233,7 +233,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
                 try {
                     // TODO pass the url of the registry as the first parameter
-                    this.registryService = new JCRRegistry(null, jcrClass, userName, password, map);
+                    this.registryService = new AiravataJCRRegistry(null, jcrClass, userName, password, map);
                 } catch (javax.jcr.RepositoryException e) {
                     e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
                 }

@@ -28,9 +28,9 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.xbaya.appwrapper.ServiceDescriptionDialog;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.AddAction;
@@ -98,7 +98,7 @@ public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
     private void deleteServiceDescription(JTree tree) throws Exception {
         if (askQuestion("Service descriptions",
                 "Are you sure that you want to remove all service descriptions in this registry?")) {
-            Registry registry = getRegistry();
+            AiravataRegistry registry = getRegistry();
             List<ServiceDescription> descriptions = getServiceDescriptions().getDescriptions();
             for (ServiceDescription descriptionWrap : descriptions) {
                 registry.deleteServiceDescription(descriptionWrap.getType().getName());

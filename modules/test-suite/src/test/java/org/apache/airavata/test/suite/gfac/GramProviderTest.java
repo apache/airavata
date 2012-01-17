@@ -30,7 +30,7 @@ import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.services.impl.PropertiesBasedServiceImpl;
-import org.apache.airavata.registry.api.impl.JCRRegistry;
+import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.schemas.gfac.*;
 import org.junit.Assert;
 import org.junit.Before;
@@ -54,7 +54,7 @@ public class GramProviderTest {
         /*
            * Create database
            */
-        JCRRegistry jcrRegistry = new JCRRegistry(null,
+        AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
                 "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
                 "admin", null);
 

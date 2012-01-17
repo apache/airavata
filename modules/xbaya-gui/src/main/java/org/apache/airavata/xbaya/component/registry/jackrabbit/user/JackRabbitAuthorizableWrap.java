@@ -27,8 +27,8 @@ import java.util.Iterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
-import org.apache.airavata.registry.api.user.Authorizable;
-import org.apache.airavata.registry.api.user.Group;
+import org.apache.airavata.common.registry.api.user.Authorizable;
+import org.apache.airavata.common.registry.api.user.Group;
 
 public class JackRabbitAuthorizableWrap extends AbstractJackRabbitUMComponent implements Authorizable {
     private org.apache.jackrabbit.api.security.user.Authorizable authorizable;

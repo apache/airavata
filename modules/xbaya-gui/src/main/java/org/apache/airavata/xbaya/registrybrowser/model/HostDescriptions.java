@@ -23,22 +23,22 @@ package org.apache.airavata.xbaya.registrybrowser.model;
 
 import java.util.List;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.AiravataRegistry;
 
 public class HostDescriptions {
-    private Registry registry;
+    private AiravataRegistry registry;
 
-    public HostDescriptions(Registry registry) {
+    public HostDescriptions(AiravataRegistry registry) {
         setRegistry(registry);
     }
 
-    public Registry getRegistry() {
+    public AiravataRegistry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(Registry registry) {
+    public void setRegistry(AiravataRegistry registry) {
         this.registry = registry;
     }
 

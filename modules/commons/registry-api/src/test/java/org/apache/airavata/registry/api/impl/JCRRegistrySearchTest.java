@@ -20,12 +20,20 @@
 */
 package org.apache.airavata.registry.api.impl;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.jcr.RepositoryException;
+
 import junit.framework.Assert;
+
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
@@ -34,19 +42,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.jcr.RepositoryException;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 public class JCRRegistrySearchTest {
     @Before
     public void setUp() throws Exception {
         /*
         * Create database
         */
-        JCRRegistry jcrRegistry = new JCRRegistry(null,
+        AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
                 "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
                 "admin", null);
 
@@ -135,7 +137,7 @@ public class JCRRegistrySearchTest {
     @Test
     public void searchServiceDescriptionTest() {
         try {
-            JCRRegistry jcrRegistry = new JCRRegistry(null,
+            AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
                    "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
                    "admin", null);
             List<ServiceDescription> simpleEcho = jcrRegistry.searchServiceDescription("SimpleEchoSearch");
@@ -155,7 +157,7 @@ public class JCRRegistrySearchTest {
     @Test
     public void searchDeploymentDescriptorTest() {
         try {
-            JCRRegistry jcrRegistry = new JCRRegistry(null,
+            AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
                    "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
                    "admin", null);
             Map<ApplicationDeploymentDescription,String> applicationDeploymentDescriptionStringMap = jcrRegistry.searchDeploymentDescription();
@@ -175,7 +177,7 @@ public class JCRRegistrySearchTest {
     @Test
     public void searchDeploymentDescriptorWithAllTest() {
         try {
-            JCRRegistry jcrRegistry = new JCRRegistry(null,
+            AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
                    "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
                    "admin", null);
 
@@ -197,7 +199,7 @@ public class JCRRegistrySearchTest {
     @Test
     public void searchDeploymentDescriptorWithServiceNameTest() {
         try {
-            JCRRegistry jcrRegistry = new JCRRegistry(null,
+            AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
                    "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
                    "admin", null);
             Map<HostDescription, List<ApplicationDeploymentDescription>> simpleEchoSearch =
@@ -218,7 +220,7 @@ public class JCRRegistrySearchTest {
      @Test
     public void searchDeploymentDescriptorWithServiceAndHostTest() {
         try {
-            JCRRegistry jcrRegistry = new JCRRegistry(null,
+            AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
                    "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
                    "admin", null);
             List<ApplicationDeploymentDescription> applicationDeploymentDescriptions =

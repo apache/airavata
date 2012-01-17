@@ -35,10 +35,10 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -62,7 +62,7 @@ public class HostDescriptionDialog extends JDialog {
 
     private boolean hostCreated = false;
 
-    private Registry registry;
+    private AiravataRegistry registry;
 
 	private JCheckBox chkGobusHost;
 
@@ -252,6 +252,10 @@ public class HostDescriptionDialog extends JDialog {
         if (!isNewHost()) {
 			loadData();
 		}
+//        SwingUtil.addPlaceHolder(hostIdTextField.getSwingComponent(), "[unique name for the host]");
+//        SwingUtil.addPlaceHolder(hostAddressTextField.getSwingComponent(), "[a valid host address, eg: myhost.com, 127.0.0.1]");
+//        SwingUtil.addPlaceHolder(GridFTPTextField.getSwingComponent(), "[List of grid ftp endpoints]");
+//        SwingUtil.addPlaceHolder(globusGateKeeperTextField.getSwingComponent(), "[List of globus gate keeper endpoints]");
     }
 
     private String arrayToString(String[] list) {
@@ -363,11 +367,11 @@ public class HostDescriptionDialog extends JDialog {
         setHostCreated(true);
     }
 
-    public Registry getRegistry() {
+    public AiravataRegistry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(Registry registry) {
+    public void setRegistry(AiravataRegistry registry) {
         this.registry = registry;
     }
 

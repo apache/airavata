@@ -21,6 +21,13 @@
 
 package org.apache.airavata.core.gfac.scheduler.impl;
 
+import java.net.UnknownHostException;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.stream.XMLStreamException;
+
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -34,8 +41,7 @@ import org.apache.airavata.core.gfac.provider.impl.GramProvider;
 import org.apache.airavata.core.gfac.provider.impl.LocalProvider;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.schemas.wec.SecurityContextDocument;
 import org.apache.axiom.om.OMElement;
@@ -43,13 +49,8 @@ import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.stream.XMLStreamException;
-import java.net.UnknownHostException;
-import java.util.List;
-import java.util.Map;
-
 /**
- * This class selects {@link Provider} based on information in {@link Registry}
+ * This class selects {@link Provider} based on information in {@link AiravataRegistry}
  */
 public class SchedulerImpl implements Scheduler {
 
@@ -57,7 +58,7 @@ public class SchedulerImpl implements Scheduler {
 
     public Provider schedule(InvocationContext context) throws SchedulerException {
 
-        Registry registryService = context.getExecutionContext().getRegistryService();
+        AiravataRegistry registryService = context.getExecutionContext().getRegistryService();
 
         /*
          * Load Service
@@ -154,7 +155,7 @@ public class SchedulerImpl implements Scheduler {
         return null;
     }
 
-    private HostDescription scheduleToHost(Registry regService, String serviceName) {
+    private HostDescription scheduleToHost(AiravataRegistry regService, String serviceName) {
 
         log.info("Searching registry for some deployed application hosts");
         HostDescription result = null;

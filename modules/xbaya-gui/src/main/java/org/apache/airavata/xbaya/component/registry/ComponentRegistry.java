@@ -21,7 +21,7 @@
 
 package org.apache.airavata.xbaya.component.registry;
 
-import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 
 public abstract class ComponentRegistry {

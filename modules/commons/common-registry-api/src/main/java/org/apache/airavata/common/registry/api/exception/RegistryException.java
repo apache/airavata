@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.registry.api.exception;
+package org.apache.airavata.common.registry.api.exception;
 
 public class RegistryException extends Exception {
 	

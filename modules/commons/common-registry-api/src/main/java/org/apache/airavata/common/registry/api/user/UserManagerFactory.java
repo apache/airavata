@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.registry.api.user;
+package org.apache.airavata.common.registry.api.user;
 
 import java.util.HashMap;
 import java.util.Map;

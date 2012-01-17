@@ -46,7 +46,11 @@
             <artifactId>common-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>common-registry-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>        
         
         <!-- Test -->
         <dependency>

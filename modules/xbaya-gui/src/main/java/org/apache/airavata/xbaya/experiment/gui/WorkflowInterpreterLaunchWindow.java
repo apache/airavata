@@ -155,7 +155,7 @@ public class WorkflowInterpreterLaunchWindow {
             this.workflowInterpreterTextField.setText(XBayaConstants.DEFAULT_WORKFLOW_INTERPRETER_URL);
         }
 
-        org.apache.airavata.registry.api.Registry registryURL = config.getJcrComponentRegistry().getRegistry();
+        org.apache.airavata.registry.api.AiravataRegistry registryURL = config.getJcrComponentRegistry().getRegistry();
         if (null != registryURL) {
             this.RegistryTextField.setText(config.getRegistryURL());
         } else {

@@ -35,7 +35,7 @@ import javax.swing.JDialog;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.JobTypeType;
 import org.apache.airavata.schemas.gfac.JobTypeType.Enum;
@@ -54,13 +54,13 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     private XBayaTextField txtQueueType;
     private XBayaTextField txtQueueName;
     private JButton okButton;
-    private Registry registry;
+    private AiravataRegistry registry;
     private ApplicationDeploymentDescription descriptor;
 
     /**
      * Create the dialog.
      */
-    public ApplicationDescriptionHostAdvancedOptionDialog(Registry registry, ApplicationDeploymentDescription descriptor) {
+    public ApplicationDescriptionHostAdvancedOptionDialog(AiravataRegistry registry, ApplicationDeploymentDescription descriptor) {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
@@ -122,6 +122,14 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		
 		cmbJobType = new XBayaComboBox(new DefaultComboBoxModel(getJobTypesAsStrings()));
 		cmbJobType.setEditable(false);
+		
+		XBayaTextField txtMaxWallTime = new XBayaTextField();
+		
+		XBayaTextField txtCPUTime = new XBayaTextField();
+		XBayaTextField txtNodeCount = new XBayaTextField();
+		XBayaTextField txtProcessorsPerNode = new XBayaTextField();
+		XBayaTextField txtMinMemory = new XBayaTextField();
+		
 		
 		XBayaLabel lbljobType = new XBayaLabel("Job Type",cmbJobType);
 		XBayaLabel lblProjectAccountNumber = new XBayaLabel("Project Account Number",txtProjectAccountNumber);
@@ -236,11 +244,11 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		txtQueueName.setText(queueName.getQueueDescription()==null?"":queueName.getQueueDescription());
     }
 
-    public Registry getRegistry() {
+    public AiravataRegistry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(Registry registry) {
+    public void setRegistry(AiravataRegistry registry) {
         this.registry = registry;
     }
 
