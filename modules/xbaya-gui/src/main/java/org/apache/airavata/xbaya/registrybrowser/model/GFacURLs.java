@@ -26,20 +26,20 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.AiravataRegistry;
 
 public class GFacURLs {
-    private Registry registry;
+    private AiravataRegistry registry;
 
-    public GFacURLs(Registry registry) {
+    public GFacURLs(AiravataRegistry registry) {
         setRegistry(registry);
     }
 
-    public Registry getRegistry() {
+    public AiravataRegistry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(Registry registry) {
+    public void setRegistry(AiravataRegistry registry) {
         this.registry = registry;
     }
 

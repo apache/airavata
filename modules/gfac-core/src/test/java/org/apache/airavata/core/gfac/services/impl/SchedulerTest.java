@@ -33,7 +33,7 @@ import org.apache.airavata.core.gfac.provider.impl.GramProvider;
 import org.apache.airavata.core.gfac.provider.impl.LocalProvider;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.scheduler.impl.SchedulerImpl;
-import org.apache.airavata.registry.api.impl.JCRRegistry;
+import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
@@ -51,13 +51,13 @@ import java.util.Map;
 import static org.junit.Assert.fail;
 
 public class SchedulerTest {
-    private JCRRegistry jcrRegistry;
+    private AiravataJCRRegistry jcrRegistry;
     @Before
 	public void setUp() throws Exception {
 		/*
 		 * Create database
 		 */
-        jcrRegistry = new JCRRegistry(null,
+        jcrRegistry = new AiravataJCRRegistry(null,
 				"org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
 				"admin", null);
 

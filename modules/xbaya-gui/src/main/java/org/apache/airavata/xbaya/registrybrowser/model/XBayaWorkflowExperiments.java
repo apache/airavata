@@ -30,7 +30,7 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.axis2.util.XMLUtils;
@@ -40,9 +40,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class XBayaWorkflowExperiments {
-	private Registry registry;
+	private AiravataRegistry registry;
 	
-	public XBayaWorkflowExperiments(Registry registry) {
+	public XBayaWorkflowExperiments(AiravataRegistry registry) {
 		setRegistry(registry);
 	}
 	
@@ -117,10 +117,10 @@ public class XBayaWorkflowExperiments {
 			//TODO setup parameters
 		}
 	}
-	public Registry getRegistry() {
+	public AiravataRegistry getRegistry() {
 		return registry;
 	}
-	public void setRegistry(Registry registry) {
+	public void setRegistry(AiravataRegistry registry) {
 		this.registry = registry;
 	}
 

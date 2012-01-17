@@ -29,13 +29,13 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
 
-import org.apache.airavata.registry.api.impl.JCRRegistry;
-import org.apache.airavata.registry.api.user.Authorizable;
-import org.apache.airavata.registry.api.user.AuthorizableExistsException;
-import org.apache.airavata.registry.api.user.Group;
-import org.apache.airavata.registry.api.user.User;
-import org.apache.airavata.registry.api.user.UserManager;
-import org.apache.airavata.registry.api.user.UserManagerFactory;
+import org.apache.airavata.common.registry.api.impl.JCRRegistry;
+import org.apache.airavata.common.registry.api.user.Authorizable;
+import org.apache.airavata.common.registry.api.user.AuthorizableExistsException;
+import org.apache.airavata.common.registry.api.user.Group;
+import org.apache.airavata.common.registry.api.user.User;
+import org.apache.airavata.common.registry.api.user.UserManager;
+import org.apache.airavata.common.registry.api.user.UserManagerFactory;
 import org.apache.jackrabbit.api.JackrabbitSession;
 
 public class JackRabbitUserManagerWrap extends AbstractJackRabbitUMComponent implements UserManager {

@@ -21,7 +21,6 @@
 
 package org.apache.airavata.registry.api;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -29,16 +28,17 @@ import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.registry.api.Registry;
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 
-public interface Registry {
+public interface AiravataRegistry extends Registry{
     /**
      * Find locations where the service is deployed
      * 
@@ -211,27 +211,6 @@ public interface Registry {
             throws RegistryException;
 
     public void deleteHostDescription(String hostId) throws RegistryException;
-
-    /**
-     * Returns the default username that is specified to connect to the repository
-     * 
-     * @return
-     */
-    public String getUsername();
-
-    /**
-     * Repository uri
-     * 
-     * @return
-     */
-    public URI getRepositoryURI();
-
-    /**
-     * Returns the repository name
-     * 
-     * @return
-     */
-    public String getName();
 
     public boolean saveWorkflowInput(WorkflowIOData workflowInputData);
 

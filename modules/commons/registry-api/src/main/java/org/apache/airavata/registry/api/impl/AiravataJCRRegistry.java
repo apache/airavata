@@ -21,8 +21,6 @@
 
 package org.apache.airavata.registry.api.impl;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -31,23 +29,20 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
 import java.util.TimeZone;
 
-import javax.jcr.Credentials;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
-import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
-import javax.jcr.RepositoryFactory;
 import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
 import javax.jcr.Value;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.common.registry.api.impl.JCRRegistry;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -58,9 +53,7 @@ import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.DataRegistry;
 import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
-import org.apache.airavata.registry.api.user.UserManager;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.schemas.gfac.MethodType;
 import org.apache.airavata.schemas.gfac.PortTypeType;
@@ -69,9 +62,9 @@ import org.apache.airavata.schemas.gfac.ServiceType.ServiceName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JCRRegistry extends Observable implements Axis2Registry, DataRegistry {
+public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, DataRegistry {
 
-    private static final String OUTPUT_NODE_NAME = "OUTPUTS";
+	private static final String OUTPUT_NODE_NAME = "OUTPUTS";
     private static final String SERVICE_NODE_NAME = "SERVICE_HOST";
     private static final String GFAC_INSTANCE_DATA = "GFAC_INSTANCE_DATA";
     private static final String DEPLOY_NODE_NAME = "APP_HOST";
@@ -92,83 +85,14 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
     public static final String OUTPUT = "Output";
     public static final String WORKFLOW_STATUS_PROPERTY = "Status";
 
-    private Repository repository;
-    private Credentials credentials;
-    private UserManager userManager;
-    private String username;
-    private URI repositoryURI;
-    private Class registryRepositoryFactory;
-    private Map<String,String> connectionMap;
-    private String password;
+    private static Logger log = LoggerFactory.getLogger(AiravataJCRRegistry.class);
 
-    private static Logger log = LoggerFactory.getLogger(JCRRegistry.class);
-
-    public JCRRegistry(URI repositoryURI, String className, String user, String pass, Map<String, String> map)
-            throws RepositoryException {
-        try {
-            /*
-             * Load the configuration from properties file at this level and create the object
-             */
-            connectionMap = map;
-            registryRepositoryFactory = Class.forName(className);
-            Constructor c = registryRepositoryFactory.getConstructor();
-            RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
-            setRepositoryURI(repositoryURI);
-            repository = repositoryFactory.getRepository(connectionMap);
-            setUsername(user);
-            setPassword(pass);
-            credentials = new SimpleCredentials(getUsername(), new String(pass).toCharArray());
-        } catch (ClassNotFoundException e) {
-            log.error("Error class path settting", e);
-        } catch (RepositoryException e) {
-            log.error("Error connecting Remote Registry instance", e);
-            throw e;
-        } catch (Exception e) {
-            log.error("Error init", e);
-        }
-    }
-
-    public JCRRegistry(Repository repo, Credentials credentials) {
-        this.repository = repo;
-        this.credentials = credentials;
-    }
-
-    public Session getSession() throws RepositoryException {
-        Session session = null;
-        try {
-            session = repository.login(credentials);
-            if (session == null) {
-                session = resetSession(session);
-            }
-        } catch (Exception e) {
-            session = resetSession(session);
-        }
-        return session;
-    }
-
-    private Session resetSession(Session session){
-        try {
-            Constructor c = registryRepositoryFactory.getConstructor();
-            RepositoryFactory repositoryFactory = (RepositoryFactory) c.newInstance();
-            setRepositoryURI(repositoryURI);
-            repository = repositoryFactory.getRepository(connectionMap);
-            setUsername(username);
-            credentials = new SimpleCredentials(getUsername(), getPassword().toCharArray());
-            session = repository.login(credentials);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (InstantiationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (RepositoryException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        return session;
-    }
-
+    public AiravataJCRRegistry(URI repositoryURI, String className,
+			String user, String pass, Map<String, String> map)
+			throws RepositoryException {
+		super(repositoryURI, className, user, pass, map);
+	}
+    
     private Node getServiceNode(Session session) throws RepositoryException {
         return getOrAddNode(session.getRootNode(), SERVICE_NODE_NAME);
     }
@@ -179,26 +103,6 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
 
     private Node getHostNode(Session session) throws RepositoryException {
         return getOrAddNode(session.getRootNode(), HOST_NODE_NAME);
-    }
-
-    private Node getOrAddNode(Node node, String name) throws RepositoryException {
-        Node node1 = null;
-        try {
-            node1 = node.getNode(name);
-        } catch (PathNotFoundException pnfe) {
-            node1 = node.addNode(name);
-        } catch (RepositoryException e) {
-            String msg = "failed to resolve the path of the given node ";
-            log.debug(msg);
-            throw new RepositoryException(msg, e);
-        }
-        return node1;
-    }
-
-    private void closeSession(Session session) {
-        if (session != null && session.isLive()) {
-            session.logout();
-        }
     }
 
 //    public List<HostDescription> getServiceLocation(String serviceId) {
@@ -770,14 +674,6 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         return urlList;
     }
 
-    public UserManager getUserManager() {
-        return userManager;
-    }
-
-    public void setUserManager(UserManager userManager) {
-        this.userManager = userManager;
-    }
-
     public String saveOutput(String workflowId, List<ActualParameter> parameters) {
         Session session = null;
         String result = null;
@@ -911,39 +807,6 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
         return false;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public URI getRepositoryURI() {
-        return repositoryURI;
-    }
-
-    private void setRepositoryURI(URI repositoryURI) {
-        this.repositoryURI = repositoryURI;
-    }
-
-    protected void triggerObservers(Object o) {
-        setChanged();
-        notifyObservers(o);
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return repository.getDescriptor(Repository.REP_NAME_DESC);
-    }
-
     public boolean saveWorkflowInput(WorkflowIOData workflowInputData) {
         return saveWorkflowIO(workflowInputData, INPUT);
     }
@@ -1027,10 +890,6 @@ public class JCRRegistry extends Observable implements Axis2Registry, DataRegist
             closeSession(session);
         }
         return workflowIODataList;
-    }
-
-    public Repository getRepository() {
-        return repository;
     }
 
     public boolean saveWorkflowStatus(String experimentId,String status){

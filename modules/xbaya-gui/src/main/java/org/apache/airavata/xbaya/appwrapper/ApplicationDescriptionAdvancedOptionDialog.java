@@ -44,7 +44,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
@@ -63,7 +63,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private boolean tableModelChanging = false;
     private JButton btnDeleteVariable;
     private JButton okButton;
-    private Registry registry;
+    private AiravataRegistry registry;
 
     /**
      * Launch the application.
@@ -82,7 +82,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     /**
      * Create the dialog.
      */
-    public ApplicationDescriptionAdvancedOptionDialog(Registry registry, ApplicationDeploymentDescription descriptor) {
+    public ApplicationDescriptionAdvancedOptionDialog(AiravataRegistry registry, ApplicationDeploymentDescription descriptor) {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
@@ -318,11 +318,11 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 
 
 
-    public Registry getRegistry() {
+    public AiravataRegistry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(Registry registry) {
+    public void setRegistry(AiravataRegistry registry) {
         this.registry = registry;
     }
 

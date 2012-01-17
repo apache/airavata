@@ -32,15 +32,15 @@ import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 
 public class JackRabbitAuthorizable extends AbstractJackRabbitUMComponent implements Authorizable {
-    private org.apache.airavata.registry.api.user.Authorizable authorizable;
+    private org.apache.airavata.common.registry.api.user.Authorizable authorizable;
 
-    public JackRabbitAuthorizable(org.apache.airavata.registry.api.user.Authorizable authorizable) {
+    public JackRabbitAuthorizable(org.apache.airavata.common.registry.api.user.Authorizable authorizable) {
         this.authorizable = authorizable;
     }
 
     @Override
     public Iterator<Group> declaredMemberOf() throws RepositoryException {
-        Iterator<org.apache.airavata.registry.api.user.Group> declaredMemberOfGroupList = authorizable
+        Iterator<org.apache.airavata.common.registry.api.user.Group> declaredMemberOfGroupList = authorizable
                 .declaredMemberOf();
         List<Group> groupList = getJRGroupList(declaredMemberOfGroupList);
         return groupList.iterator();
@@ -83,7 +83,7 @@ public class JackRabbitAuthorizable extends AbstractJackRabbitUMComponent implem
 
     @Override
     public Iterator<Group> memberOf() throws RepositoryException {
-        Iterator<org.apache.airavata.registry.api.user.Group> declaredMemberOfGroupList = authorizable.memberOf();
+        Iterator<org.apache.airavata.common.registry.api.user.Group> declaredMemberOfGroupList = authorizable.memberOf();
         List<Group> groupList = getJRGroupList(declaredMemberOfGroupList);
         return groupList.iterator();
     }

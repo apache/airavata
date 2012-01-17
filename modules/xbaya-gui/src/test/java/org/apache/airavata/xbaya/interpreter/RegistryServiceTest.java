@@ -21,12 +21,21 @@
 
 package org.apache.airavata.xbaya.interpreter;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.jcr.RepositoryException;
+
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
-import org.apache.airavata.registry.api.impl.JCRRegistry;
+import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
@@ -36,23 +45,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import javax.jcr.RepositoryException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
-
 public class RegistryServiceTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    public JCRRegistry jcrRegistry = null;
+    public AiravataJCRRegistry jcrRegistry = null;
 
     @Before
     public void testExecute() throws RegistryException {
 
         try {
-            jcrRegistry = new JCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin", "admin",
+            jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin", "admin",
                     null);
         } catch (RepositoryException e) {
             fail("Failed creating the JCR Registry");

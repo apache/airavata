@@ -55,10 +55,10 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
@@ -82,7 +82,7 @@ public class ServiceDescriptionDialog extends JDialog {
     private JButton okButton;
     private JButton btnDeleteParameter;
     private DefaultTableModel defaultTableModel;
-    private Registry registry;
+    private AiravataRegistry registry;
     private boolean newDescription;
     private boolean ignoreTableChanges=false;
 
@@ -99,14 +99,14 @@ public class ServiceDescriptionDialog extends JDialog {
         }
     }
 
-    public ServiceDescriptionDialog(Registry registry) {
+    public ServiceDescriptionDialog(AiravataRegistry registry) {
     	this(registry,true,null);
     }
     
     /**
      * Create the dialog.
      */
-    public ServiceDescriptionDialog(Registry registry, boolean newDescription, ServiceDescription serviceDescription) {
+    public ServiceDescriptionDialog(AiravataRegistry registry, boolean newDescription, ServiceDescription serviceDescription) {
     	setNewDescription(newDescription);
     	this.setOrginalServiceDescription(serviceDescription);
         addWindowListener(new WindowAdapter() {
@@ -493,11 +493,11 @@ public class ServiceDescriptionDialog extends JDialog {
 		}
     }
 
-    public Registry getRegistry() {
+    public AiravataRegistry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(Registry registry) {
+    public void setRegistry(AiravataRegistry registry) {
         this.registry = registry;
     }
 

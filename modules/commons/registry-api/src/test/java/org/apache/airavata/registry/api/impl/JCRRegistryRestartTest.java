@@ -45,7 +45,7 @@ public class JCRRegistryRestartTest {
                /*
                 * Create database
                 */
-               JCRRegistry jcrRegistry = new JCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
+               AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
                        "admin", "admin", null);
 
                String hostId = "localhost";

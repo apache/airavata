@@ -28,7 +28,7 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
@@ -40,7 +40,7 @@ import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowExperiments;
 import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowTemplates;
 
 public class RegistryNode extends AbstractAiravataTreeNode {
-    private Registry registry;
+    private AiravataRegistry registry;
     private XBayaEngine engine;
 
     public RegistryNode(XBayaEngine engine, TreeNode parent) {
@@ -67,11 +67,11 @@ public class RegistryNode extends AbstractAiravataTreeNode {
         return getTreeNodeList(children.toArray(), this);
     }
 
-    public Registry getRegistry() {
+    public AiravataRegistry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(Registry registry) {
+    public void setRegistry(AiravataRegistry registry) {
         this.registry = registry;
     }
 

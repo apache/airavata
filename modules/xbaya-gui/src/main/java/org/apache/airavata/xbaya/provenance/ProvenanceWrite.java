@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.concurrent.PredicatedExecutable;
@@ -57,10 +57,10 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 
     private String experimentId;
 
-    private Registry registry;
+    private AiravataRegistry registry;
 
 	public ProvenanceWrite(Node node, String workflowName,
-                           Map<Node, Invoker> invokerMap, String experimentId,Registry registry) {
+                           Map<Node, Invoker> invokerMap, String experimentId,AiravataRegistry registry) {
 		this.node = node;
 		this.workflowName = workflowName;
 		this.invokerMap = invokerMap;

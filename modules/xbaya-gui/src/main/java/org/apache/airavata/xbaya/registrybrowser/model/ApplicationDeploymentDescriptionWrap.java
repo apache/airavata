@@ -21,19 +21,19 @@
 
 package org.apache.airavata.xbaya.registrybrowser.model;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.AiravataRegistry;
 
 public class ApplicationDeploymentDescriptionWrap {
     private ApplicationDeploymentDescription applicationDeploymentDescription;
     private String service;
     private String host;
-    private Registry registry;
+    private AiravataRegistry registry;
 
-    public ApplicationDeploymentDescriptionWrap(Registry registry,
+    public ApplicationDeploymentDescriptionWrap(AiravataRegistry registry,
             ApplicationDeploymentDescription applicationDeploymentDescription, String service, String host) {
         setApplicationDeploymentDescription(applicationDeploymentDescription);
         setService(service);
@@ -73,11 +73,11 @@ public class ApplicationDeploymentDescriptionWrap {
         this.host = host;
     }
 
-    public Registry getRegistry() {
+    public AiravataRegistry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(Registry registry) {
+    public void setRegistry(AiravataRegistry registry) {
         this.registry = registry;
     }
 }

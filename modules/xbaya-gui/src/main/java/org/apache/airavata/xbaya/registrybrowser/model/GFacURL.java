@@ -23,22 +23,22 @@ package org.apache.airavata.xbaya.registrybrowser.model;
 
 import java.net.URL;
 
-import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.AiravataRegistry;
 
 public class GFacURL {
-    private Registry registry;
+    private AiravataRegistry registry;
     private URL gfacURL;
 
-    public GFacURL(Registry registry, URL gfacURL) {
+    public GFacURL(AiravataRegistry registry, URL gfacURL) {
         setRegistry(registry);
         setGfacURL(gfacURL);
     }
 
-    public Registry getRegistry() {
+    public AiravataRegistry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(Registry registry) {
+    public void setRegistry(AiravataRegistry registry) {
         this.registry = registry;
     }
 

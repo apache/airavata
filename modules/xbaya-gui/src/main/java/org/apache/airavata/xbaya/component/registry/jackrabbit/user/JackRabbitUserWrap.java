@@ -28,8 +28,8 @@ import javax.jcr.Credentials;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
-import org.apache.airavata.registry.api.user.Group;
-import org.apache.airavata.registry.api.user.User;
+import org.apache.airavata.common.registry.api.user.Group;
+import org.apache.airavata.common.registry.api.user.User;
 
 public class JackRabbitUserWrap extends AbstractJackRabbitUMComponent implements User {
     private org.apache.jackrabbit.api.security.user.User user;

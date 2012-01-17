@@ -25,22 +25,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.AiravataRegistry;
 
 public class ApplicationDeploymentDescriptions {
-    private Registry registry;
+    private AiravataRegistry registry;
 
-    public ApplicationDeploymentDescriptions(Registry registry) {
+    public ApplicationDeploymentDescriptions(AiravataRegistry registry) {
         setRegistry(registry);
     }
 
-    public Registry getRegistry() {
+    public AiravataRegistry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(Registry registry) {
+    public void setRegistry(AiravataRegistry registry) {
         this.registry = registry;
     }
 

@@ -43,12 +43,12 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
@@ -62,7 +62,7 @@ public class DescriptorEditorDialog extends JDialog {
 
     private XBayaDialog dialog;
 
-    private Registry registry;
+    private AiravataRegistry registry;
 
 	private JList descriptorList;
 
@@ -351,11 +351,11 @@ public class DescriptorEditorDialog extends JDialog {
 		}
     	
     }
-    public Registry getRegistry() {
+    public AiravataRegistry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(Registry registry) {
+    public void setRegistry(AiravataRegistry registry) {
         this.registry = registry;
     }
 }

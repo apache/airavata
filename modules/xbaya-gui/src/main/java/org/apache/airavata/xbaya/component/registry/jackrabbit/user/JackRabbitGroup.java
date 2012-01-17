@@ -31,9 +31,9 @@ import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 
 public class JackRabbitGroup extends AbstractJackRabbitUMComponent implements Group {
-    private org.apache.airavata.registry.api.user.Group group;
+    private org.apache.airavata.common.registry.api.user.Group group;
 
-    public JackRabbitGroup(org.apache.airavata.registry.api.user.Group group) {
+    public JackRabbitGroup(org.apache.airavata.common.registry.api.user.Group group) {
         this.group = group;
     }
 
@@ -89,7 +89,7 @@ public class JackRabbitGroup extends AbstractJackRabbitUMComponent implements Gr
 
     @Override
     public Iterator<Authorizable> getDeclaredMembers() throws RepositoryException {
-        Iterator<org.apache.airavata.registry.api.user.Authorizable> declaredMembers = group.getDeclaredMembers();
+        Iterator<org.apache.airavata.common.registry.api.user.Authorizable> declaredMembers = group.getDeclaredMembers();
         return getJRAuthorizableList(declaredMembers).iterator();
     }
 

@@ -21,6 +21,8 @@
 
 package org.apache.airavata.registry.api.exception;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
+
 public class HostDescriptionRetrieveException extends RegistryException {
     private final static String ERROR_MESSAGE = "Error occured while attempting to retrieve existing hosts";
 

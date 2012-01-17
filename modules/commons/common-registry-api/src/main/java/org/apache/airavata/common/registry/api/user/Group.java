@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.airavata.registry.api.user;
+package org.apache.airavata.common.registry.api.user;
 
 import javax.jcr.RepositoryException;
 import java.util.Iterator;

@@ -28,20 +28,20 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.registry.api.Registry;
+import org.apache.airavata.registry.api.AiravataRegistry;
 
 public class XBayaWorkflowTemplates {
-    private Registry registry;
+    private AiravataRegistry registry;
 
-    public XBayaWorkflowTemplates(Registry registry) {
+    public XBayaWorkflowTemplates(AiravataRegistry registry) {
         setRegistry(registry);
     }
 
-    public Registry getRegistry() {
+    public AiravataRegistry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(Registry registry) {
+    public void setRegistry(AiravataRegistry registry) {
         this.registry = registry;
     }
 

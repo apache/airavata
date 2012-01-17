@@ -43,12 +43,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.Registry;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
@@ -68,7 +68,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     private XBayaTextField txtAppName;
     private XBayaTextField txtTempDir;
 
-    private Registry registry;
+    private AiravataRegistry registry;
     private ApplicationDeploymentDescription shellApplicationDescription;
     private JLabel lblError;
     private boolean applcationDescCreated = false;
@@ -343,7 +343,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             JLabel lblBindThisDeployment = new JLabel("Bind this deployment description to:");
             lblBindThisDeployment.setFont(new Font("Tahoma", Font.BOLD, 11));
 
-            btnHostAdvanceOptions=new JButton("Options...");
+            btnHostAdvanceOptions=new JButton("Gram Configuration...");
             btnHostAdvanceOptions.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -671,11 +671,11 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         }
     }
 
-    public Registry getRegistry() {
+    public AiravataRegistry getRegistry() {
         return registry;
     }
 
-    public void setRegistry(Registry registry) {
+    public void setRegistry(AiravataRegistry registry) {
         this.registry = registry;
     }
 
