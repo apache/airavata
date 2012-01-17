@@ -223,4 +223,10 @@ public interface AiravataRegistry extends Registry{
     public boolean saveWorkflowStatus(String experimentId,String status);
 
     public String getWorkflowStatus(String experimentId);
+
+    public boolean saveWorkflowOutputData(String experimentId,String outputNodeName,String output);
+
+    public String getWorkflowOutputData(String experimentId,String outputNodeName);
+
+    public String[] getWorkflowOutputNames(String exeperimentId);
 }

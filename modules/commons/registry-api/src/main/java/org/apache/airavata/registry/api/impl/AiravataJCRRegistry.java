@@ -928,4 +928,15 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         }
         return property;
     }
+     public boolean saveWorkflowOutputData(String experimentId,String outputNodeName,String output){
+         return true;
+     }
+
+    public String getWorkflowOutputData(String experimentId,String outputNodeName){
+        return "";
+    }
+
+    public String[] getWorkflowOutputNames(String exeperimentId){
+        return new String[4];
+    }
 }
