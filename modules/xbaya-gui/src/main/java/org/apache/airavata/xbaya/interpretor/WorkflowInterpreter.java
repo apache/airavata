@@ -254,7 +254,10 @@ public class WorkflowInterpreter {
 			}
 
 			this.getWorkflow().setExecutionState(XBayaExecutionState.RUNNING);
-            this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowStatus(this.topic, WORKFLOW_STARTED);
+            System.out.println(actOnProvenance);
+            if(actOnProvenance){
+                this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowStatus(this.topic, WORKFLOW_STARTED);
+            }
 			ArrayList<Node> inputNodes = this.getInputNodesDynamically();
 			Object[] values = new Object[inputNodes.size()];
 			String[] keywords = new String[inputNodes.size()];
@@ -326,8 +329,16 @@ public class WorkflowInterpreter {
 					if (getRunningNodeCountDynamically() == 0
 							&& getFailedNodeCountDynamically() != 0) {
 						this.getWorkflow().setExecutionState(
-								XBayaExecutionState.PAUSED);
+                                XBayaExecutionState.PAUSED);
 					}
+
+                    if (getFailedNodeCountDynamically() == 0) {
+                        if (actOnProvenance) {
+                            System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
+                            this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowStatus(this.topic, WORKFLOW_FINISHED);
+                            System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
+                        }
+                    }
 					try {
 						Thread.sleep(400);
 					} catch (InterruptedException e) {
@@ -515,9 +526,7 @@ public class WorkflowInterpreter {
 			}
 			this.notifier.sendingPartialResults(outputValues.toArray(),
 					outputKeywords.toArray(new String[outputKeywords.size()]));
-            System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
-            this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowStatus(this.topic, WORKFLOW_FINISHED);
-            System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
+
 		}
 	}
 
