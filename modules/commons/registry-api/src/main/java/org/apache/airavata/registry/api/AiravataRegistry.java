@@ -224,9 +224,15 @@ public interface AiravataRegistry extends Registry{
 
     public String getWorkflowStatus(String experimentId);
 
+    public Map<String,String> getWorkflowStatusWithRegex(String regex) throws RegistryException;
+
     public boolean saveWorkflowOutputData(String experimentId,String outputNodeName,String output) throws RegistryException;
 
     public String getWorkflowOutputData(String experimentId,String outputNodeName) throws RegistryException;
 
+    public Map<String,String> getWorkflowOutputDataWithRegix(String experimentIdRegex,String outputName)throws  RegistryException;
+
     public String[] getWorkflowOutputNames(String exeperimentId) throws RegistryException;
+
+    public Map<String,String[]> getWorkflowOutputNamesWithRegex(String experiementId) throws  RegistryException;
 }
