@@ -30,6 +30,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -995,4 +997,74 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 		Node resultNode = getOrAddNode(workflowExperimentDataNode,RESULT);
 		return resultNode;
 	}
+    private List<String> getMatchingExperimentIds(String regex,Session session)throws RepositoryException{
+        Node orAddNode = getOrAddNode(session.getRootNode(), WORKFLOW_DATA);
+        List<String> matchList = new ArrayList<String>();
+        NodeIterator nodes = orAddNode.getNodes();
+        Pattern compile = Pattern.compile(regex);
+        while(nodes.hasNext()){
+            Node node = nodes.nextNode();
+            String name = node.getName();
+            if(compile.matcher(name).find()){
+                matchList.add(name);
+            }
+        }
+        return matchList;
+    }
+    public Map<String, String> getWorkflowStatusWithRegex(String regex) throws RegistryException {
+        Session session=null;
+        Map<String,String> workflowStatusMap = new HashMap<String, String>();
+        try {
+            session = getSession();
+            List<String> matchingExperimentIds = getMatchingExperimentIds(regex, session);
+            for(String experimentId:matchingExperimentIds){
+                String workflowStatus = getWorkflowStatus(experimentId);
+                workflowStatusMap.put(experimentId,workflowStatus);
+            }
+		} catch (RepositoryException e) {
+            e.printStackTrace();
+            throw new RegistryException(e);
+        }finally{
+            closeSession(session);
+        }
+        return workflowStatusMap;
+    }
+
+    public Map<String, String> getWorkflowOutputDataWithRegix(String regex, String outputName) throws RegistryException {
+        Session session=null;
+        Map<String,String> workflowStatusMap = new HashMap<String, String>();
+        try {
+            session = getSession();
+            List<String> matchingExperimentIds = getMatchingExperimentIds(regex, session);
+            for(String experimentId:matchingExperimentIds){
+                String workflowOutputData = getWorkflowOutputData(experimentId,outputName);
+                workflowStatusMap.put(experimentId,workflowOutputData);
+            }
+		} catch (RepositoryException e) {
+            e.printStackTrace();
+            throw new RegistryException(e);
+        }finally{
+            closeSession(session);
+        }
+        return workflowStatusMap;
+    }
+
+    public Map<String, String[]> getWorkflowOutputNamesWithRegex(String regex) throws RegistryException {
+        Session session = null;
+      Map<String,String[]> workflowStatusMap = new HashMap<String, String[]>();
+        try {
+            session = getSession();
+            List<String> matchingExperimentIds = getMatchingExperimentIds(regex, session);
+            for(String experimentId:matchingExperimentIds){
+                String[] workflowOutputData = getWorkflowOutputNames(experimentId);
+                workflowStatusMap.put(experimentId,workflowOutputData);
+            }
+		} catch (RepositoryException e) {
+            e.printStackTrace();
+            throw new RegistryException(e);
+        }finally{
+            closeSession(session);
+        }
+        return workflowStatusMap;
+    }
 }
