@@ -27,7 +27,7 @@ import java.util.Map;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.registry.api.AiravataRegistry;
-import org.apache.airavata.registry.api.workflow.WorkflowIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.concurrent.PredicatedExecutable;
 import org.apache.airavata.xbaya.graph.DataPort;
@@ -174,7 +174,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 			}
             if (inputs!=null) {
 				try {
-					this.registry.saveWorkflowExecutionServiceInput(new WorkflowIOData(
+					this.registry.saveWorkflowExecutionServiceInput(new WorkflowServiceIOData(
 							xsul5.XmlConstants.BUILDER.serializeToString(inputs),
 							experimentId, node.getID(), this.workflowName));
 				} catch (RegistryException e) {
@@ -206,7 +206,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 				}
 			}
             try {
-				this.registry.saveWorkflowExecutionServiceOutput(new WorkflowIOData(xsul5.XmlConstants.BUILDER.serializeToString(outputs), experimentId, node.getID(),this.workflowName));
+				this.registry.saveWorkflowExecutionServiceOutput(new WorkflowServiceIOData(xsul5.XmlConstants.BUILDER.serializeToString(outputs), experimentId, node.getID(),this.workflowName));
             } catch (RegistryException e) {
 				throw new XBayaException(e);
 			}

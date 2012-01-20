@@ -23,14 +23,15 @@ package org.apache.airavata.registry.api.impl;
 
 import java.net.URI;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.jcr.Node;
@@ -53,10 +54,14 @@ import org.apache.airavata.commons.gfac.wsdl.WSDLConstants;
 import org.apache.airavata.commons.gfac.wsdl.WSDLGenerator;
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.DataRegistry;
+import org.apache.airavata.registry.api.WorkflowExecution;
+import org.apache.airavata.registry.api.WorkflowExecutionStatus;
+import org.apache.airavata.registry.api.WorkflowExecutionStatus.ExecutionStatus;
 import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 import org.apache.airavata.schemas.gfac.MethodType;
 import org.apache.airavata.schemas.gfac.PortTypeType;
 import org.apache.airavata.schemas.gfac.ServiceType;
@@ -87,6 +92,8 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
     public static final String OUTPUT = "Output";
     public static final String RESULT = "Result";
     public static final String WORKFLOW_STATUS_PROPERTY = "Status";
+    public static final String WORKFLOW_STATUS_TIME_PROPERTY = "Status_Time";
+    public static final String WORKFLOW_USER_PROPERTY = "User";
 
     private static Logger log = LoggerFactory.getLogger(AiravataJCRRegistry.class);
 
@@ -799,16 +806,16 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         return false;
     }
 
-    public boolean saveWorkflowExecutionServiceInput(WorkflowIOData workflowInputData) throws RegistryException{
+    public boolean saveWorkflowExecutionServiceInput(WorkflowServiceIOData workflowInputData) throws RegistryException{
         return saveWorkflowIO(workflowInputData, INPUT);
     }
 
-    public boolean saveWorkflowExecutionServiceOutput(WorkflowIOData workflowOutputData) throws RegistryException{
+    public boolean saveWorkflowExecutionServiceOutput(WorkflowServiceIOData workflowOutputData) throws RegistryException{
         return saveWorkflowIO(workflowOutputData, OUTPUT);
     }
 
 
-    private boolean saveWorkflowIO(WorkflowIOData workflowOutputData, String type) throws RegistryException{
+    private boolean saveWorkflowIO(WorkflowServiceIOData workflowOutputData, String type) throws RegistryException{
         Session session = null;
         boolean isSaved = true;
         try {
@@ -816,7 +823,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             Node workflowDataNode = getWorkflowExperimentDataNode(workflowOutputData.getExperimentId(),session);
             workflowDataNode.setProperty(PROPERTY_WORKFLOW_NAME, workflowOutputData.getWorkflowName());
             workflowDataNode = getOrAddNode(getOrAddNode(workflowDataNode, workflowOutputData.getNodeId()), type);
-            workflowDataNode.setProperty(PROPERTY_WORKFLOW_IO_CONTENT, workflowOutputData.getData());
+            workflowDataNode.setProperty(PROPERTY_WORKFLOW_IO_CONTENT, workflowOutputData.getValue());
             session.save();
         } catch (Exception e) {
             isSaved = false;
@@ -827,19 +834,19 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         return isSaved;
     }
 
-    public List<WorkflowIOData> searchWorkflowExecutionServiceInput(String experimentIdRegEx, String workflowNameRegEx,
+    public List<WorkflowServiceIOData> searchWorkflowExecutionServiceInput(String experimentIdRegEx, String workflowNameRegEx,
             String nodeNameRegEx) throws RegistryException{
         return searchWorkflowIO(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx, INPUT);
     }
 
-    public List<WorkflowIOData> searchWorkflowExecutionServiceOutput(String experimentIdRegEx, String workflowNameRegEx,
+    public List<WorkflowServiceIOData> searchWorkflowExecutionServiceOutput(String experimentIdRegEx, String workflowNameRegEx,
             String nodeNameRegEx) throws RegistryException{
         return searchWorkflowIO(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx, OUTPUT);
     }
 
-    private List<WorkflowIOData> searchWorkflowIO(String experimentIdRegEx, String workflowNameRegEx,
+    private List<WorkflowServiceIOData> searchWorkflowIO(String experimentIdRegEx, String workflowNameRegEx,
             String nodeNameRegEx, String type) throws RegistryException{
-        List<WorkflowIOData> workflowIODataList = new ArrayList<WorkflowIOData>();
+        List<WorkflowServiceIOData> workflowIODataList = new ArrayList<WorkflowServiceIOData>();
         Session session = null;
         try {
             session = getSession();
@@ -864,12 +871,12 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
                             continue;
                         }
                         Node ioNode = getOrAddNode(serviceNode, type);
-                        WorkflowIOData workflowIOData = new WorkflowIOData();
+                        WorkflowServiceIOData workflowIOData = new WorkflowServiceIOData();
                         workflowIOData.setExperimentId(experimentNode.getName());
                         workflowIOData.setWorkflowId(workflowNode.getName());
                         workflowIOData.setWorkflowName(workflowName);
                         workflowIOData.setNodeId(serviceNode.getName());
-                        workflowIOData.setData(ioNode.getProperty(PROPERTY_WORKFLOW_IO_CONTENT).getString());
+                        workflowIOData.setValue(ioNode.getProperty(PROPERTY_WORKFLOW_IO_CONTENT).getString());
                         workflowIODataList.add(workflowIOData);
                     }
                 }
@@ -899,16 +906,22 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         return isSaved;
     }
 
-    public String getWorkflowExecutionStatus(String experimentId)throws RegistryException{
-       Session session = null;
-        String property = null;
+    public WorkflowExecutionStatus getWorkflowExecutionStatus(String experimentId)throws RegistryException{
+    	Session session = null;
+    	WorkflowExecutionStatus property = null;
         try {
             session = getSession();
             Node workflowDataNode = getWorkflowExperimentDataNode(experimentId, session);
-            property = workflowDataNode.getProperty(WORKFLOW_STATUS_PROPERTY).getString();
+            ExecutionStatus status = ExecutionStatus.valueOf(workflowDataNode.getProperty(WORKFLOW_STATUS_PROPERTY).getString());
+            String dateString = workflowDataNode.getProperty(WORKFLOW_STATUS_TIME_PROPERTY).getString();
+			Date date=null;
+			if (dateString!=null) {
+				date = DateFormat.getInstance().parse(dateString);
+			}
+			property=new WorkflowExecutionStatus(status, date);
             session.save();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RegistryException("Error while retrieving workflow execution status!!!", e);
         } finally {
             closeSession(session);
         }
@@ -938,7 +951,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	    return true;
 	}
 
-    public String getWorkflowExecutionOutput(String experimentId,String outputNodeName) throws RegistryException{
+    public WorkflowIOData getWorkflowExecutionOutput(String experimentId,String outputNodeName) throws RegistryException{
 		Session session=null;
 		try {
 			session = getSession();
@@ -948,7 +961,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 			if (outputProperty==null){
 				return null;
 			}
-			return outputProperty.getString();
+			return new WorkflowIOData(outputNodeName,outputProperty.getString());
 		} catch (RepositoryException e) {
 			e.printStackTrace();
 			throw new RegistryException(e);
@@ -1000,14 +1013,14 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         }
         return matchList;
     }
-    public Map<String, String> getWorkflowExecutionStatusWithRegex(String regex) throws RegistryException {
+    public Map<String, WorkflowExecutionStatus> getWorkflowExecutionStatusWithRegex(String regex) throws RegistryException {
         Session session=null;
-        Map<String,String> workflowStatusMap = new HashMap<String, String>();
+        Map<String,WorkflowExecutionStatus> workflowStatusMap = new HashMap<String, WorkflowExecutionStatus>();
         try {
             session = getSession();
             List<String> matchingExperimentIds = getMatchingExperimentIds(regex, session);
             for(String experimentId:matchingExperimentIds){
-                String workflowStatus = getWorkflowExecutionStatus(experimentId);
+                WorkflowExecutionStatus workflowStatus = getWorkflowExecutionStatus(experimentId);
                 workflowStatusMap.put(experimentId,workflowStatus);
             }
 		} catch (RepositoryException e) {
@@ -1019,14 +1032,14 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         return workflowStatusMap;
     }
 
-    public Map<String, String> getWorkflowExecutionOutputWithRegex(String regex, String outputName) throws RegistryException {
+    public Map<String, WorkflowIOData> getWorkflowExecutionOutputWithRegex(String regex, String outputName) throws RegistryException {
         Session session=null;
-        Map<String,String> workflowStatusMap = new HashMap<String, String>();
+        Map<String,WorkflowIOData> workflowStatusMap = new HashMap<String, WorkflowIOData>();
         try {
             session = getSession();
             List<String> matchingExperimentIds = getMatchingExperimentIds(regex, session);
             for(String experimentId:matchingExperimentIds){
-                String workflowOutputData = getWorkflowExecutionOutput(experimentId,outputName);
+            	WorkflowIOData workflowOutputData = getWorkflowExecutionOutput(experimentId,outputName);
                 workflowStatusMap.put(experimentId,workflowOutputData);
             }
 		} catch (RepositoryException e) {
@@ -1059,6 +1072,63 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 
 	public boolean saveWorkflowExecutionUser(String experimentId, String user)
 			throws RegistryException {
-		return false;
+		Session session = null;
+        boolean isSaved = true;
+        try {
+            session = getSession();
+            Node workflowDataNode = getWorkflowExperimentDataNode(experimentId, session);
+            workflowDataNode.setProperty(WORKFLOW_USER_PROPERTY,user);
+            session.save();
+        } catch (Exception e) {
+            isSaved = false;
+            e.printStackTrace();
+        } finally {
+            closeSession(session);
+        }
+        return isSaved;
+	}
+
+	public boolean saveWorkflowExecutionOutput(String experimentId,WorkflowIOData data)
+			throws RegistryException {
+		return saveWorkflowExecutionOutput(experimentId, data.getNodeId(), data.getValue());
+	}
+
+	public String getWorkflowExecutionUser(String experimentId)
+			throws RegistryException {
+		Session session = null;
+        String property = null;
+        try {
+            session = getSession();
+            Node workflowDataNode = getWorkflowExperimentDataNode(experimentId, session);
+            property = workflowDataNode.getProperty(WORKFLOW_USER_PROPERTY).getString();
+            session.save();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeSession(session);
+        }
+        return property;
+	}
+
+	public WorkflowExecution getWorkflowExection(String experimentId)
+			throws RegistryException {
+		WorkflowExecution workflowExecution = new WorkflowExecutionImpl();
+		workflowExecution.setExperimentId(experimentId);
+		workflowExecution.setExecutionStatus(getWorkflowExecutionStatus(experimentId));
+		workflowExecution.setUser(getWorkflowExecutionUser(experimentId));
+		workflowExecution.setOutput(getWorkflowExecutionOutput(experimentId));
+		workflowExecution.setServiceInput(searchWorkflowExecutionServiceInput(experimentId,".*",".*"));
+		workflowExecution.setServiceOutput(searchWorkflowExecutionServiceOutput(experimentId,".*",".*"));
+		return null;
+	}
+
+	public List<WorkflowIOData> getWorkflowExecutionOutput(String experimentId)
+			throws RegistryException {
+		List<WorkflowIOData> result=new ArrayList<WorkflowIOData>();
+		String[] workflowExecutionOutputNames = getWorkflowExecutionOutputNames(experimentId);
+		for (String workflowExecutionOutputName : workflowExecutionOutputNames) {
+			result.add(getWorkflowExecutionOutput(experimentId, workflowExecutionOutputName));
+		}
+		return result;
 	}
 }

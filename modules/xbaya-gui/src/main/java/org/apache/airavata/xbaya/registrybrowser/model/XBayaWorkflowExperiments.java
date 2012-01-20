@@ -32,7 +32,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry;
-import org.apache.airavata.registry.api.workflow.WorkflowIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.axis2.util.XMLUtils;
 import org.w3c.dom.Document;
@@ -50,8 +50,8 @@ public class XBayaWorkflowExperiments {
 	public List<XBayaWorkflowExperiment> getAllExperiments(){
 		Map<String, XBayaWorkflowExperiment> experiments=new HashMap<String,XBayaWorkflowExperiment>();
     	try {
-			List<WorkflowIOData> workflowInput = getRegistry().searchWorkflowExecutionServiceInput(null, null, null);
-			List<WorkflowIOData> workflowOutput = getRegistry().searchWorkflowExecutionServiceOutput(null, null, null);
+			List<WorkflowServiceIOData> workflowInput = getRegistry().searchWorkflowExecutionServiceInput(null, null, null);
+			List<WorkflowServiceIOData> workflowOutput = getRegistry().searchWorkflowExecutionServiceOutput(null, null, null);
 			createChildren(experiments, workflowInput, true);
 			createChildren(experiments, workflowOutput, false);
 		} catch (RegistryException e) {
@@ -61,8 +61,8 @@ public class XBayaWorkflowExperiments {
 	}
 	private void createChildren(
 			Map<String, XBayaWorkflowExperiment> experiments,
-			List<WorkflowIOData> workflowIO, boolean inputData) {
-		for (WorkflowIOData workflowIOData : workflowIO) {
+			List<WorkflowServiceIOData> workflowIO, boolean inputData) {
+		for (WorkflowServiceIOData workflowIOData : workflowIO) {
 			if (!experiments.containsKey(workflowIOData.getExperimentId())){
 				experiments.put(workflowIOData.getExperimentId(),new XBayaWorkflowExperiment(workflowIOData.getExperimentId(), null));
 			}
@@ -92,7 +92,7 @@ public class XBayaWorkflowExperiments {
 				xbayaWorkflow.add(workflowService);
 			}
 			try {
-				Document parameterDocument = XMLUtils.newDocument(new ByteArrayInputStream(workflowIOData.getData().getBytes()));
+				Document parameterDocument = XMLUtils.newDocument(new ByteArrayInputStream(workflowIOData.getValue().getBytes()));
 				NodeList childNodes = parameterDocument.getDocumentElement().getChildNodes();
 				for(int i=0;i<childNodes.getLength();i++){
 					Node parameterNode = childNodes.item(i);
