@@ -238,15 +238,21 @@ public class XBayaClient {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
-
+    public String runWorkflow(String topic){
+    	return runWorkflow(topic,(String)null);
+    }
+    
     public String runWorkflow(String topic, String user){
+    	return runWorkflow(topic, user, null);
+    }
+    public String runWorkflow(String topic, String user, String metadata){
 		String worflowoutput= null;
 		try {
 			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(getClientConfiguration().getXbayaServiceURL().toString());
 		    worflowoutput = stub.launchWorkflow(workflow, topic, getClientConfiguration().getMyproxyPassword(),getClientConfiguration().getMyproxyUsername(), null,
 					configurations);
-		    getRegistry().saveWorkflowExecutionUser(topic, user);
-		    log.info("Workflow output : " + worflowoutput);
+		    runPostWorkflowExecutionTasks(topic, user, metadata);
+			log.info("Workflow output : " + worflowoutput);
 		} catch (AxisFault e) {
 			log.fine(e.getMessage(), e);
 		} catch (RemoteException e) {
@@ -257,14 +263,29 @@ public class XBayaClient {
 		return worflowoutput;
 	}
 
+	private void runPostWorkflowExecutionTasks(String topic, String user,
+			String metadata) throws RegistryException {
+		if (user!=null) {
+			getRegistry().saveWorkflowExecutionUser(topic, user);
+		}
+		if (metadata!=null){
+			getRegistry().saveWorkflowExecutionMetadata(topic, metadata);
+		}
+	}
+    public String runWorkflow(String topic, NameValue[] inputs){
+    	return runWorkflow(topic, inputs, null);
+    }
     public String runWorkflow(String topic, NameValue[] inputs, String user){
+    	return runWorkflow(topic, inputs, user, null);
+    }
+    public String runWorkflow(String topic, NameValue[] inputs, String user, String metadata){
 		String worflowoutput= null;
 		try {
 			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(getClientConfiguration().getXbayaServiceURL().toString());
 		    worflowoutput = stub.launchWorkflow(workflow, topic, getClientConfiguration().getMyproxyPassword(),getClientConfiguration().getMyproxyUsername(), inputs,
 					configurations);
-		    getRegistry().saveWorkflowExecutionUser(topic, user);
-		    log.info("Workflow output : " + worflowoutput);
+		    runPostWorkflowExecutionTasks(topic, user, metadata);
+			log.info("Workflow output : " + worflowoutput);
 		} catch (AxisFault e) {
 			log.fine(e.getMessage(), e);
 		} catch (RemoteException e) {

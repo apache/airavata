@@ -248,5 +248,7 @@ public interface AiravataRegistry extends Registry{
     
     public List<WorkflowExecution> getWorkflowExecutionByUser(String user, int pageSize, int pageNo) throws RegistryException;
     
-
+    public String getWorkflowExecutionMetadata(String experimentId) throws RegistryException;
+    
+    public boolean saveWorkflowExecutionMetadata(String experimentId, String metadata) throws RegistryException;
 }
