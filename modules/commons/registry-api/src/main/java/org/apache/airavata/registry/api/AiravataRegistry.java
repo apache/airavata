@@ -82,7 +82,7 @@ public interface AiravataRegistry extends Registry{
      * @param host
      * @return identifier
      */
-    public String saveHostDescription(HostDescription host);
+    public String saveHostDescription(HostDescription host)throws RegistryException;
 
     /**
      * Save a service description with the specific name.
@@ -91,7 +91,7 @@ public interface AiravataRegistry extends Registry{
      * @param host
      * @return identifier
      */
-    public String saveServiceDescription(ServiceDescription service);
+    public String saveServiceDescription(ServiceDescription service)throws RegistryException;
 
     /**
      * Save a deployment description according to the service and host
@@ -101,7 +101,7 @@ public interface AiravataRegistry extends Registry{
      * @param app
      * @return identifier
      */
-    public String saveDeploymentDescription(String serviceId, String hostId, ApplicationDeploymentDescription app);
+    public String saveDeploymentDescription(String serviceId, String hostId, ApplicationDeploymentDescription app)throws RegistryException;
 
     /**
      * Deploy a service on a host
@@ -110,7 +110,7 @@ public interface AiravataRegistry extends Registry{
      * @param hostName
      * @return true if service can be deploy on the host, otherwise false
      */
-    public boolean deployServiceOnHost(String serviceName, String hostName);
+    public boolean deployServiceOnHost(String serviceName, String hostName)throws RegistryException;
 
     /**
      * Search host description with name
@@ -184,26 +184,27 @@ public interface AiravataRegistry extends Registry{
      * @param gfacURL
      * @return
      */
-    public boolean saveGFacDescriptor(String gfacURL);
+    public boolean saveGFacDescriptor(String gfacURL)throws RegistryException;
 
     /**
      * This method can be used to unset the gfacURL from repository resource
      * 
      * @param gfacURL
      * @return
+     * @throws RegistryException 
      */
-    public boolean deleteGFacDescriptor(String gfacURL);
+    public boolean deleteGFacDescriptor(String gfacURL) throws RegistryException;
 
-    public List<String> getGFacDescriptorList();
+    public List<String> getGFacDescriptorList() throws RegistryException;
 
     public boolean saveWorkflow(QName ResourceID, String workflowName, String resourceDesc, String workflowAsaString,
-            String owner, boolean isMakePublic);
+            String owner, boolean isMakePublic) throws RegistryException;
 
-    public Map<QName, Node> getWorkflows(String userName);
+    public Map<QName, Node> getWorkflows(String userName) throws RegistryException;
 
-    public Node getWorkflow(QName templateID, String userName);
+    public Node getWorkflow(QName templateID, String userName) throws RegistryException;
 
-    public boolean deleteWorkflow(QName resourceID, String userName);
+    public boolean deleteWorkflow(QName resourceID, String userName) throws RegistryException;
 
     public void deleteServiceDescription(String serviceId) throws RegistryException;
 
@@ -212,27 +213,30 @@ public interface AiravataRegistry extends Registry{
 
     public void deleteHostDescription(String hostId) throws RegistryException;
 
-    public boolean saveWorkflowInput(WorkflowIOData workflowInputData) ;
+    public boolean saveWorkflowExecutionServiceInput(WorkflowIOData workflowInputData) throws RegistryException;
 
-    public boolean saveWorkflowOutput(WorkflowIOData workflowOutputData);
+    public boolean saveWorkflowExecutionServiceOutput(WorkflowIOData workflowOutputData)throws RegistryException;
     
-    public List<WorkflowIOData> searchWorkflowInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx);
+    public List<WorkflowIOData> searchWorkflowExecutionServiceInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
 
-    public List<WorkflowIOData> searchWorkflowOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx);
+    public List<WorkflowIOData> searchWorkflowExecutionServiceOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
 
-    public boolean saveWorkflowStatus(String experimentId,String status);
+    public boolean saveWorkflowExecutionStatus(String experimentId,String status)throws RegistryException;
 
-    public String getWorkflowStatus(String experimentId);
+    public String getWorkflowExecutionStatus(String experimentId)throws RegistryException;
 
-    public Map<String,String> getWorkflowStatusWithRegex(String regex) throws RegistryException;
+    public Map<String,String> getWorkflowExecutionStatusWithRegex(String regex) throws RegistryException;
 
-    public boolean saveWorkflowOutputData(String experimentId,String outputNodeName,String output) throws RegistryException;
+    public boolean saveWorkflowExecutionOutput(String experimentId,String outputNodeName,String output) throws RegistryException;
 
-    public String getWorkflowOutputData(String experimentId,String outputNodeName) throws RegistryException;
+    public String getWorkflowExecutionOutput(String experimentId,String outputNodeName) throws RegistryException;
 
-    public Map<String,String> getWorkflowOutputDataWithRegix(String experimentIdRegex,String outputName)throws  RegistryException;
+    public Map<String,String> getWorkflowExecutionOutputWithRegex(String experimentIdRegex,String outputName)throws  RegistryException;
 
-    public String[] getWorkflowOutputNames(String exeperimentId) throws RegistryException;
+    public String[] getWorkflowExecutionOutputNames(String exeperimentId) throws RegistryException;
 
-    public Map<String,String[]> getWorkflowOutputNamesWithRegex(String experiementId) throws  RegistryException;
+    public Map<String,String[]> getWorkflowExecutionOutputNamesWithRegex(String experiementId) throws  RegistryException;
+    
+    public boolean saveWorkflowExecutionUser(String experimentId, String user) throws RegistryException;
+
 }

@@ -20,6 +20,26 @@
 */
 package org.apache.airavata.xbaya.clients;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
+
+import javax.jcr.RepositoryException;
+
+import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.graph.GraphException;
@@ -29,25 +49,15 @@ import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorStub;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axis2.AxisFault;
-import xsul5.MLogger;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
-import java.rmi.RemoteException;
-import java.util.List;
-import java.util.Properties;
+import xsul5.MLogger;
 
 
 public class XBayaClient {
     private static final MLogger log = MLogger.getLogger();
 
     public static final String GFAC = "gfac";
+    public static final String JCR = "jcr";
     public static final String PROXYSERVER = "proxyserver";
     public static final String MSGBOX = "msgbox";
     public static final String BROKER = "broker";
@@ -55,15 +65,24 @@ public class XBayaClient {
     public static final String DEFAULT_MYPROXY_SERVER = "myproxy.url";
     public static final String DEFAULT_MESSAGE_BOX_URL = "messagebox.url";
     public static final String DEFAULT_BROKER_URL = "messagebroker.url";
+    public static final String DEFAULT_JCR_URL = "jcr.url";
+    public static final String JCR_USERNAME = "jcr.username";
+    public static final String JCR_PASSWORD= "jcr.password";
     public static final String MYPROXYUSERNAME = "myproxy.username";
     public static final String MYPROXYPASS = "myproxy.password";
     public static final String WORKFLOWSERVICEURL = "xbaya.service.url";
+    private XBayaClientConfiguration clientConfiguration;
     private static String workflow = "";
 
-    private NameValue[] configurations = new NameValue[7];
+    private AiravataRegistry registry;
 
-    public XBayaClient(NameValue[] configuration) {
+	private NameValue[] configurations=new NameValue[10];
+    
+//    private NameValue[] configurations = new NameValue[7];
+
+    public XBayaClient(NameValue[] configuration) throws MalformedURLException {
         configurations = configuration;
+        updateClientConfiguration(configurations);
     }
 
     public XBayaClient(String fileName) throws IOException {
@@ -74,11 +93,11 @@ public class XBayaClient {
         configurations[0] = new NameValue();
         configurations[0].setName(GFAC);
         configurations[0].setValue(properties.getProperty(DEFAULT_GFAC_URL));
-
+        
         configurations[1] = new NameValue();
         configurations[1].setName(PROXYSERVER);
         configurations[1].setValue(properties.getProperty(DEFAULT_MYPROXY_SERVER));
-
+        
         configurations[2] = new NameValue();
         configurations[2].setName(MSGBOX);
         configurations[2].setValue(properties.getProperty(DEFAULT_MESSAGE_BOX_URL));
@@ -98,9 +117,59 @@ public class XBayaClient {
         configurations[6] = new NameValue();
         configurations[6].setName(WORKFLOWSERVICEURL);
         configurations[6].setValue(properties.getProperty(WORKFLOWSERVICEURL));
+        
+        configurations[7] = new NameValue();
+        configurations[7].setName(JCR);
+        configurations[7].setValue(properties.getProperty(DEFAULT_JCR_URL));
+        
+        configurations[8] = new NameValue();
+        configurations[8].setName(JCR_USERNAME);
+        configurations[9].setValue(properties.getProperty(JCR_USERNAME));
+        
+        configurations[10] = new NameValue();
+        configurations[10].setName(JCR_PASSWORD);
+        configurations[10].setValue(properties.getProperty(JCR_PASSWORD));
+        
+        updateClientConfiguration(configurations);
 
     }
 
+    private void updateClientConfiguration(NameValue[] configurations) throws MalformedURLException {
+		XBayaClientConfiguration clientConfiguration = getClientConfiguration();
+    	for (NameValue configuration : configurations) {
+			if (configuration.getName().equals(GFAC)){
+    			clientConfiguration.setJcrURL(new URL(configuration.getValue()));
+    		}
+    		if (configuration.getName().equals(PROXYSERVER)){
+    			clientConfiguration.setMyproxyHost(configuration.getValue());
+    		}
+    		if (configuration.getName().equals(MSGBOX)){
+    			clientConfiguration.setMessageboxURL(new URL(configuration.getValue()));
+    		}
+    		if (configuration.getName().equals(BROKER)){
+    			clientConfiguration.setMessagebrokerURL(new URL(configuration.getValue()));
+    		}
+    		if (configuration.getName().equals(MYPROXYUSERNAME)){
+    			clientConfiguration.setMyproxyUsername(configuration.getValue());
+    		}
+    		if (configuration.getName().equals(MYPROXYPASS)){
+    			clientConfiguration.setMyproxyPassword(configuration.getValue());
+    		}
+    		if (configuration.getName().equals(WORKFLOWSERVICEURL)){
+    			clientConfiguration.setXbayaServiceURL(new URL(configuration.getValue()));
+    		}
+    		if (configuration.getName().equals(JCR)){
+    			clientConfiguration.setJcrURL(new URL(configuration.getValue()));
+    		}
+    		if (configuration.getName().equals(JCR_USERNAME)){
+    			clientConfiguration.setJcrUsername(configuration.getValue());
+    		}
+    		if (configuration.getName().equals(JCR_PASSWORD)){
+    			clientConfiguration.setJcrPassword(configuration.getValue());
+    		}
+    	}
+
+	}
     public void loadWorkflowFromaFile(String workflowFile)throws URISyntaxException,IOException {
 
         URL url = XBayaClient.class.getClassLoader().getResource(workflowFile);
@@ -172,8 +241,8 @@ public class XBayaClient {
     public String runWorkflow(String topic){
 		String worflowoutput= null;
 		try {
-			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(configurations[4].getValue());
-		    worflowoutput = stub.launchWorkflow(workflow, topic, configurations[5].getValue(), configurations[6].getValue(), null,
+			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(getClientConfiguration().getXbayaServiceURL().toString());
+		    worflowoutput = stub.launchWorkflow(workflow, topic, getClientConfiguration().getMyproxyPassword(),getClientConfiguration().getMyproxyUsername(), null,
 					configurations);
 		    log.info("Workflow output : " + worflowoutput);
 		} catch (AxisFault e) {
@@ -186,18 +255,19 @@ public class XBayaClient {
 		return worflowoutput;
 	}
 
-        public String runWorkflow(String topic, NameValue[] inputs){
+    public String runWorkflow(String topic, NameValue[] inputs, String user){
 		String worflowoutput= null;
 		try {
-			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(configurations[6].getValue());
-		    worflowoutput = stub.launchWorkflow(workflow, topic, configurations[5].getValue(), configurations[4].getValue(), inputs,
+			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(getClientConfiguration().getXbayaServiceURL().toString());
+		    worflowoutput = stub.launchWorkflow(workflow, topic, getClientConfiguration().getMyproxyPassword(),getClientConfiguration().getMyproxyUsername(), inputs,
 					configurations);
+		    getRegistry().saveWorkflowExecutionUser(topic, user);
 		    log.info("Workflow output : " + worflowoutput);
 		} catch (AxisFault e) {
 			log.fine(e.getMessage(), e);
 		} catch (RemoteException e) {
 			log.fine(e.getMessage(), e);
-		} catch (IOException e) {
+		} catch (RegistryException e) {
 			log.fine(e.getMessage(), e);
 		}
 		return worflowoutput;
@@ -210,5 +280,29 @@ public class XBayaClient {
     public static void setWorkflow(String workflow) {
         XBayaClient.workflow = workflow;
     }
+
+	public AiravataRegistry getRegistry() {
+		if (registry==null){
+			try {
+				HashMap<String, String> map = new HashMap<String, String>();
+		        URI uri = getClientConfiguration().getJcrURL().toURI();
+				map.put("org.apache.jackrabbit.repository.uri", uri.toString());
+				registry=new AiravataJCRRegistry(uri, "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", getClientConfiguration().getJcrUsername(), getClientConfiguration().getJcrPassword(), map);
+			} catch (RepositoryException e) {
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+		}
+		return registry;
+	}
+
+	public XBayaClientConfiguration getClientConfiguration() {
+		if (clientConfiguration==null){
+			clientConfiguration=new XBayaClientConfiguration();
+		}
+		return clientConfiguration;
+	}
+
 }
 

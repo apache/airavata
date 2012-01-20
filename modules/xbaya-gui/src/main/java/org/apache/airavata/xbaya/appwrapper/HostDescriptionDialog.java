@@ -80,6 +80,8 @@ public class HostDescriptionDialog extends JDialog {
     
     private HostDescription originalHostDescription;
     
+    private XBayaEngine engine;
+    
     public HostDescriptionDialog(XBayaEngine engine) {
     	this(engine,true,null);
     }
@@ -89,6 +91,7 @@ public class HostDescriptionDialog extends JDialog {
      */
     public HostDescriptionDialog(XBayaEngine engine, boolean newHost, HostDescription originalHostDescription) {
         setNewHost(newHost);
+        setEngine(engine);
         setOriginalHostDescription(originalHostDescription);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -363,8 +366,12 @@ public class HostDescriptionDialog extends JDialog {
 
     public void saveHostDescription() {
         HostDescription desc = getHostDescription();
-		getRegistry().saveHostDescription(desc);
-        setHostCreated(true);
+		try {
+			getRegistry().saveHostDescription(desc);
+			setHostCreated(true);
+		} catch (RegistryException e) {
+			getEngine().getErrorWindow().error(e);
+		}
     }
 
     public AiravataRegistry getRegistry() {
@@ -401,5 +408,13 @@ public class HostDescriptionDialog extends JDialog {
 
 	public void setOriginalHostDescription(HostDescription originalHostDescription) {
 		this.originalHostDescription = originalHostDescription;
+	}
+
+	public XBayaEngine getEngine() {
+		return engine;
+	}
+
+	public void setEngine(XBayaEngine engine) {
+		this.engine = engine;
 	}
 }

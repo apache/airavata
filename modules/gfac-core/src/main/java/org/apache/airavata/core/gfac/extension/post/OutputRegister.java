@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
@@ -64,7 +65,11 @@ public class OutputRegister extends PostExecuteChain {
             }
 
             if (registry != null && DataRegistry.class.isAssignableFrom(registry.getClass())) {
-                ((DataRegistry) registry).saveOutput(workflowId, outputs);
+                try {
+					((DataRegistry) registry).saveOutput(workflowId, outputs);
+				} catch (RegistryException e) {
+					log.error(e.getLocalizedMessage(), e);
+				}
             } else {
                 log.debug("Registry does not support for Data Catalog, CLass: " + registry.getClass());
             }

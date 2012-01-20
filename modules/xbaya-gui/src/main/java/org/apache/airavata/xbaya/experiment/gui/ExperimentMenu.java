@@ -24,15 +24,14 @@ package org.apache.airavata.xbaya.experiment.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 
-import javax.jcr.RepositoryException;
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
-import org.apache.airavata.xbaya.ode.ODEDeploymentDescriptor;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
 
 public class ExperimentMenu {
@@ -104,7 +103,7 @@ public class ExperimentMenu {
                 try {
                     ExperimentMenu.this.registryAccesser.deleteOGCEWorkflow(ExperimentMenu.this.engine.getWorkflow()
                             .getQname());
-                } catch (RepositoryException e1) {
+                } catch (RegistryException e1) {
                     throw new XBayaRuntimeException(e1);
                 }
             }

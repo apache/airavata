@@ -39,15 +39,16 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XbayaEnhancedList;
+import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.airavata.xbaya.registry.RegistryAccesser;
 
 public class RegistryLoaderWindow {
 
@@ -131,7 +132,7 @@ public class RegistryLoaderWindow {
                 } catch (Error e) {
                     RegistryLoaderWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                     hide();
-                } catch (RepositoryException e) {
+                } catch (RegistryException e) {
                     RegistryLoaderWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                     hide();
                 }
@@ -170,7 +171,7 @@ public class RegistryLoaderWindow {
         for (RegistrySearchResult i : this.list.getSelectedValues()) {
             try {
                 registryAccesser.deleteOGCEWorkflow(i.getResourceId());
-            } catch (RepositoryException e) {
+            } catch (RegistryException e) {
                 e.printStackTrace();
             }
         }

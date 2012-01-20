@@ -793,7 +793,7 @@ public class XBayaConfiguration extends Observable implements Observer {
         this.registryPassphrase = registryPassphrase;
     }
 
-    public String getRegigstryUserName() {
+    public String getRegistryUserName() {
         return regigstryUserName;
     }
 

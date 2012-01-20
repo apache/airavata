@@ -338,7 +338,7 @@ public class WorkflowInterpreterLaunchWindow {
                         inputNameVals[i].setValue(value);
                     }
 
-                    String myProxyUsername = engine.getConfiguration().getRegigstryUserName();
+                    String myProxyUsername = engine.getConfiguration().getRegistryUserName();
                     String myProxyPass = engine.getConfiguration().getRegistryPassphrase();
 
                     stub.launchWorkflow(workflow.toXMLText(), topicString, myProxyPass, myProxyUsername, inputNameVals,

@@ -35,6 +35,7 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryFactory;
 import javax.jcr.SimpleCredentials;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.services.gfac.axis2.dispatchers.GFacURIBasedDispatcher;
@@ -145,13 +146,17 @@ public class GFacService implements ServiceLifeCycle {
     public void shutDown(ConfigurationContext configctx, AxisService service) {
         AiravataRegistry registry = (AiravataJCRRegistry) configctx.getProperty(CONFIGURATION_CONTEXT_REGISTRY);
         String gfacURL = (String) configctx.getProperty(GFAC_URL);
-        registry.deleteGFacDescriptor(gfacURL);
-        thread.interrupt();
         try {
-            thread.join();
-        } catch (InterruptedException e) {
-            log.info("GFacURL update thread is interrupted");
-        }
+			registry.deleteGFacDescriptor(gfacURL);
+			thread.interrupt();
+			try {
+			    thread.join();
+			} catch (InterruptedException e) {
+			    log.info("GFacURL update thread is interrupted");
+			}
+		} catch (RegistryException e) {
+			log.error("Error while shutting down!!!", e);
+		}
     }
 
     class GFacThread extends Thread {
@@ -172,7 +177,9 @@ public class GFacService implements ServiceLifeCycle {
                 }
             } catch (InterruptedException e) {
                 log.info("GFacURL update thread is interrupted");
-            }
+            } catch (RegistryException e) {
+				log.error("Error saving GFac descriptor",e);			
+			}
         }
     }
 }

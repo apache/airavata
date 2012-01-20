@@ -21,6 +21,7 @@
 
 package org.apache.airavata.xbaya.graph.dynamic.gui;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -97,7 +98,12 @@ public class DynamicWorkflowRunnerWindow {
      */
     public void show() {
         this.workflow = this.engine.getWorkflow();
-        List<String> urlList = this.engine.getConfiguration().getJcrComponentRegistry().getGFacURLList();
+        List<String> urlList=null;
+		try {
+			urlList = this.engine.getConfiguration().getJcrComponentRegistry().getRegistry().getGFacDescriptorList();
+		} catch (RegistryException e) {
+			engine.getErrorWindow().error(e);
+		}
         // When run xbaya continously urls can be repeating, so first remove everything and then add
         this.gfacUrlListField.removeAllItems();
         for (String gfacUrl : urlList) {

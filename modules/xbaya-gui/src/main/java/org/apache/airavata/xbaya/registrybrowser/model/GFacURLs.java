@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry;
 
 public class GFacURLs {
@@ -45,15 +46,19 @@ public class GFacURLs {
 
     public List<GFacURL> getURLS() {
         List<GFacURL> urls = new ArrayList<GFacURL>();
-        List<String> gfacDescriptorList = getRegistry().getGFacDescriptorList();
-        for (String urlString : gfacDescriptorList) {
-            try {
-                urls.add(new GFacURL(getRegistry(), new URL(urlString)));
-            } catch (MalformedURLException e) {
-                // practically speaking this exception should not be possible. just in case,
-                e.printStackTrace();
-            }
-        }
+        try {
+			List<String> gfacDescriptorList = getRegistry().getGFacDescriptorList();
+			for (String urlString : gfacDescriptorList) {
+			    try {
+			        urls.add(new GFacURL(getRegistry(), new URL(urlString)));
+			    } catch (MalformedURLException e) {
+			        // practically speaking this exception should not be possible. just in case,
+			        e.printStackTrace();
+			    }
+			}
+		} catch (RegistryException e) {
+			e.printStackTrace();
+		}
         return urls;
     }
 }
