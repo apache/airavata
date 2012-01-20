@@ -37,6 +37,7 @@ import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveE
 import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 
 public interface AiravataRegistry extends Registry{
     /**
@@ -213,30 +214,32 @@ public interface AiravataRegistry extends Registry{
 
     public void deleteHostDescription(String hostId) throws RegistryException;
 
-    public boolean saveWorkflowExecutionServiceInput(WorkflowIOData workflowInputData) throws RegistryException;
+    public boolean saveWorkflowExecutionServiceInput(WorkflowServiceIOData workflowInputData) throws RegistryException;
 
-    public boolean saveWorkflowExecutionServiceOutput(WorkflowIOData workflowOutputData)throws RegistryException;
+    public boolean saveWorkflowExecutionServiceOutput(WorkflowServiceIOData workflowOutputData)throws RegistryException;
     
-    public List<WorkflowIOData> searchWorkflowExecutionServiceInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
+    public List<WorkflowServiceIOData> searchWorkflowExecutionServiceInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
 
-    public List<WorkflowIOData> searchWorkflowExecutionServiceOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
+    public List<WorkflowServiceIOData> searchWorkflowExecutionServiceOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
 
     public boolean saveWorkflowExecutionStatus(String experimentId,String status)throws RegistryException;
 
-    public String getWorkflowExecutionStatus(String experimentId)throws RegistryException;
-
-    public Map<String,String> getWorkflowExecutionStatusWithRegex(String regex) throws RegistryException;
+    public WorkflowExecutionStatus getWorkflowExecutionStatus(String experimentId)throws RegistryException;
 
     public boolean saveWorkflowExecutionOutput(String experimentId,String outputNodeName,String output) throws RegistryException;
+    
+    public boolean saveWorkflowExecutionOutput(String experimentId, WorkflowIOData data) throws RegistryException;
 
-    public String getWorkflowExecutionOutput(String experimentId,String outputNodeName) throws RegistryException;
-
-    public Map<String,String> getWorkflowExecutionOutputWithRegex(String experimentIdRegex,String outputName)throws  RegistryException;
+    public WorkflowIOData getWorkflowExecutionOutput(String experimentId,String outputNodeName) throws RegistryException;
+    
+    public List<WorkflowIOData> getWorkflowExecutionOutput(String experimentId) throws RegistryException;
 
     public String[] getWorkflowExecutionOutputNames(String exeperimentId) throws RegistryException;
 
-    public Map<String,String[]> getWorkflowExecutionOutputNamesWithRegex(String experiementId) throws  RegistryException;
-    
     public boolean saveWorkflowExecutionUser(String experimentId, String user) throws RegistryException;
+    
+    public String getWorkflowExecutionUser(String experimentId) throws RegistryException;
+    
+    public WorkflowExecution getWorkflowExection(String experimentId) throws RegistryException;
 
 }
