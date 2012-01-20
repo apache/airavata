@@ -168,7 +168,6 @@ public class WorkflowInterpreter {
 		this.mode = SERVER_MODE;
 		this.retryFailed = false;
 		this.runWithCrossProduct = this.configuration.isRunWithCrossProduct();
-        provenanceWriter = new PredicatedTaskRunner(1);
 	}
 
 
@@ -197,8 +196,6 @@ public class WorkflowInterpreter {
                 }
                 this.mode = SERVER_MODE;
                 this.retryFailed = false;
-                provenanceWriter = new PredicatedTaskRunner(1);
-
         }
 
 	/**
@@ -234,7 +231,6 @@ public class WorkflowInterpreter {
 		this.topic = topic;
 		this.actOnProvenance = actOnProvenance;
 		this.runWithCrossProduct = this.configuration.isRunWithCrossProduct();
-		provenanceWriter = new PredicatedTaskRunner(1);
 		engine.registerWorkflowInterpreter(this);
 
 	}
@@ -257,7 +253,7 @@ public class WorkflowInterpreter {
 			this.getWorkflow().setExecutionState(XBayaExecutionState.RUNNING);
             if(actOnProvenance){
                 this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowStatus(this.topic, WORKFLOW_STARTED);
-                System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
+//                System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
             }
 			ArrayList<Node> inputNodes = this.getInputNodesDynamically();
 			Object[] values = new Object[inputNodes.size()];
@@ -344,7 +340,7 @@ public class WorkflowInterpreter {
             if (getFailedNodeCountDynamically() == 0) {
                 if (actOnProvenance) {
                     this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowStatus(this.topic, WORKFLOW_FINISHED);
-                    System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
+//                    System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
                 }
             }
             this.notifier.workflowTerminated();
@@ -448,6 +444,9 @@ public class WorkflowInterpreter {
 		if (node instanceof ForEachNode) {
 			node = InterpreterUtil.findEndForEachFor((ForEachNode) node);
 		}
+        if(this.provenanceWriter == null){
+           this.provenanceWriter = new PredicatedTaskRunner(1);
+        }
 		this.provenanceWriter.scedule(new ProvenanceWrite(node, this
 				.getWorkflow().getName(), invokerMap, this.topic,
 				this.configuration.getJcrComponentRegistry().getRegistry()));
@@ -1823,5 +1822,9 @@ public class WorkflowInterpreter {
 
     public void setActOnProvenance(boolean actOnProvenance) {
         this.actOnProvenance = actOnProvenance;
+    }
+
+    public void setProvenanceWriter(PredicatedTaskRunner provenanceWriter) {
+        this.provenanceWriter = provenanceWriter;
     }
 }
