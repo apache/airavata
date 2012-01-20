@@ -30,6 +30,7 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.schemas.gfac.Parameter;
@@ -48,10 +49,14 @@ public class XBayaWorkflowExperiments {
 	
 	public List<XBayaWorkflowExperiment> getAllExperiments(){
 		Map<String, XBayaWorkflowExperiment> experiments=new HashMap<String,XBayaWorkflowExperiment>();
-    	List<WorkflowIOData> workflowInput = getRegistry().searchWorkflowInput(null, null, null);
-    	List<WorkflowIOData> workflowOutput = getRegistry().searchWorkflowOutput(null, null, null);
-    	createChildren(experiments, workflowInput, true);
-    	createChildren(experiments, workflowOutput, false);
+    	try {
+			List<WorkflowIOData> workflowInput = getRegistry().searchWorkflowExecutionServiceInput(null, null, null);
+			List<WorkflowIOData> workflowOutput = getRegistry().searchWorkflowExecutionServiceOutput(null, null, null);
+			createChildren(experiments, workflowInput, true);
+			createChildren(experiments, workflowOutput, false);
+		} catch (RegistryException e) {
+			e.printStackTrace();
+		}
     	return Arrays.asList(experiments.values().toArray(new XBayaWorkflowExperiment[]{}));
 	}
 	private void createChildren(

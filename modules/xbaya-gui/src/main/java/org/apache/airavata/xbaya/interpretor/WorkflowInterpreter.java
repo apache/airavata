@@ -21,6 +21,25 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
+import java.awt.Color;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
@@ -36,7 +55,15 @@ import org.apache.airavata.xbaya.component.amazon.InstanceComponent;
 import org.apache.airavata.xbaya.component.amazon.TerminateInstanceComponent;
 import org.apache.airavata.xbaya.component.dynamic.DynamicComponent;
 import org.apache.airavata.xbaya.component.dynamic.DynamicInvoker;
-import org.apache.airavata.xbaya.component.system.*;
+import org.apache.airavata.xbaya.component.system.ConstantComponent;
+import org.apache.airavata.xbaya.component.system.EndForEachComponent;
+import org.apache.airavata.xbaya.component.system.EndifComponent;
+import org.apache.airavata.xbaya.component.system.ForEachComponent;
+import org.apache.airavata.xbaya.component.system.IfComponent;
+import org.apache.airavata.xbaya.component.system.InputComponent;
+import org.apache.airavata.xbaya.component.system.MemoComponent;
+import org.apache.airavata.xbaya.component.system.OutputComponent;
+import org.apache.airavata.xbaya.component.system.S3InputComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
@@ -51,7 +78,13 @@ import org.apache.airavata.xbaya.graph.impl.EdgeImpl;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.xbaya.graph.subworkflow.SubWorkflowNodeGUI;
-import org.apache.airavata.xbaya.graph.system.*;
+import org.apache.airavata.xbaya.graph.system.ConstantNode;
+import org.apache.airavata.xbaya.graph.system.EndForEachNode;
+import org.apache.airavata.xbaya.graph.system.EndifNode;
+import org.apache.airavata.xbaya.graph.system.ForEachNode;
+import org.apache.airavata.xbaya.graph.system.IfNode;
+import org.apache.airavata.xbaya.graph.system.InputNode;
+import org.apache.airavata.xbaya.graph.system.OutputNode;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.apache.airavata.xbaya.gui.Cancelable;
@@ -78,24 +111,12 @@ import org.apache.airavata.xbaya.wf.Workflow;
 import org.ietf.jgss.GSSCredential;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.impl.XmlElementWithViewsImpl;
+
 import xsul.lead.LeadContextHeader;
 import xsul.lead.LeadResourceMapping;
 import xsul5.XmlConstants;
 import xsul5.wsdl.WsdlPort;
 import xsul5.wsdl.WsdlService;
-
-import javax.xml.namespace.QName;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import java.awt.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.*;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class WorkflowInterpreter {
 
@@ -252,8 +273,11 @@ public class WorkflowInterpreter {
 
 			this.getWorkflow().setExecutionState(XBayaExecutionState.RUNNING);
             if(actOnProvenance){
-                this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowStatus(this.topic, WORKFLOW_STARTED);
-//                System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
+                try {
+					this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionStatus(this.topic, WORKFLOW_STARTED);
+				} catch (RegistryException e) {
+					throw new XBayaException(e);
+				}
             }
 			ArrayList<Node> inputNodes = this.getInputNodesDynamically();
 			Object[] values = new Object[inputNodes.size()];
@@ -339,7 +363,15 @@ public class WorkflowInterpreter {
 
             if (getFailedNodeCountDynamically() == 0) {
                 if (actOnProvenance) {
-                    this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowStatus(this.topic, WORKFLOW_FINISHED);
+                    try {
+						try {
+							this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionStatus(this.topic, WORKFLOW_FINISHED);
+						} catch (Exception e) {
+							throw new XBayaException(e);
+						}
+					} catch (Exception e) {
+						throw new XBayaException(e);
+					}
 //                    System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
                 }
             }
@@ -524,7 +556,7 @@ public class WorkflowInterpreter {
 					((OutputNode) node).setDescription(val.toString());
                      if(actOnProvenance){
                         try {
-                            this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowOutputData(this.topic,node.getName(),val.toString());
+                            this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionOutput(this.topic,node.getName(),val.toString());
                         } catch (RegistryException e) {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                         }
@@ -571,7 +603,7 @@ public class WorkflowInterpreter {
 				if (node.getGUI().getBodyColor() != NodeState.FINISHED.color) {
                     if(actOnProvenance){
                         try {
-                            this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowOutputData(this.topic,node.getName(),val.toString());
+                            this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionOutput(this.topic,node.getName(),val.toString());
                         } catch (RegistryException e) {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                         }

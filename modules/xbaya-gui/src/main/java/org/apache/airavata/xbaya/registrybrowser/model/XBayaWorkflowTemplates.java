@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry;
 
 public class XBayaWorkflowTemplates {
@@ -47,10 +48,14 @@ public class XBayaWorkflowTemplates {
 
     public List<XBayaWorkflowTemplate> getWorkflows() {
         List<XBayaWorkflowTemplate> workflows = new ArrayList<XBayaWorkflowTemplate>();
-        Map<QName, Node> workflowMap = registry.getWorkflows(registry.getUsername());
-        for (Node xBayaWorkflowNode : workflowMap.values()) {
-            workflows.add(new XBayaWorkflowTemplate(xBayaWorkflowNode));
-        }
+        try {
+			Map<QName, Node> workflowMap = registry.getWorkflows(registry.getUsername());
+			for (Node xBayaWorkflowNode : workflowMap.values()) {
+			    workflows.add(new XBayaWorkflowTemplate(xBayaWorkflowNode));
+			}
+		} catch (RegistryException e) {
+			e.printStackTrace();
+		}
         return workflows;
     }
 }

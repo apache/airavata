@@ -85,7 +85,9 @@ public class JCRComponentRegistry extends ComponentRegistry {
             }
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
-        }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+		}
 
         return tree;
     }
@@ -98,21 +100,17 @@ public class JCRComponentRegistry extends ComponentRegistry {
         return NAME;
     }
 
-    public List<String> getGFacURLList() {
-        return this.registry.getGFacDescriptorList();
-    }
-
     public UserManager getUserManager() {
         return registry.getUserManager();
     }
 
-    public String saveDeploymentDescription(String service, String host, ApplicationDeploymentDescription app) {
-        // deploy the service on host
-        registry.deployServiceOnHost(service, host);
-
-        // save deployment description
-        return registry.saveDeploymentDescription(service, host, app);
-    }
+//    public String saveDeploymentDescription(String service, String host, ApplicationDeploymentDescription app) {
+//        // deploy the service on host
+//        registry.deployServiceOnHost(service, host);
+//
+//        // save deployment description
+//        return registry.saveDeploymentDescription(service, host, app);
+//    }
 
     public AiravataRegistry getRegistry() {
         return registry;

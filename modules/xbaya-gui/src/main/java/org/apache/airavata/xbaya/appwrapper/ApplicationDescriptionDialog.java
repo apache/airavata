@@ -535,17 +535,21 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     }
 
     public void saveApplicationDescription() {
-        getRegistry().saveDeploymentDescription(getServiceName(), getHostName(), getShellApplicationDescription());
-        if (!isNewDescritor() && (!getServiceName().equals(getOriginalService()) || !getHostName().equals(getOriginalHost()))) {
-			try {
-				getRegistry().deleteDeploymentDescription(getOriginalService(),
-						getOriginalHost(),getOriginalDeploymentDescription().getType()
-						.getApplicationName().getStringValue());
-			} catch (RegistryException e) {
-				engine.getErrorWindow().error(e);
+        try {
+			getRegistry().saveDeploymentDescription(getServiceName(), getHostName(), getShellApplicationDescription());
+			if (!isNewDescritor() && (!getServiceName().equals(getOriginalService()) || !getHostName().equals(getOriginalHost()))) {
+				try {
+					getRegistry().deleteDeploymentDescription(getOriginalService(),
+							getOriginalHost(),getOriginalDeploymentDescription().getType()
+							.getApplicationName().getStringValue());
+				} catch (RegistryException e) {
+					engine.getErrorWindow().error(e);
+				}
 			}
+			setApplicationDescCreated(true);
+		} catch (RegistryException e) {
+			engine.getErrorWindow().error(e);
 		}
-		setApplicationDescCreated(true);
     }
 
     public boolean isApplicationDescCreated() {

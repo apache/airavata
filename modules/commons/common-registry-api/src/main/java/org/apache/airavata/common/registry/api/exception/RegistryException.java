@@ -31,7 +31,7 @@ public class RegistryException extends Exception {
         super(ERROR_MESSAGE, e);
     }
     
-    protected RegistryException(String message, Exception e) {
+    public RegistryException(String message, Exception e) {
         super(message, e);
     }
 }

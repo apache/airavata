@@ -33,13 +33,14 @@ public interface Axis2Registry extends AiravataRegistry{
      * @return WSDL
      * @throws RegistryException 
      */
-    public String getWSDL(String serviceId) throws RegistryException;
+    public String getWSDL(String serviceId) throws Exception;
     
     /**
      * Load WSDL for Axis2
      * 
      * @param serviceId
      * @return WSDL
+     * @throws Exception 
      */
-    public String getWSDL(ServiceDescription service);
+    public String getWSDL(ServiceDescription service) throws Exception;
 }

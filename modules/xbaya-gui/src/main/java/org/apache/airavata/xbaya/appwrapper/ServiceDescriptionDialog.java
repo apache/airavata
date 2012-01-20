@@ -43,6 +43,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -450,8 +451,13 @@ public class ServiceDescriptionDialog extends JDialog {
         getServiceDescriptionType().setInputParametersArray(inputParameters.toArray(new InputParameterType[] {}));
         getServiceDescriptionType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[] {}));
 
-        getRegistry().saveServiceDescription(getServiceDescription());
-        setServiceCreated(true);
+        try {
+			getRegistry().saveServiceDescription(getServiceDescription());
+	        setServiceCreated(true);
+		} catch (RegistryException e) {
+			e.printStackTrace();
+			setError(e.getMessage());
+		}
     }
 
     public void close() {

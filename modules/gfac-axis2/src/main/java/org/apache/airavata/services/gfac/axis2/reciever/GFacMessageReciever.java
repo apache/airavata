@@ -493,6 +493,10 @@ public class GFacMessageReciever implements MessageReceiver {
 		} catch (RegistryException e) {
 			//TODO this scenario occur if the service is not present in the registry.
 			//someone should handle this 
+		} catch (Exception e) {
+			//TODO this scenario occur if something something something.
+			//someone should handle this 
+			e.printStackTrace();
 		}
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(WSDL));
         StAXOMBuilder builder = new StAXOMBuilder(reader);
