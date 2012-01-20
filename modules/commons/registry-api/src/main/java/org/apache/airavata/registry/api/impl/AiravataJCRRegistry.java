@@ -850,7 +850,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         Session session = null;
         try {
             session = getSession();
-            Node experimentsNode = getOrAddNode(session.getRootNode(), WORKFLOW_DATA);
+            Node experimentsNode = getWorkflowDataNode(session);
             NodeIterator experimentNodes = experimentsNode.getNodes();
             for (; experimentNodes.hasNext();) {
                 Node experimentNode = experimentNodes.nextNode();
@@ -930,8 +930,13 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 
 	private Node getWorkflowExperimentDataNode(String experimentId,
 			Session session) throws RepositoryException {
-		return getOrAddNode(getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOW_DATA),
+		return getOrAddNode(getOrAddNode(getWorkflowDataNode(session),
 		                experimentId),experimentId);
+	}
+
+	private Node getWorkflowDataNode(Session session)
+			throws RepositoryException {
+		return getOrAddNode(session.getRootNode(), WORKFLOW_DATA);
 	}
     
 	public boolean saveWorkflowExecutionOutput(String experimentId,String outputNodeName,String output) throws RegistryException{
@@ -1000,7 +1005,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 		return resultNode;
 	}
     private List<String> getMatchingExperimentIds(String regex,Session session)throws RepositoryException{
-        Node orAddNode = getOrAddNode(session.getRootNode(), WORKFLOW_DATA);
+        Node orAddNode = getWorkflowDataNode(session);
         List<String> matchList = new ArrayList<String>();
         NodeIterator nodes = orAddNode.getNodes();
         Pattern compile = Pattern.compile(regex);
@@ -1130,5 +1135,52 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 			result.add(getWorkflowExecutionOutput(experimentId, workflowExecutionOutputName));
 		}
 		return result;
+	}
+
+	public List<String> getWorkflowExecutionIdByUser(String user)
+			throws RegistryException {
+		Session session = null;
+		List<String> ids=new ArrayList<String>();
+		try {
+			session = getSession();
+			List<String> matchingExperimentIds = getMatchingExperimentIds(".*", session);
+			for (String id : matchingExperimentIds) {
+				if (user.equals(getWorkflowExecutionUser(id))){
+					ids.add(id);
+				}
+			}
+		} catch (RepositoryException e) {
+			throw new RegistryException("Error in retrieving Execution Ids for the user '"+user+"'",e);
+		}finally{
+			closeSession(session);
+		}
+		return ids;
+	}
+
+	public List<WorkflowExecution> getWorkflowExecutionByUser(String user)
+			throws RegistryException {
+		return getWorkflowExecution(user,-1,-1);
+	}
+
+	private List<WorkflowExecution> getWorkflowExecution(String user, int startLimit, int endLimit)
+			throws RegistryException {
+		List<WorkflowExecution> executions=new ArrayList<WorkflowExecution>();
+		List<String> workflowExecutionIdByUser = getWorkflowExecutionIdByUser(user);
+		int count=0;
+		for (String id : workflowExecutionIdByUser) {
+			if ((startLimit==-1 && endLimit==-1) ||
+				(startLimit==-1 && count<endLimit) ||
+				(startLimit<=count && endLimit==-1) ||
+				(startLimit<=count && count<endLimit)){
+				executions.add(getWorkflowExection(id));
+			}
+			count++;
+		}
+		return executions;
+	}
+
+	public List<WorkflowExecution> getWorkflowExecutionByUser(String user,
+			int pageSize, int pageNo) throws RegistryException {
+		return getWorkflowExecutionByUser(user,pageSize*pageNo,pageSize*(pageNo+1));
 	}
 }
