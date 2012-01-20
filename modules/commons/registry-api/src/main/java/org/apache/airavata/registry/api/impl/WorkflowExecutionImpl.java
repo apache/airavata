@@ -36,7 +36,14 @@ public class WorkflowExecutionImpl implements WorkflowExecution{
 	private List<WorkflowServiceIOData> serviceOutput;
 	private List<WorkflowIOData> output;
 	private String experimentId;
+	private String metadata;
 	
+	public String getMetadata() {
+		return metadata;
+	}
+	public void setMetadata(String metadata) {
+		this.metadata = metadata;
+	}
 	public String getExperimentId() {
 		return experimentId;
 	}
