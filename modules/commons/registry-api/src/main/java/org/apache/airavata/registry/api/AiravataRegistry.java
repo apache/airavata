@@ -33,6 +33,7 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.registry.api.WorkflowExecutionStatus.ExecutionStatus;
 import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
@@ -222,7 +223,9 @@ public interface AiravataRegistry extends Registry{
 
     public List<WorkflowServiceIOData> searchWorkflowExecutionServiceOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
 
-    public boolean saveWorkflowExecutionStatus(String experimentId,String status)throws RegistryException;
+    public boolean saveWorkflowExecutionStatus(String experimentId,WorkflowExecutionStatus status)throws RegistryException;
+    
+    public boolean saveWorkflowExecutionStatus(String experimentId,ExecutionStatus status)throws RegistryException;
 
     public WorkflowExecutionStatus getWorkflowExecutionStatus(String experimentId)throws RegistryException;
 

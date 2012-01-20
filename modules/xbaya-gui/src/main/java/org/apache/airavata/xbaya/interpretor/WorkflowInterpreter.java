@@ -44,6 +44,7 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.registry.api.WorkflowExecutionStatus.ExecutionStatus;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
@@ -274,7 +275,7 @@ public class WorkflowInterpreter {
 			this.getWorkflow().setExecutionState(XBayaExecutionState.RUNNING);
             if(actOnProvenance){
                 try {
-					this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionStatus(this.topic, WORKFLOW_STARTED);
+					this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionStatus(this.topic, ExecutionStatus.STARTED);
 				} catch (RegistryException e) {
 					throw new XBayaException(e);
 				}
@@ -365,7 +366,7 @@ public class WorkflowInterpreter {
                 if (actOnProvenance) {
                     try {
 						try {
-							this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionStatus(this.topic, WORKFLOW_FINISHED);
+							this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionStatus(this.topic, ExecutionStatus.FINISHED);
 						} catch (Exception e) {
 							throw new XBayaException(e);
 						}

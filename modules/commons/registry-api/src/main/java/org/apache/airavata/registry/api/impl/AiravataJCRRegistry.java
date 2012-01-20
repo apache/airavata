@@ -890,13 +890,19 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         return workflowIODataList;
     }
 
-    public boolean saveWorkflowExecutionStatus(String experimentId,String status)throws RegistryException{
+    public boolean saveWorkflowExecutionStatus(String experimentId,WorkflowExecutionStatus status)throws RegistryException{
         Session session = null;
         boolean isSaved = true;
         try {
             session = getSession();
             Node workflowDataNode = getWorkflowExperimentDataNode(experimentId, session);
-            workflowDataNode.setProperty(WORKFLOW_STATUS_PROPERTY,status);
+            workflowDataNode.setProperty(WORKFLOW_STATUS_PROPERTY,status.getExecutionStatus().name());
+            Date time = status.getStatusUpdateTime();
+            if (time==null){
+            	time=Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime();
+            }
+            //TODO is saving the datetime following format ok?
+			workflowDataNode.setProperty(WORKFLOW_STATUS_TIME_PROPERTY,time.getTime());
             session.save();
         } catch (Exception e) {
             isSaved = false;
@@ -914,10 +920,13 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             session = getSession();
             Node workflowDataNode = getWorkflowExperimentDataNode(experimentId, session);
             ExecutionStatus status = ExecutionStatus.valueOf(workflowDataNode.getProperty(WORKFLOW_STATUS_PROPERTY).getString());
-            String dateString = workflowDataNode.getProperty(WORKFLOW_STATUS_TIME_PROPERTY).getString();
+            Property prop = workflowDataNode.getProperty(WORKFLOW_STATUS_TIME_PROPERTY);
 			Date date=null;
-			if (dateString!=null) {
-				date = DateFormat.getInstance().parse(dateString);
+			if (prop!=null) {
+				Long dateMiliseconds = prop.getLong();
+				Calendar cal = Calendar.getInstance();
+				cal.setTimeInMillis(dateMiliseconds);
+				date = cal.getTime();
 			}
 			property=new WorkflowExecutionStatus(status, date);
             session.save();
@@ -1220,5 +1229,10 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         }
         return isSaved;
 		
+	}
+
+	public boolean saveWorkflowExecutionStatus(String experimentId,
+			ExecutionStatus status) throws RegistryException {
+		return saveWorkflowExecutionStatus(experimentId,new WorkflowExecutionStatus(status));
 	}
 }
