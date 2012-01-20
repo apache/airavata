@@ -39,6 +39,7 @@ import javax.jcr.RepositoryException;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.WorkflowExecution;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
@@ -238,18 +239,19 @@ public class XBayaClient {
         }
     }
 
-    public String runWorkflow(String topic){
+    public String runWorkflow(String topic, String user){
 		String worflowoutput= null;
 		try {
 			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(getClientConfiguration().getXbayaServiceURL().toString());
 		    worflowoutput = stub.launchWorkflow(workflow, topic, getClientConfiguration().getMyproxyPassword(),getClientConfiguration().getMyproxyUsername(), null,
 					configurations);
+		    getRegistry().saveWorkflowExecutionUser(topic, user);
 		    log.info("Workflow output : " + worflowoutput);
 		} catch (AxisFault e) {
 			log.fine(e.getMessage(), e);
 		} catch (RemoteException e) {
 			log.fine(e.getMessage(), e);
-		} catch (IOException e) {
+		} catch (RegistryException e) {
 			log.fine(e.getMessage(), e);
 		}
 		return worflowoutput;
@@ -272,7 +274,23 @@ public class XBayaClient {
 		}
 		return worflowoutput;
 	}
-
+    
+    public List<WorkflowExecution> getWorkflowExecutionData(String user) throws RegistryException{
+    	return getRegistry().getWorkflowExecutionByUser(user);
+    }
+    
+    /**
+     * 
+     * @param user
+     * @param pageSize - number of executions to return (page size)
+     * @param PageNo - which page to return to (>=0) 
+     * @return
+     * @throws RegistryException
+     */
+    public List<WorkflowExecution> getWorkflowExecutionData(String user, int pageSize, int PageNo) throws RegistryException{
+    	return getRegistry().getWorkflowExecutionByUser(user, pageSize, PageNo);
+    }
+    
     public static String getWorkflow() {
         return workflow;
     }
