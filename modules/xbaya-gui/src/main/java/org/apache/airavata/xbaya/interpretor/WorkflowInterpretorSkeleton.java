@@ -65,6 +65,8 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static  String jcrUserName = "";
     public static  String jcrPassword = "";
     public static  String jcrURL = "";
+    public static boolean runInThread = false;
+    public static final String RUN_IN_THREAD = "runInThread";
 
 
     public void startUp(ConfigurationContext configctx, AxisService service) {
@@ -79,9 +81,15 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             }else{
                 provenance = false;
             }
+            if("true".equals(properties.get(RUN_IN_THREAD))){
+                runInThread = true;
+            }else{
+                runInThread = false;
+            }
             jcrUserName = (String)properties.get(JCR_USER);
             jcrPassword = (String) properties.get(JCR_PASS);
             jcrURL = (String) properties.get(JCR_URL);
+
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -98,7 +106,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	 */
 
 	public java.lang.String launchWorkflow(java.lang.String workflowAsString, java.lang.String topic, java.lang.String password, java.lang.String username, NameValue[] inputs, NameValue[] configurations) {
-        return setupAndLaunch(workflowAsString, topic, password, username, inputs, configurations,true);
+        return setupAndLaunch(workflowAsString, topic, password, username, inputs, configurations,runInThread);
 	}
 
     private String setupAndLaunch(String workflowAsString, String topic, String password, String username, NameValue[] inputs, NameValue[] configurations,boolean inNewThread) {
