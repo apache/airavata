@@ -1331,146 +1331,155 @@ public class WorkflowInterpreter {
 		return invoker;
 	}
 
-	private void runInThread(LinkedList<String> listOfValues,
-			ForEachNode forEachNode, Node middleNode, Node endForEachNode,
-			SystemComponentInvoker tempInvoker, AtomicInteger counter,
-			Integer[] inputNumber) throws XBayaException {
+    private void runInThread(final LinkedList<String> listOfValues,
+                             ForEachNode forEachNode, final Node middleNode,
+                             Node endForEachNode, SystemComponentInvoker tempInvoker,
+                             AtomicInteger counter, final Integer[] inputNumber) throws XBayaException {
 
-		Invoker invoker = null;
-		LinkedList<Invoker> invokerList = new LinkedList<Invoker>();
+        final LinkedList<Invoker> invokerList = new LinkedList<Invoker>();
 
-		if (inputNumber.length > 1) {
-			List<String> inputValues = createInputValues(listOfValues,
-					inputNumber);
-			for (Iterator<String> iterator = inputValues.iterator(); iterator
-					.hasNext();) {
-				String input = iterator.next();
-				final String gfacURLString = this.configuration
-						.getGFacURL().toString();
+        if(inputNumber.length > 1){
+            List<String> inputValues = createInputValues(listOfValues,inputNumber);
+            for (final Iterator<String> iterator = inputValues.iterator(); iterator.hasNext();) {
+                final String gfacURLString = this.configuration.getGFacURL().toString();
+                final String input = iterator.next();
+                WSComponent wsComponent = (WSComponent) middleNode.getComponent();
+                final Invoker invoker2 = createInvokerForEachSingleWSNode(middleNode, gfacURLString, wsComponent);
+                invokerList.add(invoker2);
 
-				if (middleNode instanceof WSNode) {
-					WSComponent wsComponent = (WSComponent) middleNode
-							.getComponent();
-					invoker = createInvokerForEachSingleWSNode(middleNode,
-							gfacURLString, wsComponent);
-					invoker.setup();
-					invoker.setOperation(wsComponent.getOperationName());
-				} else if (middleNode instanceof SubWorkflowNode) {
-					// ((SubWorkflowNode) middleNode).getWorkflow();
-					// this.configuration;
-					// TODO : Need to create a invoker!
-					// new WorkflowInterpreter()
-				} else {
-					throw new XBayaRuntimeException(
-							"Only Web services and subworkflows are supported for For-Each : Found : "
-									+ middleNode);
-				}
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            getInvoker(middleNode, invoker2);
+                            invokeGFacService(listOfValues, middleNode, inputNumber, input, invoker2);
 
-				invokerList.add(invoker);
-				// find inputs
-				List<DataPort> inputPorts = middleNode.getInputPorts();
-				String[] inputArray = null;
-				if (inputNumber.length == 1) {
-					inputArray = listOfValues.toArray(new String[listOfValues
-							.size()]);
-				} else {
-					inputArray = input.split(",");
-				}
-				int index = 0;
-				for (DataPort port : inputPorts) {
-					Object inputVal = InterpreterUtil.findInputFromPort(port,
-							this.invokerMap);
-					/*
-					 * Handle ForEachNode
-					 */
-					Node fromNode = port.getFromNode();
-					if (fromNode instanceof ForEachNode) {
-						inputVal = inputArray[index++];
-					}
+                        } catch (XBayaException e) {
+                            WorkflowInterpreter.this.engine.getErrorWindow().error(e);
+                        }
+                    }
 
-					if (null == inputVal) {
-						throw new WorkFlowInterpreterException(
-								"Unable to find inputs for the node:"
-										+ middleNode.getID());
-					}
-					invoker.setInput(port.getName(), inputVal);
-				}
-				invoker.invoke();
+                }.start();
 
-			}
-		} else {
-			for (Iterator<String> iterator = listOfValues.iterator(); iterator
-					.hasNext();) {
-				String input = iterator.next();
-				final String gfacURLString = this.configuration
-						.getGFacURL().toString();
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    WorkflowInterpreter.this.engine.getErrorWindow().error(e);
+                }
+            }
+        }else{
+            Invoker invoker = null;
+            for (Iterator<String> iterator = listOfValues.iterator(); iterator
+                    .hasNext();) {
+                String input = iterator.next();
+                final String gfacURLString = this.configuration
+                        .getGFacURL().toString();
 
-				if (middleNode instanceof WSNode) {
-					WSComponent wsComponent = (WSComponent) middleNode
-							.getComponent();
-					invoker = createInvokerForEachSingleWSNode(middleNode,
-							gfacURLString, wsComponent);
-					invoker.setup();
-					invoker.setOperation(wsComponent.getOperationName());
-				} else if (middleNode instanceof SubWorkflowNode) {
-					// ((SubWorkflowNode) middleNode).getWorkflow();
-					// this.configuration;
-					// TODO : Need to create a invoker!
-					// new WorkflowInterpreter()
-				} else {
-					throw new XBayaRuntimeException(
-							"Only Web services and subworkflows are supported for For-Each : Found : "
-									+ middleNode);
-				}
+                WSComponent wsComponent = (WSComponent) middleNode.getComponent();
+                invoker = createInvokerForEachSingleWSNode(middleNode, gfacURLString, wsComponent);
+                invokerList.add(invoker);
+                getInvoker(middleNode, invoker);
 
-				invokerList.add(invoker);
-				// find inputs
-				List<DataPort> inputPorts = middleNode.getInputPorts();
-				for (DataPort port : inputPorts) {
-					Object inputVal = InterpreterUtil.findInputFromPort(port,
-							this.invokerMap);
+                // find inputs
+                List<DataPort> inputPorts = middleNode.getInputPorts();
+                for (DataPort port : inputPorts) {
+                    Object inputVal = InterpreterUtil.findInputFromPort(port,
+                            this.invokerMap);
 
-					/*
-					 * Handle ForEachNode
-					 */
-					Node fromNode = port.getFromNode();
-					// if (fromNode instanceof ForEachNode) {
-					inputVal = input;
-					// }
+                    /*
+                    * Handle ForEachNode
+                    */
+                    Node fromNode = port.getFromNode();
+//                if (fromNode instanceof ForEachNode) {
+                    inputVal = input;
+//                }
 
-					if (null == inputVal) {
-						throw new WorkFlowInterpreterException(
-								"Unable to find inputs for the node:"
-										+ middleNode.getID());
-					}
-					invoker.setInput(port.getName(), inputVal);
-				}
-				invoker.invoke();
-			}
-		}
+                    if (null == inputVal) {
+                        throw new WorkFlowInterpreterException(
+                                "Unable to find inputs for the node:"
+                                        + middleNode.getID());
+                    }
+                    invoker.setInput(port.getName(), inputVal);
+                }
+                invoker.invoke();
+            }
+        }
 
-		// String arrayElementName = foreachWSNode.getOperationName() +
-		// "ArrayResponse";
-		// String outputStr = "<" + arrayElementName + ">";
-		String outputStr = "";
-		for (Iterator<Invoker> iterator = invokerList.iterator(); iterator
-				.hasNext();) {
-			Invoker workflowInvoker = iterator.next();
+        // String arrayElementName = foreachWSNode.getOperationName() +
+        // "ArrayResponse";
+        // String outputStr = "<" + arrayElementName + ">";
+        String outputStr = "";
+        for (Iterator<Invoker> iterator = invokerList.iterator(); iterator
+                .hasNext();) {
+            Invoker workflowInvoker = iterator.next();
 
-			// /
-			Object output = workflowInvoker.getOutput(endForEachNode
-					.getInputPort(0).getFromPort().getName());
-			outputStr += "\n<value>" + output + "</value>";
-			counter.incrementAndGet();
-		}
-		// outputStr += "\n</" + arrayElementName + ">";
-		System.out.println(outputStr);
-		if (!(endForEachNode instanceof OutputNode)) {
-			tempInvoker.addOutput(endForEachNode.getOutputPort(0).getName(),
-					outputStr);
-		}
-		forEachNode.getGUI().setBodyColor(NodeState.FINISHED.color);
-	}
+            // /
+            Object output = workflowInvoker.getOutput(endForEachNode
+                    .getInputPort(0).getFromPort().getName());
+            outputStr += "\n<value>" + output + "</value>";
+            counter.incrementAndGet();
+        }
+        // outputStr += "\n</" + arrayElementName + ">";
+        System.out.println(outputStr);
+        if(!(endForEachNode instanceof OutputNode)){
+            tempInvoker.addOutput(endForEachNode.getOutputPort(0).getName(),
+                    outputStr);
+        }
+        forEachNode.getGUI().setBodyColor(NodeState.FINISHED.color);
+    }
+
+    private void invokeGFacService(LinkedList<String> listOfValues, Node middleNode,
+                                   Integer[] inputNumber, String input,
+                                   Invoker invoker) throws XBayaException {
+
+
+        // find inputs
+        List<DataPort> inputPorts = middleNode.getInputPorts();
+        String[] inputArray = null;
+        if(inputNumber.length == 1){
+            inputArray = listOfValues.toArray(new String[listOfValues.size()]);
+        }else{
+            inputArray = input.split(",");
+        }
+        int index = 0;
+        for (DataPort port : inputPorts) {
+            Object inputVal = InterpreterUtil.findInputFromPort(port,
+                    this.invokerMap);
+            /*
+            * Handle ForEachNode
+            */
+            Node fromNode = port.getFromNode();
+            if (fromNode instanceof ForEachNode) {
+                inputVal = inputArray[index++];
+            }
+
+
+            if (null == inputVal) {
+                throw new WorkFlowInterpreterException(
+                        "Unable to find inputs for the node:"
+                                + middleNode.getID());
+            }
+            invoker.setInput(port.getName(), inputVal);
+        }
+        invoker.invoke();
+
+    }
+
+    private Invoker getInvoker(Node middleNode, Invoker invoker) throws XBayaException {
+        if(middleNode instanceof WSNode) {
+            WSComponent wsComponent = (WSComponent) middleNode.getComponent();
+            invoker.setup();
+            invoker.setOperation(wsComponent.getOperationName());
+        } else if (middleNode instanceof SubWorkflowNode){
+            //((SubWorkflowNode) middleNode).getWorkflow();
+            //this.configuration;
+            // TODO : Need to create a invoker!
+            //new WorkflowInterpreter()
+        } else {
+            throw new XBayaRuntimeException("Only Web services and subworkflows are supported for For-Each : Found : " + middleNode);
+        }
+        return invoker;
+    }
 
 	private void setInputValuesForForEach(Node middleNode,
 			LinkedList<String> listOfValues, Integer[] inputNumbers,
