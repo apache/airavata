@@ -28,7 +28,8 @@ public class WorkflowExecutionStatus {
 		STARTED,
 		RUNNING,
 		ERROR,
-		STOPPED,
+		PAUSED,
+		FINISHED,
 		UNKNOWN
 	}
 
