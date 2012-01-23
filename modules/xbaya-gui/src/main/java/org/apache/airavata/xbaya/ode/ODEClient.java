@@ -98,7 +98,7 @@ public class ODEClient {
 
     /**
      * Returns a WSDL that is ready to be used as the WSIF invokable WSDL to initiate the process
-     * 
+     *
      * @param xRegistryURI
      * @param gssCredential
      * @param qname
@@ -122,33 +122,6 @@ public class ODEClient {
     // throw new XBayaRuntimeException(e);
     // }
     // }
-
-    public Object parseValue(WSComponentPort input, String valueString) {
-        String name = input.getName();
-        if (false) {
-            // Some user wants to pass empty strings, so this check is disabled.
-            if (valueString.length() == 0) {
-                throw new XBayaRuntimeException("Input parameter, " + name + ", cannot be empty");
-            }
-        }
-        QName type = input.getType();
-        Object value;
-        if (LEADTypes.isKnownType(type)) {
-            // TODO check the type.
-            value = valueString;
-        } else {
-            try {
-                if(XBayaConstants.HTTP_SCHEMAS_AIRAVATA_APACHE_ORG_GFAC_TYPE.equals(input.getType().getNamespaceURI())){
-                    value = XMLUtil.stringToXmlElement3(ODEClientUtil.createInputForGFacService(input,valueString));
-                }else {
-                    throw new XBayaRuntimeException("Input parameter, " + name + ", Unkown Type");
-                }
-            } catch (RuntimeException e) {
-                throw new XBayaRuntimeException("Input parameter, " + name + ", is not valid XML", e);
-            }
-        }
-        return value;
-    }
 
     /**
      * 
@@ -177,7 +150,7 @@ public class ODEClient {
                 // to parse the input to a type like a xmlElement or an array we would
                 // do it ourselves
                 if (componentPort.getValue() instanceof String) {
-                    componentPort.setValue(parseValue(componentPort, (String) componentPort.getValue()));
+                    componentPort.setValue(ODEClientUtil.parseValue(componentPort, (String) componentPort.getValue()));
                 }
 
             }
