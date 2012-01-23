@@ -1377,7 +1377,7 @@ public class WorkflowInterpreter {
     private void runInThread(final LinkedList<String> listOfValues,
                              ForEachNode forEachNode, final Node middleNode,
                               Node[] endForEachNodes,
-			Map<Node,Invoker> tempInvoker,
+			                Map<Node,Invoker> tempInvoker,
                              AtomicInteger counter, final Integer[] inputNumber) throws XBayaException {
 
         final LinkedList<Invoker> invokerList = new LinkedList<Invoker>();
@@ -1435,7 +1435,8 @@ public class WorkflowInterpreter {
                     */
                     Node fromNode = port.getFromNode();
 //                if (fromNode instanceof ForEachNode) {
-                    inputVal = input;
+                    inputVal = ODEClientUtil.parseValue((WSComponentPort) port.getComponentPort(),
+                                                    input);
 //                }
 
                     if (null == inputVal) {
