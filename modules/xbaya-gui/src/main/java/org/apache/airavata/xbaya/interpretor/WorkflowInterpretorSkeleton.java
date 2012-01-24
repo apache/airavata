@@ -57,7 +57,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	public static final String BROKER = "broker";
     public static final String MYPROXY_USER = "myproxy.user";
     public static final String MYPROXY_PASS = "myproxy.password";
-    public static final String JCR_USER = "jcr.user";
+    public static final String JCR_USER = "jcr.username";
     public static final String JCR_PASS = "jcr.password";
     public static final String JCR_URL = "jcr.url";
     public static boolean provenance = false;
