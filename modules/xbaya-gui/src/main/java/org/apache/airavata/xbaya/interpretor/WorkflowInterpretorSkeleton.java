@@ -61,7 +61,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static final String JCR_PASS = "jcr.password";
     public static final String JCR_URL = "jcr.url";
     public static boolean provenance = false;
-    public static final String PROVENANCE = "PROVENANCE";
+    public static final String PROVENANCE = "provenance";
     public static  String jcrUserName = "";
     public static  String jcrPassword = "";
     public static  String jcrURL = "";
