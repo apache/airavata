@@ -125,11 +125,11 @@ public class XBayaClient {
         
         configurations[8] = new NameValue();
         configurations[8].setName(JCR_USERNAME);
-        configurations[9].setValue(properties.getProperty(JCR_USERNAME));
+        configurations[8].setValue(properties.getProperty(JCR_USERNAME));
         
-        configurations[10] = new NameValue();
-        configurations[10].setName(JCR_PASSWORD);
-        configurations[10].setValue(properties.getProperty(JCR_PASSWORD));
+        configurations[9] = new NameValue();
+        configurations[9].setName(JCR_PASSWORD);
+        configurations[9].setValue(properties.getProperty(JCR_PASSWORD));
         
         updateClientConfiguration(configurations);
 
@@ -174,7 +174,13 @@ public class XBayaClient {
     public void loadWorkflowFromaFile(String workflowFile)throws URISyntaxException,IOException {
 
         URL url = XBayaClient.class.getClassLoader().getResource(workflowFile);
-        FileInputStream stream = new FileInputStream(new File(url.toURI()));
+        File workflow;
+        if(url == null){
+            workflow = new File(workflowFile);
+        }else{
+            workflow = new File(url.toURI());
+        }
+        FileInputStream stream = new FileInputStream(workflow);
         try {
             FileChannel fc = stream.getChannel();
             MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
