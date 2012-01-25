@@ -72,6 +72,7 @@
 			<enumeration value="serial" />
 			<enumeration value="mpi" />
 			<enumeration value="openMP" />
+            <enumeration value="single" />
 		</restriction>
 	</simpleType>
 
