@@ -170,6 +170,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 			jobTypes.add(JobTypeType.OPEN_MP);
 			jobTypes.add(JobTypeType.MPI);
 			jobTypes.add(JobTypeType.SERIAL);
+            jobTypes.add(JobTypeType.SINGLE);
 		}
 		return jobTypes;
 	}
