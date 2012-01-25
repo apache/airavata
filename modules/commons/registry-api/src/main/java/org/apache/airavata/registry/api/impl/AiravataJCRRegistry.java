@@ -919,14 +919,22 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         try {
             session = getSession();
             Node workflowDataNode = getWorkflowExperimentDataNode(experimentId, session);
-            ExecutionStatus status = ExecutionStatus.valueOf(workflowDataNode.getProperty(WORKFLOW_STATUS_PROPERTY).getString());
-            Property prop = workflowDataNode.getProperty(WORKFLOW_STATUS_TIME_PROPERTY);
-			Date date=null;
-			if (prop!=null) {
-				Long dateMiliseconds = prop.getLong();
-				Calendar cal = Calendar.getInstance();
-				cal.setTimeInMillis(dateMiliseconds);
-				date = cal.getTime();
+            ExecutionStatus status = null;
+			if (workflowDataNode.hasProperty(WORKFLOW_STATUS_PROPERTY)) {
+				status = ExecutionStatus.valueOf(workflowDataNode.getProperty(
+						WORKFLOW_STATUS_PROPERTY).getString());
+			}
+            Date date = null;
+			if (workflowDataNode.hasProperty(WORKFLOW_STATUS_TIME_PROPERTY)) {
+				Property prop = workflowDataNode
+						.getProperty(WORKFLOW_STATUS_TIME_PROPERTY);
+				date = null;
+				if (prop != null) {
+					Long dateMiliseconds = prop.getLong();
+					Calendar cal = Calendar.getInstance();
+					cal.setTimeInMillis(dateMiliseconds);
+					date = cal.getTime();
+				}
 			}
 			property=new WorkflowExecutionStatus(status, date);
             session.save();
@@ -1115,8 +1123,11 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         try {
             session = getSession();
             Node workflowDataNode = getWorkflowExperimentDataNode(experimentId, session);
-            property = workflowDataNode.getProperty(WORKFLOW_USER_PROPERTY).getString();
-            session.save();
+            if (workflowDataNode.hasProperty(WORKFLOW_USER_PROPERTY)) {
+				property = workflowDataNode.getProperty(WORKFLOW_USER_PROPERTY)
+						.getString();
+			}
+			session.save();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -1202,8 +1213,11 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         try {
             session = getSession();
             Node workflowDataNode = getWorkflowExperimentDataNode(experimentId, session);
-            property = workflowDataNode.getProperty(WORKFLOW_METADATA_PROPERTY).getString();
-            session.save();
+            if (workflowDataNode.hasProperty(WORKFLOW_METADATA_PROPERTY)) {
+				property = workflowDataNode.getProperty(
+						WORKFLOW_METADATA_PROPERTY).getString();
+			}
+			session.save();
         } catch (Exception e) {
             throw new RegistryException("Error while retrieving workflow metadata!!!", e);
         } finally {
