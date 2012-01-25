@@ -861,24 +861,34 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
                 NodeIterator workflowNodes = experimentNode.getNodes();
                 for (; workflowNodes.hasNext();) {
                     Node workflowNode = workflowNodes.nextNode();
-                    String workflowName = workflowNode.getProperty(PROPERTY_WORKFLOW_NAME).getString();
-                    if (workflowNameRegEx != null && !workflowName.matches(workflowNameRegEx)) {
-                        continue;
-                    }
-                    NodeIterator serviceNodes = workflowNode.getNodes();
+                    String workflowName = null;
+                    if (workflowNode.hasProperty(PROPERTY_WORKFLOW_NAME)) {
+						workflowName = workflowNode.getProperty(
+								PROPERTY_WORKFLOW_NAME).getString();
+						if (workflowNameRegEx != null
+								&& !workflowName.matches(workflowNameRegEx)) {
+							continue;
+						}
+					}
+					NodeIterator serviceNodes = workflowNode.getNodes();
                     for (; serviceNodes.hasNext();) {
                         Node serviceNode = serviceNodes.nextNode();
                         if (nodeNameRegEx != null && !serviceNode.getName().matches(nodeNameRegEx)) {
                             continue;
                         }
                         Node ioNode = getOrAddNode(serviceNode, type);
-                        WorkflowServiceIOData workflowIOData = new WorkflowServiceIOData();
-                        workflowIOData.setExperimentId(experimentNode.getName());
-                        workflowIOData.setWorkflowId(workflowNode.getName());
-                        workflowIOData.setWorkflowName(workflowName);
-                        workflowIOData.setNodeId(serviceNode.getName());
-                        workflowIOData.setValue(ioNode.getProperty(PROPERTY_WORKFLOW_IO_CONTENT).getString());
-                        workflowIODataList.add(workflowIOData);
+                        if (ioNode.hasProperty(PROPERTY_WORKFLOW_IO_CONTENT)) {
+							WorkflowServiceIOData workflowIOData = new WorkflowServiceIOData();
+							workflowIOData.setExperimentId(experimentNode
+									.getName());
+							workflowIOData
+									.setWorkflowId(workflowNode.getName());
+							workflowIOData.setWorkflowName(workflowName);
+							workflowIOData.setNodeId(serviceNode.getName());
+							workflowIOData.setValue(ioNode.getProperty(
+									PROPERTY_WORKFLOW_IO_CONTENT).getString());
+							workflowIODataList.add(workflowIOData);
+						}
                     }
                 }
             }
@@ -1146,7 +1156,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 		workflowExecution.setOutput(getWorkflowExecutionOutput(experimentId));
 		workflowExecution.setServiceInput(searchWorkflowExecutionServiceInput(experimentId,".*",".*"));
 		workflowExecution.setServiceOutput(searchWorkflowExecutionServiceOutput(experimentId,".*",".*"));
-		return null;
+		return workflowExecution;
 	}
 
 	public List<WorkflowIOData> getWorkflowExecutionOutput(String experimentId)
