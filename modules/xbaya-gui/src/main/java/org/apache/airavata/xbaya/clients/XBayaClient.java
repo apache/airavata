@@ -302,8 +302,12 @@ public class XBayaClient {
 		return worflowoutput;
 	}
     
-    public List<WorkflowExecution> getWorkflowExecutionData(String user) throws RegistryException{
+    public List<WorkflowExecution> getWorkflowExecutionDataByUser(String user) throws RegistryException{
     	return getRegistry().getWorkflowExecutionByUser(user);
+    }
+    
+    public WorkflowExecution getWorkflowExecutionData(String topic) throws RegistryException{
+    	return getRegistry().getWorkflowExecution(topic);
     }
     
     /**
