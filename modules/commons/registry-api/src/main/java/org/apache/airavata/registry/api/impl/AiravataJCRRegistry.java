@@ -1146,7 +1146,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         return property;
 	}
 
-	public WorkflowExecution getWorkflowExection(String experimentId)
+	public WorkflowExecution getWorkflowExecution(String experimentId)
 			throws RegistryException {
 		WorkflowExecution workflowExecution = new WorkflowExecutionImpl();
 		workflowExecution.setExperimentId(experimentId);
@@ -1204,7 +1204,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 				(startLimit==-1 && count<endLimit) ||
 				(startLimit<=count && endLimit==-1) ||
 				(startLimit<=count && count<endLimit)){
-				executions.add(getWorkflowExection(id));
+				executions.add(getWorkflowExecution(id));
 			}
 			count++;
 		}
