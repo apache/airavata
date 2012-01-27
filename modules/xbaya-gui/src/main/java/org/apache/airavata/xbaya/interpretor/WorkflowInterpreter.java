@@ -163,7 +163,7 @@ public class WorkflowInterpreter {
 
 	private PredicatedTaskRunner provenanceWriter;
 
-	private boolean runWithCrossProduct = true;
+	private boolean runWithCrossProduct = false;
 
     private boolean isoffline = false;
 
@@ -570,6 +570,7 @@ public class WorkflowInterpreter {
                     }
 					node.getGUI().setBodyColor(NodeState.FINISHED.color);
 				}
+                System.out.println("Looping");
 			}
 			this.notifier.sendingPartialResults(outputValues.toArray(),
 					outputKeywords.toArray(new String[outputKeywords.size()]));
@@ -1007,16 +1008,13 @@ public class WorkflowInterpreter {
 					final WSNode node1 = (WSNode) wsNodes.get(i);
                     SystemComponentInvoker systemInvoker = null;
                     List<DataPort> outputPorts1 = node1.getOutputPorts();
-                    Node[] endForEachNodes = new Node[outputPorts1.size()];
-                    int j = 0;
+                    List<Node> endForEachNodes = new ArrayList<Node>();
                     for (DataPort port : outputPorts1) {
                         Iterator<Node> endForEachNodeItr1 = port.getToNodes().iterator();
                         while (endForEachNodeItr1.hasNext()) {
                             Node node2 = endForEachNodeItr1.next();
                             if (node2 instanceof EndForEachNode) {
-                                endForEachNodes[j] = (EndForEachNode) node2;
-                                this.invokerMap.put(endForEachNodes[j], systemInvoker);
-                                j++;
+                                endForEachNodes.add(node2);
                             } else if (node2 instanceof OutputNode) {
                                 // intentionally left noop
                             } else {
@@ -1026,7 +1024,7 @@ public class WorkflowInterpreter {
 
                         }
                     }
-                    final Node[] finalEndForEachNodes = endForEachNodes;
+                    final List<Node> finalEndForEachNodes = endForEachNodes;
 
 
 					Iterator<Node> endForEachNodeItr1 = node1.getOutputPort(0)
@@ -1042,20 +1040,10 @@ public class WorkflowInterpreter {
 									NodeState.EXECUTING.color);
 							List<DataPort> outputPorts = node1.getOutputPorts();
 							final AtomicInteger counter = new AtomicInteger();
-							for (DataPort port : outputPorts) {
-								Iterator<Node> endForEachNodeItr = port
-										.getToNodes().iterator();
-								while (endForEachNodeItr.hasNext()) {
-                                    systemInvoker = new SystemComponentInvoker();
-									Object tempNode = endForEachNodeItr.next();
-									if (tempNode instanceof EndForEachNode) {
-										endForEachNode = (EndForEachNode) tempNode;
-										endForEachNode.getGUI().setBodyColor(
-												NodeState.EXECUTING.color);
-									}
-									final Node tempendForEachNode = node2;
-									this.invokerMap.put(node2, systemInvoker);
-                                }}
+                            for (Node endFor : endForEachNodes) {
+                                systemInvoker = new SystemComponentInvoker();
+                                this.invokerMap.put(endFor, systemInvoker);
+                            }
                             final Map<Node,Invoker> finalMap = this.invokerMap;
 									new Thread() {
 										@Override
@@ -1118,15 +1106,13 @@ public class WorkflowInterpreter {
 
 				// First node after foreach should end with EndForEachNode
                 List<DataPort> outputPorts1 = middleNode.getOutputPorts();
-                Node[] endForEachNodes = new Node[outputPorts1.size()];
-                int i = 0;
+                List<Node> endForEachNodes = new ArrayList<Node>();
                 for(DataPort port:outputPorts1){
                     Iterator<Node> endForEachNodeItr1 = port.getToNodes().iterator();
 				while (endForEachNodeItr1.hasNext()) {
 					Node node2 = endForEachNodeItr1.next();
 					if (node2 instanceof EndForEachNode) {
-						endForEachNodes[i] = (EndForEachNode) node2;
-                        i++;
+						endForEachNodes.add(node2);
 					} else if (node2 instanceof OutputNode) {
 						// intentionally left noop
 					} else {
@@ -1136,7 +1122,7 @@ public class WorkflowInterpreter {
 
 				}
                 }
-                final Node[] finalEndForEachNodes = endForEachNodes;
+                final List<Node> finalEndForEachNodes = endForEachNodes;
 				final Node foreachWSNode = middleNode;
 				final LinkedList<String> listOfValues = new LinkedList<String>();
 
@@ -1148,7 +1134,7 @@ public class WorkflowInterpreter {
 								this.invokerMap);
 
 				int parallelRuns = createInputValues(listOfValues, inputNumbers)
-						.size();
+						.size()  * outputPorts1.size();
 				if (listOfValues.size() > 0) {
 
 					forEachNode.getGUI()
@@ -1157,20 +1143,11 @@ public class WorkflowInterpreter {
 							NodeState.EXECUTING.color);
 					List<DataPort> outputPorts = middleNode.getOutputPorts();
 					final AtomicInteger counter = new AtomicInteger();
-					for (DataPort port : outputPorts) {
-						Iterator<Node> endForEachNodeItr = port.getToNodes()
-								.iterator();
-						while (endForEachNodeItr.hasNext()) {
-							Object tempNode = endForEachNodeItr.next();
-							if (tempNode instanceof EndForEachNode) {
-								endForEachNode = (EndForEachNode) tempNode;
-								endForEachNode.getGUI().setBodyColor(
-										NodeState.EXECUTING.color);
-								final EndForEachNode tempendForEachNode = endForEachNode;
-								final SystemComponentInvoker systemInvoker = new SystemComponentInvoker();
-								this.invokerMap.put(endForEachNode,
-										systemInvoker);
-                            }}
+                        for(Node endFor:endForEachNodes){
+                                final SystemComponentInvoker systemInvoker = new SystemComponentInvoker();
+                                this.invokerMap.put(endFor,
+                                        systemInvoker);
+                            }
                         final Map<Node,Invoker> finalInvokerMap = this.invokerMap;
 
 								new Thread() {
@@ -1189,7 +1166,6 @@ public class WorkflowInterpreter {
 									}
 
 								}.start();
-					}
 					while (counter.intValue() < parallelRuns) {
 						try {
 							Thread.sleep(100);
@@ -1376,7 +1352,7 @@ public class WorkflowInterpreter {
 
     private void runInThread(final LinkedList<String> listOfValues,
                              ForEachNode forEachNode, final Node middleNode,
-                              Node[] endForEachNodes,
+                              List<Node> endForEachNodes,
 			                Map<Node,Invoker> tempInvoker,
                              AtomicInteger counter, final Integer[] inputNumber) throws XBayaException {
 
@@ -1453,17 +1429,19 @@ public class WorkflowInterpreter {
         // String arrayElementName = foreachWSNode.getOperationName() +
         // "ArrayResponse";
         // String outputStr = "<" + arrayElementName + ">";
-         String[] outputStr = new String[endForEachNodes.length];
+        //invokerMap size and endForEachNodes size can be difference
+        //because we can create endForEachNode with n number of input/output ports so always have to use
+        //middleNode.getOutputPorts when iterate
+         String[] outputStr = new String[middleNode.getOutputPorts().size()];
         int i = 0;
-        for(Node endForEachNode:endForEachNodes){
+        for(DataPort port:middleNode.getOutputPorts()){
             String outputString = "";
             for (Iterator<Invoker> iterator = invokerList.iterator(); iterator
                     .hasNext(); ) {
                 Invoker workflowInvoker = iterator.next();
 
                 // /
-                Object output = workflowInvoker.getOutput(endForEachNode
-                        .getInputPort(0).getFromPort().getName());
+                Object output = workflowInvoker.getOutput(port.getName());
                 if(output instanceof org.xmlpull.v1.builder.XmlElement){
                     org.xmlpull.v1.builder.XmlElement element =
                             (org.xmlpull.v1.builder.XmlElement)((org.xmlpull.v1.builder.XmlElement) output).children().next();
@@ -1478,13 +1456,19 @@ public class WorkflowInterpreter {
             i++;
         }
         i=0;
-		// outputStr += "\n</" + arrayElementName + ">";
-        for (Node endForEachNode : endForEachNodes) {
-            if (!(endForEachNode instanceof OutputNode)) {
-                ((SystemComponentInvoker)tempInvoker.get(endForEachNode)).addOutput(endForEachNode.getOutputPort(0).getName(),
-                        outputStr[i]);
-                i++;
+        // outputStr += "\n</" + arrayElementName + ">";
+        int outputPortIndex = 0;
+        for (DataPort port : middleNode.getOutputPorts()) {
+            for (Node endForEachNode : endForEachNodes) {
+                if (tempInvoker.get(endForEachNode) != null) {
+                    if (!(endForEachNode instanceof OutputNode)) {
+                        ((SystemComponentInvoker) tempInvoker.get(endForEachNode)).addOutput(port.getName(),
+                                outputStr[i]);
+                    }
+                }
+                outputPortIndex++;
             }
+            i++;
         }
         forEachNode.getGUI().setBodyColor(NodeState.FINISHED.color);
     }

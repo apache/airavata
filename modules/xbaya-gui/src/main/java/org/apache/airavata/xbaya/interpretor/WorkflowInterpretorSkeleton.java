@@ -141,6 +141,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         try {
             conf = getConfiguration(configurations);
             conf.setTopic(topic);
+            conf.setRunWithCrossProduct(true);
         } catch (URISyntaxException e1) {
             throw new XBayaRuntimeException(e1);
         }
