@@ -110,8 +110,8 @@ public class InterpreterUtil {
 						}
 					}
 				} else if (workflowInvoker instanceof SystemComponentInvoker) {
-					String outputName = forEachInputNode.getOutputPort(0)
-							.getName();
+                    int index = forEachInputNode.getOutputPorts().indexOf(inputPort.getEdge(0).getFromPort());
+                    String outputName = ((SystemDataPort)forEachInputNode.getInputPort(index)).getWSComponentPort().getName();
 					returnValForProvenance = workflowInvoker
 							.getOutput(outputName);
 					XmlElement msgElmt = XmlConstants.BUILDER
@@ -157,7 +157,7 @@ public class InterpreterUtil {
 		} else if (fromNode instanceof EndForEachNode) {
 			outputVal = "";
 			Invoker workflowInvoker = invokerMap.get(fromNode);
-			String outputName = fromNode.getOutputPort(0).getName();
+			String outputName = ((SystemDataPort) inputPort).getWSComponentPort().getName();
 			XmlElement msgElmt = XmlConstants.BUILDER
 					.parseFragmentFromString("<temp>"
 							+ workflowInvoker.getOutput(outputName) + "</temp>");
@@ -165,10 +165,13 @@ public class InterpreterUtil {
 			while (valItr.hasNext()) {
 				Object object2 = valItr.next();
 				if (object2 instanceof XmlElement) {
+
+                    if(((XmlElement) object2).children().iterator().hasNext()){
 					outputVal = outputVal
 							+ ","
 							+ ((XmlElement) object2).children().iterator()
 									.next().toString();
+                    }
 				}
 			}
 
@@ -282,9 +285,8 @@ public class InterpreterUtil {
 					}
                         inputNumbers[inputPorts.indexOf(forEachInputPort)] = index;
 				} else if (workflowInvoker instanceof SystemComponentInvoker) {
-
-					String outputName = forEachInputNode.getOutputPort(0)
-							.getName();
+				    int portIndex = forEachInputNode.getOutputPorts().indexOf(forEachInputPort.getEdge(0).getFromPort());
+                    String outputName = ((SystemDataPort)forEachInputNode.getInputPort(portIndex)).getWSComponentPort().getName();
 					returnValForProvenance = workflowInvoker
 							.getOutput(outputName);
 					XmlElement msgElmt = XmlConstants.BUILDER
