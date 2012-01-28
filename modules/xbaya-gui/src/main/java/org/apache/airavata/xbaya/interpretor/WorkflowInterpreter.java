@@ -571,7 +571,12 @@ public class WorkflowInterpreter {
 
                      if(actOnProvenance){
                         try {
-                            this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionOutput(this.topic, node.getName(), val.toString());
+                            if (val instanceof String) {
+                                this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionOutput(this.topic, node.getName(), val.toString());
+                            } else if (val instanceof org.xmlpull.v1.builder.XmlElement) {
+                                this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionOutput(this.topic,
+                                        node.getName(), XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
+                            }
                         } catch (RegistryException e) {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                         }
@@ -619,7 +624,14 @@ public class WorkflowInterpreter {
 				if (node.getGUI().getBodyColor() != NodeState.FINISHED.color) {
                     if(actOnProvenance){
                         try {
-                            this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionOutput(this.topic, node.getName(), val.toString());
+                            if(val instanceof String){
+                                this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionOutput(this.topic,
+                                        node.getName(), val.toString());
+                            } else if (val instanceof org.xmlpull.v1.builder.XmlElement) {
+                                this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionOutput(this.topic,
+                                        node.getName(), XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
+                            }
+
                         } catch (RegistryException e) {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                         }
