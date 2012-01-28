@@ -376,6 +376,14 @@ public class WorkflowInterpreter {
 					}
 //                    System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
                 }
+            }else {
+                if(actOnProvenance){
+                try {
+					this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionStatus(this.topic, ExecutionStatus.FAILED);
+				} catch (RegistryException e) {
+					throw new XBayaException(e);
+				}
+            }
             }
             this.notifier.workflowTerminated();
             if (this.mode == GUI_MODE) {
