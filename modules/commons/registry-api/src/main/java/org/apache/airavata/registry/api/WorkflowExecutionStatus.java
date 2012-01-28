@@ -27,7 +27,7 @@ public class WorkflowExecutionStatus {
 	public enum ExecutionStatus {
 		STARTED,
 		RUNNING,
-		ERROR,
+	    FAILED,
 		PAUSED,
 		FINISHED,
 		UNKNOWN
