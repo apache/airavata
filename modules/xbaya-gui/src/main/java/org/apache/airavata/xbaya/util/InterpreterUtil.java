@@ -163,7 +163,13 @@ public class InterpreterUtil {
 		} else if (fromNode instanceof EndForEachNode) {
 			outputVal = "";
 			Invoker workflowInvoker = invokerMap.get(fromNode);
-			String outputName = ((SystemDataPort) inputPort).getWSComponentPort().getName();
+			String outputName = "";
+            if (inputPort instanceof SystemDataPort) {
+                outputName = ((SystemDataPort) inputPort).getWSComponentPort().getName();
+
+            } else if (inputPort instanceof WSPort) {
+                outputName = ((WSPort) inputPort).getComponentPort().getName();
+            }
 			XmlElement msgElmt = XmlConstants.BUILDER
 					.parseFragmentFromString("<temp>"
 							+ workflowInvoker.getOutput(outputName) + "</temp>");
