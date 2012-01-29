@@ -8,7 +8,8 @@
 	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
 	the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -17,16 +18,16 @@
 	</prerequisites>
 
 	<parent>
-		<groupId>org.apache.airavata</groupId>
-		<artifactId>airavata-master</artifactId>
-		<version>0.2-incubating-SNAPSHOT</version>
-		<relativePath>../../airavata-master-pom/branches/0.2-incubating-SNAPSHOT/pom.xml</relativePath>
+		<groupId>org.apache</groupId>
+		<artifactId>apache</artifactId>
+		<version>10</version>
+		<relativePath />
 	</parent>
 
 	<groupId>org.apache.airavata</groupId>
 	<artifactId>airavata</artifactId>
 	<packaging>pom</packaging>
-	<name>Airavata</name>
+	<name>Apache Airavata</name>
 	<version>0.2-incubating-SNAPSHOT</version>
 
 	<url>http://incubator.apache.org/airavata/</url>
@@ -342,6 +343,14 @@
 	</dependencyManagement>
 	<repositories>
 		<repository>
+			<id>apache.snapshots</id>
+			<name>Apache Snapshot Repository</name>
+			<url>http://repository.apache.org/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+		<repository>
 			<name>ogce.m2.all</name>
 			<id>ogce.m2.all</id>
 			<url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
@@ -382,6 +391,29 @@
 			<url>http://maven.ow2.org/maven2</url>
 		</repository>
 	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-remote-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<configuration>
+							<!-- add apache-incubator-disclaimer-resource-bundle to be removed again when graduating from Incubator -->
+							<resourceBundles combine.children="append">
+								<resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
+							</resourceBundles>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 	<profiles>
 		<profile>
 			<id>profile-test-suite</id>
@@ -436,7 +468,6 @@
 				<module>modules/workflow-interpreter</module>
 			</modules>
 		</profile>
-
 		<profile>
 			<id>profile-workflow-tracking</id>
 			<activation>
@@ -487,12 +518,12 @@
 				<module>modules/ws-messenger</module>
 				<module>modules/xbaya-gui</module>
 				<module>modules/commons</module>
-                <module>samples/simple-math-service</module>
-                <module>samples/complex-math-service</module>
-                <module>samples/levenshtein-distance-service</module>
-                <module>modules/distribution</module>
-                <module>modules/test-suite</module>
-            </modules>
+				<module>samples/simple-math-service</module>
+				<module>samples/complex-math-service</module>
+				<module>samples/levenshtein-distance-service</module>
+				<module>modules/distribution</module>
+				<module>modules/test-suite</module>
+			</modules>
 		</profile>
 		<profile>
 			<id>pedantic</id>
