@@ -122,4 +122,9 @@ public class StandaloneNotificationSender implements WorkflowNotifiable {
         return new StandaloneServiceNotificationSender(this.workflow, this.workflowID);
     }
 
+    @Override
+    public void cleanup(){
+
+    }
+
 }

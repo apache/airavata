@@ -34,6 +34,7 @@ import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
+import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.monitor.MonitorException;
@@ -67,6 +68,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static  String jcrURL = "";
     public static boolean runInThread = false;
     public static final String RUN_IN_THREAD = "runInThread";
+    private static PredicatedTaskRunner runner = null;
 
 
     public void startUp(ConfigurationContext configctx, AxisService service) {
@@ -78,6 +80,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             configctx.setProperty(MYPROXY_USER, properties.get(MYPROXY_USER));
             if("true".equals(properties.get(PROVENANCE))){
                 provenance = true;
+                runner = new PredicatedTaskRunner(1);
             }else{
                 provenance = false;
             }
@@ -163,6 +166,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         final WorkflowInterpreter interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password);
         interpreter.setActOnProvenance(provenance);
+        interpreter.setProvenanceWriter(runner);
         System.err.println("Created the interpreter");
         if(inNewThread){
             runInThread(interpreter,listener);
