@@ -535,6 +535,7 @@ public class WorkflowInterpreter {
 				this.engine.getMonitor().reset();
 			}
 		}
+        this.notifier.cleanup();
 	}
 
 	private void sendOutputsDynamically() throws XBayaException {
@@ -648,6 +649,7 @@ public class WorkflowInterpreter {
 		}
 		this.notifier.sendingPartialResults(outputValues.toArray(),
 				outputKeywords.toArray(new String[outputKeywords.size()]));
+        cleanup();
 	}
 
 	private void executeDynamically(final Node node) throws XBayaException {

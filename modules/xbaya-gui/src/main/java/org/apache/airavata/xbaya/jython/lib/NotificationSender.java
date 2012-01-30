@@ -276,4 +276,9 @@ public class NotificationSender implements WorkflowNotifiable {
         return new ServiceNotificationSender(this.notifier, this.eventSink, this.initiator, this.workflowID, nodeID,
                 this.context);
     }
+
+    @Override
+    public void cleanup(){
+        this.notifier.delete();
+    }
 }
