@@ -116,7 +116,8 @@ public class InterpreterUtil {
                     if(forEachInputNode.getInputPort(index) instanceof SystemDataPort){
                        outputName = ((SystemDataPort)forEachInputNode.getInputPort(index)).getWSComponentPort().getName();
                     }else if(forEachInputNode.getInputPort(index) instanceof WSPort){
-                        outputName = ((WSPort)forEachInputNode.getInputPort(index)).getComponentPort().getName();
+                         outputName = ((SystemDataPort)forEachInputNode.getInputPort(
+                        forEachInputNode.getOutputPorts().indexOf(inputPort.getEdge(0).getFromPort()))).getWSComponentPort().getName();
                     }
 					returnValForProvenance = workflowInvoker
 							.getOutput(outputName);
@@ -168,7 +169,8 @@ public class InterpreterUtil {
                 outputName = ((SystemDataPort) inputPort).getWSComponentPort().getName();
 
             } else if (inputPort instanceof WSPort) {
-                outputName = ((WSPort) inputPort).getComponentPort().getName();
+                outputName = ((SystemDataPort)fromNode.getInputPort(
+                        fromNode.getOutputPorts().indexOf(inputPort.getEdge(0).getFromPort()))).getWSComponentPort().getName();
             }
 			XmlElement msgElmt = XmlConstants.BUILDER
 					.parseFragmentFromString("<temp>"
@@ -198,6 +200,8 @@ public class InterpreterUtil {
 				if (fromInvoker != null)
 					outputVal = fromInvoker.getOutput(inputPort.getFromPort()
 							.getName());
+
+
 
 			} catch (Exception e) {
 				// if the value is still null look it up from the inputport name
@@ -276,8 +280,8 @@ public class InterpreterUtil {
 						}
 					}
 				} else if (workflowInvoker instanceof WorkflowInvokerWrapperForGFacInvoker) {
-
-                    String outputName = forEachInputNode.getOutputPort(0).getName();
+                    String outputName = forEachInputNode.getOutputPort(0)
+							.getName();
 					returnValForProvenance = workflowInvoker
 							.getOutput(outputName);
 					org.xmlpull.v1.builder.XmlElement msgElmt = (org.xmlpull.v1.builder.XmlElement) returnValForProvenance;
