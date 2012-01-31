@@ -25,7 +25,6 @@ import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.interpreter.utils.WorkflowTestUtils;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.axis2.engine.ListenerManager;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -34,15 +33,14 @@ import java.net.URL;
 import java.util.UUID;
 
 public class ForEachWorkflowTest {
-       @Test
+
+    @Test
     public void testScheduleDynamically() throws IOException, URISyntaxException, XBayaException {
         URL systemResource = this.getClass().getClassLoader().getSystemResource("SimpleEcho.xwf");
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
-        ListenerManager manager = WorkflowTestUtils.axis2ServiceStarter();
         ((InputNode) workflow.getGraph().getNode("input")).setDefaultValue("1");
         WorkflowInterpreter interpretor = new WorkflowInterpreter(WorkflowTestUtils.getConfiguration(), UUID.randomUUID().toString(),
                 workflow, "NA", "NA",true);
         interpretor.scheduleDynamically();
-        manager.stop();
     }
 }
