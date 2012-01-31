@@ -31,6 +31,11 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,12 +105,24 @@ public class DestroyMsgBox {
         opts.setTo(msgBoxEndPointReference);
         opts.setMessageId(uuid);
         opts.setAction(message.getNamespace().getNamespaceURI() + "/" + message.getLocalName());
-
         opts.setTimeOutInMilliSeconds(getTimeoutInMilliSeconds());
+        ServiceClient _serviceClient = new ServiceClient();
 
-        ServiceClient client = new ServiceClient();
+        MultiThreadedHttpConnectionManager httpConnectionManager = new MultiThreadedHttpConnectionManager();
+        httpConnectionManager.getParams().setMaxTotalConnections(10000);
+        httpConnectionManager.getParams().setMaxConnectionsPerHost(HostConfiguration.ANY_HOST_CONFIGURATION, 100);
+        httpConnectionManager.getParams().setDefaultMaxConnectionsPerHost(200);
+        HttpClient httpClient = new HttpClient(httpConnectionManager);
+
+        ConfigurationContext configurationContext = _serviceClient.getServiceContext().getConfigurationContext();
+        configurationContext.setProperty(HTTPConstants.REUSE_HTTP_CLIENT, true);
+        configurationContext.setProperty(HTTPConstants.CACHED_HTTP_CLIENT, httpClient);
+        configurationContext.setProperty(HTTPConstants.AUTO_RELEASE_CONNECTION, true);
+
+        _serviceClient.getOptions().setTo(new org.apache.axis2.addressing.EndpointReference(msgBoxEndPointReference.getAddress()));
+
         try {
-            client.engageModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING);
+            _serviceClient.engageModule(WsmgCommonConstants.AXIS_MODULE_NAME_ADDRESSING);
             if (logger.isDebugEnabled())
                 logger.debug("Addressing module engaged");
         } catch (AxisFault e) {
@@ -113,7 +130,7 @@ public class DestroyMsgBox {
                 logger.debug("Addressing module not engaged :" + e);
         }
 
-        client.setOptions(opts);
-        return client;
+        _serviceClient.setOptions(opts);
+        return _serviceClient;
     }
 }
