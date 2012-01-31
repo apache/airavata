@@ -29,4 +29,12 @@ public class ComplexMathService {
     public int multiplier(int param1, int param2) {
         return param1 * param2;
     }
+
+    public String echo(String str) {
+        return str;
+    }
+
+    public String concatenate(String str1, String str2) {
+        return str1 + str2;
+    }
 }
