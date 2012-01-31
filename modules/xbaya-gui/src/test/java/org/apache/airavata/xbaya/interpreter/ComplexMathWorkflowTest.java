@@ -36,6 +36,7 @@ public class ComplexMathWorkflowTest {
 
     @Test
     public void testScheduleDynamically() throws IOException, URISyntaxException, XBayaException {
+        System.out.println("Running ComplexMathWorkflowTest...");
         URL systemResource = this.getClass().getClassLoader().getSystemResource("ComplexMath.xwf");
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
         WorkflowInterpreter interpretor = new WorkflowInterpreter(WorkflowTestUtils.getConfiguration(), UUID.randomUUID().toString(),

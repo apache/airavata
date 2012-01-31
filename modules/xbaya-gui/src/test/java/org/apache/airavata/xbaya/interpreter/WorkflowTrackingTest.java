@@ -59,6 +59,7 @@ public class WorkflowTrackingTest implements ConsumerNotificationHandler{
 
     @Test
     public void WorkflowTrackingtest() throws Exception{
+        System.out.println("Running WorkflowTrackingTest...");
         setUp();
         Properties configurations = new Properties(getDefaults());
         WseMsgBrokerClient brokerClient = new WseMsgBrokerClient();

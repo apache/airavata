@@ -36,6 +36,7 @@ public class ForEachWorkflowTest {
 
     @Test
     public void testScheduleDynamically() throws IOException, URISyntaxException, XBayaException {
+        System.out.println("Running ForEachWorkflowTest...");
         URL systemResource = this.getClass().getClassLoader().getSystemResource("SimpleEcho.xwf");
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
         ((InputNode) workflow.getGraph().getNode("input")).setDefaultValue("1");

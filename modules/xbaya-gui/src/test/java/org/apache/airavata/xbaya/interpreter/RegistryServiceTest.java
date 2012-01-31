@@ -21,15 +21,6 @@
 
 package org.apache.airavata.xbaya.interpreter;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.jcr.RepositoryException;
-
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -45,6 +36,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import javax.jcr.RepositoryException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
+
 public class RegistryServiceTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -53,7 +50,7 @@ public class RegistryServiceTest {
 
     @Before
     public void testExecute() throws RegistryException {
-
+        System.out.println("Running RegistryServiceTest...");
         try {
             jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin", "admin",
                     null);
