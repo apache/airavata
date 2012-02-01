@@ -290,7 +290,7 @@ public class WorkflowInterpreter {
 				if (this.mode == GUI_MODE) {
 					this.engine.getGUI().getGraphCanvas().repaint();
 				}
-				keywords[i] = ((InputNode) node).getConfiguredName();
+				keywords[i] = ((InputNode) node).getName();
 				values[i] = ((InputNode) node).getDefaultValue();
 			}
 			this.notifier.workflowStarted(values, keywords);

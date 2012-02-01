@@ -145,9 +145,18 @@ public class ServiceNotificationSender implements ServiceNotifiable {
             } else {
                 message += ", ";
             }
+
             String name = (String) partIt.next();
             Object value = inputs.getObjectPart(name);
-            message += name + "=" + value;
+            if(value instanceof org.xmlpull.v1.builder.XmlElement){
+                message += name + "=";
+                Iterator children = ((org.xmlpull.v1.builder.XmlElement) value).children();
+                while (children.hasNext()){
+                    message += children.next();
+                }
+            }else{
+                message += name + "=" + value;
+            }
         }
         XmlObject header = null;
         XmlObject body;
@@ -178,7 +187,15 @@ public class ServiceNotificationSender implements ServiceNotifiable {
             }
             String name = (String) partIt.next();
             Object value = outputs.getObjectPart(name);
-            message += name + "=" + value;
+            if(value instanceof org.xmlpull.v1.builder.XmlElement){
+                message += name + "=";
+                Iterator children = ((org.xmlpull.v1.builder.XmlElement) value).children();
+                while (children.hasNext()){
+                    message += children.next();
+                }
+            }else{
+             message += name + "=" + value;
+            }
         }
         XmlObject header = null;
         XmlObject body;
