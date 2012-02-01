@@ -409,6 +409,7 @@ public class WorkflowInterpreter {
 					e.printStackTrace();
 				}
 				cleanup();
+                this.notifier.cleanup();
 				waitDialog.hide();
 			} else {
 				finish();
@@ -417,6 +418,7 @@ public class WorkflowInterpreter {
 		} catch (RuntimeException e) {
 			// we reset all the state
 			cleanup();
+            this.notifier.cleanup();
             this.workflow.setExecutionState(XBayaExecutionState.NONE);
             raiseException(e);
         }
@@ -526,7 +528,7 @@ public class WorkflowInterpreter {
      * @throws MonitorException
      */
     public void cleanup() throws MonitorException {
-        this.workflow.setExecutionState(XBayaExecutionState.STOPPED);
+            this.workflow.setExecutionState(XBayaExecutionState.STOPPED);
 		if (this.mode == GUI_MODE) {
 			this.engine.resetWorkflowInterpreter();
 			try {
@@ -535,7 +537,6 @@ public class WorkflowInterpreter {
 				this.engine.getMonitor().reset();
 			}
 		}
-        this.notifier.cleanup();
 	}
 
 	private void sendOutputsDynamically() throws XBayaException {
@@ -648,6 +649,8 @@ public class WorkflowInterpreter {
 		this.notifier.sendingPartialResults(outputValues.toArray(),
 				outputKeywords.toArray(new String[outputKeywords.size()]));
         cleanup();
+        this.notifier.cleanup();
+
 	}
 
 	private void executeDynamically(final Node node) throws XBayaException {
