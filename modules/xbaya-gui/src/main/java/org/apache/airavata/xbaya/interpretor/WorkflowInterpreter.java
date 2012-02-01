@@ -555,8 +555,6 @@ public class WorkflowInterpreter {
 				for (DataPort dataPort : inputPorts) {
 					Object val = InterpreterUtil.findInputFromPort(dataPort,
 							this.invokerMap);
-					;
-
 								if (null == val) {
 						throw new WorkFlowInterpreterException(
 								"Unable to find output for the node:"
@@ -564,8 +562,8 @@ public class WorkflowInterpreter {
 					}
 					// This is ok because the outputnodes always got only one
                     // input
-                    if (val instanceof XmlElement) {
-                        ((OutputNode) node).setDescription(XMLUtil.xmlElementToString((XmlElement) val));
+                    if (val instanceof org.xmlpull.v1.builder.XmlElement) {
+                        ((OutputNode) node).setDescription(XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
                     } else {
                         ((OutputNode) node).setDescription(val.toString());
                     }
