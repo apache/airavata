@@ -40,7 +40,7 @@ import java.util.Properties;
 public class WorkflowTrackingTest implements ConsumerNotificationHandler{
     final static Logger logger = LoggerFactory.getLogger(ConsumerNotificationHandler.class);
 
-        @Rule
+    @Rule
     public MethodRule watchman = new TestWatchman() {
         public void starting(FrameworkMethod method) {
             logger.info("{} being run...", method.getName());
