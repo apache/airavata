@@ -20,20 +20,29 @@
 */
 package org.apache.airavata.xbaya.interpreter;
 
-import org.apache.airavata.xbaya.clients.XBayaClient;
-import org.apache.airavata.xbaya.interpretor.NameValue;
-import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorStub;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.ListenerManager;
+import org.junit.Rule;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
+import org.junit.rules.MethodRule;
+import org.junit.rules.TestWatchman;
+import org.junit.runners.model.FrameworkMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XBayaClientTest {
+    final static Logger logger = LoggerFactory.getLogger(XBayaClientTest.class);
+
+    @Rule
+    public MethodRule watchman = new TestWatchman() {
+        public void starting(FrameworkMethod method) {
+            logger.info("{} being run...", method.getName());
+        }
+    };
+
     @Test
 	public void testInvokeWorkflowString() {
 //		  try {

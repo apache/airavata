@@ -5,20 +5,31 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.engine.ListenerManager;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.rules.MethodRule;
+import org.junit.rules.TestWatchman;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.junit.runners.model.FrameworkMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({XBayaClientTest.class, SimpleMathWorkflowTest.class, WorkflowTest.class,
+@Suite.SuiteClasses({XBayaClientTest.class, SimpleMathWorkflowTest.class, WorkflowTest.class/*,
         ComplexMathWorkflowTest.class, CrossProductWorkflowTest.class, ForEachWorkflowTest.class,
-        WorkflowTrackingTest.class, RegistryServiceTest.class})
+        WorkflowTrackingTest.class, RegistryServiceTest.class*/})
 public class XBayaConsolidatedTestSuite {
     private static ListenerManager manager = null;
 
     final static Logger logger = LoggerFactory.getLogger(XBayaConsolidatedTestSuite.class);
+
+    @Rule
+    public MethodRule watchman = new TestWatchman() {
+        public void starting(FrameworkMethod method) {
+            logger.info("{} being run...", method.getName());
+        }
+    };
 
     @BeforeClass
     public static void startServer() throws AxisFault {

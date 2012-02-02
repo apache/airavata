@@ -25,7 +25,11 @@ import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.interpreter.utils.WorkflowTestUtils;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.MethodRule;
+import org.junit.rules.TestWatchman;
+import org.junit.runners.model.FrameworkMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +40,13 @@ import java.util.UUID;
 
 public class SimpleMathWorkflowTest {
     final Logger logger = LoggerFactory.getLogger(SimpleMathWorkflowTest.class);
+
+    @Rule
+    public MethodRule watchman = new TestWatchman() {
+        public void starting(FrameworkMethod method) {
+            logger.info("{} being run...", method.getName());
+        }
+    };
 
     @Test
     public void testScheduleDynamically() throws IOException, URISyntaxException, XBayaException {
