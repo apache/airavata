@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Set;
 
 import javax.jcr.Credentials;
 import javax.jcr.Node;
@@ -39,6 +40,10 @@ import javax.jcr.RepositoryException;
 import javax.jcr.RepositoryFactory;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
+import javax.jcr.UnsupportedRepositoryOperationException;
+import javax.jcr.observation.Event;
+import javax.jcr.observation.EventIterator;
+import javax.jcr.observation.EventListener;
 
 import org.apache.airavata.common.registry.api.Registry;
 import org.apache.airavata.common.registry.api.user.UserManager;
@@ -61,6 +66,7 @@ public class JCRRegistry extends Observable implements Registry{
     private String password;
     private Session defaultSession=null;
     private boolean sessionKeepAlive=false;
+    private EventListener workspaceChangeEventListener;
     
 	private Thread sessionManager;
     private static final int SESSION_TIME_OUT = 60000;
@@ -86,6 +92,53 @@ public class JCRRegistry extends Observable implements Registry{
             setPassword(pass);
             credentials = new SimpleCredentials(getUsername(), new String(pass).toCharArray());
             definiteSessionTimeout();
+            workspaceChangeEventListener=new EventListener() {
+				
+				public void onEvent(EventIterator events) {
+					for(;events.hasNext();){
+						Event event=events.nextEvent();
+						try {
+							String path = event.getPath();
+							synchronized (sessionSynchronousObject) {
+								System.out.println("something happened: " + event.getType() + " " + path);
+								List<Node> nodesToRemove=new ArrayList<Node>();
+								Set<Node> nodeIterator = getSessionNodes().keySet();
+								for (Node node : nodeIterator) {
+									if (node == null) {
+										if (path.equals("/")) {
+											nodesToRemove.add(node);
+										}
+									} else {
+										if (node.getPath().startsWith(path)
+												|| path.startsWith(node
+														.getPath())) {
+											nodesToRemove.add(node);
+										}
+									}
+								}
+								for(Node node:nodesToRemove){
+									getSessionNodes().remove(node);
+								}
+								nodeIterator = getSessionNodeChildren().keySet();
+								nodesToRemove.clear();
+								for (Node node : nodeIterator) {
+									if (node.getPath().startsWith(path)
+											|| path.startsWith(node.getPath())) {
+										nodesToRemove.add(node);
+									}
+								}
+								for(Node node:nodesToRemove){
+									getSessionNodeChildren().remove(node);
+								}
+							}
+							triggerObservers(this);
+						} catch (RepositoryException e) {
+							e.printStackTrace();
+						}
+					}
+					
+				}
+			};
         } catch (ClassNotFoundException e) {
             log.error("Error class path settting", e);
         } catch (RepositoryException e) {
@@ -129,7 +182,7 @@ public class JCRRegistry extends Observable implements Registry{
         setSessionKeepAlive(true);
     	sessionManager=new Thread(new Runnable() {
 			public void run() {
-				while (!isSessionValid() && isSessionKeepAlive()){
+				while (!isSessionInvalid() && isSessionKeepAlive()){
 					try {
 						setSessionKeepAlive(false);
 						Thread.sleep(SESSION_TIME_OUT);
@@ -167,7 +220,8 @@ public class JCRRegistry extends Observable implements Registry{
 	}
 	
 	public Session getSession() throws RepositoryException {
-    	if (isSessionValid()){
+    	if (isSessionInvalid()){
+    		reallyCloseSession(defaultSession);
         	synchronized (sessionSynchronousObject) {
 	    		System.out.println("session created");
 		        Session session = null;
@@ -180,6 +234,7 @@ public class JCRRegistry extends Observable implements Registry{
 		            session = resetSession(session);
 		        }
 		        defaultSession=session;
+				defaultSession.getWorkspace().getObservationManager().addEventListener(getWorkspaceChangeEventListener(), Event.NODE_ADDED|Event.NODE_REMOVED|Event.NODE_MOVED, "/", true, null, null, false);
 		        currentSessionUseCount.put(session, 1);
         	}
 	        setupSessionManagement();
@@ -240,22 +295,30 @@ public class JCRRegistry extends Observable implements Registry{
     }
 
     protected void closeSession(Session session) {
-    	//Do nothing - let the session management thread handle closing the thread
-    	currentSessionUseCount.put(session,currentSessionUseCount.get(session)-1);
-    	if (session!=defaultSession){
-    		reallyCloseSession(session);
-    	}
+    	if (session!=null) {
+			currentSessionUseCount.put(session,
+					currentSessionUseCount.get(session) - 1);
+			if (session != defaultSession) {
+				reallyCloseSession(session);
+			}
+		}
     }
 
     protected void reallyCloseSession(Session session) {
     	synchronized (sessionSynchronousObject) {
-    		if (currentSessionUseCount.get(session)==0){
+    		if (session!=null && currentSessionUseCount.get(session)==0){
 				if (session != null && session.isLive()) {
-		            session.logout();
+					try {
+						session.getWorkspace().getObservationManager().removeEventListener(getWorkspaceChangeEventListener());
+					} catch (UnsupportedRepositoryOperationException e) {
+						e.printStackTrace();
+					} catch (RepositoryException e) {
+						e.printStackTrace();
+					}
+					session.logout();
 		        }
 				sessionNodes=null;
 				sessionNodeChildren=null;
-				nodeHistory=null;
 				if (session!=defaultSession){
 					currentSessionUseCount.remove(session);
 				}
@@ -263,7 +326,7 @@ public class JCRRegistry extends Observable implements Registry{
     	}
 	}
 
-    private boolean isSessionValid(){
+    private boolean isSessionInvalid(){
     	boolean isValid=false;
     	synchronized (sessionSynchronousObject) {
     		isValid=(defaultSession==null || !defaultSession.isLive());
@@ -330,15 +393,14 @@ public class JCRRegistry extends Observable implements Registry{
 	}
 	
 	protected List<Node> getChildNodes(Node node) throws RepositoryException{
-//		if (!getSessionNodeChildren().containsKey(node) || getNodeHistory().get(node)<node.getBaseVersion().getCreated().getTimeInMillis()){
+		if (!getSessionNodeChildren().containsKey(node)){
 			List<Node> children=new ArrayList<Node>();
 			NodeIterator nodes = node.getNodes();
 			for (;nodes.hasNext();) {
 				children.add(nodes.nextNode());
 			}
 			getSessionNodeChildren().put(node,children);
-//			getNodeHistory().put(node, node.getBaseVersion().getCreated().getTimeInMillis());
-//		}
+		}
 		return getSessionNodeChildren().get(node);
 	}
 
@@ -349,22 +411,13 @@ public class JCRRegistry extends Observable implements Registry{
 		return sessionNodeChildren;
 	}
 	
-	private Map<Node,Long> nodeHistory;
-	
-	protected void notifyNodeChange(Node node){
-		if (getSessionNodeChildren().containsKey(node)){
-			getSessionNodeChildren().remove(node);
-		}
-		if (getSessionNodes().containsKey(node)){
-			getSessionNodes().remove(node);
-		}
+	public EventListener getWorkspaceChangeEventListener() {
+		return workspaceChangeEventListener;
 	}
 
-	public Map<Node,Long> getNodeHistory() {
-		if (nodeHistory==null){
-			nodeHistory=new HashMap<Node, Long>();
-		}
-		return nodeHistory;
+	public void setWorkspaceChangeEventListener(
+			EventListener workspaceChangeEventListener) {
+		this.workspaceChangeEventListener = workspaceChangeEventListener;
 	}
 
 }
