@@ -26,6 +26,8 @@ import org.apache.airavata.xbaya.interpreter.utils.WorkflowTestUtils;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -33,10 +35,11 @@ import java.net.URL;
 import java.util.UUID;
 
 public class SimpleMathWorkflowTest {
+    final Logger logger = LoggerFactory.getLogger(SimpleMathWorkflowTest.class);
 
     @Test
     public void testScheduleDynamically() throws IOException, URISyntaxException, XBayaException {
-        System.out.println("Running SimpleMathWorkflowTest...");
+        logger.info("Running SimpleMathWorkflowTest...");
         URL systemResource = this.getClass().getClassLoader().getSystemResource("SimpleMath.xwf");
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
         WorkflowInterpreter interpretor = new WorkflowInterpreter(WorkflowTestUtils.getConfiguration(), UUID.randomUUID().toString(),
