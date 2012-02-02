@@ -35,6 +35,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 import java.util.ArrayList;
@@ -46,11 +48,13 @@ public class RegistryServiceTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
+    final Logger logger = LoggerFactory.getLogger(RegistryServiceTest.class);
+
     public AiravataJCRRegistry jcrRegistry = null;
 
     @Before
     public void testExecute() throws RegistryException {
-        System.out.println("Running RegistryServiceTest...");
+        logger.info("Running RegistryServiceTest...");
         try {
             jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin", "admin",
                     null);
