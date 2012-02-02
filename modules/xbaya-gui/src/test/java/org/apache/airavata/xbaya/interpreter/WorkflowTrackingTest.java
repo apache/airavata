@@ -27,14 +27,28 @@ import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.xbaya.interpreter.utils.ConfigKeys;
 import org.apache.airavata.xbaya.interpreter.utils.TestUtilServer;
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.MethodRule;
+import org.junit.rules.TestWatchman;
+import org.junit.runners.model.FrameworkMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
 public class WorkflowTrackingTest implements ConsumerNotificationHandler{
+    final static Logger logger = LoggerFactory.getLogger(ConsumerNotificationHandler.class);
 
-       public void handleNotification(SOAPEnvelope msgEnvelope) {
-        System.out.println("Received " + msgEnvelope);
+        @Rule
+    public MethodRule watchman = new TestWatchman() {
+        public void starting(FrameworkMethod method) {
+            logger.info("{} being run...", method.getName());
+        }
+    };
+
+    public void handleNotification(SOAPEnvelope msgEnvelope) {
+        logger.info("Received " + msgEnvelope);
         String message = "<?xml version='1.0' encoding='utf-8'?><soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"><soapenv:Header><wsa:Action xmlns:wsa=\"http://www.w3.org/2005/08/addressing\">http://org.apache.airavata/WseNotification</wsa:Action><wsa:MessageID xmlns:wsa=\"http://www.w3.org/2005/08/addressing\" /><wsa:To xmlns:wsa=\"http://www.w3.org/2005/08/addressing\">http://140.182.151.20:61436/axis2/services/ConsumerService/</wsa:To><wsnt:Topic xmlns:wsnt=\"http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification\" xmlns:ns2=\"http://tutorial.globus.org/auction\" Dialect=\"http://www.ibm.com/xmlns/stdwip/web-services/WS-Topics/TopicExpression/simple\">ns2:abc</wsnt:Topic></soapenv:Header><soapenv:Body><wor:workflowInvoked xmlns:wor=\"http://airavata.apache.org/schemas/workflow_tracking_types\" infoModelVersion=\"2.6\"><wor:notificationSource wor:serviceID=\"abc\" /><wor:timestamp>2011-12-20T14:47:33.736-05:00</wor:timestamp><wor:description>Workflow Started</wor:description><wor:annotation /><wor:initiator wor:serviceID=\"abc\" /></wor:workflowInvoked></soapenv:Body></soapenv:Envelope>";
         Assert.assertEquals(message,msgEnvelope);
     }
@@ -59,7 +73,7 @@ public class WorkflowTrackingTest implements ConsumerNotificationHandler{
 
     @Test
     public void WorkflowTrackingtest() throws Exception{
-        System.out.println("Running WorkflowTrackingTest...");
+        logger.info("Running WorkflowTrackingTest...");
         setUp();
         Properties configurations = new Properties(getDefaults());
         WseMsgBrokerClient brokerClient = new WseMsgBrokerClient();

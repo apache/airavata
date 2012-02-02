@@ -20,20 +20,31 @@
 */
 package org.apache.airavata.xbaya.interpreter;
 
-import org.apache.airavata.common.registry.api.impl.JCRRegistry;
 import org.apache.airavata.xbaya.clients.XBayaClient;
 import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.MethodRule;
+import org.junit.rules.TestWatchman;
+import org.junit.runners.model.FrameworkMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class WorkflowPerfTest {
+    final static Logger logger = LoggerFactory.getLogger(WorkflowPerfTest.class);
+
+    @Rule
+    public MethodRule watchman = new TestWatchman() {
+        public void starting(FrameworkMethod method) {
+            logger.info("{} being run...", method.getName());
+        }
+    };
 
     @Test
         public void testInvokeWorkflowString(){

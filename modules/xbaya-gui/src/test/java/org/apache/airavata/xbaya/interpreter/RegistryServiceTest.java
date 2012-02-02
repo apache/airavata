@@ -35,6 +35,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.MethodRule;
+import org.junit.rules.TestWatchman;
+import org.junit.runners.model.FrameworkMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +50,13 @@ import static org.junit.Assert.*;
 public class RegistryServiceTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
+
+    @Rule
+    public MethodRule watchman = new TestWatchman() {
+        public void starting(FrameworkMethod method) {
+            logger.info("{} being run...", method.getName());
+        }
+    };
 
     final Logger logger = LoggerFactory.getLogger(RegistryServiceTest.class);
 
