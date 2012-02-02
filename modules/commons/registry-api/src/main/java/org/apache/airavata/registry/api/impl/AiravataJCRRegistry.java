@@ -149,7 +149,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             if (node != null) {
                 node.remove();
                 session.save();
-                triggerObservers(this);
+//                triggerObservers(this);
             }
         } catch (Exception e) {
             throw new ServiceDescriptionRetrieveException(e);
@@ -210,7 +210,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             if (node != null) {
                 node.remove();
                 session.save();
-                triggerObservers(this);
+//                triggerObservers(this);
             }
         } catch (Exception e) {
             throw new HostDescriptionRetrieveException(e);
@@ -263,7 +263,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             session.save();
 
             result = node.getIdentifier();
-            triggerObservers(this);
+//            triggerObservers(this);
         } catch (Exception e) {
             System.out.println(e);
             throw new RegistryException("Error while saving host description!!!", e);
@@ -284,7 +284,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             session.save();
 
             result = node.getIdentifier();
-            triggerObservers(this);
+//            triggerObservers(this);
         } catch (Exception e) {
             System.out.println(e);
             throw new RegistryException("Error while saving service description!!!", e);
@@ -307,7 +307,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             session.save();
 
             result = appName.getIdentifier();
-            triggerObservers(this);
+//            triggerObservers(this);
         } catch (Exception e) {
             System.out.println(e);
             throw new RegistryException("Error while saving deployment description!!!", e);
@@ -443,7 +443,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             }
             if (found) {
                 session.save();
-                triggerObservers(this);
+//                triggerObservers(this);
             }
         } catch (Exception e) {
             throw new DeploymentDescriptionRetrieveException(e);
@@ -604,7 +604,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
                 gfacDataNode.setProperty(propertyName, gfacURL + ";" + timestamp.getTime());
                 session.save();
             }
-            triggerObservers(this);
+//            triggerObservers(this);
         } catch (Exception e) {
             System.out.println(e);
             throw new RegistryException("Error while saving GFac Descriptor to the registry!!!", e);
@@ -625,7 +625,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             if (prop != null) {
                 prop.setValue((String) null);
                 session.save();
-                triggerObservers(this);
+//                triggerObservers(this);
             }
         } catch (Exception e) {
             System.out.println(e);
@@ -675,7 +675,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             session.save();
 
             result = node.getIdentifier();
-            triggerObservers(this);
+//            triggerObservers(this);
         } catch (Exception e) {
             System.out.println(e);
             throw new RegistryException("Error while saving workflow output to the registry!!!", e);
@@ -762,7 +762,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             workflowNode.setProperty("Description", resourceDesc);
             workflowNode.setProperty("Type", REGISTRY_TYPE_WORKFLOW);
             session.save();
-            triggerObservers(this);
+//            triggerObservers(this);
         } catch (Exception e) {
             throw new RegistryException("Error while saving workflow to the registry!!!", e);
         } finally {
@@ -780,7 +780,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             if (result != null) {
                 result.remove();
                 session.save();
-                triggerObservers(this);
+//                triggerObservers(this);
             }
         } catch (Exception e) {
             throw new RegistryException("Error while deleting workflow from registry!!!", e);

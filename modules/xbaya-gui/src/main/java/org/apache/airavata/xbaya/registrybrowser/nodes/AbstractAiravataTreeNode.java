@@ -205,10 +205,10 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
     }
 
     protected void reloadTreeNode(JTree tree, TreeNode node) {
-        TreePath selectionPath = tree.getSelectionPath();
-        ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
-        ((DefaultTreeModel) tree.getModel()).reload(node);
-        tree.expandPath(selectionPath);
+//        TreePath selectionPath = tree.getSelectionPath();
+//        ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
+//        ((DefaultTreeModel) tree.getModel()).reload(node);
+//        tree.expandPath(selectionPath);
     }
 
     public abstract String getActionCaption(AbstractBrowserActionItem action);
