@@ -23,7 +23,6 @@ package org.apache.airavata.registry.api.impl;
 
 import java.net.URI;
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,7 +34,6 @@ import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
@@ -105,15 +103,15 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	}
     
     private Node getServiceNode(Session session) throws RepositoryException {
-        return getOrAddNode(session.getRootNode(), SERVICE_NODE_NAME);
+        return getOrAddNode(getRootNode(session), SERVICE_NODE_NAME);
     }
 
     private Node getDeploymentNode(Session session) throws RepositoryException {
-        return getOrAddNode(session.getRootNode(), DEPLOY_NODE_NAME);
+        return getOrAddNode(getRootNode(session), DEPLOY_NODE_NAME);
     }
 
     private Node getHostNode(Session session) throws RepositoryException {
-        return getOrAddNode(session.getRootNode(), HOST_NODE_NAME);
+        return getOrAddNode(getRootNode(session), HOST_NODE_NAME);
     }
 
 //    public List<HostDescription> getServiceLocation(String serviceId) {
@@ -186,9 +184,8 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             Node deploymentNode = getDeploymentNode(session);
             Node serviceNode = deploymentNode.getNode(serviceId);
             Node hostNode = serviceNode.getNode(hostId);
-            NodeIterator nodes = hostNode.getNodes();
-            for (; nodes.hasNext();) {
-                Node app = nodes.nextNode();
+            List<Node> childNodes = getChildNodes(hostNode);
+            for (Node app:childNodes) {
                 Property prop = app.getProperty(XML_PROPERTY_NAME);
                 result = ApplicationDeploymentDescription.fromXML(prop.getString());
                 break;
@@ -364,9 +361,8 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         try {
             session = getSession();
             Node node = getServiceNode(session);
-            NodeIterator nodes = node.getNodes();
-            for (; nodes.hasNext();) {
-                Node service = nodes.nextNode();
+            List<Node> childNodes = getChildNodes(node);
+            for (Node service:childNodes) {
                 if (nameRegEx.equals("") || service.getName().matches(nameRegEx)) {
                     Property prop = service.getProperty(XML_PROPERTY_NAME);
                     result.add(ServiceDescription.fromXML(prop.getString()));
@@ -386,9 +382,8 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         try {
             session = getSession();
             Node node = getHostNode(session);
-            NodeIterator nodes = node.getNodes();
-            for (; nodes.hasNext();) {
-                Node host = nodes.nextNode();
+            List<Node> childNodes = getChildNodes(node);
+            for (Node host:childNodes) {
                 if (host != null && host.getName().matches(nameRegEx)) {
                     HostDescription hostDescriptor = getHostDescriptor(host);
                     result.add(hostDescriptor);
@@ -408,17 +403,12 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         try {
             session = getSession();
             Node deploymentNode = getDeploymentNode(session);
-            NodeIterator serviceNodes = deploymentNode.getNodes();
-
-            for (; serviceNodes.hasNext();) {
-                Node serviceNode = serviceNodes.nextNode();
-                NodeIterator hostNodes = serviceNode.getNodes();
-
-                for (; hostNodes.hasNext();) {
-                    Node hostNode = hostNodes.nextNode();
-                    NodeIterator nodes = hostNode.getNodes();
-                    for (; nodes.hasNext();) {
-                        Node app = nodes.nextNode();
+            List<Node> childNodes = getChildNodes(deploymentNode);
+            for (Node serviceNode:childNodes) {
+                List<Node> childNodes2 = getChildNodes(serviceNode);
+                for (Node hostNode:childNodes2) {
+                    List<Node> childNodes3 = getChildNodes(hostNode);
+                    for (Node app:childNodes3) {
                         Property prop = app.getProperty(XML_PROPERTY_NAME);
                         result.put(ApplicationDeploymentDescription.fromXML(prop.getString()), serviceNode.getName()
                                 + "$" + hostNode.getName());
@@ -441,10 +431,9 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             Node deploymentNode = getDeploymentNode(session);
             Node serviceNode = deploymentNode.getNode(serviceName);
             Node hostNode = serviceNode.getNode(hostName);
-            NodeIterator nodes = hostNode.getNodes();
             boolean found = false;
-            for (; nodes.hasNext();) {
-                Node app = nodes.nextNode();
+            List<Node> childNodes = getChildNodes(hostNode);
+            for (Node app:childNodes) {
                 Property prop = app.getProperty(XML_PROPERTY_NAME);
                 ApplicationDeploymentDescription appDesc = ApplicationDeploymentDescription.fromXML(prop.getString());
                 if (appDesc.getType().getApplicationName().getStringValue().matches(applicationName)) {
@@ -472,9 +461,8 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             Node deploymentNode = getDeploymentNode(session);
             Node serviceNode = deploymentNode.getNode(serviceName);
             Node hostNode = serviceNode.getNode(hostName);
-            NodeIterator nodes = hostNode.getNodes();
-            for (; nodes.hasNext();) {
-                Node app = nodes.nextNode();
+            List<Node> childNodes = getChildNodes(hostNode);
+            for (Node app:childNodes) {
                 Property prop = app.getProperty(XML_PROPERTY_NAME);
                 ApplicationDeploymentDescription appDesc = ApplicationDeploymentDescription.fromXML(prop.getString());
                 if (appDesc.getType().getApplicationName().getStringValue().matches(applicationName)) {
@@ -499,14 +487,12 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 			session = getSession();
 			Node deploymentNode = getDeploymentNode(session);
 			Node serviceNode = deploymentNode.getNode(serviceName);
-			NodeIterator hostNodes = serviceNode.getNodes();
-			for(;hostNodes.hasNext();){
-				Node hostNode = hostNodes.nextNode();
+            List<Node> childNodes = getChildNodes(serviceNode);
+            for (Node hostNode:childNodes) {
 				HostDescription hostDescriptor = getHostDescription(hostNode.getName());
 				result.put(hostDescriptor, new ArrayList<ApplicationDeploymentDescription>());
-				NodeIterator nodes = hostNode.getNodes();
-				for (; nodes.hasNext();) {
-					Node app = nodes.nextNode();
+	            List<Node> childNodes2 = getChildNodes(hostNode);
+	            for (Node app:childNodes2) {
 					Property prop = app.getProperty(XML_PROPERTY_NAME);
 					result.get(hostDescriptor).add(ApplicationDeploymentDescription.fromXML(prop.getString()));
 				}
@@ -530,9 +516,8 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             Node deploymentNode = getDeploymentNode(session);
             Node serviceNode = deploymentNode.getNode(serviceName);
             Node hostNode = serviceNode.getNode(hostName);
-            NodeIterator nodes = hostNode.getNodes();
-            for (; nodes.hasNext();) {
-                Node app = nodes.nextNode();
+            List<Node> childNodes = getChildNodes(hostNode);
+            for (Node app:childNodes) {
                 Property prop = app.getProperty(XML_PROPERTY_NAME);
                 result.add(ApplicationDeploymentDescription.fromXML(prop.getString()));
             }
@@ -610,7 +595,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             URI uri = new URI(gfacURL);
             String propertyName = uri.getHost() + "-" + uri.getPort();
             session = getSession();
-            Node gfacDataNode = getOrAddNode(session.getRootNode(), GFAC_INSTANCE_DATA);
+            Node gfacDataNode = getOrAddNode(getRootNode(session), GFAC_INSTANCE_DATA);
             try {
                 Property prop = gfacDataNode.getProperty(propertyName);
                 prop.setValue(gfacURL + ";" + timestamp.getTime());
@@ -635,7 +620,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             URI uri = new URI(gfacURL);
             String propertyName = uri.getHost() + "-" + uri.getPort();
             session = getSession();
-            Node gfacDataNode = getOrAddNode(session.getRootNode(), GFAC_INSTANCE_DATA);
+            Node gfacDataNode = getOrAddNode(getRootNode(session), GFAC_INSTANCE_DATA);
             Property prop = gfacDataNode.getProperty(propertyName);
             if (prop != null) {
                 prop.setValue((String) null);
@@ -658,7 +643,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         Timestamp timestamp = new Timestamp(today.getTime());
         try {
             session = getSession();
-            Node gfacNode = getOrAddNode(session.getRootNode(), GFAC_INSTANCE_DATA);
+            Node gfacNode = getOrAddNode(getRootNode(session), GFAC_INSTANCE_DATA);
             PropertyIterator propertyIterator = gfacNode.getProperties();
             while (propertyIterator.hasNext()) {
                 Property property = propertyIterator.nextProperty();
@@ -681,7 +666,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         String result = null;
         try {
             session = getSession();
-            Node outputNode = getOrAddNode(session.getRootNode(), OUTPUT_NODE_NAME);
+            Node outputNode = getOrAddNode(getRootNode(session), OUTPUT_NODE_NAME);
             Node node = getOrAddNode(outputNode, workflowId);
             for (int i = 0; i < parameters.size(); i++) {
                 node.setProperty(String.valueOf(i), parameters.get(i).toXML());
@@ -705,7 +690,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         ArrayList<ActualParameter> result = new ArrayList<ActualParameter>();
         try {
             session = getSession();
-            Node outputNode = getOrAddNode(session.getRootNode(), OUTPUT_NODE_NAME);
+            Node outputNode = getOrAddNode(getRootNode(session), OUTPUT_NODE_NAME);
             Node node = outputNode.getNode(workflowId);
 
             PropertyIterator it = node.getProperties();
@@ -727,16 +712,14 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         Map<QName, Node> workflowList = new HashMap<QName, Node>();
         try {
             session = getSession();
-            Node workflowListNode = getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOWS), PUBLIC);
-            NodeIterator iterator = workflowListNode.getNodes();
-            while (iterator.hasNext()) {
-                Node nextNode = iterator.nextNode();
+            Node workflowListNode = getOrAddNode(getOrAddNode(getRootNode(session), WORKFLOWS), PUBLIC);
+            List<Node> childNodes = getChildNodes(workflowListNode);
+            for (Node nextNode:childNodes) {
                 workflowList.put(new QName(nextNode.getName()), nextNode);
             }
-            workflowListNode = getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOWS), userName);
-            iterator = workflowListNode.getNodes();
-            while (iterator.hasNext()) {
-                Node nextNode = iterator.nextNode();
+            workflowListNode = getOrAddNode(getOrAddNode(getRootNode(session), WORKFLOWS), userName);
+            childNodes = getChildNodes(workflowListNode);
+            for (Node nextNode:childNodes) {
                 workflowList.put(new QName(nextNode.getName()), nextNode);
             }
 
@@ -751,7 +734,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         Node result = null;
         try {
             session = getSession();
-            Node workflowListNode = getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOWS), userName);
+            Node workflowListNode = getOrAddNode(getOrAddNode(getRootNode(session), WORKFLOWS), userName);
             result = getOrAddNode(workflowListNode, templateID.getLocalPart());
         } catch (Exception e) {
             throw new RegistryException("Error while retrieving workflow from registry!!!", e);
@@ -764,7 +747,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         Session session = null;
         try {
             session = getSession();
-            Node workflowListNode = getOrAddNode(session.getRootNode(), WORKFLOWS);
+            Node workflowListNode = getOrAddNode(getRootNode(session), WORKFLOWS);
             Node workflowNode = null;
             if (isMakePublic) {
                 workflowNode = getOrAddNode(getOrAddNode(workflowListNode, PUBLIC), workflowName);
@@ -792,7 +775,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         Session session = null;
         try {
             session = getSession();
-            Node workflowListNode = getOrAddNode(getOrAddNode(session.getRootNode(), WORKFLOWS), userName);
+            Node workflowListNode = getOrAddNode(getOrAddNode(getRootNode(session), WORKFLOWS), userName);
             Node result = getOrAddNode(workflowListNode, resourceID.getLocalPart());
             if (result != null) {
                 result.remove();
@@ -852,15 +835,13 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         try {
             session = getSession();
             Node experimentsNode = getWorkflowDataNode(session);
-            NodeIterator experimentNodes = experimentsNode.getNodes();
-            for (; experimentNodes.hasNext();) {
-                Node experimentNode = experimentNodes.nextNode();
+            List<Node> childNodes = getChildNodes(experimentsNode);
+            for (Node experimentNode:childNodes) {
                 if (experimentIdRegEx != null && !experimentNode.getName().matches(experimentIdRegEx)) {
                     continue;
                 }
-                NodeIterator workflowNodes = experimentNode.getNodes();
-                for (; workflowNodes.hasNext();) {
-                    Node workflowNode = workflowNodes.nextNode();
+                List<Node> childNodes2 = getChildNodes(experimentNode);
+                for (Node workflowNode:childNodes2) {
                     String workflowName = null;
                     if (workflowNode.hasProperty(PROPERTY_WORKFLOW_NAME)) {
 						workflowName = workflowNode.getProperty(
@@ -870,9 +851,8 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 							continue;
 						}
 					}
-					NodeIterator serviceNodes = workflowNode.getNodes();
-                    for (; serviceNodes.hasNext();) {
-                        Node serviceNode = serviceNodes.nextNode();
+                    List<Node> childNodes3 = getChildNodes(workflowNode);
+                    for (Node serviceNode:childNodes3) {
                         if (nodeNameRegEx != null && !serviceNode.getName().matches(nodeNameRegEx)) {
                             continue;
                         }
@@ -964,7 +944,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 
 	private Node getWorkflowDataNode(Session session)
 			throws RepositoryException {
-		return getOrAddNode(session.getRootNode(), WORKFLOW_DATA);
+		return getOrAddNode(getRootNode(session), WORKFLOW_DATA);
 	}
     
 	public boolean saveWorkflowExecutionOutput(String experimentId,String outputNodeName,String output) throws RegistryException{
@@ -1035,10 +1015,10 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
     private List<String> getMatchingExperimentIds(String regex,Session session)throws RepositoryException{
         Node orAddNode = getWorkflowDataNode(session);
         List<String> matchList = new ArrayList<String>();
-        NodeIterator nodes = orAddNode.getNodes();
+        
         Pattern compile = Pattern.compile(regex);
-        while(nodes.hasNext()){
-            Node node = nodes.nextNode();
+        List<Node> childNodes = getChildNodes(orAddNode);
+        for (Node node:childNodes) {
             String name = node.getName();
             if(compile.matcher(name).find()){
                 matchList.add(name);

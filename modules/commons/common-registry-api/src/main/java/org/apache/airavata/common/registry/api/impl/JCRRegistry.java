@@ -24,11 +24,15 @@ package org.apache.airavata.common.registry.api.impl;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 
 import javax.jcr.Credentials;
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -55,9 +59,17 @@ public class JCRRegistry extends Observable implements Registry{
     private Class registryRepositoryFactory;
     private Map<String,String> connectionMap;
     private String password;
-
+    private Session defaultSession=null;
+    private boolean sessionKeepAlive=false;
+    
+	private Thread sessionManager;
+    private static final int SESSION_TIME_OUT = 60000;
+    private static final int DEFINITE_SESSION_TIME_OUT = 300000;
     private static Logger log = LoggerFactory.getLogger(JCRRegistry.class);
-
+    private Map<Node,Map<String,Node>> sessionNodes;
+    private Map<Node,List<Node>> sessionNodeChildren;
+    private Map<Session,Integer> currentSessionUseCount=new HashMap<Session, Integer>();
+    
     public JCRRegistry(URI repositoryURI, String className, String user, String pass, Map<String, String> map)
             throws RepositoryException {
         try {
@@ -73,6 +85,7 @@ public class JCRRegistry extends Observable implements Registry{
             setUsername(user);
             setPassword(pass);
             credentials = new SimpleCredentials(getUsername(), new String(pass).toCharArray());
+            definiteSessionTimeout();
         } catch (ClassNotFoundException e) {
             log.error("Error class path settting", e);
         } catch (RepositoryException e) {
@@ -82,23 +95,101 @@ public class JCRRegistry extends Observable implements Registry{
             log.error("Error init", e);
         }
     }
+    
+    private void definiteSessionTimeout(){
+    	Thread m=new Thread(new Runnable() {
+			public void run() {
+				while (true){
+					int timeoutCount=0;
+					int shortStep=10000;
+					Session currentSession=defaultSession;
+					while(timeoutCount<DEFINITE_SESSION_TIME_OUT){
+						try {
+							Thread.sleep(shortStep);
+						} catch (InterruptedException e) {
+							//life sucks anyway, so who cares if this exception is thrown
+						}
+						timeoutCount=timeoutCount+shortStep;
+						if (currentSession!=defaultSession){
+							//reset start from begining since its a new session
+							currentSession=defaultSession;
+							timeoutCount=0;
+						}
+					}
+					reallyCloseSession(defaultSession);
+				}
+				
+			}
+		});
+    	m.start();
+    }
+    
+    private void setupSessionManagement(){
+    	stopSessionManager();
+        setSessionKeepAlive(true);
+    	sessionManager=new Thread(new Runnable() {
+			public void run() {
+				while (!isSessionValid() && isSessionKeepAlive()){
+					try {
+						setSessionKeepAlive(false);
+						Thread.sleep(SESSION_TIME_OUT);
+					} catch (InterruptedException e) {
+						//no issue
+					}
+				}
+				reallyCloseSession(defaultSession);
+			}
+		});
+    	sessionManager.start();
+    }
+    
+    private void stopSessionManager(){
+    	if (sessionManager!=null) {
+			sessionManager.interrupt();
+		}
+    }
+    protected boolean isSessionKeepAlive() {
+		return sessionKeepAlive;
+	}
 
-    public JCRRegistry(Repository repo, Credentials credentials) {
+	public JCRRegistry(Repository repo, Credentials credentials) {
         this.repository = repo;
         this.credentials = credentials;
     }
 
-    public Session getSession() throws RepositoryException {
-        Session session = null;
-        try {
-            session = repository.login(credentials);
-            if (session == null) {
-                session = resetSession(session);
-            }
-        } catch (Exception e) {
-            session = resetSession(session);
-        }
-        return session;
+	protected Node getRootNode(Session session) throws RepositoryException {
+		String ROOT_NODE_TEXT = "root";
+		if (!getSessionNodes().containsKey(null)){
+			getSessionNodes().put(null, new HashMap<String, Node>());
+			getSessionNodes().get(null).put(ROOT_NODE_TEXT, session.getRootNode());
+		}
+		return getOrAddNode(null, ROOT_NODE_TEXT);
+	}
+	
+	public Session getSession() throws RepositoryException {
+    	if (isSessionValid()){
+        	synchronized (sessionSynchronousObject) {
+	    		System.out.println("session created");
+		        Session session = null;
+		        try {
+		            session = repository.login(credentials);
+		            if (session == null) {
+		                session = resetSession(session);
+		            }
+		        } catch (Exception e) {
+		            session = resetSession(session);
+		        }
+		        defaultSession=session;
+		        currentSessionUseCount.put(session, 1);
+        	}
+	        setupSessionManagement();
+    	}else{
+            setSessionKeepAlive(true);
+            synchronized (sessionSynchronousObject) {
+		        currentSessionUseCount.put(defaultSession, currentSessionUseCount.get(defaultSession)+1);
+        	}
+    	}
+        return defaultSession;
     }
 
     protected Session resetSession(Session session){
@@ -125,9 +216,19 @@ public class JCRRegistry extends Observable implements Registry{
     }
 
     protected Node getOrAddNode(Node node, String name) throws RepositoryException {
+    	Map<Node, Map<String, Node>> sessionNodes = getSessionNodes();
+    	if (sessionNodes.containsKey(node)){
+    		if (sessionNodes.get(node)!=null && sessionNodes.get(node).containsKey(name)){
+    			return sessionNodes.get(node).get(name);
+    		}
+    	}else{
+    		sessionNodes.put(node,new HashMap<String, Node>());
+    	}
         Node node1 = null;
         try {
+        	System.out.println("node extracted");
             node1 = node.getNode(name);
+            sessionNodes.get(node).put(name, node1);
         } catch (PathNotFoundException pnfe) {
             node1 = node.addNode(name);
         } catch (RepositoryException e) {
@@ -139,11 +240,38 @@ public class JCRRegistry extends Observable implements Registry{
     }
 
     protected void closeSession(Session session) {
-        if (session != null && session.isLive()) {
-            session.logout();
-        }
+    	//Do nothing - let the session management thread handle closing the thread
+    	currentSessionUseCount.put(session,currentSessionUseCount.get(session)-1);
+    	if (session!=defaultSession){
+    		reallyCloseSession(session);
+    	}
     }
 
+    protected void reallyCloseSession(Session session) {
+    	synchronized (sessionSynchronousObject) {
+    		if (currentSessionUseCount.get(session)==0){
+				if (session != null && session.isLive()) {
+		            session.logout();
+		        }
+				sessionNodes=null;
+				sessionNodeChildren=null;
+				nodeHistory=null;
+				if (session!=defaultSession){
+					currentSessionUseCount.remove(session);
+				}
+    		}
+    	}
+	}
+
+    private boolean isSessionValid(){
+    	boolean isValid=false;
+    	synchronized (sessionSynchronousObject) {
+    		isValid=(defaultSession==null || !defaultSession.isLive());
+		}
+    	return isValid;
+    }
+    
+    private Object sessionSynchronousObject=new Object();
 
     public UserManager getUserManager() {
         return userManager;
@@ -190,5 +318,53 @@ public class JCRRegistry extends Observable implements Registry{
         return repository;
     }
 
+	public void setSessionKeepAlive(boolean sessionKeepAlive) {
+		this.sessionKeepAlive = sessionKeepAlive;
+	}
+
+	private Map<Node,Map<String,Node>> getSessionNodes() {
+		if (sessionNodes==null) {
+			sessionNodes=new HashMap<Node, Map<String,Node>>();
+		}
+		return sessionNodes;
+	}
+	
+	protected List<Node> getChildNodes(Node node) throws RepositoryException{
+//		if (!getSessionNodeChildren().containsKey(node) || getNodeHistory().get(node)<node.getBaseVersion().getCreated().getTimeInMillis()){
+			List<Node> children=new ArrayList<Node>();
+			NodeIterator nodes = node.getNodes();
+			for (;nodes.hasNext();) {
+				children.add(nodes.nextNode());
+			}
+			getSessionNodeChildren().put(node,children);
+//			getNodeHistory().put(node, node.getBaseVersion().getCreated().getTimeInMillis());
+//		}
+		return getSessionNodeChildren().get(node);
+	}
+
+	public Map<Node,List<Node>> getSessionNodeChildren() {
+		if (sessionNodeChildren==null) {
+			sessionNodeChildren=new HashMap<Node, List<Node>>();
+		}
+		return sessionNodeChildren;
+	}
+	
+	private Map<Node,Long> nodeHistory;
+	
+	protected void notifyNodeChange(Node node){
+		if (getSessionNodeChildren().containsKey(node)){
+			getSessionNodeChildren().remove(node);
+		}
+		if (getSessionNodes().containsKey(node)){
+			getSessionNodes().remove(node);
+		}
+	}
+
+	public Map<Node,Long> getNodeHistory() {
+		if (nodeHistory==null){
+			nodeHistory=new HashMap<Node, Long>();
+		}
+		return nodeHistory;
+	}
 
 }
