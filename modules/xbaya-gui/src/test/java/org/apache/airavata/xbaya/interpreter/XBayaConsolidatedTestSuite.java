@@ -14,7 +14,7 @@ import org.junit.runners.Suite;
         ComplexMathWorkflowTest.class, CrossProductWorkflowTest.class, ForEachWorkflowTest.class,
         WorkflowTrackingTest.class, RegistryServiceTest.class})
 public class XBayaConsolidatedTestSuite {
-    static ListenerManager manager = null;
+    private static ListenerManager manager = null;
 
     @BeforeClass
     public static void startServer() throws AxisFault {
