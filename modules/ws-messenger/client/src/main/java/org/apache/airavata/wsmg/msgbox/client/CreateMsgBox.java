@@ -71,7 +71,7 @@ public class CreateMsgBox {
         try {
             responseMessage = serviceClient.sendReceive(createMessageEl());
         } finally {
-            serviceClient.cleanup();
+            serviceClient.cleanupTransport();
         }
 
         if (responseMessage == null) {
