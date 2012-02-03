@@ -244,5 +244,10 @@ public class JCRRegistrySearchTest {
            String s = jackrabbit.getAbsolutePath() + File.separator +
                     "jackrabbit";
            IOUtil.deleteDirectory(new File(s));
+           
+           jackrabbit = new File(".");
+           s = jackrabbit.getAbsolutePath() + File.separator +
+                   "modules" + File.separator + "registry-api" + File.separator +"jackrabbit";
+           IOUtil.deleteDirectory(new File(s));
     }
 }
