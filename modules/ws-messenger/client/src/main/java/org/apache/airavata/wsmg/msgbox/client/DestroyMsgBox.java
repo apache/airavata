@@ -74,7 +74,7 @@ public class DestroyMsgBox {
         try {
             responseMessage = serviceClient.sendReceive(message);
         } finally {
-            serviceClient.cleanup();
+            serviceClient.cleanupTransport();
         }
 
         responseMessage = serviceClient.sendReceive(message);
