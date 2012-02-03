@@ -476,6 +476,28 @@
 		<profile>
 			<id>default</id>
 			<build>
+<artifactId>maven-resources-plugin</artifactId>
+        <version>2.5</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <!-- here the phase you need -->
+            <phase>validate</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/target/classes/META-INF</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${basedir}/src/main/assembly/dist</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
