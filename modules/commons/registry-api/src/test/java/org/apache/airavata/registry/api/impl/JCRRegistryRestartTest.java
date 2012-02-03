@@ -62,13 +62,17 @@ public class JCRRegistryRestartTest {
                Repository repository = jcrRegistry.getRepository();
                ((TransientRepository)repository).shutdown();
 
-               Session session = jcrRegistry.getSession();
-               if (session!=null){
+               Session session = null;
+				try {
+					session = jcrRegistry.getSession();
+				} catch (Exception e) {
+				}
+	           if (session!=null){
 	               HostDescription hostR = jcrRegistry.getHostDescription(hostId);
 	               Assert.assertNotNull(hostR);
-               }else{
-            	   Assert.assertTrue(true);
-               }
+	           }else{
+	        	   Assert.assertTrue(true);
+	           }
            } catch (Exception e) {
                e.printStackTrace();
                fail(e.getMessage());
