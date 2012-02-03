@@ -109,7 +109,7 @@ public class JCRRegistry extends Observable implements Registry{
 											nodesToRemove.add(node);
 										}
 									} else {
-										if (node.getPath().startsWith(path)
+										if (node.getSession().isLive() && node.getPath().startsWith(path)
 												|| path.startsWith(node
 														.getPath())) {
 											nodesToRemove.add(node);
