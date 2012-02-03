@@ -234,8 +234,17 @@ public class JCRRegistry extends Observable implements Registry{
 		            session = resetSession(session);
 		        }
 		        defaultSession=session;
-				defaultSession.getWorkspace().getObservationManager().addEventListener(getWorkspaceChangeEventListener(), Event.NODE_ADDED|Event.NODE_REMOVED|Event.NODE_MOVED, "/", true, null, null, false);
-		        currentSessionUseCount.put(session, 1);
+				if (defaultSession!=null) {
+					defaultSession
+							.getWorkspace()
+							.getObservationManager()
+							.addEventListener(
+									getWorkspaceChangeEventListener(),
+									Event.NODE_ADDED | Event.NODE_REMOVED
+											| Event.NODE_MOVED, "/", true,
+									null, null, false);
+					currentSessionUseCount.put(session, 1);
+				}
         	}
 	        setupSessionManagement();
     	}else{
@@ -296,8 +305,10 @@ public class JCRRegistry extends Observable implements Registry{
 
     protected void closeSession(Session session) {
     	if (session!=null) {
-			currentSessionUseCount.put(session,
-					currentSessionUseCount.get(session) - 1);
+			if (currentSessionUseCount!=null) {
+				currentSessionUseCount.put(session,
+						currentSessionUseCount.get(session) - 1);
+			}
 			if (session != defaultSession) {
 				reallyCloseSession(session);
 			}
@@ -319,6 +330,8 @@ public class JCRRegistry extends Observable implements Registry{
 		        }
 				sessionNodes=null;
 				sessionNodeChildren=null;
+//				sessionNodes=new HashMap<Node, Map<String,Node>>();
+//				sessionNodeChildren=new HashMap<Node, List<Node>>();
 				if (session!=defaultSession){
 					currentSessionUseCount.remove(session);
 				}

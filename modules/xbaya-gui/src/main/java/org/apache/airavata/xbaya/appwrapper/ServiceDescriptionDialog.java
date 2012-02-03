@@ -40,10 +40,10 @@ import javax.jcr.PathNotFoundException;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -55,6 +55,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
@@ -68,6 +69,7 @@ import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
+import org.apache.xmlbeans.XmlCursor;
 
 public class ServiceDescriptionDialog extends JDialog {
 
@@ -86,6 +88,7 @@ public class ServiceDescriptionDialog extends JDialog {
     private AiravataRegistry registry;
     private boolean newDescription;
     private boolean ignoreTableChanges=false;
+	private JCheckBox chkForceFileStagingToWorkDir;
 
     /**
      * Launch the application.
@@ -235,7 +238,15 @@ public class ServiceDescriptionDialog extends JDialog {
             }
 
         });
+        chkForceFileStagingToWorkDir=new JCheckBox("Save URI content in work directory");
+        chkForceFileStagingToWorkDir.addActionListener(new ActionListener(){
 
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				setForceFileStagingToWorkDir(chkForceFileStagingToWorkDir.isSelected());
+			}
+        	
+        });
         GridPanel buttonPane = new GridPanel();
         {
             GridBagLayout gbl_buttonPane = new GridBagLayout();
@@ -311,8 +322,9 @@ public class ServiceDescriptionDialog extends JDialog {
         GridPanel infoPanel = new GridPanel();
         infoPanel.add(contentPanel);
         infoPanel.add(parameterPanel);
+        infoPanel.add(chkForceFileStagingToWorkDir);
         infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
-        infoPanel.layout(2, 1, 1, 0);
+        infoPanel.layout(3, 1, 1, 0);
         getContentPane().add(infoPanel.getSwingComponent());
         getContentPane().add(buttonPane.getSwingComponent());
         buttonPane.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
@@ -343,6 +355,16 @@ public class ServiceDescriptionDialog extends JDialog {
     		defaultTableModel.addRow(new Object[] { getIOStringList()[1], parameter.getParameterName(), parameter.getParameterType().getName(),parameter.getParameterDescription()});	
 		}
     	addNewRowIfLastIsNotEmpty();
+    	XmlCursor cursor = getOrginalServiceDescription().getType().getPortType().getMethod().newCursor();
+    	cursor.toNextToken();
+    	String value = cursor.getAttributeText(new QName("id"));
+    	cursor.dispose();
+    	Boolean selected=false;
+    	if (value!=null){
+    		selected=Boolean.parseBoolean(value);
+    	}
+    	chkForceFileStagingToWorkDir.setSelected(selected);
+    	setForceFileStagingToWorkDir(selected);
     	ignoreTableChanges=false;
 	}
 
@@ -387,6 +409,38 @@ public class ServiceDescriptionDialog extends JDialog {
         updateDialogStatus();
     }
 
+    private void setupMethod(){
+    	if (getServiceDescriptionType().getPortType()==null){
+    		getServiceDescriptionType().setPortType(getServiceDescriptionType().addNewPortType());
+    	}
+    	if (getServiceDescriptionType().getPortType().getMethod()==null){
+    		getServiceDescriptionType().getPortType().setMethod(getServiceDescriptionType().getPortType().addNewMethod());
+    	}
+    }
+    public void setForceFileStagingToWorkDir(Boolean force){
+    	setupMethod();
+    	XmlCursor cursor = getServiceDescriptionType().getPortType().getMethod().newCursor();
+    	cursor.toNextToken();
+		if (!cursor.setAttributeText(new QName("http://schemas.airavata.apache.org/gfac/type","forceFileStagingToWorkDir"),force.toString())){
+			cursor.insertAttributeWithValue("forceFileStagingToWorkDir",force.toString());
+		}
+		cursor.dispose();
+    }
+    
+    public Boolean getForceFileStagingToWorkDir(){
+    	setupMethod();
+    	XmlCursor cursor = getServiceDescriptionType().getPortType().getMethod().newCursor();    	
+    	cursor.toNextToken();
+		String value = cursor.getAttributeText(new QName("forceFileStagingToWorkDir"));
+		cursor.dispose();
+		if (value==null){
+			return false;
+		}else{
+			return Boolean.parseBoolean(value);
+		}
+		
+    }
+    
     private void updateDialogStatus() {
         String message = null;
         try {
