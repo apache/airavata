@@ -79,7 +79,7 @@
 			<version>${project.version}</version>
 		</dependency>
 
-        <dependency>
+<!--        <dependency>
             <groupId>j2ssh</groupId>
             <artifactId>j2ssh-core</artifactId>
             <version>0.2.9</version>
@@ -90,7 +90,7 @@
             <artifactId>j2ssh-common</artifactId>
             <version>0.2.9</version>
             <type>jar</type>
-        </dependency>
+        </dependency>-->
 
 		<!-- Workflow Tracking -->
 		<dependency>

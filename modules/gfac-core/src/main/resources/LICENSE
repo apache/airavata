@@ -1,3 +1,4 @@
+For Xerces, XMLBeans,jglobus, com.amazonaws, net.schmizz:
 
                                  Apache License
                            Version 2.0, January 2004
@@ -208,7 +209,7 @@ dependencies with separate copyright notices and license terms. Your use of the
 code for Airavata is subject to the terms and conditions of the following licenses.
 ===============================================================================
 
-For XPP3, gpel, weps-beans, pegasuswebservice, mapReduce-service-client, xsul, xutil, wsmg:
+For XPP3, gpel, weps-beans, pegasuswebservice, mapReduce-service-client, xsul, xsul5, xutil, wsmg:
 
 Indiana University Extreme! Lab Software License
 
@@ -330,7 +331,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ===============================================================================
 
-For activation, jaxb, mail:
+For activation, jaxb, mail, junit:
 
 COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
 
@@ -635,3 +636,26 @@ For puretls:
    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
    OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
    SUCH DAMAGE.
+
+===============================================================================
+
+For Bounty Castle:
+
+Copyright (c) 2000 - 2011 The Legion Of The Bouncy Castle (http://www.bouncycastle.org)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+and associated documentation files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial
+portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+===============================================================================
