@@ -10,549 +10,550 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<prerequisites>
-		<maven>3.0</maven>
-	</prerequisites>
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
 
-	<!--parent>
-		<groupId>org.apache.airavata</groupId>
-		<artifactId>airavata-master</artifactId>
-		<version>0.2-incubating-SNAPSHOT</version>
-		<relativePath>../airavata-master-pom/trunk/pom.xml</relativePath>
-	</parent-->
-	<parent>
-    		<groupId>org.apache</groupId>
-    		<artifactId>apache</artifactId>
-    		<version>10</version>
-    		<relativePath />
-  	</parent>
+    <!--parent>
+         <groupId>org.apache.airavata</groupId>
+         <artifactId>airavata-master</artifactId>
+         <version>0.2-incubating-SNAPSHOT</version>
+         <relativePath>../airavata-master-pom/trunk/pom.xml</relativePath>
+     </parent-->
+    <parent>
+        <groupId>org.apache</groupId>
+        <artifactId>apache</artifactId>
+        <version>10</version>
+        <relativePath />
+    </parent>
 
-	<groupId>org.apache.airavata</groupId>
-	<artifactId>airavata</artifactId>
-	<packaging>pom</packaging>
-	<name>Airavata</name>
-	<version>0.2-incubating-SNAPSHOT</version>
+    <groupId>org.apache.airavata</groupId>
+    <artifactId>airavata</artifactId>
+    <packaging>pom</packaging>
+    <name>Airavata</name>
+    <version>0.2-incubating-SNAPSHOT</version>
 
-	<url>http://incubator.apache.org/airavata/</url>
-	<inceptionYear>2011</inceptionYear>
+    <url>http://incubator.apache.org/airavata/</url>
+    <inceptionYear>2011</inceptionYear>
 
-	<scm>
-		<connection>scm:svn:http://svn.apache.org/repos/asf/incubator/airavata/trunk</connection>
-		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/airavata/trunk</developerConnection>
-		<url>http://svn.apache.org/viewvc/incubator/airavata/trunk/</url>
-	</scm>
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/incubator/airavata/trunk</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/airavata/trunk</developerConnection>
+        <url>http://svn.apache.org/viewvc/incubator/airavata/trunk/</url>
+    </scm>
 
-	<mailingLists>
-		<mailingList>
-			<name>Airavata Developer List</name>
-			<subscribe>airavata-dev-subscribe@incubator.apache.org</subscribe>
-			<unsubscribe>airavata-dev-unsubscribe@incubator.apache.org</unsubscribe>
-			<post>mailto:airavata-dev@incubator.apache.org</post>
-			<archive>http://mail-archives.apache.org/mod_mbox/incubator-airavata-dev/</archive>
-		</mailingList>
-	</mailingLists>
+    <mailingLists>
+        <mailingList>
+            <name>Airavata Developer List</name>
+            <subscribe>airavata-dev-subscribe@incubator.apache.org</subscribe>
+            <unsubscribe>airavata-dev-unsubscribe@incubator.apache.org</unsubscribe>
+            <post>mailto:airavata-dev@incubator.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/incubator-airavata-dev/</archive>
+        </mailingList>
+    </mailingLists>
 
-	<issueManagement>
-		<url>https://issues.apache.org/jira/browse/AIRAVATA</url>
-	</issueManagement>
+    <issueManagement>
+        <url>https://issues.apache.org/jira/browse/AIRAVATA</url>
+    </issueManagement>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<axis2.version>1.5.1</axis2.version>
-		<derby.version>10.7.1.1</derby.version>
-		<jackrabbit.version>2.2.7</jackrabbit.version>
-		<logback.version>0.9.20</logback.version>
-		<org.slf4j.version>1.6.1</org.slf4j.version>
-		<log4j.version>1.2.16</log4j.version>
-		<axiom.version>1.2.8</axiom.version>
-		<surefire.version>2.10</surefire.version>
-	</properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <axis2.version>1.5.1</axis2.version>
+        <derby.version>10.7.1.1</derby.version>
+        <jackrabbit.version>2.2.7</jackrabbit.version>
+        <logback.version>0.9.20</logback.version>
+        <org.slf4j.version>1.6.1</org.slf4j.version>
+        <log4j.version>1.2.16</log4j.version>
+        <axiom.version>1.2.8</axiom.version>
+        <surefire.version>2.10</surefire.version>
+    </properties>
 
-	<developers>
-		<developer>
-			<id>chinthaka</id>
-			<name>Eran Chinthaka</name>
-			<email>chinthaka@apache.org</email>
-			<timezone>-8</timezone>
-			<organization>Nextag</organization>
-			<organizationUrl>http://www.nextag.com/</organizationUrl>
-			<roles>
-				<role>committer</role>
-				<role>PPMC member</role>
-				<role>IPMC member</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>ate</id>
-			<name>Ate Douma</name>
-			<email>ate@douma.nu</email>
-			<timezone>+1</timezone>
-			<organization>Hippo</organization>
-			<organizationUrl>http://www.onehippo.com</organizationUrl>
-			<roles>
-				<role>mentor</role>
-				<role>IPMC member</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>rgardler</id>
-			<name>Ross Gardler</name>
-			<email>rgardler@apache.org</email>
-			<organization>OpenDirective</organization>
-			<organizationUrl>http://www.opendirective.com/</organizationUrl>
-			<roles>
-				<role>champion</role>
-				<role>mentor</role>
-				<role>IPMC member</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>lahiru</id>
-			<name>Lahiru Gunathilake</name>
-			<email>glahiru@gmail.com</email>
-			<timezone>-5</timezone>
-			<organization>Indiana University</organization>
-			<organizationUrl>http://www.iub.edu</organizationUrl>
-			<roles>
-				<role>committer</role>
-				<role>PPMC member</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>thilina</id>
-			<name>Thilina Gunaratne</name>
-			<email>thilina@apache.org</email>
-			<timezone>-5</timezone>
-			<organization>Indiana University</organization>
-			<organizationUrl>http://www.iub.edu</organizationUrl>
-			<roles>
-				<role>committer</role>
-				<role>PPMC member</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>barbara</id>
-			<name>Barbara Hallock</name>
-			<email>bahalloc@apache.org</email>
-			<timezone>-5</timezone>
-			<organization>Indiana University</organization>
-			<organizationUrl>http://www.iub.edu</organizationUrl>
-			<roles>
-				<role>committer</role>
-				<role>PPMC member</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>chathura</id>
-			<name>Chathura Herath</name>
-			<email>chathura@apache.org</email>
-			<timezone>-5</timezone>
-			<organization>Indiana University</organization>
-			<organizationUrl>http://www.iub.edu</organizationUrl>
-			<roles>
-				<role>committer</role>
-				<role>PPMC member</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>chris</id>
-			<name>Chris Mattmann</name>
-			<email>chris.a.mattmann@jpl.nasa.gov</email>
-			<timezone>-5</timezone>
-			<organization>NASA JPL</organization>
-			<organizationUrl>http://www.jpl.nasa.gov/</organizationUrl>
-			<roles>
-				<role>mentor</role>
-				<role>IPMC member</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>smarru</id>
-			<name>Suresh Marru</name>
-			<email>smarru@apache.org</email>
-			<timezone>-5</timezone>
-			<organization>Indiana University</organization>
-			<organizationUrl>http://www.iub.edu</organizationUrl>
-			<roles>
-				<role>committer</role>
-				<role>PPMC member</role>
-				<role>release manager</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>hemapani</id>
-			<name>Srinath Perera</name>
-			<email>hemapani@apache.org</email>
-			<timezone>+1</timezone>
-			<organization>Lanka Software Foundation</organization>
-			<organizationUrl>http://opensource.lk</organizationUrl>
-			<roles>
-				<role>committer</role>
-				<role>PPMC member</role>
-				<role>IPMC member</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>mpierce</id>
-			<name>Marlon Pierce</name>
-			<email>mpierce@apache.org</email>
-			<timezone>-5</timezone>
-			<organization>Indiana University</organization>
-			<organizationUrl>http://www.iub.edu</organizationUrl>
-			<roles>
-				<role>committer</role>
-				<role>PPMC member</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>raminder</id>
-			<name>Raminderjeet Singh</name>
-			<email>ramifnu@indiana.edu</email>
-			<timezone>-5</timezone>
-			<organization>Indiana University</organization>
-			<organizationUrl>http://www.iub.edu</organizationUrl>
-			<roles>
-				<role>committer</role>
-				<role>PPMC member</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>aslom</id>
-			<name>Aleksander Slominski</name>
-			<email>aslom@us.ibm.com</email>
-			<timezone>-5</timezone>
-			<organization>IBM</organization>
-			<organizationUrl>http://www.ibm.com/us/en/</organizationUrl>
-			<roles>
-				<role>committer</role>
-				<role>mentor</role>
-				<role>PPMC member</role>
-				<role>IPMC member</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>heshan</id>
-			<name>Heshan Suriyarachchi</name>
-			<email>heshan.suriyaarachchi@gmail.com</email>
-			<timezone>-5</timezone>
-			<organization>Indiana University</organization>
-			<organizationUrl>http://www.iub.edu</organizationUrl>
-			<roles>
-				<role>committer</role>
-				<role>PPMC member</role>
-			</roles>
-		</developer>
-		<developer>
-			<id>patanachai</id>
-			<name>Patanachai Tangchaisin</name>
-			<email>patanachai@apache.org</email>
-			<timezone>-5</timezone>
-			<organization>Indiana University</organization>
-			<organizationUrl>http://www.iub.edu</organizationUrl>
-			<roles>
-				<role>committer</role>
-				<role>PPMC member</role>
-			</roles>
-		</developer>
-		<developer>
-			<name>Sanjiva Weerawarana</name>
-			<id>sanjiva</id>
-			<email>sanjiva@wso2.com</email>
-			<organization>WSO2</organization>
-			<roles>
-				<role>mentor</role>
-				<role>IPMC member</role>
-			</roles>
-		</developer>
-	</developers>
+    <developers>
+        <developer>
+            <id>chinthaka</id>
+            <name>Eran Chinthaka</name>
+            <email>chinthaka@apache.org</email>
+            <timezone>-8</timezone>
+            <organization>Nextag</organization>
+            <organizationUrl>http://www.nextag.com/</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PPMC member</role>
+                <role>IPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>ate</id>
+            <name>Ate Douma</name>
+            <email>ate@douma.nu</email>
+            <timezone>+1</timezone>
+            <organization>Hippo</organization>
+            <organizationUrl>http://www.onehippo.com</organizationUrl>
+            <roles>
+                <role>mentor</role>
+                <role>IPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>rgardler</id>
+            <name>Ross Gardler</name>
+            <email>rgardler@apache.org</email>
+            <organization>OpenDirective</organization>
+            <organizationUrl>http://www.opendirective.com/</organizationUrl>
+            <roles>
+                <role>champion</role>
+                <role>mentor</role>
+                <role>IPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>lahiru</id>
+            <name>Lahiru Gunathilake</name>
+            <email>glahiru@gmail.com</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://www.iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>thilina</id>
+            <name>Thilina Gunaratne</name>
+            <email>thilina@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://www.iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>barbara</id>
+            <name>Barbara Hallock</name>
+            <email>bahalloc@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://www.iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>chathura</id>
+            <name>Chathura Herath</name>
+            <email>chathura@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://www.iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>chris</id>
+            <name>Chris Mattmann</name>
+            <email>chris.a.mattmann@jpl.nasa.gov</email>
+            <timezone>-5</timezone>
+            <organization>NASA JPL</organization>
+            <organizationUrl>http://www.jpl.nasa.gov/</organizationUrl>
+            <roles>
+                <role>mentor</role>
+                <role>IPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>smarru</id>
+            <name>Suresh Marru</name>
+            <email>smarru@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://www.iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PPMC member</role>
+                <role>release manager</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>hemapani</id>
+            <name>Srinath Perera</name>
+            <email>hemapani@apache.org</email>
+            <timezone>+1</timezone>
+            <organization>Lanka Software Foundation</organization>
+            <organizationUrl>http://opensource.lk</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PPMC member</role>
+                <role>IPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>mpierce</id>
+            <name>Marlon Pierce</name>
+            <email>mpierce@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://www.iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>raminder</id>
+            <name>Raminderjeet Singh</name>
+            <email>ramifnu@indiana.edu</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://www.iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>aslom</id>
+            <name>Aleksander Slominski</name>
+            <email>aslom@us.ibm.com</email>
+            <timezone>-5</timezone>
+            <organization>IBM</organization>
+            <organizationUrl>http://www.ibm.com/us/en/</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>mentor</role>
+                <role>PPMC member</role>
+                <role>IPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>heshan</id>
+            <name>Heshan Suriyarachchi</name>
+            <email>heshan.suriyaarachchi@gmail.com</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://www.iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>patanachai</id>
+            <name>Patanachai Tangchaisin</name>
+            <email>patanachai@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://www.iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PPMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Sanjiva Weerawarana</name>
+            <id>sanjiva</id>
+            <email>sanjiva@wso2.com</email>
+            <organization>WSO2</organization>
+            <roles>
+                <role>mentor</role>
+                <role>IPMC member</role>
+            </roles>
+        </developer>
+    </developers>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>${org.slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.axis2</groupId>
-				<artifactId>axis2</artifactId>
-				<version>${axis2.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.jcr</groupId>
-				<artifactId>jcr</artifactId>
-				<version>2.0</version>
-			</dependency>
-			<dependency>
-				<groupId>xmlbeans</groupId>
-				<artifactId>xbean</artifactId>
-				<version>2.5.0</version>
-			</dependency>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>4.7</version>
-			</dependency>
-			<dependency>
-				<groupId>xerces</groupId>
-				<artifactId>xercesImpl</artifactId>
-				<version>2.9.1</version>
-			</dependency>
-			<dependency>
-				<groupId>xpp3</groupId>
-				<artifactId>xpp3</artifactId>
-				<version>1.1.3_7</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-simple</artifactId>
-				<version>${org.slf4j.version}</version>
-			</dependency>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${org.slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2</artifactId>
+                <version>${axis2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.jcr</groupId>
+                <artifactId>jcr</artifactId>
+                <version>2.0</version>
+            </dependency>
+            <dependency>
+                <groupId>xmlbeans</groupId>
+                <artifactId>xbean</artifactId>
+                <version>2.5.0</version>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.7</version>
+            </dependency>
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>2.9.1</version>
+            </dependency>
+            <dependency>
+                <groupId>xpp3</groupId>
+                <artifactId>xpp3</artifactId>
+                <version>1.1.3_7</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${org.slf4j.version}</version>
+            </dependency>
 
-			<dependency>
-				<groupId>xsul</groupId>
-				<artifactId>xsul</artifactId>
-				<version>2.10.5_b</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.jackrabbit</groupId>
-				<artifactId>jackrabbit-core</artifactId>
-				<version>${jackrabbit.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.jackrabbit</groupId>
-				<artifactId>jackrabbit-jcr-rmi</artifactId>
-				<version>${jackrabbit.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	<repositories>
-		<repository>
-			<name>ogce.m2.all</name>
-			<id>ogce.m2.all</id>
-			<url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
-			<snapshots>
-				<!--updatePolicy>daily</updatePolicy-->
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>m2-snapshot-repository</id>
-			<url>http://people.apache.org/repo/m2-snapshot-repository</url>
-			<releases>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>ibiblio</id>
-			<name>ibiblio Repository</name>
-			<url>http://mirrors.ibiblio.org/pub/mirrors/maven2
+            <dependency>
+                <groupId>xsul</groupId>
+                <artifactId>xsul</artifactId>
+                <version>2.10.5_b</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jackrabbit</groupId>
+                <artifactId>jackrabbit-core</artifactId>
+                <version>${jackrabbit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.jackrabbit</groupId>
+                <artifactId>jackrabbit-jcr-rmi</artifactId>
+                <version>${jackrabbit.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <repositories>
+        <repository>
+            <name>ogce.m2.all</name>
+            <id>ogce.m2.all</id>
+            <url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
+            <snapshots>
+                <!--updatePolicy>daily</updatePolicy-->
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>m2-snapshot-repository</id>
+            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+            <releases>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>ibiblio</id>
+            <name>ibiblio Repository</name>
+            <url>http://mirrors.ibiblio.org/pub/mirrors/maven2
             </url>
-		</repository>
-		<repository>
-			<id>maven 2 java.net</id>
-			<name>2 java.net Maven Repository</name>
-			<url>http://download.java.net/maven/2/
+        </repository>
+        <repository>
+            <id>maven 2 java.net</id>
+            <name>2 java.net Maven Repository</name>
+            <url>http://download.java.net/maven/2/
             </url>
-			<layout>default</layout>
-		</repository>
-		<repository>
-			<id>apache-repo</id>
-			<name>Apache Yfilter repo</name>
-			<url>http://people.apache.org/~lahiru/maven-repo</url>
-		</repository>
-		<repository>
-			<id>OW2</id>
-			<name>OW2 Repository</name>
-			<url>http://maven.ow2.org/maven2</url>
-		</repository>
-	</repositories>
-	<profiles>
-		<profile>
-			<id>profile-test-suite</id>
-			<activation>
-				<property>
-					<name>module</name>
-					<value>test-suite</value>
-				</property>
-			</activation>
-			<modules>
-				<module>modules/test-suite</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>profile-gfac</id>
-			<activation>
-				<property>
-					<name>module</name>
-					<value>gfac</value>
-				</property>
-			</activation>
-			<modules>
-				<module>modules/gfac-core</module>
-				<module>modules/gfac-axis2</module>
-				<module>modules/commons</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>profile-wsmessaging</id>
-			<activation>
-				<property>
-					<name>module</name>
-					<value>wsmessaging</value>
-				</property>
-			</activation>
-			<modules>
-				<module>modules/ws-messenger</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>profile-workflow-interpreter</id>
-			<activation>
-				<property>
-					<name>module</name>
-					<value>workflow-interpreter</value>
-				</property>
-			</activation>
-			<modules>
-				<module>modules/commons</module>
-				<module>modules/ws-messenger</module>
-				<module>modules/xbaya-gui</module>
-				<module>modules/workflow-interpreter</module>
-			</modules>
-		</profile>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <id>apache-repo</id>
+            <name>Apache Yfilter repo</name>
+            <url>http://people.apache.org/~lahiru/maven-repo</url>
+        </repository>
+        <repository>
+            <id>OW2</id>
+            <name>OW2 Repository</name>
+            <url>http://maven.ow2.org/maven2</url>
+        </repository>
+    </repositories>
+    <profiles>
+        <profile>
+            <id>profile-test-suite</id>
+            <activation>
+                <property>
+                    <name>module</name>
+                    <value>test-suite</value>
+                </property>
+            </activation>
+            <modules>
+                <module>modules/test-suite</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>profile-gfac</id>
+            <activation>
+                <property>
+                    <name>module</name>
+                    <value>gfac</value>
+                </property>
+            </activation>
+            <modules>
+                <module>modules/gfac-core</module>
+                <module>modules/gfac-axis2</module>
+                <module>modules/commons</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>profile-wsmessaging</id>
+            <activation>
+                <property>
+                    <name>module</name>
+                    <value>wsmessaging</value>
+                </property>
+            </activation>
+            <modules>
+                <module>modules/ws-messenger</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>profile-workflow-interpreter</id>
+            <activation>
+                <property>
+                    <name>module</name>
+                    <value>workflow-interpreter</value>
+                </property>
+            </activation>
+            <modules>
+                <module>modules/commons</module>
+                <module>modules/ws-messenger</module>
+                <module>modules/xbaya-gui</module>
+                <module>modules/workflow-interpreter</module>
+            </modules>
+        </profile>
 
-		<profile>
-			<id>profile-workflow-tracking</id>
-			<activation>
-				<property>
-					<name>module</name>
-					<value>workflow-tracking</value>
-				</property>
-			</activation>
-			<modules>
-				<module>modules/commons</module>
-			</modules>
-		</profile>
+        <profile>
+            <id>profile-workflow-tracking</id>
+            <activation>
+                <property>
+                    <name>module</name>
+                    <value>workflow-tracking</value>
+                </property>
+            </activation>
+            <modules>
+                <module>modules/commons</module>
+            </modules>
+        </profile>
 
-		<profile>
-			<id>profile-xbaya</id>
-			<activation>
-				<property>
-					<name>module</name>
-					<value>xbaya</value>
-				</property>
-			</activation>
-			<modules>
-				<module>modules/commons</module>
-				<module>modules/xbaya-gui</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>profile-samples</id>
-			<activation>
-				<property>
-					<name>module</name>
-					<value>samples</value>
-				</property>
-			</activation>
-			<modules>
-         		        <module>samples/simple-math-service</module>
-                		<module>samples/complex-math-service</module>
-                		<module>samples/levenshtein-distance-service</module>
-			</modules>
-		</profile>
+        <profile>
+            <id>profile-xbaya</id>
+            <activation>
+                <property>
+                    <name>module</name>
+                    <value>xbaya</value>
+                </property>
+            </activation>
+            <modules>
+                <module>modules/commons</module>
+                <module>modules/xbaya-gui</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>profile-samples</id>
+            <activation>
+                <property>
+                    <name>module</name>
+                    <value>samples</value>
+                </property>
+            </activation>
+            <modules>
+                <module>samples/simple-math-service</module>
+                <module>samples/complex-math-service</module>
+                <module>samples/levenshtein-distance-service</module>
+            </modules>
+        </profile>
 
-		<profile>
-			<id>default</id>
-			<build>
-<artifactId>maven-resources-plugin</artifactId>
-        <version>2.5</version>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <!-- here the phase you need -->
-            <phase>validate</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/classes/META-INF</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${basedir}/src/main/assembly/dist</directory>
-                  <filtering>true</filtering>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<version>2.3.2</version>
-						<configuration>
-							<source>1.6</source>
-							<target>1.6</target>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<modules>
-				<module>modules/gfac-core</module>
-				<module>modules/gfac-axis2</module>
-				<module>modules/ws-messenger</module>
-				<module>modules/xbaya-gui</module>
-				<module>modules/commons</module>
-         		        <module>samples/simple-math-service</module>
-                		<module>samples/complex-math-service</module>
-                		<module>samples/levenshtein-distance-service</module>
-                		<module>modules/distribution</module>
-                		<module>modules/test-suite</module>
-            		</modules>
-		</profile>
-		<profile>
-			<id>pedantic</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<version>2.3.2</version>
-						<configuration>
-							<source>1.6</source>
-							<target>1.6</target>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.rat</groupId>
-						<artifactId>apache-rat-plugin</artifactId>
-						<executions>
-							<execution>
-								<phase>verify</phase>
-								<goals>
-									<goal>check</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+        <profile>
+            <id>default</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.5</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <!-- here the phase you need -->
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${basedir}/target/classes/META-INF</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${basedir}/src/main/assembly/dist</directory>
+                                            <filtering>true</filtering>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>2.3.2</version>
+                        <configuration>
+                            <source>1.6</source>
+                            <target>1.6</target>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>modules/gfac-core</module>
+                <module>modules/gfac-axis2</module>
+                <module>modules/ws-messenger</module>
+                <module>modules/xbaya-gui</module>
+                <module>modules/commons</module>
+                <module>samples/simple-math-service</module>
+                <module>samples/complex-math-service</module>
+                <module>samples/levenshtein-distance-service</module>
+                <module>modules/distribution</module>
+                <module>modules/test-suite</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>pedantic</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>2.3.2</version>
+                        <configuration>
+                            <source>1.6</source>
+                            <target>1.6</target>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
