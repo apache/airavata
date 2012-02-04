@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>commons</artifactId>
-        <version>0.3-incubating-SNAPSHOT</version>
+        <version>0.2-incubating-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
