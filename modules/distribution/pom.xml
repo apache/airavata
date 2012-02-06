@@ -20,8 +20,8 @@
 	<groupId>org.apache.airavata</groupId>
 	<artifactId>distribution</artifactId>
 	<name>distribution</name>
-	<url>http://incubator.apache.org/airavata</url>
 	<packaging>pom</packaging>
+	<url>http://incubator.apache.org/airavata</url>
 	<build>
 		<plugins>
 			<plugin>
@@ -51,26 +51,27 @@
 					</execution>
 				</executions>
 			</plugin>
-      <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>generate-timestamp</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <source>
-                                import java.util.Date
-                                import java.text.MessageFormat
-                                project.properties['buildTimestamp'] = MessageFormat.format("{0,date,dd-MM-yyyy}", new Date())
-                            </source>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>generate-timestamp</id>
+						<phase>package</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>
+								import java.util.Date
+								import java.text.MessageFormat
+								project.properties['buildTimestamp'] =
+								MessageFormat.format("{0,date,dd-MM-yyyy}", new Date())
+							</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -87,7 +88,7 @@
 							<finalName>${archieve.name}-${project.version}</finalName>
 							<descriptors>
 								<descriptor>src/main/assembly/bin-assembly.xml</descriptor>
-								<descriptor>src/main/assembly/src-assembly.xml</descriptor>	
+								<descriptor>src/main/assembly/src-assembly.xml</descriptor>
 							</descriptors>
 							<attach>false</attach>
 						</configuration>
