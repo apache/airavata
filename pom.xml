@@ -455,6 +455,7 @@
             </activation>
             <modules>
                 <module>modules/commons</module>
+		<module>modules/ws-messenger</module>
                 <module>modules/xbaya-gui</module>
             </modules>
         </profile>
