@@ -47,7 +47,7 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
     private static final Logger logger = LoggerFactory.getLogger(MsgBoxServiceSkeleton.class);
     private static final String TRUE = Boolean.toString(true);
     private static final String FALSE = Boolean.toString(false);
-    private static final long SLEEP_TIME = 60 * 60 * 1000l; // 1 hour;
+    private static final long SLEEP_TIME = 5 * 60 * 1000l; // 1 hour;
     private static OMFactory factory = OMAbstractFactory.getOMFactory();
     private MsgBoxStorage storage;
     private Thread deletingThread;

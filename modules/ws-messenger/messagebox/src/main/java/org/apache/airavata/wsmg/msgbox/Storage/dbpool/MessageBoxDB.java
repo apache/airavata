@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
 public class MessageBoxDB {
 
     private static final String MSGBOXES_TABLENAME = "msgBoxes";
-    private static final String MSGBOX_TABLENAME = "msgbox";
+    private static final String    MSGBOX_TABLENAME = "msgbox";
 
     private static final Logger logger = LoggerFactory.getLogger(MessageBoxDB.class);
 
@@ -73,7 +73,7 @@ public class MessageBoxDB {
     public static final String SQL_DELETE_MSGBOX_STATEMENT = "DELETE FROM " + MSGBOX_TABLENAME + " WHERE msgboxid = ?";
 
     public static final String SQL_DELETE_ANCIENT_STATEMENT = "DELETE FROM " + MSGBOX_TABLENAME
-            + " WHERE {fn TIMESTAMPDIFF(SQL_TSI_FRAC_SECOND, CURRENT_TIMESTAMP, time) } > ?";
+            + " WHERE {fn TIMESTAMPDIFF(SQL_TSI_FRAC_SECOND, time, CURRENT_TIMESTAMP) } > ?";
 
     private JdbcStorage db;
 
@@ -151,7 +151,7 @@ public class MessageBoxDB {
                 throw sql;
             }
         } else {
-            throw new IOException("Currently a messagebox is not available with given message box id :" + msgBoxID);
+            throw new IOException("Currently a messagebox is not available with given message box id :" + msgBoxID + message.toStringWithConsume());
         }
     }
 
