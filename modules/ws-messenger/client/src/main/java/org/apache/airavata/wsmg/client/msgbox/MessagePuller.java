@@ -21,6 +21,7 @@
 
 package org.apache.airavata.wsmg.client.msgbox;
 
+import java.rmi.RemoteException;
 import java.util.Iterator;
 
 import org.apache.airavata.wsmg.client.NotificationHandler;
@@ -44,7 +45,7 @@ public class MessagePuller {
 
     long unavailableInterval = 300000;
 
-    long timeout = 1000L;
+    long timeout = 2000L;
 
     boolean stopPulling = false;
 
@@ -61,7 +62,7 @@ public class MessagePuller {
     }
 
     public MessagePuller(MsgBoxClient msgBoxUser, EndpointReference msgBoxId, NotificationHandler handler) {
-        this(msgBoxUser, msgBoxId, handler, 1000, 500);
+        this(msgBoxUser, msgBoxId, handler, 1000, 2000);
     }
 
     public void startPulling() {
@@ -72,6 +73,7 @@ public class MessagePuller {
     public void stopPulling() {
         stopPulling = true;
     }
+
 
     protected class Puller implements Runnable {
 
