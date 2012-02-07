@@ -1,9 +1,3 @@
-Apache Airavata
-Copyright 2012 The Apache Software Foundation
-
-This product includes software (Xerces, XMLBeans,jglobus, com.amazonaws, net.schmizz) developed at
-The Apache Software Foundation (http://www.apache.org/).
-
 =========================================================================
 This product includes unmodified, binary redistributions of software (XPP3,
 weps-beans, pegasuswebservice, mapReduce-service-client, xsul, xutil, wsmg)
