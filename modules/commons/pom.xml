@@ -59,19 +59,6 @@
 			</modules>
 		</profile>
 		<profile>
-			<id>profile-xbaya</id>
-			<activation>
-				<property>
-					<name>module</name>
-					<value>xbaya</value>
-				</property>
-			</activation>
-			<modules>
-				<module>workflow-tracking</module>
-				<module>registry-api</module>
-			</modules>
-		</profile>
-		<profile>
 			<id>profile-gfac</id>
 			<activation>
 				<property>
@@ -82,7 +69,6 @@
 			<modules>
 				<module>gfac-schema</module>
 				<module>registry-api</module>
-			</modules>
 			</modules>
 		</profile>
 
