@@ -29,4 +29,8 @@ public class ConfigKeys {
     public static final String MSG_BOX_JDBC_DRIVER = "msgBox.jdbc.driver";
     public static final String MSG_BOX_JDBC_URL = "msgBox.jdbc.url";
     public static final String USE_DATABASE_STORAGE = "msgBox.usedatabase";
+    public static final String MSG_PRESV_INTERVAL_DAYS = "messagePreservationIntervalDays";
+    public static final String MSG_PRESV_INTERVAL_HRS = "messagePreservationIntervalHours";
+    public static final String MSG_PRESV_INTERVAL_MINS = "messagePreservationIntervalMinutes";
+    public static final String MSG_PRESV_INTERVAL = "messagePreservationInterval";
 }
