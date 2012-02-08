@@ -75,6 +75,7 @@ public class JCRRegistry extends Observable implements Registry{
     private Map<Node,Map<String,Node>> sessionNodes;
     private Map<Node,List<Node>> sessionNodeChildren;
     private Map<Session,Integer> currentSessionUseCount=new HashMap<Session, Integer>();
+    private boolean threadRun = true;
     
     public JCRRegistry(URI repositoryURI, String className, String user, String pass, Map<String, String> map)
             throws RepositoryException {
@@ -152,7 +153,7 @@ public class JCRRegistry extends Observable implements Registry{
     private void definiteSessionTimeout(){
     	Thread m=new Thread(new Runnable() {
 			public void run() {
-				while (true){
+				while (threadRun){
 					int timeoutCount=0;
 					int shortStep=10000;
 					Session currentSession=defaultSession;
@@ -433,4 +434,11 @@ public class JCRRegistry extends Observable implements Registry{
 		this.workspaceChangeEventListener = workspaceChangeEventListener;
 	}
 
+    private void setThreadRun(boolean threadRun) {
+        this.threadRun = threadRun;
+    }
+
+    public void closeConnection(){
+        setThreadRun(false);
+    }
 }
