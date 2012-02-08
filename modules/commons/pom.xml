@@ -68,6 +68,7 @@
 			</activation>
 			<modules>
 				<module>workflow-tracking</module>
+				<module>registry-api</module>
 			</modules>
 		</profile>
 		<profile>
@@ -80,6 +81,8 @@
 			</activation>
 			<modules>
 				<module>gfac-schema</module>
+				<module>registry-api</module>
+			</modules>
 			</modules>
 		</profile>
 
