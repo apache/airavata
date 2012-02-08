@@ -45,6 +45,12 @@
       <wsdl:output message="ns:launchWorkflowResponse" wsaw:Action="urn:launchWorkflowResponse">
     </wsdl:output>
     </wsdl:operation>
+      <wsdl:operation name="launchWorkflowWithoutListener">
+          <wsdl:input message="ns:launchWorkflowRequest" wsaw:Action="urn:launchWorkflow">
+          </wsdl:input>
+          <wsdl:output message="ns:launchWorkflowResponse" wsaw:Action="urn:launchWorkflowResponse">
+          </wsdl:output>
+      </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="WorkflowInterpretorSoap11Binding" type="ns:WorkflowInterpretorPortType">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>

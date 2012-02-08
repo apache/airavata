@@ -419,7 +419,12 @@ public class RunMenuItem  implements EventListener{
 	
 	private void cleanup() {
 		try {
-			engine.getWorkflowInterpreter().cleanup();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            engine.getWorkflowInterpreter().cleanup();
 		} catch (MonitorException e) {
 			this.engine.getErrorWindow().error(e);
 		}

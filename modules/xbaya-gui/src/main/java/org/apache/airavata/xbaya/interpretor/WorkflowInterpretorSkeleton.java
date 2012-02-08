@@ -109,10 +109,14 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	 */
 
 	public java.lang.String launchWorkflow(java.lang.String workflowAsString, java.lang.String topic, java.lang.String password, java.lang.String username, NameValue[] inputs, NameValue[] configurations) {
-        return setupAndLaunch(workflowAsString, topic, password, username, inputs, configurations,runInThread);
+        return setupAndLaunch(workflowAsString, topic, password, username, inputs, configurations,runInThread, true);
 	}
 
-    private String setupAndLaunch(String workflowAsString, String topic, String password, String username, NameValue[] inputs, NameValue[] configurations,boolean inNewThread) {
+    public java.lang.String launchWorkflowWithoutListener(java.lang.String workflowAsString, java.lang.String topic, java.lang.String password, java.lang.String username, NameValue[] inputs, NameValue[] configurations) {
+        return setupAndLaunch(workflowAsString, topic, password, username, inputs, configurations,runInThread, false);
+    }
+
+    private String setupAndLaunch(String workflowAsString, String topic, String password, String username, NameValue[] inputs, NameValue[] configurations, boolean inNewThread, boolean withListener) {
         System.err.println("Launch is called for topi:");
 
         Workflow workflow = null;
@@ -149,13 +153,18 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             throw new XBayaRuntimeException(e1);
         }
 
-        final WorkflowInterpretorEventListener listener = new WorkflowInterpretorEventListener(workflow, conf);
+        final WorkflowInterpretorEventListener listener;
+            if(withListener){
         try {
+                listener = new WorkflowInterpretorEventListener(workflow, conf);
             System.err.println("start listener set");
-            listener.start();
+                listener.start();
         } catch (MonitorException e1) {
             e1.printStackTrace();
         }
+            }else{
+                listener = null;
+            }
 
         try {
             conf.setJcrComponentRegistry(new JCRComponentRegistry(new URI(jcrURL),jcrUserName,jcrPassword));
@@ -164,14 +173,14 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         } catch (URISyntaxException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        final WorkflowInterpreter interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password);
+        final WorkflowInterpreter interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password,true);
         interpreter.setActOnProvenance(provenance);
         interpreter.setProvenanceWriter(runner);
         System.err.println("Created the interpreter");
         if(inNewThread){
-            runInThread(interpreter,listener);
+            runInThread(interpreter,null);
         }else{
-            executeWorkflow(interpreter,listener);
+            executeWorkflow(interpreter,null);
         }
         System.err.println("topic return:" + topic);
 
@@ -194,13 +203,15 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         } catch (XBayaException e) {
             throw new XBayaRuntimeException(e);
         } finally {
-            /*
-             * stop listener no matter what happens
-             */
+//            /*
+//             * stop listener no matter what happens
+//             */
+            if(listener != null){
             try {
                 listener.stop();
             } catch (MonitorException e) {
                 e.printStackTrace();
+            }
             }
         }
     }
