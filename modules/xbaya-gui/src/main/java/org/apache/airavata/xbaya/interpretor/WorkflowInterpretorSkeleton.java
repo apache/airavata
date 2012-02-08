@@ -109,14 +109,10 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	 */
 
 	public java.lang.String launchWorkflow(java.lang.String workflowAsString, java.lang.String topic, java.lang.String password, java.lang.String username, NameValue[] inputs, NameValue[] configurations) {
-        return setupAndLaunch(workflowAsString, topic, password, username, inputs, configurations,runInThread, true);
+        return setupAndLaunch(workflowAsString, topic, password, username, inputs, configurations,runInThread);
 	}
 
-    public java.lang.String launchWorkflowWithoutListener(java.lang.String workflowAsString, java.lang.String topic, java.lang.String password, java.lang.String username, NameValue[] inputs, NameValue[] configurations) {
-        return setupAndLaunch(workflowAsString, topic, password, username, inputs, configurations,runInThread, false);
-    }
-
-    private String setupAndLaunch(String workflowAsString, String topic, String password, String username, NameValue[] inputs, NameValue[] configurations, boolean inNewThread, boolean withListener) {
+    private String setupAndLaunch(String workflowAsString, String topic, String password, String username, NameValue[] inputs, NameValue[] configurations,boolean inNewThread) {
         System.err.println("Launch is called for topi:");
 
         Workflow workflow = null;
@@ -152,20 +148,21 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         } catch (URISyntaxException e1) {
             throw new XBayaRuntimeException(e1);
         }
-
-        final WorkflowInterpretorEventListener listener;
-            if(withListener){
-        try {
-                listener = new WorkflowInterpretorEventListener(workflow, conf);
-            System.err.println("start listener set");
+        WorkflowInterpretorEventListener listener = null;
+        WorkflowInterpreter interpreter = null;
+        if("true".equals(configurations[10].getValue())){
+            listener = new WorkflowInterpretorEventListener(workflow, conf);
+            interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password);
+            try {
+                System.err.println("start listener set");
                 listener.start();
-        } catch (MonitorException e1) {
-            e1.printStackTrace();
-        }
-            }else{
-                listener = null;
+            } catch (MonitorException e1) {
+                e1.printStackTrace();
             }
-
+        }else{
+            interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password,true);
+        }
+        final WorkflowInterpretorEventListener finalListener = listener;
         try {
             conf.setJcrComponentRegistry(new JCRComponentRegistry(new URI(jcrURL),jcrUserName,jcrPassword));
         } catch (RepositoryException e) {
@@ -173,14 +170,15 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         } catch (URISyntaxException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        final WorkflowInterpreter interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password,true);
+       
+        final WorkflowInterpreter finalInterpreter = interpreter;
         interpreter.setActOnProvenance(provenance);
         interpreter.setProvenanceWriter(runner);
         System.err.println("Created the interpreter");
         if(inNewThread){
-            runInThread(interpreter,null);
+            runInThread(finalInterpreter,finalListener);
         }else{
-            executeWorkflow(interpreter,null);
+            executeWorkflow(finalInterpreter,finalListener);
         }
         System.err.println("topic return:" + topic);
 
@@ -203,15 +201,14 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         } catch (XBayaException e) {
             throw new XBayaRuntimeException(e);
         } finally {
-//            /*
-//             * stop listener no matter what happens
-//             */
-            if(listener != null){
+            /*
+             * stop listener no matter what happens
+             */
             try {
+                if(listener != null)
                 listener.stop();
             } catch (MonitorException e) {
                 e.printStackTrace();
-            }
             }
         }
     }

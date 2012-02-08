@@ -71,13 +71,14 @@ public class XBayaClient {
     public static final String JCR_PASSWORD= "jcr.password";
     public static final String MYPROXYUSERNAME = "myproxy.username";
     public static final String MYPROXYPASS = "myproxy.password";
+    public static final String WITHLISTENER = "with.Listener";
     public static final String WORKFLOWSERVICEURL = "xbaya.service.url";
     private XBayaClientConfiguration clientConfiguration;
     private static String workflow = "";
 
     private AiravataRegistry registry;
 
-	private NameValue[] configurations=new NameValue[10];
+	private NameValue[] configurations=new NameValue[11];
     
 //    private NameValue[] configurations = new NameValue[7];
 
@@ -130,7 +131,11 @@ public class XBayaClient {
         configurations[9] = new NameValue();
         configurations[9].setName(JCR_PASSWORD);
         configurations[9].setValue(properties.getProperty(JCR_PASSWORD));
-        
+
+        configurations[10] = new NameValue();
+        configurations[10].setName(WITHLISTENER);
+        configurations[10].setValue(properties.getProperty(WITHLISTENER));
+
         updateClientConfiguration(configurations);
 
     }
@@ -302,23 +307,6 @@ public class XBayaClient {
 		return worflowoutput;
 	}
 
-    public String runWorkflowWithoutListener(String topic, NameValue[] inputs, String user, String metadata){
-        String worflowoutput= null;
-        try {
-            WorkflowInterpretorStub stub = new WorkflowInterpretorStub(getClientConfiguration().getXbayaServiceURL().toString());
-            worflowoutput = stub.launchWorkflowWithoutListener(workflow, topic, getClientConfiguration().getMyproxyPassword(),getClientConfiguration().getMyproxyUsername(), inputs,
-                    configurations);
-            runPostWorkflowExecutionTasks(topic, user, metadata);
-            log.info("Workflow output : " + worflowoutput);
-        } catch (AxisFault e) {
-            log.fine(e.getMessage(), e);
-        } catch (RemoteException e) {
-            log.fine(e.getMessage(), e);
-        } catch (RegistryException e) {
-            log.fine(e.getMessage(), e);
-        }
-        return worflowoutput;
-    }
     
     public List<WorkflowExecution> getWorkflowExecutionDataByUser(String user) throws RegistryException{
     	return getRegistry().getWorkflowExecutionByUser(user);
