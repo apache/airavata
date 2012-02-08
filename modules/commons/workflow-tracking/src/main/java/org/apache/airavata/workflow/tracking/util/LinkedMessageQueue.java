@@ -37,7 +37,9 @@ public class LinkedMessageQueue<E> implements Iterable {
     private final int capacity;
 
     private final Object takeLock = new Object();
-    private final Object putLock = new Object();
+    private final Object  putLock = new Object();
+    
+    private boolean canStop = false;
 
     public LinkedMessageQueue() {
         this(Integer.MAX_VALUE); // default capacity is MAX_INT
@@ -122,10 +124,11 @@ public class LinkedMessageQueue<E> implements Iterable {
     public final E get() throws InterruptedException {
 
         if (count.get() <= 0) { // do initial check before checking & waiting
+                while (count.get() <= 0 && !canStop) {
             synchronized (putLock) {
-                while (count.get() <= 0) {
-                    putLock.wait();
+                    putLock.wait(1);
                 }
+                    return null;
             }
         }
 
@@ -172,4 +175,7 @@ public class LinkedMessageQueue<E> implements Iterable {
         return list.iterator();
     }
 
+    public void setCanStop(boolean canStop) {
+        this.canStop = canStop;
+    }
 }

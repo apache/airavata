@@ -110,7 +110,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
 
             logger.info("Unsubscribing the messagebox that was destroyed," + " SubscriptionID:" + this.subscriptionId);
 
-            msgboxHandler.deleteMsgBox(msgBoxEpr, 1000L);
+            msgboxHandler.deleteMsgBox(msgBoxEpr, 2000L);
 
         } catch (MsgBrokerClientException e) {
 
