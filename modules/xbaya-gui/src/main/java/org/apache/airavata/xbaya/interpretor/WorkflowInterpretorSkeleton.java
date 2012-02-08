@@ -28,6 +28,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.airavata.common.registry.api.impl.JCRRegistry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
@@ -69,6 +70,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static boolean runInThread = false;
     public static final String RUN_IN_THREAD = "runInThread";
     private static PredicatedTaskRunner runner = null;
+    public static  JCRComponentRegistry jcrComponentRegistry = null;
 
 
     public void startUp(ConfigurationContext configctx, AxisService service) {
@@ -78,9 +80,21 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             properties.load(url.openStream());
             configctx.setProperty(MYPROXY_PASS, properties.get(MYPROXY_PASS));
             configctx.setProperty(MYPROXY_USER, properties.get(MYPROXY_USER));
+
+            jcrUserName = (String)properties.get(JCR_USER);
+            jcrPassword = (String) properties.get(JCR_PASS);
+            jcrURL = (String) properties.get(JCR_URL);
+
             if("true".equals(properties.get(PROVENANCE))){
                 provenance = true;
                 runner = new PredicatedTaskRunner(1);
+                try {
+                    jcrComponentRegistry = new JCRComponentRegistry(new URI(jcrURL),jcrUserName,jcrPassword);
+                } catch (RepositoryException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
             }else{
                 provenance = false;
             }
@@ -89,9 +103,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             }else{
                 runInThread = false;
             }
-            jcrUserName = (String)properties.get(JCR_USER);
-            jcrPassword = (String) properties.get(JCR_PASS);
-            jcrURL = (String) properties.get(JCR_URL);
 
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -163,13 +174,8 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password,true);
         }
         final WorkflowInterpretorEventListener finalListener = listener;
-        try {
-            conf.setJcrComponentRegistry(new JCRComponentRegistry(new URI(jcrURL),jcrUserName,jcrPassword));
-        } catch (RepositoryException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (URISyntaxException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        conf.setJcrComponentRegistry(jcrComponentRegistry);
+
        
         final WorkflowInterpreter finalInterpreter = interpreter;
         interpreter.setActOnProvenance(provenance);
@@ -181,7 +187,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             executeWorkflow(finalInterpreter,finalListener);
         }
         System.err.println("topic return:" + topic);
-
         return topic;
     }
 
@@ -235,6 +240,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		return defaultVal;
 	}
      public void shutDown(ConfigurationContext configctx, AxisService service) {
-
+            ((JCRRegistry)jcrComponentRegistry.getRegistry()).closeConnection();
     }
 }
