@@ -301,6 +301,24 @@ public class XBayaClient {
 		}
 		return worflowoutput;
 	}
+
+    public String runWorkflowWithoutListener(String topic, NameValue[] inputs, String user, String metadata){
+        String worflowoutput= null;
+        try {
+            WorkflowInterpretorStub stub = new WorkflowInterpretorStub(getClientConfiguration().getXbayaServiceURL().toString());
+            worflowoutput = stub.launchWorkflowWithoutListener(workflow, topic, getClientConfiguration().getMyproxyPassword(),getClientConfiguration().getMyproxyUsername(), inputs,
+                    configurations);
+            runPostWorkflowExecutionTasks(topic, user, metadata);
+            log.info("Workflow output : " + worflowoutput);
+        } catch (AxisFault e) {
+            log.fine(e.getMessage(), e);
+        } catch (RemoteException e) {
+            log.fine(e.getMessage(), e);
+        } catch (RegistryException e) {
+            log.fine(e.getMessage(), e);
+        }
+        return worflowoutput;
+    }
     
     public List<WorkflowExecution> getWorkflowExecutionDataByUser(String user) throws RegistryException{
     	return getRegistry().getWorkflowExecutionByUser(user);

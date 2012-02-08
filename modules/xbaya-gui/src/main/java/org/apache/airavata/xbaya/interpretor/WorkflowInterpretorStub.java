@@ -244,7 +244,113 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
             }
         } finally {
             _serviceClient.cleanup();
-            _serviceClient.cleanupTransport();
+            _messageContext.getTransportOut().getSender().cleanup(_messageContext);
+        }
+    }
+
+
+    public java.lang.String launchWorkflowWithoutListener(
+
+            java.lang.String workflowAsString1, java.lang.String topic2, java.lang.String password3,
+            java.lang.String username4, NameValue[] inputs5, NameValue[] configurations6)
+
+            throws java.rmi.RemoteException
+
+    {
+        org.apache.axis2.context.MessageContext _messageContext = null;
+        try {
+            org.apache.axis2.client.OperationClient _operationClient = _serviceClient.createClient(_operations[0]
+                    .getName());
+            _operationClient.getOptions().setAction("urn:launchWorkflowWithoutListener");
+            _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
+
+            addPropertyToOperationClient(_operationClient,
+                    org.apache.axis2.description.WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR, "&");
+
+            // create a message context
+            _messageContext = new org.apache.axis2.context.MessageContext();
+
+            // create SOAP envelope with that payload
+            org.apache.axiom.soap.SOAPEnvelope env = null;
+            WorkflowInterpretorStub.LaunchWorkflow dummyWrappedType = null;
+            env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()), workflowAsString1, topic2,
+                    password3, username4, inputs5, configurations6, dummyWrappedType,
+                    optimizeContent(new javax.xml.namespace.QName("http://interpretor.xbaya.airavata.apache.org",
+                            "launchWorkflowWithoutListener")));
+
+            // adding SOAP soap_headers
+            _serviceClient.addHeadersToEnvelope(env);
+            _serviceClient.getOptions().setTimeOutInMilliSeconds(90000000);
+            // set the message context with that soap envelope
+            _messageContext.setEnvelope(env);
+
+            // add the message contxt to the operation client
+            _operationClient.addMessageContext(_messageContext);
+
+            // execute the operation client
+            _operationClient.execute(true);
+
+            org.apache.axis2.context.MessageContext _returnMessageContext = _operationClient
+                    .getMessageContext(org.apache.axis2.wsdl.WSDLConstants.MESSAGE_LABEL_IN_VALUE);
+            org.apache.axiom.soap.SOAPEnvelope _returnEnv = _returnMessageContext.getEnvelope();
+
+            java.lang.Object object = fromOM(_returnEnv.getBody().getFirstElement(),
+                    WorkflowInterpretorStub.LaunchWorkflowResponse.class, getEnvelopeNamespaces(_returnEnv));
+
+            return getLaunchWorkflowResponse_return((WorkflowInterpretorStub.LaunchWorkflowResponse) object);
+
+        } catch (AxisFault f) {
+            org.apache.axiom.om.OMElement faultElt = f.getDetail();
+            if (faultElt != null) {
+                if (faultExceptionNameMap.containsKey(faultElt.getQName())) {
+                    // make the fault by reflection
+                    try {
+                        java.lang.String exceptionClassName = (java.lang.String) faultExceptionClassNameMap
+                                .get(faultElt.getQName());
+                        java.lang.Class exceptionClass = java.lang.Class.forName(exceptionClassName);
+                        java.lang.Exception ex = (java.lang.Exception) exceptionClass.newInstance();
+                        // message class
+                        java.lang.String messageClassName = (java.lang.String) faultMessageMap.get(faultElt.getQName());
+                        java.lang.Class messageClass = java.lang.Class.forName(messageClassName);
+                        java.lang.Object messageObject = fromOM(faultElt, messageClass, null);
+                        java.lang.reflect.Method m = exceptionClass.getMethod("setFaultMessage",
+                                new java.lang.Class[]{messageClass});
+                        m.invoke(ex, new java.lang.Object[]{messageObject});
+
+                        throw new java.rmi.RemoteException(ex.getMessage(), ex);
+                    } catch (java.lang.ClassCastException e) {
+                        // we cannot intantiate the class - throw the original
+                        // Axis fault
+                        throw f;
+                    } catch (java.lang.ClassNotFoundException e) {
+                        // we cannot intantiate the class - throw the original
+                        // Axis fault
+                        throw f;
+                    } catch (java.lang.NoSuchMethodException e) {
+                        // we cannot intantiate the class - throw the original
+                        // Axis fault
+                        throw f;
+                    } catch (java.lang.reflect.InvocationTargetException e) {
+                        // we cannot intantiate the class - throw the original
+                        // Axis fault
+                        throw f;
+                    } catch (java.lang.IllegalAccessException e) {
+                        // we cannot intantiate the class - throw the original
+                        // Axis fault
+                        throw f;
+                    } catch (java.lang.InstantiationException e) {
+                        // we cannot intantiate the class - throw the original
+                        // Axis fault
+                        throw f;
+                    }
+                } else {
+                    throw f;
+                }
+            } else {
+                throw f;
+            }
+        } finally {
+            _serviceClient.cleanup();
             _messageContext.getTransportOut().getSender().cleanup(_messageContext);
         }
     }
