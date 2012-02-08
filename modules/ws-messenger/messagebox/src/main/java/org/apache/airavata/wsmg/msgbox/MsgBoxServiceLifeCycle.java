@@ -62,6 +62,7 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
         // Load the configuration file from the classpath
         ConfigurationManager confmanager = new ConfigurationManager("conf" + File.separator + CONFIGURATION_FILE_NAME);
         initDatabase(configurationcontext, confmanager);
+        configurationcontext.setProperty(ConfigKeys.MSG_PRESV_INTERVAL,getIntervaltoExecuteDelete(confmanager));
     }
 
     public void initDatabase(ConfigurationContext configurationcontext, ConfigurationManager confmanager) {
@@ -86,6 +87,18 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
         int messagePreservationDays = configs.getConfig(ConfigKeys.MSG_PRESV_DAYS, 2);
         int messagePreservationHours = configs.getConfig(ConfigKeys.MSG_PRESV_HRS, 0);
         int messagePreservationMinutes = configs.getConfig(ConfigKeys.MSG_PRESV_MINS, 0);
+
+        long interval = messagePreservationDays * 24l;
+        interval = (interval + messagePreservationHours) * 60;
+        interval = (interval + messagePreservationMinutes) * 60;
+        interval = interval * 1000;
+        return interval;
+    }
+
+    private long getIntervaltoExecuteDelete(ConfigurationManager configs) {
+        int messagePreservationDays = configs.getConfig(ConfigKeys.MSG_PRESV_INTERVAL_DAYS, 0);
+        int messagePreservationHours = configs.getConfig(ConfigKeys.MSG_PRESV_INTERVAL_HRS, 0);
+        int messagePreservationMinutes = configs.getConfig(ConfigKeys.MSG_PRESV_INTERVAL_MINS, 5);
 
         long interval = messagePreservationDays * 24l;
         interval = (interval + messagePreservationHours) * 60;

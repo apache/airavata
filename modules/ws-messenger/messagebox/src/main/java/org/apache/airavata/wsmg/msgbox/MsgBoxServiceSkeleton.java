@@ -28,6 +28,7 @@ import java.util.List;
 import org.apache.airavata.wsmg.commons.MsgBoxQNameConstants;
 import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
+import org.apache.airavata.wsmg.msgbox.util.ConfigKeys;
 import org.apache.airavata.wsmg.msgbox.util.MsgBoxCommonConstants;
 import org.apache.airavata.wsmg.msgbox.util.MsgBoxUtils;
 import org.apache.axiom.om.OMAbstractFactory;
@@ -38,6 +39,7 @@ import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.service.Lifecycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.beans.editors.LongEditor;
 
 /**
  * Service class for MsgBoxService this get called by MsgBoxServiceMessageReceiverInOut with ProcessingContext
@@ -47,7 +49,6 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
     private static final Logger logger = LoggerFactory.getLogger(MsgBoxServiceSkeleton.class);
     private static final String TRUE = Boolean.toString(true);
     private static final String FALSE = Boolean.toString(false);
-    private static final long SLEEP_TIME = 5 * 60 * 1000l; // 1 hour;
     private static OMFactory factory = OMAbstractFactory.getOMFactory();
     private MsgBoxStorage storage;
     private Thread deletingThread;
@@ -56,9 +57,8 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
     public void init(ServiceContext context) throws AxisFault {
         this.storage = (MsgBoxStorage) context.getConfigurationContext().getProperty(
                 MsgBoxCommonConstants.MSGBOX_STORAGE);
-
         logger.info("Start clean up thread for messagebox");
-        deletingThread = new Thread(new DeleteOldMessageRunnable());
+        deletingThread = new Thread(new DeleteOldMessageRunnable(context.getConfigurationContext().getProperty(ConfigKeys.MSG_PRESV_INTERVAL)));
         deletingThread.start();
     }
 
@@ -163,18 +163,18 @@ public class MsgBoxServiceSkeleton implements Lifecycle {
     }
 
     class DeleteOldMessageRunnable implements Runnable {
-
+        long longInterval = 60 * 60 * 1000;
+        DeleteOldMessageRunnable(Object inveral){
+          longInterval = (Long)inveral;
+        }
         public void run() {
             while (!stop) {
                 try {
-
-                    // sleep
-                    Thread.sleep(SLEEP_TIME);
-
-                    // try to remove old message
+                        // try to remove old message
                     if (storage != null) {
                         storage.removeAncientMessages();
                     }
+                    Thread.sleep(longInterval);
                 } catch (Exception e) {
                     logger.warn("Msgbox cleanup thread is interrupted to close");
                 }
