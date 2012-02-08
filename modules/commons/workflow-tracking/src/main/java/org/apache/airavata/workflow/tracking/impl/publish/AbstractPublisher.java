@@ -53,6 +53,8 @@ public abstract class AbstractPublisher implements Runnable, NotificationPublish
 
     private boolean deleted = false;
 
+    private boolean deleteNow = false;
+
     private final Thread pubThread;
 
     protected AbstractPublisher(int capacity, boolean defaultAsync) {
@@ -68,7 +70,8 @@ public abstract class AbstractPublisher implements Runnable, NotificationPublish
     // public abstract void publishSync(String leadMessage);
     public final void delete() {
         deleted = true;
-        pubThread.interrupt();
+        messageQueue.setCanStop(true);
+        deleteNow = true;
     }
 
     public final boolean isDeleted() {
@@ -149,13 +152,16 @@ public abstract class AbstractPublisher implements Runnable, NotificationPublish
     public final void run() {
 
         BrokerEntry brokerEntry = null;
-        while (true) {
+        while (deleteNow) {
 
             try {
                 // get the head from queue, but dont remove it yet
                 // block for message to arrive only if not finished;
                 // if finished, dont block...just quit
                 brokerEntry = finished ? messageQueue.peek() : messageQueue.get();
+                if(deleteNow){
+                    break;
+                }
                 if (brokerEntry == null) {
 
                     // the queue has been flushed
