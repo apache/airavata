@@ -23,12 +23,12 @@ package org.apache.airavata.xbaya.component.gui;
 
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.globus.GridFTPFileTransferClient;
-import org.globusonline.transfer.JSONTransferAPIClient;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
 import org.globusonline.transfer.APIError;
+import org.globusonline.transfer.JSONTransferAPIClient;
 import org.json.JSONException;
 
 import javax.swing.*;
@@ -138,7 +138,7 @@ public class GlobusFileTransferWindow {
         this.destFilePathTextField = new XBayaTextField();
 
         // Setting some sample values when the Window is loaded
-        this.usernameTextField.setText("heshan");
+        /*this.usernameTextField.setText("heshan");
         this.caFileTextField
                 .setText("/home/heshan/Dev/globusonline/transfer-api-client-java.git/trunk/ca/gd-bundle_ca.cert");
         this.certFileTextField.setText("/tmp/x509up_u780936");
@@ -146,7 +146,7 @@ public class GlobusFileTransferWindow {
         this.sourceEndpointTextField.setText("xsede#ranger");
         this.sourceFilePathTextField.setText("~/tmp.log");
         this.destEndpointTextField.setText("xsede#trestles");
-        this.destFilePathTextField.setText("~/tmp.log.copy");
+        this.destFilePathTextField.setText("~/tmp.log.copy");*/
 
         XBayaLabel nameLabel = new XBayaLabel("Username", this.usernameTextField);
         XBayaLabel caFileLabel = new XBayaLabel("CA File", this.caFileTextField);
