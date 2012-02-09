@@ -338,7 +338,8 @@ public class ServiceDescriptionDialog extends JDialog {
     }
 
     private void loadData() {
-    	txtServiceName.setText(getOrginalServiceDescription().getType().getName());
+    	ServiceDescriptionType descType = getOrginalServiceDescription().getType();
+		txtServiceName.setText(descType.getName());
 		setServiceName(txtServiceName.getText());
 
 		txtServiceName.setEditable(isNewDescription());
@@ -346,24 +347,27 @@ public class ServiceDescriptionDialog extends JDialog {
     	while(defaultTableModel.getRowCount()>0){
     		defaultTableModel.removeRow(0);
     	}
-    	InputParameterType[] iparameters = getOrginalServiceDescription().getType().getInputParametersArray();
+    	InputParameterType[] iparameters = descType.getInputParametersArray();
     	for (InputParameterType parameter : iparameters) {
     		defaultTableModel.addRow(new Object[] { getIOStringList()[0], parameter.getParameterName(),parameter.getParameterType().getName(),parameter.getParameterDescription()});	
 		}
-    	OutputParameterType[] oparameters = getOrginalServiceDescription().getType().getOutputParametersArray();
+    	OutputParameterType[] oparameters = descType.getOutputParametersArray();
     	for (OutputParameterType parameter : oparameters) {
     		defaultTableModel.addRow(new Object[] { getIOStringList()[1], parameter.getParameterName(), parameter.getParameterType().getName(),parameter.getParameterDescription()});	
 		}
     	addNewRowIfLastIsNotEmpty();
-    	XmlCursor cursor = getOrginalServiceDescription().getType().getPortType().getMethod().newCursor();
-    	cursor.toNextToken();
-    	String value = cursor.getAttributeText(new QName("id"));
-    	cursor.dispose();
-    	Boolean selected=false;
-    	if (value!=null){
-    		selected=Boolean.parseBoolean(value);
-    	}
-    	chkForceFileStagingToWorkDir.setSelected(selected);
+    	Boolean selected = false;
+    	if (descType.getPortType()!=null && descType.getPortType().getMethod()!=null) {
+			XmlCursor cursor = descType.getPortType().getMethod().newCursor();
+			cursor.toNextToken();
+			String value = cursor.getAttributeText(new QName("id"));
+			cursor.dispose();
+			selected = false;
+			if (value != null) {
+				selected = Boolean.parseBoolean(value);
+			}
+		}
+		chkForceFileStagingToWorkDir.setSelected(selected);
     	setForceFileStagingToWorkDir(selected);
     	ignoreTableChanges=false;
 	}
