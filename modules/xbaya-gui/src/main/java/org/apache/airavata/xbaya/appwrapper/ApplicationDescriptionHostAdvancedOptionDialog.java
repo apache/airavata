@@ -52,7 +52,6 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     private XBayaTextField txtProjectAccountNumber;
     private XBayaTextField txtProjectAccountDescription;
     private XBayaTextField txtQueueType;
-    private XBayaTextField txtQueueName;
     private JButton okButton;
     private AiravataRegistry registry;
     private ApplicationDeploymentDescription descriptor;
@@ -115,8 +114,6 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		
 		txtProjectAccountDescription = new XBayaTextField();
 		
-		txtQueueName = new XBayaTextField();
-		
 		txtQueueType = new XBayaTextField();
 		
 		
@@ -135,7 +132,6 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		XBayaLabel lblProjectAccountNumber = new XBayaLabel("Project Account Number",txtProjectAccountNumber);
 		XBayaLabel lblProjectAccountDescription = new XBayaLabel("Project Account Description",txtProjectAccountDescription);
 		XBayaLabel lblQueueType = new XBayaLabel("Queue Type",txtQueueType);
-		XBayaLabel lblQueueName = new XBayaLabel("Queue Name",txtQueueName);
     	
 		panel.add(lbljobType);
 		panel.add(cmbJobType);
@@ -145,12 +141,10 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		panel.add(txtProjectAccountDescription);
 		panel.add(lblQueueType);
 		panel.add(txtQueueType);
-		panel.add(lblQueueName);
-		panel.add(txtQueueName);
 		panel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         buttonPane.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
-        SwingUtil.layoutToGrid(panel.getSwingComponent(), 5, 2, SwingUtil.WEIGHT_NONE, 1);
+        SwingUtil.layoutToGrid(panel.getSwingComponent(), 4, 2, SwingUtil.WEIGHT_NONE, 1);
         
         buttonPane.add(okButton);
         buttonPane.add(cancelButton);
@@ -212,7 +206,6 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		
 		QueueType queueName = getQueueName();
 		queueName.setQueueName(txtQueueType.getText());
-		queueName.setQueueDescription(txtQueueName.getText());
     }
 
 	private QueueType getQueueName() {
@@ -242,7 +235,6 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		
 		QueueType queueName = getQueueName();
 		txtQueueType.setText(queueName.getQueueName()==null?"":queueName.getQueueName());
-		txtQueueName.setText(queueName.getQueueDescription()==null?"":queueName.getQueueDescription());
     }
 
     public AiravataRegistry getRegistry() {
