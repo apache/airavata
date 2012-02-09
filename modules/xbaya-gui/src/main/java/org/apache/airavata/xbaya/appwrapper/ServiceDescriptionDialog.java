@@ -329,12 +329,12 @@ public class ServiceDescriptionDialog extends JDialog {
         getContentPane().add(buttonPane.getSwingComponent());
         buttonPane.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         SwingUtil.layoutToGrid(getContentPane(), 2, 1, 0, 0);
-        setResizable(false);
+        setResizable(true);
         getRootPane().setDefaultButton(okButton);
         if (!isNewDescription()){
         	loadData();
         }
-        
+        SwingUtil.adjustWindowSize(getDialog());
     }
 
     private void loadData() {

@@ -31,6 +31,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -38,6 +39,8 @@ import java.net.URL;
 import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.Spring;
 import javax.swing.SpringLayout;
@@ -332,7 +335,7 @@ public class SwingUtil {
     public static void addPlaceHolder(final JTextField field,final String placeHolderText){
     	field.addFocusListener(new FocusListener(){
     		private Color fontColor=field.getForeground();
-    		private String previousText=field.getText();
+//    		private String previousText=field.getText();
     		
 			public void focusGained(FocusEvent arg0) {
 				if (field.getText().equals(placeHolderText)){
@@ -352,6 +355,15 @@ public class SwingUtil {
     	if (field.getText().trim().equals("")){
     		field.setText(placeHolderText);
     		field.setForeground(Color.GRAY);
+    	}
+    }
+    
+    public static void adjustWindowSize(JDialog window){
+    	while(true){
+    		Rectangle bounds = window.getBounds();
+    		JOptionPane.showMessageDialog(window, window.getComponentCount());
+    		window.getComponents()[0].setBounds(0,0,bounds.width,bounds.height);
+    		break;
     	}
     }
 }
