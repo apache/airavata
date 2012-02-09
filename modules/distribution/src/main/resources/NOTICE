@@ -158,3 +158,25 @@ This product includes software developed by
 The Apache Software Foundation (http://www.apache.org/).
 
 =========================================================================
+
+   =========================================================================
+   ==  NOTICE file corresponding to the section 4 d of                    ==
+   ==  the Apache License, Version 2.0,                                   ==
+   ==  in this case for the Apache Woden distribution.                    ==
+   =========================================================================
+
+   This product includes software developed by
+   The Apache Software Foundation (http://www.apache.org/).
+
+   This product also includes software developed by :
+
+     - IBM Corporation (http://www.ibm.com),
+         WSDL4J was the initial code contribution for the Apache Woden
+         project and some of the WSDL4J design and code has been reused.
+     - The W3C Consortium (http://www.w3c.org),
+         Common W3C XML Schema and DTD files are packaged with Apache Woden.
+
+   Please read the different LICENSE files present in the root directory of
+   this distribution.
+   =========================================================================
+
