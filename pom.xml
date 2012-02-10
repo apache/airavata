@@ -27,15 +27,15 @@
 	<artifactId>airavata</artifactId>
 	<packaging>pom</packaging>
 	<name>Apache Airavata</name>
-	<version>0.2-incubating-SNAPSHOT</version>
+	<version>0.2-incubating</version>
 
 	<url>http://incubator.apache.org/airavata/</url>
 	<inceptionYear>2011</inceptionYear>
 
 	<scm>
-		<connection>scm:svn:http://svn.apache.org/repos/asf/incubator/airavata/branches/0.2-incubating-SNAPSHOT</connection>
-		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/airavata/branches/0.2-incubating-SNAPSHOT</developerConnection>
-		<url>http://svn.apache.org/viewvc/incubator/airavata/branches/0.2-incubating-SNAPSHOT/</url>
+		<connection>scm:svn:http://svn.apache.org/repos/asf/incubator/airavata/tags/airavata-0.2-incubating</connection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/incubator/airavata/tags/airavata-0.2-incubating</developerConnection>
+		<url>http://svn.apache.org/viewvc/incubator/airavata/tags/airavata-0.2-incubating</url>
 	</scm>
 
 	<mailingLists>
