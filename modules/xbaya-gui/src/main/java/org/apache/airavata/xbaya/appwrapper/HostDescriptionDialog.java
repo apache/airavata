@@ -159,7 +159,7 @@ public class HostDescriptionDialog extends JDialog {
      * Initializes the GUI.
      */
     private void initGUI() {
-    	setBounds(100, 100, 400, 280);
+    	setBounds(100, 100, 400, 330);
     	setModal(true);
         setLocationRelativeTo(null);
         if (isNewHost()) {

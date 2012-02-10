@@ -358,12 +358,4 @@ public class SwingUtil {
     	}
     }
     
-    public static void adjustWindowSize(JDialog window){
-    	while(true){
-    		Rectangle bounds = window.getBounds();
-    		JOptionPane.showMessageDialog(window, window.getComponentCount());
-    		window.getComponents()[0].setBounds(0,0,bounds.width,bounds.height);
-    		break;
-    	}
-    }
 }
