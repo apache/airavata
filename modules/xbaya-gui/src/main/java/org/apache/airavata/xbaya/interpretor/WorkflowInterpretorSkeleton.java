@@ -71,7 +71,8 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static final String RUN_IN_THREAD = "runInThread";
     private static PredicatedTaskRunner runner = null;
     public static  JCRComponentRegistry jcrComponentRegistry = null;
-
+    public static int provenanceWriterThreadPoolSize = 1;
+    public static final String PROVENANCE_WRITER_THREAD_POOL_SIZE = "provenanceWriterThreadPoolSize";
 
     public void startUp(ConfigurationContext configctx, AxisService service) {
         URL url = this.getClass().getClassLoader().getResource("xbaya.properties");
@@ -84,10 +85,11 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             jcrUserName = (String)properties.get(JCR_USER);
             jcrPassword = (String) properties.get(JCR_PASS);
             jcrURL = (String) properties.get(JCR_URL);
+            provenanceWriterThreadPoolSize = Integer.parseInt((String)properties.get(PROVENANCE_WRITER_THREAD_POOL_SIZE));
 
             if("true".equals(properties.get(PROVENANCE))){
                 provenance = true;
-                runner = new PredicatedTaskRunner(1);
+                runner = new PredicatedTaskRunner(provenanceWriterThreadPoolSize);
                 try {
                     jcrComponentRegistry = new JCRComponentRegistry(new URI(jcrURL),jcrUserName,jcrPassword);
                 } catch (RepositoryException e) {
@@ -180,26 +182,27 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         final WorkflowInterpreter finalInterpreter = interpreter;
         interpreter.setActOnProvenance(provenance);
         interpreter.setProvenanceWriter(runner);
+        final String experimentId = topic;
         System.err.println("Created the interpreter");
         if(inNewThread){
-            runInThread(finalInterpreter,finalListener);
+            runInThread(finalInterpreter,finalListener,experimentId);
         }else{
-            executeWorkflow(finalInterpreter,finalListener);
+            executeWorkflow(finalInterpreter,finalListener,experimentId);
         }
         System.err.println("topic return:" + topic);
         return topic;
     }
 
-    private void runInThread(final WorkflowInterpreter interpreter,final WorkflowInterpretorEventListener listener) {
+    private void runInThread(final WorkflowInterpreter interpreter,final WorkflowInterpretorEventListener listener,final String experimentId) {
         new Thread(new Runnable() {
 
             public void run() {
-                executeWorkflow(interpreter, listener);
+                executeWorkflow(interpreter, listener,experimentId);
             }
         }).start();
     }
 
-    private void executeWorkflow(WorkflowInterpreter interpreter, WorkflowInterpretorEventListener listener) {
+    private void executeWorkflow(WorkflowInterpreter interpreter, WorkflowInterpretorEventListener listener,String experimentId) {
         try {
             interpreter.scheduleDynamically();
             System.err.println("Called the interpreter");
@@ -241,5 +244,8 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	}
      public void shutDown(ConfigurationContext configctx, AxisService service) {
             ((JCRRegistry)jcrComponentRegistry.getRegistry()).closeConnection();
+         if(runner != null){
+             runner.shutDown();
+         }
     }
 }
