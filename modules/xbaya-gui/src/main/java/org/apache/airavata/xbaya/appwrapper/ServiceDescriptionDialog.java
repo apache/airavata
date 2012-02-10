@@ -359,8 +359,8 @@ public class ServiceDescriptionDialog extends JDialog {
     	Boolean selected = false;
     	if (descType.getPortType()!=null && descType.getPortType().getMethod()!=null) {
 			XmlCursor cursor = descType.getPortType().getMethod().newCursor();
-			cursor.toNextToken();
-			String value = cursor.getAttributeText(new QName("id"));
+//			cursor.toNextToken();
+			String value = cursor.getAttributeText(new QName("forceFileStagingToWorkDir"));
 			cursor.dispose();
 			selected = false;
 			if (value != null) {
