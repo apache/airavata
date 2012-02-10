@@ -88,7 +88,7 @@
 							<finalName>${archieve.name}-${project.version}</finalName>
 							<descriptors>
 								<descriptor>src/main/assembly/bin-assembly.xml</descriptor>
-								<descriptor>src/main/assembly/src-assembly.xml</descriptor>
+<!-- 								<descriptor>src/main/assembly/src-assembly.xml</descriptor> -->
 							</descriptors>
 							<attach>false</attach>
 						</configuration>

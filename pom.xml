@@ -606,10 +606,5 @@
 			</modules>
 		</profile>
 
-
-		<!--profile> <id>maven-3</id> <activation> <file> <exists>${basedir}</exists> </file> </activation> <build> <plugins> <plugin> 
-			<groupId>org.apache.maven.plugins</groupId> <artifactId>maven-site-plugin</artifactId> <executions> <execution> <id>attach-descriptor</id> 
-			<goals> <goal>attach-descriptor</goal> </goals> </execution> </executions> </plugin> </plugins> </build> </profile -->
-
 	</profiles>
 </project>
