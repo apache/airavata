@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file 
+	distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under 
+	the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may 
+	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to 
+	in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
+	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
+	the License. -->
+
+<wsdl:definitions targetNamespace='http://schemas.xmlsoap.org/ws/2004/08/eventing' xmlns:wse='http://schemas.xmlsoap.org/ws/2004/08/eventing'
+	xmlns:wsdl='http://schemas.xmlsoap.org/wsdl/' xmlns:xs='http://www.w3.org/2001/XMLSchema'>
+
+	<wsdl:types>
+
+		<xs:schema targetNamespace="http://schemas.xmlsoap.org/ws/2004/08/eventing" xmlns:tns="http://schemas.xmlsoap.org/ws/2004/08/eventing"
+			xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			elementFormDefault="qualified" blockDefault="#all">
+
+			<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd" />
+
+			<xs:import namespace="http://schemas.xmlsoap.org/ws/2004/08/addressing" schemaLocation="http://schemas.xmlsoap.org/ws/2004/08/addressing" />
+
+			<!-- Types and global elements -->
+			<xs:complexType name="DeliveryType" mixed="true">
+				<xs:sequence>
+					<xs:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+				<xs:attribute name="Mode" type="xs:anyURI" use="optional" />
+				<xs:anyAttribute namespace="##other" processContents="lax" />
+			</xs:complexType>
+
+			<xs:element name="NotifyTo" type="wsa:EndpointReferenceType" />
+
+			<xs:simpleType name="NonNegativeDurationType">
+				<xs:restriction base="xs:duration">
+					<xs:minInclusive value="P0Y0M0DT0H0M0S" />
+				</xs:restriction>
+			</xs:simpleType>
+
+			<xs:simpleType name="ExpirationType">
+				<xs:union memberTypes="xs:dateTime tns:NonNegativeDurationType" />
+			</xs:simpleType>
+
+			<xs:complexType name="FilterType" mixed="true">
+				<xs:sequence>
+					<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+				<xs:attribute name="Dialect" type="xs:anyURI" use="optional" />
+				<xs:anyAttribute namespace="##other" processContents="lax" />
+			</xs:complexType>
+
+			<xs:complexType name="LanguageSpecificStringType">
+				<xs:simpleContent>
+					<xs:extension base="xs:string">
+						<xs:attribute ref="xml:lang" />
+						<xs:anyAttribute namespace="##other" processContents="lax" />
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+
+			<!-- Subscribe request -->
+			<xs:element name="Subscribe">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="EndTo" type="wsa:EndpointReferenceType" minOccurs="0" />
+						<xs:element name="Delivery" type="tns:DeliveryType" />
+						<xs:element name="Expires" type="tns:ExpirationType" minOccurs="0" />
+						<xs:element name="Filter" type="tns:FilterType" minOccurs="0" />
+						<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+					<xs:anyAttribute namespace="##other" processContents="lax" />
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="Identifier" type="xs:anyURI" />
+
+			<!-- Subscribe response -->
+			<xs:element name="SubscribeResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SubscriptionManager" type="wsa:EndpointReferenceType" />
+						<xs:element name="Expires" type="tns:ExpirationType" />
+						<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+					<xs:anyAttribute namespace="##other" processContents="lax" />
+				</xs:complexType>
+			</xs:element>
+
+			<!-- Used in a fault if there's an unsupported dialect -->
+			<xs:element name="SupportedDialect" type="xs:anyURI" />
+
+			<!-- Used in a fault if there's an unsupported delivery mode -->
+			<xs:element name="SupportedDeliveryMode" type="xs:anyURI" />
+
+			<!-- Renew request -->
+			<xs:element name="Renew">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Expires" type="tns:ExpirationType" minOccurs="0" />
+						<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+					<xs:anyAttribute namespace="##other" processContents="lax" />
+				</xs:complexType>
+			</xs:element>
+
+			<!-- Renew response -->
+			<xs:element name="RenewResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Expires" type="tns:ExpirationType" minOccurs="0" />
+						<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+					<xs:anyAttribute namespace="##other" processContents="lax" />
+				</xs:complexType>
+			</xs:element>
+
+			<!-- GetStatus request -->
+			<xs:element name="GetStatus">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+					<xs:anyAttribute namespace="##other" processContents="lax" />
+				</xs:complexType>
+			</xs:element>
+
+			<!-- GetStatus response -->
+			<xs:element name="GetStatusResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Expires" type="tns:ExpirationType" minOccurs="0" />
+						<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+					<xs:anyAttribute namespace="##other" processContents="lax" />
+				</xs:complexType>
+			</xs:element>
+
+			<!-- Unsubscribe request -->
+			<xs:element name="Unsubscribe">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+					<xs:anyAttribute namespace="##other" processContents="lax" />
+				</xs:complexType>
+			</xs:element>
+
+			<!-- count(/s:Envelope/s:Body/*) = 0 for Unsubscribe response -->
+
+			<!-- SubscriptionEnd message -->
+			<xs:element name="SubscriptionEnd">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SubscriptionManager" type="wsa:EndpointReferenceType" />
+						<xs:element name="Status" type="tns:OpenSubscriptionEndCodeType" />
+						<xs:element name="Reason" type="tns:LanguageSpecificStringType" minOccurs="0" maxOccurs="unbounded" />
+						<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+					<xs:anyAttribute namespace="##other" processContents="lax" />
+				</xs:complexType>
+			</xs:element>
+
+			<xs:simpleType name="SubscriptionEndCodeType">
+				<xs:restriction base="xs:anyURI">
+					<xs:enumeration value="http://schemas.xmlsoap.org/ws/2004/08/eventing/DeliveryFailure" />
+					<xs:enumeration value="http://schemas.xmlsoap.org/ws/2004/08/eventing/SourceShuttingDown" />
+					<xs:enumeration value="http://schemas.xmlsoap.org/ws/2004/08/eventing/SourceCancelling" />
+				</xs:restriction>
+			</xs:simpleType>
+
+			<xs:simpleType name="OpenSubscriptionEndCodeType">
+				<xs:union memberTypes="tns:SubscriptionEndCodeType xs:anyURI" />
+			</xs:simpleType>
+
+			<xs:attribute name="EventSource" type="xs:boolean" />
+
+		</xs:schema>
+
+		<xs:schema targetNamespace="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" elementFormDefault="qualified" blockDefault="#all">
+			<!-- //////////////////// WS-Addressing //////////////////// -->
+			<!-- Endpoint reference -->
+			<xs:element name="EndpointReference" type="wsa:EndpointReferenceType" />
+			<xs:complexType name="EndpointReferenceType">
+				<xs:sequence>
+					<xs:element name="Address" type="wsa:AttributedURI" />
+					<xs:element name="ReferenceProperties" type="wsa:ReferencePropertiesType" minOccurs="0" />
+					<xs:element name="ReferenceParameters" type="wsa:ReferenceParametersType" minOccurs="0" />
+					<xs:element name="PortType" type="wsa:AttributedQName" minOccurs="0" />
+					<xs:element name="ServiceName" type="wsa:ServiceNameType" minOccurs="0" />
+					<xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>
+								If "Policy" elements from namespace "http://schemas.xmlsoap.org/ws/2002/12/policy#policy" are used, they must
+								appear first (before any extensibility elements).
+							</xs:documentation>
+						</xs:annotation>
+					</xs:any>
+				</xs:sequence>
+				<xs:anyAttribute namespace="##other" processContents="lax" />
+			</xs:complexType>
+			<xs:complexType name="ReferencePropertiesType">
+				<xs:sequence>
+					<xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="ReferenceParametersType">
+				<xs:sequence>
+					<xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="ServiceNameType">
+				<xs:simpleContent>
+					<xs:extension base="xs:QName">
+						<xs:attribute name="PortName" type="xs:NCName" />
+						<xs:anyAttribute namespace="##other" processContents="lax" />
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+			<!-- Message information header blocks -->
+			<xs:element name="MessageID" type="wsa:AttributedURI" />
+			<xs:element name="RelatesTo" type="wsa:Relationship" />
+			<xs:element name="To" type="wsa:AttributedURI" />
+			<xs:element name="Action" type="wsa:AttributedURI" />
+			<xs:element name="From" type="wsa:EndpointReferenceType" />
+			<xs:element name="ReplyTo" type="wsa:EndpointReferenceType" />
+			<xs:element name="FaultTo" type="wsa:EndpointReferenceType" />
+			<xs:complexType name="Relationship">
+				<xs:simpleContent>
+					<xs:extension base="xs:anyURI">
+						<xs:attribute name="RelationshipType" type="xs:QName" use="optional" />
+						<xs:anyAttribute namespace="##other" processContents="lax" />
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+			<xs:simpleType name="RelationshipTypeValues">
+				<xs:restriction base="xs:QName">
+					<xs:enumeration value="wsa:Reply" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:element name="ReplyAfter" type="wsa:ReplyAfterType" />
+			<xs:complexType name="ReplyAfterType">
+				<xs:simpleContent>
+					<xs:extension base="xs:nonNegativeInteger">
+						<xs:anyAttribute namespace="##other" />
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+			<xs:simpleType name="FaultSubcodeValues">
+				<xs:restriction base="xs:QName">
+					<xs:enumeration value="wsa:InvalidMessageInformationHeader" />
+					<xs:enumeration value="wsa:MessageInformationHeaderRequired" />
+					<xs:enumeration value="wsa:DestinationUnreachable" />
+					<xs:enumeration value="wsa:ActionNotSupported" />
+					<xs:enumeration value="wsa:EndpointUnavailable" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:attribute name="Action" type="xs:anyURI" />
+			<!-- Common declarations and definitions -->
+			<xs:complexType name="AttributedQName">
+				<xs:simpleContent>
+					<xs:extension base="xs:QName">
+						<xs:anyAttribute namespace="##other" processContents="lax" />
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+			<xs:complexType name="AttributedURI">
+				<xs:simpleContent>
+					<xs:extension base="xs:anyURI">
+						<xs:anyAttribute namespace="##other" processContents="lax" />
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+		</xs:schema>
+
+	</wsdl:types>
+
+	<wsdl:message name='SubscribeMsg'>
+		<wsdl:part name='body' element='wse:Subscribe' />
+	</wsdl:message>
+	<wsdl:message name='SubscribeResponseMsg'>
+		<wsdl:part name='body' element='wse:SubscribeResponse' />
+	</wsdl:message>
+
+	<wsdl:message name='RenewMsg'>
+		<wsdl:part name='body' element='wse:Renew' />
+	</wsdl:message>
+	<wsdl:message name='RenewResponseMsg'>
+		<wsdl:part name='body' element='wse:RenewResponse' />
+	</wsdl:message>
+
+	<wsdl:message name='GetStatusMsg'>
+		<wsdl:part name='body' element='wse:GetStatus' />
+	</wsdl:message>
+	<wsdl:message name='GetStatusResponseMsg'>
+		<wsdl:part name='body' element='wse:GetStatusResponse' />
+	</wsdl:message>
+
+	<wsdl:message name='UnsubscribeMsg'>
+		<wsdl:part name='body' element='wse:Unsubscribe' />
+	</wsdl:message>
+	<wsdl:message name='UnsubscribeResponseMsg' />
+
+	<wsdl:message name='SubscriptionEnd'>
+		<wsdl:part name='body' element='wse:SubscriptionEnd' />
+	</wsdl:message>
+
+	<wsdl:portType name='EventSource'>
+		<wsdl:operation name='SubscribeOp'>
+			<wsdl:input message='wse:SubscribeMsg' />
+			<wsdl:output message='wse:SubscribeResponseMsg' />
+		</wsdl:operation>
+		<wsdl:operation name='SubscriptionEnd'>
+			<wsdl:output message='wse:SubscriptionEnd' />
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:portType name='SubscriptionManager'>
+		<wsdl:operation name='RenewOp'>
+			<wsdl:input message='wse:RenewMsg' />
+			<wsdl:output message='wse:RenewResponseMsg' />
+		</wsdl:operation>
+		<wsdl:operation name='GetStatusOp'>
+			<wsdl:input message='wse:GetStatusMsg' />
+			<wsdl:output message='wse:GetStatusResponseMsg' />
+		</wsdl:operation>
+		<wsdl:operation name='UnsubscribeOp'>
+			<wsdl:input message='wse:UnsubscribeMsg' />
+			<wsdl:output message='wse:UnsubscribeResponseMsg' />
+		</wsdl:operation>
+	</wsdl:portType>
+</wsdl:definitions>

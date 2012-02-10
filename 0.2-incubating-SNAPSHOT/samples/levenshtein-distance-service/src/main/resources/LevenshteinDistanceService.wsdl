@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file 
+	distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under 
+	the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may 
+	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to 
+	in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
+	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
+	the License. -->
+
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd"
+	xmlns:ns="http://interpreter.xbaya.airavata.apache.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+	targetNamespace="http://interpreter.xbaya.airavata.apache.org">
+	<wsdl:types>
+		<xs:schema attributeFormDefault="qualified" elementFormDefault="unqualified"
+			targetNamespace="http://interpreter.xbaya.airavata.apache.org">
+			<xs:element name="computeDistance">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="sequence1" nillable="true" type="xs:string" />
+						<xs:element minOccurs="0" name="sequence2" nillable="true" type="xs:string" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="computeDistanceResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element minOccurs="0" name="return" type="xs:int" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="computeDistanceRequest">
+		<wsdl:part name="parameters" element="ns:computeDistance" />
+	</wsdl:message>
+	<wsdl:message name="computeDistanceResponse">
+		<wsdl:part name="parameters" element="ns:computeDistanceResponse" />
+	</wsdl:message>
+	<wsdl:portType name="LevenshteinDistanceServicePortType">
+		<wsdl:operation name="computeDistance">
+			<wsdl:input message="ns:computeDistanceRequest" wsaw:Action="urn:computeDistance" />
+			<wsdl:output message="ns:computeDistanceResponse" wsaw:Action="urn:computeDistanceResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="LevenshteinDistanceServiceSoap11Binding" type="ns:LevenshteinDistanceServicePortType">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+		<wsdl:operation name="computeDistance">
+			<soap:operation soapAction="urn:computeDistance" style="document" />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="LevenshteinDistanceServiceSoap12Binding" type="ns:LevenshteinDistanceServicePortType">
+		<soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+		<wsdl:operation name="computeDistance">
+			<soap12:operation soapAction="urn:computeDistance" style="document" />
+			<wsdl:input>
+				<soap12:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap12:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:binding name="LevenshteinDistanceServiceHttpBinding" type="ns:LevenshteinDistanceServicePortType">
+		<http:binding verb="POST" />
+		<wsdl:operation name="computeDistance">
+			<http:operation location="LevenshteinDistanceService/computeDistance" />
+			<wsdl:input>
+				<mime:content type="text/xml" part="computeDistance" />
+			</wsdl:input>
+			<wsdl:output>
+				<mime:content type="text/xml" part="computeDistance" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="LevenshteinDistanceService">
+		<wsdl:port name="LevenshteinDistanceServiceHttpSoap11Endpoint" binding="ns:LevenshteinDistanceServiceSoap11Binding">
+			<soap:address location="http://localhost:8080/axis2/services/LevenshteinDistanceService/" />
+		</wsdl:port>
+		<wsdl:port name="LevenshteinDistanceServiceHttpSoap12Endpoint" binding="ns:LevenshteinDistanceServiceSoap12Binding">
+			<soap12:address location="http://localhost:8080/axis2/services/LevenshteinDistanceService/" />
+		</wsdl:port>
+		<wsdl:port name="LevenshteinDistanceServiceHttpEndpoint" binding="ns:LevenshteinDistanceServiceHttpBinding">
+			<http:address location="http://localhost:8080/axis2/services/LevenshteinDistanceService/" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,216 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
+package org.apache.airavata.xbaya.graph.system;
+
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import org.apache.airavata.xbaya.XBayaRuntimeException;
+import org.apache.airavata.xbaya.component.Component;
+import org.apache.airavata.xbaya.component.system.OutputComponent;
+import org.apache.airavata.xbaya.component.ws.WSComponentPort;
+import org.apache.airavata.xbaya.graph.DataEdge;
+import org.apache.airavata.xbaya.graph.DataPort;
+import org.apache.airavata.xbaya.graph.Edge;
+import org.apache.airavata.xbaya.graph.Graph;
+import org.apache.airavata.xbaya.graph.GraphException;
+import org.apache.airavata.xbaya.graph.GraphSchema;
+import org.apache.airavata.xbaya.graph.Port;
+import org.apache.airavata.xbaya.graph.gui.NodeGUI;
+import org.apache.airavata.xbaya.graph.system.gui.OutputNodeGUI;
+import org.apache.airavata.xbaya.graph.ws.WSPort;
+import org.xmlpull.infoset.XmlElement;
+
+public class OutputNode extends ParameterNode {
+
+    private OutputNodeGUI gui;
+
+    /**
+     * Creates a OutputNode.
+     * 
+     * @param graph
+     */
+    public OutputNode(Graph graph) {
+        super(graph);
+    }
+
+    /**
+     * Constructs a OutputNode.
+     * 
+     * @param nodeElement
+     * @throws GraphException
+     */
+    public OutputNode(XmlElement nodeElement) throws GraphException {
+        super(nodeElement);
+    }
+
+    /**
+     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
+     */
+    public NodeGUI getGUI() {
+        if (this.gui == null) {
+            this.gui = new OutputNodeGUI(this);
+        }
+        return this.gui;
+    }
+
+    /**
+     * Returns the type of the parameter
+     * 
+     * @return The type of the parameter (e.g. string, int)
+     */
+    @Override
+    public QName getParameterType() {
+        List<DataEdge> edges = getEdges();
+        QName parameterType = super.getParameterType();
+        if (parameterType == null && getEdges().size() > 0) {
+            Edge edge = edges.get(0);
+            WSPort fromPort = (WSPort) edge.getFromPort();
+            setParameterType(fromPort.getType());
+        }
+        return parameterType;
+    }
+
+    /**
+     * @see org.apache.airavata.xbaya.graph.impl.NodeImpl#getComponent()
+     */
+    @Override
+    public Component getComponent() {
+        Component component = super.getComponent();
+        if (component == null) {
+            // The component is null when read from the graph XML.
+            component = new OutputComponent();
+        }
+        return component;
+    }
+
+    /**
+     * Returns the port of this OutputNode.
+     * 
+     * Note that an OutputNode always has only one input port.
+     * 
+     * @return The port
+     */
+    @Override
+    public SystemDataPort getPort() {
+        return (SystemDataPort) getInputPorts().get(0);
+    }
+
+    /**
+     * Returns the first port that this output node is connected from.
+     * 
+     * @return The first port that this output node is connected from
+     */
+    @Override
+    public Port getConnectedPort() {
+        return getPort().getEdge(0).getFromPort();
+    }
+
+    /**
+     * Called whan an Edge was added to the parameter port. Change the name of this node.
+     * 
+     * @throws GraphException
+     * 
+     * @see org.apache.airavata.xbaya.graph.impl.NodeImpl#edgeWasAdded(org.apache.airavata.xbaya.graph.impl.EdgeImpl)
+     */
+    @Override
+    protected void edgeWasAdded(Edge edge) throws GraphException {
+        super.edgeWasAdded(edge);
+        // TODO organize
+        Port fromPort = edge.getFromPort();
+
+        if (edge instanceof DataEdge) {
+            DataPort fromDataPort = (DataPort) fromPort;
+            QName fromType = fromDataPort.getType();
+
+            List<DataEdge> edges = getEdges();
+            if (edges.size() == 1) {
+                setParameterType(fromType);
+
+                if (!isConfigured() && fromDataPort instanceof WSPort) {
+                    setName(fromDataPort.getName());
+                    WSComponentPort componentPort = ((WSPort) fromDataPort).getComponentPort();
+                    setDescription(componentPort.getDescription());
+                    setMetadata(componentPort.getAppinfo());
+                }
+            } else {
+                throw new GraphException("Cannot connect more than one output ports to the output parameter.");
+            }
+        }
+    }
+
+    /**
+     * Called whan an Edge was removed from the parameter port. Change the name of the node.
+     * 
+     * @see org.apache.airavata.xbaya.graph.impl.NodeImpl#edgeWasRemoved(org.apache.airavata.xbaya.graph.impl.EdgeImpl)
+     */
+    @Override
+    protected void edgeWasRemoved(Edge removedEdge) {
+        super.edgeWasRemoved(removedEdge);
+        // TODO organize
+        List<DataEdge> edges = getEdges();
+        if (edges.size() == 0) {
+            setParameterType(null);
+
+            if (!isConfigured()) {
+                // Reset
+                setName(OutputComponent.NAME);
+                setDescription("");
+                setMetadata(null);
+            }
+
+        } else if (edges.size() == 1) {
+            // This happens when the second edges was wrongly added and removed.
+        } else {
+            // Should not happen
+            throw new XBayaRuntimeException("edges.size(): " + edges.size());
+        }
+    }
+
+    /**
+     * @see org.apache.airavata.xbaya.graph.system.SystemNode#portTypeChanged(org.apache.airavata.xbaya.graph.system.SystemDataPort)
+     */
+    @Override
+    protected void portTypeChanged(SystemDataPort port) throws GraphException {
+        super.portTypeChanged(port);
+        setParameterType(port.getType());
+    }
+
+    @Override
+    protected void parseComponent(XmlElement componentElement) {
+        // No need to parse the XML.
+        setComponent(new OutputComponent());
+    }
+
+    /**
+     * @return the node xml
+     */
+    @Override
+    public XmlElement toXML() {
+
+        XmlElement nodeElement = super.toXML();
+        nodeElement.setAttributeValue(GraphSchema.NS, GraphSchema.NODE_TYPE_ATTRIBUTE, GraphSchema.NODE_TYPE_OUTPUT);
+        return nodeElement;
+    }
+
+}
