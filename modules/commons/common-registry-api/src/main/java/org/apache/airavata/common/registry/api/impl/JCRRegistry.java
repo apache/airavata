@@ -98,6 +98,7 @@ public class JCRRegistry extends Observable implements Registry{
 				public void onEvent(EventIterator events) {
 					for(;events.hasNext();){
 						Event event=events.nextEvent();
+						boolean isPropertyChange = (event.getType()&(Event.PROPERTY_CHANGED|Event.PROPERTY_ADDED|Event.PROPERTY_REMOVED))>0;
 						try {
 							String path = event.getPath();
 							synchronized (sessionSynchronousObject) {
@@ -110,10 +111,14 @@ public class JCRRegistry extends Observable implements Registry{
 											nodesToRemove.add(node);
 										}
 									} else {
-										if (node.getSession().isLive() && (node.getPath().startsWith(path)
-												|| path.startsWith(node
-														.getPath()))) {
-											nodesToRemove.add(node);
+										if (node.getSession().isLive()) {
+											if (isPropertyChange){
+												if (node.getPath().equals(path)) {
+													nodesToRemove.add(node);
+												}
+											}else if (node.getPath().startsWith(path) || path.startsWith(node.getPath())) {
+												nodesToRemove.add(node);
+											}
 										}
 									}
 								}
@@ -123,9 +128,14 @@ public class JCRRegistry extends Observable implements Registry{
 								nodeIterator = getSessionNodeChildren().keySet();
 								nodesToRemove.clear();
 								for (Node node : nodeIterator) {
-									if (node.getSession().isLive() && (node.getPath().startsWith(path)
-											|| path.startsWith(node.getPath()))) {
-										nodesToRemove.add(node);
+									if (node.getSession().isLive()) {
+										if (isPropertyChange){
+											if (node.getPath().equals(path)) {
+												nodesToRemove.add(node);
+											}
+										}else if (node.getPath().startsWith(path) || path.startsWith(node.getPath())) {
+											nodesToRemove.add(node);
+										}
 									}
 								}
 								for(Node node:nodesToRemove){
@@ -242,7 +252,7 @@ public class JCRRegistry extends Observable implements Registry{
 							.addEventListener(
 									getWorkspaceChangeEventListener(),
 									Event.NODE_ADDED | Event.NODE_REMOVED
-											| Event.NODE_MOVED, "/", true,
+											| Event.NODE_MOVED | Event.PROPERTY_CHANGED | Event.PROPERTY_ADDED | Event.PROPERTY_REMOVED, "/", true,
 									null, null, false);
 					currentSessionUseCount.put(session, 1);
 				}
