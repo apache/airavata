@@ -27,6 +27,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.airavata.common.registry.api.Registry;
+import org.apache.airavata.common.registry.api.impl.JCRRegistry;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
@@ -250,6 +252,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     @Override
     public void postProcess(InvocationContext context) throws ServiceException {
+        ((JCRRegistry)this.registryService).closeConnection();
     }
 
     /*
