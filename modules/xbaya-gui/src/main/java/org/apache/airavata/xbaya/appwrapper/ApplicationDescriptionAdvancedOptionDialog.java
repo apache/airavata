@@ -111,7 +111,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
 	private void initGUI() {
         setTitle("Application Description Advance Options");
         setModal(true);
-        setBounds(100, 100, 600, 320);
+        setBounds(100, 100, 600, 400);
         setLocationRelativeTo(null);
         GridPanel buttonPane = new GridPanel();
         okButton = new JButton("Update");
@@ -260,7 +260,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         getContentPane().add(panel.getSwingComponent());
         getContentPane().add(buttonPane.getSwingComponent());
         SwingUtil.layoutToGrid(getContentPane(), 2, 1, 0, 0);
-        setResizable(false);
+        setResizable(true);
         getRootPane().setDefaultButton(okButton);
     }
 

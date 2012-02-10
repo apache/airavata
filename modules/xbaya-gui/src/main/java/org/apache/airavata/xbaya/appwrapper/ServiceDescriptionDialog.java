@@ -334,7 +334,6 @@ public class ServiceDescriptionDialog extends JDialog {
         if (!isNewDescription()){
         	loadData();
         }
-        SwingUtil.adjustWindowSize(getDialog());
     }
 
     private void loadData() {

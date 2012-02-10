@@ -163,7 +163,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 		}else{
 			setTitle("Update Deployment Description: "+getOriginalDeploymentDescription().getType().getApplicationName().getStringValue());
 		}
-		setBounds(100, 100, 500, 520);
+		setBounds(100, 100, 600, 620);
         setModal(true);
         setLocationRelativeTo(null);
         GridPanel buttonPane = new GridPanel();
@@ -312,7 +312,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
             cmbServiceName = new JComboBox();
             cmbServiceName.addActionListener(this);
-            cmbServiceName.setRenderer(new DefaultListCellRenderer());
+//            cmbServiceName.setRenderer(new DefaultListCellRenderer());
             cmbHostName = new JComboBox();
             cmbHostName.addActionListener(this);
 
@@ -414,7 +414,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             infoPanel.add(infoPanel4);
             
             SwingUtil.layoutToGrid(infoPanel.getSwingComponent(), 8, 1, SwingUtil.WEIGHT_NONE, 0);
-            
+            SwingUtil.layoutToGrid(buttonPane.getSwingComponent(), 1, buttonPane.getContentPanel().getComponentCount(),SwingUtil.WEIGHT_NONE,0);
             getContentPane().add(infoPanel.getSwingComponent());
             getContentPane().add(buttonPane.getSwingComponent());
             
@@ -425,7 +425,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             loadServiceDescriptions();
             loadHostDescriptions();
         }
-        setResizable(false);
+        setResizable(true);
         getRootPane().setDefaultButton(okButton);
         if (!isNewDescritor()){
         	loadData();

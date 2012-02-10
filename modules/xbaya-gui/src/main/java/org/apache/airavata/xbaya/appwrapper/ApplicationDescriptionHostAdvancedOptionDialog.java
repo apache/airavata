@@ -87,7 +87,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     private void initGUI() {
         setTitle("Host Description Advance Options");
         setModal(true);
-        setBounds(100, 100, 400, 250);
+        setBounds(100, 100, 400, 300);
         setLocationRelativeTo(null);
         GridPanel buttonPane = new GridPanel();
         okButton = new JButton("Update");
