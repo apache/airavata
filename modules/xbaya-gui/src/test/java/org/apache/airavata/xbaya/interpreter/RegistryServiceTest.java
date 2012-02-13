@@ -43,7 +43,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -66,8 +68,10 @@ public class RegistryServiceTest {
     public void testExecute() throws RegistryException {
         logger.info("Running RegistryServiceTest...");
         try {
+            Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
             jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin", "admin",
-                    null);
+                    config);
         } catch (RepositoryException e) {
             fail("Failed creating the JCR Registry");
         }

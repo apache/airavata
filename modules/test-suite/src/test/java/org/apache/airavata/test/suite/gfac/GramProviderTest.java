@@ -38,9 +38,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static org.junit.Assert.fail;
 
@@ -54,9 +52,12 @@ public class GramProviderTest {
         /*
            * Create database
            */
+        Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
+
         AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
                 "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-                "admin", null);
+                "admin", config);
 
         /*
            * Host

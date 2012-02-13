@@ -54,6 +54,7 @@ public class JCRRegistryTest {
         	map.put("jcr.class","org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory");
         	map.put("jcr.user","admin");
 			map.put("jcr.pass","admin");
+            map.put("org.apache.jackrabbit.repository.home","target");
             /*
              * Create database
              */
@@ -110,9 +111,10 @@ public class JCRRegistryTest {
     @Test
     public void testSaveLoadServiceDescription() {
         try {
-
+            Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
             AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
-                    "admin", "admin", null);
+                    "admin", "admin", config);
             
             String serviceId = "SimpleEcho";            
             
@@ -168,9 +170,10 @@ public class JCRRegistryTest {
     @Test
     public void testSaveLoadApplicationDescription() {
         try {
-
+            Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
             AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
-                    "admin", "admin", null);
+                    "admin", "admin", config);
             
             String hostId = "localhost";
             String address = "127.0.0.1";

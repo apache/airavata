@@ -22,6 +22,7 @@ package org.apache.airavata.registry.api.impl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,9 +49,11 @@ public class JCRRegistrySearchTest {
         /*
         * Create database
         */
+        Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
         AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
                 "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-                "admin", null);
+                "admin", config);
 
         /*
         * Host
@@ -137,9 +140,11 @@ public class JCRRegistrySearchTest {
     @Test
     public void searchServiceDescriptionTest() {
         try {
+            Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
             AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
                    "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-                   "admin", null);
+                   "admin", config);
             List<ServiceDescription> simpleEcho = jcrRegistry.searchServiceDescription("SimpleEchoSearch");
             if(simpleEcho.size() == 0){
                 Assert.assertTrue(false);
@@ -157,9 +162,11 @@ public class JCRRegistrySearchTest {
     @Test
     public void searchDeploymentDescriptorTest() {
         try {
+            Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
             AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
                    "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-                   "admin", null);
+                   "admin", config);
             Map<ApplicationDeploymentDescription,String> applicationDeploymentDescriptionStringMap = jcrRegistry.searchDeploymentDescription();
             if(applicationDeploymentDescriptionStringMap.size() == 0){
                 Assert.assertTrue(false);
@@ -177,9 +184,11 @@ public class JCRRegistrySearchTest {
     @Test
     public void searchDeploymentDescriptorWithAllTest() {
         try {
+            Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
             AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
                    "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-                   "admin", null);
+                   "admin", config);
 
             List<ApplicationDeploymentDescription> applicationDeploymentDescriptions =
                     jcrRegistry.searchDeploymentDescription("SimpleEchoSearch", "localhostsearch", "EchoLocalSearch");
@@ -199,9 +208,11 @@ public class JCRRegistrySearchTest {
     @Test
     public void searchDeploymentDescriptorWithServiceNameTest() {
         try {
+            Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
             AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
                    "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-                   "admin", null);
+                   "admin", config);
             Map<HostDescription, List<ApplicationDeploymentDescription>> simpleEchoSearch =
                     jcrRegistry.searchDeploymentDescription("MathService");
             if((simpleEchoSearch).size() == 0){
@@ -220,9 +231,11 @@ public class JCRRegistrySearchTest {
      @Test
     public void searchDeploymentDescriptorWithServiceAndHostTest() {
         try {
+            Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
             AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
                    "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-                   "admin", null);
+                   "admin", config);
             List<ApplicationDeploymentDescription> applicationDeploymentDescriptions =
                     jcrRegistry.searchDeploymentDescription("MathService", "localhostsearch");
             if((applicationDeploymentDescriptions).size() == 0){
