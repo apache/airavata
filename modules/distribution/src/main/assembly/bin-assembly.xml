@@ -415,7 +415,6 @@
 				<include>amazon:MapReduce.Service.Client</include>
 				<include>net.java.dev.jets3t:jets3t</include>
 				<include>wsmg:wsmg</include>
-				<include>ode-proxy:weps-beans</include>
 				<include>atomixmiser:atomixmiser</include>
                 <include>globus:transfer-api-client</include>
 			</includes>
