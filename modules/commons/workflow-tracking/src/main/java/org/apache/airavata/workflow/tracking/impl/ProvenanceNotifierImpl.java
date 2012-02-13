@@ -263,7 +263,6 @@ public class ProvenanceNotifierImpl extends GenericNotifierImpl implements Prove
 
         if (context == null)
             throw new RuntimeException("Context passed was NULL.");
-
         final InvokingServiceFailedDocument activity = InvokingServiceFailedDocument.Factory.newInstance();
         final AcknowledgeFailureType activityType = activity.addNewInvokingServiceFailed();
 

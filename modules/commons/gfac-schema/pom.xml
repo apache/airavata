@@ -25,10 +25,7 @@
 	<url>http://incubator.apache.org/airavata/</url>
 
 	<dependencies>
-		<dependency>
-			<groupId>javax.jcr</groupId>
-			<artifactId>jcr</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>xmlbeans</groupId>
 			<artifactId>xbean</artifactId>
