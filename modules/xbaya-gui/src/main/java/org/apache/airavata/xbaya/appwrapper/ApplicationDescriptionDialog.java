@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -233,6 +232,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 					int rVal = c.showOpenDialog(null);
 					if (rVal == JFileChooser.APPROVE_OPTION) {
 						txtExecPath.setText(c.getSelectedFile().toString());
+						setExecutablePath(txtExecPath.getText());
 					}
 				}
             });
@@ -268,6 +268,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 					int rVal = c.showOpenDialog(null);
 					if (rVal == JFileChooser.APPROVE_OPTION) {
 						txtTempDir.setText(c.getSelectedFile().toString());
+						setTempDir(txtTempDir.getText());
 					}
 				}
             });
