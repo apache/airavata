@@ -657,6 +657,12 @@ public class XBayaGUI implements EventListener {
         if (height != 0) {
             size.height = height;
         }
+
+        // This controls the size when you open in a huge screen
+        if(size.width > 1280 && size.height > 800){
+            size.width = 1280;
+            size.height = 800;
+        }
         this.frame.setPreferredSize(size);
 
         this.frame.setTitle(XBayaConstants.APPLICATION_NAME);
