@@ -294,7 +294,9 @@ public class JCRRegistry extends Observable implements Registry{
     	Map<Node, Map<String, Node>> sessionNodes = getSessionNodes();
     	if (sessionNodes.containsKey(node)){
     		if (sessionNodes.get(node)!=null && sessionNodes.get(node).containsKey(name)){
-    			return sessionNodes.get(node).get(name);
+    			if (sessionNodes.get(node).get(name).getSession().isLive()){
+    				return sessionNodes.get(node).get(name);
+    			}
     		}
     	}else{
     		sessionNodes.put(node,new HashMap<String, Node>());
@@ -417,15 +419,18 @@ public class JCRRegistry extends Observable implements Registry{
 	}
 	
 	protected List<Node> getChildNodes(Node node) throws RepositoryException{
-		if (!getSessionNodeChildren().containsKey(node)){
-			List<Node> children=new ArrayList<Node>();
-			NodeIterator nodes = node.getNodes();
-			for (;nodes.hasNext();) {
-				children.add(nodes.nextNode());
+		if (getSessionNodeChildren().containsKey(node)){
+			if (getSessionNodeChildren().get(node).size()==0 || (getSessionNodeChildren().get(node).get(0).getSession().isLive())){
+				return getSessionNodeChildren().get(node);
 			}
-			getSessionNodeChildren().put(node,children);
 		}
-		return getSessionNodeChildren().get(node);
+		List<Node> children=new ArrayList<Node>();
+		NodeIterator nodes = node.getNodes();
+		for (;nodes.hasNext();) {
+			children.add(nodes.nextNode());
+		}
+		getSessionNodeChildren().put(node,children);
+		return children;
 	}
 
 	public Map<Node,List<Node>> getSessionNodeChildren() {
