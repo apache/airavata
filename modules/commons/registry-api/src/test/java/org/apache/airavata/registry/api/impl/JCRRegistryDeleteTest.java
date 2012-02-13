@@ -31,7 +31,9 @@ import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.fail;
 
@@ -42,8 +44,10 @@ public class JCRRegistryDeleteTest {
                /*
                 * Create database
                 */
+               Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
                AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
-                       "admin", "admin", null);
+                       "admin", "admin", config);
 
                String hostId = "localhost";
                String address = "127.0.0.1";
@@ -74,8 +78,10 @@ public class JCRRegistryDeleteTest {
             /*
             * Create database
             */
+            Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
             AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
-                    "admin", "admin", null);
+                    "admin", "admin", config);
 
             ServiceDescription serv = new ServiceDescription();
             serv.getType().setName("SimpleEcho");

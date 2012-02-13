@@ -35,6 +35,8 @@ import javax.jcr.RepositoryFactory;
 import javax.jcr.Session;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.fail;
 
@@ -45,8 +47,10 @@ public class JCRRegistryRestartTest {
                /*
                 * Create database
                 */
+               Map<String,String> config = new HashMap<String,String>();
+               config.put("org.apache.jackrabbit.repository.home","target");
                AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
-                       "admin", "admin", null);
+                       "admin", "admin", config);
 
                String hostId = "localhost";
                String address = "127.0.0.1";

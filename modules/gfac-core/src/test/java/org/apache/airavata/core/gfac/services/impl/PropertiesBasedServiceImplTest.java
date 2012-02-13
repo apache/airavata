@@ -24,7 +24,9 @@ package org.apache.airavata.core.gfac.services.impl;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
@@ -50,9 +52,11 @@ public class PropertiesBasedServiceImplTest {
 		/*
 		 * Create database
 		 */
+        Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
 		AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
 				"org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-				"admin", null);
+				"admin", config);
 
 		/*
 		 * Host

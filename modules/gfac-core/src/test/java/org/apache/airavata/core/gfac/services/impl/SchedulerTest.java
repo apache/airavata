@@ -57,9 +57,11 @@ public class SchedulerTest {
 		/*
 		 * Create database
 		 */
+        Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
         jcrRegistry = new AiravataJCRRegistry(null,
 				"org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-				"admin", null);
+				"admin", config);
 
 		/*
 		 * Host
