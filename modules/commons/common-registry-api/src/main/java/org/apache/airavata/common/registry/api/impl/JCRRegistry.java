@@ -102,7 +102,7 @@ public class JCRRegistry extends Observable implements Registry{
 						try {
 							String path = event.getPath();
 							synchronized (sessionSynchronousObject) {
-								System.out.println("something happened: " + event.getType() + " " + path);
+//								System.out.println("something happened: " + event.getType() + " " + path);
 								List<Node> nodesToRemove=new ArrayList<Node>();
 								Set<Node> nodeIterator = getSessionNodes().keySet();
 								for (Node node : nodeIterator) {
@@ -234,7 +234,7 @@ public class JCRRegistry extends Observable implements Registry{
     	if (isSessionInvalid()){
     		reallyCloseSession(defaultSession);
         	synchronized (sessionSynchronousObject) {
-	    		System.out.println("session created");
+//	    		System.out.println("session created");
 		        Session session = null;
 		        try {
 		            session = repository.login(credentials);
@@ -303,7 +303,7 @@ public class JCRRegistry extends Observable implements Registry{
     	}
         Node node1 = null;
         try {
-        	System.out.println("node extracted");
+//        	System.out.println("node extracted");
             node1 = node.getNode(name);
             sessionNodes.get(node).put(name, node1);
         } catch (PathNotFoundException pnfe) {
