@@ -78,6 +78,8 @@ public class DynamicWorkflowRunnerWindow {
 
     private JCheckBox interactChkBox;
 
+	private JCheckBox chkRunWithCrossProduct;
+
     protected final static XmlInfosetBuilder builder = XmlConstants.BUILDER;
 
     /**
@@ -178,7 +180,7 @@ public class DynamicWorkflowRunnerWindow {
     public void hide() {
         this.dialog.hide();
 
-        this.parameterPanel.getContentPanel().removeAll();
+        this.parameterPanel.resetPanel();
         this.parameterTextFields.clear();
     }
 
@@ -220,6 +222,9 @@ public class DynamicWorkflowRunnerWindow {
         this.interactChkBox.setSelected(false);
         XBayaLabel interactLabel = new XBayaLabel("Enable Service Interactions", this.interactChkBox);
 
+    	chkRunWithCrossProduct=new JCheckBox();
+    	XBayaLabel crossProductLabel = new XBayaLabel("Execute in cross product", chkRunWithCrossProduct);
+
         GridPanel infoPanel = new GridPanel();
         // infoPanel.add(this.resourceSelectionLabel);
         // infoPanel.add(this.resourceSelectionComboBox);
@@ -233,8 +238,10 @@ public class DynamicWorkflowRunnerWindow {
         infoPanel.add(this.gfacUrlListField);
         infoPanel.add(interactLabel);
         infoPanel.add(this.interactChkBox);
-
-        // infoPanel.layout(5, 2, GridPanel.WEIGHT_NONE, 1);
+        infoPanel.add(crossProductLabel);
+        infoPanel.add(chkRunWithCrossProduct);
+        
+        infoPanel.layout(4, 2, GridPanel.WEIGHT_NONE, 1);
 
         GridPanel mainPanel = new GridPanel();
         mainPanel.add(this.parameterPanel);
@@ -296,6 +303,7 @@ public class DynamicWorkflowRunnerWindow {
             }
         }
 
+        final boolean isRunCrossProduct=chkRunWithCrossProduct.isSelected();
         // TODO error check for user inputs
 
         final List<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
@@ -364,6 +372,7 @@ public class DynamicWorkflowRunnerWindow {
 
                 WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(
                         DynamicWorkflowRunnerWindow.this.engine, topicString);
+                workflowInterpreter.setRunWithCrossProduct(isRunCrossProduct);
                 try {
                     MonitorConfiguration notifConfig = DynamicWorkflowRunnerWindow.this.engine.getMonitor()
                             .getConfiguration();

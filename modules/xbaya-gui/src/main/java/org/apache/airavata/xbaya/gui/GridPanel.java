@@ -44,6 +44,8 @@ public class GridPanel implements XBayaComponent {
     private JPanel contentPanel;
 
     private JComponent rootComponent;
+    
+    private boolean scroll=false;
 
     /**
      * Constructs a GridPanel.
@@ -154,5 +156,10 @@ public class GridPanel implements XBayaComponent {
         } else {
             this.rootComponent = this.contentPanel;
         }
+        this.scroll=scroll;
+    }
+    
+    public void resetPanel(){
+    	init(scroll);
     }
 }

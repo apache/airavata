@@ -321,8 +321,9 @@ public class RunMenuItem  implements EventListener{
                             throw new XBayaRuntimeException("Error stopping previous workflow Execution");
                         }
                     }
-                    this.window = new DynamicWorkflowRunnerWindow(engine);
+                    
                 }
+                this.window = new DynamicWorkflowRunnerWindow(engine);
                 this.window.show();
             }
         };
