@@ -36,7 +36,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.net.URL;
 import java.util.*;
 
@@ -46,6 +45,7 @@ public class GramProviderTest {
 
     public static final String MYPROXY = "myproxy";
     public static final String GRAM_PROPERTIES = "gram.properties";
+    private AiravataJCRRegistry jcrRegistry = null;
 
     @Before
     public void setUp() throws Exception {
@@ -55,7 +55,7 @@ public class GramProviderTest {
         Map<String,String> config = new HashMap<String,String>();
             config.put("org.apache.jackrabbit.repository.home","target");
 
-        AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
+        jcrRegistry = new AiravataJCRRegistry(null,
                 "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
                 "admin", config);
 
@@ -132,6 +132,7 @@ public class GramProviderTest {
             DefaultInvocationContext ct = new DefaultInvocationContext();
             DefaultExecutionContext ec = new DefaultExecutionContext();
             ec.addNotifiable(new LoggingNotification());
+            ec.setRegistryService(jcrRegistry);
             ct.setExecutionContext(ec);
 
 
