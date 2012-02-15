@@ -526,21 +526,6 @@
 			</modules>
 		</profile>
 		<profile>
-			<id>profile-workflow-interpreter</id>
-			<activation>
-				<property>
-					<name>module</name>
-					<value>workflow-interpreter</value>
-				</property>
-			</activation>
-			<modules>
-				<module>modules/commons</module>
-				<module>modules/ws-messenger</module>
-				<module>modules/xbaya-gui</module>
-				<module>modules/workflow-interpreter</module>
-			</modules>
-		</profile>
-		<profile>
 			<id>profile-workflow-tracking</id>
 			<activation>
 				<property>
