@@ -54,6 +54,11 @@ PRGDIR=`dirname "$PRG"`
 
 XBAYA_CLASSPATH=""
 
+for f in "$AIRAVATA_HOME"/lib/*.jar
+do
+  XBAYA_CLASSPATH="$XBAYA_CLASSPATH":$f
+done
+
 for f in "$AIRAVATA_HOME"/standalone-server/lib/*.jar
 do
   XBAYA_CLASSPATH="$XBAYA_CLASSPATH":$f

@@ -233,26 +233,25 @@
 				<include>gpel:gpel_client</include>
 				<include>xpp5:xpp5</include>
 				<include>xpp3:xpp3_xpath</include>
-				<include>org.apache.jackrabbit:jackrabbit-standalone:jar</include>
 				<include>xsul:xsul:jar</include>
-				<include>xsul5-ogce:xsul5-2007-02-27:jar</include>
-				<include>gfac:gfac-schema-utils</include>
-				<include>lead-security:cryptix32</include>
-				<include>lead-security:jce</include>
-				<include>lead-security:cryptix-asn1</include>
-				<include>lead-security:puretls</include>
-				<include>xutil:xutil</include>
-				<include>jython:jython</include>
-				<include>lead-security:cog-jglobus</include>
-				<include>xmlbeans:xbean</include>
-				<include>xmlbeans-ogce:jsr173_api</include>
-				<include>xbaya:pegasuswebservice</include>
-				<include>com.amazonaws:aws-java-sdk</include>
-				<include>amazon:MapReduce.Service.Client</include>
-				<include>net.java.dev.jets3t:jets3t</include>
-				<include>wsmg:wsmg</include>
-				<include>ode-proxy:weps-beans</include>
-				<include>atomixmiser:atomixmiser</include>
+                <include>xsul5-ogce:xsul5-2007-02-27:jar</include>
+                <include>gfac:gfac-schema-utils</include>
+                <include>lead-security:cryptix32</include>
+                <include>lead-security:jce</include>
+                <include>lead-security:cryptix-asn1</include>
+                <include>lead-security:puretls</include>
+                <include>xutil:xutil</include>
+                <include>jython:jython</include>
+                <include>lead-security:cog-jglobus</include>
+                <include>xmlbeans:xbean</include>
+                <include>xmlbeans-ogce:jsr173_api</include>
+                <include>xbaya:pegasuswebservice</include>
+                <include>com.amazonaws:aws-java-sdk</include>
+                <include>amazon:MapReduce.Service.Client</include>
+                <include>net.java.dev.jets3t:jets3t</include>
+                <include>wsmg:wsmg</include>
+                <include>ode-proxy:weps-beans</include>
+                <include>atomixmiser:atomixmiser</include>
                 <include>globus:transfer-api-client</include>
                 <include>org.apache.airavata:registry-api</include>
                 <include>org.apache.airavata:workflow-execution-context</include>
@@ -263,10 +262,9 @@
                 <include>org.apache.airavata:gfac-schema-utils</include>
                 <include>org.apache.airavata:common-utils</include>
                 <include>edu.berkeley:yfilter</include>
-                <include>wsdl4j:wsdl4j</include>
                 <include>javax.servlet:servlet-api</include>
-			</includes>
-		</dependencySet>
+            </includes>
+        </dependencySet>
 
         <dependencySet>
             <outputDirectory>standalone-server/repository/services</outputDirectory>
@@ -275,6 +273,13 @@
                 <include>org.apache.airavata:messagebroker:jar</include>
                 <include>org.apache.airavata:xbaya-gui:jar</include>
                 <include>org.apache.airavata:gfac-axis2-interface:jar</include>
+            </includes>
+        </dependencySet>
+
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>org.apache.jackrabbit:jackrabbit-standalone:jar</include>
             </includes>
         </dependencySet>
 	</dependencySets>
