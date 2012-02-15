@@ -100,6 +100,36 @@
 			<artifactId>derbytools</artifactId>
 			<version>${derby.version}</version>
 		</dependency>
+        <dependency>
+			<groupId>edu.berkeley</groupId>
+			<artifactId>yfilter</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>messenger-client</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>messenger-commons</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>messagebox</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>messagebroker</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

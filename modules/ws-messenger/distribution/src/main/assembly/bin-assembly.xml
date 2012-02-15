@@ -5,7 +5,7 @@
 	in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
 	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
 	the License. -->
-	
+
 <!DOCTYPE assembly [
         <!ELEMENT assembly (id|includeBaseDirectory|baseDirectory|formats|fileSets|dependencySets)*>
         <!ELEMENT id (#PCDATA)>
@@ -23,277 +23,186 @@
         <!ELEMENT dependencySet (outputDirectory|includes)*>
         ]>
 <assembly>
-	<id>bin</id>
-	<includeBaseDirectory>true</includeBaseDirectory>
-	<baseDirectory>${archieve.name}-${version}</baseDirectory>
-	<formats>
-		<!--<format>tar.gz</format>  //uncomment,if tar.gz archive needed-->
-		<format>zip</format>
-	</formats>
+    <id>bin</id>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>${archieve.name}-${version}</baseDirectory>
+    <formats>
+        <!--<format>tar.gz</format>  //uncomment,if tar.gz archive needed-->
+        <format>zip</format>
+    </formats>
 
 
-	<fileSets>
-		<!--
-			********************** copy axis2 distribution from messenger folder **********************
-		-->
-
-		<fileSet>
-			<directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
-			<outputDirectory>standalone-server/lib</outputDirectory>
-			<includes>
-                <include>*.jar</include>
-			</includes>
-		</fileSet>
+    <fileSets>
+        <!--
+              ********************** copy axis2 distribution from messenger folder **********************
+          -->
 
         <fileSet>
-			<directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
-			<outputDirectory>standalone-server/repository</outputDirectory>
-			<includes>
+            <directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
+            <outputDirectory>standalone-server/lib</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
+            <outputDirectory>standalone-server/repository</outputDirectory>
+            <includes>
                 <include>services/*</include>
                 <include>modules/*</include>
-			</includes>
-		</fileSet>
+            </includes>
+        </fileSet>
 
         <fileSet>
-			<directory>target/axis2-${used.axis2.release}/WEB-INF/classes</directory>
-			<outputDirectory>standalone-server/conf</outputDirectory>
-			<includes>
+            <directory>target/axis2-${used.axis2.release}/WEB-INF/classes</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
                 <include>log4j.properties</include>
                 <include>commons-logging.properties</include>
-			</includes>
-		</fileSet>
+            </includes>
+        </fileSet>
 
         <fileSet>
-			<directory>target/axis2-${used.axis2.release}/WEB-INF/conf</directory>
-			<outputDirectory>standalone-server/conf</outputDirectory>
-			<includes>
+            <directory>target/axis2-${used.axis2.release}/WEB-INF/conf</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
                 <include>axis2.xml</include>
-			</includes>
-		</fileSet>
+            </includes>
+        </fileSet>
+
+        <!--
+              ********************** copy wsmg.broker and messagebox property files
+              **********************
+          -->
+
+        <fileSet>
+            <directory>resources</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
+                <include>*properties*</include>
+            </includes>
+        </fileSet>
 
 
-		<!--
-			********************** copymessagebrokeraar **********************
-		-->
+        <!--
+              ********************** replace bin directory
+              **********************
+          -->
 
-		<fileSet>
-			<directory>../messagebroker/target</directory>
-			<outputDirectory>standalone-server/repository/services
-			</outputDirectory>
-			<includes>
-				<include>messagebroker*.aar</include>
-			</includes>
-		</fileSet>
-
-		<!--
-			********************** copy messagebox aar **********************
-		-->
-
-		<fileSet>
-			<directory>../messagebox/target</directory>
-			<outputDirectory>standalone-server/repository/services
-			</outputDirectory>
-			<includes>
-				<include>messagebox*.aar</include>
-			</includes>
-		</fileSet>
-
-
-		<!--
-			********************** copy wsmg.broker and messagebox property files
-			**********************
-		-->
-
-		<fileSet>
-			<directory>resources</directory>
-			<outputDirectory>standalone-server/conf</outputDirectory>
-			<includes>
-				<include>*properties*</include>
-			</includes>
-		</fileSet>
-
-
-
-
-        	<!--
-			********************** replace bin directory
-			**********************
-		-->
-
-		<fileSet>
-			<directory>resources/bin</directory>
-			<outputDirectory>standalone-server/bin</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
+        <fileSet>
+            <directory>resources/bin</directory>
+            <outputDirectory>standalone-server/bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
 
         <!--
             ********************** copy messenger commons **********************
         -->
 
+
+
         <fileSet>
-            <directory>../commons/target</directory>
-            <outputDirectory>lib</outputDirectory>
+            <directory>../../ws-messenger/client/target/</directory>
+            <outputDirectory>standalone-server/lib</outputDirectory>
             <includes>
-                <include>airavata*.jar</include>
+                <include>*.jar</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>../../ws-messenger/commons/target/</directory>
+            <outputDirectory>standalone-server/lib</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+
+
 
         <!--
-            ********************** copy messenger client **********************
-        -->
+              ********************** copymessagebrokerjar **********************
+          -->
+
+
+        <!--
+              ********************** copy messagebroker+ messagebox samples **********************
+          -->
 
         <fileSet>
-            <directory>../client/target</directory>
-            <outputDirectory>lib</outputDirectory>
+            <directory>../samples</directory>
+            <outputDirectory>samples</outputDirectory>
             <includes>
-                <include>airavata*.jar</include>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+
+        <!--
+              ********************** copy gui start up script **********************
+          -->
+
+        <fileSet>
+            <directory>resources</directory>
+            <outputDirectory>gui</outputDirectory>
+            <includes>
+                <include>*sh</include>
+            </includes>
+        </fileSet>
+
+
+        <fileSet>
+            <directory>../</directory>
+            <includes>
+                <include>LICENSE*</include>
+                <include>NOTICE*</include>
+            </includes>
+        </fileSet>
+
+
+        <!--
+              ********************** copy database scripts **********************
+          -->
+
+        <fileSet>
+            <directory>../messagebroker/src/main/resources/database_scripts</directory>
+            <outputDirectory>standalone-server/conf/database_scripts</outputDirectory>
+            <includes>
+                <include>*sql*</include>
             </includes>
         </fileSet>
 
         <fileSet>
-            <directory>../../ws-messenger/client/target/</directory>
-            <outputDirectory>standalone-server/lib</outputDirectory>
+            <directory>../messagebox/src/main/resources/database_scripts</directory>
+            <outputDirectory>standalone-server/conf/database_scripts</outputDirectory>
             <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../../ws-messenger/commons/target/</directory>
-            <outputDirectory>standalone-server/lib</outputDirectory>
-            <includes>
-                <include>*.jar</include>
+                <include>*sql*</include>
             </includes>
         </fileSet>
 
-        <fileSet>
-            <directory>../../ws-messenger/client/target/</directory>
-            <outputDirectory>standalone-server/lib</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../../ws-messenger/commons/target/</directory>
-            <outputDirectory>standalone-server/lib</outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
-
-		<!--
-			********************** copymessagebrokerjar **********************
-		-->
-
-		<fileSet>
-			<directory>../messagebroker/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>messagebroker*.jar</include>
-			</includes>
-		</fileSet>
-
-		<!--
-			********************** copy messagebox jar **********************
-		-->
-
-		<fileSet>
-			<directory>../messagebox/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>messagebox*.jar</include>
-			</includes>
-		</fileSet>
-
-		<!--
-			********************** copy messagebroker+ messagebox samples **********************
-		-->
-
-		<fileSet>
-			<directory>../samples</directory>
-			<outputDirectory>samples</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
-
-
-
-
-		<!--
-			********************** copy gui start up script **********************
-		-->
-
-		<fileSet>
-			<directory>resources</directory>
-			<outputDirectory>gui</outputDirectory>
-			<includes>
-				<include>*sh</include>
-			</includes>
-		</fileSet>
-
-
-
-		<!--
-			********************** copy messenger servlet **********************
-		-->
-
-		<!--fileSet>
-			<directory>../messenger/target</directory>
-			<outputDirectory>messenger</outputDirectory>
-			<includes>
-				<include>messenger*.war</include>
-			</includes>
-		</fileSet-->
-
-
-		<!--
-			********************** copy licenses **********************
-		-->
-
-		<fileSet>
-			<directory>../</directory>
-			<includes>
-				<include>LICENSE*</include>
-				<include>NOTICE*</include>
-			</includes>
-		</fileSet>
-
-
-
-		<!--
-			********************** copy database scripts **********************
-		-->
-
-		<fileSet>
-			<directory>../messagebroker/src/main/resources/database_scripts</directory>
-			<outputDirectory>standalone-server/conf/database_scripts</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-
-		<fileSet>
-			<directory>../messagebox/src/main/resources/database_scripts</directory>
-			<outputDirectory>standalone-server/conf/database_scripts</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-
-	</fileSets>
+    </fileSets>
     <dependencySets>
 
-            <dependencySet>
-                <outputDirectory>standalone-server/lib</outputDirectory>
-                <includes>
-                    <include>org.slf4j:slf4j-api:jar</include>
-                    <include>org.apache.derby:derby:jar</include>
-                    <include>org.apache.derby:derbytools:jar</include>
-                    <include>mysql:mysql-connector-java</include>
-                </includes>
-                    </dependencySet>
-        </dependencySets>
+        <dependencySet>
+            <outputDirectory>standalone-server/lib</outputDirectory>
+            <includes>
+                <include>org.slf4j:slf4j-api:jar</include>
+                <include>org.apache.derby:derby:jar</include>
+                <include>org.apache.derby:derbytools:jar</include>
+                <include>org.apache.airavata:messenger-client:jar</include>
+                <include>org.apache.airavata:messenger-commons:jar</include>
+                <include>edu.berkeley:yfilter:jar</include>
+                <include>wsdl4j:wsdl4j:jar</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>standalone-server/repository/services</outputDirectory>
+            <includes>
+                <include>org.apache.airavata:messagebox:jar</include>
+                <include>org.apache.airavata:messagebroker:jar</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
 
 </assembly>
