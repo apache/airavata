@@ -252,6 +252,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     @Override
     public void postProcess(InvocationContext context) throws ServiceException {
+        if(this.registryService != null)
         ((JCRRegistry)this.registryService).closeConnection();
     }
 
