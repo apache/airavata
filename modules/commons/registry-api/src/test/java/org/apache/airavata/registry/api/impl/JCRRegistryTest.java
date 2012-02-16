@@ -49,17 +49,10 @@ public class JCRRegistryTest {
     @Test
     public void testSaveLoadHostDescription() {
         try {
-        	Map<String,String> map = new HashMap<String,String>();
-        	map.put("org.apache.jackrabbit.repository.uri","http://localhost:8080/rmi");
-        	map.put("jcr.class","org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory");
-        	map.put("jcr.user","admin");
-			map.put("jcr.pass","admin");
-            map.put("org.apache.jackrabbit.repository.home","target");
-            /*
-             * Create database
-             */
+         Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target" + File.separator + "jackrabbit4");
             AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
-                    "admin", "admin", map);
+                    "admin", "admin", config);
 
             String hostId = "localhost";
             String address = "127.0.0.1";
@@ -112,7 +105,7 @@ public class JCRRegistryTest {
     public void testSaveLoadServiceDescription() {
         try {
             Map<String,String> config = new HashMap<String,String>();
-            config.put("org.apache.jackrabbit.repository.home","target");
+            config.put("org.apache.jackrabbit.repository.home","target" + File.separator + "jackrabbit4");
             AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
                     "admin", "admin", config);
             
@@ -171,7 +164,7 @@ public class JCRRegistryTest {
     public void testSaveLoadApplicationDescription() {
         try {
             Map<String,String> config = new HashMap<String,String>();
-            config.put("org.apache.jackrabbit.repository.home","target");
+            config.put("org.apache.jackrabbit.repository.home","target" + File.separator + "jackrabbit5");
             AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
                     "admin", "admin", config);
             
@@ -244,12 +237,5 @@ public class JCRRegistryTest {
             fail(e.getMessage());
         }
     }
-       @After
-    public void cleanup(){
-        File jackrabbit = new File(".");
-           String s = jackrabbit.getAbsolutePath() + File.separator +
-                   "modules" + File.separator + "registry-api" + File.separator +"jackrabbit";
-           IOUtil.deleteDirectory(new File(s));
-    }
-    
+
 }
