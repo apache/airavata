@@ -45,7 +45,7 @@ public class JCRRegistryDeleteTest {
                 * Create database
                 */
                Map<String,String> config = new HashMap<String,String>();
-            config.put("org.apache.jackrabbit.repository.home","target");
+            config.put("org.apache.jackrabbit.repository.home","target" + File.separator + "jackrabbit1");
                AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
                        "admin", "admin", config);
 
@@ -79,7 +79,7 @@ public class JCRRegistryDeleteTest {
             * Create database
             */
             Map<String,String> config = new HashMap<String,String>();
-            config.put("org.apache.jackrabbit.repository.home","target");
+            config.put("org.apache.jackrabbit.repository.home","target" + File.separator + "jackrabbit2");
             AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
                     "admin", "admin", config);
 
@@ -116,11 +116,5 @@ public class JCRRegistryDeleteTest {
         Assert.assertTrue(false);
     }
 
-        @After
-    public void cleanup(){
-        File jackrabbit = new File(".");
-           String s = jackrabbit.getAbsolutePath() + File.separator +
-                   "modules" + File.separator + "registry-api" + File.separator +"jackrabbit";
-           IOUtil.deleteDirectory(new File(s));
-    }
+
 }

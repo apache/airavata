@@ -48,7 +48,7 @@ public class JCRRegistryRestartTest {
                 * Create database
                 */
                Map<String,String> config = new HashMap<String,String>();
-               config.put("org.apache.jackrabbit.repository.home","target");
+               config.put("org.apache.jackrabbit.repository.home","target" + File.separator + "jackrabbit3");
                AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
                        "admin", "admin", config);
 
@@ -82,12 +82,5 @@ public class JCRRegistryRestartTest {
                fail(e.getMessage());
            }
        }
-      @After
-    public void cleanup(){
-        File jackrabbit = new File(".");
-           String s = jackrabbit.getAbsolutePath() + File.separator +
-                   "modules" + File.separator + "registry-api" + File.separator +"jackrabbit";
-           IOUtil.deleteDirectory(new File(s));
-    }
 
 }
