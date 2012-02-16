@@ -78,24 +78,7 @@
 			<artifactId>workflow-execution-context</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>common-registry-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>     
-        
-        <dependency>
-            <groupId>j2ssh</groupId>
-            <artifactId>j2ssh-core</artifactId>
-            <version>0.2.9</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>j2ssh</groupId>
-            <artifactId>j2ssh-common</artifactId>
-            <version>0.2.9</version>
-            <type>jar</type>
-        </dependency>
+
 
 		<!-- Workflow Tracking -->
 		<dependency>
@@ -132,11 +115,31 @@
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>jackrabbit-core</artifactId>
+            <version>${jackrabbit.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jackrabbit</groupId>
 			<artifactId>jackrabbit-jcr-rmi</artifactId>
+            <version>${jackrabbit.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>common-registry-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>     
+        
+        <dependency>
+            <groupId>j2ssh</groupId>
+            <artifactId>j2ssh-core</artifactId>
+            <version>0.2.9</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>j2ssh</groupId>
+            <artifactId>j2ssh-common</artifactId>
+            <version>0.2.9</version>
+            <type>jar</type>
+        </dependency>
 	</dependencies>
 
 	<build>

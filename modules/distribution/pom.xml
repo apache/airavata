@@ -20,8 +20,8 @@
 	<groupId>org.apache.airavata</groupId>
 	<artifactId>distribution</artifactId>
 	<name>distribution</name>
-	<url>http://incubator.apache.org/airavata</url>
 	<packaging>pom</packaging>
+	<url>http://incubator.apache.org/airavata</url>
 	<build>
 		<plugins>
 			<plugin>
@@ -51,26 +51,27 @@
 					</execution>
 				</executions>
 			</plugin>
-      <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>generate-timestamp</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <source>
-                                import java.util.Date
-                                import java.text.MessageFormat
-                                project.properties['buildTimestamp'] = MessageFormat.format("{0,date,dd-MM-yyyy}", new Date())
-                            </source>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+			<plugin>
+				<groupId>org.codehaus.gmaven</groupId>
+				<artifactId>gmaven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>generate-timestamp</id>
+						<phase>package</phase>
+						<goals>
+							<goal>execute</goal>
+						</goals>
+						<configuration>
+							<source>
+								import java.util.Date
+								import java.text.MessageFormat
+								project.properties['buildTimestamp'] =
+								MessageFormat.format("{0,date,dd-MM-yyyy}", new Date())
+							</source>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -87,7 +88,7 @@
 							<finalName>${archieve.name}-${project.version}</finalName>
 							<descriptors>
 								<descriptor>src/main/assembly/bin-assembly.xml</descriptor>
-								<descriptor>src/main/assembly/src-assembly.xml</descriptor>	
+<!-- 								<descriptor>src/main/assembly/src-assembly.xml</descriptor> -->
 							</descriptors>
 							<attach>false</attach>
 						</configuration>
@@ -191,6 +192,7 @@
 		<dependency>
 			<groupId>javax.jcr</groupId>
 			<artifactId>jcr</artifactId>
+            <version>${jcr.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>xpp5</groupId>
@@ -278,6 +280,11 @@
 			<version>1.76.7</version>
 		</dependency>
 		<dependency>
+			<groupId>ode-proxy</groupId>
+			<artifactId>weps-beans</artifactId>
+			<version>0.1</version>
+		</dependency>
+		<dependency>
 			<groupId>atomixmiser</groupId>
 			<artifactId>atomixmiser</artifactId>
 			<version>0.9.4</version>
@@ -302,6 +309,86 @@
 			<artifactId>transfer-api-client</artifactId>
 			<version>0.10</version>
 		</dependency>
+        <dependency>
+			<groupId>edu.berkeley</groupId>
+			<artifactId>yfilter</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>messenger-client</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>messenger-commons</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>registry-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>workflow-execution-context</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>workflowtracking</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>gfac-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>messenger-commons</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>gfac-schema-utils</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>common-utils</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+              <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>messagebox</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>messagebroker</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+              <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>xbaya-gui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>gfac-axis2-interface</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	<dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>common-registry-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
 	</dependencies>
 	<properties>

@@ -25,14 +25,10 @@
 	<url>http://incubator.apache.org/airavata/</url>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>xmlbeans</groupId>
 			<artifactId>xbean</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
+            <version>${xmlbeans.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>wsdl4j</groupId>
@@ -40,26 +36,14 @@
 			<version>1.6.2</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-configuration</groupId>
-			<artifactId>commons-configuration</artifactId>
-			<version>1.6</version>
-		</dependency>
-		<dependency>
 			<groupId>xpp3</groupId>
 			<artifactId>xpp3</artifactId>
 			<version>1.1.4c</version>
 		</dependency>
 		<dependency>
-			<groupId>xsul</groupId>
-			<artifactId>xsul</artifactId>
-			<version>2.10.5_d</version>
-		</dependency>
-		<!-- Logging -->
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
-
 		<!-- Testing -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -80,12 +64,10 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>2.3.2</version>
 					<configuration>
-						<source>1.5</source>
-						<target>1.5</target>
+						<source>1.6</source>
+						<target>1.6</target>
 					</configuration>
 				</plugin>
-
-
 			</plugins>
 		</pluginManagement>
 		<plugins>
