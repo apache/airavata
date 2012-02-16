@@ -125,7 +125,13 @@ public class PropertiesBasedServiceImplTest {
 			DefaultExecutionContext ec = new DefaultExecutionContext();
 			ec.addNotifiable(new LoggingNotification());
 			ct.setExecutionContext(ec);
+             Map<String,String> config = new HashMap<String,String>();
+            config.put("org.apache.jackrabbit.repository.home","target");
+		    AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
+				"org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
+				"admin", config);
 
+            ec.setRegistryService(jcrRegistry);
 			ct.setServiceName("SimpleEcho");
 
 			/*
