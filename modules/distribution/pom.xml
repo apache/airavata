@@ -384,8 +384,18 @@
 			<artifactId>gfac-axis2-interface</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+	 <dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15</artifactId>
+			<version>1.45</version>
+		</dependency>		
 	<dependency>
-            <groupId>org.apache.airavata</groupId>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcmail-jdk15</artifactId>
+			<version>1.45</version>
+		</dependency>		
+<dependency>
+  <groupId>org.apache.airavata</groupId>
             <artifactId>common-registry-api</artifactId>
             <version>${project.version}</version>
         </dependency>
