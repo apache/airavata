@@ -257,6 +257,8 @@
                 <include>org.apache.airavata:common-utils</include>
                 <include>edu.berkeley:yfilter</include>
                 <include>javax.servlet:servlet-api</include>
+                <include>org.bouncycastle:bcprov-jdk15</include>
+                <include>org.bouncycastle:bcmail-jdk15</include>
             </includes>
         </dependencySet>
 
