@@ -23,10 +23,7 @@ package org.apache.airavata.xbaya.clients;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
@@ -87,14 +84,17 @@ public class XBayaClient {
         updateClientConfiguration(configurations);
     }
 
-    public XBayaClient(String fileName) throws IOException {
+    public XBayaClient(String fileName) throws RegistryException,MalformedURLException,IOException{
         URL url = this.getClass().getClassLoader().getResource(fileName);
+        if(url == null){
+            url = (new File(fileName)).toURL();
+        }
         Properties properties = new Properties();
         properties.load(url.openStream());
 
         configurations[0] = new NameValue();
         configurations[0].setName(GFAC);
-        configurations[0].setValue(properties.getProperty(DEFAULT_GFAC_URL));
+        configurations[0].setValue(validateAxisService(properties.getProperty(DEFAULT_GFAC_URL)));
         
         configurations[1] = new NameValue();
         configurations[1].setName(PROXYSERVER);
@@ -102,11 +102,11 @@ public class XBayaClient {
         
         configurations[2] = new NameValue();
         configurations[2].setName(MSGBOX);
-        configurations[2].setValue(properties.getProperty(DEFAULT_MESSAGE_BOX_URL));
+        configurations[2].setValue(validateAxisService(properties.getProperty(DEFAULT_MESSAGE_BOX_URL)));
 
         configurations[3] = new NameValue();
         configurations[3].setName(BROKER);
-        configurations[3].setValue(properties.getProperty(DEFAULT_BROKER_URL));
+        configurations[3].setValue(validateAxisService(properties.getProperty(DEFAULT_BROKER_URL)));
 
         configurations[4] = new NameValue();
         configurations[4].setName(MYPROXYUSERNAME);
@@ -118,11 +118,11 @@ public class XBayaClient {
 
         configurations[6] = new NameValue();
         configurations[6].setName(WORKFLOWSERVICEURL);
-        configurations[6].setValue(properties.getProperty(WORKFLOWSERVICEURL));
+        configurations[6].setValue(validateAxisService(properties.getProperty(WORKFLOWSERVICEURL)));
         
         configurations[7] = new NameValue();
         configurations[7].setName(JCR);
-        configurations[7].setValue(properties.getProperty(DEFAULT_JCR_URL));
+        configurations[7].setValue(validateURL(properties.getProperty(DEFAULT_JCR_URL)));
         
         configurations[8] = new NameValue();
         configurations[8].setName(JCR_USERNAME);
@@ -177,13 +177,15 @@ public class XBayaClient {
 
 	}
     public void loadWorkflowFromaFile(String workflowFile)throws URISyntaxException,IOException {
-
+        File workflow = null;
         URL url = XBayaClient.class.getClassLoader().getResource(workflowFile);
-        File workflow;
         if(url == null){
-            workflow = new File(workflowFile);
-        }else{
+            url = (new File(workflowFile)).toURL();
+        }
+        try {
             workflow = new File(url.toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         FileInputStream stream = new FileInputStream(workflow);
         try {
@@ -203,6 +205,9 @@ public class XBayaClient {
 
     public NameValue[] setInputs(String fileName) throws IOException {
         URL url = this.getClass().getClassLoader().getResource(fileName);
+        if(url == null){
+            url = (new File(fileName)).toURL();
+        }
         Properties properties = new Properties();
         properties.load(url.openStream());
         try {
@@ -358,6 +363,38 @@ public class XBayaClient {
 		}
 		return clientConfiguration;
 	}
+
+    private String validateAxisService(String urlString)throws RegistryException{
+        if(!urlString.endsWith("?wsdl")){
+            urlString = urlString + "?wsdl";
+        }
+        try {
+            URL url = new URL(urlString);
+            URLConnection conn = url.openConnection();
+            conn.connect();
+        } catch (MalformedURLException e) {
+            // the URL is not in a valid form
+            throw new RegistryException("Given Axis2 Service URL : " + urlString + " is Invalid",e);
+        } catch (IOException e) {
+            // the connection couldn't be established
+            throw new RegistryException("Given Axis2 Service URL : " + urlString + " is Invalid",e);
+        }
+        return  urlString;
+    }
+    private String validateURL(String urlString)throws RegistryException{
+           try {
+               URL url = new URL(urlString);
+               URLConnection conn = url.openConnection();
+               conn.connect();
+           } catch (MalformedURLException e) {
+               // the URL is not in a valid form
+               throw new RegistryException("Given URL: " + urlString + " is Invalid",e);
+           } catch (IOException e) {
+               // the connection couldn't be established
+               throw new RegistryException("Given URL: " + urlString + " is Invalid",e);
+           }
+           return  urlString;
+       }
 
 }
 
