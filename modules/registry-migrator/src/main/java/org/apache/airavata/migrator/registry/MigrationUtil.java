@@ -28,34 +28,38 @@ public class MigrationUtil {
 
         org.ogce.schemas.gfac.documents.InputParameterType[] inputParameterTypes = serviceBean.getInputParam();
         List<InputParameterType> inputList = new ArrayList<InputParameterType>();
-        for (org.ogce.schemas.gfac.documents.InputParameterType inputParameterType : inputParameterTypes) {
-            InputParameterType input = InputParameterType.Factory.newInstance();
-            String inputParamName = inputParameterType.getParameterName();
-            input.setParameterName(inputParamName);
+        if (inputParameterTypes != null) {
+            for (org.ogce.schemas.gfac.documents.InputParameterType inputParameterType : inputParameterTypes) {
+                InputParameterType input = InputParameterType.Factory.newInstance();
+                String inputParamName = inputParameterType.getParameterName();
+                input.setParameterName(inputParamName);
 
-            //TODO
-            org.ogce.schemas.gfac.documents.InputDataType.Enum en = inputParameterType.getParameterType();
-            input.setParameterType(StringParameterType.Factory.newInstance());
-            inputList.add(input);
+                //TODO
+                org.ogce.schemas.gfac.documents.InputDataType.Enum en = inputParameterType.getParameterType();
+                input.setParameterType(StringParameterType.Factory.newInstance());
+                inputList.add(input);
+            }
+            InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
+            serv.getType().setInputParametersArray(inputParamList);
         }
-        InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
-        serv.getType().setInputParametersArray(inputParamList);
 
         org.ogce.schemas.gfac.documents.OutputParameterType[] outputParameterTypes = serviceBean.getOutputParam();
         List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
-        for (org.ogce.schemas.gfac.documents.OutputParameterType outputParameterType : outputParameterTypes) {
-            String outputParamName = outputParameterType.getParameterName();
-            OutputParameterType output = OutputParameterType.Factory.newInstance();
-            output.setParameterName(outputParamName);
+        if (outputParameterTypes != null){
+            for (org.ogce.schemas.gfac.documents.OutputParameterType outputParameterType : outputParameterTypes) {
+                String outputParamName = outputParameterType.getParameterName();
+                OutputParameterType output = OutputParameterType.Factory.newInstance();
+                output.setParameterName(outputParamName);
 
-            //TODO
-            org.ogce.schemas.gfac.documents.OutputDataType.Enum en = outputParameterType.getParameterType();
-            output.setParameterType(StringParameterType.Factory.newInstance());
-            outputList.add(output);
+                //TODO
+                org.ogce.schemas.gfac.documents.OutputDataType.Enum en = outputParameterType.getParameterType();
+                output.setParameterType(StringParameterType.Factory.newInstance());
+                outputList.add(output);
 
+            }
+            OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
+            serv.getType().setOutputParametersArray(outputParamList);
         }
-        OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
-        serv.getType().setOutputParametersArray(outputParamList);
 
         return serv;
     }
