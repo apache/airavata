@@ -23,7 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class XRegistryMigrate {
-    private static String propertyfile = "xregistry.properties";
+//    private static String propertyfile = "xregistry.properties";
+//    private static String propertyfile = "xregistry-dropbox.properties";
+    private static String propertyfile = "xregistry-local.properties";
 
     public static void main(String[] args) throws XRegistryClientException {
         /* Create database */
@@ -42,7 +44,7 @@ public class XRegistryMigrate {
         ApplicationDeploymentDescription app = null;
         ServiceDescription service = null;
 
-        XRegistryClient client = XRegistryClientUtil.CreateGSISecureRegistryInstance("xregistry.properties");
+        XRegistryClient client = XRegistryClientUtil.CreateGSISecureRegistryInstance(propertyfile);
 
         HostDescData[] hostDescs = client.findHosts("");
         Map<QName, HostDescData> val = new HashMap<QName, HostDescData>();
