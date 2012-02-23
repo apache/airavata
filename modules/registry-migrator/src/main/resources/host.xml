@@ -1,0 +1,16 @@
+<gfac:HostDescription xmlns:gfac="http://www.extreme.indiana.edu/namespaces/2004/01/gFac">
+    <gfac:hostName>dropbox.ucs.indiana.edu</gfac:hostName>
+    <gfac:hostConfiguration>
+        <gfac:gFacPath>/home/simplegrid/ogce-all-rc1/gfac/target/dist-bin</gfac:gFacPath>
+        <gfac:tmpDir>/tmp</gfac:tmpDir>
+        <gfac:portRange>
+            <gfac:start>12000</gfac:start>
+            <gfac:end>12500</gfac:end>
+        </gfac:portRange>
+        <gfac:java>
+            <gfac:name>jdk1.5</gfac:name>
+            <gfac:version>jdk1.5</gfac:version>
+            <gfac:home>/usr/java/jdk1.6.0_26/</gfac:home>
+        </gfac:java>
+    </gfac:hostConfiguration>
+</gfac:HostDescription>
