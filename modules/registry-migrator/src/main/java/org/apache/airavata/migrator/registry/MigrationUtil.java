@@ -15,6 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MigrationUtil {
+    /**
+     * Creates a HostDescription from HostBean.
+     *
+     * @param hostBean HostBean
+     * @return HostDescription
+     */
     public static HostDescription createHostDescription(HostBean hostBean) {
         HostDescription host = new HostDescription();
         host.getType().setHostName(hostBean.getHostName());
@@ -22,6 +28,11 @@ public class MigrationUtil {
         return host;
     }
 
+    /**
+     * Creates ServiceDescription from ServiceBean
+     * @param serviceBean ServiceBean
+     * @return ServiceDescription
+     */
     public static ServiceDescription createServiceDescription(ServiceBean serviceBean) {
         ServiceDescription serv = new ServiceDescription();
         serv.getType().setName(serviceBean.getServiceName());
@@ -64,6 +75,11 @@ public class MigrationUtil {
         return serv;
     }
 
+    /**
+     * Creates ApplicationDeploymentDescription from ApplicationBean
+     * @param appBean ApplicationBean
+     * @return ApplicationDeploymentDescription
+     */
     public static ApplicationDeploymentDescription createAppDeploymentDescription(ApplicationBean appBean) {
         ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription();
         ApplicationDeploymentDescriptionType app = appDesc.getType();
