@@ -23,53 +23,16 @@
 	<description>Airavata Client for accessing XBaya</description>
 
 	<dependencies>
-		<!--<dependency>
-            <groupId>xregistry</groupId>
-            <artifactId>xregistry-client</artifactId>
-            <version>1.2.1</version>
-		</dependency>
         <dependency>
-            <groupId>xregistry</groupId>
-            <artifactId>xregistry_generated</artifactId>
-            <version>0.8.3</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>messagebroker</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>registry-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>common-utils</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>workflowtracking</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
         <dependency>
-			<groupId>gfac</groupId>
-			<artifactId>gfac-schema-utils</artifactId>
-			<version>0.4.4</version>
-		</dependency>
-
-		&lt;!&ndash; JCR Support &ndash;&gt;
-		&lt;!&ndash; TODO need clean up &ndash;&gt;
-		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>gfac-schema-utils</artifactId>
-			<version>${project.version}</version>
-		</dependency>-->
-
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>xbaya-gui</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 	</dependencies>
 
 	<build>

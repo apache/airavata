@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.xbaya.clients;
+package org.apache.airavata.client.airavata;
 
 import java.net.URL;
 
