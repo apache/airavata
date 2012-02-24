@@ -283,6 +283,7 @@
             <outputDirectory>lib</outputDirectory>
             <includes>
                 <include>org.apache.jackrabbit:jackrabbit-standalone:jar</include>
+                <include>org.apache.airavata:airavata-client</include>
             </includes>
         </dependencySet>
 	</dependencySets>
