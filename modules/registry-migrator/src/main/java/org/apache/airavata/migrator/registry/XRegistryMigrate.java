@@ -97,15 +97,15 @@ public class XRegistryMigrate {
 
             if(serviceBean != null) {
                 service = MigrationUtil.createServiceDescription(serviceBean);
+                try {
+                    jcrRegistry.saveServiceDescription(service);
+                    ApplicationBean appBean = saveApplicationDescriptionWithName(client, applicationName, service);
+                    jcrRegistry.deployServiceOnHost(service.getType().getName(), appBean.getHostName());
+                } catch (RegistryException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
             }
 
-            try {
-                jcrRegistry.saveServiceDescription(service);
-                ApplicationBean appBean = saveApplicationDescriptionWithName(client, applicationName, service);
-                jcrRegistry.deployServiceOnHost(service.getType().getName(), appBean.getHostName());
-            } catch (RegistryException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
         }
         return service;
     }
