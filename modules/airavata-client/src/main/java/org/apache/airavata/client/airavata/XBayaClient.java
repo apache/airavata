@@ -18,21 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.xbaya.clients;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.*;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
-import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
-
-import javax.jcr.RepositoryException;
+package org.apache.airavata.client.airavata;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry;
@@ -47,8 +33,20 @@ import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorStub;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axis2.AxisFault;
-
 import xsul5.MLogger;
+
+import javax.jcr.RepositoryException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.*;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
 
 
 public class XBayaClient {
