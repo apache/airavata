@@ -159,7 +159,13 @@
                 <include>xbaya.properties</include>
             </includes>
         </fileSet>
-
+           <fileSet>
+            <directory>../distribution/src/main/resources/conf</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
+                <include>jcr.properties</include>
+            </includes>
+        </fileSet>
 
         <fileSet>
 			<directory>../../samples/simple-math-service/target</directory>
@@ -269,6 +275,7 @@
                 <include>org.apache.airavata:messagebroker:jar</include>
                 <include>org.apache.airavata:xbaya-gui:jar</include>
                 <include>org.apache.airavata:gfac-axis2-interface:jar</include>
+		<include>org.apache.airavata:registry-service:jar</include>
             </includes>
         </dependencySet>
 
