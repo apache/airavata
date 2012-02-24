@@ -477,6 +477,7 @@
                 <module>modules/ws-messenger</module>
                 <module>modules/xbaya-gui</module>
                 <module>modules/commons</module>
+                <module>modules/registry-migrator</module>
                 <module>samples/simple-math-service</module>
                 <module>samples/complex-math-service</module>
                 <module>samples/levenshtein-distance-service</module>
