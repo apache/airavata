@@ -43,19 +43,23 @@ public class XRegistryMigrate {
         XRegistryClient client = XRegistryClientUtil.CreateGSISecureRegistryInstance(propertyfile);
         saveAllHostDescriptions(client);
         saveAllServiceDescriptions(client);
+
+        System.out.println("DONE!");
     }
 
-    private static HostDescription saveAllHostDescriptions(XRegistryClient client) throws XRegistryClientException {
+    private static void saveAllHostDescriptions(XRegistryClient client) throws XRegistryClientException {
         HostDescription host = null;
         HostDescData[] hostDescs = client.findHosts("");
         Map<QName, HostDescData> val = new HashMap<QName, HostDescData>();
         for (HostDescData hostDesc : hostDescs) {
             val.put(hostDesc.getName(), hostDesc);
             String hostDescStr = client.getHostDesc(hostDesc.getName().getLocalPart());
-            System.out.println(hostDescStr);
             HostBean hostBean = null;
             try {
                 hostBean = org.ogce.schemas.gfac.beans.utils.HostUtils.simpleHostBeanRequest(hostDescStr);
+                System.out.println("Host : " + hostBean.getHostName());
+                System.out.println(hostDescStr);
+
             } catch (XmlException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
@@ -71,10 +75,11 @@ public class XRegistryMigrate {
             }
 
         }
-        return host;
+
+        System.out.println("=== All Hosts are saved ===");
     }
 
-    private static ServiceDescription saveAllServiceDescriptions(XRegistryClient client) throws XRegistryClientException {
+    private static void saveAllServiceDescriptions(XRegistryClient client) throws XRegistryClientException {
         ServiceDescription service = null;
         ServiceDescData[] serviceDescDatas = client.findServiceDesc("");
         Map<QName, ServiceDescData> val3 = new HashMap<QName, ServiceDescData>();
@@ -82,13 +87,14 @@ public class XRegistryMigrate {
         for (ServiceDescData serviceDesc : serviceDescDatas) {
             val3.put(serviceDesc.getName(), serviceDesc);
             String serviceDescStr = client.getServiceDesc(serviceDesc.getName());
-            System.out.println(serviceDescStr);
             ServiceBean serviceBean = null;
             String applicationName = null;
 
             try {
                 serviceBean = org.ogce.schemas.gfac.beans.utils.ServiceUtils.serviceBeanRequest(serviceDescStr);
                 applicationName = serviceBean.getApplicationName();
+                System.out.println("Service : " + serviceBean.getServiceName());
+                System.out.println(serviceDescStr);
             } catch (XmlException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             } catch (IOException e) {
@@ -100,14 +106,17 @@ public class XRegistryMigrate {
                 try {
                     jcrRegistry.saveServiceDescription(service);
                     ApplicationBean appBean = saveApplicationDescriptionWithName(client, applicationName, service);
-                    jcrRegistry.deployServiceOnHost(service.getType().getName(), appBean.getHostName());
+                    // TODO : should look into this
+                    if (appBean != null){
+                        jcrRegistry.deployServiceOnHost(service.getType().getName(), appBean.getHostName());
+                    }
                 } catch (RegistryException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
             }
 
         }
-        return service;
+        System.out.println("=== All Service/Applciation descriptors are saved ===");
     }
 
     private static ApplicationBean saveApplicationDescriptionWithName(XRegistryClient client, String applicationName, ServiceDescription service) throws XRegistryClientException {
@@ -119,9 +128,10 @@ public class XRegistryMigrate {
         for (FindAppDescResponseDocument.FindAppDescResponse.AppData appDesc : appDatas) {
             val2.put(appDesc.getName(), appDesc);
             String appDescStr = client.getAppDesc(appDesc.getName().toString(),appDesc.getHostName());
-            System.out.println(appDescStr);
             try {
                 appBean = org.ogce.schemas.gfac.beans.utils.ApplicationUtils.simpleApplicationBeanRequest(appDescStr);
+                System.out.println("Application : " + appBean.getApplicationName());
+                System.out.println(appDescStr);
 
             } catch (XmlException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
