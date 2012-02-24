@@ -33,6 +33,7 @@
 				<module>gfac-schema</module>
 				<module>utils</module>
 				<module>common-registry-api</module>
+				<module>registry-service</module>
 				<module>registry-api</module>
 				<module>workflow-execution-context</module>
 			</modules>
