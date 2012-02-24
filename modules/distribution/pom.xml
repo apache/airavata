@@ -334,6 +334,12 @@
 			<artifactId>registry-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+<dependency>
+                        <groupId>org.apache.airavata</groupId>
+                        <artifactId>registry-service</artifactId>
+                        <version>${project.version}</version>
+                </dependency>
+
         <dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>workflow-execution-context</artifactId>
