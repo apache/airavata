@@ -23,7 +23,7 @@ package org.apache.airavata.client.airavata;
 
 import java.net.URL;
 
-public class XBayaClientConfiguration {
+public class AiravataClientConfiguration {
 	private URL gfacURL;
 	private URL xregistryURL;
 	private String myproxyHost="myproxy.teragrid.org";

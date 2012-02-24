@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Properties;
 
 
-public class XBayaClient {
+public class AiravataClient {
     private static final MLogger log = MLogger.getLogger();
 
     public static final String GFAC = "gfac";
@@ -68,7 +68,7 @@ public class XBayaClient {
     public static final String MYPROXYPASS = "myproxy.password";
     public static final String WITHLISTENER = "with.Listener";
     public static final String WORKFLOWSERVICEURL = "xbaya.service.url";
-    private XBayaClientConfiguration clientConfiguration;
+    private AiravataClientConfiguration clientConfiguration;
     private static String workflow = "";
 
     private AiravataRegistry registry;
@@ -77,12 +77,12 @@ public class XBayaClient {
     
 //    private NameValue[] configurations = new NameValue[7];
 
-    public XBayaClient(NameValue[] configuration) throws MalformedURLException {
+    public AiravataClient(NameValue[] configuration) throws MalformedURLException {
         configurations = configuration;
         updateClientConfiguration(configurations);
     }
 
-    public XBayaClient(String fileName) throws RegistryException,MalformedURLException,IOException{
+    public AiravataClient(String fileName) throws RegistryException,MalformedURLException,IOException{
         URL url = this.getClass().getClassLoader().getResource(fileName);
         if(url == null){
             url = (new File(fileName)).toURL();
@@ -139,7 +139,7 @@ public class XBayaClient {
     }
 
     private void updateClientConfiguration(NameValue[] configurations) throws MalformedURLException {
-		XBayaClientConfiguration clientConfiguration = getClientConfiguration();
+		AiravataClientConfiguration clientConfiguration = getClientConfiguration();
     	for (NameValue configuration : configurations) {
 			if (configuration.getName().equals(GFAC)){
     			clientConfiguration.setJcrURL(new URL(configuration.getValue()));
@@ -176,7 +176,7 @@ public class XBayaClient {
 	}
     public void loadWorkflowFromaFile(String workflowFile)throws URISyntaxException,IOException {
         File workflow = null;
-        URL url = XBayaClient.class.getClassLoader().getResource(workflowFile);
+        URL url = AiravataClient.class.getClassLoader().getResource(workflowFile);
         if(url == null){
             url = (new File(workflowFile)).toURL();
         }
@@ -336,7 +336,7 @@ public class XBayaClient {
     }
 
     public static void setWorkflow(String workflow) {
-        XBayaClient.workflow = workflow;
+        AiravataClient.workflow = workflow;
     }
 
 	public AiravataRegistry getRegistry() {
@@ -355,9 +355,9 @@ public class XBayaClient {
 		return registry;
 	}
 
-	public XBayaClientConfiguration getClientConfiguration() {
+	public AiravataClientConfiguration getClientConfiguration() {
 		if (clientConfiguration==null){
-			clientConfiguration=new XBayaClientConfiguration();
+			clientConfiguration=new AiravataClientConfiguration();
 		}
 		return clientConfiguration;
 	}
