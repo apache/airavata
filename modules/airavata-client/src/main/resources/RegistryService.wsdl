@@ -1,0 +1,1314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://apache.airavata.registry.service" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:axis2="http://apache.airavata.registry.service" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax21="http://apache.airavata.registry.service/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/">
+    <wsdl:documentation>RegistryService</wsdl:documentation>
+    <wsdl:types/>
+    <wsdl:message name="searchDeploymentDescriptionWithServiceHostAppRequest"/>
+    <wsdl:message name="searchDeploymentDescriptionWithServiceHostAppResponse"/>
+    <wsdl:message name="searchHostDescriptionRequest"/>
+    <wsdl:message name="searchHostDescriptionResponse"/>
+    <wsdl:message name="getGFacDescriptorListRequest"/>
+    <wsdl:message name="getGFacDescriptorListResponse"/>
+    <wsdl:message name="saveDeploymentDescriptionRequest"/>
+    <wsdl:message name="saveDeploymentDescriptionResponse"/>
+    <wsdl:message name="deleteServiceDescriptionRequest"/>
+    <wsdl:message name="deleteServiceDescriptionResponse"/>
+    <wsdl:message name="saveWorkflowExecutionServiceInputRequest"/>
+    <wsdl:message name="saveWorkflowExecutionServiceInputResponse"/>
+    <wsdl:message name="saveWorkflowExecutionStatusRequest"/>
+    <wsdl:message name="saveWorkflowExecutionStatusResponse"/>
+    <wsdl:message name="deleteDeploymentDescriptionRequest"/>
+    <wsdl:message name="deleteDeploymentDescriptionResponse"/>
+    <wsdl:message name="getHostDescriptionRequest"/>
+    <wsdl:message name="getHostDescriptionResponse"/>
+    <wsdl:message name="getWorkflowExecutionIdByUserRequest"/>
+    <wsdl:message name="getWorkflowExecutionIdByUserResponse"/>
+    <wsdl:message name="saveHostDescriptionRequest"/>
+    <wsdl:message name="saveHostDescriptionResponse"/>
+    <wsdl:message name="saveServiceDescriptionRequest"/>
+    <wsdl:message name="saveServiceDescriptionResponse"/>
+    <wsdl:message name="saveWorkflowExecutionOutputRequest"/>
+    <wsdl:message name="saveWorkflowExecutionOutputResponse"/>
+    <wsdl:message name="deleteHostDescriptionRequest"/>
+    <wsdl:message name="deleteHostDescriptionResponse"/>
+    <wsdl:message name="saveGFacDescriptorRequest"/>
+    <wsdl:message name="saveGFacDescriptorResponse"/>
+    <wsdl:message name="getWorkflowExecutionOutputNamesRequest"/>
+    <wsdl:message name="getWorkflowExecutionOutputNamesResponse"/>
+    <wsdl:message name="deleteGFacDescriptorRequest"/>
+    <wsdl:message name="deleteGFacDescriptorResponse"/>
+    <wsdl:message name="deployServiceOnHostRequest"/>
+    <wsdl:message name="deployServiceOnHostResponse"/>
+    <wsdl:message name="getDeploymentDescriptionRequest"/>
+    <wsdl:message name="getDeploymentDescriptionResponse"/>
+    <wsdl:message name="getWorkflowExecutionMetadataRequest"/>
+    <wsdl:message name="getWorkflowExecutionMetadataResponse"/>
+    <wsdl:message name="saveWorkflowExecutionMetadataRequest"/>
+    <wsdl:message name="saveWorkflowExecutionMetadataResponse"/>
+    <wsdl:message name="getWorkflowExecutionRequest"/>
+    <wsdl:message name="getWorkflowExecutionResponse"/>
+    <wsdl:message name="getWorkflowExecutionByUserRequest"/>
+    <wsdl:message name="getWorkflowExecutionByUserResponse"/>
+    <wsdl:message name="getWorkflowExecutionUserRequest"/>
+    <wsdl:message name="getWorkflowExecutionUserResponse"/>
+    <wsdl:message name="searchDeploymentDescriptionWithServiceRequest"/>
+    <wsdl:message name="searchDeploymentDescriptionWithServiceResponse"/>
+    <wsdl:message name="saveWorkflowExecutionServiceOutputRequest"/>
+    <wsdl:message name="saveWorkflowExecutionServiceOutputResponse"/>
+    <wsdl:message name="getWorkflowExecutionStatusRequest"/>
+    <wsdl:message name="getWorkflowExecutionStatusResponse"/>
+    <wsdl:message name="saveWorkflowRequest"/>
+    <wsdl:message name="saveWorkflowResponse"/>
+    <wsdl:message name="getServiceDescriptionRequest"/>
+    <wsdl:message name="getServiceDescriptionResponse"/>
+    <wsdl:message name="searchWorkflowExecutionServiceInputRequest"/>
+    <wsdl:message name="searchWorkflowExecutionServiceInputResponse"/>
+    <wsdl:message name="getWorkflowsRequest"/>
+    <wsdl:message name="getWorkflowsResponse"/>
+    <wsdl:message name="searchWorkflowExecutionServiceOutputRequest"/>
+    <wsdl:message name="searchWorkflowExecutionServiceOutputResponse"/>
+    <wsdl:message name="getWorkflowRequest"/>
+    <wsdl:message name="getWorkflowResponse"/>
+    <wsdl:message name="saveWorkflowExecutionUserRequest"/>
+    <wsdl:message name="saveWorkflowExecutionUserResponse"/>
+    <wsdl:message name="deleteWorkflowRequest"/>
+    <wsdl:message name="deleteWorkflowResponse"/>
+    <wsdl:message name="searchDeploymentDescriptionRequest"/>
+    <wsdl:message name="searchDeploymentDescriptionResponse"/>
+    <wsdl:message name="getWorkflowExecutionOutputRequest"/>
+    <wsdl:message name="getWorkflowExecutionOutputResponse"/>
+    <wsdl:message name="searchDeploymentDescriptionWithSerivceHostRequest"/>
+    <wsdl:message name="searchDeploymentDescriptionWithSerivceHostResponse"/>
+    <wsdl:message name="getWorkflowExecutionByUserLimitedRequest"/>
+    <wsdl:message name="getWorkflowExecutionByUserLimitedResponse"/>
+    <wsdl:portType name="RegistryServicePortType">
+        <wsdl:operation name="searchDeploymentDescriptionWithServiceHostApp">
+            <wsdl:input message="axis2:searchDeploymentDescriptionWithServiceHostAppRequest" wsaw:Action="urn:searchDeploymentDescriptionWithServiceHostApp"/>
+            <wsdl:output message="axis2:searchDeploymentDescriptionWithServiceHostAppResponse" wsaw:Action="urn:searchDeploymentDescriptionWithServiceHostAppResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="searchHostDescription">
+            <wsdl:input message="axis2:searchHostDescriptionRequest" wsaw:Action="urn:searchHostDescription"/>
+            <wsdl:output message="axis2:searchHostDescriptionResponse" wsaw:Action="urn:searchHostDescriptionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getGFacDescriptorList">
+            <wsdl:input message="axis2:getGFacDescriptorListRequest" wsaw:Action="urn:getGFacDescriptorList"/>
+            <wsdl:output message="axis2:getGFacDescriptorListResponse" wsaw:Action="urn:getGFacDescriptorListResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="saveDeploymentDescription">
+            <wsdl:input message="axis2:saveDeploymentDescriptionRequest" wsaw:Action="urn:saveDeploymentDescription"/>
+            <wsdl:output message="axis2:saveDeploymentDescriptionResponse" wsaw:Action="urn:saveDeploymentDescriptionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="deleteServiceDescription">
+            <wsdl:input message="axis2:deleteServiceDescriptionRequest" wsaw:Action="urn:deleteServiceDescription"/>
+            <wsdl:output message="axis2:deleteServiceDescriptionResponse" wsaw:Action="urn:deleteServiceDescriptionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionServiceInput">
+            <wsdl:input message="axis2:saveWorkflowExecutionServiceInputRequest" wsaw:Action="urn:saveWorkflowExecutionServiceInput"/>
+            <wsdl:output message="axis2:saveWorkflowExecutionServiceInputResponse" wsaw:Action="urn:saveWorkflowExecutionServiceInputResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionStatus">
+            <wsdl:input message="axis2:saveWorkflowExecutionStatusRequest" wsaw:Action="urn:saveWorkflowExecutionStatus"/>
+            <wsdl:output message="axis2:saveWorkflowExecutionStatusResponse" wsaw:Action="urn:saveWorkflowExecutionStatusResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="deleteDeploymentDescription">
+            <wsdl:input message="axis2:deleteDeploymentDescriptionRequest" wsaw:Action="urn:deleteDeploymentDescription"/>
+            <wsdl:output message="axis2:deleteDeploymentDescriptionResponse" wsaw:Action="urn:deleteDeploymentDescriptionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getHostDescription">
+            <wsdl:input message="axis2:getHostDescriptionRequest" wsaw:Action="urn:getHostDescription"/>
+            <wsdl:output message="axis2:getHostDescriptionResponse" wsaw:Action="urn:getHostDescriptionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionIdByUser">
+            <wsdl:input message="axis2:getWorkflowExecutionIdByUserRequest" wsaw:Action="urn:getWorkflowExecutionIdByUser"/>
+            <wsdl:output message="axis2:getWorkflowExecutionIdByUserResponse" wsaw:Action="urn:getWorkflowExecutionIdByUserResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="saveHostDescription">
+            <wsdl:input message="axis2:saveHostDescriptionRequest" wsaw:Action="urn:saveHostDescription"/>
+            <wsdl:output message="axis2:saveHostDescriptionResponse" wsaw:Action="urn:saveHostDescriptionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="saveServiceDescription">
+            <wsdl:input message="axis2:saveServiceDescriptionRequest" wsaw:Action="urn:saveServiceDescription"/>
+            <wsdl:output message="axis2:saveServiceDescriptionResponse" wsaw:Action="urn:saveServiceDescriptionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionOutput">
+            <wsdl:input message="axis2:saveWorkflowExecutionOutputRequest" wsaw:Action="urn:saveWorkflowExecutionOutput"/>
+            <wsdl:output message="axis2:saveWorkflowExecutionOutputResponse" wsaw:Action="urn:saveWorkflowExecutionOutputResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="deleteHostDescription">
+            <wsdl:input message="axis2:deleteHostDescriptionRequest" wsaw:Action="urn:deleteHostDescription"/>
+            <wsdl:output message="axis2:deleteHostDescriptionResponse" wsaw:Action="urn:deleteHostDescriptionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="saveGFacDescriptor">
+            <wsdl:input message="axis2:saveGFacDescriptorRequest" wsaw:Action="urn:saveGFacDescriptor"/>
+            <wsdl:output message="axis2:saveGFacDescriptorResponse" wsaw:Action="urn:saveGFacDescriptorResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionOutputNames">
+            <wsdl:input message="axis2:getWorkflowExecutionOutputNamesRequest" wsaw:Action="urn:getWorkflowExecutionOutputNames"/>
+            <wsdl:output message="axis2:getWorkflowExecutionOutputNamesResponse" wsaw:Action="urn:getWorkflowExecutionOutputNamesResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="deleteGFacDescriptor">
+            <wsdl:input message="axis2:deleteGFacDescriptorRequest" wsaw:Action="urn:deleteGFacDescriptor"/>
+            <wsdl:output message="axis2:deleteGFacDescriptorResponse" wsaw:Action="urn:deleteGFacDescriptorResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="deployServiceOnHost">
+            <wsdl:input message="axis2:deployServiceOnHostRequest" wsaw:Action="urn:deployServiceOnHost"/>
+            <wsdl:output message="axis2:deployServiceOnHostResponse" wsaw:Action="urn:deployServiceOnHostResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getDeploymentDescription">
+            <wsdl:input message="axis2:getDeploymentDescriptionRequest" wsaw:Action="urn:getDeploymentDescription"/>
+            <wsdl:output message="axis2:getDeploymentDescriptionResponse" wsaw:Action="urn:getDeploymentDescriptionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionMetadata">
+            <wsdl:input message="axis2:getWorkflowExecutionMetadataRequest" wsaw:Action="urn:getWorkflowExecutionMetadata"/>
+            <wsdl:output message="axis2:getWorkflowExecutionMetadataResponse" wsaw:Action="urn:getWorkflowExecutionMetadataResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionMetadata">
+            <wsdl:input message="axis2:saveWorkflowExecutionMetadataRequest" wsaw:Action="urn:saveWorkflowExecutionMetadata"/>
+            <wsdl:output message="axis2:saveWorkflowExecutionMetadataResponse" wsaw:Action="urn:saveWorkflowExecutionMetadataResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecution">
+            <wsdl:input message="axis2:getWorkflowExecutionRequest" wsaw:Action="urn:getWorkflowExecution"/>
+            <wsdl:output message="axis2:getWorkflowExecutionResponse" wsaw:Action="urn:getWorkflowExecutionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionByUser">
+            <wsdl:input message="axis2:getWorkflowExecutionByUserRequest" wsaw:Action="urn:getWorkflowExecutionByUser"/>
+            <wsdl:output message="axis2:getWorkflowExecutionByUserResponse" wsaw:Action="urn:getWorkflowExecutionByUserResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionUser">
+            <wsdl:input message="axis2:getWorkflowExecutionUserRequest" wsaw:Action="urn:getWorkflowExecutionUser"/>
+            <wsdl:output message="axis2:getWorkflowExecutionUserResponse" wsaw:Action="urn:getWorkflowExecutionUserResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescriptionWithService">
+            <wsdl:input message="axis2:searchDeploymentDescriptionWithServiceRequest" wsaw:Action="urn:searchDeploymentDescriptionWithService"/>
+            <wsdl:output message="axis2:searchDeploymentDescriptionWithServiceResponse" wsaw:Action="urn:searchDeploymentDescriptionWithServiceResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionServiceOutput">
+            <wsdl:input message="axis2:saveWorkflowExecutionServiceOutputRequest" wsaw:Action="urn:saveWorkflowExecutionServiceOutput"/>
+            <wsdl:output message="axis2:saveWorkflowExecutionServiceOutputResponse" wsaw:Action="urn:saveWorkflowExecutionServiceOutputResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionStatus">
+            <wsdl:input message="axis2:getWorkflowExecutionStatusRequest" wsaw:Action="urn:getWorkflowExecutionStatus"/>
+            <wsdl:output message="axis2:getWorkflowExecutionStatusResponse" wsaw:Action="urn:getWorkflowExecutionStatusResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflow">
+            <wsdl:input message="axis2:saveWorkflowRequest" wsaw:Action="urn:saveWorkflow"/>
+            <wsdl:output message="axis2:saveWorkflowResponse" wsaw:Action="urn:saveWorkflowResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceDescription">
+            <wsdl:input message="axis2:getServiceDescriptionRequest" wsaw:Action="urn:getServiceDescription"/>
+            <wsdl:output message="axis2:getServiceDescriptionResponse" wsaw:Action="urn:getServiceDescriptionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="searchWorkflowExecutionServiceInput">
+            <wsdl:input message="axis2:searchWorkflowExecutionServiceInputRequest" wsaw:Action="urn:searchWorkflowExecutionServiceInput"/>
+            <wsdl:output message="axis2:searchWorkflowExecutionServiceInputResponse" wsaw:Action="urn:searchWorkflowExecutionServiceInputResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflows">
+            <wsdl:input message="axis2:getWorkflowsRequest" wsaw:Action="urn:getWorkflows"/>
+            <wsdl:output message="axis2:getWorkflowsResponse" wsaw:Action="urn:getWorkflowsResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="searchWorkflowExecutionServiceOutput">
+            <wsdl:input message="axis2:searchWorkflowExecutionServiceOutputRequest" wsaw:Action="urn:searchWorkflowExecutionServiceOutput"/>
+            <wsdl:output message="axis2:searchWorkflowExecutionServiceOutputResponse" wsaw:Action="urn:searchWorkflowExecutionServiceOutputResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflow">
+            <wsdl:input message="axis2:getWorkflowRequest" wsaw:Action="urn:getWorkflow"/>
+            <wsdl:output message="axis2:getWorkflowResponse" wsaw:Action="urn:getWorkflowResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionUser">
+            <wsdl:input message="axis2:saveWorkflowExecutionUserRequest" wsaw:Action="urn:saveWorkflowExecutionUser"/>
+            <wsdl:output message="axis2:saveWorkflowExecutionUserResponse" wsaw:Action="urn:saveWorkflowExecutionUserResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="deleteWorkflow">
+            <wsdl:input message="axis2:deleteWorkflowRequest" wsaw:Action="urn:deleteWorkflow"/>
+            <wsdl:output message="axis2:deleteWorkflowResponse" wsaw:Action="urn:deleteWorkflowResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescription">
+            <wsdl:input message="axis2:searchDeploymentDescriptionRequest" wsaw:Action="urn:searchDeploymentDescription"/>
+            <wsdl:output message="axis2:searchDeploymentDescriptionResponse" wsaw:Action="urn:searchDeploymentDescriptionResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionOutput">
+            <wsdl:input message="axis2:getWorkflowExecutionOutputRequest" wsaw:Action="urn:getWorkflowExecutionOutput"/>
+            <wsdl:output message="axis2:getWorkflowExecutionOutputResponse" wsaw:Action="urn:getWorkflowExecutionOutputResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescriptionWithSerivceHost">
+            <wsdl:input message="axis2:searchDeploymentDescriptionWithSerivceHostRequest" wsaw:Action="urn:searchDeploymentDescriptionWithSerivceHost"/>
+            <wsdl:output message="axis2:searchDeploymentDescriptionWithSerivceHostResponse" wsaw:Action="urn:searchDeploymentDescriptionWithSerivceHostResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionByUserLimited">
+            <wsdl:input message="axis2:getWorkflowExecutionByUserLimitedRequest" wsaw:Action="urn:getWorkflowExecutionByUserLimited"/>
+            <wsdl:output message="axis2:getWorkflowExecutionByUserLimitedResponse" wsaw:Action="urn:getWorkflowExecutionByUserLimitedResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="RegistryServiceSoap11Binding" type="axis2:RegistryServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="searchHostDescription">
+            <soap:operation soapAction="urn:searchHostDescription" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescriptionWithServiceHostApp">
+            <soap:operation soapAction="urn:searchDeploymentDescriptionWithServiceHostApp" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveDeploymentDescription">
+            <soap:operation soapAction="urn:saveDeploymentDescription" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getGFacDescriptorList">
+            <soap:operation soapAction="urn:getGFacDescriptorList" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionServiceInput">
+            <soap:operation soapAction="urn:saveWorkflowExecutionServiceInput" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteServiceDescription">
+            <soap:operation soapAction="urn:deleteServiceDescription" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionStatus">
+            <soap:operation soapAction="urn:saveWorkflowExecutionStatus" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionIdByUser">
+            <soap:operation soapAction="urn:getWorkflowExecutionIdByUser" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getHostDescription">
+            <soap:operation soapAction="urn:getHostDescription" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteDeploymentDescription">
+            <soap:operation soapAction="urn:deleteDeploymentDescription" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveHostDescription">
+            <soap:operation soapAction="urn:saveHostDescription" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionOutput">
+            <soap:operation soapAction="urn:saveWorkflowExecutionOutput" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveServiceDescription">
+            <soap:operation soapAction="urn:saveServiceDescription" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionOutputNames">
+            <soap:operation soapAction="urn:getWorkflowExecutionOutputNames" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveGFacDescriptor">
+            <soap:operation soapAction="urn:saveGFacDescriptor" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteHostDescription">
+            <soap:operation soapAction="urn:deleteHostDescription" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteGFacDescriptor">
+            <soap:operation soapAction="urn:deleteGFacDescriptor" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deployServiceOnHost">
+            <soap:operation soapAction="urn:deployServiceOnHost" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDeploymentDescription">
+            <soap:operation soapAction="urn:getDeploymentDescription" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionMetadata">
+            <soap:operation soapAction="urn:getWorkflowExecutionMetadata" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecution">
+            <soap:operation soapAction="urn:getWorkflowExecution" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionMetadata">
+            <soap:operation soapAction="urn:saveWorkflowExecutionMetadata" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionByUser">
+            <soap:operation soapAction="urn:getWorkflowExecutionByUser" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionUser">
+            <soap:operation soapAction="urn:getWorkflowExecutionUser" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescriptionWithService">
+            <soap:operation soapAction="urn:searchDeploymentDescriptionWithService" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionServiceOutput">
+            <soap:operation soapAction="urn:saveWorkflowExecutionServiceOutput" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionStatus">
+            <soap:operation soapAction="urn:getWorkflowExecutionStatus" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchWorkflowExecutionServiceInput">
+            <soap:operation soapAction="urn:searchWorkflowExecutionServiceInput" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceDescription">
+            <soap:operation soapAction="urn:getServiceDescription" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflow">
+            <soap:operation soapAction="urn:saveWorkflow" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflows">
+            <soap:operation soapAction="urn:getWorkflows" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchWorkflowExecutionServiceOutput">
+            <soap:operation soapAction="urn:searchWorkflowExecutionServiceOutput" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflow">
+            <soap:operation soapAction="urn:getWorkflow" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionUser">
+            <soap:operation soapAction="urn:saveWorkflowExecutionUser" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteWorkflow">
+            <soap:operation soapAction="urn:deleteWorkflow" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescription">
+            <soap:operation soapAction="urn:searchDeploymentDescription" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionOutput">
+            <soap:operation soapAction="urn:getWorkflowExecutionOutput" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescriptionWithSerivceHost">
+            <soap:operation soapAction="urn:searchDeploymentDescriptionWithSerivceHost" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionByUserLimited">
+            <soap:operation soapAction="urn:getWorkflowExecutionByUserLimited" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="RegistryServiceSoap12Binding" type="axis2:RegistryServicePortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="searchHostDescription">
+            <soap12:operation soapAction="urn:searchHostDescription" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescriptionWithServiceHostApp">
+            <soap12:operation soapAction="urn:searchDeploymentDescriptionWithServiceHostApp" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveDeploymentDescription">
+            <soap12:operation soapAction="urn:saveDeploymentDescription" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getGFacDescriptorList">
+            <soap12:operation soapAction="urn:getGFacDescriptorList" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionServiceInput">
+            <soap12:operation soapAction="urn:saveWorkflowExecutionServiceInput" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteServiceDescription">
+            <soap12:operation soapAction="urn:deleteServiceDescription" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionStatus">
+            <soap12:operation soapAction="urn:saveWorkflowExecutionStatus" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionIdByUser">
+            <soap12:operation soapAction="urn:getWorkflowExecutionIdByUser" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getHostDescription">
+            <soap12:operation soapAction="urn:getHostDescription" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteDeploymentDescription">
+            <soap12:operation soapAction="urn:deleteDeploymentDescription" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveHostDescription">
+            <soap12:operation soapAction="urn:saveHostDescription" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionOutput">
+            <soap12:operation soapAction="urn:saveWorkflowExecutionOutput" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveServiceDescription">
+            <soap12:operation soapAction="urn:saveServiceDescription" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionOutputNames">
+            <soap12:operation soapAction="urn:getWorkflowExecutionOutputNames" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveGFacDescriptor">
+            <soap12:operation soapAction="urn:saveGFacDescriptor" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteHostDescription">
+            <soap12:operation soapAction="urn:deleteHostDescription" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteGFacDescriptor">
+            <soap12:operation soapAction="urn:deleteGFacDescriptor" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deployServiceOnHost">
+            <soap12:operation soapAction="urn:deployServiceOnHost" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDeploymentDescription">
+            <soap12:operation soapAction="urn:getDeploymentDescription" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionMetadata">
+            <soap12:operation soapAction="urn:getWorkflowExecutionMetadata" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecution">
+            <soap12:operation soapAction="urn:getWorkflowExecution" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionMetadata">
+            <soap12:operation soapAction="urn:saveWorkflowExecutionMetadata" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionByUser">
+            <soap12:operation soapAction="urn:getWorkflowExecutionByUser" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionUser">
+            <soap12:operation soapAction="urn:getWorkflowExecutionUser" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescriptionWithService">
+            <soap12:operation soapAction="urn:searchDeploymentDescriptionWithService" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionServiceOutput">
+            <soap12:operation soapAction="urn:saveWorkflowExecutionServiceOutput" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionStatus">
+            <soap12:operation soapAction="urn:getWorkflowExecutionStatus" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchWorkflowExecutionServiceInput">
+            <soap12:operation soapAction="urn:searchWorkflowExecutionServiceInput" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceDescription">
+            <soap12:operation soapAction="urn:getServiceDescription" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflow">
+            <soap12:operation soapAction="urn:saveWorkflow" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflows">
+            <soap12:operation soapAction="urn:getWorkflows" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchWorkflowExecutionServiceOutput">
+            <soap12:operation soapAction="urn:searchWorkflowExecutionServiceOutput" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflow">
+            <soap12:operation soapAction="urn:getWorkflow" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionUser">
+            <soap12:operation soapAction="urn:saveWorkflowExecutionUser" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteWorkflow">
+            <soap12:operation soapAction="urn:deleteWorkflow" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescription">
+            <soap12:operation soapAction="urn:searchDeploymentDescription" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionOutput">
+            <soap12:operation soapAction="urn:getWorkflowExecutionOutput" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescriptionWithSerivceHost">
+            <soap12:operation soapAction="urn:searchDeploymentDescriptionWithSerivceHost" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionByUserLimited">
+            <soap12:operation soapAction="urn:getWorkflowExecutionByUserLimited" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="RegistryServiceHttpBinding" type="axis2:RegistryServicePortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="searchHostDescription">
+            <http:operation location="RegistryService/searchHostDescription"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="searchHostDescription"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="searchHostDescription"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescriptionWithServiceHostApp">
+            <http:operation location="RegistryService/searchDeploymentDescriptionWithServiceHostApp"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="searchDeploymentDescriptionWithServiceHostApp"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="searchDeploymentDescriptionWithServiceHostApp"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveDeploymentDescription">
+            <http:operation location="RegistryService/saveDeploymentDescription"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="saveDeploymentDescription"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="saveDeploymentDescription"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getGFacDescriptorList">
+            <http:operation location="RegistryService/getGFacDescriptorList"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getGFacDescriptorList"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getGFacDescriptorList"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionServiceInput">
+            <http:operation location="RegistryService/saveWorkflowExecutionServiceInput"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="saveWorkflowExecutionServiceInput"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="saveWorkflowExecutionServiceInput"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteServiceDescription">
+            <http:operation location="RegistryService/deleteServiceDescription"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="deleteServiceDescription"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="deleteServiceDescription"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionStatus">
+            <http:operation location="RegistryService/saveWorkflowExecutionStatus"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="saveWorkflowExecutionStatus"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="saveWorkflowExecutionStatus"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionIdByUser">
+            <http:operation location="RegistryService/getWorkflowExecutionIdByUser"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getWorkflowExecutionIdByUser"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getWorkflowExecutionIdByUser"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getHostDescription">
+            <http:operation location="RegistryService/getHostDescription"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getHostDescription"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getHostDescription"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteDeploymentDescription">
+            <http:operation location="RegistryService/deleteDeploymentDescription"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="deleteDeploymentDescription"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="deleteDeploymentDescription"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveHostDescription">
+            <http:operation location="RegistryService/saveHostDescription"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="saveHostDescription"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="saveHostDescription"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionOutput">
+            <http:operation location="RegistryService/saveWorkflowExecutionOutput"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="saveWorkflowExecutionOutput"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="saveWorkflowExecutionOutput"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveServiceDescription">
+            <http:operation location="RegistryService/saveServiceDescription"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="saveServiceDescription"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="saveServiceDescription"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionOutputNames">
+            <http:operation location="RegistryService/getWorkflowExecutionOutputNames"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getWorkflowExecutionOutputNames"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getWorkflowExecutionOutputNames"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveGFacDescriptor">
+            <http:operation location="RegistryService/saveGFacDescriptor"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="saveGFacDescriptor"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="saveGFacDescriptor"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteHostDescription">
+            <http:operation location="RegistryService/deleteHostDescription"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="deleteHostDescription"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="deleteHostDescription"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteGFacDescriptor">
+            <http:operation location="RegistryService/deleteGFacDescriptor"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="deleteGFacDescriptor"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="deleteGFacDescriptor"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deployServiceOnHost">
+            <http:operation location="RegistryService/deployServiceOnHost"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="deployServiceOnHost"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="deployServiceOnHost"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDeploymentDescription">
+            <http:operation location="RegistryService/getDeploymentDescription"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getDeploymentDescription"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getDeploymentDescription"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionMetadata">
+            <http:operation location="RegistryService/getWorkflowExecutionMetadata"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getWorkflowExecutionMetadata"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getWorkflowExecutionMetadata"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecution">
+            <http:operation location="RegistryService/getWorkflowExecution"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getWorkflowExecution"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getWorkflowExecution"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionMetadata">
+            <http:operation location="RegistryService/saveWorkflowExecutionMetadata"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="saveWorkflowExecutionMetadata"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="saveWorkflowExecutionMetadata"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionByUser">
+            <http:operation location="RegistryService/getWorkflowExecutionByUser"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getWorkflowExecutionByUser"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getWorkflowExecutionByUser"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionUser">
+            <http:operation location="RegistryService/getWorkflowExecutionUser"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getWorkflowExecutionUser"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getWorkflowExecutionUser"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescriptionWithService">
+            <http:operation location="RegistryService/searchDeploymentDescriptionWithService"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="searchDeploymentDescriptionWithService"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="searchDeploymentDescriptionWithService"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionServiceOutput">
+            <http:operation location="RegistryService/saveWorkflowExecutionServiceOutput"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="saveWorkflowExecutionServiceOutput"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="saveWorkflowExecutionServiceOutput"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionStatus">
+            <http:operation location="RegistryService/getWorkflowExecutionStatus"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getWorkflowExecutionStatus"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getWorkflowExecutionStatus"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchWorkflowExecutionServiceInput">
+            <http:operation location="RegistryService/searchWorkflowExecutionServiceInput"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="searchWorkflowExecutionServiceInput"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="searchWorkflowExecutionServiceInput"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceDescription">
+            <http:operation location="RegistryService/getServiceDescription"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getServiceDescription"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getServiceDescription"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflow">
+            <http:operation location="RegistryService/saveWorkflow"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="saveWorkflow"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="saveWorkflow"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflows">
+            <http:operation location="RegistryService/getWorkflows"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getWorkflows"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getWorkflows"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchWorkflowExecutionServiceOutput">
+            <http:operation location="RegistryService/searchWorkflowExecutionServiceOutput"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="searchWorkflowExecutionServiceOutput"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="searchWorkflowExecutionServiceOutput"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflow">
+            <http:operation location="RegistryService/getWorkflow"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getWorkflow"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getWorkflow"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="saveWorkflowExecutionUser">
+            <http:operation location="RegistryService/saveWorkflowExecutionUser"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="saveWorkflowExecutionUser"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="saveWorkflowExecutionUser"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deleteWorkflow">
+            <http:operation location="RegistryService/deleteWorkflow"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="deleteWorkflow"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="deleteWorkflow"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescription">
+            <http:operation location="RegistryService/searchDeploymentDescription"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="searchDeploymentDescription"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="searchDeploymentDescription"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionOutput">
+            <http:operation location="RegistryService/getWorkflowExecutionOutput"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getWorkflowExecutionOutput"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getWorkflowExecutionOutput"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="searchDeploymentDescriptionWithSerivceHost">
+            <http:operation location="RegistryService/searchDeploymentDescriptionWithSerivceHost"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="searchDeploymentDescriptionWithSerivceHost"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="searchDeploymentDescriptionWithSerivceHost"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getWorkflowExecutionByUserLimited">
+            <http:operation location="RegistryService/getWorkflowExecutionByUserLimited"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getWorkflowExecutionByUserLimited"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getWorkflowExecutionByUserLimited"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="RegistryService">
+        <wsdl:port name="RegistryServiceHttpSoap11Endpoint" binding="axis2:RegistryServiceSoap11Binding">
+            <soap:address location="http://localhost:8080/axis2/services/RegistryService.RegistryServiceHttpSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="RegistryServiceHttpSoap12Endpoint" binding="axis2:RegistryServiceSoap12Binding">
+            <soap12:address location="http://localhost:8080/axis2/services/RegistryService.RegistryServiceHttpSoap12Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="RegistryServiceHttpEndpoint" binding="axis2:RegistryServiceHttpBinding">
+            <http:address location="http://localhost:8080/axis2/services/RegistryService.RegistryServiceHttpEndpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

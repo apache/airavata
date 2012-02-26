@@ -9,44 +9,81 @@
 	the License. -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<parent>
-		<groupId>org.apache.airavata</groupId>
-		<artifactId>airavata</artifactId>
-		<version>0.3-incubating-SNAPSHOT</version>
-		<relativePath>../../pom.xml</relativePath>
-	</parent>
+    <parent>
+        <groupId>org.apache.airavata</groupId>
+        <artifactId>airavata</artifactId>
+        <version>0.3-incubating-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.apache.airavata</groupId>
-	<artifactId>airavata-client</artifactId>
-	<name>Airavata Client</name>
-	<description>Airavata Client for accessing XBaya</description>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.airavata</groupId>
+    <artifactId>airavata-client</artifactId>
+    <name>Airavata Client</name>
+    <description>Airavata Client for accessing XBaya</description>
 
-	<dependencies>
+    <dependencies>
         <dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>registry-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>registry-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-codegen</artifactId>
+            <version>${axis2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-adb-codegen</artifactId>
+            <version>${axis2.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>xbaya-gui</artifactId>
             <version>${project.version}</version>
         </dependency>
-	</dependencies>
+    </dependencies>
 
-	<build>
-		<plugins>
-			<!-- Set working directory to test-class directory -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
-				</configuration>
-				<version>${surefire.version}</version>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+
+        <plugins>
+           <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.3</version>
+                <executions>
+                    <execution>
+                        <id>source-code-generation</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
+                                    <arg line="-uri src/main/resources/RegistryService.wsdl -u -uw -o target/generated-code
+                                    -p org.apache.airavata.registry.services
+                                    -ns2p http://apache.airavata.registry.service=org.apache.airavata.registry.service"/>
+                                    <classpath refid="maven.dependency.classpath"/>
+                                    <classpath refid="maven.compile.classpath"/>
+                                    <classpath refid="maven.runtime.classpath"/>
+                                </java>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Set working directory to test-class directory -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+                </configuration>
+                <version>${surefire.version}</version>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
