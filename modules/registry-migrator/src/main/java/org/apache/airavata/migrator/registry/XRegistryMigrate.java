@@ -19,6 +19,8 @@ import xregistry.generated.ServiceDescData;
 import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,16 +29,21 @@ public class XRegistryMigrate {
 //    private static String propertyfile = "xregistry-dropbox.properties";
     private static String propertyfile = "xregistry-local.properties";
     private static AiravataJCRRegistry jcrRegistry = null;
+    private static String jcrRegsitryURL = "http://localhost:8081/";
+    private static String jcrUsername = "admin";
+    private static String jcrPassword = "admin";
 
     public static void main(String[] args) throws XRegistryClientException {
         /* Create database */
         Map<String,String> config = new HashMap<String,String>();
         config.put("org.apache.jackrabbit.repository.home","target");
         try {
-            jcrRegistry = new AiravataJCRRegistry(null,
-                    "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-                    "admin", config);
+            jcrRegistry = new AiravataJCRRegistry(new URI(jcrRegsitryURL),
+                    "org.apache.jackrabbit.core.RepositoryFactoryImpl",
+                    jcrUsername, jcrPassword, config);
         } catch (RepositoryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (URISyntaxException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
