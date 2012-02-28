@@ -18,22 +18,41 @@ import xregistry.generated.ServiceDescData;
 
 import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 public class XRegistryMigrate {
 //    private static String propertyfile = "xregistry.properties";
 //    private static String propertyfile = "xregistry-dropbox.properties";
     private static String propertyfile = "xregistry-local.properties";
     private static AiravataJCRRegistry jcrRegistry = null;
-    private static String jcrRegsitryURL = "http://localhost:8081/";
-    private static String jcrUsername = "admin";
-    private static String jcrPassword = "admin";
+
+    private static final String JCR_URL = "jcr.url";
+    private static final String JCR_USERNAME = "jcr.username";
+    private static final String JCR_PASSWORD = "jcr.password";
 
     public static void main(String[] args) throws XRegistryClientException {
+        Properties prop = new Properties();
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(propertyfile);
+            prop.load(fis);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        String jcrRegsitryURL = prop.getProperty(JCR_URL);
+        String jcrUsername = prop.getProperty(JCR_USERNAME);
+        String jcrPassword = prop.getProperty(JCR_PASSWORD);
+
         /* Create database */
         Map<String,String> config = new HashMap<String,String>();
         config.put("org.apache.jackrabbit.repository.home","target");
