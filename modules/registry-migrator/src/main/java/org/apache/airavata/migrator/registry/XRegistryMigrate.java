@@ -33,10 +33,6 @@ public class XRegistryMigrate {
     private static String propertyfile = "xregistry-local.properties";
     private static AiravataJCRRegistry jcrRegistry = null;
 
-    private static final String JCR_URL = "jcr.url";
-    private static final String JCR_USERNAME = "jcr.username";
-    private static final String JCR_PASSWORD = "jcr.password";
-
     public static void main(String[] args) throws XRegistryClientException {
         Properties prop = new Properties();
         FileInputStream fis = null;
@@ -49,9 +45,9 @@ public class XRegistryMigrate {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        String jcrRegsitryURL = prop.getProperty(JCR_URL);
-        String jcrUsername = prop.getProperty(JCR_USERNAME);
-        String jcrPassword = prop.getProperty(JCR_PASSWORD);
+        String jcrRegsitryURL = prop.getProperty(MigrationConstants.JCR_URL);
+        String jcrUsername = prop.getProperty(MigrationConstants.JCR_USERNAME);
+        String jcrPassword = prop.getProperty(MigrationConstants.JCR_PASSWORD);
 
         /* Create database */
         Map<String,String> config = new HashMap<String,String>();
