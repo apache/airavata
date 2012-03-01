@@ -179,7 +179,13 @@ public class XRegistryMigrate {
             if(appBean != null){
                 app = MigrationUtil.createAppDeploymentDescription(appBean);
                 try {
-                    jcrRegistry.saveDeploymentDescription(service.getType().getName(), appBean.getHostName(), app);
+                    ApplicationDeploymentDescription appDepDesc = jcrRegistry.getDeploymentDescription(service.getType().getName(), appBean.getHostName());
+                    if(appDepDesc == null) {
+                        jcrRegistry.saveDeploymentDescription(service.getType().getName(), appBean.getHostName(), app);
+                    } else {
+                        System.out.println("Application Deployment Description named " + service.getType().getName() +
+                        " with host " + appBean.getHostName() + " exists in the registry. Therefore, not saving it.");
+                    }
 //            jcrRegistry.saveDeploymentDescription(service.getType().getName(), host.getType().getHostName(), app);
                 } catch (RegistryException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
