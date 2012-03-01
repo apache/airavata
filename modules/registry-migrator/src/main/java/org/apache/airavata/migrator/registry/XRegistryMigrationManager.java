@@ -25,10 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class XRegistryMigrate {
-//    private static String propertyfile = "xregistry.properties";
-//    private static String propertyfile = "xregistry-dropbox.properties";
-//    private static String file = "xregistry-local.properties";
+public class XRegistryMigrationManager {
     private static String file = null;
     private static AiravataJCRRegistry jcrRegistry = null;
 
@@ -36,7 +33,7 @@ public class XRegistryMigrate {
     private static String jcrUsername = null;
     private static String jcrPassword = null;
 
-    public XRegistryMigrate(String propertyFile) {
+    public XRegistryMigrationManager(String propertyFile) {
         try {
             file = propertyFile;
             loadProperties(propertyFile);
@@ -47,11 +44,11 @@ public class XRegistryMigrate {
     }
 
     public static void main(String[] args) throws XRegistryClientException {
-        XRegistryMigrate manager = new XRegistryMigrate("xregistry-local.properties");
+        XRegistryMigrationManager manager = new XRegistryMigrationManager("xregistry-local.properties");
         manager.migrate();
     }
 
-    private void migrate() throws XRegistryClientException {
+    public void migrate() throws XRegistryClientException {
         Map<String,String> config = new HashMap<String,String>();
         URI uri = null;
         try {
