@@ -42,16 +42,20 @@ public class XRegistryMigrate {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        /* Create database */
         Map<String,String> config = new HashMap<String,String>();
-        config.put("org.apache.jackrabbit.repository.home","target");
+        URI uri = null;
         try {
-            jcrRegistry = new AiravataJCRRegistry(new URI(jcrRegsitryURL),
-                    "org.apache.jackrabbit.core.RepositoryFactoryImpl",
+            uri = new URI(jcrRegsitryURL);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        config.put("org.apache.jackrabbit.repository.uri", uri.toString());
+
+        try {
+            jcrRegistry = new AiravataJCRRegistry(uri,
+                    "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory",
                     jcrUsername, jcrPassword, config);
         } catch (RepositoryException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (URISyntaxException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
