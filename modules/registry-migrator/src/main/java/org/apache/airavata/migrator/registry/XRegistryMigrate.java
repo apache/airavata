@@ -18,9 +18,7 @@ import xregistry.generated.ServiceDescData;
 
 import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -33,21 +31,16 @@ public class XRegistryMigrate {
     private static String propertyfile = "xregistry-local.properties";
     private static AiravataJCRRegistry jcrRegistry = null;
 
+    private static String jcrRegsitryURL = null;
+    private static String jcrUsername = null;
+    private static String jcrPassword = null;
+
     public static void main(String[] args) throws XRegistryClientException {
-        Properties prop = new Properties();
-        FileInputStream fis = null;
         try {
-            fis = new FileInputStream(propertyfile);
-            prop.load(fis);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            loadProperties(propertyfile);
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-
-        String jcrRegsitryURL = prop.getProperty(MigrationConstants.JCR_URL);
-        String jcrUsername = prop.getProperty(MigrationConstants.JCR_USERNAME);
-        String jcrPassword = prop.getProperty(MigrationConstants.JCR_PASSWORD);
 
         /* Create database */
         Map<String,String> config = new HashMap<String,String>();
@@ -67,6 +60,26 @@ public class XRegistryMigrate {
         saveAllServiceDescriptions(client);
 
         System.out.println("DONE!");
+    }
+
+    private static void loadProperties(String file) throws IOException {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        InputStream propertyStream = classLoader.getResourceAsStream(file);
+        Properties properties = new Properties();
+        if (propertyStream == null) {
+            FileInputStream fileInputStream = new FileInputStream(new File(file));
+            properties.load(fileInputStream);
+        } else {
+            properties.load(propertyStream);
+        }
+
+        jcrRegsitryURL = properties.getProperty(MigrationConstants.JCR_URL);
+        jcrUsername = properties.getProperty(MigrationConstants.JCR_USERNAME);
+        jcrPassword = properties.getProperty(MigrationConstants.JCR_PASSWORD);
+        System.out.println(jcrRegsitryURL);
+        System.out.println(jcrUsername);
+        System.out.println(jcrPassword);
+
     }
 
     private static void saveAllHostDescriptions(XRegistryClient client) throws XRegistryClientException {
