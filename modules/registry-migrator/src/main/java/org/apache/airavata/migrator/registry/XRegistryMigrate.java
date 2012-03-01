@@ -28,20 +28,30 @@ import java.util.Properties;
 public class XRegistryMigrate {
 //    private static String propertyfile = "xregistry.properties";
 //    private static String propertyfile = "xregistry-dropbox.properties";
-    private static String propertyfile = "xregistry-local.properties";
+//    private static String file = "xregistry-local.properties";
+    private static String file = null;
     private static AiravataJCRRegistry jcrRegistry = null;
 
     private static String jcrRegsitryURL = null;
     private static String jcrUsername = null;
     private static String jcrPassword = null;
 
-    public static void main(String[] args) throws XRegistryClientException {
+    public XRegistryMigrate(String propertyFile) {
         try {
-            loadProperties(propertyfile);
+            file = propertyFile;
+            loadProperties(propertyFile);
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
+    }
+
+    public static void main(String[] args) throws XRegistryClientException {
+        XRegistryMigrate manager = new XRegistryMigrate("xregistry-local.properties");
+        manager.migrate();
+    }
+
+    private void migrate() throws XRegistryClientException {
         Map<String,String> config = new HashMap<String,String>();
         URI uri = null;
         try {
@@ -59,7 +69,7 @@ public class XRegistryMigrate {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        XRegistryClient client = XRegistryClientUtil.CreateGSISecureRegistryInstance(propertyfile);
+        XRegistryClient client = XRegistryClientUtil.CreateGSISecureRegistryInstance(file);
         saveAllHostDescriptions(client);
         saveAllServiceDescriptions(client);
 
