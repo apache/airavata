@@ -28,7 +28,6 @@ import java.util.Properties;
 public class XRegistryMigrationManager {
     private static String file = null;
     private static AiravataJCRRegistry jcrRegistry = null;
-
     private static String jcrRegsitryURL = null;
     private static String jcrUsername = null;
     private static String jcrPassword = null;
@@ -40,11 +39,10 @@ public class XRegistryMigrationManager {
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-
     }
 
     public static void main(String[] args) throws XRegistryClientException {
-        XRegistryMigrationManager manager = new XRegistryMigrationManager("xregistry-local.properties");
+        XRegistryMigrationManager manager = new XRegistryMigrationManager(args[0]);
         manager.migrate();
     }
 
