@@ -51,9 +51,13 @@ public class MigrationUtil {
         if (inputParameterTypes != null) {
             for (ParamObject inputParameterType : inputParameterTypes) {
                 InputParameterType input = InputParameterType.Factory.newInstance();
-                String inputParamName = inputParameterType.getName();
-                input.setParameterName(inputParamName);
-                input.setParameterType(createParameterType(inputParameterType));
+                input.setParameterName(inputParameterType.getName());
+                input.setParameterDescription(inputParameterType.getDesc());
+
+                ParameterType parameterType = input.addNewParameterType();
+                parameterType.setType(DataType.Enum.forString(inputParameterType.getType()));
+                parameterType.setName(inputParameterType.getType());
+
                 inputList.add(input);
             }
             InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
