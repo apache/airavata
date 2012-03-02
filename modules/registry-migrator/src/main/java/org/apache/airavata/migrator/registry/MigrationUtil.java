@@ -53,10 +53,7 @@ public class MigrationUtil {
                 InputParameterType input = InputParameterType.Factory.newInstance();
                 String inputParamName = inputParameterType.getName();
                 input.setParameterName(inputParamName);
-
-                //TODO properly set the type
-                String type = inputParameterType.getType();
-                input.setParameterType(StringParameterType.Factory.newInstance());
+                input.setParameterType(createParameterType(inputParameterType));
                 inputList.add(input);
             }
             InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
@@ -70,10 +67,7 @@ public class MigrationUtil {
                 String outputParamName = outputParameterType.getName();
                 OutputParameterType output = OutputParameterType.Factory.newInstance();
                 output.setParameterName(outputParamName);
-
-                //TODO properly set the type
-                String en = outputParameterType.getType();
-                output.setParameterType(StringParameterType.Factory.newInstance());
+                output.setParameterType(createParameterType(outputParameterType));
                 outputList.add(output);
 
             }
@@ -82,6 +76,20 @@ public class MigrationUtil {
         }
 
         return serv;
+    }
+
+    private static ParameterType createParameterType(ParamObject outputParameterType) {
+        String en = outputParameterType.getType();
+
+        //DataType dt;
+        if("String".equalsIgnoreCase(en)) {
+            return StringParameterType.Factory.newInstance();
+        } else if ("double".equalsIgnoreCase(en)) {
+            return DoubleParameterType.Factory.newInstance();
+        } else {
+            // TODO check
+            return StringParameterType.Factory.newInstance();
+        }
     }
 
     /**
