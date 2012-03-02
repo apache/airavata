@@ -94,15 +94,15 @@ public class MigrationUtil {
         ApplicationDeploymentDescriptionType.ApplicationName name =
                 ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
         name.setStringValue(appBean.getApplicationName());
-        app.setApplicationName(name);
 
+        app.setApplicationName(name);
         app.setExecutableLocation(appBean.getExecutable());
         app.setScratchWorkingDirectory(appBean.getTmpDir());
 //      TODO : following are not there in the OGCE schema
-        app.setInputDataDirectory("/tmp/input");
-        app.setOutputDataDirectory("/tmp/output");
-        app.setStandardOutput("/tmp/echo.stdout");
-        app.setStandardError("/tmp/echo.stdout");
+//        app.setInputDataDirectory("/tmp/input");
+//        app.setOutputDataDirectory("/tmp/output");
+//        app.setStandardOutput("/tmp/echo.stdout");
+//        app.setStandardError("/tmp/echo.stdout");
         return appDesc;
 
     }
