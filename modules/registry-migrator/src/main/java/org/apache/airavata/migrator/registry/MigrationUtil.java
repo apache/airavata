@@ -7,6 +7,7 @@ import org.apache.airavata.schemas.gfac.*;
 import org.ogce.schemas.gfac.beans.ApplicationBean;
 import org.ogce.schemas.gfac.beans.HostBean;
 import org.ogce.schemas.gfac.beans.ServiceBean;
+import org.ogce.schemas.gfac.beans.utils.ParamObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,16 +46,16 @@ public class MigrationUtil {
         ServiceDescription serv = new ServiceDescription();
         serv.getType().setName(serviceBean.getServiceName());
 
-        org.ogce.schemas.gfac.documents.InputParameterType[] inputParameterTypes = serviceBean.getInputParam();
+        ArrayList<ParamObject> inputParameterTypes = serviceBean.getMethodBean().getInputParms();
         List<InputParameterType> inputList = new ArrayList<InputParameterType>();
         if (inputParameterTypes != null) {
-            for (org.ogce.schemas.gfac.documents.InputParameterType inputParameterType : inputParameterTypes) {
+            for (ParamObject inputParameterType : inputParameterTypes) {
                 InputParameterType input = InputParameterType.Factory.newInstance();
-                String inputParamName = inputParameterType.getParameterName();
+                String inputParamName = inputParameterType.getName();
                 input.setParameterName(inputParamName);
 
-                //TODO
-                org.ogce.schemas.gfac.documents.InputDataType.Enum en = inputParameterType.getParameterType();
+                //TODO properly set the type
+                String en = inputParameterType.getType();
                 input.setParameterType(StringParameterType.Factory.newInstance());
                 inputList.add(input);
             }
