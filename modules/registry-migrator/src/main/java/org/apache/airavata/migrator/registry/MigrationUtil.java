@@ -68,10 +68,14 @@ public class MigrationUtil {
         List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
         if (outputParameterTypes != null){
             for (ParamObject outputParameterType : outputParameterTypes) {
-                String outputParamName = outputParameterType.getName();
                 OutputParameterType output = OutputParameterType.Factory.newInstance();
-                output.setParameterName(outputParamName);
-                output.setParameterType(createParameterType(outputParameterType));
+                output.setParameterName(outputParameterType.getName());
+                output.setParameterDescription(outputParameterType.getDesc());
+
+                ParameterType parameterType = output.addNewParameterType();
+                parameterType.setType(DataType.Enum.forString(outputParameterType.getType()));
+                parameterType.setName(outputParameterType.getType());
+
                 outputList.add(output);
 
             }
