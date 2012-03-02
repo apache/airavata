@@ -3,10 +3,7 @@ package org.apache.airavata.migrator.registry;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.StringParameterType;
+import org.apache.airavata.schemas.gfac.*;
 import org.ogce.schemas.gfac.beans.ApplicationBean;
 import org.ogce.schemas.gfac.beans.HostBean;
 import org.ogce.schemas.gfac.beans.ServiceBean;
@@ -16,15 +13,26 @@ import java.util.List;
 
 public class MigrationUtil {
     /**
-     * Creates a HostDescription from HostBean.
+     * Creates a HostDescription from HostBean
      *
      * @param hostBean HostBean
      * @return HostDescription
      */
     public static HostDescription createHostDescription(HostBean hostBean) {
         HostDescription host = new HostDescription();
-        host.getType().setHostName(hostBean.getHostName());
-        host.getType().setHostAddress(hostBean.getHostName());
+        if(hostBean.getGateKeeperendPointReference()!=null ||
+                hostBean.getGridFtpendPointReference()!=null) {
+            host.getType().changeType(GlobusHostType.type);
+            host.getType().setHostName(hostBean.getHostName());
+            host.getType().setHostAddress(hostBean.getHostName());
+            ((GlobusHostType) host.getType()).
+                    setGridFTPEndPointArray(new String[]{hostBean.getGridFtpendPointReference()});
+            ((GlobusHostType) host.getType()).
+                    setGlobusGateKeeperEndPointArray(new String[]{hostBean.getGateKeeperendPointReference()});
+        } else {
+            host.getType().setHostName(hostBean.getHostName());
+            host.getType().setHostAddress(hostBean.getHostName());
+        }
         return host;
     }
 
