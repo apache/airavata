@@ -26,15 +26,15 @@ import java.util.Map;
 import java.util.Properties;
 
 public class XRegistryMigrationManager {
-    private static String file = null;
+    private static String migrationPropertiesFile = null;
     private static AiravataJCRRegistry jcrRegistry = null;
-    private static String jcrRegsitryURL = null;
+    private static String jcrRegistryURL = null;
     private static String jcrUsername = null;
     private static String jcrPassword = null;
 
     public XRegistryMigrationManager(String propertyFile) {
         try {
-            file = propertyFile;
+            migrationPropertiesFile = propertyFile;
             loadProperties(propertyFile);
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -46,11 +46,16 @@ public class XRegistryMigrationManager {
         manager.migrate();
     }
 
+    /**
+     * Migrates the the resources from XRegistry to the Airavata Registry.
+     *
+     * @throws XRegistryClientException XRegistryClientException
+     */
     public void migrate() throws XRegistryClientException {
         Map<String,String> config = new HashMap<String,String>();
         URI uri = null;
         try {
-            uri = new URI(jcrRegsitryURL);
+            uri = new URI(jcrRegistryURL);
         } catch (URISyntaxException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -64,7 +69,7 @@ public class XRegistryMigrationManager {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
-        XRegistryClient client = XRegistryClientUtil.CreateGSISecureRegistryInstance(file);
+        XRegistryClient client = XRegistryClientUtil.CreateGSISecureRegistryInstance(migrationPropertiesFile);
         saveAllHostDescriptions(client);
         saveAllServiceDescriptions(client);
 
@@ -82,15 +87,21 @@ public class XRegistryMigrationManager {
             properties.load(propertyStream);
         }
 
-        jcrRegsitryURL = properties.getProperty(MigrationConstants.JCR_URL);
+        jcrRegistryURL = properties.getProperty(MigrationConstants.JCR_URL);
         jcrUsername = properties.getProperty(MigrationConstants.JCR_USERNAME);
         jcrPassword = properties.getProperty(MigrationConstants.JCR_PASSWORD);
-        System.out.println(jcrRegsitryURL);
+        System.out.println(jcrRegistryURL);
         System.out.println(jcrUsername);
         System.out.println(jcrPassword);
 
     }
 
+    /**
+     * Saves all the host descriptions to the Airavata Registry from the the given XRegistry.
+     *
+     * @param client client to access the XRegistry
+     * @throws XRegistryClientException XRegistryClientException
+     */
     private static void saveAllHostDescriptions(XRegistryClient client) throws XRegistryClientException {
         HostDescription host = null;
         HostDescData[] hostDescs = client.findHosts("");
@@ -123,6 +134,12 @@ public class XRegistryMigrationManager {
         System.out.println("=== All Hosts are saved ===");
     }
 
+    /**
+     * Saves all the host service descriptions to the Airavata Registry from the the given XRegistry.
+     *
+     * @param client client to access the XRegistry
+     * @throws XRegistryClientException XRegistryClientException
+     */
     private static void saveAllServiceDescriptions(XRegistryClient client) throws XRegistryClientException {
         ServiceDescription service = null;
         ServiceDescData[] serviceDescDatas = client.findServiceDesc("");
@@ -163,6 +180,15 @@ public class XRegistryMigrationManager {
         System.out.println("=== All Service/Applciation descriptors are saved ===");
     }
 
+    /**
+     * Saves the application description to the Airavata Registry from the the given XRegistry.
+     *
+     * @param client client to access the XRegistry
+     * @param applicationName name of the application to be saved
+     * @param service service name
+     * @return ApplicationBean
+     * @throws XRegistryClientException XRegistryClientException
+     */
     private static ApplicationBean saveApplicationDescriptionWithName(XRegistryClient client, String applicationName, ServiceDescription service) throws XRegistryClientException {
         ApplicationDeploymentDescription app = null;
         FindAppDescResponseDocument.FindAppDescResponse.AppData[] appDatas = client.findAppDesc(applicationName);
@@ -203,7 +229,13 @@ public class XRegistryMigrationManager {
         return appBean;
     }
 
-    private static void saveAllApplicationDescriptions(XRegistryClient client, ServiceDescription service) throws XRegistryClientException {
+    /**
+     * Saves all the application descriptions to the Airavata Registry from the the given XRegistry.
+     *
+     * @param client client to access the XRegistry
+     * @throws XRegistryClientException XRegistryClientException
+     */
+    private static void saveAllApplicationDescriptions(XRegistryClient client) throws XRegistryClientException {
         ApplicationDeploymentDescription app = null;
         FindAppDescResponseDocument.FindAppDescResponse.AppData[] appDatas = client.findAppDesc("");
         Map<QName, FindAppDescResponseDocument.FindAppDescResponse.AppData> val2 =

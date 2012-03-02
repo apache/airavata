@@ -77,7 +77,6 @@ public class MigrationUtil {
                 parameterType.setName(outputParameterType.getType());
 
                 outputList.add(output);
-
             }
             OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
             serv.getType().setOutputParametersArray(outputParamList);
