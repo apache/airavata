@@ -86,20 +86,6 @@ public class MigrationUtil {
         return serv;
     }
 
-    private static ParameterType createParameterType(ParamObject outputParameterType) {
-        String en = outputParameterType.getType();
-
-        //DataType dt;
-        if("String".equalsIgnoreCase(en)) {
-            return StringParameterType.Factory.newInstance();
-        } else if ("double".equalsIgnoreCase(en)) {
-            return DoubleParameterType.Factory.newInstance();
-        } else {
-            // TODO check
-            return StringParameterType.Factory.newInstance();
-        }
-    }
-
     /**
      * Creates ApplicationDeploymentDescription from ApplicationBean
      * @param appBean ApplicationBean
