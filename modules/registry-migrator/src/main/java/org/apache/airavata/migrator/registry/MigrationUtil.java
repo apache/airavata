@@ -97,7 +97,7 @@ public class MigrationUtil {
         app.setApplicationName(name);
 
         app.setExecutableLocation(appBean.getExecutable());
-        app.setScratchWorkingDirectory(appBean.getWorkDir());
+        app.setScratchWorkingDirectory(appBean.getTmpDir());
 //      TODO : following are not there in the OGCE schema
         app.setInputDataDirectory("/tmp/input");
         app.setOutputDataDirectory("/tmp/output");
