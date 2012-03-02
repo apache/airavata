@@ -55,7 +55,7 @@ public class MigrationUtil {
                 input.setParameterName(inputParamName);
 
                 //TODO properly set the type
-                String en = inputParameterType.getType();
+                String type = inputParameterType.getType();
                 input.setParameterType(StringParameterType.Factory.newInstance());
                 inputList.add(input);
             }
@@ -63,16 +63,16 @@ public class MigrationUtil {
             serv.getType().setInputParametersArray(inputParamList);
         }
 
-        org.ogce.schemas.gfac.documents.OutputParameterType[] outputParameterTypes = serviceBean.getOutputParam();
+        ArrayList<ParamObject> outputParameterTypes = serviceBean.getMethodBean().getOutputParms();
         List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
         if (outputParameterTypes != null){
-            for (org.ogce.schemas.gfac.documents.OutputParameterType outputParameterType : outputParameterTypes) {
-                String outputParamName = outputParameterType.getParameterName();
+            for (ParamObject outputParameterType : outputParameterTypes) {
+                String outputParamName = outputParameterType.getName();
                 OutputParameterType output = OutputParameterType.Factory.newInstance();
                 output.setParameterName(outputParamName);
 
-                //TODO
-                org.ogce.schemas.gfac.documents.OutputDataType.Enum en = outputParameterType.getParameterType();
+                //TODO properly set the type
+                String en = outputParameterType.getType();
                 output.setParameterType(StringParameterType.Factory.newInstance());
                 outputList.add(output);
 
