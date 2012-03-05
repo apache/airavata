@@ -214,14 +214,47 @@ public class MigrationUtil {
      */
     public static ApplicationDeploymentDescription createAppDeploymentDescription(String applicationName, ApplicationBean appBean) {
         ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription();
-        ApplicationDeploymentDescriptionType app = appDesc.getType();
-        ApplicationDeploymentDescriptionType.ApplicationName name =
-                ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
-        name.setStringValue(applicationName);
 
-        app.setApplicationName(name);
-        app.setExecutableLocation(appBean.getExecutable());
-        app.setScratchWorkingDirectory(appBean.getTmpDir());
+        if(appBean.getJobType() != null) {
+            appDesc.getType().changeType(GramApplicationDeploymentType.type);
+            GramApplicationDeploymentType gram = (GramApplicationDeploymentType) appDesc.getType();
+            ApplicationDeploymentDescriptionType.ApplicationName name =
+                    ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+            name.setStringValue(applicationName);
+
+            gram.setApplicationName(name);
+            gram.setExecutableLocation(appBean.getExecutable());
+            gram.setScratchWorkingDirectory(appBean.getTmpDir());
+
+            gram.setJobType(getJobTypeEnum(appBean.getJobType()));
+            // TODO : verify the following
+            ProjectAccountType projectAccount;
+            if(gram.getProjectAccount() != null) {
+                projectAccount = gram.getProjectAccount();
+            } else {
+                projectAccount = gram.addNewProjectAccount();
+            }
+            projectAccount.setProjectAccountNumber(appBean.getProjectName());
+            projectAccount.setProjectAccountDescription(appBean.getPcount().toString());
+
+            QueueType queueName;
+            if(gram.getQueue() != null) {
+                queueName = gram.getQueue();
+            } else {
+                queueName = gram.addNewQueue();
+            }
+            queueName.setQueueName(appBean.getQueue());
+
+        } else {
+            ApplicationDeploymentDescriptionType app = appDesc.getType();
+            ApplicationDeploymentDescriptionType.ApplicationName name =
+                    ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+            name.setStringValue(applicationName);
+
+            app.setApplicationName(name);
+            app.setExecutableLocation(appBean.getExecutable());
+            app.setScratchWorkingDirectory(appBean.getTmpDir());
+        }
         return appDesc;
     }
 
