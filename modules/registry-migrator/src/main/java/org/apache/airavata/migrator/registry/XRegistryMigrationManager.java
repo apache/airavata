@@ -168,6 +168,7 @@ public class XRegistryMigrationManager {
         ServiceDescription service = null;
         ServiceDescData[] serviceDescDatas = client.findServiceDesc("");
         Map<QName, ServiceDescData> val3 = new HashMap<QName, ServiceDescData>();
+        int count = 0;
 
         for (ServiceDescData serviceDesc : serviceDescDatas) {
             val3.put(serviceDesc.getName(), serviceDesc);
@@ -187,13 +188,31 @@ public class XRegistryMigrationManager {
             }
 
             if(serviceBean != null) {
-                service = MigrationUtil.createServiceDescription(serviceBean);
                 try {
-                    jcrRegistry.saveServiceDescription(service);
-                    ApplicationBean appBean = saveApplicationDescriptionWithName(client, applicationName, service);
-                    // TODO : should look into this
-                    if (appBean != null){
-                        jcrRegistry.deployServiceOnHost(service.getType().getName(), appBean.getHostName());
+                    String serviceName = serviceBean.getServiceName();
+                    ServiceDescription serviceDescription = jcrRegistry.getServiceDescription(serviceName);
+                    if(serviceDescription == null) {
+                        service = MigrationUtil.createServiceDescription(serviceBean);
+                        jcrRegistry.saveServiceDescription(service);
+                        ApplicationBean appBean = saveApplicationDescriptionWithName(client, applicationName, service);
+                        // TODO : should look into this
+                        if (appBean != null){
+                            jcrRegistry.deployServiceOnHost(service.getType().getName(), appBean.getHostName());
+                        }
+                    } else {
+                        serviceName = serviceName + "_" + count++;
+                        service = MigrationUtil.createServiceDescription(serviceName,serviceBean);
+                        System.out.println("DEBUG : Service Description named " + service.getType().getName() +
+                                " exists in the registry. Therefore, saving it as " +
+                                serviceName + " in the registry.");
+
+                        jcrRegistry.saveServiceDescription(service);
+                        ApplicationBean appBean = saveApplicationDescriptionWithName(client, applicationName, service);
+                        // TODO : should look into this
+                        if (appBean != null){
+                            jcrRegistry.deployServiceOnHost(service.getType().getName(), appBean.getHostName());
+                        }
+
                     }
                 } catch (RegistryException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -233,16 +252,15 @@ public class XRegistryMigrationManager {
             }
 
             if(appBean != null){
-                app = MigrationUtil.createAppDeploymentDescription(appBean);
                 try {
-
                     String name = service.getType().getName();
                     String hostName = appBean.getHostName();
                     /*System.out.println("==== TESTING name : " + name);
                     System.out.println("==== TESTING hostName: " + hostName);*/
                     ApplicationDeploymentDescription appDepDesc = jcrRegistry.getDeploymentDescription(name, hostName);
                     if(appDepDesc == null) {
-                        jcrRegistry.saveDeploymentDescription(name, hostName, app);
+                        jcrRegistry.saveDeploymentDescription(name, hostName,
+                                MigrationUtil.createAppDeploymentDescription(appBean));
                     } else {
                         //Creating a new name for the the duplicated item
                         name = name + "_" + count++;
