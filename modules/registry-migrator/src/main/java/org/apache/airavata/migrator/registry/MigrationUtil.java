@@ -165,19 +165,36 @@ public class MigrationUtil {
      */
     public static ApplicationDeploymentDescription createAppDeploymentDescription(ApplicationBean appBean) {
         ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription();
-        ApplicationDeploymentDescriptionType app = appDesc.getType();
-        ApplicationDeploymentDescriptionType.ApplicationName name =
-                ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
-        name.setStringValue(appBean.getApplicationName());
 
-        app.setApplicationName(name);
-        app.setExecutableLocation(appBean.getExecutable());
-        app.setScratchWorkingDirectory(appBean.getTmpDir());
-//      TODO : following are not there in the OGCE schema
-//        app.setInputDataDirectory("/tmp/input");
-//        app.setOutputDataDirectory("/tmp/output");
-//        app.setStandardOutput("/tmp/echo.stdout");
-//        app.setStandardError("/tmp/echo.stdout");
+        if(appBean.getJobType() != null) {
+            appDesc.getType().changeType(GramApplicationDeploymentType.type);
+            GramApplicationDeploymentType gram = (GramApplicationDeploymentType) appDesc.getType();
+            ApplicationDeploymentDescriptionType.ApplicationName name =
+                    ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+            name.setStringValue(appBean.getApplicationName());
+
+            gram.setApplicationName(name);
+            gram.setExecutableLocation(appBean.getExecutable());
+            gram.setScratchWorkingDirectory(appBean.getTmpDir());
+
+            gram.setJobType(getJobTypeEnum(appBean.getJobType()));
+            // TODO : verify the following
+            ProjectAccountType projectAccount = gram.getProjectAccount();
+            projectAccount.setProjectAccountNumber(appBean.getProjectName());
+            projectAccount.setProjectAccountDescription(appBean.getPcount().toString());
+            QueueType queueName = gram.getQueue();
+            queueName.setQueueName(appBean.getQueue());
+
+        } else {
+            ApplicationDeploymentDescriptionType app = appDesc.getType();
+            ApplicationDeploymentDescriptionType.ApplicationName name =
+                    ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+            name.setStringValue(appBean.getApplicationName());
+
+            app.setApplicationName(name);
+            app.setExecutableLocation(appBean.getExecutable());
+            app.setScratchWorkingDirectory(appBean.getTmpDir());
+        }
         return appDesc;
 
     }
@@ -200,5 +217,24 @@ public class MigrationUtil {
         app.setExecutableLocation(appBean.getExecutable());
         app.setScratchWorkingDirectory(appBean.getTmpDir());
         return appDesc;
+    }
+
+    private static JobTypeType.Enum getJobTypeEnum(String jobTypeString){
+        for (JobTypeType.Enum jtype : getJobTypes()) {
+            if (jtype.toString().equalsIgnoreCase(jobTypeString)){
+                return jtype;
+            }
+        }
+        return null;
+    }
+
+    private static List<JobTypeType.Enum> getJobTypes() {
+        List<JobTypeType.Enum> jobTypes;
+        jobTypes = new ArrayList<JobTypeType.Enum>();
+        jobTypes.add(JobTypeType.OPEN_MP);
+        jobTypes.add(JobTypeType.MPI);
+        jobTypes.add(JobTypeType.SERIAL);
+        jobTypes.add(JobTypeType.SINGLE);
+        return jobTypes;
     }
 }
