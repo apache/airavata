@@ -187,11 +187,7 @@ public class XRegistryMigrationManager {
                 service = MigrationUtil.createServiceDescription(serviceBean);
                 try {
                     jcrRegistry.saveServiceDescription(service);
-                    ApplicationBean appBean = saveApplicationDescriptionWithName(client, applicationName, service);
-                    // TODO : should look into this
-                    if (appBean != null){
-                        jcrRegistry.deployServiceOnHost(service.getType().getName(), appBean.getHostName());
-                    }
+                    saveApplicationDescriptionWithName(client, applicationName, service);
                 } catch (RegistryException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
@@ -210,7 +206,7 @@ public class XRegistryMigrationManager {
      * @return ApplicationBean
      * @throws XRegistryClientException XRegistryClientException
      */
-    private static ApplicationBean saveApplicationDescriptionWithName(XRegistryClient client, String applicationName, ServiceDescription service) throws XRegistryClientException {
+    private static void saveApplicationDescriptionWithName(XRegistryClient client, String applicationName, ServiceDescription service) throws XRegistryClientException {
         ApplicationDeploymentDescription app = null;
         FindAppDescResponseDocument.FindAppDescResponse.AppData[] appDatas = client.findAppDesc(applicationName);
         Map<QName, FindAppDescResponseDocument.FindAppDescResponse.AppData> val2 =
@@ -234,6 +230,8 @@ public class XRegistryMigrationManager {
                     ApplicationDeploymentDescription appDepDesc = jcrRegistry.getDeploymentDescription(service.getType().getName(), appBean.getHostName());
                     if(appDepDesc == null) {
                         jcrRegistry.saveDeploymentDescription(service.getType().getName(), appBean.getHostName(), app);
+                        // TODO : should look into this
+                        jcrRegistry.deployServiceOnHost(service.getType().getName(), appBean.getHostName());
                     } else {
                         System.out.println("Application Deployment Description named " + service.getType().getName() +
                         " with host " + appBean.getHostName() + " exists in the registry. Therefore, not saving it.");
@@ -247,7 +245,6 @@ public class XRegistryMigrationManager {
 
         }
 
-        return appBean;
     }
 
     /**
