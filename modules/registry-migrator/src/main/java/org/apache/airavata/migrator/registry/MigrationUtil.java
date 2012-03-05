@@ -179,9 +179,15 @@ public class MigrationUtil {
 
             gram.setJobType(getJobTypeEnum(appBean.getJobType()));
             // TODO : verify the following
-            ProjectAccountType projectAccount = gram.getProjectAccount();
+            ProjectAccountType projectAccount;
+            if(gram.getProjectAccount() != null) {
+                projectAccount = gram.getProjectAccount();
+            } else {
+                projectAccount = gram.addNewProjectAccount();
+            }
             projectAccount.setProjectAccountNumber(appBean.getProjectName());
             projectAccount.setProjectAccountDescription(appBean.getPcount().toString());
+
             QueueType queueName = gram.getQueue();
             queueName.setQueueName(appBean.getQueue());
 
