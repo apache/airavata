@@ -129,4 +129,24 @@ public class MigrationUtil {
         return appDesc;
 
     }
+
+    /**
+     * Creates ApplicationDeploymentDescription from ApplicationBean with a the provided applicationName
+     * @param applicationName Application name
+     * @param appBean ApplicationBean
+     * @return ApplicationDeploymentDescription
+     */
+    public static ApplicationDeploymentDescription createAppDeploymentDescription(String applicationName, ApplicationBean appBean) {
+        ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription();
+        ApplicationDeploymentDescriptionType app = appDesc.getType();
+        ApplicationDeploymentDescriptionType.ApplicationName name =
+                ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+        name.setStringValue(applicationName);
+
+        app.setApplicationName(name);
+        app.setExecutableLocation(appBean.getExecutable());
+        app.setScratchWorkingDirectory(appBean.getTmpDir());
+        return appDesc;
+
+    }
 }
