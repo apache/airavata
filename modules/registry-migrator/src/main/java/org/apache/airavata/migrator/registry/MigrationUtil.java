@@ -188,7 +188,12 @@ public class MigrationUtil {
             projectAccount.setProjectAccountNumber(appBean.getProjectName());
             projectAccount.setProjectAccountDescription(appBean.getPcount().toString());
 
-            QueueType queueName = gram.getQueue();
+            QueueType queueName;
+            if(gram.getQueue() != null) {
+                queueName = gram.getQueue();
+            } else {
+                queueName = gram.addNewQueue();
+            }
             queueName.setQueueName(appBean.getQueue());
 
         } else {
