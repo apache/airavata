@@ -39,7 +39,10 @@ import xregistry.generated.ServiceDescData;
 
 import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -187,7 +190,11 @@ public class XRegistryMigrationManager {
                 service = MigrationUtil.createServiceDescription(serviceBean);
                 try {
                     jcrRegistry.saveServiceDescription(service);
-                    saveApplicationDescriptionWithName(client, applicationName, service);
+                    ApplicationBean appBean = saveApplicationDescriptionWithName(client, applicationName, service);
+                    // TODO : should look into this
+                    if (appBean != null){
+                        jcrRegistry.deployServiceOnHost(service.getType().getName(), appBean.getHostName());
+                    }
                 } catch (RegistryException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
@@ -206,12 +213,13 @@ public class XRegistryMigrationManager {
      * @return ApplicationBean
      * @throws XRegistryClientException XRegistryClientException
      */
-    private static void saveApplicationDescriptionWithName(XRegistryClient client, String applicationName, ServiceDescription service) throws XRegistryClientException {
+    private static ApplicationBean saveApplicationDescriptionWithName(XRegistryClient client, String applicationName, ServiceDescription service) throws XRegistryClientException {
         ApplicationDeploymentDescription app = null;
         FindAppDescResponseDocument.FindAppDescResponse.AppData[] appDatas = client.findAppDesc(applicationName);
         Map<QName, FindAppDescResponseDocument.FindAppDescResponse.AppData> val2 =
                 new HashMap<QName, FindAppDescResponseDocument.FindAppDescResponse.AppData>();
         ApplicationBean appBean = null;
+        int count = 0;
         for (FindAppDescResponseDocument.FindAppDescResponse.AppData appDesc : appDatas) {
             val2.put(appDesc.getName(), appDesc);
             String appDescStr = client.getAppDesc(appDesc.getName().toString(),appDesc.getHostName());
@@ -227,14 +235,22 @@ public class XRegistryMigrationManager {
             if(appBean != null){
                 app = MigrationUtil.createAppDeploymentDescription(appBean);
                 try {
-                    ApplicationDeploymentDescription appDepDesc = jcrRegistry.getDeploymentDescription(service.getType().getName(), appBean.getHostName());
+
+                    String name = service.getType().getName();
+                    String hostName = appBean.getHostName();
+                    /*System.out.println("==== TESTING name : " + name);
+                    System.out.println("==== TESTING hostName: " + hostName);*/
+                    ApplicationDeploymentDescription appDepDesc = jcrRegistry.getDeploymentDescription(name, hostName);
                     if(appDepDesc == null) {
-                        jcrRegistry.saveDeploymentDescription(service.getType().getName(), appBean.getHostName(), app);
-                        // TODO : should look into this
-                        jcrRegistry.deployServiceOnHost(service.getType().getName(), appBean.getHostName());
+                        jcrRegistry.saveDeploymentDescription(name, hostName, app);
                     } else {
-                        System.out.println("Application Deployment Description named " + service.getType().getName() +
-                        " with host " + appBean.getHostName() + " exists in the registry. Therefore, not saving it.");
+                        //Creating a new name for the the duplicated item
+                        name = name + "_" + count++;
+                        System.out.println("DEBUG : Application Deployment Description named " + service.getType().getName() +
+                                " with host " + hostName + " exists in the registry. Therefore, saving it as " +
+                                name + " in the registry.");
+                        jcrRegistry.saveDeploymentDescription(name, hostName,
+                                MigrationUtil.createAppDeploymentDescription(name,appBean));
                     }
 //            jcrRegistry.saveDeploymentDescription(service.getType().getName(), host.getType().getHostName(), app);
                 } catch (RegistryException e) {
@@ -245,6 +261,7 @@ public class XRegistryMigrationManager {
 
         }
 
+        return appBean;
     }
 
     /**
