@@ -108,6 +108,56 @@ public class MigrationUtil {
     }
 
     /**
+     * Creates ServiceDescription with the given serviceName from ServiceBean
+     *
+     * @param serviceName Service name
+     * @param serviceBean ServiceBean
+     * @return ServiceDescription
+     */
+    public static ServiceDescription createServiceDescription(String serviceName, ServiceBean serviceBean) {
+        ServiceDescription serv = new ServiceDescription();
+        serv.getType().setName(serviceName);
+
+        ArrayList<ParamObject> inputParameterTypes = serviceBean.getMethodBean().getInputParms();
+        List<InputParameterType> inputList = new ArrayList<InputParameterType>();
+        if (inputParameterTypes != null) {
+            for (ParamObject inputParameterType : inputParameterTypes) {
+                InputParameterType input = InputParameterType.Factory.newInstance();
+                input.setParameterName(inputParameterType.getName());
+                input.setParameterDescription(inputParameterType.getDesc());
+
+                ParameterType parameterType = input.addNewParameterType();
+                parameterType.setType(DataType.Enum.forString(inputParameterType.getType()));
+                parameterType.setName(inputParameterType.getType());
+
+                inputList.add(input);
+            }
+            InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
+            serv.getType().setInputParametersArray(inputParamList);
+        }
+
+        ArrayList<ParamObject> outputParameterTypes = serviceBean.getMethodBean().getOutputParms();
+        List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
+        if (outputParameterTypes != null){
+            for (ParamObject outputParameterType : outputParameterTypes) {
+                OutputParameterType output = OutputParameterType.Factory.newInstance();
+                output.setParameterName(outputParameterType.getName());
+                output.setParameterDescription(outputParameterType.getDesc());
+
+                ParameterType parameterType = output.addNewParameterType();
+                parameterType.setType(DataType.Enum.forString(outputParameterType.getType()));
+                parameterType.setName(outputParameterType.getType());
+
+                outputList.add(output);
+            }
+            OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
+            serv.getType().setOutputParametersArray(outputParamList);
+        }
+
+        return serv;
+    }
+
+    /**
      * Creates ApplicationDeploymentDescription from ApplicationBean
      *
      * @param appBean ApplicationBean
