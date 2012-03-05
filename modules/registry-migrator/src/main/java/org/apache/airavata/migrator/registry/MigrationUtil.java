@@ -60,6 +60,7 @@ public class MigrationUtil {
 
     /**
      * Creates ServiceDescription from ServiceBean
+     *
      * @param serviceBean ServiceBean
      * @return ServiceDescription
      */
@@ -108,6 +109,7 @@ public class MigrationUtil {
 
     /**
      * Creates ApplicationDeploymentDescription from ApplicationBean
+     *
      * @param appBean ApplicationBean
      * @return ApplicationDeploymentDescription
      */
@@ -132,6 +134,7 @@ public class MigrationUtil {
 
     /**
      * Creates ApplicationDeploymentDescription from ApplicationBean with a the provided applicationName
+     *
      * @param applicationName Application name
      * @param appBean ApplicationBean
      * @return ApplicationDeploymentDescription
@@ -147,6 +150,5 @@ public class MigrationUtil {
         app.setExecutableLocation(appBean.getExecutable());
         app.setScratchWorkingDirectory(appBean.getTmpDir());
         return appDesc;
-
     }
 }
