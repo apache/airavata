@@ -186,7 +186,7 @@ public class MigrationUtil {
                 projectAccount = gram.addNewProjectAccount();
             }
             projectAccount.setProjectAccountNumber(appBean.getProjectName());
-            projectAccount.setProjectAccountDescription(appBean.getPcount().toString());
+            projectAccount.setProjectAccountDescription("");
 
             QueueType queueName;
             if(gram.getQueue() != null) {
@@ -240,7 +240,7 @@ public class MigrationUtil {
                 projectAccount = gram.addNewProjectAccount();
             }
             projectAccount.setProjectAccountNumber(appBean.getProjectName());
-            projectAccount.setProjectAccountDescription(appBean.getPcount().toString());
+            projectAccount.setProjectAccountDescription("");
 
             QueueType queueName;
             if(gram.getQueue() != null) {
