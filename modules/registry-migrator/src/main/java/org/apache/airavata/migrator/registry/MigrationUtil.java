@@ -176,6 +176,10 @@ public class MigrationUtil {
             gram.setApplicationName(name);
             gram.setExecutableLocation(appBean.getExecutable());
             gram.setScratchWorkingDirectory(appBean.getTmpDir());
+            //TODO: add to documentation --> ask user to check the hostcount
+            gram.setMaxWallTime(appBean.getMaxWallTime());
+            gram.setCpuCount(appBean.getPcount());
+            gram.setMinMemory(appBean.getMinMemory());
 
             gram.setJobType(getJobTypeEnum(appBean.getJobType()));
             // TODO : verify the following
@@ -230,6 +234,10 @@ public class MigrationUtil {
             gram.setApplicationName(name);
             gram.setExecutableLocation(appBean.getExecutable());
             gram.setScratchWorkingDirectory(appBean.getTmpDir());
+            //TODO: add to documentation --> ask user to check the hostcount
+            gram.setMaxWallTime(appBean.getMaxWallTime());
+            gram.setCpuCount(appBean.getPcount());
+            gram.setMinMemory(appBean.getMinMemory());
 
             gram.setJobType(getJobTypeEnum(appBean.getJobType()));
             // TODO : verify the following
