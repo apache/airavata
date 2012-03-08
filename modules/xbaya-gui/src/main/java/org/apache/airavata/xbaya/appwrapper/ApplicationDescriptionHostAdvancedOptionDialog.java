@@ -21,18 +21,6 @@
 
 package org.apache.airavata.xbaya.appwrapper;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.registry.api.AiravataRegistry;
@@ -46,12 +34,24 @@ import org.apache.airavata.xbaya.gui.XBayaComboBox;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     private static final long serialVersionUID = 3920479739097405014L;
     private XBayaComboBox cmbJobType;
     private XBayaTextField txtProjectAccountNumber;
     private XBayaTextField txtProjectAccountDescription;
     private XBayaTextField txtQueueType;
+    private XBayaTextField txtMaxWallTime = new XBayaTextField();
+    private XBayaTextField txtMinMemory = new XBayaTextField();
+    private XBayaTextField txtCpuCount = new XBayaTextField();
+    private XBayaTextField txtProcessorsPerNode = new XBayaTextField();
     private JButton okButton;
     private AiravataRegistry registry;
     private ApplicationDeploymentDescription descriptor;
@@ -115,24 +115,29 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		txtProjectAccountDescription = new XBayaTextField();
 		
 		txtQueueType = new XBayaTextField();
-		
-		
-		cmbJobType = new XBayaComboBox(new DefaultComboBoxModel(getJobTypesAsStrings()));
-		cmbJobType.setEditable(false);
-		
-		XBayaTextField txtMaxWallTime = new XBayaTextField();
-		
-		XBayaTextField txtCPUTime = new XBayaTextField();
-		XBayaTextField txtNodeCount = new XBayaTextField();
-		XBayaTextField txtProcessorsPerNode = new XBayaTextField();
-		XBayaTextField txtMinMemory = new XBayaTextField();
-		
+        txtMaxWallTime = new XBayaTextField();
+        txtMinMemory = new XBayaTextField();
+        txtCpuCount = new XBayaTextField();
+        txtProcessorsPerNode = new XBayaTextField();
+
+        cmbJobType = new XBayaComboBox(new DefaultComboBoxModel(getJobTypesAsStrings()));
+        cmbJobType.setEditable(false);
+
+
+        XBayaTextField txtCPUTime = new XBayaTextField();
+        XBayaTextField txtNodeCount = new XBayaTextField();
+        //XBayaTextField txtProcessorsPerNode = new XBayaTextField();
+
 		
 		XBayaLabel lbljobType = new XBayaLabel("Job Type",cmbJobType);
 		XBayaLabel lblProjectAccountNumber = new XBayaLabel("Project Account Number",txtProjectAccountNumber);
 		XBayaLabel lblProjectAccountDescription = new XBayaLabel("Project Account Description",txtProjectAccountDescription);
 		XBayaLabel lblQueueType = new XBayaLabel("Queue Type",txtQueueType);
-    	
+		XBayaLabel lblMaxWallTime = new XBayaLabel("Max Wall Time",txtMaxWallTime);
+		XBayaLabel lblCpuCount = new XBayaLabel("CPU Count",txtCpuCount);
+		XBayaLabel lblProcessorPerNode = new XBayaLabel("Processor Per Node", txtProcessorsPerNode);
+		XBayaLabel lblMinMemory = new XBayaLabel("Min Memory",txtMinMemory);
+
 		panel.add(lbljobType);
 		panel.add(cmbJobType);
 		panel.add(lblProjectAccountNumber);
@@ -141,10 +146,18 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		panel.add(txtProjectAccountDescription);
 		panel.add(lblQueueType);
 		panel.add(txtQueueType);
+        panel.add(lblMaxWallTime);
+		panel.add(txtMaxWallTime);
+        panel.add(lblCpuCount);
+		panel.add(txtCpuCount);
+        panel.add(lblProcessorPerNode);
+		panel.add(txtProcessorsPerNode);
+        panel.add(lblMinMemory);
+		panel.add(txtMinMemory);
 		panel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         buttonPane.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
-        SwingUtil.layoutToGrid(panel.getSwingComponent(), 4, 2, SwingUtil.WEIGHT_NONE, 1);
+        SwingUtil.layoutToGrid(panel.getSwingComponent(), 8, 2, SwingUtil.WEIGHT_NONE, 1);
         
         buttonPane.add(okButton);
         buttonPane.add(cancelButton);
@@ -152,7 +165,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         getContentPane().add(panel.getSwingComponent());
         getContentPane().add(buttonPane.getSwingComponent());
         SwingUtil.layoutToGrid(getContentPane(), 2, 1, 0, 0);
-        setResizable(false);
+        setResizable(true);
         getRootPane().setDefaultButton(okButton);
     }
     
@@ -200,6 +213,10 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 
     private void saveApplicationDescriptionAdvancedOptions() {
 		getGramApplicationDescriptionType().setJobType(getJobTypeEnum(cmbJobType.getText()));
+        getGramApplicationDescriptionType().setMaxWallTime(Integer.parseInt(txtMaxWallTime.getText()));
+        getGramApplicationDescriptionType().setCpuCount(Integer.parseInt(txtCpuCount.getText()));
+        getGramApplicationDescriptionType().setProcessorsPerNode(Integer.parseInt(txtProcessorsPerNode.getText()));
+        getGramApplicationDescriptionType().setMinMemory(Integer.parseInt(txtMinMemory.getText()));
 		ProjectAccountType projectAccount = getProjectAccountType();
 		projectAccount.setProjectAccountNumber(txtProjectAccountNumber.getText());
 		projectAccount.setProjectAccountDescription(txtProjectAccountDescription.getText());
@@ -227,12 +244,16 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     	if (getGramApplicationDescriptionType().getJobType()!=null) {
 			cmbJobType.setSelectedItem(getGramApplicationDescriptionType()
 					.getJobType().toString());
+            txtMinMemory.setText(String.valueOf(getGramApplicationDescriptionType().getMaxWallTime()));
+            txtCpuCount.setText(String.valueOf(getGramApplicationDescriptionType().getCpuCount()));
+            txtProcessorsPerNode.setText(String.valueOf(getGramApplicationDescriptionType().getProcessorsPerNode()));
+            txtMinMemory.setText(String.valueOf(getGramApplicationDescriptionType().getMinMemory()));
 		}
 		ProjectAccountType projectAccount = getProjectAccountType();
 
 		txtProjectAccountNumber.setText(projectAccount.getProjectAccountNumber()==null? "":projectAccount.getProjectAccountNumber());
 		txtProjectAccountDescription.setText(projectAccount.getProjectAccountDescription()==null? "":projectAccount.getProjectAccountDescription());
-		
+
 		QueueType queueName = getQueueName();
 		txtQueueType.setText(queueName.getQueueName()==null?"":queueName.getQueueName());
     }
