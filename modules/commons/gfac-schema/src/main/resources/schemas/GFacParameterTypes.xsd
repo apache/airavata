@@ -35,6 +35,8 @@
 			<enumeration value="IntegerArray" />
 			<enumeration value="FloatArray" />
 			<enumeration value="BooleanArray" />
+            <enumeration value="StdOut"/>
+            <enumeration value="StdErr"/>
 			<enumeration value="FileArray" />
 			<enumeration value="DataID" />
 			<enumeration value="DataIDArray" />
@@ -42,6 +44,28 @@
             <enumeration value="URI" />
 		</restriction>
 	</simpleType>
+
+    <complexType name="StdOutParameterType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" type="xsd:string" />
+				</sequence>
+				<attribute name="type" fixed="StdOut" />
+			</extension>
+		</complexContent>
+	</complexType>
+
+    <complexType name="StdErrParameterType">
+		<complexContent>
+			<extension base="gfac:ParameterType">
+				<sequence>
+					<element name="value" nillable="true" type="xsd:string" />
+				</sequence>
+				<attribute name="type" fixed="StdErr" />
+			</extension>
+		</complexContent>
+	</complexType>
 
 	<complexType name="StringParameterType">
 		<complexContent>
