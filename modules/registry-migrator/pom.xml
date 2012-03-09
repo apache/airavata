@@ -42,42 +42,16 @@
             <version>0.8.3</version>
             <type>jar</type>
         </dependency>
-        <dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>messagebroker</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>registry-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>common-utils</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>workflowtracking</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-        <dependency>
-			<groupId>gfac</groupId>
-			<artifactId>gfac-schema-utils</artifactId>
-			<version>0.4.4</version>
-		</dependency>
-
-		<!-- JCR Support -->
-		<!-- TODO need clean up -->
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>gfac-schema-utils</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
 	</dependencies>
 
 	<build>
