@@ -33,6 +33,8 @@ import org.ogce.schemas.gfac.beans.ServiceBean;
 import org.ogce.xregistry.client.XRegistryClient;
 import org.ogce.xregistry.client.XRegistryClientUtil;
 import org.ogce.xregistry.utils.XRegistryClientException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xregistry.generated.FindAppDescResponseDocument;
 import xregistry.generated.HostDescData;
 import xregistry.generated.ServiceDescData;
@@ -52,6 +54,7 @@ public class XRegistryMigrationManager {
     private static String jcrRegistryURL = null;
     private static String jcrUsername = null;
     private static String jcrPassword = null;
+    private static Logger log = LoggerFactory.getLogger(XRegistryMigrationManager.class);
 
     public XRegistryMigrationManager(String propertyFile) throws XRegistryMigrationException {
         migrationPropertiesFile = propertyFile;
@@ -59,12 +62,12 @@ public class XRegistryMigrationManager {
     }
 
     public static void main(String[] args) {
-        XRegistryMigrationManager manager = null;
+        XRegistryMigrationManager manager;
         try {
             manager = new XRegistryMigrationManager(args[0]);
             manager.migrate();
         } catch (XRegistryMigrationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.info(e.getMessage());
         }
     }
 
@@ -75,7 +78,7 @@ public class XRegistryMigrationManager {
      */
     public void migrate() throws XRegistryMigrationException {
         Map<String,String> config = new HashMap<String,String>();
-        URI uri = null;
+        URI uri;
         try {
             uri = new URI(jcrRegistryURL);
         } catch (URISyntaxException e) {
@@ -88,10 +91,11 @@ public class XRegistryMigrationManager {
                     "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory",
                     jcrUsername, jcrPassword, config);
         } catch (RepositoryException e) {
-            throw new XRegistryMigrationException("Issue creating the JCR Registry instance " + e.getMessage(), e);
+            throw new XRegistryMigrationException("Issue creating the JCR Registry instance " +
+                    e.getMessage(), e);
         }
 
-        XRegistryClient client = null;
+        XRegistryClient client;
 
 
         try {
@@ -104,7 +108,7 @@ public class XRegistryMigrationManager {
         saveAllHostDescriptions(client);
         saveAllServiceDescriptions(client);
 
-        System.out.println("DONE!");
+        log.info("DONE!");
     }
 
     private static void loadProperties(String file) throws XRegistryMigrationException {
@@ -112,11 +116,12 @@ public class XRegistryMigrationManager {
         InputStream propertyStream = classLoader.getResourceAsStream(file);
         Properties properties = new Properties();
         if (propertyStream == null) {
-            FileInputStream fileInputStream = null;
+            FileInputStream fileInputStream;
             try {
                 fileInputStream = new FileInputStream(new File(file));
             } catch (FileNotFoundException e) {
-                throw new XRegistryMigrationException("Migration properties file not found " + e.getMessage(), e);
+                throw new XRegistryMigrationException("Migration properties file not found " +
+                        e.getMessage(), e);
             }
             try {
                 properties.load(fileInputStream);
@@ -128,8 +133,8 @@ public class XRegistryMigrationManager {
             try {
                 properties.load(propertyStream);
             } catch (IOException e) {
-                throw new XRegistryMigrationException("Issue occurred while loading the migration " +
-                        "properties from file " + e.getMessage(), e);
+                throw new XRegistryMigrationException("Issue occurred while loading the " +
+                        "migration properties from file " + e.getMessage(), e);
             }
         }
 
@@ -144,13 +149,15 @@ public class XRegistryMigrationManager {
      * @param client client to access the XRegistry
      * @throws XRegistryMigrationException XRegistryMigrationException
      */
-    private static void saveAllHostDescriptions(XRegistryClient client) throws XRegistryMigrationException {
+    private static void saveAllHostDescriptions(XRegistryClient client)
+            throws XRegistryMigrationException {
         HostDescription host = null;
-        HostDescData[] hostDescs = new HostDescData[0];
+        HostDescData[] hostDescs;
         try {
             hostDescs = client.findHosts("");
         } catch (XRegistryClientException e) {
-            throw new XRegistryMigrationException("Issue searching hosts in XRegistry instance " + e.getMessage(), e);
+            throw new XRegistryMigrationException("Issue searching hosts in XRegistry instance " +
+                    e.getMessage(), e);
         }
         Map<QName, HostDescData> val = new HashMap<QName, HostDescData>();
         for (HostDescData hostDesc : hostDescs) {
@@ -159,17 +166,20 @@ public class XRegistryMigrationManager {
             try {
                 hostDescStr = client.getHostDesc(hostDesc.getName().getLocalPart());
             } catch (XRegistryClientException e) {
-                throw new XRegistryMigrationException("Issue getting the host description with name " +
-                        hostDesc.getName().getLocalPart() + " from XRegistry instance " + e.getMessage(), e);
+                throw new XRegistryMigrationException("Issue getting the host description with " +
+                        "name " + hostDesc.getName().getLocalPart() + " from XRegistry instance " +
+                        e.getMessage(), e);
             }
             HostBean hostBean = null;
             try {
-                hostBean = org.ogce.schemas.gfac.beans.utils.HostUtils.simpleHostBeanRequest(hostDescStr);
-                System.out.println("Host : " + hostBean.getHostName());
-                System.out.println(hostDescStr);
+                hostBean = org.ogce.schemas.gfac.beans.
+                        utils.HostUtils.simpleHostBeanRequest(hostDescStr);
+                log.info("Host : " + hostBean.getHostName());
+                log.info(hostDescStr);
 
             } catch (XmlException e) {
-                throw new XRegistryMigrationException("Issue creating the OGCE Schema Host Bean " + e.getMessage(), e);
+                throw new XRegistryMigrationException("Issue creating the OGCE Schema Host Bean " +
+                        e.getMessage(), e);
             }
 
             if(hostBean != null){
@@ -179,13 +189,14 @@ public class XRegistryMigrationManager {
             try {
                 jcrRegistry.saveHostDescription(host);
             } catch (RegistryException e) {
-                throw new XRegistryMigrationException("Issue occurred when saving the Host Description "
-                        + host.getType().getHostName() + " to JCR Registry" + e.getMessage(), e);
+                throw new XRegistryMigrationException("Issue occurred when saving the Host " +
+                        "Description " + host.getType().getHostName() + " to JCR Registry" +
+                        e.getMessage(), e);
             }
 
         }
 
-        System.out.println("=== All Hosts are saved ===");
+        log.info("All Hosts are saved!");
     }
 
     /**
@@ -194,9 +205,10 @@ public class XRegistryMigrationManager {
      * @param client client to access the XRegistry
      * @throws XRegistryMigrationException XRegistryMigrationException
      */
-    private static void saveAllServiceDescriptions(XRegistryClient client) throws XRegistryMigrationException {
-        ServiceDescription service = null;
-        ServiceDescData[] serviceDescDatas = new ServiceDescData[0];
+    private static void saveAllServiceDescriptions(XRegistryClient client)
+            throws XRegistryMigrationException {
+        ServiceDescription service;
+        ServiceDescData[] serviceDescDatas;
         try {
             serviceDescDatas = client.findServiceDesc("");
         } catch (XRegistryClientException e) {
@@ -214,18 +226,21 @@ public class XRegistryMigrationManager {
                 throw new XRegistryMigrationException("Issue retrieving Service Description form " +
                         "XRegistry instance " + e.getMessage(), e);
             }
-            ServiceBean serviceBean = null;
-            String applicationName = null;
 
+            ServiceBean serviceBean;
+            String applicationName;
             try {
-                serviceBean = org.ogce.schemas.gfac.beans.utils.ServiceUtils.serviceBeanRequest(serviceDescStr);
+                serviceBean = org.ogce.schemas.gfac.beans.
+                        utils.ServiceUtils.serviceBeanRequest(serviceDescStr);
                 applicationName = serviceBean.getApplicationName();
-                System.out.println("Service : " + serviceBean.getServiceName());
-                System.out.println(serviceDescStr);
+                log.info("Service : " + serviceBean.getServiceName());
+                log.info(serviceDescStr);
             } catch (XmlException e) {
-                 throw new XRegistryMigrationException("Issue creating the OGCE Schema Service Bean " + e.getMessage(), e);
+                 throw new XRegistryMigrationException("Issue creating the OGCE Schema Service " +
+                         "Bean " + e.getMessage(), e);
             } catch (IOException e) {
-                throw new XRegistryMigrationException("Issue creating the OGCE Schema Service Bean " + e.getMessage(), e);
+                throw new XRegistryMigrationException("Issue creating the OGCE Schema Service " +
+                        "Bean " + e.getMessage(), e);
             }
 
             if(serviceBean != null) {
@@ -235,33 +250,39 @@ public class XRegistryMigrationManager {
                     if(serviceDescription == null) {
                         service = MigrationUtil.createServiceDescription(serviceBean);
                         jcrRegistry.saveServiceDescription(service);
-                        ApplicationBean appBean = saveApplicationDescriptionWithName(client, applicationName, service);
+                        ApplicationBean appBean =
+                                saveApplicationDescriptionWithName(client, applicationName, service);
                         // TODO : should look into this
                         if (appBean != null){
-                            jcrRegistry.deployServiceOnHost(service.getType().getName(), appBean.getHostName());
+                            jcrRegistry.deployServiceOnHost(service.getType().
+                                    getName(), appBean.getHostName());
                         }
                     } else {
                         serviceName = serviceName + "_" + count++;
                         service = MigrationUtil.createServiceDescription(serviceName,serviceBean);
-                        System.out.println("DEBUG : Service Description named " + service.getType().getName() +
+                        log.info("Service Description named " +
+                                service.getType().getName() +
                                 " exists in the registry. Therefore, saving it as " +
                                 serviceName + " in the registry.");
 
                         jcrRegistry.saveServiceDescription(service);
-                        ApplicationBean appBean = saveApplicationDescriptionWithName(client, applicationName, service);
+                        ApplicationBean appBean = saveApplicationDescriptionWithName(client,
+                                applicationName, service);
                         // TODO : should look into this
                         if (appBean != null){
-                            jcrRegistry.deployServiceOnHost(service.getType().getName(), appBean.getHostName());
+                            jcrRegistry.deployServiceOnHost(service.getType().getName(),
+                                    appBean.getHostName());
                         }
 
                     }
                 } catch (RegistryException e) {
-                    throw new XRegistryMigrationException("Issue accessing the JCR Registry " + e.getMessage(), e);
+                    throw new XRegistryMigrationException("Issue accessing the JCR Registry " +
+                            e.getMessage(), e);
                 }
             }
 
         }
-        System.out.println("=== All Service/Applciation descriptors are saved ===");
+        log.info("All Service/Application descriptors are saved!");
     }
 
     /**
@@ -274,9 +295,11 @@ public class XRegistryMigrationManager {
      * @throws XRegistryClientException XRegistryClientException
      * @throws XRegistryMigrationException XRegistryMigrationException
      */
-    private static ApplicationBean saveApplicationDescriptionWithName(XRegistryClient client, String applicationName, ServiceDescription service) throws XRegistryMigrationException {
-        ApplicationDeploymentDescription app = null;
-        FindAppDescResponseDocument.FindAppDescResponse.AppData[] appDatas = new FindAppDescResponseDocument.FindAppDescResponse.AppData[0];
+    private static ApplicationBean saveApplicationDescriptionWithName(XRegistryClient client,
+                                                                      String applicationName,
+                                                                      ServiceDescription service)
+            throws XRegistryMigrationException {
+        FindAppDescResponseDocument.FindAppDescResponse.AppData[] appDatas;
         try {
             appDatas = client.findAppDesc(applicationName);
         } catch (XRegistryClientException e) {
@@ -288,20 +311,22 @@ public class XRegistryMigrationManager {
         int count = 0;
         for (FindAppDescResponseDocument.FindAppDescResponse.AppData appDesc : appDatas) {
             val2.put(appDesc.getName(), appDesc);
-            String appDescStr = null;
+            String appDescStr;
             try {
                 appDescStr = client.getAppDesc(appDesc.getName().toString(),appDesc.getHostName());
             } catch (XRegistryClientException e) {
-                throw new XRegistryMigrationException("Issue retrieving Application Description form " +
-                        "XRegistry instance " + e.getMessage(), e);
+                throw new XRegistryMigrationException("Issue retrieving Application " +
+                        "Description form XRegistry instance " + e.getMessage(), e);
             }
             try {
-                appBean = org.ogce.schemas.gfac.beans.utils.ApplicationUtils.simpleApplicationBeanRequest(appDescStr);
-                System.out.println("Application : " + appBean.getApplicationName());
-                System.out.println(appDescStr);
+                appBean = org.ogce.schemas.gfac.beans.
+                        utils.ApplicationUtils.simpleApplicationBeanRequest(appDescStr);
+                log.info("Application : " + appBean.getApplicationName());
+                log.info(appDescStr);
 
             } catch (XmlException e) {
-                 throw new XRegistryMigrationException("Issue creating the OGCE Schema Application Bean " + e.getMessage(), e);
+                 throw new XRegistryMigrationException("Issue creating the OGCE Schema " +
+                         "Application Bean " + e.getMessage(), e);
             }
 
             if(appBean != null){
@@ -309,26 +334,32 @@ public class XRegistryMigrationManager {
                     String name = service.getType().getName();
                     String hostName = appBean.getHostName();
                     Thread.sleep(500);
-                    ApplicationDeploymentDescription appDepDesc = jcrRegistry.getDeploymentDescription(name, hostName);
+                    ApplicationDeploymentDescription appDepDesc =
+                            jcrRegistry.getDeploymentDescription(name, hostName);
                     if(appDepDesc == null) {
-                        System.out.println("==== DEBUG name : " + name);
-                        System.out.println("==== DEUBG hostName: " + hostName);
+                        if(log.isDebugEnabled()) {
+                            log.debug("name : " + name);
+                            log.debug("hostName: " + hostName);
+                        }
                         jcrRegistry.saveDeploymentDescription(name, hostName,
                                 MigrationUtil.createAppDeploymentDescription(appBean));
                     } else {
                         //Creating a new name for the the duplicated item
                         name = name + "_" + count++;
-                        System.out.println("==== DEBUG name : " + name);
-                        System.out.println("==== DEBUG hostName: " + hostName);
-                        System.out.println("DEBUG : Application Deployment Description named " + service.getType().getName() +
-                                " with host " + hostName + " exists in the registry. Therefore, saving it as " +
+                        if(log.isDebugEnabled()) {
+                        log.debug("DEBUG name : " + name);
+                        log.debug("hostName: " + hostName);
+                        }
+                        log.info("Application Deployment Description named " +
+                                service.getType().getName() + " with host " + hostName +
+                                " exists in the registry. Therefore, saving it as " +
                                 name + " in the registry.");
                         jcrRegistry.saveDeploymentDescription(name, hostName,
                                 MigrationUtil.createAppDeploymentDescription(name,appBean));
                     }
-//            jcrRegistry.saveDeploymentDescription(service.getType().getName(), host.getType().getHostName(), app);
                 } catch (RegistryException e) {
-                    throw new XRegistryMigrationException("Issue using the Airavata Registry API " + e.getMessage(), e);
+                    throw new XRegistryMigrationException("Issue using the Airavata Registry API " +
+                            e.getMessage(), e);
                 } catch (InterruptedException e) {
                     throw new XRegistryMigrationException(e.getMessage(), e);
                 }
@@ -346,27 +377,28 @@ public class XRegistryMigrationManager {
      * @param client client to access the XRegistry
      * @throws XRegistryClientException XRegistryClientException
      */
-    private static void saveAllApplicationDescriptions(XRegistryClient client) throws XRegistryClientException {
+    private static void saveAllApplicationDescriptions(XRegistryClient client)
+            throws XRegistryClientException {
         ApplicationDeploymentDescription app = null;
         FindAppDescResponseDocument.FindAppDescResponse.AppData[] appDatas = client.findAppDesc("");
         Map<QName, FindAppDescResponseDocument.FindAppDescResponse.AppData> val2 =
                 new HashMap<QName, FindAppDescResponseDocument.FindAppDescResponse.AppData>();
         for (FindAppDescResponseDocument.FindAppDescResponse.AppData appDesc : appDatas) {
             val2.put(appDesc.getName(), appDesc);
-            String appDescStr = client.getAppDesc(appDesc.getName().toString(),appDesc.getHostName());
-            System.out.println(appDescStr);
+            String appDescStr =
+                    client.getAppDesc(appDesc.getName().toString(),appDesc.getHostName());
+            log.info(appDescStr);
             ApplicationBean appBean = null;
             try {
-                appBean = org.ogce.schemas.gfac.beans.utils.ApplicationUtils.simpleApplicationBeanRequest(appDescStr);
+                appBean = org.ogce.schemas.gfac.beans.
+                        utils.ApplicationUtils.simpleApplicationBeanRequest(appDescStr);
             } catch (XmlException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                e.printStackTrace();
             }
 
             if(appBean != null){
                 app = MigrationUtil.createAppDeploymentDescription(appBean);
             }
-
-            //jcrRegistry.saveDeploymentDescription(service.getType().getName(), host.getType().getHostName(), app);
 
         }
     }
