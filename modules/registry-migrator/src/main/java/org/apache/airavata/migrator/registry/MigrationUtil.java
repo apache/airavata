@@ -218,8 +218,12 @@ public class MigrationUtil {
             gram.setScratchWorkingDirectory(appBean.getTmpDir());
             //TODO: add to documentation --> ask user to check the hostcount
             gram.setMaxWallTime(appBean.getMaxWallTime());
-            gram.setCpuCount(appBean.getPcount());
-            gram.setMinMemory(appBean.getMinMemory());
+            if (appBean.getPcount() != null) {
+                gram.setCpuCount(appBean.getPcount());
+            }
+            if (appBean.getMinMemory() != null) {
+                gram.setMinMemory(appBean.getMinMemory());
+            }
 
             gram.setJobType(getJobTypeEnum(appBean.getJobType()));
             // TODO : verify the following
@@ -278,8 +282,12 @@ public class MigrationUtil {
             gram.setScratchWorkingDirectory(appBean.getTmpDir());
             //TODO: add to documentation --> ask user to check the hostcount
             gram.setMaxWallTime(appBean.getMaxWallTime());
-            gram.setCpuCount(appBean.getPcount());
-            gram.setMinMemory(appBean.getMinMemory());
+            if (appBean.getPcount() != null) {
+                gram.setCpuCount(appBean.getPcount());
+            }
+            if (appBean.getMinMemory() != null) {
+                gram.setMinMemory(appBean.getMinMemory());
+            }
 
             gram.setJobType(getJobTypeEnum(appBean.getJobType()));
             // TODO : verify the following
