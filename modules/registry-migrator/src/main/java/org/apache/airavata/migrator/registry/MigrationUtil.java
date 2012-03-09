@@ -80,6 +80,10 @@ public class MigrationUtil {
                 parameterType.setType(DataType.Enum.forString(inputParameterType.getType()));
                 parameterType.setName(inputParameterType.getType());
 
+                System.out.println("Input param name : ." + inputParameterType.getName() + ".");
+                System.out.println("            type : ." + inputParameterType.getType() + ".");
+                System.out.println("        set type : ." + DataType.Enum.forString(inputParameterType.getType()) + ".");
+
                 inputList.add(input);
             }
             InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
@@ -97,6 +101,10 @@ public class MigrationUtil {
                 ParameterType parameterType = output.addNewParameterType();
                 parameterType.setType(DataType.Enum.forString(outputParameterType.getType()));
                 parameterType.setName(outputParameterType.getType());
+
+                System.out.println("Output param name : ." + outputParameterType.getName() + ".");
+                System.out.println("             type : ." + outputParameterType.getType() + ".");
+                System.out.println("         set type : ." + DataType.Enum.forString(outputParameterType.getType()) + ".");
 
                 outputList.add(output);
             }
@@ -117,6 +125,7 @@ public class MigrationUtil {
     public static ServiceDescription createServiceDescription(String serviceName, ServiceBean serviceBean) {
         ServiceDescription serv = new ServiceDescription();
         serv.getType().setName(serviceName);
+        System.out.println("\nSERVICE : " + serviceName);
 
         ArrayList<ParamObject> inputParameterTypes = serviceBean.getMethodBean().getInputParms();
         List<InputParameterType> inputList = new ArrayList<InputParameterType>();
@@ -129,6 +138,10 @@ public class MigrationUtil {
                 ParameterType parameterType = input.addNewParameterType();
                 parameterType.setType(DataType.Enum.forString(inputParameterType.getType()));
                 parameterType.setName(inputParameterType.getType());
+
+                System.out.println("Input param name : ." + inputParameterType.getName() + ".");
+                System.out.println("            type : ." + inputParameterType.getType() + ".");
+                System.out.println("        set type : ." + DataType.Enum.forString(inputParameterType.getType()) + ".");
 
                 inputList.add(input);
             }
@@ -147,6 +160,10 @@ public class MigrationUtil {
                 ParameterType parameterType = output.addNewParameterType();
                 parameterType.setType(DataType.Enum.forString(outputParameterType.getType()));
                 parameterType.setName(outputParameterType.getType());
+
+                System.out.println("Output param name : ." + outputParameterType.getName() + ".");
+                System.out.println("             type : ." + outputParameterType.getType() + ".");
+                System.out.println("         set type : ." + DataType.Enum.forString(outputParameterType.getType()) + ".");
 
                 outputList.add(output);
             }

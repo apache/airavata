@@ -21,27 +21,6 @@
 
 package org.apache.airavata.registry.api.impl;
 
-import java.net.URI;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-import java.util.regex.Pattern;
-
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
-import javax.xml.namespace.QName;
-
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.registry.api.impl.JCRRegistry;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
@@ -66,6 +45,13 @@ import org.apache.airavata.schemas.gfac.ServiceType;
 import org.apache.airavata.schemas.gfac.ServiceType.ServiceName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.*;
+import javax.xml.namespace.QName;
+import java.net.URI;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, DataRegistry {
 
@@ -217,6 +203,25 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         } finally {
             closeSession(session);
         }
+    }
+
+    public ServiceDescription getServiceDesc(String serviceId) throws ServiceDescriptionRetrieveException {
+        Session session = null;
+        ServiceDescription result = null;
+        try {
+            session = getSession();
+            Node serviceNode = getServiceNode(session);
+            Node node = serviceNode.getNode(serviceId);
+            Property prop = node.getProperty(XML_PROPERTY_NAME);
+            result = ServiceDescription.fromXML(prop.getString());
+        } catch (PathNotFoundException e) {
+            return null;
+        } catch (Exception e) {
+            throw new ServiceDescriptionRetrieveException(e);
+        } finally {
+            closeSession(session);
+        }
+        return result;
     }
 
     public HostDescription getHostDescription(String hostId) throws RegistryException {
