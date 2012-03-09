@@ -70,8 +70,8 @@ public class MigrationUtil {
      * @return ServiceDescription
      */
     public static ServiceDescription createServiceDescription(ServiceBean serviceBean) {
-        ServiceDescription serv = new ServiceDescription();
-        serv.getType().setName(serviceBean.getServiceName());
+        ServiceDescription serviceDescription = new ServiceDescription();
+        serviceDescription.getType().setName(serviceBean.getServiceName());
 
         ArrayList<ParamObject> inputParameterTypes = serviceBean.getMethodBean().getInputParms();
         List<InputParameterType> inputList = new ArrayList<InputParameterType>();
@@ -96,7 +96,7 @@ public class MigrationUtil {
             }
             InputParameterType[] inputParamList =
                     inputList.toArray(new InputParameterType[inputList.size()]);
-            serv.getType().setInputParametersArray(inputParamList);
+            serviceDescription.getType().setInputParametersArray(inputParamList);
         }
 
         ArrayList<ParamObject> outputParameterTypes = serviceBean.getMethodBean().getOutputParms();
@@ -122,10 +122,10 @@ public class MigrationUtil {
             }
             OutputParameterType[] outputParamList =
                     outputList.toArray(new OutputParameterType[outputList.size()]);
-            serv.getType().setOutputParametersArray(outputParamList);
+            serviceDescription.getType().setOutputParametersArray(outputParamList);
         }
 
-        return serv;
+        return serviceDescription;
     }
 
     /**
@@ -137,8 +137,8 @@ public class MigrationUtil {
      */
     public static ServiceDescription createServiceDescription(String serviceName,
                                                               ServiceBean serviceBean) {
-        ServiceDescription serv = new ServiceDescription();
-        serv.getType().setName(serviceName);
+        ServiceDescription serviceDescription = new ServiceDescription();
+        serviceDescription.getType().setName(serviceName);
         log.debug("\nSERVICE : " + serviceName);
 
         ArrayList<ParamObject> inputParameterTypes = serviceBean.getMethodBean().getInputParms();
@@ -164,7 +164,7 @@ public class MigrationUtil {
             }
             InputParameterType[] inputParamList =
                     inputList.toArray(new InputParameterType[inputList.size()]);
-            serv.getType().setInputParametersArray(inputParamList);
+            serviceDescription.getType().setInputParametersArray(inputParamList);
         }
 
         ArrayList<ParamObject> outputParameterTypes = serviceBean.getMethodBean().getOutputParms();
@@ -190,10 +190,10 @@ public class MigrationUtil {
             }
             OutputParameterType[] outputParamList =
                     outputList.toArray(new OutputParameterType[outputList.size()]);
-            serv.getType().setOutputParametersArray(outputParamList);
+            serviceDescription.getType().setOutputParametersArray(outputParamList);
         }
 
-        return serv;
+        return serviceDescription;
     }
 
     /**
@@ -216,7 +216,6 @@ public class MigrationUtil {
             gram.setApplicationName(name);
             gram.setExecutableLocation(appBean.getExecutable());
             gram.setScratchWorkingDirectory(appBean.getTmpDir());
-            //TODO: add to documentation --> ask user to check the hostcount
             gram.setMaxWallTime(appBean.getMaxWallTime());
             if (appBean.getPcount() != null) {
                 gram.setCpuCount(appBean.getPcount());
@@ -226,7 +225,6 @@ public class MigrationUtil {
             }
 
             gram.setJobType(getJobTypeEnum(appBean.getJobType()));
-            // TODO : verify the following
             ProjectAccountType projectAccount;
             if(gram.getProjectAccount() != null) {
                 projectAccount = gram.getProjectAccount();
@@ -280,7 +278,6 @@ public class MigrationUtil {
             gram.setApplicationName(name);
             gram.setExecutableLocation(appBean.getExecutable());
             gram.setScratchWorkingDirectory(appBean.getTmpDir());
-            //TODO: add to documentation --> ask user to check the hostcount
             gram.setMaxWallTime(appBean.getMaxWallTime());
             if (appBean.getPcount() != null) {
                 gram.setCpuCount(appBean.getPcount());
@@ -290,7 +287,6 @@ public class MigrationUtil {
             }
 
             gram.setJobType(getJobTypeEnum(appBean.getJobType()));
-            // TODO : verify the following
             ProjectAccountType projectAccount;
             if(gram.getProjectAccount() != null) {
                 projectAccount = gram.getProjectAccount();
@@ -322,9 +318,9 @@ public class MigrationUtil {
     }
 
     private static JobTypeType.Enum getJobTypeEnum(String jobTypeString){
-        for (JobTypeType.Enum jtype : getJobTypes()) {
-            if (jtype.toString().equalsIgnoreCase(jobTypeString)){
-                return jtype;
+        for (JobTypeType.Enum jobTypeEnum : getJobTypes()) {
+            if (jobTypeEnum.toString().equalsIgnoreCase(jobTypeString)){
+                return jobTypeEnum;
             }
         }
         return null;

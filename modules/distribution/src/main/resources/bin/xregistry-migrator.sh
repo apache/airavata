@@ -27,7 +27,7 @@ for f in ../standalone-server/lib/*.jar
 do
   TOOL_CLASSPATH="$TOOL_CLASSPATH":$f
 done
-echo "classpath : $TOOL_CLASSPATH"
+#echo "classpath : $TOOL_CLASSPATH"
 
 java -cp "$TOOL_CLASSPATH" org.apache.airavata.migrator.registry.XRegistryMigrationManager $1
 
