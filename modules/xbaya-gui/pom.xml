@@ -372,6 +372,11 @@
 			<artifactId>gfac-schema-utils</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+        <dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>registry-migrator</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
