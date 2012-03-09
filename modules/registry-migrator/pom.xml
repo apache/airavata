@@ -82,14 +82,14 @@
 
 	<build>
 		<plugins>
-			<!-- Set working directory to test-class directory -->
-			<plugin>
+            <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
 				<configuration>
-					<workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
-				<version>${surefire.version}</version>
 			</plugin>
 		</plugins>
 	</build>
