@@ -226,20 +226,12 @@ public class MigrationUtil {
 
             gram.setJobType(getJobTypeEnum(appBean.getJobType()));
             ProjectAccountType projectAccount;
-            if(gram.getProjectAccount() != null) {
-                projectAccount = gram.getProjectAccount();
-            } else {
-                projectAccount = gram.addNewProjectAccount();
-            }
+            projectAccount = getProjectAccountType(gram);
             projectAccount.setProjectAccountNumber(appBean.getProjectName());
             projectAccount.setProjectAccountDescription("");
 
             QueueType queueName;
-            if(gram.getQueue() != null) {
-                queueName = gram.getQueue();
-            } else {
-                queueName = gram.addNewQueue();
-            }
+            queueName = getQueueType(gram);
             queueName.setQueueName(appBean.getQueue());
 
         } else {
@@ -254,6 +246,16 @@ public class MigrationUtil {
         }
         return appDesc;
 
+    }
+
+    private static ProjectAccountType getProjectAccountType(GramApplicationDeploymentType gram) {
+        ProjectAccountType projectAccount;
+        if(gram.getProjectAccount() != null) {
+            projectAccount = gram.getProjectAccount();
+        } else {
+            projectAccount = gram.addNewProjectAccount();
+        }
+        return projectAccount;
     }
 
     /**
@@ -288,20 +290,12 @@ public class MigrationUtil {
 
             gram.setJobType(getJobTypeEnum(appBean.getJobType()));
             ProjectAccountType projectAccount;
-            if(gram.getProjectAccount() != null) {
-                projectAccount = gram.getProjectAccount();
-            } else {
-                projectAccount = gram.addNewProjectAccount();
-            }
+            projectAccount = getProjectAccountType(gram);
             projectAccount.setProjectAccountNumber(appBean.getProjectName());
             projectAccount.setProjectAccountDescription("");
 
             QueueType queueName;
-            if(gram.getQueue() != null) {
-                queueName = gram.getQueue();
-            } else {
-                queueName = gram.addNewQueue();
-            }
+            queueName = getQueueType(gram);
             queueName.setQueueName(appBean.getQueue());
 
         } else {
@@ -315,6 +309,16 @@ public class MigrationUtil {
             app.setScratchWorkingDirectory(appBean.getTmpDir());
         }
         return appDesc;
+    }
+
+    private static QueueType getQueueType(GramApplicationDeploymentType gram) {
+        QueueType queueName;
+        if(gram.getQueue() != null) {
+            queueName = gram.getQueue();
+        } else {
+            queueName = gram.addNewQueue();
+        }
+        return queueName;
     }
 
     private static JobTypeType.Enum getJobTypeEnum(String jobTypeString){
