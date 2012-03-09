@@ -29,11 +29,15 @@ import org.ogce.schemas.gfac.beans.ApplicationBean;
 import org.ogce.schemas.gfac.beans.HostBean;
 import org.ogce.schemas.gfac.beans.ServiceBean;
 import org.ogce.schemas.gfac.beans.utils.ParamObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MigrationUtil {
+    private static Logger log = LoggerFactory.getLogger(MigrationUtil.class);
+
     /**
      * Creates a HostDescription from HostBean
      *
@@ -50,7 +54,8 @@ public class MigrationUtil {
             ((GlobusHostType) host.getType()).
                     setGridFTPEndPointArray(new String[]{hostBean.getGridFtpendPointReference()});
             ((GlobusHostType) host.getType()).
-                    setGlobusGateKeeperEndPointArray(new String[]{hostBean.getGateKeeperendPointReference()});
+                    setGlobusGateKeeperEndPointArray(new String[]{
+                            hostBean.getGateKeeperendPointReference()});
         } else {
             host.getType().setHostName(hostBean.getHostName());
             host.getType().setHostAddress(hostBean.getHostName());
@@ -80,13 +85,17 @@ public class MigrationUtil {
                 parameterType.setType(DataType.Enum.forString(inputParameterType.getType()));
                 parameterType.setName(inputParameterType.getType());
 
-                System.out.println("Input param name : ." + inputParameterType.getName() + ".");
-                System.out.println("            type : ." + inputParameterType.getType() + ".");
-                System.out.println("        set type : ." + DataType.Enum.forString(inputParameterType.getType()) + ".");
+                if(log.isDebugEnabled()) {
+                    log.debug("Input param name : ." + inputParameterType.getName() + ".");
+                    log.debug("            type : ." + inputParameterType.getType() + ".");
+                    log.debug("        set type : ." +
+                            DataType.Enum.forString(inputParameterType.getType()) + ".");
+                }
 
                 inputList.add(input);
             }
-            InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
+            InputParameterType[] inputParamList =
+                    inputList.toArray(new InputParameterType[inputList.size()]);
             serv.getType().setInputParametersArray(inputParamList);
         }
 
@@ -102,13 +111,17 @@ public class MigrationUtil {
                 parameterType.setType(DataType.Enum.forString(outputParameterType.getType()));
                 parameterType.setName(outputParameterType.getType());
 
-                System.out.println("Output param name : ." + outputParameterType.getName() + ".");
-                System.out.println("             type : ." + outputParameterType.getType() + ".");
-                System.out.println("         set type : ." + DataType.Enum.forString(outputParameterType.getType()) + ".");
+                if(log.isDebugEnabled()) {
+                log.debug("Output param name : ." + outputParameterType.getName() + ".");
+                log.debug("             type : ." + outputParameterType.getType() + ".");
+                log.debug("         set type : ." +
+                        DataType.Enum.forString(outputParameterType.getType()) + ".");
+                }
 
                 outputList.add(output);
             }
-            OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
+            OutputParameterType[] outputParamList =
+                    outputList.toArray(new OutputParameterType[outputList.size()]);
             serv.getType().setOutputParametersArray(outputParamList);
         }
 
@@ -122,10 +135,11 @@ public class MigrationUtil {
      * @param serviceBean ServiceBean
      * @return ServiceDescription
      */
-    public static ServiceDescription createServiceDescription(String serviceName, ServiceBean serviceBean) {
+    public static ServiceDescription createServiceDescription(String serviceName,
+                                                              ServiceBean serviceBean) {
         ServiceDescription serv = new ServiceDescription();
         serv.getType().setName(serviceName);
-        System.out.println("\nSERVICE : " + serviceName);
+        log.debug("\nSERVICE : " + serviceName);
 
         ArrayList<ParamObject> inputParameterTypes = serviceBean.getMethodBean().getInputParms();
         List<InputParameterType> inputList = new ArrayList<InputParameterType>();
@@ -139,13 +153,17 @@ public class MigrationUtil {
                 parameterType.setType(DataType.Enum.forString(inputParameterType.getType()));
                 parameterType.setName(inputParameterType.getType());
 
-                System.out.println("Input param name : ." + inputParameterType.getName() + ".");
-                System.out.println("            type : ." + inputParameterType.getType() + ".");
-                System.out.println("        set type : ." + DataType.Enum.forString(inputParameterType.getType()) + ".");
+                if(log.isDebugEnabled()) {
+                log.debug("Input param name : ." + inputParameterType.getName() + ".");
+                log.debug("            type : ." + inputParameterType.getType() + ".");
+                log.debug("        set type : ." +
+                        DataType.Enum.forString(inputParameterType.getType()) + ".");
+                }
 
                 inputList.add(input);
             }
-            InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList.size()]);
+            InputParameterType[] inputParamList =
+                    inputList.toArray(new InputParameterType[inputList.size()]);
             serv.getType().setInputParametersArray(inputParamList);
         }
 
@@ -161,13 +179,17 @@ public class MigrationUtil {
                 parameterType.setType(DataType.Enum.forString(outputParameterType.getType()));
                 parameterType.setName(outputParameterType.getType());
 
-                System.out.println("Output param name : ." + outputParameterType.getName() + ".");
-                System.out.println("             type : ." + outputParameterType.getType() + ".");
-                System.out.println("         set type : ." + DataType.Enum.forString(outputParameterType.getType()) + ".");
+                if(log.isDebugEnabled()) {
+                log.debug("Output param name : ." + outputParameterType.getName() + ".");
+                log.debug("             type : ." + outputParameterType.getType() + ".");
+                log.debug("         set type : ." +
+                        DataType.Enum.forString(outputParameterType.getType()) + ".");
+                }
 
                 outputList.add(output);
             }
-            OutputParameterType[] outputParamList = outputList.toArray(new OutputParameterType[outputList.size()]);
+            OutputParameterType[] outputParamList =
+                    outputList.toArray(new OutputParameterType[outputList.size()]);
             serv.getType().setOutputParametersArray(outputParamList);
         }
 
@@ -180,7 +202,8 @@ public class MigrationUtil {
      * @param appBean ApplicationBean
      * @return ApplicationDeploymentDescription
      */
-    public static ApplicationDeploymentDescription createAppDeploymentDescription(ApplicationBean appBean) {
+    public static ApplicationDeploymentDescription createAppDeploymentDescription(
+            ApplicationBean appBean) {
         ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription();
 
         if(appBean.getJobType() != null) {
@@ -232,13 +255,15 @@ public class MigrationUtil {
     }
 
     /**
-     * Creates ApplicationDeploymentDescription from ApplicationBean with a the provided applicationName
+     * Creates ApplicationDeploymentDescription from ApplicationBean with a the provided
+     * applicationName
      *
      * @param applicationName Application name
      * @param appBean ApplicationBean
      * @return ApplicationDeploymentDescription
      */
-    public static ApplicationDeploymentDescription createAppDeploymentDescription(String applicationName, ApplicationBean appBean) {
+    public static ApplicationDeploymentDescription createAppDeploymentDescription(
+            String applicationName, ApplicationBean appBean) {
         ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription();
 
         if(appBean.getJobType() != null) {
