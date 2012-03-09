@@ -112,10 +112,10 @@ public class MigrationUtil {
                 parameterType.setName(outputParameterType.getType());
 
                 if(log.isDebugEnabled()) {
-                log.debug("Output param name : ." + outputParameterType.getName() + ".");
-                log.debug("             type : ." + outputParameterType.getType() + ".");
-                log.debug("         set type : ." +
-                        DataType.Enum.forString(outputParameterType.getType()) + ".");
+                    log.debug("Output param name : ." + outputParameterType.getName() + ".");
+                    log.debug("             type : ." + outputParameterType.getType() + ".");
+                    log.debug("         set type : ." +
+                            DataType.Enum.forString(outputParameterType.getType()) + ".");
                 }
 
                 outputList.add(output);
@@ -154,10 +154,10 @@ public class MigrationUtil {
                 parameterType.setName(inputParameterType.getType());
 
                 if(log.isDebugEnabled()) {
-                log.debug("Input param name : ." + inputParameterType.getName() + ".");
-                log.debug("            type : ." + inputParameterType.getType() + ".");
-                log.debug("        set type : ." +
-                        DataType.Enum.forString(inputParameterType.getType()) + ".");
+                    log.debug("Input param name : ." + inputParameterType.getName() + ".");
+                    log.debug("            type : ." + inputParameterType.getType() + ".");
+                    log.debug("        set type : ." +
+                            DataType.Enum.forString(inputParameterType.getType()) + ".");
                 }
 
                 inputList.add(input);
@@ -180,10 +180,10 @@ public class MigrationUtil {
                 parameterType.setName(outputParameterType.getType());
 
                 if(log.isDebugEnabled()) {
-                log.debug("Output param name : ." + outputParameterType.getName() + ".");
-                log.debug("             type : ." + outputParameterType.getType() + ".");
-                log.debug("         set type : ." +
-                        DataType.Enum.forString(outputParameterType.getType()) + ".");
+                    log.debug("Output param name : ." + outputParameterType.getName() + ".");
+                    log.debug("             type : ." + outputParameterType.getType() + ".");
+                    log.debug("         set type : ." +
+                            DataType.Enum.forString(outputParameterType.getType()) + ".");
                 }
 
                 outputList.add(output);

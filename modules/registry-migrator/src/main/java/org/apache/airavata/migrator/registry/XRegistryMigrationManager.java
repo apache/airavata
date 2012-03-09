@@ -162,7 +162,7 @@ public class XRegistryMigrationManager {
         Map<QName, HostDescData> val = new HashMap<QName, HostDescData>();
         for (HostDescData hostDesc : hostDescs) {
             val.put(hostDesc.getName(), hostDesc);
-            String hostDescStr = null;
+            String hostDescStr;
             try {
                 hostDescStr = client.getHostDesc(hostDesc.getName().getLocalPart());
             } catch (XRegistryClientException e) {
@@ -170,7 +170,7 @@ public class XRegistryMigrationManager {
                         "name " + hostDesc.getName().getLocalPart() + " from XRegistry instance " +
                         e.getMessage(), e);
             }
-            HostBean hostBean = null;
+            HostBean hostBean;
             try {
                 hostBean = org.ogce.schemas.gfac.beans.
                         utils.HostUtils.simpleHostBeanRequest(hostDescStr);
@@ -219,7 +219,7 @@ public class XRegistryMigrationManager {
 
         for (ServiceDescData serviceDesc : serviceDescDatas) {
             val3.put(serviceDesc.getName(), serviceDesc);
-            String serviceDescStr = null;
+            String serviceDescStr;
             try {
                 serviceDescStr = client.getServiceDesc(serviceDesc.getName());
             } catch (XRegistryClientException e) {
@@ -236,8 +236,8 @@ public class XRegistryMigrationManager {
                 log.info("Service : " + serviceBean.getServiceName());
                 log.info(serviceDescStr);
             } catch (XmlException e) {
-                 throw new XRegistryMigrationException("Issue creating the OGCE Schema Service " +
-                         "Bean " + e.getMessage(), e);
+                throw new XRegistryMigrationException("Issue creating the OGCE Schema Service " +
+                        "Bean " + e.getMessage(), e);
             } catch (IOException e) {
                 throw new XRegistryMigrationException("Issue creating the OGCE Schema Service " +
                         "Bean " + e.getMessage(), e);
@@ -325,8 +325,8 @@ public class XRegistryMigrationManager {
                 log.info(appDescStr);
 
             } catch (XmlException e) {
-                 throw new XRegistryMigrationException("Issue creating the OGCE Schema " +
-                         "Application Bean " + e.getMessage(), e);
+                throw new XRegistryMigrationException("Issue creating the OGCE Schema " +
+                        "Application Bean " + e.getMessage(), e);
             }
 
             if(appBean != null){
@@ -347,8 +347,8 @@ public class XRegistryMigrationManager {
                         //Creating a new name for the the duplicated item
                         name = name + "_" + count++;
                         if(log.isDebugEnabled()) {
-                        log.debug("DEBUG name : " + name);
-                        log.debug("hostName: " + hostName);
+                            log.debug("DEBUG name : " + name);
+                            log.debug("hostName: " + hostName);
                         }
                         log.info("Application Deployment Description named " +
                                 service.getType().getName() + " with host " + hostName +
@@ -369,38 +369,6 @@ public class XRegistryMigrationManager {
         }
 
         return appBean;
-    }
-
-    /**
-     * Saves all the application descriptions to the Airavata Registry from the the given XRegistry.
-     *
-     * @param client client to access the XRegistry
-     * @throws XRegistryClientException XRegistryClientException
-     */
-    private static void saveAllApplicationDescriptions(XRegistryClient client)
-            throws XRegistryClientException {
-        ApplicationDeploymentDescription app = null;
-        FindAppDescResponseDocument.FindAppDescResponse.AppData[] appDatas = client.findAppDesc("");
-        Map<QName, FindAppDescResponseDocument.FindAppDescResponse.AppData> val2 =
-                new HashMap<QName, FindAppDescResponseDocument.FindAppDescResponse.AppData>();
-        for (FindAppDescResponseDocument.FindAppDescResponse.AppData appDesc : appDatas) {
-            val2.put(appDesc.getName(), appDesc);
-            String appDescStr =
-                    client.getAppDesc(appDesc.getName().toString(),appDesc.getHostName());
-            log.info(appDescStr);
-            ApplicationBean appBean = null;
-            try {
-                appBean = org.ogce.schemas.gfac.beans.
-                        utils.ApplicationUtils.simpleApplicationBeanRequest(appDescStr);
-            } catch (XmlException e) {
-                e.printStackTrace();
-            }
-
-            if(appBean != null){
-                app = MigrationUtil.createAppDeploymentDescription(appBean);
-            }
-
-        }
     }
 
 }
