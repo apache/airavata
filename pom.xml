@@ -415,6 +415,37 @@
                 <module>modules/xbaya-gui</module>
             </modules>
         </profile>
+
+         <profile>
+            <id>profile-airavata-client</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>2.3.2</version>
+                        <configuration>
+                            <source>1.6</source>
+                            <target>1.6</target>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <activation>
+                <property>
+                    <name>module</name>
+                    <value>airavata-client</value>
+                </property>
+            </activation>
+            <modules>
+                <module>modules/commons</module>
+		        <module>modules/ws-messenger</module>
+		        <module>modules/registry-migrator</module>
+                <module>modules/xbaya-gui</module>
+                <module>modules/airavata-client</module>
+            </modules>
+         </profile>
+
         <profile>
             <id>profile-samples</id>
             <activation>
