@@ -37,6 +37,11 @@
             <version>1.2.1</version>
 		</dependency>
         <dependency>
+            <groupId>gfac</groupId>
+            <artifactId>gfac-schema-utils</artifactId>
+            <version>0.4.4</version>
+        </dependency>
+        <dependency>
             <groupId>xregistry</groupId>
             <artifactId>xregistry_generated</artifactId>
             <version>0.8.3</version>
