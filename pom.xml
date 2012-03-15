@@ -447,6 +447,35 @@
          </profile>
 
         <profile>
+            <id>profile-registry-api</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>2.3.2</version>
+                        <configuration>
+                            <source>1.6</source>
+                            <target>1.6</target>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <activation>
+                <property>
+                    <name>module</name>
+                    <value>registry-api</value>
+                </property>
+            </activation>
+            <modules>
+                <module>modules/commons/gfac-schema</module>
+                <module>modules/commons/utils</module>
+                <module>modules/commons/common-registry-api</module>
+                <module>modules/commons/registry-api</module>
+            </modules>
+        </profile>
+
+        <profile>
             <id>profile-samples</id>
             <activation>
                 <property>
