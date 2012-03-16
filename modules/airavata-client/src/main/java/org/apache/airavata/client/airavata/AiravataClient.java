@@ -458,6 +458,10 @@ public class AiravataClient {
 		return urlString;
 	}
 
+	/**
+	 * Retrieve the names of the workflow templates saved in the registry
+	 * @return
+	 */
 	public List<String> getWorkflowTemplateIds() {
 		List<String> workflowList = new ArrayList<String>();
 		Map<QName, Node> workflows;
@@ -474,6 +478,12 @@ public class AiravataClient {
 		return workflowList;
 	}
 	
+	/**
+	 * Execute the given workflow template with the given inputs and return the topic id 
+	 * @param workflowTemplateId
+	 * @param inputs
+	 * @return
+	 */
 	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs){
 		try {
 			List<WSComponentPort> ports = getWSComponentPortInputs(workflowTemplateId);
@@ -495,7 +505,7 @@ public class AiravataClient {
 				inputValues.add(nameValue);
 			}
 			workflow=getWorkflowAsString(workflowTemplateId).getString();
-			String topic=workflowTemplateId+UUID.randomUUID();
+			String topic=workflowTemplateId+"_"+UUID.randomUUID();
 			return runWorkflow(topic, inputValues.toArray(new NameValue[]{}));
 		} catch (PathNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -519,15 +529,11 @@ public class AiravataClient {
 		return null;
 	}
 	
-	private WSComponentPort getWSComponentPort(String name,List<WSComponentPort> ports){
-		for (WSComponentPort port : ports) {
-			if (port.getName().equals(name)){
-				return port;
-			}
-		}
-		return null;
-	}
-	
+	/**
+	 * Retrieve the inputs for the given workflow template
+	 * @param workflowTemplateId
+	 * @return
+	 */
 	public List<WorkflowInput> getWorkflowInputs(String workflowTemplateId){
 		try {
 			List<WSComponentPort> inputs = getWSComponentPortInputs(workflowTemplateId);
@@ -555,6 +561,15 @@ public class AiravataClient {
 		return null;
 	}
 
+	public Property getWorkflowAsString(String workflowTemplateId)
+			throws RegistryException, PathNotFoundException,
+			RepositoryException {
+		Node workflowNode = getRegistry().getWorkflow(new QName(workflowTemplateId), getClientConfiguration().getJcrUsername());
+		Property workflowAsString = workflowNode.getProperty("workflow");
+		return workflowAsString;
+	}
+	
+
 	private List<WSComponentPort> getWSComponentPortInputs(
 			String workflowTemplateId) throws RegistryException,
 			PathNotFoundException, RepositoryException, GraphException,
@@ -564,12 +579,14 @@ public class AiravataClient {
 		List<WSComponentPort> inputs = workflow.getInputs();
 		return inputs;
 	}
-
-	public Property getWorkflowAsString(String workflowTemplateId)
-			throws RegistryException, PathNotFoundException,
-			RepositoryException {
-		Node workflowNode = getRegistry().getWorkflow(new QName(workflowTemplateId), getClientConfiguration().getJcrUsername());
-		Property workflowAsString = workflowNode.getProperty("workflow");
-		return workflowAsString;
+	
+	private WSComponentPort getWSComponentPort(String name,List<WSComponentPort> ports){
+		for (WSComponentPort port : ports) {
+			if (port.getName().equals(name)){
+				return port;
+			}
+		}
+		return null;
 	}
+
 }
