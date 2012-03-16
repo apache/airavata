@@ -330,16 +330,16 @@ public class AiravataClient {
 		}
 	}
 
-	public String runWorkflow(String topic, NameValue[] inputs) {
+	public String runWorkflow(String topic, NameValue[] inputs) throws Exception {
 		return runWorkflow(topic, inputs, null);
 	}
 
-	public String runWorkflow(String topic, NameValue[] inputs, String user) {
+	public String runWorkflow(String topic, NameValue[] inputs, String user) throws Exception {
 		return runWorkflow(topic, inputs, user, null);
 	}
 
 	public String runWorkflow(String topic, NameValue[] inputs, String user,
-			String metadata) {
+			String metadata) throws Exception{
 		String worflowoutput = null;
 		try {
 			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
@@ -350,10 +350,6 @@ public class AiravataClient {
 					configurations);
 			runPostWorkflowExecutionTasks(topic, user, metadata);
 			log.info("Workflow output : " + worflowoutput);
-		} catch (AxisFault e) {
-			log.fine(e.getMessage(), e);
-		} catch (RemoteException e) {
-			log.fine(e.getMessage(), e);
 		} catch (RegistryException e) {
 			log.fine(e.getMessage(), e);
 		}
@@ -484,7 +480,7 @@ public class AiravataClient {
 	 * @param inputs
 	 * @return
 	 */
-	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs){
+	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs) throws Exception{
 		try {
 			List<WSComponentPort> ports = getWSComponentPortInputs(workflowTemplateId);
 			for (WorkflowInput input : inputs) {
@@ -508,16 +504,6 @@ public class AiravataClient {
 			String topic=workflowTemplateId+"_"+UUID.randomUUID();
 			return runWorkflow(topic, inputValues.toArray(new NameValue[]{}));
 		} catch (PathNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (GraphException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ComponentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ValueFormatException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (RegistryException e) {
 			// TODO Auto-generated catch block
@@ -534,7 +520,7 @@ public class AiravataClient {
 	 * @param workflowTemplateId
 	 * @return
 	 */
-	public List<WorkflowInput> getWorkflowInputs(String workflowTemplateId){
+	public List<WorkflowInput> getWorkflowInputs(String workflowTemplateId) throws Exception{
 		try {
 			List<WSComponentPort> inputs = getWSComponentPortInputs(workflowTemplateId);
 			List<WorkflowInput> results=new ArrayList<WorkflowInput>();
@@ -542,16 +528,7 @@ public class AiravataClient {
 				results.add(new WorkflowInput(port.getName(), port.getType().getLocalPart(), port.getDefaultValue(), port.getValue()));
 			}
 			return results;
-		} catch (GraphException e) {
-			e.printStackTrace(); // To change body of catch statement use File |
-									// Settings | File Templates.
-		} catch (ComponentException e) {
-			e.printStackTrace(); // To change body of catch statement use File |
-									// Settings | File Templates.
 		} catch (RegistryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ValueFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (RepositoryException e) {
