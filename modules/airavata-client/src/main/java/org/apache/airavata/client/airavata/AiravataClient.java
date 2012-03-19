@@ -58,6 +58,7 @@ import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorStub;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.axis2.AxisFault;
 
 import xsul5.MLogger;
@@ -541,9 +542,13 @@ public class AiravataClient {
 	public Property getWorkflowAsString(String workflowTemplateId)
 			throws RegistryException, PathNotFoundException,
 			RepositoryException {
-		Node workflowNode = getRegistry().getWorkflow(new QName(workflowTemplateId), getClientConfiguration().getJcrUsername());
-		Property workflowAsString = workflowNode.getProperty("workflow");
-		return workflowAsString;
+		Map<QName, Node> workflows = getRegistry().getWorkflows(getClientConfiguration().getJcrUsername());
+		for (QName qname : workflows.keySet()) {
+			if (qname.getLocalPart().equals(workflowTemplateId)){
+				return workflows.get(qname).getProperty("workflow");
+			}
+		}
+		return null;
 	}
 	
 
@@ -553,6 +558,7 @@ public class AiravataClient {
 			ComponentException, ValueFormatException {
 		Property workflowAsString = getWorkflowAsString(workflowTemplateId);
 		Workflow workflow = new Workflow(workflowAsString.getString());
+		WorkflowClient.createScript(workflow);
 		List<WSComponentPort> inputs = workflow.getInputs();
 		return inputs;
 	}
