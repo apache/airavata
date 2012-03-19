@@ -474,7 +474,7 @@ public class AiravataClient {
 		}
 		return workflowList;
 	}
-	
+
 	/**
 	 * Execute the given workflow template with the given inputs and return the topic id 
 	 * @param workflowTemplateId
@@ -482,6 +482,19 @@ public class AiravataClient {
 	 * @return
 	 */
 	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs) throws Exception{
+		return runWorkflow(workflowTemplateId,inputs,getRegistry().getUsername(),null);
+	}
+	
+	/**
+	 * Execute the given workflow template with the given inputs, user, metadata and return the topic id
+	 * @param workflowTemplateId
+	 * @param inputs
+	 * @param user
+	 * @param metadata
+	 * @return
+	 * @throws Exception
+	 */
+	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata) throws Exception{
 		try {
 			List<WSComponentPort> ports = getWSComponentPortInputs(workflowTemplateId);
 			for (WorkflowInput input : inputs) {
@@ -503,7 +516,7 @@ public class AiravataClient {
 			}
 			workflow=getWorkflowAsString(workflowTemplateId).getString();
 			String topic=workflowTemplateId+"_"+UUID.randomUUID();
-			return runWorkflow(topic, inputValues.toArray(new NameValue[]{}));
+			return runWorkflow(topic, inputValues.toArray(new NameValue[]{}), user, metadata);
 		} catch (PathNotFoundException e) {
 			e.printStackTrace();
 		} catch (RegistryException e) {
