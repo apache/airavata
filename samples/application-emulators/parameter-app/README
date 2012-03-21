@@ -1,0 +1,36 @@
+OVERVIEW
+--------
+This is a sample application which emulates three inputs. One of the input is a parameter file and other two are data files.
+
+
+DESCRIPTION
+----------
+
+
+MOCK APPLICATION
+----------------
+This application is similar to a thermo dynamics application PWscf. MOCK APPLICATION
+
+
+APPLICATION INPUT/OUPUTS
+------------------------
+
+The first input parameter file has multiple name value pairs inputs which application can understand.
+
+The second input is a data file 
+
+
+INSTALL
+------
+Building instructions
+
+EXECUTION
+---------
+
+To run the application ..
+
+VERIFICATION
+-----------
+The execution will be successfull if ....
+
+
