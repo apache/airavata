@@ -150,6 +150,7 @@ print_help(){
 	echo "   --properties		A properties file on how to configure/customize deployed webapps"
 	echo
 	echo "Optional arguments"
+	echo "   -? --help		Print this help"
 	echo "   --debug		Let there be more text :)"
 	echo "   --base=PATH		Setup tomcat at the given location (ignored if --tomcat is a directory)"
 	echo "   --start_tomcat	Once setup is done start the tomcat server"
@@ -196,6 +197,14 @@ do
 			;;
 		--start_tomcat)
 			START_TOMCAT="yes"
+			;;
+		--help)
+			print_help $0
+			exit 0
+			;;
+		-?)
+			print_help $0
+			exit 0
 			;;
     	--debug)
 			debug="debug_mode"
