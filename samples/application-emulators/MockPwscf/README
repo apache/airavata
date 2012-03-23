@@ -1,0 +1,49 @@
+OVERVIEW
+--------
+This is a sample application which emulates three inputs.
+The First Input is Pwscf_Input, it has all data setup manually by the user over the Web Portal.
+The second and third inputs are pseudo_1 and pseudo_2. Those file usually are created by a third part software
+containing atomic positions.
+The real PWscf uses those pseudo files to simulate atomic postions of the atoms involved on the calculations.
+
+
+DESCRIPTION
+----------
+
+This Application only reads three input Pwscf_Input, pseudo_1, and pseudo_2. Then It prints 2 Outputs, one called Pwscf_Output, and the other
+called output_2_binary. This seconds output output_2_binary is just one example. In the real PWscf several binary files will be placed over
+the tmp directory.
+
+
+MOCK APPLICATION
+----------------
+This application is similar to a thermo dynamics application PWscf. MOCK APPLICATION
+
+
+APPLICATION INPUT/OUPUTS
+------------------------
+
+The first input parameter file has multiple name value pairs inputs which application can understand.
+
+The second input is a data file 
+
+
+INSTALL
+------
+Building instructions
+
+Compilations process tested on Ranger: mpicc pwscf.c -o pwscf.w
+
+EXECUTION
+---------
+
+To run the application ..
+
+mpirun -np 4 pwscf.w
+
+
+VERIFICATION
+-----------
+The execution will be successfull if ....
+
+In case the execution goes correctly. It should read those three inputs, and create one output Pwscf_Output and another output called output_2_binary in the tmp directory.

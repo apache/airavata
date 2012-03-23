@@ -1,0 +1,6 @@
+ATOMIC_SPECIES
+   O   20.0   008-O-ca--bm3.vdb
+ATOMIC_POSITIONS crystal
+O      0.25   0.25   0.25
+K_POINTS automatic
+  6 6 6   1 1 1

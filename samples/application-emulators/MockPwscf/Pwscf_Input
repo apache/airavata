@@ -1,0 +1,25 @@
+&CONTROL
+                 calculation = "relax" ,
+                restart_mode = "from_scratch" ,
+                      outdir = "./tmp/" , 
+                  pseudo_dir = "./" ,
+                     disk_io = "default" ,
+                   verbosity = "default" ,
+                     tstress = .true. ,
+                     tprnfor = .true. ,
+   nstep = 1 ,
+               etot_conv_thr = 1.0E-5  ,
+               forc_conv_thr = 1.0D-3 ,
+                      iprint = 1 ,
+                 max_seconds = 36000 , 
+                          dt = 50 ,
+ /
+ &SYSTEM
+                       ibrav = 0 ,
+   A = 3.01728916 ,
+   B = 3.01728916 ,
+   C = 3.01728916 ,
+   cosAB = 0.50000000 ,
+   cosAC = 0.50000000 ,
+   cosBC = 0.50000000 ,
+
