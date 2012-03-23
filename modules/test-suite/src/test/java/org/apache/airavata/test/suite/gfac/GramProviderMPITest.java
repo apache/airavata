@@ -30,6 +30,7 @@ import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.services.impl.PropertiesBasedServiceImpl;
+import org.apache.airavata.migrator.registry.MigrationUtil;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.schemas.gfac.*;
 import org.junit.Assert;
@@ -49,9 +50,6 @@ public class GramProviderMPITest {
 
     @Before
     public void setUp() throws Exception {
-        /*
-           * Create database
-           */
         Map<String,String> config = new HashMap<String,String>();
             config.put("org.apache.jackrabbit.repository.home","target");
 
@@ -59,10 +57,7 @@ public class GramProviderMPITest {
                 "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
                 "admin", config);
 
-        /*
-           * Host
-           */
-
+        // Host
         URL url = this.getClass().getClassLoader().getResource(GRAM_PROPERTIES);
         Properties properties = new Properties();
         properties.load(url.openStream());
@@ -73,32 +68,24 @@ public class GramProviderMPITest {
         ((GlobusHostType) host.getType()).setGridFTPEndPointArray(new String[]{properties.getProperty("gridftp.endpoint")});
         ((GlobusHostType) host.getType()).setGlobusGateKeeperEndPointArray(new String[]{properties.getProperty("globus.endpoints")});
 
-
-        /*
-        * App
-        */
+        /* Application */
         ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(GramApplicationDeploymentType.type);
         GramApplicationDeploymentType app = (GramApplicationDeploymentType) appDesc.getType();
         app.setCpuCount(1);
         app.setNodeCount(1);
         ApplicationDeploymentDescriptionType.ApplicationName name = appDesc.getType().addNewApplicationName();
         name.setStringValue("EchoMPILocal");
-        app.setExecutableLocation("/share/home/01437/ogce/airavata-test/scheduler_sge_job_mpi_helloworld2");
+        app.setExecutableLocation("/share/home/01437/ogce/airavata-test/mpi-hellow-world");
         app.setScratchWorkingDirectory(properties.getProperty("scratch.directory"));
         app.setCpuCount(16);
+        app.setJobType(MigrationUtil.getJobTypeEnum("MPI"));
         //app.setMinMemory();
         ProjectAccountType projectAccountType = ((GramApplicationDeploymentType) appDesc.getType()).addNewProjectAccount();
         projectAccountType.setProjectAccountNumber(properties.getProperty("project.name"));
 
-/*        QueueType queueName;
-        queueName = getQueueType(gram);
-        queueName.setQueueName(appBean.getQueue());*/
-
-        /*
-           * Service
-           */
+        /* Service */
         ServiceDescription serv = new ServiceDescription();
-        serv.getType().setName("SimpleEcho");
+        serv.getType().setName("SimpleMPIEcho");
 
         InputParameterType input = InputParameterType.Factory.newInstance();
         ParameterType parameterType = input.addNewParameterType();
@@ -118,9 +105,7 @@ public class GramProviderMPITest {
         serv.getType().setInputParametersArray(inputParamList);
         serv.getType().setOutputParametersArray(outputParamList);
 
-        /*
-           * Save to registry
-           */
+        /* Save to Registry */
         jcrRegistry.saveHostDescription(host);
         jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host.getType().getHostName(), appDesc);
         jcrRegistry.saveServiceDescription(serv);
@@ -150,25 +135,21 @@ public class GramProviderMPITest {
 
             ct.addSecurityContext(MYPROXY, gsiSecurityContext);
 
-            ct.setServiceName("SimpleEcho");
+            ct.setServiceName("SimpleMPIEcho");
 
-            /*
-            * Input
-            */
+            /* Input */
             ParameterContextImpl input = new ParameterContextImpl();
             ActualParameter echo_input = new ActualParameter();
             // TODO : although I am setting input here. The service will echo a different sout msg
             ((StringParameterType) echo_input.getType()).setValue("echo_mpi_output=hello");
             input.add("echo_mpi_input", echo_input);
 
-            /*
-            * Output
-            */
+            /* Output */
             ParameterContextImpl output = new ParameterContextImpl();
             ActualParameter echo_output = new ActualParameter();
             output.add("echo_mpi_output", echo_output);
 
-            // parameter
+            /* parameter */
             ct.setInput(input);
             ct.setOutput(output);
 
