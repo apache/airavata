@@ -321,7 +321,7 @@ public class MigrationUtil {
         return queueName;
     }
 
-    private static JobTypeType.Enum getJobTypeEnum(String jobTypeString){
+    public static JobTypeType.Enum getJobTypeEnum(String jobTypeString){
         for (JobTypeType.Enum jobTypeEnum : getJobTypes()) {
             if (jobTypeEnum.toString().equalsIgnoreCase(jobTypeString)){
                 return jobTypeEnum;
