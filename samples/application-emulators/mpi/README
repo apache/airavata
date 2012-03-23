@@ -1,0 +1,52 @@
+OVERVIEW
+--------
+This application is MPI application that prints out hello world.
+
+
+DESCRIPTION
+----------
+This application is MPI application that prints out hello world.
+
+
+MOCK APPLICATION
+----------------
+This application is MPI application that prints out hello world.
+
+
+APPLICATION INPUT/OUPUTS
+------------------------
+The program will print to standard output.
+
+
+INSTALL
+------
+Building instructions
+
+Compilations process tested on Ranger: mpicc -o mpi-hellow-world mpi-hellow-world.c
+
+EXECUTION
+---------
+
+To run the application ..
+
+ibrun -n 16 -o 0
+
+
+VERIFICATION
+-----------
+The execution will be successfull if following output is printed ....
+
+echo_mpi_output=Hello world from process 13 of 16
+echo_mpi_output=Hello world from process 9 of 16
+echo_mpi_output=Hello world from process 7 of 16
+echo_mpi_output=Hello world from process 11 of 16
+echo_mpi_output=Hello world from process 15 of 16
+echo_mpi_output=Hello world from process 10 of 16
+echo_mpi_output=Hello world from process 0 of 16
+echo_mpi_output=Hello world from process 2 of 16
+echo_mpi_output=Hello world from process 14 of 16
+echo_mpi_output=Hello world from process 5 of 16
+echo_mpi_output=Hello world from process 3 of 16
+echo_mpi_output=Hello world from process 1 of 16
+echo_mpi_output=Hello world from process 6 of 16
+echo_mpi_output=Hello world from process 8 of 16
