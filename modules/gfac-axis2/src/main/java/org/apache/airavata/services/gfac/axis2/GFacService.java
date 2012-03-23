@@ -65,6 +65,7 @@ public class GFacService implements ServiceLifeCycle {
 
     public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 
+    public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
     /*
      * Properties for JCR
      */
@@ -110,44 +111,58 @@ public class GFacService implements ServiceLifeCycle {
     	new Thread(){
     		@Override
     		public void run() {
-    			try {
-					Thread.sleep(10000);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
     	        Properties properties = new Properties();
     	        String port = null;
     	        try {
     	            URL url = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
     	            properties.load(url.openStream());
     	            Map<String, String> map = new HashMap<String, String>((Map) properties);
-    	            AiravataRegistry registry = new AiravataJCRRegistry(new URI(map.get(ORG_APACHE_JACKRABBIT_REPOSITORY_URI)),map.get(JCR_CLASS),map.get(JCR_USER),map.get(JCR_PASS), map);
-    	            String localAddress = Utils.getIpAddress(context.getAxisConfiguration());
-    	            TransportInDescription transportInDescription = context.getAxisConfiguration().getTransportsIn()
-    	                    .get("http");
-    	            if (transportInDescription != null && transportInDescription.getParameter("port") != null) {
-    	                port = (String) transportInDescription.getParameter("port").getValue();
-    	            } else {
-    	                port = map.get("port");
-    	            }
-    	            localAddress = "http://" + localAddress + ":" + port;
-    	            localAddress = localAddress + "/" + context.getContextRoot() + "/" + context.getServicePath() + "/"
-    	                    + WSConstants.GFAC_SERVICE_NAME;
-    	            log.debug("GFAC_ADDRESS:" + localAddress);
-    	            context.setProperty(CONFIGURATION_CONTEXT_REGISTRY, registry);
-    	            context.setProperty(GFAC_URL, localAddress);
-    	            context.setProperty(TRUSTED_CERT_LOCATION,properties.getProperty(TRUSTED_CERT_LOCATION));
-    	            context.setProperty(MYPROXY_USER,properties.getProperty(MYPROXY_USER));
-    	            context.setProperty(MYPROXY_PASS,properties.getProperty(MYPROXY_PASS));
-    	            context.setProperty(MYPROXY_SERVER,properties.getProperty(MYPROXY_SERVER));
-    	            context.setProperty(MYPROXY_LIFE,properties.getProperty(MYPROXY_LIFE));
-    	            
-
-    	            /*
-    	             * Heart beat message to registry
-    	             */
-    	            thread = new GFacThread(context);
-    	            thread.start();
+	            	try {
+						Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+					AiravataRegistry registry = new AiravataJCRRegistry(
+							new URI(
+									map.get(ORG_APACHE_JACKRABBIT_REPOSITORY_URI)),
+							map.get(JCR_CLASS), map.get(JCR_USER), map
+									.get(JCR_PASS), map);
+					String localAddress = Utils.getIpAddress(context
+							.getAxisConfiguration());
+					TransportInDescription transportInDescription = context
+							.getAxisConfiguration().getTransportsIn()
+							.get("http");
+					if (transportInDescription != null
+							&& transportInDescription.getParameter("port") != null) {
+						port = (String) transportInDescription
+								.getParameter("port").getValue();
+					} else {
+						port = map.get("port");
+					}
+					localAddress = "http://" + localAddress + ":" + port;
+					localAddress = localAddress + "/"
+							+ context.getContextRoot() + "/"
+							+ context.getServicePath() + "/"
+							+ WSConstants.GFAC_SERVICE_NAME;
+					log.debug("GFAC_ADDRESS:" + localAddress);
+					context.setProperty(CONFIGURATION_CONTEXT_REGISTRY,
+							registry);
+					context.setProperty(GFAC_URL, localAddress);
+					context.setProperty(TRUSTED_CERT_LOCATION,
+							properties.getProperty(TRUSTED_CERT_LOCATION));
+					context.setProperty(MYPROXY_USER,
+							properties.getProperty(MYPROXY_USER));
+					context.setProperty(MYPROXY_PASS,
+							properties.getProperty(MYPROXY_PASS));
+					context.setProperty(MYPROXY_SERVER,
+							properties.getProperty(MYPROXY_SERVER));
+					context.setProperty(MYPROXY_LIFE,
+							properties.getProperty(MYPROXY_LIFE));
+					/*
+					 * Heart beat message to registry
+					 */
+					thread = new GFacThread(context);
+					thread.start();
     	        } catch (Exception e) {
     	            log.error(e.getMessage(), e);
     	        }
@@ -181,16 +196,20 @@ public class GFacService implements ServiceLifeCycle {
         public void run() {
             try {
                 while (true) {
-                    AiravataRegistry registry = (AiravataRegistry) this.context.getProperty(CONFIGURATION_CONTEXT_REGISTRY);
-                    String localAddress = (String) this.context.getProperty(GFAC_URL);
-                    registry.saveGFacDescriptor(localAddress);
-                    log.info("Updated the GFac URL in to Repository");
-                    Thread.sleep(GFAC_URL_UPDATE_INTERVAL);
+                    try {
+						AiravataRegistry registry = (AiravataRegistry) this.context.getProperty(CONFIGURATION_CONTEXT_REGISTRY);
+						String localAddress = (String) this.context.getProperty(GFAC_URL);
+						registry.saveGFacDescriptor(localAddress);
+						log.info("Updated the GFac URL in to Repository");
+						Thread.sleep(GFAC_URL_UPDATE_INTERVAL);
+					} catch (RegistryException e) {
+						//in case of an registry exception best to retry sooner
+						log.error("Error saving GFac descriptor",e);
+						Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
+					}
                 }
             } catch (InterruptedException e) {
                 log.info("GFacURL update thread is interrupted");
-            } catch (RegistryException e) {
-				log.error("Error saving GFac descriptor",e);			
 			}
         }
     }
