@@ -73,42 +73,54 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static  JCRComponentRegistry jcrComponentRegistry = null;
     public static int provenanceWriterThreadPoolSize = 1;
     public static final String PROVENANCE_WRITER_THREAD_POOL_SIZE = "provenanceWriterThreadPoolSize";
+    public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
 
-    public void startUp(ConfigurationContext configctx, AxisService service) {
-        URL url = this.getClass().getClassLoader().getResource("xbaya.properties");
-        Properties properties = new Properties();
-        try {
-            properties.load(url.openStream());
-            configctx.setProperty(MYPROXY_PASS, properties.get(MYPROXY_PASS));
-            configctx.setProperty(MYPROXY_USER, properties.get(MYPROXY_USER));
+    public void startUp(final ConfigurationContext configctx, AxisService service) {
+    	new Thread(){
+    		@Override
+    		public void run() {
+    			try {
+					Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+		        URL url = this.getClass().getClassLoader().getResource("xbaya.properties");
+		        Properties properties = new Properties();
+		        try {
+		            properties.load(url.openStream());
+		            configctx.setProperty(MYPROXY_PASS, properties.get(MYPROXY_PASS));
+		            configctx.setProperty(MYPROXY_USER, properties.get(MYPROXY_USER));
+		
+		            jcrUserName = (String)properties.get(JCR_USER);
+		            jcrPassword = (String) properties.get(JCR_PASS);
+		            jcrURL = (String) properties.get(JCR_URL);
+		            provenanceWriterThreadPoolSize = Integer.parseInt((String)properties.get(PROVENANCE_WRITER_THREAD_POOL_SIZE));
+		
+		            if("true".equals(properties.get(PROVENANCE))){
+		                provenance = true;
+		                runner = new PredicatedTaskRunner(provenanceWriterThreadPoolSize);
+		                try {
+		                    jcrComponentRegistry = new JCRComponentRegistry(new URI(jcrURL),jcrUserName,jcrPassword);
+		                } catch (RepositoryException e) {
+		                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		                } catch (URISyntaxException e) {
+		                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		                }
+		            }else{
+		                provenance = false;
+		            }
+		            if("true".equals(properties.get(RUN_IN_THREAD))){
+		                runInThread = true;
+		            }else{
+		                runInThread = false;
+		            }
+		
+		        } catch (IOException e) {
+		            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		        }
+    		}
+    	}.start();
 
-            jcrUserName = (String)properties.get(JCR_USER);
-            jcrPassword = (String) properties.get(JCR_PASS);
-            jcrURL = (String) properties.get(JCR_URL);
-            provenanceWriterThreadPoolSize = Integer.parseInt((String)properties.get(PROVENANCE_WRITER_THREAD_POOL_SIZE));
-
-            if("true".equals(properties.get(PROVENANCE))){
-                provenance = true;
-                runner = new PredicatedTaskRunner(provenanceWriterThreadPoolSize);
-                try {
-                    jcrComponentRegistry = new JCRComponentRegistry(new URI(jcrURL),jcrUserName,jcrPassword);
-                } catch (RepositoryException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-            }else{
-                provenance = false;
-            }
-            if("true".equals(properties.get(RUN_IN_THREAD))){
-                runInThread = true;
-            }else{
-                runInThread = false;
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
     }
 	/**
 	 * Auto generated method signature
