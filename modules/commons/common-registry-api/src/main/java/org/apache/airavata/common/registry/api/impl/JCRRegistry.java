@@ -303,12 +303,7 @@ public class JCRRegistry extends Observable implements Registry{
     	}
         Node node1 = null;
         try {
-//        	System.out.println("node extracted");
-//        	if (node==null){ //root node
-//        		node1=getSession().getRootNode();
-//        	}else{
-	            node1 = node.getNode(name);
-//        	}
+            node1 = node.getNode(name);
         	sessionNodes.get(node).put(name, node1);
         } catch (PathNotFoundException pnfe) {
             node1 = node.addNode(name);
