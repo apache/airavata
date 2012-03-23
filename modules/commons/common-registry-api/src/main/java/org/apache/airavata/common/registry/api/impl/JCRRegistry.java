@@ -223,7 +223,7 @@ public class JCRRegistry extends Observable implements Registry{
 
 	protected Node getRootNode(Session session) throws RepositoryException {
 		String ROOT_NODE_TEXT = "root";
-		if (!getSessionNodes().containsKey(null)){
+		if (!getSessionNodes().containsKey(null) || !getSessionNodes().get(null).get(ROOT_NODE_TEXT).getSession().isLive()){
 			getSessionNodes().put(null, new HashMap<String, Node>());
 			getSessionNodes().get(null).put(ROOT_NODE_TEXT, session.getRootNode());
 		}
@@ -304,8 +304,12 @@ public class JCRRegistry extends Observable implements Registry{
         Node node1 = null;
         try {
 //        	System.out.println("node extracted");
-            node1 = node.getNode(name);
-            sessionNodes.get(node).put(name, node1);
+//        	if (node==null){ //root node
+//        		node1=getSession().getRootNode();
+//        	}else{
+	            node1 = node.getNode(name);
+//        	}
+        	sessionNodes.get(node).put(name, node1);
         } catch (PathNotFoundException pnfe) {
             node1 = node.addNode(name);
         } catch (RepositoryException e) {
