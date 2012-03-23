@@ -104,43 +104,55 @@ public class GFacService implements ServiceLifeCycle {
         initializeRepository(configctx);
     }
 
-    private void initializeRepository(ConfigurationContext context) {
-        Properties properties = new Properties();
-        String port = null;
-        try {
-            URL url = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
-            properties.load(url.openStream());
-            Map<String, String> map = new HashMap<String, String>((Map) properties);
-            AiravataRegistry registry = new AiravataJCRRegistry(new URI(map.get(ORG_APACHE_JACKRABBIT_REPOSITORY_URI)),map.get(JCR_CLASS),map.get(JCR_USER),map.get(JCR_PASS), map);
-            String localAddress = Utils.getIpAddress(context.getAxisConfiguration());
-            TransportInDescription transportInDescription = context.getAxisConfiguration().getTransportsIn()
-                    .get("http");
-            if (transportInDescription != null && transportInDescription.getParameter("port") != null) {
-                port = (String) transportInDescription.getParameter("port").getValue();
-            } else {
-                port = map.get("port");
-            }
-            localAddress = "http://" + localAddress + ":" + port;
-            localAddress = localAddress + "/" + context.getContextRoot() + "/" + context.getServicePath() + "/"
-                    + WSConstants.GFAC_SERVICE_NAME;
-            log.debug("GFAC_ADDRESS:" + localAddress);
-            context.setProperty(CONFIGURATION_CONTEXT_REGISTRY, registry);
-            context.setProperty(GFAC_URL, localAddress);
-            context.setProperty(TRUSTED_CERT_LOCATION,properties.getProperty(TRUSTED_CERT_LOCATION));
-            context.setProperty(MYPROXY_USER,properties.getProperty(MYPROXY_USER));
-            context.setProperty(MYPROXY_PASS,properties.getProperty(MYPROXY_PASS));
-            context.setProperty(MYPROXY_SERVER,properties.getProperty(MYPROXY_SERVER));
-            context.setProperty(MYPROXY_LIFE,properties.getProperty(MYPROXY_LIFE));
-            
+    private void initializeRepository(final ConfigurationContext context) {
+    	//Allow the initialization to run on a thread, orelse this will create the chiken and egg prob
+    	//(orelse the main thread will wait for the response from jackrabbit which actually starts after GFac webapp
+    	new Thread(){
+    		@Override
+    		public void run() {
+    			try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+    	        Properties properties = new Properties();
+    	        String port = null;
+    	        try {
+    	            URL url = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
+    	            properties.load(url.openStream());
+    	            Map<String, String> map = new HashMap<String, String>((Map) properties);
+    	            AiravataRegistry registry = new AiravataJCRRegistry(new URI(map.get(ORG_APACHE_JACKRABBIT_REPOSITORY_URI)),map.get(JCR_CLASS),map.get(JCR_USER),map.get(JCR_PASS), map);
+    	            String localAddress = Utils.getIpAddress(context.getAxisConfiguration());
+    	            TransportInDescription transportInDescription = context.getAxisConfiguration().getTransportsIn()
+    	                    .get("http");
+    	            if (transportInDescription != null && transportInDescription.getParameter("port") != null) {
+    	                port = (String) transportInDescription.getParameter("port").getValue();
+    	            } else {
+    	                port = map.get("port");
+    	            }
+    	            localAddress = "http://" + localAddress + ":" + port;
+    	            localAddress = localAddress + "/" + context.getContextRoot() + "/" + context.getServicePath() + "/"
+    	                    + WSConstants.GFAC_SERVICE_NAME;
+    	            log.debug("GFAC_ADDRESS:" + localAddress);
+    	            context.setProperty(CONFIGURATION_CONTEXT_REGISTRY, registry);
+    	            context.setProperty(GFAC_URL, localAddress);
+    	            context.setProperty(TRUSTED_CERT_LOCATION,properties.getProperty(TRUSTED_CERT_LOCATION));
+    	            context.setProperty(MYPROXY_USER,properties.getProperty(MYPROXY_USER));
+    	            context.setProperty(MYPROXY_PASS,properties.getProperty(MYPROXY_PASS));
+    	            context.setProperty(MYPROXY_SERVER,properties.getProperty(MYPROXY_SERVER));
+    	            context.setProperty(MYPROXY_LIFE,properties.getProperty(MYPROXY_LIFE));
+    	            
 
-            /*
-             * Heart beat message to registry
-             */
-            thread = new GFacThread(context);
-            thread.start();
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
+    	            /*
+    	             * Heart beat message to registry
+    	             */
+    	            thread = new GFacThread(context);
+    	            thread.start();
+    	        } catch (Exception e) {
+    	            log.error(e.getMessage(), e);
+    	        }
+    		}
+    	}.start();
     }
 
     public void shutDown(ConfigurationContext configctx, AxisService service) {
