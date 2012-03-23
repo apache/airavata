@@ -1,0 +1,11 @@
+ For Norm-Conserving or Ultrasoft (Vanderbilt) Pseudopotentials or PAW
+Current dimensions of program pwscf are:
+Max number of different atomic species (ntypx) = 10
+Max number of k-points (npk) =  40000
+Max angular momentum in pseudopotentials (lmaxx) =  3
+
+ pwscf_ctrl_msg 0002 : dynamics converged !
+
+Writing output data file pwscf.save
+
+PWSCF        :     4.65s CPU time,    9.53s wall time
