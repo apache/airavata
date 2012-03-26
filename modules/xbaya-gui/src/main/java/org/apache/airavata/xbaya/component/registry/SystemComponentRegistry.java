@@ -41,6 +41,7 @@ import org.apache.airavata.xbaya.component.system.MemoComponent;
 import org.apache.airavata.xbaya.component.system.OutputComponent;
 import org.apache.airavata.xbaya.component.system.ReceiveComponent;
 import org.apache.airavata.xbaya.component.system.S3InputComponent;
+import org.apache.airavata.xbaya.graph.system.gui.DifferedInputComponent;
 
 public class SystemComponentRegistry extends ComponentRegistry {
 
@@ -55,6 +56,7 @@ public class SystemComponentRegistry extends ComponentRegistry {
         // Use LinkedHashMap to preserve the order.
         this.componentMap = new LinkedHashMap<String, Component>();
         this.componentMap.put(InputComponent.NAME, new InputComponent());
+        this.componentMap.put(DifferedInputComponent.NAME, new DifferedInputComponent());
         this.componentMap.put(S3InputComponent.NAME, new S3InputComponent());
         this.componentMap.put(OutputComponent.NAME, new OutputComponent());
         this.componentMap.put(ConstantComponent.NAME, new ConstantComponent());

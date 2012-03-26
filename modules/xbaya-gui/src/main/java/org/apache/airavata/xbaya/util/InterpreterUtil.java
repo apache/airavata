@@ -20,12 +20,25 @@
 */
 package org.apache.airavata.xbaya.util;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
-import org.apache.airavata.xbaya.graph.system.*;
+import org.apache.airavata.xbaya.graph.system.ConstantNode;
+import org.apache.airavata.xbaya.graph.system.EndForEachNode;
+import org.apache.airavata.xbaya.graph.system.EndifNode;
+import org.apache.airavata.xbaya.graph.system.ForEachNode;
+import org.apache.airavata.xbaya.graph.system.InputNode;
+import org.apache.airavata.xbaya.graph.system.SystemDataPort;
+import org.apache.airavata.xbaya.graph.system.gui.DifferedInputNode;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.apache.airavata.xbaya.interpretor.SystemComponentInvoker;
 import org.apache.airavata.xbaya.interpretor.WorkFlowInterpreterException;
@@ -33,9 +46,8 @@ import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
 import org.xmlpull.infoset.XmlElement;
-import xsul5.XmlConstants;
 
-import java.util.*;
+import xsul5.XmlConstants;
 
 public class InterpreterUtil {
     /**
@@ -156,6 +168,8 @@ public class InterpreterUtil {
 			outputVal = ((InputNode) fromNode).getDefaultValue();
 		} else if (fromNode instanceof ConstantNode) {
 			outputVal = ((ConstantNode) fromNode).getValue();
+		} else if (fromNode instanceof DifferedInputNode && ((DifferedInputNode) fromNode).isConfigured()) {
+			outputVal = ((DifferedInputNode) fromNode).getDefaultValue();
 		} else if (fromNode instanceof EndifNode) {
 			Invoker fromInvoker = invokerMap.get(fromNode);
 			outputVal = fromInvoker.getOutput(inputPort.getFromPort().getID());
