@@ -373,4 +373,6 @@ public class GraphSchema {
 
     public static final String NODE_STREAM_LABEL_TAG = "streamlabel";
 
+	public static final String NODE_TYPE_DIFFERED_INPUT = "Differed Input";
+
 }

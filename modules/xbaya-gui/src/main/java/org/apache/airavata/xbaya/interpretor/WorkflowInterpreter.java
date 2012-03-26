@@ -86,6 +86,8 @@ import org.apache.airavata.xbaya.graph.system.ForEachNode;
 import org.apache.airavata.xbaya.graph.system.IfNode;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
+import org.apache.airavata.xbaya.graph.system.gui.DifferedInputComponent;
+import org.apache.airavata.xbaya.graph.system.gui.DifferedInputHandler;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.apache.airavata.xbaya.gui.Cancelable;
@@ -126,12 +128,12 @@ public class WorkflowInterpreter {
 
 	private static final int SERVER_MODE = 2;
 
-    private static final int MAXIMUM_RETRY_TIME = 2;
+	private static final int MAXIMUM_RETRY_TIME = 2;
 
-    public static final String WORKFLOW_STARTED = "Workflow Running";
-    public static final String WORKFLOW_FINISHED = "Workflow Finished";
+	public static final String WORKFLOW_STARTED = "Workflow Running";
+	public static final String WORKFLOW_FINISHED = "Workflow Finished";
 
-    private XBayaEngine engine;
+	private XBayaEngine engine;
 
 	private Map<Node, Integer> retryCounter = new HashMap<Node, Integer>();
 
@@ -165,8 +167,7 @@ public class WorkflowInterpreter {
 
 	private boolean runWithCrossProduct = false;
 
-    private boolean isoffline = false;
-
+	private boolean isoffline = false;
 
 	/**
 	 * 
@@ -193,33 +194,33 @@ public class WorkflowInterpreter {
 		this.runWithCrossProduct = this.configuration.isRunWithCrossProduct();
 	}
 
-
-/**
-         *
-         * Constructs a WorkflowInterpreter.
-         *
-         * @param configuration
-         * @param topic
-         * @param workflow
-         * @param username
-         * @param password
-         */
-        public WorkflowInterpreter(XBayaConfiguration configuration, String topic,
-                        Workflow workflow, String username, String password, boolean offline){
-                this.isoffline = offline;
-                this.configuration = configuration;
-                this.username = username;
-                this.password = password;
-                this.topic = topic;
-                this.workflow = workflow;
-                if (this.isoffline) {
-                        this.notifier = new StandaloneNotificationSender(topic, this.workflow);
-                } else {
-                        throw new Error("Cannot Initialize workflow with offline false");
-                }
-                this.mode = SERVER_MODE;
-                this.retryFailed = false;
-        }
+	/**
+	 * 
+	 * Constructs a WorkflowInterpreter.
+	 * 
+	 * @param configuration
+	 * @param topic
+	 * @param workflow
+	 * @param username
+	 * @param password
+	 */
+	public WorkflowInterpreter(XBayaConfiguration configuration, String topic,
+			Workflow workflow, String username, String password, boolean offline) {
+		this.isoffline = offline;
+		this.configuration = configuration;
+		this.username = username;
+		this.password = password;
+		this.topic = topic;
+		this.workflow = workflow;
+		if (this.isoffline) {
+			this.notifier = new StandaloneNotificationSender(topic,
+					this.workflow);
+		} else {
+			throw new Error("Cannot Initialize workflow with offline false");
+		}
+		this.mode = SERVER_MODE;
+		this.retryFailed = false;
+	}
 
 	/**
 	 * 
@@ -229,7 +230,8 @@ public class WorkflowInterpreter {
 	 * @param topic
 	 */
 	public WorkflowInterpreter(XBayaEngine engine, String topic) {
-		this(engine, topic, engine.getWorkflow(), false, engine.getConfiguration().isCollectProvenance());
+		this(engine, topic, engine.getWorkflow(), false, engine
+				.getConfiguration().isCollectProvenance());
 	}
 
 	/**
@@ -274,13 +276,17 @@ public class WorkflowInterpreter {
 			}
 
 			this.getWorkflow().setExecutionState(XBayaExecutionState.RUNNING);
-            if(actOnProvenance){
-                try {
-					this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionStatus(this.topic, ExecutionStatus.STARTED);
+			if (actOnProvenance) {
+				try {
+					this.configuration
+							.getJcrComponentRegistry()
+							.getRegistry()
+							.saveWorkflowExecutionStatus(this.topic,
+									ExecutionStatus.STARTED);
 				} catch (RegistryException e) {
 					throw new XBayaException(e);
 				}
-            }
+			}
 			ArrayList<Node> inputNodes = this.getInputNodesDynamically();
 			Object[] values = new Object[inputNodes.size()];
 			String[] keywords = new String[inputNodes.size()];
@@ -326,15 +332,16 @@ public class WorkflowInterpreter {
 						// recalculate the execution stack
 					}
 
-//					boolean nodeOutputLoadedFromProvenance = false;
+					// boolean nodeOutputLoadedFromProvenance = false;
 					if (this.actOnProvenance) {
-//					    nodeOutputLoadedFromProvenance = readProvenance(node);
-//					} else {
-					    writeProvenanceLater(node);
+						// nodeOutputLoadedFromProvenance =
+						// readProvenance(node);
+						// } else {
+						writeProvenanceLater(node);
 					}
-//					if (!nodeOutputLoadedFromProvenance) {
-					    executeDynamically(node);
-//					}
+					// if (!nodeOutputLoadedFromProvenance) {
+					executeDynamically(node);
+					// }
 					if (this.getWorkflow().getExecutionState() == XBayaExecutionState.STEP) {
 						this.getWorkflow().setExecutionState(
 								XBayaExecutionState.PAUSED);
@@ -352,42 +359,50 @@ public class WorkflowInterpreter {
 					if (getRunningNodeCountDynamically() == 0
 							&& getFailedNodeCountDynamically() != 0) {
 						this.getWorkflow().setExecutionState(
-                                XBayaExecutionState.PAUSED);
+								XBayaExecutionState.PAUSED);
 					}
 
 					try {
-                        Thread.sleep(400);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+						Thread.sleep(400);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 
-            if (getFailedNodeCountDynamically() == 0) {
-                if (actOnProvenance) {
-                    try {
+			if (getFailedNodeCountDynamically() == 0) {
+				if (actOnProvenance) {
+					try {
 						try {
-							this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionStatus(this.topic, ExecutionStatus.FINISHED);
+							this.configuration
+									.getJcrComponentRegistry()
+									.getRegistry()
+									.saveWorkflowExecutionStatus(this.topic,
+											ExecutionStatus.FINISHED);
 						} catch (Exception e) {
 							throw new XBayaException(e);
 						}
 					} catch (Exception e) {
 						throw new XBayaException(e);
 					}
-//                    System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
-                }
-            }else {
-                if(actOnProvenance){
-                try {
-					this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionStatus(this.topic, ExecutionStatus.FAILED);
-				} catch (RegistryException e) {
-					throw new XBayaException(e);
+					// System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
 				}
-            }
-            }
-            this.notifier.workflowTerminated();
-            if (this.mode == GUI_MODE) {
-                final WaitDialog waitDialog = new WaitDialog(new Cancelable() {
+			} else {
+				if (actOnProvenance) {
+					try {
+						this.configuration
+								.getJcrComponentRegistry()
+								.getRegistry()
+								.saveWorkflowExecutionStatus(this.topic,
+										ExecutionStatus.FAILED);
+					} catch (RegistryException e) {
+						throw new XBayaException(e);
+					}
+				}
+			}
+			this.notifier.workflowTerminated();
+			if (this.mode == GUI_MODE) {
+				final WaitDialog waitDialog = new WaitDialog(new Cancelable() {
 					@Override
 					public void cancel() {
 						// Do nothing
@@ -409,19 +424,19 @@ public class WorkflowInterpreter {
 					e.printStackTrace();
 				}
 				cleanup();
-                this.notifier.cleanup();
+				this.notifier.cleanup();
 				waitDialog.hide();
 			} else {
 				finish();
 			}
-            this.workflow.setExecutionState(XBayaExecutionState.NONE);
+			this.workflow.setExecutionState(XBayaExecutionState.NONE);
 		} catch (RuntimeException e) {
 			// we reset all the state
 			cleanup();
-            this.notifier.cleanup();
-            this.workflow.setExecutionState(XBayaExecutionState.NONE);
-            raiseException(e);
-        }
+			this.notifier.cleanup();
+			this.workflow.setExecutionState(XBayaExecutionState.NONE);
+			raiseException(e);
+		}
 	}
 
 	/**
@@ -488,9 +503,9 @@ public class WorkflowInterpreter {
 		if (node instanceof ForEachNode) {
 			node = InterpreterUtil.findEndForEachFor((ForEachNode) node);
 		}
-        if(this.provenanceWriter == null){
-           this.provenanceWriter = new PredicatedTaskRunner(1);
-        }
+		if (this.provenanceWriter == null) {
+			this.provenanceWriter = new PredicatedTaskRunner(1);
+		}
 		this.provenanceWriter.scedule(new ProvenanceWrite(node, this
 				.getWorkflow().getName(), invokerMap, this.topic,
 				this.configuration.getJcrComponentRegistry().getRegistry()));
@@ -524,11 +539,11 @@ public class WorkflowInterpreter {
 		}
 	}
 
-    /**
-     * @throws MonitorException
-     */
-    public void cleanup() throws MonitorException {
-            this.workflow.setExecutionState(XBayaExecutionState.STOPPED);
+	/**
+	 * @throws MonitorException
+	 */
+	public void cleanup() throws MonitorException {
+		this.workflow.setExecutionState(XBayaExecutionState.STOPPED);
 		if (this.mode == GUI_MODE) {
 			this.engine.resetWorkflowInterpreter();
 			try {
@@ -556,34 +571,49 @@ public class WorkflowInterpreter {
 				for (DataPort dataPort : inputPorts) {
 					Object val = InterpreterUtil.findInputFromPort(dataPort,
 							this.invokerMap);
-								if (null == val) {
+					if (null == val) {
 						throw new WorkFlowInterpreterException(
 								"Unable to find output for the node:"
 										+ node.getID());
 					}
 					// This is ok because the outputnodes always got only one
-                    // input
-                    if (val instanceof org.xmlpull.v1.builder.XmlElement) {
-                        ((OutputNode) node).setDescription(XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
-                    } else {
-                        ((OutputNode) node).setDescription(val.toString());
-                    }
+					// input
+					if (val instanceof org.xmlpull.v1.builder.XmlElement) {
+						((OutputNode) node)
+								.setDescription(XMLUtil
+										.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
+					} else {
+						((OutputNode) node).setDescription(val.toString());
+					}
 
-                     if(actOnProvenance){
-                        try {
-                            if (val instanceof String) {
-                                this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionOutput(this.topic, node.getName(), val.toString());
-                            } else if (val instanceof org.xmlpull.v1.builder.XmlElement) {
-                                this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionOutput(this.topic,
-                                        node.getName(), XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
-                            }
-                        } catch (RegistryException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        }
-                    }
+					if (actOnProvenance) {
+						try {
+							if (val instanceof String) {
+								this.configuration
+										.getJcrComponentRegistry()
+										.getRegistry()
+										.saveWorkflowExecutionOutput(
+												this.topic, node.getName(),
+												val.toString());
+							} else if (val instanceof org.xmlpull.v1.builder.XmlElement) {
+								this.configuration
+										.getJcrComponentRegistry()
+										.getRegistry()
+										.saveWorkflowExecutionOutput(
+												this.topic,
+												node.getName(),
+												XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
+							}
+						} catch (RegistryException e) {
+							e.printStackTrace(); // To change body of catch
+													// statement use File |
+													// Settings | File
+													// Templates.
+						}
+					}
 					node.getGUI().setBodyColor(NodeState.FINISHED.color);
 				}
-                System.out.println("Looping");
+				System.out.println("Looping");
 			}
 			this.notifier.sendingPartialResults(outputValues.toArray(),
 					outputKeywords.toArray(new String[outputKeywords.size()]));
@@ -622,25 +652,38 @@ public class WorkflowInterpreter {
 				}
 				// Some node not yet updated
 				if (node.getGUI().getBodyColor() != NodeState.FINISHED.color) {
-                    if(actOnProvenance){
-                        try {
-                            if(val instanceof String){
-                                this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionOutput(this.topic,
-                                        node.getName(), val.toString());
-                            } else if (val instanceof org.xmlpull.v1.builder.XmlElement) {
-                                this.configuration.getJcrComponentRegistry().getRegistry().saveWorkflowExecutionOutput(this.topic,
-                                        node.getName(), XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
-                            }
+					if (actOnProvenance) {
+						try {
+							if (val instanceof String) {
+								this.configuration
+										.getJcrComponentRegistry()
+										.getRegistry()
+										.saveWorkflowExecutionOutput(
+												this.topic, node.getName(),
+												val.toString());
+							} else if (val instanceof org.xmlpull.v1.builder.XmlElement) {
+								this.configuration
+										.getJcrComponentRegistry()
+										.getRegistry()
+										.saveWorkflowExecutionOutput(
+												this.topic,
+												node.getName(),
+												XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
+							}
 
-                        } catch (RegistryException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        }
-                    }
-                    if (val instanceof XmlElement) {
-                        ((OutputNode) node).setDescription(XMLUtil.xmlElementToString((XmlElement) val));
-                    } else {
-                        ((OutputNode) node).setDescription(val.toString());
-                    }
+						} catch (RegistryException e) {
+							e.printStackTrace(); // To change body of catch
+													// statement use File |
+													// Settings | File
+													// Templates.
+						}
+					}
+					if (val instanceof XmlElement) {
+						((OutputNode) node).setDescription(XMLUtil
+								.xmlElementToString((XmlElement) val));
+					} else {
+						((OutputNode) node).setDescription(val.toString());
+					}
 					node.getGUI().setBodyColor(NodeState.FINISHED.color);
 				}
 			}
@@ -648,8 +691,8 @@ public class WorkflowInterpreter {
 		}
 		this.notifier.sendingPartialResults(outputValues.toArray(),
 				outputKeywords.toArray(new String[outputKeywords.size()]));
-        cleanup();
-        this.notifier.cleanup();
+		cleanup();
+		this.notifier.cleanup();
 
 	}
 
@@ -850,27 +893,31 @@ public class WorkflowInterpreter {
 				}
 
 				invoker = new WorkflowInvokerWrapperForGFacInvoker(
-						portTypeQName, gfacURLString,
-                        this.engine.getMonitor().getConfiguration().getMessageBoxURL().toString(), leadCtxHeader,
+						portTypeQName, gfacURLString, this.engine.getMonitor()
+								.getConfiguration().getMessageBoxURL()
+								.toString(), leadCtxHeader,
 						this.notifier.createServiceNotificationSender(node
 								.getID()));
 
 			} else {
-                if(this.mode == GUI_MODE){
-                    //if user configure the msgBox url using the UI we have to pick the latest one which
-                    //set by the UI
-				    invoker = new GenericInvoker(portTypeQName,
-						WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
-								.getComponent().getWSDL()), node.getID(),
-						this.engine.getMonitor().getConfiguration().getMessageBoxURL().toASCIIString(),
-						gfacURLString, this.notifier);
-                }else{
-                    invoker = new GenericInvoker(portTypeQName,
-						WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
-								.getComponent().getWSDL()), node.getID(),
-						this.configuration.getMessageBoxURL().toASCIIString(),
-						gfacURLString, this.notifier);
-                }
+				if (this.mode == GUI_MODE) {
+					// if user configure the msgBox url using the UI we have to
+					// pick the latest one which
+					// set by the UI
+					invoker = new GenericInvoker(portTypeQName,
+							WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
+									.getComponent().getWSDL()), node.getID(),
+							this.engine.getMonitor().getConfiguration()
+									.getMessageBoxURL().toASCIIString(),
+							gfacURLString, this.notifier);
+				} else {
+					invoker = new GenericInvoker(portTypeQName,
+							WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
+									.getComponent().getWSDL()), node.getID(),
+							this.configuration.getMessageBoxURL()
+									.toASCIIString(), gfacURLString,
+							this.notifier);
+				}
 			}
 
 		} else {
@@ -901,8 +948,8 @@ public class WorkflowInterpreter {
 			 */
 			if (port.getFromNode() instanceof InputNode) {
 				inputVal = ODEClientUtil.parseValue(
-                        (WSComponentPort) port.getComponentPort(),
-                        (String) inputVal);
+						(WSComponentPort) port.getComponentPort(),
+						(String) inputVal);
 			}
 
 			if (null == inputVal) {
@@ -1029,33 +1076,34 @@ public class WorkflowInterpreter {
 
 				for (int i = 0; i < wsNodes.size(); i++) {
 					final WSNode node1 = (WSNode) wsNodes.get(i);
-                    SystemComponentInvoker systemInvoker = null;
-                    List<DataPort> outputPorts1 = node1.getOutputPorts();
-                    List<Node> endForEachNodes = new ArrayList<Node>();
-                    for (DataPort port : outputPorts1) {
-                        Iterator<Node> endForEachNodeItr1 = port.getToNodes().iterator();
-                        while (endForEachNodeItr1.hasNext()) {
-                            Node node2 = endForEachNodeItr1.next();
-                            if (node2 instanceof EndForEachNode) {
-                                endForEachNodes.add(node2);
-                            } else if (node2 instanceof OutputNode) {
-                                // intentionally left noop
-                            } else {
-                                throw new WorkFlowInterpreterException(
-                                        "Found More than one node inside foreach");
-                            }
+					SystemComponentInvoker systemInvoker = null;
+					List<DataPort> outputPorts1 = node1.getOutputPorts();
+					List<Node> endForEachNodes = new ArrayList<Node>();
+					for (DataPort port : outputPorts1) {
+						Iterator<Node> endForEachNodeItr1 = port.getToNodes()
+								.iterator();
+						while (endForEachNodeItr1.hasNext()) {
+							Node node2 = endForEachNodeItr1.next();
+							if (node2 instanceof EndForEachNode) {
+								endForEachNodes.add(node2);
+							} else if (node2 instanceof OutputNode) {
+								// intentionally left noop
+							} else {
+								throw new WorkFlowInterpreterException(
+										"Found More than one node inside foreach");
+							}
 
-                        }
-                    }
-                    final List<Node> finalEndForEachNodes = endForEachNodes;
-
+						}
+					}
+					final List<Node> finalEndForEachNodes = endForEachNodes;
 
 					Iterator<Node> endForEachNodeItr1 = node1.getOutputPort(0)
 							.getToNodes().iterator();
 					while (endForEachNodeItr1.hasNext()) {
 						Node node2 = endForEachNodeItr1.next();
 						// Start reading input came for foreach node
-						int parallelRuns = listOfValues.size() * node1.getOutputPorts().size();
+						int parallelRuns = listOfValues.size()
+								* node1.getOutputPorts().size();
 						if (listOfValues.size() > 0) {
 							forEachNode.getGUI().setBodyColor(
 									NodeState.EXECUTING.color);
@@ -1063,30 +1111,26 @@ public class WorkflowInterpreter {
 									NodeState.EXECUTING.color);
 							List<DataPort> outputPorts = node1.getOutputPorts();
 							final AtomicInteger counter = new AtomicInteger();
-                            for (Node endFor : endForEachNodes) {
-                                systemInvoker = new SystemComponentInvoker();
-                                this.invokerMap.put(endFor, systemInvoker);
-                            }
-                            final Map<Node,Invoker> finalMap = this.invokerMap;
-									new Thread() {
-										@Override
-										public void run() {
-											try {
-												runInThread(listOfValues,
-														forEachNode, node1,
-														finalEndForEachNodes,
-														finalMap, counter,
-														inputNumbers);
-											} catch (XBayaException e) {
+							for (Node endFor : endForEachNodes) {
+								systemInvoker = new SystemComponentInvoker();
+								this.invokerMap.put(endFor, systemInvoker);
+							}
+							final Map<Node, Invoker> finalMap = this.invokerMap;
+							new Thread() {
+								@Override
+								public void run() {
+									try {
+										runInThread(listOfValues, forEachNode,
+												node1, finalEndForEachNodes,
+												finalMap, counter, inputNumbers);
+									} catch (XBayaException e) {
 
+										WorkflowInterpreter.this.engine
+												.getErrorWindow().error(e);
+									}
+								}
 
-												WorkflowInterpreter.this.engine
-														.getErrorWindow()
-														.error(e);
-											}
-										}
-
-									}.start();
+							}.start();
 
 							while (counter.intValue() < parallelRuns) {
 								try {
@@ -1128,24 +1172,25 @@ public class WorkflowInterpreter {
 			} else {
 
 				// First node after foreach should end with EndForEachNode
-                List<DataPort> outputPorts1 = middleNode.getOutputPorts();
-                List<Node> endForEachNodes = new ArrayList<Node>();
-                for(DataPort port:outputPorts1){
-                    Iterator<Node> endForEachNodeItr1 = port.getToNodes().iterator();
-				while (endForEachNodeItr1.hasNext()) {
-					Node node2 = endForEachNodeItr1.next();
-					if (node2 instanceof EndForEachNode) {
-						endForEachNodes.add(node2);
-					} else if (node2 instanceof OutputNode) {
-						// intentionally left noop
-					} else {
-						throw new WorkFlowInterpreterException(
-								"Found More than one node inside foreach");
-					}
+				List<DataPort> outputPorts1 = middleNode.getOutputPorts();
+				List<Node> endForEachNodes = new ArrayList<Node>();
+				for (DataPort port : outputPorts1) {
+					Iterator<Node> endForEachNodeItr1 = port.getToNodes()
+							.iterator();
+					while (endForEachNodeItr1.hasNext()) {
+						Node node2 = endForEachNodeItr1.next();
+						if (node2 instanceof EndForEachNode) {
+							endForEachNodes.add(node2);
+						} else if (node2 instanceof OutputNode) {
+							// intentionally left noop
+						} else {
+							throw new WorkFlowInterpreterException(
+									"Found More than one node inside foreach");
+						}
 
+					}
 				}
-                }
-                final List<Node> finalEndForEachNodes = endForEachNodes;
+				final List<Node> finalEndForEachNodes = endForEachNodes;
 				final Node foreachWSNode = middleNode;
 				final LinkedList<String> listOfValues = new LinkedList<String>();
 
@@ -1157,7 +1202,7 @@ public class WorkflowInterpreter {
 								this.invokerMap);
 
 				int parallelRuns = createInputValues(listOfValues, inputNumbers)
-						.size()  * outputPorts1.size();
+						.size() * outputPorts1.size();
 				if (listOfValues.size() > 0) {
 
 					forEachNode.getGUI()
@@ -1166,29 +1211,26 @@ public class WorkflowInterpreter {
 							NodeState.EXECUTING.color);
 					List<DataPort> outputPorts = middleNode.getOutputPorts();
 					final AtomicInteger counter = new AtomicInteger();
-                        for(Node endFor:endForEachNodes){
-                                final SystemComponentInvoker systemInvoker = new SystemComponentInvoker();
-                                this.invokerMap.put(endFor,
-                                        systemInvoker);
-                            }
-                        final Map<Node,Invoker> finalInvokerMap = this.invokerMap;
+					for (Node endFor : endForEachNodes) {
+						final SystemComponentInvoker systemInvoker = new SystemComponentInvoker();
+						this.invokerMap.put(endFor, systemInvoker);
+					}
+					final Map<Node, Invoker> finalInvokerMap = this.invokerMap;
 
-								new Thread() {
-									@Override
-									public void run() {
-										try {
-											runInThread(listOfValues,
-													forEachNode, foreachWSNode,
-													finalEndForEachNodes,
-													finalInvokerMap, counter,
-													inputNumbers);
-										} catch (XBayaException e) {
-											WorkflowInterpreter.this.engine
-													.getErrorWindow().error(e);
-										}
-									}
+					new Thread() {
+						@Override
+						public void run() {
+							try {
+								runInThread(listOfValues, forEachNode,
+										foreachWSNode, finalEndForEachNodes,
+										finalInvokerMap, counter, inputNumbers);
+							} catch (XBayaException e) {
+								WorkflowInterpreter.this.engine
+										.getErrorWindow().error(e);
+							}
+						}
 
-								}.start();
+					}.start();
 					while (counter.intValue() < parallelRuns) {
 						try {
 							Thread.sleep(100);
@@ -1201,9 +1243,9 @@ public class WorkflowInterpreter {
 					// todo this has to be done in a separate thread
 					middleNode.getGUI().setBodyColor(NodeState.FINISHED.color);
 					for (Node endForEach : endForEachNodes) {
-                        endForEach.getGUI().setBodyColor(
-                                NodeState.FINISHED.color);
-                    }
+						endForEach.getGUI().setBodyColor(
+								NodeState.FINISHED.color);
+					}
 				} else {
 					throw new WorkFlowInterpreterException(
 							"No array values found for foreach");
@@ -1373,181 +1415,193 @@ public class WorkflowInterpreter {
 		return invoker;
 	}
 
-    private void runInThread(final LinkedList<String> listOfValues,
-                             ForEachNode forEachNode, final Node middleNode,
-                              List<Node> endForEachNodes,
-			                Map<Node,Invoker> tempInvoker,
-                             AtomicInteger counter, final Integer[] inputNumber) throws XBayaException {
+	private void runInThread(final LinkedList<String> listOfValues,
+			ForEachNode forEachNode, final Node middleNode,
+			List<Node> endForEachNodes, Map<Node, Invoker> tempInvoker,
+			AtomicInteger counter, final Integer[] inputNumber)
+			throws XBayaException {
 
-        final LinkedList<Invoker> invokerList = new LinkedList<Invoker>();
+		final LinkedList<Invoker> invokerList = new LinkedList<Invoker>();
 
-        if(inputNumber.length > 1){
-            List<String> inputValues = createInputValues(listOfValues,inputNumber);
-            for (final Iterator<String> iterator = inputValues.iterator(); iterator.hasNext();) {
-                final String gfacURLString = this.configuration.getGFacURL().toString();
-                final String input = iterator.next();
-                WSComponent wsComponent = (WSComponent) middleNode.getComponent();
-                final Invoker invoker2 = createInvokerForEachSingleWSNode(middleNode, gfacURLString, wsComponent);
-                invokerList.add(invoker2);
+		if (inputNumber.length > 1) {
+			List<String> inputValues = createInputValues(listOfValues,
+					inputNumber);
+			for (final Iterator<String> iterator = inputValues.iterator(); iterator
+					.hasNext();) {
+				final String gfacURLString = this.configuration.getGFacURL()
+						.toString();
+				final String input = iterator.next();
+				WSComponent wsComponent = (WSComponent) middleNode
+						.getComponent();
+				final Invoker invoker2 = createInvokerForEachSingleWSNode(
+						middleNode, gfacURLString, wsComponent);
+				invokerList.add(invoker2);
 
-                new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            getInvoker(middleNode, invoker2);
-                            invokeGFacService(listOfValues, middleNode, inputNumber, input, invoker2);
+				new Thread() {
+					@Override
+					public void run() {
+						try {
+							getInvoker(middleNode, invoker2);
+							invokeGFacService(listOfValues, middleNode,
+									inputNumber, input, invoker2);
 
-                        } catch (XBayaException e) {
-                            WorkflowInterpreter.this.engine.getErrorWindow().error(e);
-                        }
-                    }
+						} catch (XBayaException e) {
+							WorkflowInterpreter.this.engine.getErrorWindow()
+									.error(e);
+						}
+					}
 
-                }.start();
+				}.start();
 
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    WorkflowInterpreter.this.engine.getErrorWindow().error(e);
-                }
-            }
-        }else{
-            Invoker invoker = null;
-            for (Iterator<String> iterator = listOfValues.iterator(); iterator
-                    .hasNext();) {
-                String input = iterator.next();
-                final String gfacURLString = this.configuration
-                        .getGFacURL().toString();
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					WorkflowInterpreter.this.engine.getErrorWindow().error(e);
+				}
+			}
+		} else {
+			Invoker invoker = null;
+			for (Iterator<String> iterator = listOfValues.iterator(); iterator
+					.hasNext();) {
+				String input = iterator.next();
+				final String gfacURLString = this.configuration.getGFacURL()
+						.toString();
 
-                WSComponent wsComponent = (WSComponent) middleNode.getComponent();
-                invoker = createInvokerForEachSingleWSNode(middleNode, gfacURLString, wsComponent);
-                invokerList.add(invoker);
-                getInvoker(middleNode, invoker);
+				WSComponent wsComponent = (WSComponent) middleNode
+						.getComponent();
+				invoker = createInvokerForEachSingleWSNode(middleNode,
+						gfacURLString, wsComponent);
+				invokerList.add(invoker);
+				getInvoker(middleNode, invoker);
 
-                // find inputs
-                List<DataPort> inputPorts = middleNode.getInputPorts();
-                for (DataPort port : inputPorts) {
-                    Object inputVal = InterpreterUtil.findInputFromPort(port,
-                            this.invokerMap);
+				// find inputs
+				List<DataPort> inputPorts = middleNode.getInputPorts();
+				for (DataPort port : inputPorts) {
+					Object inputVal = InterpreterUtil.findInputFromPort(port,
+							this.invokerMap);
 
-                    /*
-                    * Handle ForEachNode
-                    */
-                    Node fromNode = port.getFromNode();
-//                if (fromNode instanceof ForEachNode) {
-                    inputVal = ODEClientUtil.parseValue((WSComponentPort) port.getComponentPort(),
-                                                    input);
-//                }
+					/*
+					 * Handle ForEachNode
+					 */
+					Node fromNode = port.getFromNode();
+					// if (fromNode instanceof ForEachNode) {
+					inputVal = ODEClientUtil.parseValue(
+							(WSComponentPort) port.getComponentPort(), input);
+					// }
 
-                    if (null == inputVal) {
-                        throw new WorkFlowInterpreterException(
-                                "Unable to find inputs for the node:"
-                                        + middleNode.getID());
-                    }
-                    invoker.setInput(port.getName(), inputVal);
-                }
-                invoker.invoke();
-            }
-        }
+					if (null == inputVal) {
+						throw new WorkFlowInterpreterException(
+								"Unable to find inputs for the node:"
+										+ middleNode.getID());
+					}
+					invoker.setInput(port.getName(), inputVal);
+				}
+				invoker.invoke();
+			}
+		}
 
-        // String arrayElementName = foreachWSNode.getOperationName() +
-        // "ArrayResponse";
-        // String outputStr = "<" + arrayElementName + ">";
-        //invokerMap size and endForEachNodes size can be difference
-        //because we can create endForEachNode with n number of input/output ports so always have to use
-        //middleNode.getOutputPorts when iterate
-         String[] outputStr = new String[middleNode.getOutputPorts().size()];
-        int i = 0;
-        for(DataPort port:middleNode.getOutputPorts()){
-            String outputString = "";
-            for (Iterator<Invoker> iterator = invokerList.iterator(); iterator
-                    .hasNext(); ) {
-                Invoker workflowInvoker = iterator.next();
+		// String arrayElementName = foreachWSNode.getOperationName() +
+		// "ArrayResponse";
+		// String outputStr = "<" + arrayElementName + ">";
+		// invokerMap size and endForEachNodes size can be difference
+		// because we can create endForEachNode with n number of input/output
+		// ports so always have to use
+		// middleNode.getOutputPorts when iterate
+		String[] outputStr = new String[middleNode.getOutputPorts().size()];
+		int i = 0;
+		for (DataPort port : middleNode.getOutputPorts()) {
+			String outputString = "";
+			for (Iterator<Invoker> iterator = invokerList.iterator(); iterator
+					.hasNext();) {
+				Invoker workflowInvoker = iterator.next();
 
-                // /
-                Object output = workflowInvoker.getOutput(port.getName());
-                if(output instanceof org.xmlpull.v1.builder.XmlElement){
-                    org.xmlpull.v1.builder.XmlElement element =
-                            (org.xmlpull.v1.builder.XmlElement)((org.xmlpull.v1.builder.XmlElement) output).children().next();
-                    outputString += "\n" + XMLUtil.xmlElementToString(element);
-                }else{
-                    outputString += "\n<value>" + output + "</value>";
-                }
-                counter.incrementAndGet();
-            }
-            outputStr[i] = outputString;
-            System.out.println(outputStr[i]);
-            i++;
-        }
-        i=0;
-        // outputStr += "\n</" + arrayElementName + ">";
-        int outputPortIndex = 0;
-        for (DataPort port : middleNode.getOutputPorts()) {
-            for (Node endForEachNode : endForEachNodes) {
-                if (tempInvoker.get(endForEachNode) != null) {
-                    if (!(endForEachNode instanceof OutputNode)) {
-                        ((SystemComponentInvoker) tempInvoker.get(endForEachNode)).addOutput(port.getName(),
-                                outputStr[i]);
-                    }
-                }
-                outputPortIndex++;
-            }
-            i++;
-        }
-        forEachNode.getGUI().setBodyColor(NodeState.FINISHED.color);
-    }
+				// /
+				Object output = workflowInvoker.getOutput(port.getName());
+				if (output instanceof org.xmlpull.v1.builder.XmlElement) {
+					org.xmlpull.v1.builder.XmlElement element = (org.xmlpull.v1.builder.XmlElement) ((org.xmlpull.v1.builder.XmlElement) output)
+							.children().next();
+					outputString += "\n" + XMLUtil.xmlElementToString(element);
+				} else {
+					outputString += "\n<value>" + output + "</value>";
+				}
+				counter.incrementAndGet();
+			}
+			outputStr[i] = outputString;
+			System.out.println(outputStr[i]);
+			i++;
+		}
+		i = 0;
+		// outputStr += "\n</" + arrayElementName + ">";
+		int outputPortIndex = 0;
+		for (DataPort port : middleNode.getOutputPorts()) {
+			for (Node endForEachNode : endForEachNodes) {
+				if (tempInvoker.get(endForEachNode) != null) {
+					if (!(endForEachNode instanceof OutputNode)) {
+						((SystemComponentInvoker) tempInvoker
+								.get(endForEachNode)).addOutput(port.getName(),
+								outputStr[i]);
+					}
+				}
+				outputPortIndex++;
+			}
+			i++;
+		}
+		forEachNode.getGUI().setBodyColor(NodeState.FINISHED.color);
+	}
 
-    private void invokeGFacService(LinkedList<String> listOfValues, Node middleNode,
-                                   Integer[] inputNumber, String input,
-                                   Invoker invoker) throws XBayaException {
+	private void invokeGFacService(LinkedList<String> listOfValues,
+			Node middleNode, Integer[] inputNumber, String input,
+			Invoker invoker) throws XBayaException {
 
+		// find inputs
+		List<DataPort> inputPorts = middleNode.getInputPorts();
+		String[] inputArray = null;
+		if (inputNumber.length == 1) {
+			inputArray = listOfValues.toArray(new String[listOfValues.size()]);
+		} else {
+			inputArray = input.split(",");
+		}
+		int index = 0;
+		for (DataPort port : inputPorts) {
+			Object inputVal = InterpreterUtil.findInputFromPort(port,
+					this.invokerMap);
+			/*
+			 * Handle ForEachNode
+			 */
+			Node fromNode = port.getFromNode();
+			if (fromNode instanceof ForEachNode) {
+				inputVal = inputArray[index++];
+			}
 
-        // find inputs
-        List<DataPort> inputPorts = middleNode.getInputPorts();
-        String[] inputArray = null;
-        if(inputNumber.length == 1){
-            inputArray = listOfValues.toArray(new String[listOfValues.size()]);
-        }else{
-            inputArray = input.split(",");
-        }
-        int index = 0;
-        for (DataPort port : inputPorts) {
-            Object inputVal = InterpreterUtil.findInputFromPort(port,
-                    this.invokerMap);
-            /*
-            * Handle ForEachNode
-            */
-            Node fromNode = port.getFromNode();
-            if (fromNode instanceof ForEachNode) {
-                inputVal = inputArray[index++];
-            }
+			if (null == inputVal) {
+				throw new WorkFlowInterpreterException(
+						"Unable to find inputs for the node:"
+								+ middleNode.getID());
+			}
+			invoker.setInput(port.getName(), inputVal);
+		}
+		invoker.invoke();
 
+	}
 
-            if (null == inputVal) {
-                throw new WorkFlowInterpreterException(
-                        "Unable to find inputs for the node:"
-                                + middleNode.getID());
-            }
-            invoker.setInput(port.getName(), inputVal);
-        }
-        invoker.invoke();
-
-    }
-
-    private Invoker getInvoker(Node middleNode, Invoker invoker) throws XBayaException {
-        if(middleNode instanceof WSNode) {
-            WSComponent wsComponent = (WSComponent) middleNode.getComponent();
-            invoker.setup();
-            invoker.setOperation(wsComponent.getOperationName());
-        } else if (middleNode instanceof SubWorkflowNode){
-            //((SubWorkflowNode) middleNode).getWorkflow();
-            //this.configuration;
-            // TODO : Need to create a invoker!
-            //new WorkflowInterpreter()
-        } else {
-            throw new XBayaRuntimeException("Only Web services and subworkflows are supported for For-Each : Found : " + middleNode);
-        }
-        return invoker;
-    }
+	private Invoker getInvoker(Node middleNode, Invoker invoker)
+			throws XBayaException {
+		if (middleNode instanceof WSNode) {
+			WSComponent wsComponent = (WSComponent) middleNode.getComponent();
+			invoker.setup();
+			invoker.setOperation(wsComponent.getOperationName());
+		} else if (middleNode instanceof SubWorkflowNode) {
+			// ((SubWorkflowNode) middleNode).getWorkflow();
+			// this.configuration;
+			// TODO : Need to create a invoker!
+			// new WorkflowInterpreter()
+		} else {
+			throw new XBayaRuntimeException(
+					"Only Web services and subworkflows are supported for For-Each : Found : "
+							+ middleNode);
+		}
+		return invoker;
+	}
 
 	private void setInputValuesForForEach(Node middleNode,
 			LinkedList<String> listOfValues, Integer[] inputNumbers,
@@ -1766,6 +1820,7 @@ public class WorkflowInterpreter {
 				}
 
 			} else if (InputComponent.NAME.equals(component.getName())
+					|| DifferedInputComponent.NAME.equals(component.getName())
 					|| S3InputComponent.NAME.equals(component.getName())
 					|| OutputComponent.NAME.equals(component.getName())
 					|| MemoComponent.NAME.equals(component.getName())) {
@@ -1801,6 +1856,14 @@ public class WorkflowInterpreter {
 					this.retryCounter.put(node2, Integer.valueOf(1));
 					list.add(node2);
 				}
+			}
+		}
+
+		if (this.mode == GUI_MODE) {
+			ArrayList<Node> waitingNodes = this.getWaitingNodesDynamically();
+			for (Node readyNode : waitingNodes) {
+				DifferedInputHandler.handleDifferredInputsofDependentNodes(
+						readyNode, engine);
 			}
 		}
 
@@ -1916,7 +1979,6 @@ public class WorkflowInterpreter {
 		return null;
 	}
 
-	
 	public boolean isRunWithCrossProduct() {
 		return runWithCrossProduct;
 	}
@@ -1929,11 +1991,11 @@ public class WorkflowInterpreter {
 		return workflow;
 	}
 
-    public void setActOnProvenance(boolean actOnProvenance) {
-        this.actOnProvenance = actOnProvenance;
-    }
+	public void setActOnProvenance(boolean actOnProvenance) {
+		this.actOnProvenance = actOnProvenance;
+	}
 
-    public void setProvenanceWriter(PredicatedTaskRunner provenanceWriter) {
-        this.provenanceWriter = provenanceWriter;
-    }
+	public void setProvenanceWriter(PredicatedTaskRunner provenanceWriter) {
+		this.provenanceWriter = provenanceWriter;
+	}
 }
