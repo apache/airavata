@@ -76,6 +76,8 @@ public class JCRRegistry extends Observable implements Registry{
     private Map<Node,List<Node>> sessionNodeChildren;
     private Map<Session,Integer> currentSessionUseCount=new HashMap<Session, Integer>();
     private boolean threadRun = true;
+    private Boolean registryUpdated=false;
+    
     
     public JCRRegistry(URI repositoryURI, String className, String user, String pass, Map<String, String> map)
             throws RepositoryException {
@@ -93,41 +95,36 @@ public class JCRRegistry extends Observable implements Registry{
             setPassword(pass);
             credentials = new SimpleCredentials(getUsername(), new String(pass).toCharArray());
             definiteSessionTimeout();
-            workspaceChangeEventListener=new EventListener() {
-				
-				public void onEvent(EventIterator events) {
-					for(;events.hasNext();){
-						Event event=events.nextEvent();
-						boolean isPropertyChange = (event.getType()&(Event.PROPERTY_CHANGED|Event.PROPERTY_ADDED|Event.PROPERTY_REMOVED))>0;
-						try {
-							String path = event.getPath();
-							synchronized (sessionSynchronousObject) {
+            setupRegistryModifyHandler();
+        } catch (ClassNotFoundException e) {
+            log.error("Error class path settting", e);
+        } catch (RepositoryException e) {
+            log.error("Error connecting Remote Registry instance", e);
+            throw e;
+        } catch (Exception e) {
+            log.error("Error init", e);
+        }
+    }
+
+	private void setupRegistryModifyHandler() {
+		workspaceChangeEventListener=new EventListener() {
+			
+			public void onEvent(EventIterator events) {
+				for(;events.hasNext();){
+					Event event=events.nextEvent();
+					boolean isPropertyChange = (event.getType()&(Event.PROPERTY_CHANGED|Event.PROPERTY_ADDED|Event.PROPERTY_REMOVED))>0;
+					try {
+						String path = event.getPath();
+						synchronized (sessionSynchronousObject) {
 //								System.out.println("something happened: " + event.getType() + " " + path);
-								List<Node> nodesToRemove=new ArrayList<Node>();
-								Set<Node> nodeIterator = getSessionNodes().keySet();
-								for (Node node : nodeIterator) {
-									if (node == null) {
-										if (path.equals("/")) {
-											nodesToRemove.add(node);
-										}
-									} else {
-										if (node.getSession().isLive()) {
-											if (isPropertyChange){
-												if (node.getPath().equals(path)) {
-													nodesToRemove.add(node);
-												}
-											}else if (node.getPath().startsWith(path) || path.startsWith(node.getPath())) {
-												nodesToRemove.add(node);
-											}
-										}
+							List<Node> nodesToRemove=new ArrayList<Node>();
+							Set<Node> nodeIterator = getSessionNodes().keySet();
+							for (Node node : nodeIterator) {
+								if (node == null) {
+									if (path.equals("/")) {
+										nodesToRemove.add(node);
 									}
-								}
-								for(Node node:nodesToRemove){
-									getSessionNodes().remove(node);
-								}
-								nodeIterator = getSessionNodeChildren().keySet();
-								nodesToRemove.clear();
-								for (Node node : nodeIterator) {
+								} else {
 									if (node.getSession().isLive()) {
 										if (isPropertyChange){
 											if (node.getPath().equals(path)) {
@@ -138,27 +135,57 @@ public class JCRRegistry extends Observable implements Registry{
 										}
 									}
 								}
-								for(Node node:nodesToRemove){
-									getSessionNodeChildren().remove(node);
+							}
+							for(Node node:nodesToRemove){
+								getSessionNodes().remove(node);
+							}
+							nodeIterator = getSessionNodeChildren().keySet();
+							nodesToRemove.clear();
+							for (Node node : nodeIterator) {
+								if (node.getSession().isLive()) {
+									if (isPropertyChange){
+										if (node.getPath().equals(path)) {
+											nodesToRemove.add(node);
+										}
+									}else if (node.getPath().startsWith(path) || path.startsWith(node.getPath())) {
+										nodesToRemove.add(node);
+									}
 								}
 							}
-							triggerObservers(this);
-						} catch (RepositoryException e) {
-							e.printStackTrace();
+							for(Node node:nodesToRemove){
+								getSessionNodeChildren().remove(node);
+							}
 						}
+						triggerObservers(this);
+					} catch (RepositoryException e) {
+						e.printStackTrace();
 					}
-					
 				}
-			};
-        } catch (ClassNotFoundException e) {
-            log.error("Error class path settting", e);
-        } catch (RepositoryException e) {
-            log.error("Error connecting Remote Registry instance", e);
-            throw e;
-        } catch (Exception e) {
-            log.error("Error init", e);
-        }
-    }
+				
+			}
+		};
+		new Thread(){
+    		@Override
+    		public void run() {
+    			int sleep_time=1000;
+    			while(threadRun){
+    				if (isRegistryUpdated()){
+    					setRegistryUpdated(false);
+    	    	        setChanged();
+    	    	        notifyObservers(JCRRegistry.this);
+    	    	        sleep_time=3000;
+    				}else{
+    					sleep_time=1000;
+    				}
+    				try {
+						Thread.sleep(sleep_time);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+    			}
+    		}
+    	}.start();
+	}
     
     private void definiteSessionTimeout(){
     	Thread m=new Thread(new Runnable() {
@@ -386,8 +413,7 @@ public class JCRRegistry extends Observable implements Registry{
     }
 
     protected void triggerObservers(Object o) {
-        setChanged();
-        notifyObservers(o);
+    	setRegistryUpdated(true);
     }
 
     public String getPassword() {
@@ -455,4 +481,19 @@ public class JCRRegistry extends Observable implements Registry{
     public void closeConnection(){
         setThreadRun(false);
     }
+
+	public boolean isRegistryUpdated() {
+		boolean result;
+		synchronized (this.registryUpdated) {
+			result = registryUpdated;	
+		}
+		return result;
+	}
+
+	public void setRegistryUpdated(Boolean registryUpdated) {
+		synchronized (this.registryUpdated) {
+			this.registryUpdated = registryUpdated;	
+		}
+		
+	}
 }
