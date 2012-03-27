@@ -419,6 +419,7 @@ public class AiravataClient {
 
 	private String validateAxisService(String urlString)
 			throws RegistryException {
+		String originalURL=urlString;
 		if (!urlString.endsWith("?wsdl")) {
 			urlString = urlString + "?wsdl";
 		}
@@ -435,7 +436,7 @@ public class AiravataClient {
 			throw new RegistryException("Given Axis2 Service URL : "
 					+ urlString + " is Invalid", e);
 		}
-		return urlString;
+		return originalURL;
 	}
 
 	private String validateURL(String urlString) throws RegistryException {
