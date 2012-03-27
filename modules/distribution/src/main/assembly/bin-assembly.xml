@@ -38,9 +38,12 @@
 			<directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
 			<outputDirectory>standalone-server/lib</outputDirectory>
 			<includes>
-                <include>*.jar</include>
+                		<include>*.jar</include>
 			</includes>
 		</fileSet>
+			<excludes>
+                                <exclude>xom*.jar</exclude>
+                        </excludes>
 		<fileSet>
 			<directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
 			<outputDirectory>standalone-server/repository</outputDirectory>
