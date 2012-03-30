@@ -1,0 +1,5 @@
+id:Input,controller:components/calculator/InputController.php
+id:Adder,controller:components/calculator/AdderController.php
+id:Subtract,controller:components/calculator/SubtractController.php
+id:Multiply,controller:components/calculator/MultiplyController.php
+id:Divide,controller:components/calculator/DivideController.php
