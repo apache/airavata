@@ -41,14 +41,21 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.NameValuePairType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.ParameterType;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
+import org.apache.xmlbeans.XmlCursor;
 
 public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private static final long serialVersionUID = 3920479739097405014L;
@@ -302,7 +309,20 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     	getShellApplicationDescriptionType().setStandardInput(txtSTDIN.getText());
     	getShellApplicationDescriptionType().setStandardOutput(txtSTDOUT.getText());
     	getShellApplicationDescriptionType().setStandardError(txtSTDERR.getText());
-
+    	
+    	while(getShellApplicationDescriptionType().getApplicationEnvironmentArray().length>0){
+    		getShellApplicationDescriptionType().removeApplicationEnvironment(0);
+    	}
+    	for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
+            String parameterName = (String) defaultTableModel.getValueAt(i, 0);
+            String paramValue = (String) defaultTableModel.getValueAt(i, 1);
+            if (parameterName != null && !parameterName.trim().equals("")) {
+            	NameValuePairType envType = getShellApplicationDescriptionType().addNewApplicationEnvironment();
+        		envType.setName(parameterName);
+                envType.setValue(paramValue);
+            }
+        }
+    	int a=10;
     }
 
     private void loadApplicationDescriptionAdvancedOptions() {
@@ -312,7 +332,14 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         txtSTDOUT.setText(getShellApplicationDescriptionType().getStandardOutput());
         txtSTDERR.setText(getShellApplicationDescriptionType().getStandardError());
         tableModelChanging = true;
-        addNewRowIfLastIsNotEmpty();
+        while(defaultTableModel.getRowCount()>0){
+    		defaultTableModel.removeRow(0);
+    	}
+        NameValuePairType[] envParams = getShellApplicationDescriptionType().getApplicationEnvironmentArray();
+    	for (NameValuePairType envParam : envParams) {
+    		defaultTableModel.addRow(new Object[] { envParam.getName(),envParam.getName()});	
+		}
+    	addNewRowIfLastIsNotEmpty();
         tableModelChanging = false;
     }
 
