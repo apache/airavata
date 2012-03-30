@@ -235,6 +235,20 @@ public class AiravataClient {
 		this.workflow = workflowAsaString;
 	}
 
+	public static void updateWorkflowInputValuesFromProperties(List<WorkflowInput> inputs, String fileName) throws IOException{
+		URL url = AiravataClient.class.getClassLoader().getResource(fileName);
+		if (url == null) {
+			url = (new File(fileName)).toURL();
+		}
+		Properties properties = new Properties();
+		properties.load(url.openStream());
+		for (WorkflowInput workflowInput : inputs) {
+			if (properties.containsKey(workflowInput.getName())){
+				workflowInput.setValue(properties.get(workflowInput.getName()));
+			}
+		}
+	}
+	
 	public NameValue[] setInputs(String fileName) throws IOException {
 		URL url = this.getClass().getClassLoader().getResource(fileName);
 		if (url == null) {
