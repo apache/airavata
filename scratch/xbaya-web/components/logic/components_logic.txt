@@ -1,0 +1,7 @@
+id:Not,controller:components/logic/NotController.php
+id:And,controller:components/logic/AndController.php
+id:Or,controller:components/logic/OrController.php
+id:Nand,controller:components/logic/NAndController.php
+id:XOR,controller:components/logic/XORController.php
+id:XNOR,controller:components/logic/XNORController.php
+

@@ -1,0 +1,42 @@
+@CHARSET "UTF-8";
+
+.componentFactoryIconStyle {
+	width: 60px;
+	height: 60px;
+	border: 2px;
+	padding: 1.5em;
+	float: left;
+}
+.window, .label {
+    box-shadow: 2px 2px 19px #AAAAAA;
+    cursor: pointer;
+    z-index: 5;
+}
+
+.windowtitle {
+	font-size: 20px;
+	font-family: "Trebuchet MS","Arial","Helvetica","Verdana","sans-serif";
+	vertical-align: text-bottom;
+	height:100%; 
+	position:relative;
+	padding: 0em;
+}
+
+._jsPlumb_connector {
+    z-index:4;
+
+}
+
+._jsPlumb_endpoint {
+    z-index:6; 
+}
+.endpointLabel{
+	cursor: pointer;
+	font-family: "Trebuchet MS","Arial","Helvetica","Verdana","sans-serif";
+}
+
+.componentConfiguration{
+	font-size: 9px;
+	font-family: "Trebuchet MS","Arial","Helvetica","Verdana","sans-serif";
+	vertical-align: baseline;
+}
