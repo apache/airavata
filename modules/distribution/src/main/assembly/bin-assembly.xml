@@ -40,10 +40,10 @@
 			<includes>
                 		<include>*.jar</include>
 			</includes>
-		</fileSet>
 			<excludes>
                                 <exclude>xom*.jar</exclude>
                         </excludes>
+		</fileSet>
 		<fileSet>
 			<directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
 			<outputDirectory>standalone-server/repository</outputDirectory>
