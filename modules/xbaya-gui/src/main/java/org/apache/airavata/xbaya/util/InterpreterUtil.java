@@ -20,18 +20,18 @@
 */
 package org.apache.airavata.xbaya.util;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
+import org.apache.airavata.xbaya.graph.gui.NodeGUI;
+import org.apache.airavata.xbaya.graph.impl.NodeImpl;
+import org.apache.airavata.xbaya.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.xbaya.graph.system.ConstantNode;
 import org.apache.airavata.xbaya.graph.system.EndForEachNode;
 import org.apache.airavata.xbaya.graph.system.EndifNode;
@@ -39,15 +39,21 @@ import org.apache.airavata.xbaya.graph.system.ForEachNode;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.SystemDataPort;
 import org.apache.airavata.xbaya.graph.system.gui.DifferedInputNode;
+import org.apache.airavata.xbaya.graph.ws.WSGraph;
+import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.apache.airavata.xbaya.interpretor.SystemComponentInvoker;
 import org.apache.airavata.xbaya.interpretor.WorkFlowInterpreterException;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
+import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler;
 import org.xmlpull.infoset.XmlElement;
 
+import org.xmlpull.infoset.impl.XmlElementWithViewsImpl;
 import xsul5.XmlConstants;
+import xsul5.wsdl.WsdlPort;
+import xsul5.wsdl.WsdlService;
 
 public class InterpreterUtil {
     /**
@@ -345,4 +351,74 @@ public class InterpreterUtil {
     }
         return inputNumbers;
     }
+    	public static ArrayList<Node> getFinishedNodesDynamically(WSGraph graph) {
+		return getNodesWithBodyColor(MonitorEventHandler.NodeState.FINISHED.color,graph);
+	}
+
+	public static ArrayList<Node> getFailedNodesDynamically(WSGraph graph) {
+		return getNodesWithBodyColor(MonitorEventHandler.NodeState.FAILED.color,graph);
+	}
+
+	public static ArrayList<Node> getWaitingNodesDynamically(WSGraph graph) {
+		return getNodesWithBodyColor(NodeGUI.DEFAULT_BODY_COLOR,graph);
+	}
+
+	public static ArrayList<Node> getNodesWithBodyColor(Color color,WSGraph graph) {
+		ArrayList<Node> list = new ArrayList<Node>();
+		List<NodeImpl> nodes = graph.getNodes();
+		for (Node node : nodes) {
+			if (node.getGUI().getBodyColor() == color) {
+				list.add(node);
+			}
+		}
+		return list;
+	}
+
+	public static int getRunningNodeCountDynamically(WSGraph graph) {
+		return getNodeCountWithBodyColor(MonitorEventHandler.NodeState.EXECUTING.color,graph);
+	}
+
+	public static int getFailedNodeCountDynamically(WSGraph graph) {
+        return getFailedNodesDynamically(graph).size();
+	}
+
+	public static int getWaitingNodeCountDynamically(WSGraph graph) {
+		return getNodeCountWithBodyColor(NodeGUI.DEFAULT_BODY_COLOR,graph);
+	}
+
+	public static int getNodeCountWithBodyColor(Color color,WSGraph graph) {
+		int sum = 0;
+		List<NodeImpl> nodes = graph.getNodes();
+		for (Node node : nodes) {
+			if (node.getGUI().getBodyColor() == color) {
+				++sum;
+			}
+		}
+		return sum;
+	}
+
+    public static String getEPR(WSNode wsNode) {
+		Iterable<WsdlService> services = wsNode.getComponent().getWSDL()
+				.services();
+		Iterator<WsdlService> iterator = services.iterator();
+		if (iterator.hasNext()) {
+			Iterable<WsdlPort> ports = iterator.next().ports();
+			Iterator<WsdlPort> portIterator = ports.iterator();
+			if (portIterator.hasNext()) {
+				WsdlPort port = portIterator.next();
+				Iterable children = port.xml().children();
+				Iterator childIterator = children.iterator();
+				while (childIterator.hasNext()) {
+					Object next = childIterator.next();
+					if (next instanceof XmlElementWithViewsImpl) {
+						org.xmlpull.infoset.XmlAttribute epr = ((XmlElementWithViewsImpl) next)
+								.attribute("location");
+						return epr.getValue();
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 }
