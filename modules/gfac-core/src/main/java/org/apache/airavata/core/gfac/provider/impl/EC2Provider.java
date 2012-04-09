@@ -81,8 +81,8 @@ public class EC2Provider extends SSHProvider{
         }
         SecurityContextDocument.SecurityContext.AmazonWebservices amazonWebservices =
                 document.getContextHeader().getSecurityContext().getAmazonWebservices();
-
         String access_key = amazonWebservices.getAccessKeyId();
+
         String secret_key = amazonWebservices.getSecretAccessKey();
         String ami_id = amazonWebservices.getAmiId();
         String ins_id = amazonWebservices.getInstanceId();
