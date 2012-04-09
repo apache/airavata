@@ -117,6 +117,7 @@ import org.apache.airavata.xbaya.util.AmazonUtil;
 import org.apache.airavata.xbaya.util.InterpreterUtil;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.axis2.context.ConfigurationContext;
 import org.ietf.jgss.GSSCredential;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.impl.XmlElementWithViewsImpl;
@@ -178,6 +179,8 @@ public class WorkflowInterpreter {
 	private boolean runWithCrossProduct = false;
 
 	private boolean isoffline = false;
+
+    private ConfigurationContext configurationContext;
 
 	/**
 	 * 
@@ -922,7 +925,7 @@ public class WorkflowInterpreter {
                                         .getMessageBoxURL().toASCIIString(),
                                 gfacURLString, this.notifier, this.topic,
                                 this.engine.getConfiguration().getJcrComponentRegistry().getRegistry(),
-                                portTypeQName.getLocalPart());
+                                portTypeQName.getLocalPart(),this.engine.getConfiguration());
                     } else {
                         invoker = new GenericInvoker(portTypeQName,
                                 WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
@@ -939,7 +942,7 @@ public class WorkflowInterpreter {
                                 this.configuration.getMessageBoxURL()
                                         .toASCIIString(),
                                 gfacURLString, this.notifier, this.topic, configuration.getJcrComponentRegistry().getRegistry(),
-                                portTypeQName.getLocalPart());
+                                portTypeQName.getLocalPart(),this.configuration);
                     }else{
                         invoker = new GenericInvoker(portTypeQName,
                                 WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
@@ -1871,5 +1874,13 @@ public class WorkflowInterpreter {
 
     public Boolean getGfacEmbeddedMode() {
         return gfacEmbeddedMode;
+    }
+
+    public XBayaConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(XBayaConfiguration configuration) {
+        this.configuration = configuration;
     }
 }

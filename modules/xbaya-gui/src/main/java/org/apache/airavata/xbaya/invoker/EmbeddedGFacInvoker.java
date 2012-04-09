@@ -22,24 +22,20 @@ package org.apache.airavata.xbaya.invoker;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.commons.gfac.wsdl.WSDLConstants;
 import org.apache.airavata.core.gfac.GfacAPI;
 import org.apache.airavata.core.gfac.context.GFacConfiguration;
 import org.apache.airavata.core.gfac.context.JobContext;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
-import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
+import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.axiom.om.OMAbstractFactory;
@@ -51,21 +47,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 import xsul.wsdl.WsdlDefinitions;
-import xsul.wsdl.WsdlException;
-import xsul.wsdl.WsdlResolver;
 import xsul.wsif.WSIFMessage;
 import xsul.wsif.impl.WSIFMessageElement;
-import xsul.xhandler_soap_sticky_header.StickySoapHeaderHandler;
 import xsul.xwsif_runtime.WSIFClient;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.File;
 import java.io.StringReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -86,6 +76,8 @@ public class EmbeddedGFacInvoker implements Invoker{
     private String gfacURL;
 
     private Invoker invoker;
+
+    private XBayaConfiguration configuration;
 
 
     private Future<Boolean> result;
@@ -186,7 +178,7 @@ public class EmbeddedGFacInvoker implements Invoker{
      * @param notifier
      */
     public EmbeddedGFacInvoker(QName portTypeQName, WsdlDefinitions wsdl, String nodeID, String messageBoxURL,
-            String gfacURL, WorkflowNotifiable notifier,String topic,AiravataRegistry registry,String serviceName) {
+            String gfacURL, WorkflowNotifiable notifier,String topic,AiravataRegistry registry,String serviceName,XBayaConfiguration config) {
         final String wsdlStr = xsul.XmlConstants.BUILDER.serializeToString(wsdl);
         this.nodeID = nodeID;
         this.portTypeQName = portTypeQName;
@@ -199,6 +191,7 @@ public class EmbeddedGFacInvoker implements Invoker{
         this.topic = topic;
         this.serviceName = serviceName;
         this.failerSent = false;
+        this.configuration = config;
     }
 
     /**
@@ -271,8 +264,10 @@ public class EmbeddedGFacInvoker implements Invoker{
                 public Boolean call() {
                     try {
                         JobContext jobContext = new JobContext(actualParameters,EmbeddedGFacInvoker.this.topic,EmbeddedGFacInvoker.this.serviceName);
-                        GFacConfiguration gFacConfiguration = new GFacConfiguration("myproxy.teragrid.org", "ogce",
-                            "Jdas7wph", 3600, EmbeddedGFacInvoker.this.gfacURL, EmbeddedGFacInvoker.this.registry, "/Users/lahirugunathilake/Downloads/certificates");
+                        GFacConfiguration gFacConfiguration = new GFacConfiguration(EmbeddedGFacInvoker.this.configuration.getMyProxyServer(),
+                                EmbeddedGFacInvoker.this.configuration.getMyProxyUsername(),
+                            EmbeddedGFacInvoker.this.configuration.getMyProxyPassphrase(),EmbeddedGFacInvoker.this.configuration.getMyProxyLifetime(),
+                                EmbeddedGFacInvoker.this.gfacURL, EmbeddedGFacInvoker.this.registry, EmbeddedGFacInvoker.this.configuration.getTrustedCertLocation());
 
                         GfacAPI gfacAPI1 = new GfacAPI();
                         InvocationContext defaultInvocationContext = gfacAPI1.gridJobSubmit(jobContext, gFacConfiguration);
