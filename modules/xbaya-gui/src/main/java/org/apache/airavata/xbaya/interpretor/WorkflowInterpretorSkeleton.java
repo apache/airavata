@@ -21,12 +21,12 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -48,6 +48,8 @@ import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.ServiceLifeCycle;
@@ -59,9 +61,13 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.jcr.RepositoryException;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 /**
  * WorkflowInterpretorSkeleton java skeleton for the axisService
@@ -295,39 +301,32 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 
     private List<HostDescription> getDefinedHostDescriptions() {
         URL url = this.getClass().getClassLoader().getResource("host.xml");
-        File fXmlFile = new File(url.getPath());
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = null;
         ArrayList<HostDescription> hostDescriptions = new ArrayList<HostDescription>();
+        XMLStreamReader reader = null;
         try {
-            dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(fXmlFile);
-            doc.getDocumentElement().normalize();
-            System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-            NodeList nList = doc.getElementsByTagName("server");
-            for (int temp = 0; temp < nList.getLength(); temp++) {
-                Node nNode = nList.item(temp);
-                HostDescription hostDescription ;
-                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element eElement = (Element) nNode;
-                    if(XMLUtil.getTagValue("gram.endpoint", eElement) != null){
-                        hostDescription = new HostDescription(GlobusHostType.type);
-                         ((GlobusHostType)hostDescription.getType()).addGlobusGateKeeperEndPoint(XMLUtil.getTagValue("gram.endpoint", eElement));
-                        ((GlobusHostType)hostDescription.getType()).addGridFTPEndPoint(XMLUtil.getTagValue("gridftp.endpoint", eElement));
-                    }else{
-                        hostDescription = new HostDescription(HostDescriptionType.type);
-                    }
-                    (hostDescription.getType()).setHostName(XMLUtil.getTagValue("name", eElement));
-                    (hostDescription.getType()).setHostAddress(XMLUtil.getTagValue("host", eElement));
-                    hostDescriptions.add(hostDescription);
-                }
+            File fXmlFile = new File(url.getPath());
+            reader = XMLInputFactory.newInstance().createXMLStreamReader(new FileReader(fXmlFile));
+        } catch (XMLStreamException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        StAXOMBuilder builder = new StAXOMBuilder(reader);
+        OMElement documentElement = builder.getDocumentElement();
+        Iterator server = documentElement.getChildrenWithName(new QName("server"));
+        while (server.hasNext()) {
+            OMElement next = (OMElement) server.next();
+            HostDescription hostDescription;
+            if (next.getFirstChildWithName(new QName("gram.endpoint")) != null) {
+                hostDescription = new HostDescription(GlobusHostType.type);
+                ((GlobusHostType) hostDescription.getType()).addGlobusGateKeeperEndPoint(next.getFirstChildWithName(new QName("gram.endpoint")).getText());
+                ((GlobusHostType) hostDescription.getType()).addGridFTPEndPoint(next.getFirstChildWithName(new QName("gridftp.endpoint")).getText());
+            } else {
+                hostDescription = new HostDescription(HostDescriptionType.type);
             }
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (SAXException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            (hostDescription.getType()).setHostName(next.getFirstChildWithName(new QName("name")).getText());
+            (hostDescription.getType()).setHostAddress(next.getFirstChildWithName(new QName("host")).getText());
+            hostDescriptions.add(hostDescription);
         }
         return hostDescriptions;
     }
