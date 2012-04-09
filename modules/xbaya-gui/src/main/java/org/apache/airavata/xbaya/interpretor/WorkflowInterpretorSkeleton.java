@@ -73,7 +73,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	public static final String GFAC = "gfac";
 	public static final String DSC = "dsc";
 	public static final String BROKER = "broker";
-    public static final String CERT_LOCATION = "certLocation";
     public static final String MYPROXY_USER = "myproxy.user";
     public static final String MYPROXY_PASS = "myproxy.password";
     public static final String JCR_USER = "jcr.username";
