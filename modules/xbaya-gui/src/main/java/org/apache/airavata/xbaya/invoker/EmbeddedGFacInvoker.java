@@ -17,46 +17,61 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
-
+*/
 package org.apache.airavata.xbaya.invoker;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import javax.xml.namespace.QName;
-
-import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.commons.gfac.wsdl.WSDLConstants;
+import org.apache.airavata.core.gfac.GfacAPI;
+import org.apache.airavata.core.gfac.context.GFacConfiguration;
+import org.apache.airavata.core.gfac.context.JobContext;
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
+import org.apache.airavata.core.gfac.context.message.MessageContext;
+import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
+import org.apache.airavata.core.gfac.utils.GfacUtils;
+import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.schemas.gfac.Parameter;
+import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
-
 import xsul.wsdl.WsdlDefinitions;
 import xsul.wsdl.WsdlException;
 import xsul.wsdl.WsdlResolver;
 import xsul.wsif.WSIFMessage;
+import xsul.wsif.impl.WSIFMessageElement;
 import xsul.xhandler_soap_sticky_header.StickySoapHeaderHandler;
 import xsul.xwsif_runtime.WSIFClient;
 
-public class GenericInvoker implements Invoker {
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.File;
+import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+import java.util.concurrent.*;
 
-    private static final Logger logger = LoggerFactory.getLogger(GenericInvoker.class);
+public class EmbeddedGFacInvoker implements Invoker{
+
+      private static final Logger logger = LoggerFactory.getLogger(EmbeddedGFacInvoker.class);
 
     private String nodeID;
 
@@ -72,10 +87,16 @@ public class GenericInvoker implements Invoker {
 
     private Invoker invoker;
 
+
     private Future<Boolean> result;
 
     private ServiceNotifiable notifier;
 
+    private AiravataRegistry registry;
+
+    private String topic;
+
+    private String serviceName;
     /**
      * used for notification
      */
@@ -90,11 +111,13 @@ public class GenericInvoker implements Invoker {
 
     private WsdlDefinitions wsdlDefinitionObject;
 
+    Map<Parameter,ActualParameter> actualParameters = new HashMap<Parameter,ActualParameter>();
+
     /**
      * Creates an InvokerWithNotification.
-     * 
+     *
      * @param portTypeQName
-     * 
+     *
      * @param wsdlLocation
      *            The URL of WSDL of the service to invoke
      * @param nodeID
@@ -102,15 +125,15 @@ public class GenericInvoker implements Invoker {
      * @param notifier
      *            The notification sender
      */
-    public GenericInvoker(QName portTypeQName, String wsdlLocation, String nodeID, WorkflowNotifiable notifier) {
+    public EmbeddedGFacInvoker(QName portTypeQName, String wsdlLocation, String nodeID, WorkflowNotifiable notifier) {
         this(portTypeQName, wsdlLocation, nodeID, null, notifier);
     }
 
     /**
      * Creates an InvokerWithNotification.
-     * 
+     *
      * @param portTypeQName
-     * 
+     *
      * @param wsdlLocation
      *            The URL of WSDL of the service to invoke
      * @param nodeID
@@ -120,16 +143,16 @@ public class GenericInvoker implements Invoker {
      * @param notifier
      *            The notification sender
      */
-    public GenericInvoker(QName portTypeQName, String wsdlLocation, String nodeID, String gfacURL,
+    public EmbeddedGFacInvoker(QName portTypeQName, String wsdlLocation, String nodeID, String gfacURL,
             WorkflowNotifiable notifier) {
         this(portTypeQName, wsdlLocation, nodeID, null, gfacURL, notifier);
     }
 
     /**
      * Creates an InvokerWithNotification.
-     * 
+     *
      * @param portTypeQName
-     * 
+     *
      * @param wsdlLocation
      *            The URL of WSDL of the service to invoke
      * @param nodeID
@@ -140,7 +163,7 @@ public class GenericInvoker implements Invoker {
      * @param notifier
      *            The notification sender
      */
-    public GenericInvoker(QName portTypeQName, String wsdlLocation, String nodeID, String messageBoxURL,
+    public EmbeddedGFacInvoker(QName portTypeQName, String wsdlLocation, String nodeID, String messageBoxURL,
             String gfacURL, WorkflowNotifiable notifier) {
         this.nodeID = nodeID;
         this.portTypeQName = portTypeQName;
@@ -149,6 +172,7 @@ public class GenericInvoker implements Invoker {
         this.messageBoxURL = messageBoxURL;
         this.gfacURL = gfacURL;
         this.notifier = notifier.createServiceNotificationSender(nodeID);
+
         this.failerSent = false;
     }
 
@@ -161,8 +185,8 @@ public class GenericInvoker implements Invoker {
      * @param gfacURL
      * @param notifier
      */
-    public GenericInvoker(QName portTypeQName, WsdlDefinitions wsdl, String nodeID, String messageBoxURL,
-            String gfacURL, WorkflowNotifiable notifier) {
+    public EmbeddedGFacInvoker(QName portTypeQName, WsdlDefinitions wsdl, String nodeID, String messageBoxURL,
+            String gfacURL, WorkflowNotifiable notifier,String topic,AiravataRegistry registry,String serviceName) {
         final String wsdlStr = xsul.XmlConstants.BUILDER.serializeToString(wsdl);
         this.nodeID = nodeID;
         this.portTypeQName = portTypeQName;
@@ -171,6 +195,9 @@ public class GenericInvoker implements Invoker {
         this.serviceInformation = wsdlStr;
         this.gfacURL = gfacURL;
         this.notifier = notifier.createServiceNotificationSender(nodeID);
+        this.registry = registry;
+        this.topic = topic;
+        this.serviceName = serviceName;
         this.failerSent = false;
     }
 
@@ -179,77 +206,9 @@ public class GenericInvoker implements Invoker {
      * @throws XBayaException
      */
     public void setup() throws XBayaException {
-        try {
-            WsdlDefinitions definitions = null;
-            if (this.wsdlLocation != null && !this.wsdlLocation.equals("")) {
-                WsdlResolver resolver = WsdlResolver.getInstance();
-                definitions = resolver.loadWsdl(new File(".").toURI(), new URI(this.wsdlLocation));
-            } else {
-                definitions = this.wsdlDefinitionObject;
-            }
-
-            setup(definitions);
-
-        } catch (XBayaException e) {
-            logger.error(e.getMessage(), e);
-            // An appropriate message has been set in the exception.
-            this.notifier.invocationFailed(e.getMessage(), e);
-            throw e;
-        } catch (URISyntaxException e) {
-            logger.error(e.getMessage(), e);
-            String message = "The location of the WSDL has to be a valid URL or file path: " + this.serviceInformation;
-            this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
-        } catch (WsdlException e) {
-            logger.error(e.getMessage(), e);
-            String message = "Error in processing the WSDL: " + this.serviceInformation;
-            this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
-        } catch (RuntimeException e) {
-            logger.error(e.getMessage(), e);
-            String message = "Error in processing the WSDL: " + this.serviceInformation;
-            this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
-        }catch (Error e) {
-            logger.error(e.getMessage(), e);
-            String message = "Unexpected error: " + this.serviceInformation;
-            this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
-        }
     }
 
     private void setup(WsdlDefinitions definitions) throws XBayaException {
-
-        // Set LEAD context header.
-        WorkflowContextHeaderBuilder builder = new WorkflowContextHeaderBuilder(this.notifier.getEventSink()
-                .getAddress(), this.gfacURL, null, this.notifier.getWorkflowID().toASCIIString(), "xbaya-experiment");
-        builder.getWorkflowMonitoringContext().setServiceInstanceId(this.nodeID);
-        builder.getWorkflowMonitoringContext().setWorkflowNodeId(this.nodeID);
-        builder.getWorkflowMonitoringContext().setWorkflowInstanceId(this.notifier.getWorkflowID().toASCIIString());
-        builder.getWorkflowMonitoringContext().setWorkflowTimeStep(1);
-        builder.setUserIdentifier("xbaya-user");
-        //todo write a UI component to collect this information and pass it through Header
-//        builder.setGridMyProxyRepository("myproxy.nersc.gov","fangliu","Jdas7wph",14000);
-        StickySoapHeaderHandler handler = new StickySoapHeaderHandler("use-workflowcontext-header", builder.getXml());
-        // Create Invoker
-        this.invoker = InvokerFactory.createInvoker(this.portTypeQName, definitions, this.gfacURL, this.messageBoxURL,
-                builder, true);
-        this.invoker.setup();
-
-        WSIFClient client = this.invoker.getClient();
-        client.addHandler(handler);
-
-        WsdlResolver resolver = WsdlResolver.getInstance();
-        // Get the concrete WSDL from invoker.setup() and set it to the
-        // notifier.
-
-        this.notifier.setServiceID(this.nodeID);
-        // if (this.wsdlLocation != null) {
-        // this.notifier.setServiceID(this.nodeID);
-        // } else {
-        // String name = this.portTypeQName.getLocalPart();
-        // this.notifier.setServiceID(name);
-        // }
     }
 
     /**
@@ -259,24 +218,6 @@ public class GenericInvoker implements Invoker {
      * @throws XBayaException
      */
     public void setOperation(String operationName) throws XBayaException {
-        try {
-            this.invoker.setOperation(operationName);
-        } catch (XBayaException e) {
-            logger.error(e.getMessage(), e);
-            // An appropriate message has been set in the exception.
-            this.notifier.invocationFailed(e.getMessage(), e);
-            throw e;
-        } catch (RuntimeException e) {
-            logger.error(e.getMessage(), e);
-            String message = "The WSDL does not conform to the invoking service: " + this.serviceInformation;
-            this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
-        } catch (Error e) {
-            logger.error(e.getMessage(), e);
-            String message = "Unexpected error: " + this.serviceInformation;
-            this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
-        }
     }
 
     /**
@@ -294,12 +235,12 @@ public class GenericInvoker implements Invoker {
             }
             this.inputNames.add(name);
             this.inputValues.add(value);
-            this.invoker.setInput(name, value);
-        } catch (XBayaException e) {
-            logger.error(e.getMessage(), e);
-            // An appropriate message has been set in the exception.
-            this.notifier.invocationFailed(e.getMessage(), e);
-            throw e;
+            ServiceDescription serviceDescription = registry.getServiceDescription(this.serviceName);
+            ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
+            for (Parameter parameter : serviceDescriptionType.getInputParametersArray()) {
+                //todo this implementation doesn't work when there are n number of nodes connecting .. need to fix
+                actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, (String) value));
+            }
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
             String message = "Error in setting an input. name: " + name + " value: " + value;
@@ -310,6 +251,10 @@ public class GenericInvoker implements Invoker {
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
             throw new XBayaException(message, e);
+        } catch (RegistryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
 
@@ -320,53 +265,68 @@ public class GenericInvoker implements Invoker {
      */
     public synchronized boolean invoke() throws XBayaException {
         try {
-            WSIFMessage inputMessage = this.invoker.getInputs();
-            logger.info("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) inputMessage));
-            this.notifier.invokingService(inputMessage);
-
             ExecutorService executor = Executors.newSingleThreadExecutor();
             this.result = executor.submit(new Callable<Boolean>() {
                 @SuppressWarnings("boxing")
                 public Boolean call() {
                     try {
-                        boolean success = GenericInvoker.this.invoker.invoke();
-                        if (success) {
+                        JobContext jobContext = new JobContext(actualParameters,EmbeddedGFacInvoker.this.topic,EmbeddedGFacInvoker.this.serviceName);
+                        GFacConfiguration gFacConfiguration = new GFacConfiguration("myproxy.teragrid.org", "ogce",
+                            "Jdas7wph", 3600, EmbeddedGFacInvoker.this.gfacURL, EmbeddedGFacInvoker.this.registry, "/Users/lahirugunathilake/Downloads/certificates");
+
+                        GfacAPI gfacAPI1 = new GfacAPI();
+                        InvocationContext defaultInvocationContext = gfacAPI1.gridJobSubmit(jobContext, gFacConfiguration);
+                        ParameterContextImpl outputParamContext = (ParameterContextImpl) defaultInvocationContext
+                                .<ActualParameter>getMessageContext("output");
+                        if (outputParamContext.getNames().hasNext()) {
+                            /*
+                            * Process Output
+                            */
+                            OMFactory fac = OMAbstractFactory.getOMFactory();
+                            OMNamespace omNs = fac.createOMNamespace("http://ws.apache.org/axis2/xsd", "ns1");
+                            OMElement outputElement = fac.createOMElement("invokeResponse", omNs);
+
+                            for (Iterator<String> iterator = outputParamContext.getNames(); iterator.hasNext(); ) {
+                                String name = iterator.next();
+                                String outputString = outputParamContext.getValue(name).toXML().replaceAll("GFacParameter", name);
+                                XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(outputString));
+                                StAXOMBuilder builder = new StAXOMBuilder(reader);
+                                outputElement.addChild(builder.getDocumentElement());
+                            }
                             // Send notification
-                            WSIFMessage outputMessage = GenericInvoker.this.invoker.getOutputs();
-                            // An implementation of WSIFMessage,
-                            // WSIFMessageElement, implements toString(), which
-                            // serialize the message XML.
-                            logger.info("outputMessage: " + outputMessage);
-                            GenericInvoker.this.notifier.serviceFinished(outputMessage);
+                            logger.info("outputMessage: " + outputElement.toString());
+                            EmbeddedGFacInvoker.this.notifier.serviceFinished(new WSIFMessageElement(XMLUtil.stringToXmlElement3(outputElement.toStringWithConsume())));
                         } else {
-                            WSIFMessage faultMessage = GenericInvoker.this.invoker.getFault();
                             // An implementation of WSIFMessage,
                             // WSIFMessageElement, implements toString(), which
                             // serialize the message XML.
-                            logger.info("received fault: " + faultMessage);
-                            GenericInvoker.this.notifier.receivedFault(faultMessage);
-                            GenericInvoker.this.failerSent = true;
+                            EmbeddedGFacInvoker.this.notifier.receivedFault(new WSIFMessageElement(XMLUtil.stringToXmlElement3("<Message>Invocation Failed</Message>")));
+                            EmbeddedGFacInvoker.this.failerSent = true;
                         }
-                        return success;
+                        return true;
                     } catch (XBayaException e) {
                         logger.error(e.getMessage(), e);
                         // An appropriate message has been set in the exception.
-                        GenericInvoker.this.notifier.invocationFailed(e.getMessage(), e);
-                        GenericInvoker.this.failerSent = true;
+                        EmbeddedGFacInvoker.this.notifier.invocationFailed(e.getMessage(), e);
+                        EmbeddedGFacInvoker.this.failerSent = true;
                         throw new XBayaRuntimeException(e);
                     } catch (RuntimeException e) {
                         logger.error(e.getMessage(), e);
-                        String message = "Error in invoking a service: " + GenericInvoker.this.serviceInformation;
-                        GenericInvoker.this.notifier.invocationFailed(message, e);
-                        GenericInvoker.this.failerSent = true;
+                        String message = "Error in invoking a service: " + EmbeddedGFacInvoker.this.serviceInformation;
+                        EmbeddedGFacInvoker.this.notifier.invocationFailed(message, e);
+                        EmbeddedGFacInvoker.this.failerSent = true;
                         throw e;
+                    } catch (XMLStreamException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    } catch (Exception e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
+                    return false;
                 }
             });
-
             // Kill the thread inside of executor. This is necessary for Jython
             // script to finish.
-            executor.shutdown();
+//            executor.shutdown();
 
             // Let other threads know that job has been submitted.
             notifyAll();
@@ -397,6 +357,8 @@ public class GenericInvoker implements Invoker {
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
             throw new XBayaException(message, e);
+        } catch (Exception e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return true;
     }

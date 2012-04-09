@@ -44,7 +44,9 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.WorkflowExecutionStatus.ExecutionStatus;
+import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
@@ -94,6 +96,7 @@ import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.apache.airavata.xbaya.gui.Cancelable;
 import org.apache.airavata.xbaya.gui.WaitDialog;
+import org.apache.airavata.xbaya.invoker.EmbeddedGFacInvoker;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
@@ -163,6 +166,8 @@ public class WorkflowInterpreter {
 	private String username;
 
 	private String topic;
+
+    private Boolean gfacEmbeddedMode = false;
 
 	private LeadResourceMapping resourceMapping;
 
@@ -909,19 +914,41 @@ public class WorkflowInterpreter {
 					// if user configure the msgBox url using the UI we have to
 					// pick the latest one which
 					// set by the UI
-					invoker = new GenericInvoker(portTypeQName,
-							WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
-									.getComponent().getWSDL()), node.getID(),
-							this.engine.getMonitor().getConfiguration()
-									.getMessageBoxURL().toASCIIString(),
-							gfacURLString, this.notifier);
+                    if (this.gfacEmbeddedMode) {
+                        invoker = new EmbeddedGFacInvoker(portTypeQName,
+                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
+                                        .getComponent().getWSDL()), node.getID(),
+                                this.engine.getMonitor().getConfiguration()
+                                        .getMessageBoxURL().toASCIIString(),
+                                gfacURLString, this.notifier, this.topic,
+                                this.engine.getConfiguration().getJcrComponentRegistry().getRegistry(),
+                                portTypeQName.getLocalPart());
+                    } else {
+                        invoker = new GenericInvoker(portTypeQName,
+                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
+                                        .getComponent().getWSDL()), node.getID(),
+                                this.engine.getMonitor().getConfiguration()
+                                        .getMessageBoxURL().toASCIIString(),
+                                gfacURLString, this.notifier);
+                    }
 				} else {
-					invoker = new GenericInvoker(portTypeQName,
-							WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
-									.getComponent().getWSDL()), node.getID(),
-							this.configuration.getMessageBoxURL()
-									.toASCIIString(), gfacURLString,
-							this.notifier);
+                    if(this.gfacEmbeddedMode){
+                        invoker = new EmbeddedGFacInvoker(portTypeQName,
+                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
+                                        .getComponent().getWSDL()), node.getID(),
+                                this.configuration.getMessageBoxURL()
+                                        .toASCIIString(),
+                                gfacURLString, this.notifier, this.topic, configuration.getJcrComponentRegistry().getRegistry(),
+                                portTypeQName.getLocalPart());
+                    }else{
+                        invoker = new GenericInvoker(portTypeQName,
+                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
+                                        .getComponent().getWSDL()), node.getID(),
+                                this.configuration.getMessageBoxURL()
+                                        .toASCIIString(), gfacURLString,
+                                this.notifier);
+
+                    }
 				}
 			}
 
@@ -1818,11 +1845,6 @@ public class WorkflowInterpreter {
 		return list;
 
 	}
-
-
-
-
-
 	public boolean isRunWithCrossProduct() {
 		return runWithCrossProduct;
 	}
@@ -1842,4 +1864,12 @@ public class WorkflowInterpreter {
 	public void setProvenanceWriter(PredicatedTaskRunner provenanceWriter) {
 		this.provenanceWriter = provenanceWriter;
 	}
+
+    public void setGfacEmbeddedMode(Boolean gfacEmbeddedMode) {
+        this.gfacEmbeddedMode = gfacEmbeddedMode;
+    }
+
+    public Boolean getGfacEmbeddedMode() {
+        return gfacEmbeddedMode;
+    }
 }
