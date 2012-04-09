@@ -73,11 +73,13 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	public static final String GFAC = "gfac";
 	public static final String DSC = "dsc";
 	public static final String BROKER = "broker";
+    public static final String CERT_LOCATION = "certLocation";
     public static final String MYPROXY_USER = "myproxy.user";
     public static final String MYPROXY_PASS = "myproxy.password";
     public static final String JCR_USER = "jcr.username";
     public static final String JCR_PASS = "jcr.password";
     public static final String JCR_URL = "jcr.url";
+    public static final String TRUSTED_CERT_LOCATION="trusted.cert.location";
     public static boolean provenance = false;
     public static final String PROVENANCE = "provenance";
     public static  String jcrUserName = "";
@@ -272,6 +274,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		configuration.setMyProxyLifetime(XBayaConstants.DEFAULT_MYPROXY_LIFTTIME);
 		configuration.setMyProxyPort(XBayaConstants.DEFAULT_MYPROXY_PORT);
 		configuration.setMyProxyServer(findValue(vals, PROXYSERVER, XBayaConstants.DEFAULT_MYPROXY_SERVER));
+        configuration.setTrustedCertLocation(findValue(vals, TRUSTED_CERT_LOCATION, ""));
 		return configuration;
 	}
 

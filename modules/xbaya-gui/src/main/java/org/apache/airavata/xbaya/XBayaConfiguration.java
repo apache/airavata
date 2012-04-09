@@ -130,6 +130,8 @@ public class XBayaConfiguration extends Observable implements Observer {
 
     private boolean runWithCrossProduct = true;
 
+    private String trustedCertLocation = "";
+
     /**
      * Constructs an XwfConfiguration.
      */
@@ -833,5 +835,13 @@ public class XBayaConfiguration extends Observable implements Observer {
 
     public boolean isRunWithCrossProduct() {
         return runWithCrossProduct;
+    }
+
+    public String getTrustedCertLocation() {
+        return trustedCertLocation;
+    }
+
+    public void setTrustedCertLocation(String trustedCertLocation) {
+        this.trustedCertLocation = trustedCertLocation;
     }
 }
