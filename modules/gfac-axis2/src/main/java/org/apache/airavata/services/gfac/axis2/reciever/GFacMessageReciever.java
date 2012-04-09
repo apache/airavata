@@ -22,8 +22,7 @@ package org.apache.airavata.services.gfac.axis2.reciever;
  */
 
 import java.io.StringReader;
-import java.net.URI;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -34,33 +33,14 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.wsdl.WSDLConstants;
-import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
+import org.apache.airavata.core.gfac.GfacAPI;
+import org.apache.airavata.core.gfac.context.GFacConfiguration;
+import org.apache.airavata.core.gfac.context.JobContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
-import org.apache.airavata.core.gfac.context.message.impl.WorkflowContextImpl;
-import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
-import org.apache.airavata.core.gfac.factory.PropertyServiceFactory;
-import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
-import org.apache.airavata.core.gfac.notification.impl.WorkflowTrackingNotification;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.registry.api.Axis2Registry;
-import org.apache.airavata.schemas.gfac.BooleanArrayType;
-import org.apache.airavata.schemas.gfac.BooleanParameterType;
-import org.apache.airavata.schemas.gfac.DoubleArrayType;
-import org.apache.airavata.schemas.gfac.DoubleParameterType;
-import org.apache.airavata.schemas.gfac.FileArrayType;
-import org.apache.airavata.schemas.gfac.FileParameterType;
-import org.apache.airavata.schemas.gfac.FloatArrayType;
-import org.apache.airavata.schemas.gfac.FloatParameterType;
-import org.apache.airavata.schemas.gfac.IntegerArrayType;
-import org.apache.airavata.schemas.gfac.IntegerParameterType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.Parameter;
-import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
-import org.apache.airavata.schemas.gfac.StringArrayType;
-import org.apache.airavata.schemas.gfac.StringParameterType;
-import org.apache.airavata.schemas.gfac.URIArrayType;
-import org.apache.airavata.schemas.gfac.URIParameterType;
+import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.schemas.wec.SecurityContextDocument;
 import org.apache.airavata.services.gfac.axis2.GFacService;
@@ -95,9 +75,10 @@ public class GFacMessageReciever implements MessageReceiver {
     public static final String MYPROXY_USER = "myproxy.user";
     public static final String MYPROXY_PASS = "myproxy.pass";
     public static final String MYPROXY_LIFE = "myproxy.life";
-    
+    private GFacConfiguration gfacContext;
     private GenericService service;
     private Axis2Registry registry;
+    private final GfacAPI gfacAPI = new GfacAPI();
 
     public void receive(org.apache.axis2.context.MessageContext axisRequestMsgCtx) throws AxisFault {
         GFacServiceOperations operation = GFacServiceOperations.valueFrom(axisRequestMsgCtx.getOperationContext()
@@ -155,7 +136,7 @@ public class GFacMessageReciever implements MessageReceiver {
                 @Override
                 public void run() {
                     try {
-                        invokeApplication(replyTo,serviceName, invoke, finalMessageContext);
+                        invokeApplication(serviceName, invoke, finalMessageContext);
                     } catch (Exception e) {
                         // Ignore the error.
                         log.error("Error invoking GFac Service",e);
@@ -167,136 +148,51 @@ public class GFacMessageReciever implements MessageReceiver {
         }
     }
 
-    private OMElement invokeApplication(EndpointReference msgBoxAddr,String serviceName, OMElement input, MessageContext messageContext)
+    private OMElement invokeApplication(String serviceName, OMElement input, MessageContext messageContext)
             throws Exception {
         ConfigurationContext context = messageContext.getConfigurationContext();
         String brokerURL = getEventBrokerURL(messageContext);
         String topic = getTopic(messageContext);
         OMElement outputElement = null;
+        SecurityContextDocument parse =
+                SecurityContextDocument.Factory.parse(getHeader(messageContext).getFirstChildWithName
+                        (new QName("http://schemas.airavata.apache.org/workflow-execution-context", "security-context")).toStringWithConsume());
+        SecurityContextDocument.SecurityContext.GridMyproxyRepository gridMyproxyRepository = parse.getSecurityContext().getGridMyproxyRepository();
+        OMElement header = getHeader(messageContext);
+        ContextHeaderDocument document = null;
+        try {
+            document = ContextHeaderDocument.Factory.parse(header.toStringWithConsume());
+        } catch (XMLStreamException e) {
+            e.printStackTrace();
+        } catch (XmlException e) {
+            e.printStackTrace();
+        }
+        Map<Parameter,ActualParameter> actualParameters = new HashMap<Parameter,ActualParameter>();
+        ServiceDescription serviceDescription = getRegistry(context).getServiceDescription(serviceName);
+        ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
+        for (Parameter parameter : serviceDescriptionType.getInputParametersArray()) {
+            OMElement element = input.getFirstChildWithName(new QName(null, parameter.getParameterName().replaceAll(WSDLConstants.HYPHEN, WSDLConstants.HYPHEN_REPLACEMENT)));
+            if (element == null) {
+                throw new Exception("Parameter is not found in the message");
+            }
+            //todo this implementation doesn't work when there are n number of nodes connecting .. need to fix
+            actualParameters.put(parameter,getInputActualParameter(parameter, element));
+        }
+         DefaultInvocationContext invocationContext = null;
+        JobContext jobContext = new JobContext(actualParameters,topic,serviceName);
+        if(document.getContextHeader().getSecurityContext().getAmazonWebservices() != null){
+//            invocationContext.getExecutionContext().setSecurityContextHeader(header);
+            //todo if there's amazoneWebServices context we need to set that value, this will refer in EC2Provider
+        }else{
+            invocationContext = gfacAPI.gridJobSubmit(jobContext,(GFacConfiguration)context.getProperty(GFacService.GFAC_CONFIGURATION));
+        }
         try {
             /*
              * Add notifiable object
              */
-            WorkflowTrackingNotification workflowNotification = new WorkflowTrackingNotification(brokerURL, topic);
-            LoggingNotification loggingNotification = new LoggingNotification();
-            DefaultInvocationContext invocationContext = new DefaultInvocationContext();
-            invocationContext.setExecutionContext(new DefaultExecutionContext());
-            invocationContext.setServiceName(serviceName);
-            invocationContext.getExecutionContext().setRegistryService(getRegistry(context));
-            invocationContext.getExecutionContext().setSecurityContextHeader(getHeader(messageContext));
-            invocationContext.getExecutionContext().addNotifiable(workflowNotification);
-            invocationContext.getExecutionContext().addNotifiable(loggingNotification);
 
-            GSISecurityContext gssContext = new GSISecurityContext();
-            SecurityContextDocument parse =
-                    SecurityContextDocument.Factory.parse(getHeader(messageContext).getFirstChildWithName
-                            (new QName("http://schemas.airavata.apache.org/workflow-execution-context", "security-context")).toStringWithConsume());
-            SecurityContextDocument.SecurityContext.GridMyproxyRepository gridMyproxyRepository = parse.getSecurityContext().getGridMyproxyRepository();
-            if (gridMyproxyRepository==null){
-            	gssContext.setMyproxyPasswd((String)messageContext.getConfigurationContext().getProperty(MYPROXY_PASS));
-                gssContext.setMyproxyUserName((String) messageContext.getConfigurationContext().getProperty(MYPROXY_USER));
-                gssContext.setMyproxyLifetime(Integer.parseInt((String) messageContext.getConfigurationContext().getProperty(MYPROXY_LIFE)));
-                gssContext.setMyproxyServer((String)messageContext.getConfigurationContext().getProperty(MYPROXY_SERVER));
-            }else{
-	            gssContext.setMyproxyPasswd(gridMyproxyRepository.getPassword());
-	            gssContext.setMyproxyUserName(gridMyproxyRepository.getUsername());
-	            gssContext.setMyproxyLifetime(gridMyproxyRepository.getLifeTimeInhours());
-	            gssContext.setMyproxyServer(gridMyproxyRepository.getMyproxyServer());
-            }
-            gssContext.setTrustedCertLoc((String)messageContext.getConfigurationContext().getProperty(TRUSTED_CERT_LOCATION));
-            
-            invocationContext.addSecurityContext("myproxy",gssContext);
-
-            /*
-             * Add workflow context
-             */
-            WorkflowContextImpl workflowContext = new WorkflowContextImpl();
-            workflowContext.setValue(WorkflowContextImpl.WORKFLOW_ID, URI.create(topic).toString());
-            invocationContext.addMessageContext(WorkflowContextImpl.WORKFLOW_CONTEXT_NAME, workflowContext);
-
-            /*
-             * read from registry and set the correct parameters
-             */
-            ServiceDescription serviceDescription = getRegistry(context).getServiceDescription(serviceName);
-
-            /*
-             * Input
-             */
-            ParameterContextImpl inputParam = new ParameterContextImpl();
-            ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
-
-            for (Parameter parameter : serviceDescriptionType.getInputParametersArray()) {
-                OMElement element = input.getFirstChildWithName(new QName(null,parameter.getParameterName().replaceAll(WSDLConstants.HYPHEN, WSDLConstants.HYPHEN_REPLACEMENT)));
-                if (element == null) {
-                    throw new Exception("Parameter is not found in the message");
-                }
-                //todo this implementation doesn't work when there are n number of nodes connecting .. need to fix
-
-//                String xmlContent = "";
-//                if(!element.getChildElements().hasNext()){
-//                    xmlContent = "<type:GFacParameter xsi:type=\"type:" + MappingFactory.getActualParameterType(parameter.getParameterType().getType())
-//                        +"\" xmlns:type=\"http://schemas.airavata.apache.org/gfac/type\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" + element.getText() + "</type:GFacParameter>";
-//                }else{
-//                    xmlContent = "<type:GFacParameter xsi:type=\"type:" + MappingFactory.getActualParameterType(parameter.getParameterType().getType())
-//                            +"\" xmlns:type=\"http://schemas.airavata.apache.org/gfac/type\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" + element.toStringWithConsume() + "</type:GFacParameter>";
-//                }
-//                System.out.println(xmlContent);
-//                inputParam.add(parameter.getParameterName(),ActualParameter.fromXML(xmlContent));
-
-                ActualParameter actualParameter = getInputActualParameter(parameter, element);
-                inputParam.add(parameter.getParameterName(),actualParameter);
-            }
-
-            /*
-             * Output
-             */
-            ParameterContextImpl outputParam = new ParameterContextImpl();
-
-
-            // List<Parameter> outputs = serviceDescription.getOutputParameters();
-            for (OutputParameterType parameter : serviceDescriptionType.getOutputParametersArray()) {
-                ActualParameter actualParameter = new ActualParameter();
-                if("String".equals(parameter.getParameterType().getName())){
-                   actualParameter.getType().changeType(StringParameterType.type);
-                }else if("Double".equals(parameter.getParameterType().getName())){
-                    actualParameter.getType().changeType(DoubleParameterType.type);
-                }else if("Integer".equals(parameter.getParameterType().getName())){
-                    actualParameter.getType().changeType(IntegerParameterType.type);
-                }else if("Float".equals(parameter.getParameterType().getName())){
-                    actualParameter.getType().changeType(FloatParameterType.type);
-                }else if("Boolean".equals(parameter.getParameterType().getName())){
-                    actualParameter.getType().changeType(BooleanParameterType.type);
-                }else if("File".equals(parameter.getParameterType().getName())){
-                    actualParameter.getType().changeType(FileParameterType.type);
-                }else if("URI".equals(parameter.getParameterType().getName())){
-                    actualParameter.getType().changeType(URIParameterType.type);
-                }else if("StringArray".equals(parameter.getParameterType().getName())){
-                    actualParameter.getType().changeType(StringArrayType.type);
-                }else if("DoubleArray".equals(parameter.getParameterType().getName())){
-                    actualParameter.getType().changeType(DoubleArrayType.type);
-                }else if("IntegerArray".equals(parameter.getParameterType().getName())){
-                    actualParameter.getType().changeType(IntegerArrayType.type);
-                }else if("FloatArray".equals(parameter.getParameterType().getName())){
-                    actualParameter.getType().changeType(FloatArrayType.type);
-                }else if("BooleanArray".equals(parameter.getParameterType().getName())){
-                    actualParameter.getType().changeType(BooleanArrayType.type);
-                }else if("FileArray".equals(parameter.getParameterType().getName())){
-                    actualParameter.getType().changeType(FileArrayType.type);
-                }else if("URIArray".equals(parameter.getParameterType().getName())){
-                    actualParameter.getType().changeType(URIArrayType.type);
-                }
-                outputParam.add(parameter.getParameterName(), new ActualParameter());
-            }
-
-            invocationContext.setInput(inputParam);
-            invocationContext.setOutput(outputParam);
-
-            if (service == null) {
-                service = new PropertyServiceFactory(GFacService.REPOSITORY_PROPERTIES).createService();
-            }
-            // invoke service
-            service.execute(invocationContext);
-
+            ParameterContextImpl outputParamContext = (ParameterContextImpl) invocationContext
+                    .<ActualParameter> getMessageContext("output");
             /*
              * Process Output
              */
@@ -304,11 +200,9 @@ public class GFacMessageReciever implements MessageReceiver {
             OMNamespace omNs = fac.createOMNamespace("http://ws.apache.org/axis2/xsd", "ns1");
             outputElement = fac.createOMElement("invokeResponse", omNs);
 
-            ParameterContextImpl paramContext = (ParameterContextImpl) invocationContext
-                    .<ActualParameter> getMessageContext("output");
-            for (Iterator<String> iterator = paramContext.getNames(); iterator.hasNext();) {
+            for (Iterator<String> iterator = outputParamContext.getNames(); iterator.hasNext();) {
                 String name = iterator.next();
-                String outputString = paramContext.getValue(name).toXML().replaceAll("GFacParameter", name);
+                String outputString = outputParamContext.getValue(name).toXML().replaceAll("GFacParameter", name);
                 XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(outputString));
                 StAXOMBuilder builder = new StAXOMBuilder(reader);
                 outputElement.addChild(builder.getDocumentElement());
@@ -327,99 +221,6 @@ public class GFacMessageReciever implements MessageReceiver {
         outMessageContext.setEnvelope(responseEnv);
         AxisEngine.send(outMessageContext);
         return outputElement;
-    }
-
-    private ActualParameter getInputActualParameter(Parameter parameter, OMElement element) {
-        OMElement innerelement = null;
-        ActualParameter actualParameter = new ActualParameter();
-        if("String".equals(parameter.getParameterType().getName())){
-            actualParameter = new ActualParameter(StringParameterType.type);
-            innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
-            ((StringParameterType)actualParameter.getType()).setValue(innerelement.getText());
-        }else if("Double".equals(parameter.getParameterType().getName())){
-            actualParameter = new ActualParameter(DoubleParameterType.type);
-            innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
-            ((DoubleParameterType)actualParameter.getType()).setValue(new Double(innerelement.getText()));
-        }else if("Integer".equals(parameter.getParameterType().getName())){
-            actualParameter = new ActualParameter(IntegerParameterType.type);
-            innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
-            ((IntegerParameterType)actualParameter.getType()).setValue(new Integer(innerelement.getText()));
-        }else if("Float".equals(parameter.getParameterType().getName())){
-            actualParameter = new ActualParameter(FloatParameterType.type);
-            innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
-            ((FloatParameterType)actualParameter.getType()).setValue(new Float(innerelement.getText()));
-        }else if("Boolean".equals(parameter.getParameterType().getName())){
-            actualParameter = new ActualParameter(BooleanParameterType.type);
-            innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
-            ((BooleanParameterType)actualParameter.getType()).setValue(new Boolean(innerelement.getText()));
-        }else if("File".equals(parameter.getParameterType().getName())){
-            actualParameter = new ActualParameter(FileParameterType.type);
-            innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
-            ((FileParameterType)actualParameter.getType()).setValue(innerelement.getText());
-        }else if("URI".equals(parameter.getParameterType().getName())){
-            actualParameter = new ActualParameter(URIParameterType.type);
-            innerelement = (OMElement)element.getChildrenWithLocalName("value").next();
-            System.out.println(actualParameter.getType().toString());
-            log.debug(actualParameter.getType().toString());
-            ((URIParameterType)actualParameter.getType()).setValue(innerelement.getText());
-        }else if("StringArray".equals(parameter.getParameterType().getName())){
-            actualParameter = new ActualParameter(StringArrayType.type);
-            Iterator value = element.getChildrenWithLocalName("value");
-            int i =0;
-            while(value.hasNext()){
-                innerelement = (OMElement)value.next();
-                ((StringArrayType)actualParameter.getType()).insertValue(i++, innerelement.getText());
-            }
-        }else if("DoubleArray".equals(parameter.getParameterType().getName())){
-            actualParameter = new ActualParameter(DoubleArrayType.type);
-            Iterator value = element.getChildrenWithLocalName("value");
-            int i =0;
-            while(value.hasNext()){
-                innerelement = (OMElement)value.next();
-                ((DoubleArrayType)actualParameter.getType()).insertValue(i++,new Double(innerelement.getText()));
-            }
-        }else if("IntegerArray".equals(parameter.getParameterType().getName())){
-            actualParameter = new ActualParameter(IntegerArrayType.type);
-              Iterator value = element.getChildrenWithLocalName("value");
-            int i =0;
-            while(value.hasNext()){
-                innerelement = (OMElement)value.next();
-                ((IntegerArrayType)actualParameter.getType()).insertValue(i++,new Integer(innerelement.getText()));
-            }
-        }else if("FloatArray".equals(parameter.getParameterType().getName())){
-            actualParameter = new ActualParameter(FloatArrayType.type);
-              Iterator value = element.getChildrenWithLocalName("value");
-            int i =0;
-            while(value.hasNext()){
-                innerelement = (OMElement)value.next();
-                ((FloatArrayType)actualParameter.getType()).insertValue(i++,new Float(innerelement.getText()));
-            }
-        }else if("BooleanArray".equals(parameter.getParameterType().getName())){
-            actualParameter = new ActualParameter(BooleanArrayType.type);
-              Iterator value = element.getChildrenWithLocalName("value");
-            int i =0;
-            while(value.hasNext()){
-                innerelement = (OMElement)value.next();
-                ((BooleanArrayType)actualParameter.getType()).insertValue(i++,new Boolean(innerelement.getText()));
-            }
-        }else if("FileArray".equals(parameter.getParameterType().getName())){
-            actualParameter = new ActualParameter(FileArrayType.type);
-              Iterator value = element.getChildrenWithLocalName("value");
-            int i =0;
-            while(value.hasNext()){
-                innerelement = (OMElement)value.next();
-                ((FileArrayType)actualParameter.getType()).insertValue(i++,innerelement.getText());
-            }
-        }else if("URIArray".equals(parameter.getParameterType().getName())){
-            actualParameter = new ActualParameter(URIArrayType.type);
-            Iterator value = element.getChildrenWithLocalName("value");
-          int i =0;
-          while(value.hasNext()){
-              innerelement = (OMElement)value.next();
-              ((URIArrayType)actualParameter.getType()).insertValue(i++,innerelement.getText());
-          }
-        }
-        return actualParameter;
     }
 
     private void processgetWSDLOperation(MessageContext messageContext) throws Exception {
@@ -565,5 +366,99 @@ public class GFacMessageReciever implements MessageReceiver {
                 "http://schemas.airavata.apache.org/workflow-execution-context", "context-header"));
         return contextHeader;
     }
+
+    private ActualParameter getInputActualParameter(Parameter parameter, OMElement element) {
+        OMElement innerelement = null;
+        ActualParameter actualParameter = new ActualParameter();
+        if ("String".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(StringParameterType.type);
+            innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
+            ((StringParameterType) actualParameter.getType()).setValue(innerelement.getText());
+        } else if ("Double".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(DoubleParameterType.type);
+            innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
+            ((DoubleParameterType) actualParameter.getType()).setValue(new Double(innerelement.getText()));
+        } else if ("Integer".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(IntegerParameterType.type);
+            innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
+            ((IntegerParameterType) actualParameter.getType()).setValue(new Integer(innerelement.getText()));
+        } else if ("Float".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(FloatParameterType.type);
+            innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
+            ((FloatParameterType) actualParameter.getType()).setValue(new Float(innerelement.getText()));
+        } else if ("Boolean".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(BooleanParameterType.type);
+            innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
+            ((BooleanParameterType) actualParameter.getType()).setValue(new Boolean(innerelement.getText()));
+        } else if ("File".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(FileParameterType.type);
+            innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
+            ((FileParameterType) actualParameter.getType()).setValue(innerelement.getText());
+        } else if ("URI".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(URIParameterType.type);
+            innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
+            System.out.println(actualParameter.getType().toString());
+            log.debug(actualParameter.getType().toString());
+            ((URIParameterType) actualParameter.getType()).setValue(innerelement.getText());
+        } else if ("StringArray".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(StringArrayType.type);
+            Iterator value = element.getChildrenWithLocalName("value");
+            int i = 0;
+            while (value.hasNext()) {
+                innerelement = (OMElement) value.next();
+                ((StringArrayType) actualParameter.getType()).insertValue(i++, innerelement.getText());
+            }
+        } else if ("DoubleArray".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(DoubleArrayType.type);
+            Iterator value = element.getChildrenWithLocalName("value");
+            int i = 0;
+            while (value.hasNext()) {
+                innerelement = (OMElement) value.next();
+                ((DoubleArrayType) actualParameter.getType()).insertValue(i++, new Double(innerelement.getText()));
+            }
+        } else if ("IntegerArray".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(IntegerArrayType.type);
+            Iterator value = element.getChildrenWithLocalName("value");
+            int i = 0;
+            while (value.hasNext()) {
+                innerelement = (OMElement) value.next();
+                ((IntegerArrayType) actualParameter.getType()).insertValue(i++, new Integer(innerelement.getText()));
+            }
+        } else if ("FloatArray".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(FloatArrayType.type);
+            Iterator value = element.getChildrenWithLocalName("value");
+            int i = 0;
+            while (value.hasNext()) {
+                innerelement = (OMElement) value.next();
+                ((FloatArrayType) actualParameter.getType()).insertValue(i++, new Float(innerelement.getText()));
+            }
+        } else if ("BooleanArray".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(BooleanArrayType.type);
+            Iterator value = element.getChildrenWithLocalName("value");
+            int i = 0;
+            while (value.hasNext()) {
+                innerelement = (OMElement) value.next();
+                ((BooleanArrayType) actualParameter.getType()).insertValue(i++, new Boolean(innerelement.getText()));
+            }
+        } else if ("FileArray".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(FileArrayType.type);
+            Iterator value = element.getChildrenWithLocalName("value");
+            int i = 0;
+            while (value.hasNext()) {
+                innerelement = (OMElement) value.next();
+                ((FileArrayType) actualParameter.getType()).insertValue(i++, innerelement.getText());
+            }
+        } else if ("URIArray".equals(parameter.getParameterType().getName())) {
+            actualParameter = new ActualParameter(URIArrayType.type);
+            Iterator value = element.getChildrenWithLocalName("value");
+            int i = 0;
+            while (value.hasNext()) {
+                innerelement = (OMElement) value.next();
+                ((URIArrayType) actualParameter.getType()).insertValue(i++, innerelement.getText());
+            }
+        }
+        return actualParameter;
+    }
+
 
 }

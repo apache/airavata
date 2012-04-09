@@ -21,7 +21,6 @@
 
 package org.apache.airavata.services.gfac.axis2;
 
-import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
@@ -30,12 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.jcr.Credentials;
-import javax.jcr.Repository;
-import javax.jcr.RepositoryFactory;
-import javax.jcr.SimpleCredentials;
-
 import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.core.gfac.context.GFacConfiguration;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.services.gfac.axis2.dispatchers.GFacURIBasedDispatcher;
@@ -78,6 +73,7 @@ public class GFacService implements ServiceLifeCycle {
     public static final String MYPROXY_USER = "myproxy.user";
     public static final String MYPROXY_PASS = "myproxy.pass";
     public static final String MYPROXY_LIFE = "myproxy.life";
+    public static final String GFAC_CONFIGURATION = "gfacConfiguration";
     /*
      * Heart beat thread
      */
@@ -145,19 +141,11 @@ public class GFacService implements ServiceLifeCycle {
 							+ context.getServicePath() + "/"
 							+ WSConstants.GFAC_SERVICE_NAME;
 					log.debug("GFAC_ADDRESS:" + localAddress);
-					context.setProperty(CONFIGURATION_CONTEXT_REGISTRY,
-							registry);
-					context.setProperty(GFAC_URL, localAddress);
-					context.setProperty(TRUSTED_CERT_LOCATION,
-							properties.getProperty(TRUSTED_CERT_LOCATION));
-					context.setProperty(MYPROXY_USER,
-							properties.getProperty(MYPROXY_USER));
-					context.setProperty(MYPROXY_PASS,
-							properties.getProperty(MYPROXY_PASS));
-					context.setProperty(MYPROXY_SERVER,
-							properties.getProperty(MYPROXY_SERVER));
-					context.setProperty(MYPROXY_LIFE,
-							properties.getProperty(MYPROXY_LIFE));
+
+                    GFacConfiguration gfacConfig = new GFacConfiguration(properties.getProperty(MYPROXY_SERVER),properties.getProperty(MYPROXY_USER),
+                            properties.getProperty(MYPROXY_PASS),Integer.parseInt(properties.getProperty(MYPROXY_LIFE)),localAddress,registry,properties.getProperty(TRUSTED_CERT_LOCATION));
+					context.setProperty(GFAC_CONFIGURATION,
+							gfacConfig);
 					/*
 					 * Heart beat message to registry
 					 */
