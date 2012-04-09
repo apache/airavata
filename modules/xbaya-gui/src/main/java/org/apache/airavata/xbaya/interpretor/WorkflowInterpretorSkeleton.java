@@ -21,14 +21,21 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.registry.api.impl.JCRRegistry;
+import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
@@ -44,8 +51,17 @@ import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.ServiceLifeCycle;
+import org.apache.xmlbeans.XmlObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.jcr.RepositoryException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * WorkflowInterpretorSkeleton java skeleton for the axisService
@@ -69,11 +85,13 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static  String jcrURL = "";
     public static boolean runInThread = false;
     public static final String RUN_IN_THREAD = "runInThread";
+    public static  Boolean gfacEmbeddedMode = false;
     private static PredicatedTaskRunner runner = null;
     public static  JCRComponentRegistry jcrComponentRegistry = null;
     public static int provenanceWriterThreadPoolSize = 1;
     public static final String PROVENANCE_WRITER_THREAD_POOL_SIZE = "provenanceWriterThreadPoolSize";
     public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
+    public static final String GFAC_EMBEDDED = "gfac.embedded";
 
     public void startUp(final ConfigurationContext configctx, AxisService service) {
     	new Thread(){
@@ -94,25 +112,36 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		            jcrUserName = (String)properties.get(JCR_USER);
 		            jcrPassword = (String) properties.get(JCR_PASS);
 		            jcrURL = (String) properties.get(JCR_URL);
-		            provenanceWriterThreadPoolSize = Integer.parseInt((String)properties.get(PROVENANCE_WRITER_THREAD_POOL_SIZE));
-		
+		            provenanceWriterThreadPoolSize = Integer.parseInt((String) properties.get(PROVENANCE_WRITER_THREAD_POOL_SIZE));
 		            if("true".equals(properties.get(PROVENANCE))){
 		                provenance = true;
 		                runner = new PredicatedTaskRunner(provenanceWriterThreadPoolSize);
 		                try {
 		                    jcrComponentRegistry = new JCRComponentRegistry(new URI(jcrURL),jcrUserName,jcrPassword);
+                            List<HostDescription> hostList = getDefinedHostDescriptions();
+                            for(HostDescription host:hostList){
+                                jcrComponentRegistry.getRegistry().saveHostDescription(host);
+                            }
 		                } catch (RepositoryException e) {
 		                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		                } catch (URISyntaxException e) {
 		                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-		                }
-		            }else{
+		                } catch (RegistryException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+                    }else{
 		                provenance = false;
 		            }
 		            if("true".equals(properties.get(RUN_IN_THREAD))){
 		                runInThread = true;
 		            }else{
 		                runInThread = false;
+		            }
+
+                     if("true".equals(properties.get(GFAC_EMBEDDED))){
+		                gfacEmbeddedMode = true;
+		            }else{
+		                gfacEmbeddedMode = false;
 		            }
 		
 		        } catch (IOException e) {
@@ -194,6 +223,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         final WorkflowInterpreter finalInterpreter = interpreter;
         interpreter.setActOnProvenance(provenance);
         interpreter.setProvenanceWriter(runner);
+        interpreter.setGfacEmbeddedMode(gfacEmbeddedMode);
         final String experimentId = topic;
         System.err.println("Created the interpreter");
         if(inNewThread){
@@ -259,5 +289,44 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
          if(runner != null){
              runner.shutDown();
          }
+    }
+
+    private List<HostDescription> getDefinedHostDescriptions() {
+        URL url = this.getClass().getClassLoader().getResource("host.xml");
+        File fXmlFile = new File(url.getPath());
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder dBuilder = null;
+        ArrayList<HostDescription> hostDescriptions = new ArrayList<HostDescription>();
+        try {
+            dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(fXmlFile);
+            doc.getDocumentElement().normalize();
+            System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+            NodeList nList = doc.getElementsByTagName("server");
+            for (int temp = 0; temp < nList.getLength(); temp++) {
+                Node nNode = nList.item(temp);
+                HostDescription hostDescription ;
+                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element eElement = (Element) nNode;
+                    if(XMLUtil.getTagValue("gram.endpoint", eElement) != null){
+                        hostDescription = new HostDescription(GlobusHostType.type);
+                         ((GlobusHostType)hostDescription.getType()).addGlobusGateKeeperEndPoint(XMLUtil.getTagValue("gram.endpoint", eElement));
+                        ((GlobusHostType)hostDescription.getType()).addGridFTPEndPoint(XMLUtil.getTagValue("gridftp.endpoint", eElement));
+                    }else{
+                        hostDescription = new HostDescription(HostDescriptionType.type);
+                    }
+                    (hostDescription.getType()).setHostName(XMLUtil.getTagValue("name", eElement));
+                    (hostDescription.getType()).setHostAddress(XMLUtil.getTagValue("host", eElement));
+                    hostDescriptions.add(hostDescription);
+                }
+            }
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (SAXException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return hostDescriptions;
     }
 }
