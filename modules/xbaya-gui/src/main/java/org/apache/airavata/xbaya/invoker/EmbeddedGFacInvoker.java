@@ -199,6 +199,7 @@ public class EmbeddedGFacInvoker implements Invoker{
      * @throws XBayaException
      */
     public void setup() throws XBayaException {
+        this.notifier.setServiceID(this.nodeID);
     }
 
     private void setup(WsdlDefinitions definitions) throws XBayaException {

@@ -316,7 +316,7 @@ public class GFacMessageReciever implements MessageReceiver {
      */
     private Axis2Registry getRegistry(ConfigurationContext context) {
         if (this.registry == null) {
-            this.registry = (Axis2Registry) context.getProperty(GFacService.CONFIGURATION_CONTEXT_REGISTRY);
+            this.registry = (Axis2Registry) ((GFacConfiguration)context.getProperty(GFacService.GFAC_CONFIGURATION)).getRegistry();
         }
         return registry;
     }
