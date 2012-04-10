@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<servers>
+    <server>
+        <name>LocalHost</name>
+        <host>127.0.0.1</host>
+    </server>
+    <server>
+        <name>purdue.teragrid.org</name>
+        <host>steele.purdue.teragrid.org</host>
+        <gram.endpoint>tg-steele.rcac.purdue.edu:2119/jobmanager-pbs</gram.endpoint>
+        <gridftp.endpoint>gsiftp://tg-data.purdue.teragrid.org:2811/</gridftp.endpoint>
+    </server>
+
+     <server>
+        <name>ncsa.teragrid.org</name>
+        <host>forge.ncsa.teragrid.org</host>
+        <gram.endpoint>grid-forge.ncsa.xsede.org:2119/jobmanager-pbs</gram.endpoint>
+        <gridftp.endpoint>gsiftp://gridftp-forge.ncsa.xsede.org:2811/</gridftp.endpoint>
+    </server>
+
+     <server>
+        <name>lonestar</name>
+        <host>lonestar4.tacc.teragrid.org</host>
+        <gram.endpoint>gridftp1.ls4.tacc.utexas.edu:2119/jobmanager-sge</gram.endpoint>
+        <gridftp.endpoint>gsiftp://gridftp1.ls4.tacc.utexas.edu:2811/</gridftp.endpoint>
+    </server>
+
+     <server>
+        <name>ranger</name>
+        <host>ranger.tacc.teragrid.org</host>
+        <gram.endpoint>gatekeeper.ranger.tacc.teragrid.org:2119/jobmanager-sge</gram.endpoint>
+        <gridftp.endpoint>gsiftp://gridftp.ranger.tacc.teragrid.org:2811/</gridftp.endpoint>
+    </server>
+
+     <server>
+        <name>trestles</name>
+        <host>trestles.sdsc.edu</host>
+        <gram.endpoint>gsiftp://trestles-dm1.sdsc.xsede.org:2811/</gram.endpoint>
+        <gridftp.endpoint>trestles.sdsc.edu:2119/jobmanager-pbs</gridftp.endpoint>
+    </server>
+
+</servers>
