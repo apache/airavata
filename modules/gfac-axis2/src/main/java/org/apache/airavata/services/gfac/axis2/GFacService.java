@@ -141,9 +141,9 @@ public class GFacService implements ServiceLifeCycle {
 							+ context.getServicePath() + "/"
 							+ WSConstants.GFAC_SERVICE_NAME;
 					log.debug("GFAC_ADDRESS:" + localAddress);
-
+                    context.setProperty(GFAC_URL,localAddress);
                     GFacConfiguration gfacConfig = new GFacConfiguration(properties.getProperty(MYPROXY_SERVER),properties.getProperty(MYPROXY_USER),
-                            properties.getProperty(MYPROXY_PASS),Integer.parseInt(properties.getProperty(MYPROXY_LIFE)),localAddress,registry,properties.getProperty(TRUSTED_CERT_LOCATION));
+                            properties.getProperty(MYPROXY_PASS),Integer.parseInt(properties.getProperty(MYPROXY_LIFE)),registry,properties.getProperty(TRUSTED_CERT_LOCATION));
 					context.setProperty(GFAC_CONFIGURATION,
 							gfacConfig);
 					/*
@@ -159,7 +159,7 @@ public class GFacService implements ServiceLifeCycle {
     }
 
     public void shutDown(ConfigurationContext configctx, AxisService service) {
-        AiravataRegistry registry = (AiravataJCRRegistry) configctx.getProperty(CONFIGURATION_CONTEXT_REGISTRY);
+        AiravataRegistry registry =  ((GFacConfiguration)configctx.getProperty(GFAC_CONFIGURATION)).getRegistry();
         String gfacURL = (String) configctx.getProperty(GFAC_URL);
         try {
 			registry.deleteGFacDescriptor(gfacURL);
@@ -185,7 +185,7 @@ public class GFacService implements ServiceLifeCycle {
             try {
                 while (true) {
                     try {
-						AiravataRegistry registry = (AiravataRegistry) this.context.getProperty(CONFIGURATION_CONTEXT_REGISTRY);
+						AiravataRegistry registry = ((GFacConfiguration)context.getProperty(GFAC_CONFIGURATION)).getRegistry();
 						String localAddress = (String) this.context.getProperty(GFAC_URL);
 						registry.saveGFacDescriptor(localAddress);
 						log.info("Updated the GFac URL in to Repository");

@@ -263,11 +263,12 @@ public class EmbeddedGFacInvoker implements Invoker{
                 @SuppressWarnings("boxing")
                 public Boolean call() {
                     try {
-                        JobContext jobContext = new JobContext(actualParameters,EmbeddedGFacInvoker.this.topic,EmbeddedGFacInvoker.this.serviceName);
+                        JobContext jobContext = new JobContext(actualParameters,EmbeddedGFacInvoker.this.topic,
+                                EmbeddedGFacInvoker.this.serviceName,EmbeddedGFacInvoker.this.gfacURL);
                         GFacConfiguration gFacConfiguration = new GFacConfiguration(EmbeddedGFacInvoker.this.configuration.getMyProxyServer(),
                                 EmbeddedGFacInvoker.this.configuration.getMyProxyUsername(),
                             EmbeddedGFacInvoker.this.configuration.getMyProxyPassphrase(),EmbeddedGFacInvoker.this.configuration.getMyProxyLifetime(),
-                                EmbeddedGFacInvoker.this.gfacURL, EmbeddedGFacInvoker.this.registry, EmbeddedGFacInvoker.this.configuration.getTrustedCertLocation());
+                                EmbeddedGFacInvoker.this.registry, EmbeddedGFacInvoker.this.configuration.getTrustedCertLocation());
 
                         GfacAPI gfacAPI1 = new GfacAPI();
                         InvocationContext defaultInvocationContext = gfacAPI1.gridJobSubmit(jobContext, gFacConfiguration);

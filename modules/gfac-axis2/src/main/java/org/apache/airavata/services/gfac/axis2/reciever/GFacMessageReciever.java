@@ -180,7 +180,7 @@ public class GFacMessageReciever implements MessageReceiver {
             actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, element));
         }
          DefaultInvocationContext invocationContext = null;
-        JobContext jobContext = new JobContext(actualParameters,topic,serviceName);
+        JobContext jobContext = new JobContext(actualParameters,topic,serviceName,brokerURL);
         if(document.getContextHeader().getSecurityContext().getAmazonWebservices() != null){
 //            invocationContext.getExecutionContext().setSecurityContextHeader(header);
             //todo if there's amazoneWebServices context we need to set that value, this will refer in EC2Provider

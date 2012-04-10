@@ -31,8 +31,7 @@
         <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-codegen</artifactId>
-            <version>${axis2.version}</version>
-        </dependency>
+            <version>${axis2.version}</version> </dependency>
         <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-adb-codegen</artifactId>
@@ -48,7 +47,7 @@
     <build>
 
         <plugins>
-           <plugin>
+           <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.3</version>
@@ -73,7 +72,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
             <!-- Set working directory to test-class directory -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

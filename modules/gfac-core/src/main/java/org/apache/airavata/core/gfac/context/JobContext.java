@@ -34,10 +34,13 @@ public class JobContext {
 
     private String serviceName;
 
-    public JobContext(Map<Parameter, ActualParameter> parameters, String topic, String serviceName) {
+    private String brokerURL;
+
+    public JobContext(Map<Parameter, ActualParameter> parameters, String topic, String serviceName,String brokerURL) {
         this.parameters = parameters;
         this.topic = topic;
         this.serviceName = serviceName;
+        this.brokerURL = brokerURL;
     }
 
     public Map<Parameter, ActualParameter> getParameters() {
@@ -50,5 +53,13 @@ public class JobContext {
 
     public String getServiceName() {
         return serviceName;
+    }
+
+    public String getBrokerURL() {
+        return brokerURL;
+    }
+
+    public void setBrokerURL(String brokerURL) {
+        this.brokerURL = brokerURL;
     }
 }
