@@ -232,7 +232,7 @@ public class EmbeddedGFacInvoker implements Invoker{
             ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
             for (Parameter parameter : serviceDescriptionType.getInputParametersArray()) {
                 //todo this implementation doesn't work when there are n number of nodes connecting .. need to fix
-                actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, (String) value));
+                actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, XMLUtil.xmlElementToString((XmlElement)value)));
             }
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
