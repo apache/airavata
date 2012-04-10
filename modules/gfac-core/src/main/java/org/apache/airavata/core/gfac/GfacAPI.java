@@ -47,7 +47,7 @@ public class GfacAPI {
     public static final String REPOSITORY_PROPERTIES = "repository.properties";
 
     public DefaultInvocationContext gridJobSubmit(JobContext jobContext,GFacConfiguration gfacConfig) throws Exception {
-        WorkflowTrackingNotification workflowNotification = new WorkflowTrackingNotification(gfacConfig.getBrokerURL(), jobContext.getTopic());
+        WorkflowTrackingNotification workflowNotification = new WorkflowTrackingNotification(jobContext.getBrokerURL(), jobContext.getTopic());
         LoggingNotification loggingNotification = new LoggingNotification();
         DefaultInvocationContext invocationContext = new DefaultInvocationContext();
         invocationContext.setExecutionContext(new DefaultExecutionContext());

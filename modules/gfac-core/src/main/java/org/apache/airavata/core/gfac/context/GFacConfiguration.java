@@ -33,18 +33,16 @@ public class GFacConfiguration {
 
     private int myProxyLifeCycle;
 
-    private String brokerURL;
 
     private AiravataRegistry registry;
 
     private String trustedCertLocation;
 
-    public GFacConfiguration(String myProxyServer, String myProxyUser, String myProxyPassphrase, int myProxyLifeCycle, String brokerURL, AiravataRegistry axis2Registry, String trustedCertLocation) {
+    public GFacConfiguration(String myProxyServer, String myProxyUser, String myProxyPassphrase, int myProxyLifeCycle, AiravataRegistry axis2Registry, String trustedCertLocation) {
         this.myProxyServer = myProxyServer;
         this.myProxyUser = myProxyUser;
         this.myProxyPassphrase = myProxyPassphrase;
         this.myProxyLifeCycle = myProxyLifeCycle;
-        this.brokerURL = brokerURL;
         this.registry = axis2Registry;
         this.trustedCertLocation = trustedCertLocation;
     }
@@ -63,10 +61,6 @@ public class GFacConfiguration {
 
     public int getMyProxyLifeCycle() {
         return myProxyLifeCycle;
-    }
-
-    public String getBrokerURL() {
-        return brokerURL;
     }
 
     public AiravataRegistry getRegistry() {

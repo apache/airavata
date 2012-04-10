@@ -88,7 +88,8 @@ public class GramProviderTest {
         app.setCpuCount(1);
         ProjectAccountType projectAccountType = ((GramApplicationDeploymentType) appDesc.getType()).addNewProjectAccount();
         projectAccountType.setProjectAccountNumber(properties.getProperty("project.name"));
-
+        QueueType queueType = app.addNewQueue();
+        queueType.setQueueName("development");
         /*
            * Service
            */
