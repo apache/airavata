@@ -103,6 +103,8 @@ public class EmbeddedGFacInvoker implements Invoker{
 
     private WsdlDefinitions wsdlDefinitionObject;
 
+    private Object outPut;
+
     Map<Parameter,ActualParameter> actualParameters = new HashMap<Parameter,ActualParameter>();
 
     /**
@@ -292,7 +294,8 @@ public class EmbeddedGFacInvoker implements Invoker{
                             }
                             // Send notification
                             logger.info("outputMessage: " + outputElement.toString());
-                            EmbeddedGFacInvoker.this.notifier.serviceFinished(new WSIFMessageElement(XMLUtil.stringToXmlElement3(outputElement.toStringWithConsume())));
+                            outPut = new WSIFMessageElement(XMLUtil.stringToXmlElement3(outputElement.toStringWithConsume()));
+                            EmbeddedGFacInvoker.this.notifier.serviceFinished(new WSIFMessageElement((XmlElement)outPut));
                         } else {
                             // An implementation of WSIFMessage,
                             // WSIFMessageElement, implements toString(), which
@@ -416,11 +419,7 @@ public class EmbeddedGFacInvoker implements Invoker{
     public Object getOutput(String name) throws XBayaException {
         try {
             waitToFinish();
-            Object output = this.invoker.getOutput(name);
-            if (output instanceof XmlElement) {
-                logger.info("output: " + XMLUtil.xmlElementToString((XmlElement) output));
-            }
-            return output;
+            return  outPut;
         } catch (XBayaException e) {
             logger.error(e.getMessage(), e);
             // An appropriate message has been set in the exception.
