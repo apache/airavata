@@ -923,7 +923,7 @@ public class WorkflowInterpreter {
                                         .getComponent().getWSDL()), node.getID(),
                                 this.engine.getMonitor().getConfiguration()
                                         .getMessageBoxURL().toASCIIString(),
-                                gfacURLString, this.notifier, this.topic,
+                                this.engine.getMonitor().getConfiguration().getBrokerURL().toASCIIString(), this.notifier, this.topic,
                                 this.engine.getConfiguration().getJcrComponentRegistry().getRegistry(),
                                 portTypeQName.getLocalPart(),this.engine.getConfiguration());
                     } else {
@@ -941,7 +941,7 @@ public class WorkflowInterpreter {
                                         .getComponent().getWSDL()), node.getID(),
                                 this.configuration.getMessageBoxURL()
                                         .toASCIIString(),
-                                gfacURLString, this.notifier, this.topic, configuration.getJcrComponentRegistry().getRegistry(),
+                                this.configuration.getBrokerURL().toASCIIString(), this.notifier, this.topic, configuration.getJcrComponentRegistry().getRegistry(),
                                 portTypeQName.getLocalPart(),this.configuration);
                     }else{
                         invoker = new GenericInvoker(portTypeQName,
