@@ -323,7 +323,7 @@ public class XRegistryMigrationManager {
             try {
                 String name = service.getType().getName();
                 String hostName = appBean.getHostName();
-                Thread.sleep(500);
+                Thread.sleep(1000);
                 ApplicationDeploymentDescription appDepDesc =
                         jcrRegistry.getDeploymentDescription(name, hostName);
                 if(appDepDesc == null) {
