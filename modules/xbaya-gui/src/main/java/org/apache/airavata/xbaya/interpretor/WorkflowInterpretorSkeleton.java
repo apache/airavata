@@ -59,6 +59,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import xsul5.MLogger;
 
 import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
@@ -73,13 +74,14 @@ import javax.xml.stream.XMLStreamReader;
  * WorkflowInterpretorSkeleton java skeleton for the axisService
  */
 public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
+    private static final MLogger log = MLogger.getLogger();
 
 	public static final String PROXYSERVER = "proxyserver";
 	public static final String MSGBOX = "msgbox";
 	public static final String GFAC = "gfac";
 	public static final String DSC = "dsc";
 	public static final String BROKER = "broker";
-    public static final String MYPROXY_USER = "myproxy.user";
+    public static final String MYPROXY_USER = "myproxy.username";
     public static final String MYPROXY_PASS = "myproxy.password";
     public static final String JCR_USER = "jcr.username";
     public static final String JCR_PASS = "jcr.password";
@@ -127,7 +129,11 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		                    jcrComponentRegistry = new JCRComponentRegistry(new URI(jcrURL),jcrUserName,jcrPassword);
                             List<HostDescription> hostList = getDefinedHostDescriptions();
                             for(HostDescription host:hostList){
-                                jcrComponentRegistry.getRegistry().saveHostDescription(host);
+                                // This will avoid the changes user is doing to one of the predefined Hosts during a restart of the system
+                                if(jcrComponentRegistry.getRegistry().getHostDescription(host.getType().getHostName()) == null){
+                                    log.info("Saving the predefined Host: " + host.getType().getHostName());
+                                    jcrComponentRegistry.getRegistry().saveHostDescription(host);
+                                }
                             }
 		                } catch (RepositoryException e) {
 		                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -279,6 +285,8 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		configuration.setMyProxyLifetime(XBayaConstants.DEFAULT_MYPROXY_LIFTTIME);
 		configuration.setMyProxyPort(XBayaConstants.DEFAULT_MYPROXY_PORT);
 		configuration.setMyProxyServer(findValue(vals, PROXYSERVER, XBayaConstants.DEFAULT_MYPROXY_SERVER));
+        configuration.setMyProxyPassphrase(findValue(vals, MYPROXY_PASS, ""));
+        configuration.setMyProxyUsername(findValue(vals,MYPROXY_USER,""));
         configuration.setTrustedCertLocation(findValue(vals, TRUSTED_CERT_LOCATION, ""));
 		return configuration;
 	}
