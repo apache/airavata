@@ -21,7 +21,6 @@
 package org.apache.airavata.client.airavata;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.xbaya.clients.XBayaClient;
 import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.junit.Test;
 
