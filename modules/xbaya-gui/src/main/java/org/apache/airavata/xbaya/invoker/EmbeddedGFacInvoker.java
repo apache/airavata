@@ -24,6 +24,7 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.commons.gfac.wsdl.WSDLConstants;
 import org.apache.airavata.core.gfac.GfacAPI;
 import org.apache.airavata.core.gfac.context.GFacConfiguration;
 import org.apache.airavata.core.gfac.context.JobContext;
@@ -235,7 +236,10 @@ public class EmbeddedGFacInvoker implements Invoker{
             ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
             for (Parameter parameter : serviceDescriptionType.getInputParametersArray()) {
                 //todo this implementation doesn't work when there are n number of nodes connecting .. need to fix
-                actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, XMLUtil.xmlElementToString((XmlElement)value)));
+                XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(XMLUtil.xmlElementToString((XmlElement) value)));
+                StAXOMBuilder builder = new StAXOMBuilder(reader);
+                OMElement input = builder.getDocumentElement();
+                actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, input));
             }
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
