@@ -104,6 +104,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
     public static final String GFAC_EMBEDDED = "gfac.embedded";
     public static  ConfigurationContext configurationContext;
+    public static final String WITH_LISTENER = "with.Listener";
 
     public void startUp(final ConfigurationContext configctx, AxisService service) {
     	new Thread(){
@@ -225,18 +226,32 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         WorkflowInterpretorEventListener listener = null;
         WorkflowInterpreter interpreter = null;
-        if("true".equals(configurations[10].getValue())){
-            listener = new WorkflowInterpretorEventListener(workflow, conf);
-            interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password);
-            try {
-                System.err.println("start listener set");
-                listener.start();
-            } catch (MonitorException e1) {
-                e1.printStackTrace();
+        for(NameValue each:configurations){
+            if(each.getName().equals(WITH_LISTENER)){
+                if ("true".equals(each.getValue())) {
+                    listener = new WorkflowInterpretorEventListener(workflow, conf);
+                    interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password);
+                    try {
+                        System.err.println("start listener set");
+                        listener.start();
+                    } catch (MonitorException e1) {
+                        e1.printStackTrace();
+                    }
+                }else{
+                    interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password,true);
+                }
+            }else {
+                listener = new WorkflowInterpretorEventListener(workflow, conf);
+                    interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password);
+                    try {
+                        System.err.println("start listener set");
+                        listener.start();
+                    } catch (MonitorException e1) {
+                        e1.printStackTrace();
+                    }
             }
-        }else{
-            interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password,true);
         }
+
         final WorkflowInterpretorEventListener finalListener = listener;
         conf.setJcrComponentRegistry(jcrComponentRegistry);
 
