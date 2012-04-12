@@ -76,17 +76,19 @@ import javax.xml.stream.XMLStreamReader;
 public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     private static final MLogger log = MLogger.getLogger();
 
-	public static final String PROXYSERVER = "proxyserver";
+	public static final String PROXYSERVER = "myproxy.url";
 	public static final String MSGBOX = "msgbox";
 	public static final String GFAC = "gfac";
 	public static final String DSC = "dsc";
 	public static final String BROKER = "broker";
     public static final String MYPROXY_USER = "myproxy.username";
     public static final String MYPROXY_PASS = "myproxy.password";
+    public static final String MYPROXY_SERVER = "myproxy.url";
+    public static final String MYPROXY_LIFETIME = "myproxy.lifetime";
+    public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
     public static final String JCR_USER = "jcr.username";
     public static final String JCR_PASS = "jcr.password";
     public static final String JCR_URL = "jcr.url";
-    public static final String TRUSTED_CERT_LOCATION="trusted.cert.location";
     public static boolean provenance = false;
     public static final String PROVENANCE = "provenance";
     public static  String jcrUserName = "";
@@ -101,6 +103,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static final String PROVENANCE_WRITER_THREAD_POOL_SIZE = "provenanceWriterThreadPoolSize";
     public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
     public static final String GFAC_EMBEDDED = "gfac.embedded";
+    public static  ConfigurationContext configurationContext;
 
     public void startUp(final ConfigurationContext configctx, AxisService service) {
     	new Thread(){
@@ -115,9 +118,13 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		        Properties properties = new Properties();
 		        try {
 		            properties.load(url.openStream());
+                    // Airavata deployer have to configure these properties,but if user send them alone the incoming message
+                    // We are overwriting those values only for that particular request
 		            configctx.setProperty(MYPROXY_PASS, properties.get(MYPROXY_PASS));
 		            configctx.setProperty(MYPROXY_USER, properties.get(MYPROXY_USER));
-		
+		            configctx.setProperty(MYPROXY_LIFETIME,properties.getProperty(MYPROXY_LIFETIME));
+                    configctx.setProperty(TRUSTED_CERT_LOCATION,properties.getProperty(TRUSTED_CERT_LOCATION));
+                    configctx.setProperty(MYPROXY_SERVER,properties.getProperty(MYPROXY_SERVER));
 		            jcrUserName = (String)properties.get(JCR_USER);
 		            jcrPassword = (String) properties.get(JCR_PASS);
 		            jcrURL = (String) properties.get(JCR_URL);
@@ -160,6 +167,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		        } catch (IOException e) {
 		            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		        }
+                WorkflowInterpretorSkeleton.configurationContext = configctx;
     		}
     	}.start();
 
@@ -284,16 +292,16 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		configuration.setMessageBoxURL(new URI(findValue(vals, MSGBOX, XBayaConstants.DEFAULT_MESSAGE_BOX_URL.toString())));
 		configuration.setMyProxyLifetime(XBayaConstants.DEFAULT_MYPROXY_LIFTTIME);
 		configuration.setMyProxyPort(XBayaConstants.DEFAULT_MYPROXY_PORT);
-		configuration.setMyProxyServer(findValue(vals, PROXYSERVER, XBayaConstants.DEFAULT_MYPROXY_SERVER));
-        configuration.setMyProxyPassphrase(findValue(vals, MYPROXY_PASS, ""));
-        configuration.setMyProxyUsername(findValue(vals,MYPROXY_USER,""));
-        configuration.setTrustedCertLocation(findValue(vals, TRUSTED_CERT_LOCATION, ""));
+		configuration.setMyProxyServer(findValue(vals, PROXYSERVER, (String)WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_SERVER)));
+        configuration.setMyProxyPassphrase(findValue(vals, MYPROXY_PASS, (String)WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_PASS)));
+        configuration.setMyProxyUsername(findValue(vals,MYPROXY_USER,(String)WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_USER)));
+        configuration.setTrustedCertLocation(findValue(vals, TRUSTED_CERT_LOCATION, (String)WorkflowInterpretorSkeleton.configurationContext.getProperty(TRUSTED_CERT_LOCATION)));
 		return configuration;
 	}
 
 	public String findValue(NameValue[] vals, String key, String defaultVal) {
 		for (int i = 0; i < vals.length; i++) {
-			if (key.equals(vals[i].getName()) && !"".equals(vals[i].getValue())) {
+			if (key.equals(vals[i].getName()) && !"".equals(vals[i].getValue()) && (vals[i].getValue() != null)) {
 				return vals[i].getValue();
 			}
 		}
