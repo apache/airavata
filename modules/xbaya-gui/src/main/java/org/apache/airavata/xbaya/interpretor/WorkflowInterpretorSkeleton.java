@@ -307,10 +307,13 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		configuration.setMessageBoxURL(new URI(findValue(vals, MSGBOX, XBayaConstants.DEFAULT_MESSAGE_BOX_URL.toString())));
 		configuration.setMyProxyLifetime(XBayaConstants.DEFAULT_MYPROXY_LIFTTIME);
 		configuration.setMyProxyPort(XBayaConstants.DEFAULT_MYPROXY_PORT);
-		configuration.setMyProxyServer(findValue(vals, PROXYSERVER, (String)WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_SERVER)));
-        configuration.setMyProxyPassphrase(findValue(vals, MYPROXY_PASS, (String)WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_PASS)));
-        configuration.setMyProxyUsername(findValue(vals,MYPROXY_USER,(String)WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_USER)));
-        configuration.setTrustedCertLocation(findValue(vals, TRUSTED_CERT_LOCATION, (String)WorkflowInterpretorSkeleton.configurationContext.getProperty(TRUSTED_CERT_LOCATION)));
+        //This null check will fix some test failures
+        if (WorkflowInterpretorSkeleton.configurationContext != null) {
+            configuration.setMyProxyServer(findValue(vals, PROXYSERVER, (String) WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_SERVER)));
+            configuration.setMyProxyPassphrase(findValue(vals, MYPROXY_PASS, (String) WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_PASS)));
+            configuration.setMyProxyUsername(findValue(vals, MYPROXY_USER, (String) WorkflowInterpretorSkeleton.configurationContext.getProperty(MYPROXY_USER)));
+            configuration.setTrustedCertLocation(findValue(vals, TRUSTED_CERT_LOCATION, (String) WorkflowInterpretorSkeleton.configurationContext.getProperty(TRUSTED_CERT_LOCATION)));
+        }
 		return configuration;
 	}
 
