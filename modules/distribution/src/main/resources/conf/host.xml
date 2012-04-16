@@ -4,20 +4,21 @@
         <name>LocalHost</name>
         <host>127.0.0.1</host>
     </server>
+    <!-- Test jobs for steele and forge.
     <server>
-        <name>purdue.teragrid.org</name>
+        <name>steele.purdue.teragrid.org</name>
         <host>steele.purdue.teragrid.org</host>
         <gram.endpoint>tg-steele.rcac.purdue.edu:2119/jobmanager-pbs</gram.endpoint>
         <gridftp.endpoint>gsiftp://tg-data.purdue.teragrid.org:2811/</gridftp.endpoint>
     </server>
 
      <server>
-        <name>ncsa.teragrid.org</name>
+        <name>forge.ncsa.teragrid.org</name>
         <host>forge.ncsa.teragrid.org</host>
         <gram.endpoint>grid-forge.ncsa.xsede.org:2119/jobmanager-pbs</gram.endpoint>
         <gridftp.endpoint>gsiftp://gridftp-forge.ncsa.xsede.org:2811/</gridftp.endpoint>
     </server>
-
+ 	-->
      <server>
         <name>lonestar</name>
         <host>lonestar4.tacc.teragrid.org</host>
