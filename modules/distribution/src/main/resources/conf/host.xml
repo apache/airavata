@@ -36,8 +36,8 @@
      <server>
         <name>trestles</name>
         <host>trestles.sdsc.edu</host>
-        <gram.endpoint>gsiftp://trestles-dm1.sdsc.xsede.org:2811/</gram.endpoint>
-        <gridftp.endpoint>trestles.sdsc.edu:2119/jobmanager-pbs</gridftp.endpoint>
+        <gram.endpoint>trestles.sdsc.edu:2119/jobmanager-pbs</gram.endpoint>
+        <gridftp.endpoint>gsiftp://trestles-dm1.sdsc.xsede.org:2811/</gridftp.endpoint>
     </server>
 
 </servers>
