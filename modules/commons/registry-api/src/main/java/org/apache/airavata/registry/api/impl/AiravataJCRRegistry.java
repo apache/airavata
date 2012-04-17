@@ -310,7 +310,6 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             Node appName = getOrAddNode(hostNode, app.getType().getApplicationName().getStringValue());
             appName.setProperty(XML_PROPERTY_NAME, app.toXML());
             session.save();
-
             result = appName.getIdentifier();
 //            triggerObservers(this);
         } catch (Exception e) {
@@ -436,20 +435,8 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             Node deploymentNode = getDeploymentNode(session);
             Node serviceNode = deploymentNode.getNode(serviceName);
             Node hostNode = serviceNode.getNode(hostName);
-            boolean found = false;
-            List<Node> childNodes = getChildNodes(hostNode);
-            for (Node app:childNodes) {
-                Property prop = app.getProperty(XML_PROPERTY_NAME);
-                ApplicationDeploymentDescription appDesc = ApplicationDeploymentDescription.fromXML(prop.getString());
-                if (appDesc.getType().getApplicationName().getStringValue().matches(applicationName)) {
-                    app.remove();
-                    found = true;
-                }
-            }
-            if (found) {
-                session.save();
-//                triggerObservers(this);
-            }
+            hostNode.remove();
+            session.save();
         } catch (Exception e) {
             throw new DeploymentDescriptionRetrieveException(e);
         } finally {
