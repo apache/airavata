@@ -127,7 +127,7 @@ public class ErrorWindow {
         // and set it to the default if it is still null.
         if (message == null) {
             if (e != null) {
-                message = e.getMessage();
+                message = messageSplitter(e.getMessage());
             }
         }
         if (message == null) {
@@ -207,7 +207,7 @@ public class ErrorWindow {
             printWriter.close();
             String stackTrace = stringWriter.toString();
 
-            JLabel messageLabel = new JLabel(message);
+            JLabel messageLabel = new JLabel(messageSplitter(message));
 
             XBayaTextArea textArea = new XBayaTextArea();
             textArea.setEditable(false);
@@ -246,6 +246,31 @@ public class ErrorWindow {
     private void showInformationDialog(Component parent, String title, String message) {
 
         JOptionPane.showMessageDialog(parent, message, title, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private String messageSplitter(String message){
+        int interval = 150;
+        char[] sAr = message.toCharArray();
+        int i = 0;
+        StringBuffer buffer = new StringBuffer("");
+        if(sAr.length > interval){
+        do{
+            String subString = "";
+            if(i + interval > message.length()){
+             subString = message.substring(i,message.length());
+            }else{
+             subString = message.substring(i, i + interval);
+            }
+            buffer.append(subString);
+            if(!subString.contains("\n")){
+               buffer.append("\n");
+            }
+            i = i + interval;
+        }while(i < sAr.length);
+            return buffer.toString();
+        }else{
+            return message;
+        }
     }
 
 }
