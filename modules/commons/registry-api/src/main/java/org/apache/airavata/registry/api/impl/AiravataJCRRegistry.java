@@ -482,10 +482,10 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             List<Node> childNodes = getChildNodes(serviceNode);
             for (Node hostNode:childNodes) {
 				HostDescription hostDescriptor = getHostDescription(hostNode.getName());
-				result.put(hostDescriptor, new ArrayList<ApplicationDeploymentDescription>());
 	            List<Node> childNodes2 = getChildNodes(hostNode);
-	            for (Node app:childNodes2) {
-					Property prop = app.getProperty(XML_PROPERTY_NAME);
+                for (Node app:childNodes2) {
+                    result.put(hostDescriptor, new ArrayList<ApplicationDeploymentDescription>());
+                    Property prop = app.getProperty(XML_PROPERTY_NAME);
 					result.get(hostDescriptor).add(ApplicationDeploymentDescription.fromXML(prop.getString()));
 				}
 			}
