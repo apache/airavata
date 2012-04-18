@@ -63,6 +63,8 @@ public class InputConfigurationDialog {
 
     private XBayaTextArea metadataTextArea;
 
+    private XBayaTextField visibilityTextField;
+
     /**
      * Constructs an InputConfigurationWindow.
      * 
@@ -101,6 +103,9 @@ public class InputConfigurationDialog {
 
         String name = this.node.getID(); // Show ID.
         this.nameTextField.setText(name);
+
+        String visibility = Boolean.toString(this.node.isVisibility());
+        this.visibilityTextField.setText(visibility);
 
         this.descriptionTextArea.setText(this.node.getDescription());
         Object value = this.node.getDefaultValue();
@@ -145,6 +150,7 @@ public class InputConfigurationDialog {
         String description = this.descriptionTextArea.getText();
         String valueString = textComponent.getText();
         String metadataText = this.metadataTextArea.getText();
+        String visibilityText = this.visibilityTextField.getText();
 
         if (name.length() == 0) {
             String warning = "The name cannot be empty.";
@@ -186,6 +192,7 @@ public class InputConfigurationDialog {
         this.node.setDescription(description);
         this.node.setDefaultValue(value);
         this.node.setMetadata(metadata);
+        this.node.setVisibility(Boolean.parseBoolean(visibilityText));
         hide();
         this.engine.getGUI().getGraphCanvas().repaint();
     }
@@ -208,16 +215,21 @@ public class InputConfigurationDialog {
         this.metadataTextArea = new XBayaTextArea();
         XBayaLabel metadataLabel = new XBayaLabel("Metadata", this.metadataTextArea);
 
+        this.visibilityTextField = new XBayaTextField();
+        XBayaLabel visibilityLabel = new XBayaLabel("Visibility", this.visibilityTextField);
+
         this.gridPanel = new GridPanel();
         this.gridPanel.add(nameLabel);
         this.gridPanel.add(this.nameTextField);
+        this.gridPanel.add(visibilityLabel);
+        this.gridPanel.add(this.visibilityTextField);
         this.gridPanel.add(descriptionLabel);
         this.gridPanel.add(this.descriptionTextArea);
         this.gridPanel.add(this.valueLabel);
         this.gridPanel.add(this.valueTextField);
         this.gridPanel.add(metadataLabel);
         this.gridPanel.add(this.metadataTextArea);
-        this.gridPanel.layout(4, 2, 3, 1);
+        this.gridPanel.layout(5, 2, 3, 1);
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {

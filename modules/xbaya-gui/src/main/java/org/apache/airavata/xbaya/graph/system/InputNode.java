@@ -48,11 +48,15 @@ public class InputNode extends ParameterNode {
 
     private static final String VALUE_TAG_NAME = "value";
 
+    private static final String VISIBILITY_TAG_NAME = "visibility";
+
     private static final Logger logger = LoggerFactory.getLogger(InputNode.class);
 
     private Object defaultValue;
 
     private InputNodeGUI gui;
+
+    private boolean visibility;
 
     /**
      * Creates an InputNode.
@@ -61,6 +65,8 @@ public class InputNode extends ParameterNode {
      */
     public InputNode(Graph graph) {
         super(graph);
+        // Default value for visibility when creating a new node is true
+        visibility = true;
     }
 
     /**
@@ -81,6 +87,14 @@ public class InputNode extends ParameterNode {
             this.gui = new InputNodeGUI(this);
         }
         return this.gui;
+    }
+
+    public boolean isVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(boolean visibility) {
+        this.visibility = visibility;
     }
 
     /**
@@ -277,6 +291,23 @@ public class InputNode extends ParameterNode {
             }
             // this.defaultValue = element.requiredText();
         }
+        element = configElement.element(null, VISIBILITY_TAG_NAME);
+        if (element != null) {
+            // It might be a String or XmlElement
+            for (Object child : element.children()) {
+                if (child instanceof String) {
+                    if (((String) child).trim().length() == 0) {
+                        // Skip white space before xml element.
+                        continue;
+                    }
+                }
+                this.visibility = Boolean.parseBoolean((String) child);
+                break;
+            }
+            // this.defaultValue = element.requiredText();
+        } else {
+            this.visibility = true;
+        }
     }
 
     @Override
@@ -293,6 +324,9 @@ public class InputNode extends ParameterNode {
             XmlElement element = configElement.addElement(GraphSchema.NS, VALUE_TAG_NAME);
             element.addChild(this.defaultValue);
         }
+       XmlElement element = configElement.addElement(GraphSchema.NS,
+                    VISIBILITY_TAG_NAME);
+        element.addChild(Boolean.toString(this.visibility));
         return configElement;
     }
 

@@ -152,6 +152,10 @@ public class DynamicWorkflowRunnerWindow {
                     valueString = value.toString();
                 }
             }
+
+            if (!node.isVisibility()) {
+                paramField.setEditable(false);
+            }
             paramField.setText(valueString);
             this.parameterPanel.add(nameLabel);
             this.parameterPanel.add(typeField);
