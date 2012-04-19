@@ -48,6 +48,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     private XBayaTextField txtProjectAccountNumber;
     private XBayaTextField txtProjectAccountDescription;
     private XBayaTextField txtQueueType;
+    private XBayaTextField txtStaticWorkingDirectory;
     private XBayaTextField txtMaxWallTime = new XBayaTextField();
     private XBayaTextField txtMinMemory = new XBayaTextField();
     private XBayaTextField txtCpuCount = new XBayaTextField();
@@ -111,10 +112,10 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         
     	GridPanel panel = new GridPanel();
 		txtProjectAccountNumber = new XBayaTextField();
-		
 		txtProjectAccountDescription = new XBayaTextField();
-		
-		txtQueueType = new XBayaTextField();
+
+        txtStaticWorkingDirectory = new XBayaTextField();
+        txtQueueType = new XBayaTextField();
         txtMaxWallTime = new XBayaTextField();
         txtMinMemory = new XBayaTextField();
         txtCpuCount = new XBayaTextField();
@@ -127,7 +128,8 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		XBayaLabel lbljobType = new XBayaLabel("Job Type",cmbJobType);
 		XBayaLabel lblProjectAccountNumber = new XBayaLabel("Project Account Number",txtProjectAccountNumber);
 		XBayaLabel lblProjectAccountDescription = new XBayaLabel("Project Account Description",txtProjectAccountDescription);
-		XBayaLabel lblQueueType = new XBayaLabel("Queue Type",txtQueueType);
+        XBayaLabel lblStaticWorkingDirectory = new XBayaLabel("Static Working Directory",txtStaticWorkingDirectory);
+        XBayaLabel lblQueueType = new XBayaLabel("Queue Type",txtQueueType);
 		XBayaLabel lblMaxWallTime = new XBayaLabel("Max Wall Time",txtMaxWallTime);
 		XBayaLabel lblCpuCount = new XBayaLabel("CPU Count",txtCpuCount);
 		XBayaLabel lblProcessorPerNode = new XBayaLabel("Processor Per Node", txtProcessorsPerNode);
@@ -139,6 +141,8 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		panel.add(txtProjectAccountNumber);
 		panel.add(lblProjectAccountDescription);
 		panel.add(txtProjectAccountDescription);
+        panel.add(lblStaticWorkingDirectory);
+        panel.add(txtStaticWorkingDirectory);
 		panel.add(lblQueueType);
 		panel.add(txtQueueType);
         panel.add(lblMaxWallTime);
@@ -227,6 +231,10 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 			getGramApplicationDescriptionType().setProcessorsPerNode(
 					Integer.parseInt(txtProcessorsPerNode.getText()));
 		}
+        if (isValueNotEmpty(txtStaticWorkingDirectory.getText())) {
+            getGramApplicationDescriptionType().setStaticWorkingDirectory(
+                    txtStaticWorkingDirectory.getText());
+        }
 		if (isValueNotEmpty(txtMinMemory.getText())) {
 			getGramApplicationDescriptionType().setMinMemory(
 					Integer.parseInt(txtMinMemory.getText()));
@@ -269,6 +277,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 					.getJobType().toString());
 		}
     	txtMaxWallTime.setText(String.valueOf(gadType.getMaxWallTime()));
+    	txtStaticWorkingDirectory.setText(String.valueOf(gadType.getStaticWorkingDirectory()));
         txtCpuCount.setText(String.valueOf(gadType.getCpuCount()));
         txtProcessorsPerNode.setText(String.valueOf(gadType.getProcessorsPerNode()));
         txtMinMemory.setText(String.valueOf(gadType.getMinMemory()));
