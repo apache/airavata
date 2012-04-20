@@ -25,10 +25,13 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -223,6 +226,13 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                     setExecutablePath(txtExecPath.getText());
                 }
             });
+            txtExecPath.getTextField().addFocusListener(new FocusAdapter() {
+            	@Override
+            	public void focusLost(FocusEvent e) {
+            		super.focusLost(e);
+            		updateTempDirWithExecPath(txtExecPath.getText());
+            	}
+			});
             txtExecPath.setColumns(10);
             JButton execBrowse=new JButton("Browse...");
             execBrowse.addActionListener(new ActionListener(){
@@ -519,8 +529,22 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
     public void setExecutablePath(String executablePath) {
     	getApplicationDescriptionType().setExecutableLocation(executablePath);
+    	updateTempDirWithExecPath(executablePath);
         updateDialogStatus();
     }
+
+	private void updateTempDirWithExecPath(String executablePath) {
+		if (!executablePath.trim().equals("") && (!txtExecPath.getSwingComponent().isFocusOwner()) && 
+				(getApplicationDescriptionType().getScratchWorkingDirectory()==null || getApplicationDescriptionType().getScratchWorkingDirectory().trim().equalsIgnoreCase(""))){
+    		String temp_location = "workflow_runs";
+			String tempDir = new File(new File(executablePath).getParentFile(),temp_location).toString();
+			txtTempDir.setText(tempDir);
+    		txtTempDir.getSwingComponent().setSelectionStart(tempDir.length()-temp_location.length());
+    		txtTempDir.getSwingComponent().setSelectionEnd(tempDir.length());
+    		setTempDir(txtTempDir.getText());
+    		txtTempDir.getSwingComponent().requestFocus();
+    	}
+	}
 
     public String getTempDir() {
         return getApplicationDescriptionType().getScratchWorkingDirectory();
