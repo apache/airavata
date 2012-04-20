@@ -278,6 +278,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		}
     	txtMaxWallTime.setText(String.valueOf(gadType.getMaxWallTime()));
     	txtStaticWorkingDirectory.setText(String.valueOf(gadType.getStaticWorkingDirectory()));
+        txtStaticWorkingDirectory.setText(String.valueOf(gadType.getStaticWorkingDirectory())==null? "":String.valueOf(gadType.getStaticWorkingDirectory()));
         txtCpuCount.setText(String.valueOf(gadType.getCpuCount()));
         txtProcessorsPerNode.setText(String.valueOf(gadType.getProcessorsPerNode()));
         txtMinMemory.setText(String.valueOf(gadType.getMinMemory()));
