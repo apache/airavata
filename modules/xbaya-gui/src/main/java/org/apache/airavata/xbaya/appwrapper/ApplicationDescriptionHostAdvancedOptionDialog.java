@@ -88,7 +88,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     private void initGUI() {
         setTitle("Host Description Advance Options");
         setModal(true);
-        setBounds(100, 100, 400, 300);
+        setBounds(100, 100, 500, 500);
         setLocationRelativeTo(null);
         GridPanel buttonPane = new GridPanel();
         okButton = new JButton("Update");
@@ -156,7 +156,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		panel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         buttonPane.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
-        SwingUtil.layoutToGrid(panel.getSwingComponent(), 8, 2, SwingUtil.WEIGHT_NONE, 1);
+        SwingUtil.layoutToGrid(panel.getSwingComponent(), 9, 2, SwingUtil.WEIGHT_NONE, 1);
         
         buttonPane.add(okButton);
         buttonPane.add(cancelButton);
@@ -277,8 +277,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 					.getJobType().toString());
 		}
     	txtMaxWallTime.setText(String.valueOf(gadType.getMaxWallTime()));
-    	txtStaticWorkingDirectory.setText(String.valueOf(gadType.getStaticWorkingDirectory()));
-        txtStaticWorkingDirectory.setText(String.valueOf(gadType.getStaticWorkingDirectory())==null? "":String.valueOf(gadType.getStaticWorkingDirectory()));
+		txtStaticWorkingDirectory.setText(gadType.getStaticWorkingDirectory()==null? "":String.valueOf(gadType.getStaticWorkingDirectory()));
         txtCpuCount.setText(String.valueOf(gadType.getCpuCount()));
         txtProcessorsPerNode.setText(String.valueOf(gadType.getProcessorsPerNode()));
         txtMinMemory.setText(String.valueOf(gadType.getMinMemory()));
