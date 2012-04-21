@@ -9,33 +9,26 @@ The Apache Software Foundation (http://www.apache.org/).
 ==  Version 2.0, in this case for the Apache Airavata distribution.
 =========================================================================
 
-==========================================================================================
-==========================================================================================
+============================================================================
 
 This product includes unmodified, binary redistributions of software (XPP3,
 weps-beans, pegasuswebservice, mapReduce-service-client, xsul, xutil, wsmg)
 developed by Indiana University (http://www.extreme.indiana.edu/).
 
-==========================================================================================
-==========================================================================================
+===============================================================================
 
 This product includes unmodified, binary redistributions of software (slf4j) 
 developed by QOS.ch (http://slf4j.org), which is licensed under the MIT license.
 An original copy of the license can be found at http://slf4j.org/license.html
 
-==========================================================================================
-==========================================================================================
+=================================================================================
 
 This product includes software developed by the Dom4j project 
 (http://www.dom4j.org), licensed under BSD style license:
 
-
-==========================================================================================
-==========================================================================================
-
 =========================================================================
-==  WSDL4J Notice                                                      ==
-=========================================================================
+
+WSDL4J Notice:
 
 The Program includes all or portions of the following software which is
 subject to the Common Public License ("CPL Code").  This software
@@ -45,14 +38,8 @@ the WSDL4J project.
 You may download the source version of the WSDL4J component at
 http://sourceforge.net/projects/wsdl4j
 
-==========================================================================================
-==========================================================================================
-Jackrabbit Standalone
-Copyright 2004-2011 The Apache Software Foundation
-
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
-
+===========================================================================
+Jackrabbit Notice:
 
 Based on source code originally developed by
 Day Software (http://www.day.com/).
@@ -89,19 +76,9 @@ Apache Harmony project. The following notice covers the Harmony sources:
     Intel Corporation and are licensed to the Apache Software
     Foundation under the "Software Grant and Corporate Contribution
     License Agreement", informally known as the "Intel Harmony CLA".
-==========================================================================================
-==========================================================================================
 
- =========================================================================
-   ==  NOTICE file corresponding to section 4(d) of the Apache License,   ==
-   ==  Version 2.0, in this case for the Apache Xerces Java distribution. ==
-   =========================================================================
-
-   Apache Xerces Java
-   Copyright 1999-2007 The Apache Software Foundation
-
-   This product includes software developed at
-   The Apache Software Foundation (http://www.apache.org/).
+============================================================================
+   Apache Xerces Java Notice:
 
    Portions of this software were originally based on the following:
      - software copyright (c) 1999, IBM Corporation., http://www.ibm.com.
@@ -109,16 +86,10 @@ Apache Harmony project. The following notice covers the Harmony sources:
      - voluntary contributions made by Paul Eng on behalf of the
        Apache Software Foundation that were originally developed at iClick, Inc.,
        software copyright (c) 1999.
-==========================================================================================
-==========================================================================================
 
-   =========================================================================
-   ==  NOTICE file corresponding to section 4(d) of the Apache License,   ==
-   ==  Version 2.0, in this case for the Apache XmlBeans distribution.    ==
-   =========================================================================
+==================================================================================
 
-   This product includes software developed by
-   The Apache Software Foundation (http://www.apache.org/).
+Apache XmlBeans Notice: 
 
    Portions of this software were originally based on the following:
      - software copyright (c) 2000-2003, BEA Systems, <http://www.bea.com/>.
@@ -142,16 +113,9 @@ Apache Harmony project. The following notice covers the Harmony sources:
     - JSR-173 Streaming API for XML from http://sourceforge.net/projects/xmlpullparser/,
       Copyright 2005 BEA under the terms of the Apache Software License 2.0
 ==========================================================================================
-==========================================================================================
 
-=========================================================================
-==  NOTICE file corresponding to the section 4 d of                    ==
-==  the Apache License, Version 2.0,                                   ==
-==  in this case for the Apache Axis2 distribution.                    ==
-=========================================================================
+Apache Axis2 Notice:
 
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
 Portions Copyright 2006 International Business Machines Corp.
 Portions Copyright 2005-2007 WSO2, Inc.
 
@@ -170,38 +134,18 @@ Portions of the included xmlbeans library were originally based on the following
 Please read the different LICENSE files present in the lib directory of
 this distribution.
 
-==========================================================================================
-==========================================================================================
+====================================================================================
 
-
-// ------------------------------------------------------------------
-// NOTICE file corresponding to the section 4d of The Apache License,
-// Version 2.0, in this case for Commons Logging
-// ------------------------------------------------------------------
-
-Commons Logging
-Copyright 2001-2007 The Apache Software Foundation
+Apache Commons Logging Notice:
 
 This product includes/uses software(s) developed by 'an unknown organization'
   - Unnamed - avalon-framework:avalon-framework:jar:4.1.3
   - Unnamed - log4j:log4j:jar:1.2.12
   - Unnamed - logkit:logkit:jar:1.0.1
 
-==========================================================================================
-==========================================================================================
+====================================================================================
 
-
-
-=========================================================================
-==  NOTICE file corresponding to section 4(d) of the Apache License,
-==  Version 2.0, in this case for the Apache Derby distribution.
-==
-==  DO NOT EDIT THIS FILE DIRECTLY. IT IS GENERATED
-==  BY THE buildnotice TARGET IN THE TOP LEVEL build.xml FILE.
-==
-=========================================================================
-
-Apache Derby
+Apache Derby Notice:
 
 Portions of Derby were originally developed by
 International Business Machines Corporation and are
@@ -216,9 +160,7 @@ and are placed here unaltered.
 
 (C) Copyright IBM Corp. 2003. 
 
-
-=========================================================================
-
+=======================
 
 The portion of the functionTests under 'nist' was originally 
 developed by the National Institute of Standards and Technology (NIST), 
@@ -227,10 +169,7 @@ International Business Machines Corporation in accordance with the NIST
 Software Acknowledgment and Redistribution document at
 http://www.itl.nist.gov/div897/ctg/sql_form.htm
 
-
-
-=========================================================================
-
+==========================
 
 The JDBC apis for small devices and JDBC3 (under java/stubs/jsr169 and
 java/stubs/jdbc3) were produced by trimming sources supplied by the
@@ -242,18 +181,9 @@ Intel Corporation and are licensed to the Apache Software
 Foundation under the "Software Grant and Corporate Contribution
 License Agreement", informally known as the "Intel Harmony CLA".
 
-==========================================================================================
-==========================================================================================
+=============================================================================
 
-
-   =========================================================================
-   ==  NOTICE file corresponding to the section 4 d of                    ==
-   ==  the Apache License, Version 2.0,                                   ==
-   ==  in this case for the Apache Woden distribution.                    ==
-   =========================================================================
-
-   This product includes software developed by
-   The Apache Software Foundation (http://www.apache.org/).
+Apache Woden Notice:
 
    This product also includes software developed by :
    
@@ -266,10 +196,7 @@ License Agreement", informally known as the "Intel Harmony CLA".
    Please read the different LICENSE files present in the root directory of
    this distribution.
 
-
-==========================================================================================
-==========================================================================================
-
+===============================================================================
 
 This product currently only contains code developed by authors
 of specific components, as identified by the source code files.
@@ -280,36 +207,18 @@ classes.
 For additional credits (generally to people who reported problems)
 see CREDITS file.
 
+================================================================================
 
-==========================================================================================
-==========================================================================================
-
-   =========================================================================
-   ==  NOTICE file corresponding to section 4(d) of the Apache License,   ==
-   ==  Version 2.0, in this case for the Apache xml-commons xml-apis      ==
-   ==  distribution.                                                      ==
-   =========================================================================
-
-   This product includes software developed by
-   The Apache Software Foundation (http://www.apache.org/).
+Apache xml-commons xml-apis Notice:
 
    Portions of this software were originally based on the following:
      - software copyright (c) 1999, IBM Corporation., http://www.ibm.com.
      - software copyright (c) 1999, Sun Microsystems., http://www.sun.com.
      - software copyright (c) 2000 World Wide Web Consortium, http://www.w3.org
 
-==========================================================================================
-==========================================================================================
-
-=========================================================================
-==  Xalan Notice                                                      ==
 =========================================================================
 
-Apache Xalan (Xalan serializer)
-Copyright 1999-2006 The Apache Software Foundation
-
-This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
+Apache  Xalan Notice: 
 
 Portions of this software was originally based on the following:
     - software copyright (c) 1999-2002, Lotus Development Corporation.,
@@ -319,15 +228,10 @@ Portions of this software was originally based on the following:
     - software copyright (c) 2003, IBM Corporation., 
     http://www.ibm.com.
 
-
-==========================================================================================
-==========================================================================================
-
 =========================================================================
-==  Woodstox Notice                                                    ==
-=========================================================================
+
+Woodstox Notice: 
 
 This product includes software developed by the Woodstox Project 
 (http://woodstox.codehaus.org/)
-
 
