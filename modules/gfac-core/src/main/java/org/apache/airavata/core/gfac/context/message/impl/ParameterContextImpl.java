@@ -21,8 +21,8 @@
 
 package org.apache.airavata.core.gfac.context.message.impl;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
@@ -37,7 +37,7 @@ public class ParameterContextImpl implements MessageContext<ActualParameter> {
     private Map<String, ActualParameter> value;
 
     public ParameterContextImpl() {
-        this.value = new HashMap<String, ActualParameter>();
+        this.value = new LinkedHashMap<String, ActualParameter>();
     }
 
     public Iterator<String> getNames() {
@@ -57,6 +57,10 @@ public class ParameterContextImpl implements MessageContext<ActualParameter> {
 
     public void add(String name, ActualParameter value) {
         this.value.put(name, value);
+    }
+
+    public void remove(String name) {
+        this.value.remove(name);
     }
 
     public void setValue(String name, ActualParameter value) {

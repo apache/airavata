@@ -87,7 +87,7 @@ public class GridFtpOutputStaging extends PostExecuteChain {
                             if (hostDescription instanceof GlobusHostType) {
                                 gridFTPTransfer(context, uri, srcFilePath);
                             } else if (GfacUtils.isLocalHost(hostDescription.getHostAddress())) {
-                                updateFile(context, uri, srcFilePath);
+                                uploadFile(context, uri, srcFilePath);
                             }
                         }
                     }
@@ -126,11 +126,11 @@ public class GridFtpOutputStaging extends PostExecuteChain {
 
     }
 
-    private void updateFile(InvocationContext context, URI dest, String localFile) throws SecurityException,
+    private void uploadFile(InvocationContext context, URI dest, String localFile) throws SecurityException,
             ToolsException {
         GridFtp ftp = new GridFtp();
         GSSCredential gssCred = ((GSISecurityContext) context.getSecurityContext(MYPROXY_SECURITY_CONTEXT))
                 .getGssCredentails();
-        ftp.updateFile(dest, gssCred, new File(localFile));
+        ftp.uploadFile(dest, gssCred, new File(localFile));
     }
 }

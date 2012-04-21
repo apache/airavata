@@ -48,7 +48,7 @@ import org.apache.xmlbeans.XmlException;
 
 /**
  * {@link LocalProvider} will execute jobs (application) on local machine.
- * 
+ *
  */
 public class LocalProvider extends AbstractProvider {
 
@@ -230,4 +230,11 @@ public class LocalProvider extends AbstractProvider {
             throw new ProviderException(io.getMessage(), io);
         }
     }
+
+	@Override
+	protected Map<String, ?> processInput(InvocationContext invocationContext)
+			throws ProviderException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

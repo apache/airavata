@@ -184,7 +184,7 @@ public class SSHProvider extends AbstractProvider {
             NameValuePairType[] env = app.getApplicationEnvironmentArray();
 
             Map<String, String> nv = new HashMap<String, String>();
-            if (env != null) {                
+            if (env != null) {
                 for (int i = 0; i < env.length; i++) {
                     String key = env[i].getName();
                     String value = env[i].getValue();
@@ -271,4 +271,11 @@ public class SSHProvider extends AbstractProvider {
             log.warn("Cannot Close SSH Connection");
         }
     }
+
+	@Override
+	protected Map<String, ?> processInput(InvocationContext invocationContext)
+			throws ProviderException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

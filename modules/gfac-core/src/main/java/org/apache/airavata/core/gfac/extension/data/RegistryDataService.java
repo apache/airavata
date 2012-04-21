@@ -56,7 +56,7 @@ public class RegistryDataService extends DataServiceChain {
             /*
              * Working dir
              */
-            if (appDesc.getStaticWorkingDirectory() == null) {
+            if (appDesc.getStaticWorkingDirectory() == null || "null".equals(appDesc.getStaticWorkingDirectory())) {
                 String date = new Date().toString();
                 date = date.replaceAll(" ", "_");
                 date = date.replaceAll(":", "_");
@@ -70,7 +70,7 @@ public class RegistryDataService extends DataServiceChain {
             /*
              * Input and Output Directory
              */
-            if (appDesc.getInputDataDirectory() == null || "".equals(appDesc.getInputDataDirectory())) {
+            if (appDesc.getInputDataDirectory() == null || "".equals(appDesc.getInputDataDirectory()) ) {
                 appDesc.setInputDataDirectory(appDesc.getStaticWorkingDirectory() + File.separator + "inputData");
             }
             if (appDesc.getOutputDataDirectory() == null || "".equals(appDesc.getOutputDataDirectory())) {

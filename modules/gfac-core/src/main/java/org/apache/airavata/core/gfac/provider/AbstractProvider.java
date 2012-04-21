@@ -24,8 +24,7 @@ package org.apache.airavata.core.gfac.provider;
 import java.util.Map;
 
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
-import org.apache.airavata.core.gfac.exception.GfacException;
-import org.apache.airavata.core.gfac.exception.ProviderException;
+import org.apache.airavata.core.gfac.exception.*;
 import org.apache.airavata.core.gfac.notification.GFacNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +52,8 @@ public abstract class AbstractProvider implements Provider {
 
     public Map<String, ?> execute(InvocationContext invocationContext) throws ProviderException {
 
-        /*
+    	processInput(invocationContext);
+    	/*
          * Setup necessary environment
          */
         setupEnvironment(invocationContext);
@@ -82,4 +82,6 @@ public abstract class AbstractProvider implements Provider {
     protected abstract void executeApplication(InvocationContext invocationContext) throws ProviderException;
 
     protected abstract Map<String, ?> processOutput(InvocationContext invocationContext) throws ProviderException;
+
+    protected abstract Map<String, ?> processInput(InvocationContext invocationContext) throws ProviderException;
 }
