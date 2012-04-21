@@ -123,7 +123,7 @@ public class GfacAPI {
             } else if ("URIArray".equals(parameter.getParameterType().getName())) {
                 actualParameter.getType().changeType(URIArrayType.type);
             }
-            outputParam.add(parameter.getParameterName(), new ActualParameter());
+            outputParam.add(parameter.getParameterName(), actualParameter);
         }
 
         invocationContext.setInput(inputParam);

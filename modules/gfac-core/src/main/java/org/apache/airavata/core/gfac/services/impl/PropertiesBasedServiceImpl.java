@@ -27,9 +27,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.airavata.common.registry.api.Registry;
 import org.apache.airavata.common.registry.api.impl.JCRRegistry;
-import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
@@ -42,6 +40,7 @@ import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.utils.LogUtils;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -52,7 +51,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This generic service implementation will load Registry service and Data Catalog from property file using (Apache
  * Commons-Configuration). It selects provider and execute it base on execution context.
- * 
+ *
  */
 public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
@@ -117,7 +116,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     /**
      * Constructor with passing file
-     * 
+     *
      * @param prop
      */
     public PropertiesBasedServiceImpl(String fileName) {
@@ -127,7 +126,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.airavata.core.gfac.services.GenericService#init(org.apache .airavata.core.gfac.context.
      * InvocationContext)
      */
@@ -150,7 +149,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.airavata.core.gfac.services.GenericService#dispose(org.apache .airavata.core.gfac.context.
      * InvocationContext)
      */
@@ -258,7 +257,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.airavata.core.gfac.services.GenericService#getScheduler(org .apache.airavata.core.gfac.context
      * .InvocationContext)
      */
@@ -294,7 +293,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.airavata.core.gfac.services.GenericService#getPreExecutionSteps (org.ogce.gfac
      * .context.InvocationContext)
      */
@@ -308,7 +307,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.airavata.core.gfac.services.GenericService#getPostExecuteSteps (org.ogce.gfac
      * .context.InvocationContext)
      */
@@ -322,7 +321,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.apache.airavata.core.gfac.services.impl.OGCEGenericService#getDataChains
      * (org.apache.airavata.core.gfac.context .InvocationContext)
      */
@@ -344,7 +343,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     }
 
     /**
-     * 
+     *
      * @param propertyName
      * @param required
      * @return
@@ -361,7 +360,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     }
 
     /**
-	 * 
+	 *
 	 */
     @SuppressWarnings("unchecked")
     private <T> T[] loadClassFromProperties(String propertyName, Class<? extends ExitableChain> type)

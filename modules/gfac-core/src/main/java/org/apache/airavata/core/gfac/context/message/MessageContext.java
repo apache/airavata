@@ -24,11 +24,11 @@ package org.apache.airavata.core.gfac.context.message;
 import java.util.Iterator;
 
 /**
- * 
+ *
  * MessageContext represents a message that could be used by all provider or in specific provider. Mostly, this context
  * will be stored in the format of <key, value> pair. For example, MessageContext<AbstractParameter> represents a
  * message for input or output as a parameter to the service.
- * 
+ *
  * @param <T>
  *            class that associate with this message
  */
@@ -36,14 +36,14 @@ public interface MessageContext<T> {
 
     /**
      * Get list of names in the context
-     * 
+     *
      * @return
      */
     public Iterator<String> getNames();
 
     /**
      * Return value associated with the key
-     * 
+     *
      * @param name
      * @return value
      */
@@ -51,7 +51,7 @@ public interface MessageContext<T> {
 
     /**
      * Return value associated with the key as a String object
-     * 
+     *
      * @param name
      * @return string represents value
      */
@@ -59,15 +59,21 @@ public interface MessageContext<T> {
 
     /**
      * Add new object associated with the key
-     * 
+     *
      * @param name
      * @param value
      */
     void add(String name, T value);
 
     /**
+     *
+     * @param name
+     * @param value
+     */
+    void remove(String name);
+    /**
      * Update the current value associated with the key
-     * 
+     *
      * @param name
      * @param value
      */

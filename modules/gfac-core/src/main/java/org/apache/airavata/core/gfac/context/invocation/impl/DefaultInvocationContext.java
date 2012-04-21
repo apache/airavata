@@ -22,6 +22,7 @@
 package org.apache.airavata.core.gfac.context.invocation.impl;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.airavata.core.gfac.context.invocation.ExecutionContext;
@@ -41,8 +42,8 @@ public class DefaultInvocationContext implements InvocationContext {
     private String serviceName;
     private ExecutionContext executionContext;
     private ExecutionDescription gfacContext;
-    private Map<String, MessageContext<?>> messageContextMap = new HashMap<String, MessageContext<?>>();
-    private Map<String, SecurityContext> securityContextMap = new HashMap<String, SecurityContext>();
+    private Map<String, MessageContext<?>> messageContextMap = new LinkedHashMap<String, MessageContext<?>>();
+    private Map<String, SecurityContext> securityContextMap = new LinkedHashMap<String, SecurityContext>();
 
     public void setServiceName(String name) {
         this.serviceName = name;

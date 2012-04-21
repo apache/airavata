@@ -84,7 +84,7 @@ public class GramRSLGenerator {
             jobAttr.setMaxWallTime(app.getMaxWallTime());
             jobAttr.set("proxy_timeout", "1");
         } else {
-            jobAttr.setMaxWallTime(29);
+            jobAttr.setMaxWallTime(30);
         }
 
         if (app.getStandardInput() != null && !"".equals(app.getStandardInput())) {
@@ -97,10 +97,10 @@ public class GramRSLGenerator {
             }
         }
 
-        if (app.getNodeCount() > 1) {
+        if (app.getNodeCount() > 0) {
             jobAttr.set("hostCount", String.valueOf(app.getNodeCount()));
         }
-        if (app.getCpuCount() > 1) {
+        if (app.getCpuCount() > 0) {
             log.info("Setting number of procs to " + app.getCpuCount());
             jobAttr.setNumProcs(app.getCpuCount());
         }
@@ -135,8 +135,6 @@ public class GramRSLGenerator {
         } else if (jobType.equalsIgnoreCase(JobType.CONDOR.toString())) {
             jobAttr.setJobType(GramAttributes.JOBTYPE_CONDOR);
         }
-
-        // TODO rsl parameter & urgency/SPRUCE
 
         return jobAttr;
     }

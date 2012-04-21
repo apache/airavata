@@ -30,6 +30,8 @@ import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.message.MessageContext;
+import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.context.security.SecurityContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.exception.JobSubmissionFault;
@@ -44,6 +46,9 @@ import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.StringParameterType;
+import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.xmlbeans.XmlException;
 import org.globus.gram.GramAttributes;
 import org.globus.gram.GramException;
@@ -117,15 +122,15 @@ public class GramProvider extends AbstractProvider {
         GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
 
         log.info("Searching for Gate Keeper");
-        
-        
-        String tmp[] = host.getGlobusGateKeeperEndPointArray();         
+
+
+        String tmp[] = host.getGlobusGateKeeperEndPointArray();
         if (tmp == null || tmp.length == 0) {
             gateKeeper = host.getHostAddress();
         }else{
             /*
              * TODO: algorithm for correct gatekeeper selection
-             */    
+             */
             gateKeeper = tmp[0];
         }
         log.info("Using Globus GateKeeper " + gateKeeper);
@@ -287,7 +292,7 @@ public class GramProvider extends AbstractProvider {
                     throw new ProviderException("URI is malformatted:" + e.getMessage(), e);
                 }
             }
-            
+
             /*
              * If the execution reach here, all GridFTP Endpoint is failed.
              */
@@ -302,4 +307,47 @@ public class GramProvider extends AbstractProvider {
         }
 
     }
+
+	@Override
+	protected Map<String, ?> processInput(InvocationContext invocationContext)
+            throws ProviderException {
+        MessageContext inputNew = new ParameterContextImpl();
+		MessageContext<Object> input = invocationContext.getInput();
+        for (Iterator<String> iterator = input.getNames(); iterator.hasNext();) {
+			String paramName = iterator.next();
+			String paramValue = input.getStringValue(paramName);
+			ActualParameter actualParameter = (ActualParameter) input
+					.getValue(paramName);
+			//TODO: Review this with type
+			if ("URI".equals(actualParameter.getType().getType().toString())) {
+				if(paramValue.startsWith("gsiftp") || paramValue.startsWith("http")){
+					URI gridftpURL;
+					try {
+                        gridftpURL = new URI(paramValue);
+                        GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
+                        ApplicationDeploymentDescriptionType app = invocationContext.getExecutionDescription().getApp().getType();
+                        GridFtp ftp = new GridFtp();
+                        gssContext = (GSISecurityContext) invocationContext.getSecurityContext(MYPROXY_SECURITY_CONTEXT);
+                        GSSCredential gssCred = gssContext.getGssCredentails();
+                        for (String endpoint : host.getGridFTPEndPointArray()) {
+                            URI inputURI = GfacUtils.createGsiftpURI(endpoint, app.getInputDataDirectory());
+                            ftp.uploadFile(gridftpURL, GfacUtils.createGsiftpURI(endpoint, inputURI.getPath() + gridftpURL.getPath()), gssCred);
+                        }
+                        ((URIParameterType) actualParameter.getType()).setValue(gridftpURL.getPath());
+                        log.info("File: " + paramValue + " moved to " + gridftpURL.getPath());
+                    } catch (URISyntaxException e) {
+                        throw new ProviderException(e.getMessage(), e);
+                    } catch (ToolsException e) {
+                        throw new ProviderException(e.getMessage(), e);
+                    } catch (SecurityException e) {
+                        throw new ProviderException(e.getMessage(), e);
+                    }
+
+                }
+                inputNew.add(paramName, actualParameter);
+            }
+		}
+        invocationContext.setInput(inputNew);
+		return null;
+	}
 }

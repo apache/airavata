@@ -61,4 +61,10 @@ public class WorkflowContextImpl implements MessageContext<String> {
         this.value.put(name, value);
     }
 
+	@Override
+	public void remove(String name) {
+		 this.value.remove(name);
+
+	}
+
 }

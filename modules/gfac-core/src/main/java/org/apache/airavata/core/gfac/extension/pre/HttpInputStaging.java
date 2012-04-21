@@ -75,7 +75,7 @@ public class HttpInputStaging extends PreExecuteChain {
                          * Determine scheme
                          */
                         URI uri = URI.create(fileParameter.getValue());
-                        if (uri.getScheme().equalsIgnoreCase("http")) {                            
+                        if (uri.getScheme().equalsIgnoreCase("http")) {
                             /*
                              * Desctination complete URI
                              */
@@ -121,14 +121,14 @@ public class HttpInputStaging extends PreExecuteChain {
                 .getGssCredentails();
 
         GlobusHostType host = (GlobusHostType) context.getExecutionDescription().getHost().getType();
-        
+
         for (String endpoint : host.getGridFTPEndPointArray()) {
             try {
                 URI destURI = GfacUtils.createGsiftpURI(endpoint, remoteLocation);
                 InputStream in = null;
                 try {
                     in = src.toURL().openStream();
-                    ftp.updateFile(destURI, gssCred, in);
+                    ftp.uploadFile(destURI, gssCred, in);
                 } finally {
                     try {
                         if (in != null) {
@@ -142,7 +142,7 @@ public class HttpInputStaging extends PreExecuteChain {
             } catch (ToolsException e) {
                 log.error(e.getMessage(), e);
             }
-        }        
+        }
     }
 
     private void downloadFile(InvocationContext context, URI src, String localFile) throws IOException {
