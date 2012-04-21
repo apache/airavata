@@ -32,7 +32,6 @@ import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
-import org.apache.airavata.core.gfac.context.security.SecurityContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.exception.JobSubmissionFault;
 import org.apache.airavata.core.gfac.exception.ProviderException;
@@ -46,8 +45,6 @@ import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.xmlbeans.XmlException;
 import org.globus.gram.GramAttributes;
@@ -344,8 +341,8 @@ public class GramProvider extends AbstractProvider {
                     }
 
                 }
-                inputNew.add(paramName, actualParameter);
             }
+			inputNew.add(paramName, actualParameter);
 		}
         invocationContext.setInput(inputNew);
 		return null;
