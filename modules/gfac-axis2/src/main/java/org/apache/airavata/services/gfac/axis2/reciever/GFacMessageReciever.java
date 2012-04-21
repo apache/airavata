@@ -168,7 +168,7 @@ public class GFacMessageReciever implements MessageReceiver {
         } catch (XmlException e) {
             e.printStackTrace();
         }
-        Map<Parameter,ActualParameter> actualParameters = new HashMap<Parameter,ActualParameter>();
+        Map<Parameter,ActualParameter> actualParameters = new LinkedHashMap<Parameter,ActualParameter>();
         ServiceDescription serviceDescription = getRegistry(context).getServiceDescription(serviceName);
         ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
         for (Parameter parameter : serviceDescriptionType.getInputParametersArray()) {
