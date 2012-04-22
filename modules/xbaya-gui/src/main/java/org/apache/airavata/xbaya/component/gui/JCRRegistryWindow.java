@@ -146,9 +146,9 @@ public class JCRRegistryWindow {
         this.urlTextField = new XBayaTextField();
         this.usernameTextField = new XBayaTextField();
         this.passwordTextField = new JPasswordField();
-        this.urlTextField.setText(XBayaConstants.REGISTRY_URL.toASCIIString());
-        this.usernameTextField.setText(XBayaConstants.REGISTRY_USERNAME);
-        this.passwordTextField.setText(XBayaConstants.REGISTRY_PASSPHRASE);
+        this.urlTextField.setText(engine.getConfiguration().getRegistryURL().toASCIIString());
+        this.usernameTextField.setText(engine.getConfiguration().getRegistryUserName());
+        this.passwordTextField.setText(engine.getConfiguration().getRegistryPassphrase());
         XBayaLabel urlLabel = new XBayaLabel("URL", this.urlTextField);
         XBayaLabel nameLabel = new XBayaLabel("Username", this.usernameTextField);
         XBayaLabel passLabel = new XBayaLabel("Password", this.usernameTextField);
