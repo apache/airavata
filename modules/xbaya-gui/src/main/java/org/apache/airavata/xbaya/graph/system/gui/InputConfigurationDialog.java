@@ -92,13 +92,13 @@ public class InputConfigurationDialog {
             this.valueLabel.setText("Default value (in XML)");
         }
         this.valueLabel.setLabelFor(textComponent);
-        final int index = 5;
+        final int index = 7;
         this.gridPanel.remove(index);
         this.gridPanel.add(textComponent, index);
         if (knownType) {
-            this.gridPanel.layout(new double[] { 0, 1.0 / 2, 0, 1.0 / 2 }, new double[] { 0, 1 });
+            this.gridPanel.layout(new double[] { 0, 1.0 / 2,0, 0, 1.0 / 2 }, new double[] { 0, 1 });
         } else {
-            this.gridPanel.layout(new double[] { 0, 1.0 / 3, 1.0 / 3, 1.0 / 3 }, new double[] { 0, 1 });
+            this.gridPanel.layout(new double[] { 0, 1.0 / 3,0, 1.0 / 3, 1.0 / 3 }, new double[] { 0, 1 });
         }
 
         String name = this.node.getID(); // Show ID.
@@ -116,6 +116,11 @@ public class InputConfigurationDialog {
             valueString = XMLUtil.xmlElementToString((XmlElement) value);
         } else {
             valueString = value.toString();
+        }
+        if (knownType) {
+            this.valueTextField.setText(valueString);
+        } else {
+            this.valueTextArea.setText(valueString);
         }
         textComponent.setText(valueString);
         XmlElement metadata = this.node.getMetadata();
