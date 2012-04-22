@@ -39,5 +39,12 @@
         <gram.endpoint>trestles.sdsc.edu:2119/jobmanager-pbs</gram.endpoint>
         <gridftp.endpoint>gsiftp://trestles-dm1.sdsc.xsede.org:2811/</gridftp.endpoint>
     </server>
+    
+    <server>
+        <name>ember</name>
+        <host>ember.ncsa.teragrid.org</host>
+        <gram.endpoint>grid-ember.ncsa.teragrid.org:2811/</gram.endpoint>
+        <gridftp.endpoint>gsiftp://grid-ember.ncsa.teragrid.org:2811/</gridftp.endpoint>
+    </server>
 
 </servers>

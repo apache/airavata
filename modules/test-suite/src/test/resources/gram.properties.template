@@ -16,13 +16,50 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-gram.name=
-gram.host=
-gridftp.endpoint=
-globus.endpoints=
-project.name=
+
+# The myproxy server to retrieve the grid credentials
 myproxy.server=
+# Example: XSEDE myproxy server
+#myproxy.server=myproxy.teragrid.org
+
+# The user name and password to fetch grid proxy
 myproxy.username=
 myproxy.password=
-certificate.path=
-scratch.directory=
+
+#Directory with Grid Certification Authority certificates and CRL's
+# The certificates for XSEDE can be downloaded from http://software.xsede.org/security/xsede-certs.tar.gz
+ca.certificates.directory=
+
+# On computational grids, an allocation is awarded with a charge number. On XSEDE, the numbers are typically of
+#  the format TG-DIS123456
+allocation.charge.number=
+
+# The scratch space with ample space to create temporary working directory on target compute cluster
+scratch.working.directory=
+
+# Name, FQDN, and gram and gridftp end points of the remote compute cluster 
+host.commom.name=
+host.fqdn.name=
+gridftp.endpoint=
+gram.endpoints=
+
+# Example compute hosts on XSEDE 
+#host.commom.name=Ranger
+#host.fqdn.name=ranger.tacc.teragrid.org
+#gridftp.endpoint=gsiftp://gridftp.ranger.tacc.teragrid.org:2811/
+#gram.endpoints=gatekeeper.ranger.tacc.teragrid.org:2119/jobmanager-sge
+
+#host.commom.name=Lonestar
+#host.fqdn.name=lonestar4.tacc.teragrid.org
+#gridftp.endpoint=gsiftp://gridftp1.ls4.tacc.utexas.edu:2811/
+#gram.endpoints=gridftp1.ls4.tacc.utexas.edu:2119/jobmanager-sge
+
+#host.commom.name=Trestles
+#host.fqdn.name=trestles.sdsc.teragrid.org
+#gridftp.endpoint=gsiftp://trestles.sdsc.edu:2811/
+#gram.endpoints=trestles.sdsc.edu:2119/jobmanager-pbs
+
+#host.commom.name=Ember
+#host.fqdn.name=ember.ncsa.teragrid.org
+#gridftp.endpoint=grid-ember.ncsa.teragrid.org:2811/
+#gram.endpoints=grid-ember.ncsa.teragrid.org:2120/jobmanager-pbs
