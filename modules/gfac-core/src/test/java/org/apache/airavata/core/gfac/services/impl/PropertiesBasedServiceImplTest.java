@@ -23,6 +23,8 @@ package org.apache.airavata.core.gfac.services.impl;
 
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +44,8 @@ import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType.App
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.StringParameterType;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,13 +77,32 @@ public class PropertiesBasedServiceImplTest {
 		ApplicationName name = ApplicationName.Factory.newInstance();
 		name.setStringValue("EchoLocal");
 		app.setApplicationName(name);
-		app.setExecutableLocation("/bin/echo");
-		app.setScratchWorkingDirectory("/tmp");
-		app.setStaticWorkingDirectory("/tmp");
-		app.setInputDataDirectory("/tmp/input");
-		app.setOutputDataDirectory("/tmp/output");
-		app.setStandardOutput("/tmp/echo.stdout");
-		app.setStandardError("/tmp/echo.stdout");
+		
+		/*
+		 * Use bat file if it is compiled on Windows
+		 */
+		if(SystemUtils.IS_OS_WINDOWS){
+			URL url = this.getClass().getClassLoader().getResource("echo.bat");
+			app.setExecutableLocation(url.getFile());
+		}else{
+			//for unix and Mac
+			app.setExecutableLocation("/bin/echo");	
+		}
+		
+		/*
+		 * Default tmp location
+		 */
+		String tempDir = System.getProperty("java.io.tmpdir");
+		if(tempDir == null){
+			tempDir = "/tmp";
+		}
+		
+		app.setScratchWorkingDirectory(tempDir);
+		app.setStaticWorkingDirectory(tempDir);
+		app.setInputDataDirectory(tempDir + File.separator + "input");
+		app.setOutputDataDirectory(tempDir + File.separator + "output");
+		app.setStandardOutput(tempDir + File.separator + "echo.stdout");
+		app.setStandardError(tempDir + File.separator + "echo.stdout");
 
 		/*
 		 * Service
