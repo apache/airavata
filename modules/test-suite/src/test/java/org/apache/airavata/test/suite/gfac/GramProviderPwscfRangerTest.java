@@ -42,10 +42,10 @@ public class GramProviderPwscfRangerTest {
         properties.load(url.openStream());
         HostDescription host = new HostDescription();
         host.getType().changeType(GlobusHostType.type);
-        host.getType().setHostName(properties.getProperty("gram.name"));
-        host.getType().setHostAddress(properties.getProperty("gram.host"));
+        host.getType().setHostName(properties.getProperty("host.commom.name"));
+        host.getType().setHostAddress(properties.getProperty("host.fqdn.name"));
         ((GlobusHostType) host.getType()).setGridFTPEndPointArray(new String[]{properties.getProperty("gridftp.endpoint")});
-        ((GlobusHostType) host.getType()).setGlobusGateKeeperEndPointArray(new String[]{properties.getProperty("globus.endpoints")});
+        ((GlobusHostType) host.getType()).setGlobusGateKeeperEndPointArray(new String[]{properties.getProperty("gram.endpoints")});
 
         /* Application */
         ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(GramApplicationDeploymentType.type);
@@ -54,13 +54,13 @@ public class GramProviderPwscfRangerTest {
         ApplicationDeploymentDescriptionType.ApplicationName name = appDesc.getType().addNewApplicationName();
         name.setStringValue("MockPwscfMPI");
         app.setExecutableLocation("/share/home/01437/ogce/airavata-test/applications/MockPwscf/pwscf.w");
-        app.setScratchWorkingDirectory(properties.getProperty("scratch.directory"));
+        app.setScratchWorkingDirectory(properties.getProperty("scratch.working.directory"));
         app.setStaticWorkingDirectory("/share/home/01437/ogce/airavata-test/applications/MockPwscf");
         app.setCpuCount(4);
         app.setJobType(MigrationUtil.getJobTypeEnum("MPI"));
         app.setMaxWallTime(9);
         ProjectAccountType projectAccountType = ((GramApplicationDeploymentType) appDesc.getType()).addNewProjectAccount();
-        projectAccountType.setProjectAccountNumber(properties.getProperty("project.name"));
+        projectAccountType.setProjectAccountNumber(properties.getProperty("allocation.charge.number"));
 
         /* Service */
         ServiceDescription serv = new ServiceDescription();
@@ -110,7 +110,7 @@ public class GramProviderPwscfRangerTest {
             gsiSecurityContext.setMyproxyUserName(properties.getProperty("myproxy.username"));
             gsiSecurityContext.setMyproxyPasswd(properties.getProperty("myproxy.password"));
             gsiSecurityContext.setMyproxyLifetime(14400);
-            gsiSecurityContext.setTrustedCertLoc(properties.getProperty("certificate.path"));
+            gsiSecurityContext.setTrustedCertLoc(properties.getProperty("ca.certificates.directory"));
 
             ct.addSecurityContext(MYPROXY, gsiSecurityContext);
 
