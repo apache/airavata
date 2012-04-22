@@ -34,7 +34,7 @@ public class LEADTypes {
     /**
      * http://www.extreme.indiana.edu/lead/xsd
      */
-    public static final String LEAD_XSD_NS_URI = "http://www.extreme.indiana.edu/lead/xsd";
+    public static final String LEAD_XSD_NS_URI = "http://schemas.airavata.apache.org/gfac/type";
 
     // Simple types
 
@@ -116,6 +116,34 @@ public class LEADTypes {
      */
     public static final QName DATA_ID_ARRAY_TYPE = new QName(LEAD_XSD_NS_URI, "DataIDArrayType");
 
+    public static final QName STRING_TYPE = new QName(LEAD_XSD_NS_URI, "StringParameterType");
+
+      /**
+       * IntegerArrayType
+       */
+      public static final QName INTEGER_TYPE = new QName(LEAD_XSD_NS_URI, "IntegerParameterType");
+
+      /**
+       * FloatArrayType
+       */
+      public static final QName FLOAT_TYPE = new QName(LEAD_XSD_NS_URI, "FloatParameterType");
+
+      /**
+       * DoubleArrayType
+       */
+      public static final QName DOUBLE_TYPE = new QName(LEAD_XSD_NS_URI, "DoubleParameterType");
+
+      /**
+       * BooleanArrayType
+       */
+      public static final QName BOOLEAN_TYPE = new QName(LEAD_XSD_NS_URI, "BooleanParameterType");
+
+      /**
+       * URIArrayType
+       */
+      public static final QName URI_TYPE = new QName(LEAD_XSD_NS_URI, "URIParameterType");
+
+
     /**
      * Checks if a specified type is known. If the type is known, the GUI accepts string as a user's input. If not
      * known, the GUI accepts XML as the input.
@@ -134,7 +162,9 @@ public class LEADTypes {
                 || HOST_NAME_TYPE.equals(type) || STRING_ARRAY_TYPE.equals(type) || INTEGER_ARRAY_TYPE.equals(type)
                 || FLOAT_ARRAY_TYPE.equals(type) || DOUBLE_ARRAY_TYPE.equals(type) || BOOLEAN_ARRAY_TYPE.equals(type)
                 || QNAME_ARRAY_TYPE.equals(type) || URI_ARRAY_TYPE.equals(type) || LEAD_FILE_ID_ARRAY_TYPE.equals(type)
-                || DATA_ID_ARRAY_TYPE.equals(type)) {
+                || DATA_ID_ARRAY_TYPE.equals(type) || STRING_TYPE.equals(type) || URI_TYPE.equals(type)
+                || INTEGER_TYPE.equals(type) || FLOAT_TYPE.equals(type) || DOUBLE_TYPE.equals(type)
+                || BOOLEAN_TYPE.equals(type)) {
             return true;
         } else if (DATA_ID_TYPE.getLocalPart().equals(type.getLocalPart())) {
             // XXX temporary hack.
@@ -153,7 +183,7 @@ public class LEADTypes {
     public static boolean isURIType(QName type) {
         if (WSConstants.XSD_ANY_URI.equals(type) || LEAD_NAME_LIST_PROPERTIES_FILE_TYPE.equals(type)
                 || LEAD_FILE_ID_TYPE.equals(type) || LEAD_NAME_LIST_FILE_TYPE.equals(type)
-                || LEAD_WORKFLOW_ID_TYPE.equals(type)) {
+                || LEAD_WORKFLOW_ID_TYPE.equals(type) || URI_TYPE.equals(type)) {
             return true;
         } else {
             return false;
