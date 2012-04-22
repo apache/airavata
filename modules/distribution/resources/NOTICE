@@ -5,29 +5,31 @@ This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
 
 =========================================================================
-==  NOTICE file corresponding to section 4(d) of the Apache License,
-==  Version 2.0, in this case for the Apache Airavata distribution.
+==  NOTICE file corresponding to section 4(d) of the Apache License,   ==
+==  Version 2.0, in this case for the Apache Airavata distribution.    ==
 =========================================================================
 
-============================================================================
+==========================================================================
+EXTREME Lab Software Notice:
 
 This product includes unmodified, binary redistributions of software (XPP3,
 weps-beans, pegasuswebservice, mapReduce-service-client, xsul, xutil, wsmg)
 developed by Indiana University (http://www.extreme.indiana.edu/).
 
-===============================================================================
+===========================================================================
+SLF4J Notice:
 
 This product includes unmodified, binary redistributions of software (slf4j) 
 developed by QOS.ch (http://slf4j.org), which is licensed under the MIT license.
 An original copy of the license can be found at http://slf4j.org/license.html
 
-=================================================================================
+==============================================================================
+DOM4J Notice;
 
 This product includes software developed by the Dom4j project 
 (http://www.dom4j.org), licensed under BSD style license:
 
 =========================================================================
-
 WSDL4J Notice:
 
 The Program includes all or portions of the following software which is
@@ -39,7 +41,7 @@ You may download the source version of the WSDL4J component at
 http://sourceforge.net/projects/wsdl4j
 
 ===========================================================================
-Jackrabbit Notice:
+Apache Jackrabbit Notice:
 
 Based on source code originally developed by
 Day Software (http://www.day.com/).
@@ -77,8 +79,8 @@ Apache Harmony project. The following notice covers the Harmony sources:
     Foundation under the "Software Grant and Corporate Contribution
     License Agreement", informally known as the "Intel Harmony CLA".
 
-============================================================================
-   Apache Xerces Java Notice:
+=========================================================================
+Apache Xerces Java Notice:
 
    Portions of this software were originally based on the following:
      - software copyright (c) 1999, IBM Corporation., http://www.ibm.com.
@@ -87,8 +89,7 @@ Apache Harmony project. The following notice covers the Harmony sources:
        Apache Software Foundation that were originally developed at iClick, Inc.,
        software copyright (c) 1999.
 
-==================================================================================
-
+================================================================================
 Apache XmlBeans Notice: 
 
    Portions of this software were originally based on the following:
@@ -112,8 +113,8 @@ Apache XmlBeans Notice:
 
     - JSR-173 Streaming API for XML from http://sourceforge.net/projects/xmlpullparser/,
       Copyright 2005 BEA under the terms of the Apache Software License 2.0
-==========================================================================================
-
+      
+=========================================================================================
 Apache Axis2 Notice:
 
 Portions Copyright 2006 International Business Machines Corp.
@@ -135,7 +136,6 @@ Please read the different LICENSE files present in the lib directory of
 this distribution.
 
 ====================================================================================
-
 Apache Commons Logging Notice:
 
 This product includes/uses software(s) developed by 'an unknown organization'
@@ -144,7 +144,6 @@ This product includes/uses software(s) developed by 'an unknown organization'
   - Unnamed - logkit:logkit:jar:1.0.1
 
 ====================================================================================
-
 Apache Derby Notice:
 
 Portions of Derby were originally developed by
@@ -169,7 +168,7 @@ International Business Machines Corporation in accordance with the NIST
 Software Acknowledgment and Redistribution document at
 http://www.itl.nist.gov/div897/ctg/sql_form.htm
 
-==========================
+========================
 
 The JDBC apis for small devices and JDBC3 (under java/stubs/jsr169 and
 java/stubs/jdbc3) were produced by trimming sources supplied by the
@@ -182,7 +181,6 @@ Foundation under the "Software Grant and Corporate Contribution
 License Agreement", informally known as the "Intel Harmony CLA".
 
 =============================================================================
-
 Apache Woden Notice:
 
    This product also includes software developed by :
@@ -196,7 +194,7 @@ Apache Woden Notice:
    Please read the different LICENSE files present in the root directory of
    this distribution.
 
-===============================================================================
+====================
 
 This product currently only contains code developed by authors
 of specific components, as identified by the source code files.
@@ -207,8 +205,7 @@ classes.
 For additional credits (generally to people who reported problems)
 see CREDITS file.
 
-================================================================================
-
+===========================================================================
 Apache xml-commons xml-apis Notice:
 
    Portions of this software were originally based on the following:
@@ -217,7 +214,6 @@ Apache xml-commons xml-apis Notice:
      - software copyright (c) 2000 World Wide Web Consortium, http://www.w3.org
 
 =========================================================================
-
 Apache  Xalan Notice: 
 
 Portions of this software was originally based on the following:
@@ -229,7 +225,6 @@ Portions of this software was originally based on the following:
     http://www.ibm.com.
 
 =========================================================================
-
 Woodstox Notice: 
 
 This product includes software developed by the Woodstox Project 
