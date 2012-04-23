@@ -36,6 +36,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 
@@ -100,11 +101,8 @@ public class FileBreedGramTest {
         InputParameterType inputParameter = InputParameterType.Factory.newInstance();
         inputParameter.setParameterName("Input_File");
         inputParameter.setParameterDescription("File to Replicate");
-        ParameterType inputParameterType = inputParameter.addNewParameterType();
-        inputParameterType.setName(DataType.URI.toString());
-        inputParameterType.setType(DataType.URI);
+        inputParameter.setParameterType(URIParameterType.Factory.newInstance());
 
-//        parameterType.setType("");
         List<InputParameterType> inputList = new ArrayList<InputParameterType>();
         inputList.add(inputParameter);
         InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList
@@ -160,8 +158,8 @@ public class FileBreedGramTest {
             */
             ParameterContextImpl input = new ParameterContextImpl();
             ActualParameter input_file = new ActualParameter();
-            String InputFile = "/gpfs1/u/ac/ccguser/alatop.inp";
-            ((StringParameterType) input_file.getType()).setValue(InputFile);
+            URI InputFile =  URI.create("/gpfs1/u/ac/ccguser/alatop.inp");
+//            ((URIParameterType) input_file.getType().);
             input.add("input_file", input_file);
 
             /*
