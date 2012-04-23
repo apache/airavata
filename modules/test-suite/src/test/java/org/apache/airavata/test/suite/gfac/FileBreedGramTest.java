@@ -41,7 +41,7 @@ import java.util.*;
 
 import static org.junit.Assert.fail;
 
-public class GramProviderTest {
+public class FileBreedGramTest {
 
     public static final String MYPROXY = "myproxy";
     public static final String GRAM_PROPERTIES = "gram.properties";
@@ -50,8 +50,8 @@ public class GramProviderTest {
     @Before
     public void setUp() throws Exception {
         /*
-           * Create database
-           */
+        * Create database
+        */
         Map<String,String> config = new HashMap<String,String>();
             config.put("org.apache.jackrabbit.repository.home","target");
 
@@ -60,8 +60,8 @@ public class GramProviderTest {
                 "admin", config);
     
         /*
-           * Host
-           */
+        * Host Description Document
+        */
 
         URL url = this.getClass().getClassLoader().getResource(GRAM_PROPERTIES);
         Properties properties = new Properties();
@@ -75,14 +75,14 @@ public class GramProviderTest {
 
 
         /*
-        * App
+        * Application deployment description
         */
         ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription(GramApplicationDeploymentType.type);
         GramApplicationDeploymentType app = (GramApplicationDeploymentType) appDesc.getType();
         app.setCpuCount(1);
         app.setNodeCount(1);
         ApplicationDeploymentDescriptionType.ApplicationName name = appDesc.getType().addNewApplicationName();
-        name.setStringValue("EchoLocal");
+        name.setStringValue("FileBreed");
         app.setExecutableLocation("/bin/echo");
         app.setScratchWorkingDirectory(properties.getProperty("scratch.working.directory"));
         app.setCpuCount(1);
@@ -92,32 +92,38 @@ public class GramProviderTest {
         queueType.setQueueName(properties.getProperty("defualt.queue"));
         
         /*
-           * Service
-           */
+        * Application Service
+        */
         ServiceDescription serv = new ServiceDescription();
-        serv.getType().setName("SimpleEcho");
+        serv.getType().setName("FileBreedTest");
 
-        InputParameterType input = InputParameterType.Factory.newInstance();
-        ParameterType parameterType = input.addNewParameterType();
-        parameterType.setName("echo_input");
+        InputParameterType inputParameter = InputParameterType.Factory.newInstance();
+        inputParameter.setParameterName("Input_File");
+        inputParameter.setParameterDescription("File to Replicate");
+        ParameterType inputParameterType = inputParameter.addNewParameterType();
+        inputParameterType.setName(DataType.URI.toString());
+        inputParameterType.setType(DataType.URI);
+
+//        parameterType.setType("");
         List<InputParameterType> inputList = new ArrayList<InputParameterType>();
-        inputList.add(input);
+        inputList.add(inputParameter);
         InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList
                 .size()]);
-
-        OutputParameterType output = OutputParameterType.Factory.newInstance();
-        ParameterType parameterType1 = output.addNewParameterType();
-        parameterType1.setName("echo_output");
+        
+        OutputParameterType outputParameter = OutputParameterType.Factory.newInstance();
+        ParameterType outputParameterType = outputParameter.addNewParameterType();
+        outputParameterType.setName("replicated_file");
+        outputParameterType.setType(DataType.URI);
         List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
-        outputList.add(output);
+        outputList.add(outputParameter);
         OutputParameterType[] outputParamList = outputList
                 .toArray(new OutputParameterType[outputList.size()]);
         serv.getType().setInputParametersArray(inputParamList);
         serv.getType().setOutputParametersArray(outputParamList);
 
         /*
-           * Save to registry
-           */
+        * Save deployment descriptions to registry
+        */
         jcrRegistry.saveHostDescription(host);
         jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host.getType().getHostName(), appDesc);
         jcrRegistry.saveServiceDescription(serv);
@@ -147,22 +153,23 @@ public class GramProviderTest {
 
             ct.addSecurityContext(MYPROXY, gsiSecurityContext);
 
-            ct.setServiceName("SimpleEcho");
+            ct.setServiceName("FileBreedTest");
 
             /*
             * Input
             */
             ParameterContextImpl input = new ParameterContextImpl();
-            ActualParameter echo_input = new ActualParameter();
-            ((StringParameterType) echo_input.getType()).setValue("echo_output=hello");
-            input.add("echo_input", echo_input);
+            ActualParameter input_file = new ActualParameter();
+            String InputFile = "/gpfs1/u/ac/ccguser/alatop.inp";
+            ((StringParameterType) input_file.getType()).setValue(InputFile);
+            input.add("input_file", input_file);
 
             /*
             * Output
             */
             ParameterContextImpl output = new ParameterContextImpl();
-            ActualParameter echo_output = new ActualParameter();
-            output.add("echo_output", echo_output);
+            ActualParameter replicated_file = new ActualParameter();
+            output.add("replicated_file", replicated_file);
 
             // parameter
             ct.setInput(input);
@@ -173,9 +180,6 @@ public class GramProviderTest {
             service.execute(ct);
 
             Assert.assertNotNull(ct.getOutput());
-            Assert.assertNotNull(ct.getOutput().getValue("echo_output"));
-            Assert.assertEquals("hello", ((StringParameterType) ((ActualParameter) ct.getOutput().getValue("echo_output")).getType()).getValue());
-
 
         } catch (Exception e) {
             e.printStackTrace();
