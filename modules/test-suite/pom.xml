@@ -135,6 +135,7 @@
             <version>${jackrabbit.version}</version>
 		</dependency>
 	</dependencies>
+	
 
 	<build>
 		<plugins>
