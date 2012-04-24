@@ -104,6 +104,14 @@ public class GramRSLGenerator {
             log.info("Setting number of procs to " + app.getCpuCount());
             jobAttr.setNumProcs(app.getCpuCount());
         }
+        if (app.getMinMemory() > 0) {
+            log.info("Setting minimum memory to " + app.getMinMemory());
+            jobAttr.setMinMemory(app.getMinMemory());
+        }
+        if (app.getMaxMemory() > 0) {
+            log.info("Setting maximum memory to " + app.getMaxMemory());
+            jobAttr.setMaxMemory(app.getMaxMemory());
+        }
         if (app.getProjectAccount() != null) {
             if (app.getProjectAccount().getProjectAccountNumber() != null) {
                 log.info("Setting project to " + app.getProjectAccount().getProjectAccountNumber());

@@ -52,6 +52,7 @@
 					<element name="nodeCount" type="xsd:int" minOccurs="0" maxOccurs="1" />
 					<element name="processorsPerNode" type="xsd:int" minOccurs="0" maxOccurs="1" />
 					<element name="minMemory" type="xsd:int" minOccurs="0" maxOccurs="1" />
+					<element name="maxMemory" type="xsd:int" minOccurs="0" maxOccurs="1" />
 				</sequence>
 			</extension>
 		</complexContent>

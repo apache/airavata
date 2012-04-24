@@ -51,6 +51,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     private XBayaTextField txtStaticWorkingDirectory;
     private XBayaTextField txtMaxWallTime = new XBayaTextField();
     private XBayaTextField txtMinMemory = new XBayaTextField();
+    private XBayaTextField txtMaxMemory = new XBayaTextField();
     private XBayaTextField txtCpuCount = new XBayaTextField();
     private XBayaTextField txtProcessorsPerNode = new XBayaTextField();
     private JButton okButton;
@@ -118,6 +119,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         txtQueueType = new XBayaTextField();
         txtMaxWallTime = new XBayaTextField();
         txtMinMemory = new XBayaTextField();
+        txtMaxMemory = new XBayaTextField();
         txtCpuCount = new XBayaTextField();
         txtProcessorsPerNode = new XBayaTextField();
 
@@ -134,6 +136,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		XBayaLabel lblCpuCount = new XBayaLabel("CPU Count",txtCpuCount);
 		XBayaLabel lblProcessorPerNode = new XBayaLabel("Processor Per Node", txtProcessorsPerNode);
 		XBayaLabel lblMinMemory = new XBayaLabel("Min Memory",txtMinMemory);
+		XBayaLabel lblMaxMemory = new XBayaLabel("Max Memory",txtMaxMemory);
 
 		panel.add(lbljobType);
 		panel.add(cmbJobType);
@@ -153,10 +156,12 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		panel.add(txtProcessorsPerNode);
         panel.add(lblMinMemory);
 		panel.add(txtMinMemory);
+        panel.add(lblMaxMemory);
+        panel.add(txtMaxMemory);
 		panel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         buttonPane.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
-        SwingUtil.layoutToGrid(panel.getSwingComponent(), 9, 2, SwingUtil.WEIGHT_NONE, 1);
+        SwingUtil.layoutToGrid(panel.getSwingComponent(), 10, 2, SwingUtil.WEIGHT_NONE, 1);
         
         buttonPane.add(okButton);
         buttonPane.add(cancelButton);
@@ -239,6 +244,10 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 			getGramApplicationDescriptionType().setMinMemory(
 					Integer.parseInt(txtMinMemory.getText()));
 		}
+	    if (isValueNotEmpty(txtMaxMemory.getText())) {
+	            getGramApplicationDescriptionType().setMaxMemory(
+	                    Integer.parseInt(txtMaxMemory.getText()));
+	        }
 		ProjectAccountType projectAccount = getProjectAccountType();
 		if (isValueNotEmpty(txtProjectAccountNumber.getText())) {
 			projectAccount.setProjectAccountNumber(txtProjectAccountNumber
@@ -281,6 +290,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         txtCpuCount.setText(String.valueOf(gadType.getCpuCount()));
         txtProcessorsPerNode.setText(String.valueOf(gadType.getProcessorsPerNode()));
         txtMinMemory.setText(String.valueOf(gadType.getMinMemory()));
+        txtMaxMemory.setText(String.valueOf(gadType.getMaxMemory()));
 		ProjectAccountType projectAccount = getProjectAccountType();
 
 		txtProjectAccountNumber.setText(projectAccount.getProjectAccountNumber()==null? "":projectAccount.getProjectAccountNumber());

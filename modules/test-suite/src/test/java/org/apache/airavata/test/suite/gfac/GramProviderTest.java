@@ -90,6 +90,7 @@ public class GramProviderTest {
         projectAccountType.setProjectAccountNumber(properties.getProperty("allocation.charge.number"));
         QueueType queueType = app.addNewQueue();
         queueType.setQueueName(properties.getProperty("defualt.queue"));
+        app.setMaxMemory(100);
         
         /*
            * Service

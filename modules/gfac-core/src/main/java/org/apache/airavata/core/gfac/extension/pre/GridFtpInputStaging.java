@@ -74,7 +74,7 @@ public class GridFtpInputStaging extends PreExecuteChain {
                         if (uri.getScheme().equalsIgnoreCase(GridFtp.GSIFTP_SCHEME)) {
                         	
                             /*
-                             * Desctination complete URI
+                             * Destination complete URI
                              */
                             File file = new File(uri.getPath());
                             String destFilePath = file.getName();
