@@ -32,6 +32,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.commons.gfac.wsdl.GFacSchemaConstants;
 import org.apache.airavata.commons.gfac.wsdl.WSDLConstants;
 import org.apache.airavata.core.gfac.GfacAPI;
 import org.apache.airavata.core.gfac.context.GFacConfiguration;
@@ -172,7 +173,10 @@ public class GFacMessageReciever implements MessageReceiver {
         ServiceDescription serviceDescription = getRegistry(context).getServiceDescription(serviceName);
         ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
         for (Parameter parameter : serviceDescriptionType.getInputParametersArray()) {
-            OMElement element = input.getFirstChildWithName(new QName(null, parameter.getParameterName().replaceAll(WSDLConstants.HYPHEN, WSDLConstants.HYPHEN_REPLACEMENT)));
+            OMElement element = input.getFirstChildWithName(new QName(null,parameter.getParameterName().replaceAll(WSDLConstants.HYPHEN, WSDLConstants.HYPHEN_REPLACEMENT)));
+            if(element == null){
+                element = input.getFirstChildWithName(new QName(GFacSchemaConstants.GFAC_NAMESPACE,parameter.getParameterName().replaceAll(WSDLConstants.HYPHEN, WSDLConstants.HYPHEN_REPLACEMENT)));
+            }
             if (element == null) {
                 throw new Exception("Parameter is not found in the message");
             }
