@@ -171,4 +171,13 @@ public class SystemDataPort extends DataPort {
         return portElement;
     }
 
+    public int getIndex(){
+            if(this.getNode() instanceof InputNode){
+                return this.getGraph().getCurrentInputNodeCount() + 1;
+            }else if (this.getNode() instanceof OutputNode){
+                return this.getGraph().getCurrentOutputNodeCount() + 1;
+            }
+        return super.getIndex();
+    }
+
 }

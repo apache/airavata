@@ -637,4 +637,32 @@ public abstract class GraphImpl implements Graph {
         }
     }
 
+    /**
+     * This returns the number of input Nodes, this will be useful when adding unique Id for nodes
+     * @return
+     */
+    public int getCurrentInputNodeCount(){
+        int index=0;
+        for(Node node:nodes){
+            if(node instanceof InputNode){
+                index++;
+            }
+        }
+        return index;
+    }
+    /**
+    * This returns the number of input Nodes, this will be useful when adding unique Id for nodes
+      * @return
+      */
+     public int getCurrentOutputNodeCount(){
+         int index=0;
+         for(Node node:nodes){
+             if(node instanceof OutputNode){
+                 index++;
+             }
+         }
+         return index;
+     }
+
+
 }
