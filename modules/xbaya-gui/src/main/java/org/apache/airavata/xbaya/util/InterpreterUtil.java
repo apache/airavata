@@ -20,9 +20,14 @@
 */
 package org.apache.airavata.xbaya.util;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
@@ -31,7 +36,6 @@ import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
-import org.apache.airavata.xbaya.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.xbaya.graph.system.ConstantNode;
 import org.apache.airavata.xbaya.graph.system.EndForEachNode;
 import org.apache.airavata.xbaya.graph.system.EndifNode;
@@ -49,8 +53,8 @@ import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler;
 import org.xmlpull.infoset.XmlElement;
-
 import org.xmlpull.infoset.impl.XmlElementWithViewsImpl;
+
 import xsul5.XmlConstants;
 import xsul5.wsdl.WsdlPort;
 import xsul5.wsdl.WsdlService;
@@ -134,10 +138,9 @@ public class InterpreterUtil {
                     if(forEachInputNode.getInputPort(index) instanceof SystemDataPort){
                        outputName = ((SystemDataPort)forEachInputNode.getInputPort(index)).getWSComponentPort().getName();
                     }else if(forEachInputNode.getInputPort(index) instanceof WSPort){
-                         outputName = ((SystemDataPort)forEachInputNode.getInputPort(
-                        forEachInputNode.getOutputPorts().indexOf(inputPort.getEdge(0).getFromPort()))).getWSComponentPort().getName();
+                    	   outputName = ((WSPort)forEachInputNode.getInputPort(index)).getComponentPort().getName();
                     }
-					returnValForProvenance = workflowInvoker
+                    returnValForProvenance = workflowInvoker
 							.getOutput(outputName);
 					XmlElement msgElmt = XmlConstants.BUILDER
 							.parseFragmentFromString("<temp>"
@@ -185,11 +188,9 @@ public class InterpreterUtil {
 			outputVal = "";
 			Invoker workflowInvoker = invokerMap.get(fromNode);
 			String outputName = "";
-            if (inputPort instanceof SystemDataPort) {
+			if (inputPort instanceof SystemDataPort) {
                 outputName = ((SystemDataPort) inputPort).getWSComponentPort().getName();
-
-            } else if (inputPort instanceof WSPort) {
-                outputName = ((SystemDataPort)fromNode.getInputPort(
+                 outputName = ((SystemDataPort)fromNode.getInputPort(
                         fromNode.getOutputPorts().indexOf(inputPort.getEdge(0).getFromPort()))).getWSComponentPort().getName();
             }
 			XmlElement msgElmt = XmlConstants.BUILDER
