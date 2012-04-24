@@ -140,7 +140,7 @@ public class GfacUtils {
         ActualParameter actualParameter = new ActualParameter();
         if ("String".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(StringParameterType.type);
-            if (element.getText() != null) {
+            if (!"".equals(element.getText())) {
                 ((StringParameterType) actualParameter.getType()).setValue(element.getText());
             } else {
                 innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
@@ -148,7 +148,7 @@ public class GfacUtils {
             }
         } else if ("Double".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(DoubleParameterType.type);
-            if (element.getText() != null) {
+            if (!"".equals(element.getText())) {
                 ((DoubleParameterType) actualParameter.getType()).setValue(new Double(innerelement.getText()));
             } else {
                 innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
@@ -156,7 +156,7 @@ public class GfacUtils {
             }
         } else if ("Integer".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(IntegerParameterType.type);
-            if (element.getText() != null) {
+            if (!"".equals(element.getText())) {
                 ((IntegerParameterType) actualParameter.getType()).setValue(new Integer(element.getText()));
             } else {
                 innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
@@ -164,7 +164,7 @@ public class GfacUtils {
             }
         } else if ("Float".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(FloatParameterType.type);
-            if (element.getText() != null) {
+            if (!"".equals(element.getText())) {
                 ((FloatParameterType) actualParameter.getType()).setValue(new Float(element.getText()));
             } else {
                 innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
@@ -172,7 +172,7 @@ public class GfacUtils {
             }
         } else if ("Boolean".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(BooleanParameterType.type);
-            if (element.getText() != null) {
+            if (!"".equals(element.getText())) {
                 ((BooleanParameterType) actualParameter.getType()).setValue(new Boolean(element.getText()));
             } else {
                 innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
@@ -180,7 +180,7 @@ public class GfacUtils {
             }
         } else if ("File".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(FileParameterType.type);
-            if (element.getText() != null) {
+            if (!"".equals(element.getText())) {
                 ((FileParameterType) actualParameter.getType()).setValue(element.getText());
             } else {
                 innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
@@ -188,7 +188,7 @@ public class GfacUtils {
             }
         } else if ("URI".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(URIParameterType.type);
-            if (element.getText() != null) {
+            if (!"".equals(element.getText())) {
                 ((URIParameterType) actualParameter.getType()).setValue(element.getText());
             } else {
                 innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
@@ -200,7 +200,7 @@ public class GfacUtils {
             actualParameter = new ActualParameter(StringArrayType.type);
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
-            if (element.getText() != null) {
+            if (!"".equals(element.getText())) {
                 while (value.hasNext()) {
                     innerelement = (OMElement) value.next();
                     ((StringArrayType) actualParameter.getType()).insertValue(i++, element.getText());
@@ -215,7 +215,7 @@ public class GfacUtils {
             actualParameter = new ActualParameter(DoubleArrayType.type);
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
-            if (element.getText() != null) {
+            if (!"".equals(element.getText())) {
                 while (value.hasNext()) {
                     innerelement = (OMElement) value.next();
                     ((DoubleArrayType) actualParameter.getType()).insertValue(i++, new Double(element.getText()));
@@ -231,7 +231,7 @@ public class GfacUtils {
             actualParameter = new ActualParameter(IntegerArrayType.type);
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
-            if (element.getText() != null) {
+            if (!"".equals(element.getText())) {
                 while (value.hasNext()) {
                     innerelement = (OMElement) value.next();
                     ((IntegerArrayType) actualParameter.getType()).insertValue(i++, new Integer(element.getText()));
@@ -247,7 +247,7 @@ public class GfacUtils {
             actualParameter = new ActualParameter(FloatArrayType.type);
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
-            if (element.getText() != null) {
+            if (!"".equals(element.getText())) {
                 while (value.hasNext()) {
                     innerelement = (OMElement) value.next();
                     ((FloatArrayType) actualParameter.getType()).insertValue(i++, new Float(element.getText()));
@@ -263,7 +263,7 @@ public class GfacUtils {
             actualParameter = new ActualParameter(BooleanArrayType.type);
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
-            if (element.getText() != null) {
+            if (!"".equals(element.getText())) {
                 while (value.hasNext()) {
                     innerelement = (OMElement) value.next();
                     ((BooleanArrayType) actualParameter.getType()).insertValue(i++, new Boolean(element.getText()));
@@ -279,7 +279,7 @@ public class GfacUtils {
             actualParameter = new ActualParameter(FileArrayType.type);
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
-            if (element.getText() != null) {
+            if (!"".equals(element.getText())) {
                 while (value.hasNext()) {
                     innerelement = (OMElement) value.next();
                     ((FileArrayType) actualParameter.getType()).insertValue(i++, element.getText());
@@ -295,7 +295,7 @@ public class GfacUtils {
             actualParameter = new ActualParameter(URIArrayType.type);
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
-            if (element.getText() != null) {
+            if (!"".equals(element.getText())) {
                 while (value.hasNext()) {
                     innerelement = (OMElement) value.next();
                     ((URIArrayType) actualParameter.getType()).insertValue(i++, element.getText());
