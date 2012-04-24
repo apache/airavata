@@ -243,4 +243,7 @@ public interface ErrorMessages {
      */
     public static final String MORE_THAN_ONE_CONNECTIONS = "Cannot connect more than one output ports to an input port.";
     String CREDENTIALS_WRONG = "Please check credentials";
+    String GIVEN_WORKFLOW_NAME_IS_WRONG = "Given Workflow Name is Wrong ";
+    String REPOSITORY_CONFIGURATION_IS_WRONG_FAILED_TO_LOAD_THE_WORKFLOW = "Repository Configuration is Wrong, Failed to load the Workflow";
+    String WORKFLOW_IS_WRONG = "Workflow is Wrong";
 }
