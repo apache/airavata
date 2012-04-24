@@ -34,6 +34,9 @@ import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.gui.PortGUI;
+import org.apache.airavata.xbaya.graph.system.InputNode;
+import org.apache.airavata.xbaya.graph.system.OutputNode;
+import org.apache.airavata.xbaya.graph.system.SystemDataPort;
 import org.xmlpull.infoset.XmlElement;
 
 /**
@@ -275,12 +278,16 @@ public abstract class PortImpl implements Port {
 
     /**
      * Sets a graph this port belogs to.
-     * 
+     *
      * @param graph
      *            The graph
      */
     protected void setGraph(GraphImpl graph) {
         this.graph = graph;
+    }
+
+    public GraphImpl getGraph() {
+        return graph;
     }
 
     /**
@@ -406,7 +413,7 @@ public abstract class PortImpl implements Port {
      * 
      * @return the port index within the node that this port belongs to
      */
-    private int getIndex() {
+    public int getIndex() {
         int index;
         switch (this.kind) {
         case DATA_IN:
