@@ -97,10 +97,11 @@ public class FileBreedGramTest {
         */
         ServiceDescription serv = new ServiceDescription();
         serv.getType().setName("FileBreedTest");
-
         InputParameterType inputParameter = InputParameterType.Factory.newInstance();
         inputParameter.setParameterName("Input_File");
         inputParameter.setParameterDescription("File to Replicate");
+        ParameterType parameterType1 = inputParameter.addNewParameterType();
+        parameterType1.setType(DataType.Enum.forString("URI"));
         inputParameter.setParameterType(URIParameterType.Factory.newInstance());
 
         List<InputParameterType> inputList = new ArrayList<InputParameterType>();
