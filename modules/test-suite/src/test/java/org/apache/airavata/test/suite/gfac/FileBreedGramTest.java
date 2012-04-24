@@ -158,8 +158,9 @@ public class FileBreedGramTest {
             */
             ParameterContextImpl input = new ParameterContextImpl();
             ActualParameter input_file = new ActualParameter();
-            URI InputFile =  URI.create("/gpfs1/u/ac/ccguser/alatop.inp");
-//            ((URIParameterType) input_file.getType().);
+//            URI InputFile =  URI.create("/gpfs1/u/ac/ccguser/alatop.inp");
+            String InputFile =  "/gpfs1/u/ac/ccguser/alatop.inp";
+            ((StringParameterType) input_file.getType()).setValue(InputFile);
             input.add("input_file", input_file);
 
             /*
