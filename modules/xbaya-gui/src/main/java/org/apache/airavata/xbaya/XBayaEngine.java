@@ -25,16 +25,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.SubWorkflowComponent;
 import org.apache.airavata.xbaya.component.gui.ComponentSelector;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
-import org.apache.airavata.xbaya.component.registry.AmazonComponentRegistry;
-import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
-import org.apache.airavata.xbaya.component.registry.LocalComponentRegistry;
-import org.apache.airavata.xbaya.component.registry.SystemComponentReference;
-import org.apache.airavata.xbaya.component.registry.SystemComponentRegistry;
+import org.apache.airavata.xbaya.component.registry.*;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.ErrorWindow;
@@ -50,6 +47,12 @@ import org.apache.airavata.xbaya.wf.gui.WorkflowPropertyWindow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xmlpull.infoset.XmlElement;
+
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.xml.namespace.QName;
 
 public class XBayaEngine {
 
@@ -210,7 +213,7 @@ public class XBayaEngine {
         // initGPEL();
 
         // This has to be after gpel initialization.
-        // loadDefaultGraph();
+        loadDefaultGraph();
 
         // This has to be after loading a graph.
         initMonitor();
@@ -393,5 +396,30 @@ public class XBayaEngine {
 		}
 		this.workflowInterpreter = workflowInterpreter;
 	}
+
+    private void loadDefaultGraph() {
+        if (this.configuration.getWorkflow() != null) {
+            this.getGUI().newGraphCanvas(true, false);
+            JCRComponentRegistry jcrComponentRegistry = this.getConfiguration().getJcrComponentRegistry();
+            try {
+                Node node = jcrComponentRegistry.getRegistry().getWorkflow(new QName(XBayaConstants.LEAD_NS, this.configuration.getWorkflow()), this.getConfiguration().getRegistryUserName());
+                XmlElement xwf = XMLUtil.stringToXmlElement(node.getProperty("workflow").getString());
+                Workflow workflow = new Workflow(xwf);
+                this.setWorkflow(workflow);
+            } catch (RegistryException e) {
+               getErrorWindow().error(ErrorMessages.REPOSITORY_CONFIGURATION_IS_WRONG_FAILED_TO_LOAD_THE_WORKFLOW, e);
+            } catch (PathNotFoundException e) {
+                getErrorWindow().error(ErrorMessages.GIVEN_WORKFLOW_NAME_IS_WRONG, e);
+            } catch (RepositoryException e) {
+                getErrorWindow().error(ErrorMessages.REPOSITORY_CONFIGURATION_IS_WRONG_FAILED_TO_LOAD_THE_WORKFLOW, e);
+            } catch (GraphException e) {
+                getErrorWindow().error(ErrorMessages.WORKFLOW_IS_WRONG, e);
+            } catch (ComponentException e) {
+                getErrorWindow().error(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
+            }
+        }
+
+    }
+
 
 }

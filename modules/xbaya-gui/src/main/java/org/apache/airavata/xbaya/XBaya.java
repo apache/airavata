@@ -24,6 +24,7 @@ package org.apache.airavata.xbaya;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,7 +205,7 @@ public class XBaya {
                         logger.warn(message, e);
                         this.config.addError(new XBayaException(message, e));
                     }
-                } else if ("-registryUserName".equalsIgnoreCase(arg)) {
+                    } else if ("-registryUserName".equalsIgnoreCase(arg)) {
 
                     index++;
                     this.config.setRegigstryUserName(args[index]);
@@ -262,6 +263,8 @@ public class XBaya {
                     logger.error(message);
                     this.config.addError(new XBayaException(message));
                 }
+                this.config.setJcrComponentRegistry(new
+                        JCRComponentRegistry(this.config.getRegistryURL(),this.config.getRegistryUserName(),this.config.getRegistryPassphrase()));
                 index++;
             }
         } catch (ArrayIndexOutOfBoundsException e) {
