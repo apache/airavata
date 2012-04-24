@@ -46,11 +46,6 @@
             </url>
 			<layout>default</layout>
 		</repository>
-		<repository>
-			<id>apache-repo</id>
-			<name>Apache Yfilter repo</name>
-			<url>http://people.apache.org/~lahiru/maven-repo</url>
-		</repository>
 	</repositories>
 	<dependencyManagement>
 		<dependencies>
