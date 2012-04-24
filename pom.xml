@@ -323,11 +323,6 @@
             <layout>default</layout>
         </repository>
         <repository>
-            <id>apache-repo</id>
-            <name>Apache Yfilter repo</name>
-            <url>http://people.apache.org/~lahiru/maven-repo</url>
-        </repository>
-        <repository>
             <id>OW2</id>
             <name>OW2 Repository</name>
             <url>http://maven.ow2.org/maven2</url>
