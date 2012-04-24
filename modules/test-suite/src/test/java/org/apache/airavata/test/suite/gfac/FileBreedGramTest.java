@@ -53,13 +53,13 @@ public class FileBreedGramTest {
         /*
         * Create database
         */
-        Map<String,String> config = new HashMap<String,String>();
-            config.put("org.apache.jackrabbit.repository.home","target");
 
-        jcrRegistry = new AiravataJCRRegistry(null,
+
+       Map<String,String> config = new HashMap<String,String>();
+
+       jcrRegistry = new AiravataJCRRegistry(null,
                 "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-                "admin", config);
-    
+                "admin", config);            config.put("org.apache.jackrabbit.repository.home","target");
         /*
         * Host Description Document
         */
@@ -69,8 +69,8 @@ public class FileBreedGramTest {
         properties.load(url.openStream());
         HostDescription host = new HostDescription();
         host.getType().changeType(GlobusHostType.type);
-        host.getType().setHostName(properties.getProperty("host.commom.name"));
-        host.getType().setHostAddress(properties.getProperty("host.fqdn.name"));
+        host.getType().setHostName(properties.getProperty("gram.name"));
+        host.getType().setHostAddress(properties.getProperty("gram.host"));
         ((GlobusHostType) host.getType()).setGridFTPEndPointArray(new String[]{properties.getProperty("gridftp.endpoint")});
         ((GlobusHostType) host.getType()).setGlobusGateKeeperEndPointArray(new String[]{properties.getProperty("gram.endpoints")});
 
@@ -148,7 +148,7 @@ public class FileBreedGramTest {
             gsiSecurityContext.setMyproxyUserName(properties.getProperty("myproxy.username"));
             gsiSecurityContext.setMyproxyPasswd(properties.getProperty("myproxy.password"));
             gsiSecurityContext.setMyproxyLifetime(14400);
-            gsiSecurityContext.setTrustedCertLoc(properties.getProperty("ca.certificates.directory"));
+            gsiSecurityContext.setTrustedCertLoc(properties.getProperty("certificate.path"));
 
             ct.addSecurityContext(MYPROXY, gsiSecurityContext);
 
@@ -161,7 +161,8 @@ public class FileBreedGramTest {
             ActualParameter input_file = new ActualParameter();
 //            URI InputFile =  URI.create("/gpfs1/u/ac/ccguser/alatop.inp");
             String InputFile =  "/gpfs1/u/ac/ccguser/alatop.inp";
-            ((StringParameterType) input_file.getType()).setValue(InputFile);
+            input_file.getType().changeType(URIParameterType.type);
+            ((URIParameterType) input_file.getType()).setValue(InputFile);
             input.add("input_file", input_file);
 
             /*
