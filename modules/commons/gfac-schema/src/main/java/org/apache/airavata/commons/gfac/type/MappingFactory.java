@@ -37,6 +37,10 @@ import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /*
  * TODO use XML meta data instead of static coding
  * 
@@ -106,19 +110,20 @@ public class MappingFactory {
         } else if (param.hasType(DataType.URI)) {
             return String.valueOf(((URIParameterType) param.getType()).getValue());
         } else if (param.hasType(DataType.STRING_ARRAY)) {
-            return String.valueOf(((StringArrayType) param.getType()).getValueArray());
+           return join(Arrays.asList(((StringArrayType) param.getType()).getValueArray()),",");
         } else if (param.hasType(DataType.INTEGER_ARRAY)) {
+            //todo return proper string array from int,double,boolean arrays
             return String.valueOf(((IntegerArrayType) param.getType()).getValueArray());
         } else if (param.hasType(DataType.DOUBLE_ARRAY)) {
             return String.valueOf(((DoubleArrayType) param.getType()).getValueArray());
         } else if (param.hasType(DataType.BOOLEAN_ARRAY)) {
             return String.valueOf(((BooleanArrayType) param.getType()).getValueArray());
         } else if (param.hasType(DataType.FILE_ARRAY)) {
-            return String.valueOf(((FileArrayType) param.getType()).getValueArray());
+            return join(Arrays.asList(((FileArrayType) param.getType()).getValueArray()),",");
         } else if (param.hasType(DataType.FLOAT_ARRAY)) {
             return String.valueOf(((FloatArrayType) param.getType()).getValueArray());
         } else if (param.hasType(DataType.URI_ARRAY)) {
-            return String.valueOf(((URIArrayType) param.getType()).getValueArray());
+           return join(Arrays.asList(((URIArrayType) param.getType()).getValueArray()),",");
         }
         return null;
     }
@@ -145,5 +150,22 @@ public class MappingFactory {
         } else if (param.hasType(DataType.URI)) {
             ((URIParameterType) param.getType()).setValue((val));
         }
+    }
+
+    public static String join(List<String> list, String delim) {
+
+        StringBuilder sb = new StringBuilder();
+
+        String loopDelim = "";
+
+        for (String s : list) {
+
+            sb.append(loopDelim);
+            sb.append(s);
+
+            loopDelim = delim;
+        }
+
+        return sb.toString();
     }
 }
