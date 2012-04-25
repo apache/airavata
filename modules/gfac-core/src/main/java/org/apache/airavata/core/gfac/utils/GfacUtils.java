@@ -201,9 +201,9 @@ public class GfacUtils {
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
             if (!"".equals(element.getText())) {
-                while (value.hasNext()) {
-                    innerelement = (OMElement) value.next();
-                    ((StringArrayType) actualParameter.getType()).insertValue(i++, element.getText());
+                String[] list = element.getText().split(",");
+                for(String arrayValue:list){
+                    ((StringArrayType) actualParameter.getType()).insertValue(i++, arrayValue);
                 }
             } else {
                 while (value.hasNext()) {
@@ -216,9 +216,9 @@ public class GfacUtils {
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
             if (!"".equals(element.getText())) {
-                while (value.hasNext()) {
-                    innerelement = (OMElement) value.next();
-                    ((DoubleArrayType) actualParameter.getType()).insertValue(i++, new Double(element.getText()));
+                String[] list = element.getText().split(",");
+                for(String arrayValue:list){
+                    ((DoubleArrayType) actualParameter.getType()).insertValue(i++, new Double(arrayValue));
                 }
             } else {
                 while (value.hasNext()) {
@@ -232,12 +232,11 @@ public class GfacUtils {
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
             if (!"".equals(element.getText())) {
-                while (value.hasNext()) {
-                    innerelement = (OMElement) value.next();
-                    ((IntegerArrayType) actualParameter.getType()).insertValue(i++, new Integer(element.getText()));
+               String[] list = element.getText().split(",");
+                for(String arrayValue:list){
+                    ((IntegerArrayType) actualParameter.getType()).insertValue(i++, new Integer(arrayValue));
                 }
             } else {
-
                 while (value.hasNext()) {
                     innerelement = (OMElement) value.next();
                     ((IntegerArrayType) actualParameter.getType()).insertValue(i++, new Integer(innerelement.getText()));
@@ -248,9 +247,9 @@ public class GfacUtils {
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
             if (!"".equals(element.getText())) {
-                while (value.hasNext()) {
-                    innerelement = (OMElement) value.next();
-                    ((FloatArrayType) actualParameter.getType()).insertValue(i++, new Float(element.getText()));
+                String[] list = element.getText().split(",");
+                for(String arrayValue:list){
+                    ((FloatArrayType) actualParameter.getType()).insertValue(i++, new Float(arrayValue));
                 }
             } else {
 
@@ -264,9 +263,9 @@ public class GfacUtils {
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
             if (!"".equals(element.getText())) {
-                while (value.hasNext()) {
-                    innerelement = (OMElement) value.next();
-                    ((BooleanArrayType) actualParameter.getType()).insertValue(i++, new Boolean(element.getText()));
+                String[] list = element.getText().split(",");
+                for(String arrayValue:list){
+                    ((BooleanArrayType) actualParameter.getType()).insertValue(i++, new Boolean(arrayValue));
                 }
             } else {
 
@@ -280,9 +279,9 @@ public class GfacUtils {
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
             if (!"".equals(element.getText())) {
-                while (value.hasNext()) {
-                    innerelement = (OMElement) value.next();
-                    ((FileArrayType) actualParameter.getType()).insertValue(i++, element.getText());
+                String[] list = element.getText().split(",");
+                for(String arrayValue:list){
+                    ((FileArrayType) actualParameter.getType()).insertValue(i++, arrayValue);
                 }
             } else {
 
@@ -296,9 +295,9 @@ public class GfacUtils {
             Iterator value = element.getChildrenWithLocalName("value");
             int i = 0;
             if (!"".equals(element.getText())) {
-                while (value.hasNext()) {
-                    innerelement = (OMElement) value.next();
-                    ((URIArrayType) actualParameter.getType()).insertValue(i++, element.getText());
+                String[] list = element.getText().split(",");
+                for(String arrayValue:list){
+                    ((URIArrayType) actualParameter.getType()).insertValue(i++,arrayValue);
                 }
             } else {
 
