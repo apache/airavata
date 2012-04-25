@@ -167,38 +167,39 @@ public class GridFtp {
     }
 
     public void uploadFile(URI srcURI,  URI destURI, GSSCredential gsCredential) throws ToolsException {
-        GridFTPClient ftpClient = null;
-        GridFTPContactInfo contactInfo = new GridFTPContactInfo(destURI.getHost(), destURI.getPort());
-
+        GridFTPClient srcClient = null;
+        GridFTPContactInfo destContactInfo = new GridFTPContactInfo(destURI.getHost(), destURI.getPort());
+        GridFTPContactInfo srcContactInfo = new GridFTPContactInfo(srcURI.getHost(),srcURI.getPort());
         try {
-
             String remoteFile = destURI.getPath();
             log.info("The remote file is " + remoteFile);
-
             log.debug("Setup GridFTP Client");
+            srcClient = new GridFTPClient(srcContactInfo.hostName, srcContactInfo.port);
+            srcClient.setAuthorization(new HostAuthorization("host"));
+            srcClient.authenticate(gsCredential);
+            srcClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
 
-            ftpClient = new GridFTPClient(contactInfo.hostName, contactInfo.port);
-            ftpClient.setAuthorization(new HostAuthorization("host"));
-            ftpClient.authenticate(gsCredential);
-            ftpClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
+            GridFTPClient destClient = new GridFTPClient(srcContactInfo.hostName, srcContactInfo.port);
+            destClient.setAuthorization(new HostAuthorization("host"));
+            destClient.authenticate(gsCredential);
+            destClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
+
 
             log.debug("Uploading file");
-
-//            ftpClient.put(remoteFile, new DataSourceStream(io), new MarkerListener() {
-//                public void markerArrived(Marker marker) {
-//                }
-//            });
+            srcClient.transfer(srcURI.getPath(),destClient, remoteFile, false, null);
 
             log.info("Upload file to:" + remoteFile + " is done");
 
         } catch (ServerException e) {
-            throw new ToolsException("Cannot upload file to GridFTP:" + contactInfo.toString(), e);
+            throw new ToolsException("Cannot upload file to GridFTP:" + destContactInfo.toString(), e);
         } catch (IOException e) {
-            throw new ToolsException("Cannot upload file to GridFTP:" + contactInfo.toString(), e);
+            throw new ToolsException("Cannot upload file to GridFTP:" + destContactInfo.toString(), e);
+        } catch (ClientException e) {
+            throw new ToolsException("Cannot upload file to GridFTP:" + destContactInfo.toString(), e);
         } finally {
-            if (ftpClient != null) {
+            if (srcClient != null) {
                 try {
-                    ftpClient.close();
+                    srcClient.close();
                 } catch (Exception e) {
                     log.warn("Cannot close GridFTP client connection");
                 }
