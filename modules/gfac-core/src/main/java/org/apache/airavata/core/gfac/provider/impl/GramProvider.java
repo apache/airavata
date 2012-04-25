@@ -21,8 +21,8 @@
 
 package org.apache.airavata.core.gfac.provider.impl;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
@@ -317,7 +317,6 @@ public class GramProvider extends AbstractProvider {
 					.getValue(paramName);
 			//TODO: Review this with type
 			if ("URI".equals(actualParameter.getType().getType().toString())) {
-				if(paramValue.startsWith("gsiftp") || paramValue.startsWith("http")){
 					URI gridftpURL;
 					try {
                         gridftpURL = new URI(paramValue);
@@ -328,19 +327,36 @@ public class GramProvider extends AbstractProvider {
                         GSSCredential gssCred = gssContext.getGssCredentails();
                         for (String endpoint : host.getGridFTPEndPointArray()) {
                             URI inputURI = GfacUtils.createGsiftpURI(endpoint, app.getInputDataDirectory());
-                            ftp.uploadFile(gridftpURL, GfacUtils.createGsiftpURI(endpoint, inputURI.getPath() + gridftpURL.getPath()), gssCred);
+                            String fileName = new File(gridftpURL.getPath()).getName();
+                            String s = inputURI.getPath() + File.separator + fileName;
+                            URI destURI = GfacUtils.createGsiftpURI(endpoint, s);
+                            //if user give a url just to refer an endpoint, not a web resource we are not doing any transfer
+                            if (fileName != null && !"".equals(fileName)) {
+                                if (paramValue.startsWith("gsiftp")) {
+                                    ftp.uploadFile(gridftpURL, destURI, gssCred);
+                                    ((URIParameterType) actualParameter.getType()).setValue(destURI.getPath());
+                                } else if (paramValue.startsWith("http")) {
+                                    ftp.uploadFile(destURI,
+                                            gssCred, (gridftpURL.toURL().openStream()));
+                                    ((URIParameterType) actualParameter.getType()).setValue(destURI.getPath());
+                                }else {
+                                    //todo throw exception telling unsupported protocol
+//                                    new
+                                }
+                            }
                         }
-                        ((URIParameterType) actualParameter.getType()).setValue(gridftpURL.getPath());
-                        log.info("File: " + paramValue + " moved to " + gridftpURL.getPath());
                     } catch (URISyntaxException e) {
                         throw new ProviderException(e.getMessage(), e);
                     } catch (ToolsException e) {
                         throw new ProviderException(e.getMessage(), e);
                     } catch (SecurityException e) {
                         throw new ProviderException(e.getMessage(), e);
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    } catch (IOException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
 
-                }
             }
 			inputNew.add(paramName, actualParameter);
 		}
