@@ -109,14 +109,6 @@ Portions of the included xmlbeans library were originally based on the following
 - software copyright (c) 2000-2003, BEA Systems, <http://www.bea.com/>.
 
 ====================================================================================
-Apache Commons Logging Notice:
-
-This product includes/uses software(s) developed by 'an unknown organization'
-  - Unnamed - avalon-framework:avalon-framework:jar:4.1.3
-  - Unnamed - log4j:log4j:jar:1.2.12
-  - Unnamed - logkit:logkit:jar:1.0.1
-
-====================================================================================
 Apache Derby Notice:
 
 Portions of Derby were originally developed by
