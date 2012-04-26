@@ -335,7 +335,11 @@ public class GramProvider extends AbstractProvider {
                                 if (paramValue.startsWith("gsiftp")) {
                                     ftp.uploadFile(gridftpURL, destURI, gssCred);
                                     ((URIParameterType) actualParameter.getType()).setValue(destURI.getPath());
-                                } else if (paramValue.startsWith("http")) {
+                                } else if (paramValue.startsWith("file")) {
+                                    String localFile = paramValue.substring(paramValue.indexOf(":")+1, paramValue.length());
+                                    ftp.uploadFile(destURI, gssCred, new FileInputStream(localFile));
+                                    ((URIParameterType) actualParameter.getType()).setValue(destURI.getPath());
+                                }else if (paramValue.startsWith("http")) {
                                     ftp.uploadFile(destURI,
                                             gssCred, (gridftpURL.toURL().openStream()));
                                     ((URIParameterType) actualParameter.getType()).setValue(destURI.getPath());
