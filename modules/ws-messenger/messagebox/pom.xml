@@ -10,86 +10,79 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<parent>
-		<groupId>org.apache.airavata</groupId>
-		<artifactId>ws-messenger</artifactId>
-		<version>0.2-incubating</version>
-	</parent>
+    <parent>
+        <groupId>org.apache.airavata</groupId>
+        <artifactId>ws-messenger</artifactId>
+        <version>0.2-incubating</version>
+    </parent>
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.apache.airavata</groupId>
-	<artifactId>messagebox</artifactId>
-	<packaging>jar</packaging>
-	<name>MessageBox</name>
-	<url>http://incubator.apache.org/airavata/</url>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.airavata</groupId>
+    <artifactId>messagebox</artifactId>
+    <packaging>jar</packaging>
+    <name>MessageBox</name>
+    <url>http://incubator.apache.org/airavata/</url>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>messenger-commons</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>messenger-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-		<!-- Logging -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
 
-		<!-- Test -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>messenger-client</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<!-- Axis2 for test only -->
-		<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2-transport-http</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2-transport-local</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	<build>
-		<defaultGoal>install</defaultGoal>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.axis2</groupId>
-				<artifactId>axis2-aar-maven-plugin</artifactId>
-				<version>${axis2.version}</version>
-				<configuration>
-					<servicesXmlFile>src/main/resources/services.xml</servicesXmlFile>
-				</configuration>
-				<executions>
-					<execution>
-						<id>createAAR</id>
-						<phase>package</phase>
-						<goals>
-							<goal>aar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-		<resources>
-			<resource>
-				<directory>resources</directory>
-				<targetPath>META-INF</targetPath>
-				<includes>
-					<include>**/*.wsdl</include>
-					<include>**/*.xml</include>
-				</includes>
-			</resource>
-		</resources>
-	</build>
+        <!-- Test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>messenger-client</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Axis2 for test only -->
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-transport-http</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-transport-local</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.3</version>
+                <executions>
+                    <execution>
+                        <id>restore-persistence</id>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <tasks>
+                                <copy file="${project.build.outputDirectory}/services.xml" tofile="${project.build.outputDirectory}/META-INF/services.xml" />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+
+    </build>
 </project>

@@ -20,7 +20,6 @@
 		<groupId>org.apache</groupId>
 		<artifactId>apache</artifactId>
 		<version>10</version>
-		<relativePath />
 	</parent>
 
 	<groupId>org.apache.airavata</groupId>
@@ -63,6 +62,9 @@
 		<log4j.version>1.2.16</log4j.version>
 		<axiom.version>1.2.8</axiom.version>
 		<surefire.version>2.10</surefire.version>
+        <jcr.version>2.0</jcr.version>
+         <xmlbeans.version>2.5.0</xmlbeans.version>
+        <xpp3.version>1.1.3_7</xpp3.version>
 	</properties>
 
 	<developers>
@@ -283,24 +285,9 @@
 				<version>${org.slf4j.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.axis2</groupId>
-				<artifactId>axis2</artifactId>
-				<version>${axis2.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
 				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.jcr</groupId>
-				<artifactId>jcr</artifactId>
-				<version>2.0</version>
-			</dependency>
-			<dependency>
-				<groupId>xmlbeans</groupId>
-				<artifactId>xbean</artifactId>
-				<version>2.5.0</version>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
@@ -308,39 +295,20 @@
 				<version>4.7</version>
 			</dependency>
 			<dependency>
-				<groupId>xerces</groupId>
-				<artifactId>xercesImpl</artifactId>
-				<version>2.9.1</version>
-			</dependency>
-			<dependency>
-				<groupId>xpp3</groupId>
-				<artifactId>xpp3</artifactId>
-				<version>1.1.3_7</version>
-			</dependency>
-			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-simple</artifactId>
 				<version>${org.slf4j.version}</version>
 			</dependency>
-
-			<dependency>
-				<groupId>xsul</groupId>
-				<artifactId>xsul</artifactId>
-				<version>2.10.5_b</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.jackrabbit</groupId>
-				<artifactId>jackrabbit-core</artifactId>
-				<version>${jackrabbit.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.jackrabbit</groupId>
-				<artifactId>jackrabbit-jcr-rmi</artifactId>
-				<version>${jackrabbit.version}</version>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<repositories>
+	    <repository>
+            <id>central</id>
+            <name>Maven Central</name>
+            <url>http://repo1.maven.org/maven2</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
 		<repository>
 			<id>apache.snapshots</id>
 			<name>Apache Snapshot Repository</name>
@@ -365,24 +333,6 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-		</repository>
-		<repository>
-			<id>ibiblio</id>
-			<name>ibiblio Repository</name>
-			<url>http://mirrors.ibiblio.org/pub/mirrors/maven2
-            </url>
-		</repository>
-		<repository>
-			<id>maven 2 java.net</id>
-			<name>2 java.net Maven Repository</name>
-			<url>http://download.java.net/maven/2/
-            </url>
-			<layout>default</layout>
-		</repository>
-		<repository>
-			<id>apache-repo</id>
-			<name>Apache Yfilter repo</name>
-			<url>http://people.apache.org/~lahiru/maven-repo</url>
 		</repository>
 		<repository>
 			<id>OW2</id>
@@ -565,21 +515,6 @@
 			</modules>
 		</profile>
 		<profile>
-			<id>profile-workflow-interpreter</id>
-			<activation>
-				<property>
-					<name>module</name>
-					<value>workflow-interpreter</value>
-				</property>
-			</activation>
-			<modules>
-				<module>modules/commons</module>
-				<module>modules/ws-messenger</module>
-				<module>modules/xbaya-gui</module>
-				<module>modules/workflow-interpreter</module>
-			</modules>
-		</profile>
-		<profile>
 			<id>profile-workflow-tracking</id>
 			<activation>
 				<property>
@@ -605,11 +540,6 @@
 				<module>modules/xbaya-gui</module>
 			</modules>
 		</profile>
-
-
-		<!--profile> <id>maven-3</id> <activation> <file> <exists>${basedir}</exists> </file> </activation> <build> <plugins> <plugin> 
-			<groupId>org.apache.maven.plugins</groupId> <artifactId>maven-site-plugin</artifactId> <executions> <execution> <id>attach-descriptor</id> 
-			<goals> <goal>attach-descriptor</goal> </goals> </execution> </executions> </plugin> </plugins> </build> </profile -->
 
 	</profiles>
 </project>

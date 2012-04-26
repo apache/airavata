@@ -31,6 +31,7 @@
         <dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
+            <version>${jcr.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -46,8 +47,6 @@
             <artifactId>common-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
-        
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
@@ -62,11 +61,13 @@
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-core</artifactId>
+            <version>${jackrabbit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-rmi</artifactId>
+            <version>${jackrabbit.version}</version>
             <scope>test</scope>
         </dependency>
         

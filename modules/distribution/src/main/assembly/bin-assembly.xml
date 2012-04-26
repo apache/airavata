@@ -38,8 +38,11 @@
 			<directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
 			<outputDirectory>standalone-server/lib</outputDirectory>
 			<includes>
-                <include>*.jar</include>
+                		<include>*.jar</include>
 			</includes>
+			<excludes>
+                                <exclude>xom*.jar</exclude>
+                        </excludes>
 		</fileSet>
 		<fileSet>
 			<directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
@@ -58,25 +61,6 @@
 			</includes>
 		</fileSet>
 
-		<!-- ********************** copymessagebrokeraar ********************** -->
-		<fileSet>
-			<directory>../ws-messenger/messagebroker/target</directory>
-			<outputDirectory>standalone-server/repository/services
-			</outputDirectory>
-			<includes>
-				<include>messagebroker*.aar</include>
-			</includes>
-		</fileSet>
-
-		<!-- ********************** copy messagebox aar ********************** -->
-		<fileSet>
-			<directory>../ws-messenger/messagebox/target</directory>
-			<outputDirectory>standalone-server/repository/services
-			</outputDirectory>
-			<includes>
-				<include>messagebox*.aar</include>
-			</includes>
-		</fileSet>
 
 
 		<!-- ********************** copy wsmg.broker and messagebox property files ********************** -->
@@ -98,67 +82,10 @@
 			</includes>
 		</fileSet>
 
-		<!-- ********************** copymessagebrokerjar ********************** -->
-		<fileSet>
-			<directory>../ws-messenger/messagebroker/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>messagebroker*.jar</include>
-			</includes>
-		</fileSet>
 
-		<!-- ********************** copy messagebox jar ********************** -->
-		<fileSet>
-			<directory>../ws-messenger/messagebox/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>messagebox*.jar</include>
-			</includes>
-		</fileSet>
 
-		<!-- ********************** copy commons and client jar ********************** -->
-		<fileSet>
-			<directory>../ws-messenger/commons/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>messenger-commons*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../ws-messenger/client/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>messenger-client*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../ws-messenger/client/target/</directory>
-			<outputDirectory>standalone-server/lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../ws-messenger/commons/target/</directory>
-			<outputDirectory>standalone-server/lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../ws-messenger/client/target/</directory>
-			<outputDirectory>standalone-server/lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../ws-messenger/commons/target/</directory>
-			<outputDirectory>standalone-server/lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
+
+
 
 		<!-- ********************** copy messagebroker+ messagebox samples ********************** -->
 		<fileSet>
@@ -180,14 +107,7 @@
 		</fileSet>
 
 
-		<!-- ********************** copy messenger servlet ********************** -->
-		<fileSet>
-			<directory>../ws-messenger/messenger/target</directory>
-			<outputDirectory>messenger</outputDirectory>
-			<includes>
-				<include>messenger*.war</include>
-			</includes>
-		</fileSet>
+
 
 
 		<!-- ********************** copy readme files ********************** -->
@@ -227,20 +147,7 @@
 				<include>*sql*</include>
 			</includes>
 		</fileSet>
-		<fileSet>
-			<directory>../xbaya-gui/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../commons/workflow-tracking/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
+
 		<fileSet>
 			<directory>resources/bin</directory>
 			<outputDirectory>bin</outputDirectory>
@@ -248,20 +155,8 @@
 				<include>*.sh</include>
 			</includes>
 		</fileSet>
-		<fileSet>
-			<directory>../gfac-axis2/target</directory>
-			<outputDirectory>standalone-server/repository/services</outputDirectory>
-			<includes>
-				<include>*.aar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../xbaya-gui/target</directory>
-			<outputDirectory>standalone-server/repository/services</outputDirectory>
-			<includes>
-				<include>*.aar</include>
-			</includes>
-		</fileSet>
+
+
 		<fileSet>
 			<directory>../../samples/simple-math-service/target</directory>
 			<outputDirectory>standalone-server/repository/services</outputDirectory>
@@ -281,41 +176,6 @@
 			<outputDirectory>standalone-server/repository/services</outputDirectory>
 			<includes>
 				<include>*.aar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../commons/gfac-schema/target</directory>
-			<outputDirectory>standalone-server/lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../commons/gfac-schema/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../commons/registry-api/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../commons/utils/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../commons/workflow-execution-context/target</directory>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*.jar</include>
 			</includes>
 		</fileSet>
         <fileSet>
@@ -373,40 +233,57 @@
 				<include>commons-configuration:commons-configuration</include>
 				<include>commons-lang:commons-lang</include>
 				<include>xpp3:xpp3</include>
-			</includes>
-		</dependencySet>
-
-		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
 				<include>gpel:gpel_client</include>
 				<include>xpp5:xpp5</include>
-				<include>xpp3:xpp3</include>
 				<include>xpp3:xpp3_xpath</include>
-				<include>org.apache.jackrabbit:jackrabbit-standalone:jar</include>
 				<include>xsul:xsul:jar</include>
-				<include>xsul5-ogce:xsul5-2007-02-27:jar</include>
-				<include>gfac:gfac-schema-utils</include>
-				<include>lead-security:cryptix32</include>
-				<include>lead-security:jce</include>
-				<include>lead-security:cryptix-asn1</include>
-				<include>lead-security:puretls</include>
-				<include>xutil:xutil</include>
-				<include>jython:jython</include>
-				<include>lead-security:cog-jglobus</include>
-				<include>xmlbeans:xbean</include>
-				<include>xmlbeans-ogce:jsr173_api</include>
-				<include>xbaya:pegasuswebservice</include>
-				<include>com.amazonaws:aws-java-sdk</include>
-				<include>amazon:MapReduce.Service.Client</include>
-				<include>net.java.dev.jets3t:jets3t</include>
-				<include>wsmg:wsmg</include>
-				<include>ode-proxy:weps-beans</include>
-				<include>atomixmiser:atomixmiser</include>
+                <include>xsul5-ogce:xsul5-2007-02-27:jar</include>
+                <include>gfac:gfac-schema-utils</include>
+                <include>lead-security:cryptix32</include>
+                <include>lead-security:jce</include>
+                <include>lead-security:cryptix-asn1</include>
+                <include>lead-security:puretls</include>
+                <include>xutil:xutil</include>
+                <include>jython:jython</include>
+                <include>lead-security:cog-jglobus</include>
+                <include>xmlbeans:xbean</include>
+                <include>xmlbeans-ogce:jsr173_api</include>
+                <include>xbaya:pegasuswebservice</include>
+                <include>com.amazonaws:aws-java-sdk</include>
+                <include>amazon:MapReduce.Service.Client</include>
+                <include>net.java.dev.jets3t:jets3t</include>
+                <include>wsmg:wsmg</include>
+                <include>atomixmiser:atomixmiser</include>
                 <include>globus:transfer-api-client</include>
-			</includes>
+                <include>org.apache.airavata:registry-api</include>
+                <include>org.apache.airavata:workflow-execution-context</include>
+                <include>org.apache.airavata:workflowtracking</include>
+                <include>org.apache.airavata:gfac-core</include>
+                <include>org.apache.airavata:messenger-client</include>
+                <include>org.apache.airavata:messenger-commons</include>
+                <include>org.apache.airavata:gfac-schema-utils</include>
+                <include>org.apache.airavata:common-utils</include>
+                <include>edu.berkeley:yfilter</include>
+                <include>javax.servlet:servlet-api</include>
+            </includes>
+        </dependencySet>
 
-		</dependencySet>
+        <dependencySet>
+            <outputDirectory>standalone-server/repository/services</outputDirectory>
+            <includes>
+                <include>org.apache.airavata:messagebox:jar</include>
+                <include>org.apache.airavata:messagebroker:jar</include>
+                <include>org.apache.airavata:xbaya-gui:jar</include>
+                <include>org.apache.airavata:gfac-axis2-interface:jar</include>
+            </includes>
+        </dependencySet>
+
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>org.apache.jackrabbit:jackrabbit-standalone:jar</include>
+            </includes>
+        </dependencySet>
 	</dependencySets>
 
 </assembly>
