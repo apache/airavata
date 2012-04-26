@@ -17,30 +17,6 @@ weps-beans, pegasuswebservice, mapReduce-service-client, xsul, xutil, wsmg)
 developed by Indiana University (http://www.extreme.indiana.edu/).
 
 ===========================================================================
-SLF4J Notice:
-
-This product includes unmodified, binary redistributions of software (slf4j) 
-developed by QOS.ch (http://slf4j.org), which is licensed under the MIT license.
-An original copy of the license can be found at http://slf4j.org/license.html
-
-==============================================================================
-DOM4J Notice;
-
-This product includes software developed by the Dom4j project 
-(http://www.dom4j.org), licensed under BSD style license:
-
-=========================================================================
-WSDL4J Notice:
-
-The Program includes all or portions of the following software which is
-subject to the Common Public License ("CPL Code").  This software
-consists of voluntary contributions made by many individuals on behalf of
-the WSDL4J project.
-
-You may download the source version of the WSDL4J component at
-http://sourceforge.net/projects/wsdl4j
-
-===========================================================================
 Apache Jackrabbit Notice:
 
 Based on source code originally developed by
@@ -205,18 +181,6 @@ classes.
 
 For additional credits (generally to people who reported problems)
 see CREDITS file.
-
-=========================================================================
-ICU4J Notice: 
-
-ICU4J, (under contrib/icu) is licensed under an MIT styles license
-(contrib/icu/lib/ICU-LICENSE.txt) and Copyright (c) 1995-2008
-International Business Machines Corporation and others
-
-=========================================================================
-Jettison Notice: 
-
-Copyright 2006 Envoi Solutions LLC
 
 =========================================================================
 Jython Notice: 
