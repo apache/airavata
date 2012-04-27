@@ -75,9 +75,9 @@ broker.socket.timeout	        Connection timeout in milliseconds.Set this to '0'
 broker.storage.type	            Specifies message, subscriptions should be stored in a database or not.	 memory or persistent
 (memory/persistent)
 broker.delivery.method	        Specifies what mechanism to be used deliver messages.
-(serial,parallel,pcrew)         serial – single threaded delivery
-                                parallel – dynamic thread pool based delivery
-                                pcrew – fixed thread pool based delivery
+(serial,parallel,pcrew)         serial:  single threaded delivery
+                                parallel:  dynamic thread pool based delivery
+                                pcrew: fixed thread pool based delivery
                                 serial , parallel or pcrew
 broker.msg.delivery.retries	    Number of message delivery failures before a url become black listed (default is 2)	 2
 consumer.expiration.time.gap	Time period (in seconds) a url will be kept blacklisted (default is 5 seconds)	 5
