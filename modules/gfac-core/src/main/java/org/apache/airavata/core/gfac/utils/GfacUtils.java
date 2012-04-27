@@ -142,9 +142,11 @@ public class GfacUtils {
             actualParameter = new ActualParameter(StringParameterType.type);
             if (!"".equals(element.getText())) {
                 ((StringParameterType) actualParameter.getType()).setValue(element.getText());
-            } else {
+            } else if(element.getChildrenWithLocalName("value").hasNext()){
                 innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
                 ((StringParameterType) actualParameter.getType()).setValue(innerelement.getText());
+            } else{
+               ((StringParameterType) actualParameter.getType()).setValue("");
             }
         } else if ("Double".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(DoubleParameterType.type);
@@ -190,11 +192,13 @@ public class GfacUtils {
             actualParameter = new ActualParameter(URIParameterType.type);
             if (!"".equals(element.getText())) {
                 ((URIParameterType) actualParameter.getType()).setValue(element.getText());
-            } else {
+            } else if(element.getChildrenWithLocalName("value").hasNext()){
                 innerelement = (OMElement) element.getChildrenWithLocalName("value").next();
                 System.out.println(actualParameter.getType().toString());
                 log.debug(actualParameter.getType().toString());
                 ((URIParameterType) actualParameter.getType()).setValue(innerelement.getText());
+            } else{
+                ((URIParameterType) actualParameter.getType()).setValue("");
             }
         } else if ("StringArray".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(StringArrayType.type);
