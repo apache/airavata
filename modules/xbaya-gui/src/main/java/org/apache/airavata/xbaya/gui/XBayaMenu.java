@@ -30,6 +30,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import org.apache.airavata.xbaya.XBayaConfiguration;
+import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.amazonEC2.gui.AmazonEC2Menu;
@@ -47,7 +49,7 @@ import org.apache.airavata.xbaya.monitor.gui.MonitorMenu;
 import org.apache.airavata.xbaya.pegasus.gui.PegasusMenu;
 import org.apache.airavata.xbaya.wf.gui.WorkflowMenu;
 
-public class XBayaMenu implements XBayaComponent {
+public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
 
     private XBayaEngine engine;
 
@@ -96,6 +98,7 @@ public class XBayaMenu implements XBayaComponent {
         this.setEngine(engine);
         setToolBar(toolBar);
         initMenu();
+		engine.getConfiguration().registerExecutionModeChangeListener(this);
 //        SwingUtilities.invokeLater(new Runnable() {
 //            public void run() {
 //                try {
@@ -126,6 +129,7 @@ public class XBayaMenu implements XBayaComponent {
 		registerApplications = new RegisterApplicationsMenu(getEngine());
 
 		createMenuBar();
+		executionModeChanged(getEngine().getConfiguration());
 	}
 
     /**
@@ -149,21 +153,10 @@ public class XBayaMenu implements XBayaComponent {
         menuBar.add(runMenuItem.getMenu());
         menuBar.add(toolsMenuItem.getMenu());
         menuBar.add(registryMenuItem.getMenu());
-
-//        this.menuBar.add(this.fileMenu.getMenu());
-//        this.menuBar.add(this.workflowMenu.getMenu());
-//        this.menuBar.add(this.componentMenu.getMenu());
-//        this.menuBar.add(this.experimentMenu.getMenu());
-//        menuBar.add(this.amazonEC2Menu.getMenu());
-//        // this.menuBar.add(this.myProxyMenu.getMenu());
-//        this.menuBar.add(this.monitorMenu.getMenu());
-//        this.menuBar.add(this.registerApplications.getMenu());
-
         // Space before Help
         this.menuBar.add(Box.createHorizontalGlue());
 
         this.menuBar.add(createHelpMenu());
-
     }
 
     private JMenu createHelpMenu() {
@@ -202,6 +195,11 @@ public class XBayaMenu implements XBayaComponent {
 
 	public void setToolBar(XBayaToolBar toolBar) {
 		this.toolBar = toolBar;
+	}
+
+	@Override
+	public void executionModeChanged(XBayaConfiguration config) {
+		this.menuBar.setVisible(config.getXbayaExecutionMode()==XBayaExecutionMode.IDE);	
 	}
 
 }

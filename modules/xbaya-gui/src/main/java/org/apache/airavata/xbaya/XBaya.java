@@ -24,6 +24,7 @@ package org.apache.airavata.xbaya;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.slf4j.Logger;
@@ -87,7 +88,7 @@ public class XBaya {
                 + " [-karmaWorkflowInstanceID]" + " [-myProxyPort port]" + " [-myProxyUsername username]"
                 + " [-myProxyLifetime sec]" + " [-loadMyProxy {true,false}]" + " [-messageBoxURL url]"
                 + " [-width width]" + " [-height height]" + " [-exitOnClose false/true]" + "[-enableProvenance false/true]"
-                + "[-enableProvenanceSmartRun false/true]" + "[-runWithCrossProduct true/false]");
+                + "[-enableProvenanceSmartRun false/true]" + "[-runWithCrossProduct true/false]"+"[-mode ide/monitor]");
     }
 
     private void parseArguments(String[] args) {
@@ -257,8 +258,11 @@ public class XBaya {
                     if ("false".equalsIgnoreCase(exit)) {
                         this.config.setRunWithCrossProduct(false);
                     }
-                }
-                else {
+                }  else if ("-mode".equalsIgnoreCase(arg)) {
+                	index++;
+                	String modeValue = args[index].toUpperCase();
+                	this.config.setXbayaExecutionMode(XBayaExecutionMode.valueOf(modeValue));
+                }  else {
                     String message = "Unknown option: " + arg;
                     logger.error(message);
                     this.config.addError(new XBayaException(message));

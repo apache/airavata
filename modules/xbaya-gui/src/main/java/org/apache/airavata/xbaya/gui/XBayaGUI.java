@@ -50,6 +50,7 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
+import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
@@ -74,7 +75,7 @@ import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class XBayaGUI implements EventListener {
+public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 
     private static final Logger logger = LoggerFactory.getLogger(XBayaGUI.class);
 
@@ -131,6 +132,7 @@ public class XBayaGUI implements EventListener {
         this.engine = engine;
         this.engine.getMonitor().addEventListener(this);
         graphFiler = new WorkflowFiler(engine);
+        engine.getConfiguration().registerExecutionModeChangeListener(this);
 
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
@@ -510,6 +512,7 @@ public class XBayaGUI implements EventListener {
 //        newGraphCanvas(true);
 
         this.frame.setVisible(true);
+        executionModeChanged(this.engine.getConfiguration());
     }
 
     /**
@@ -739,6 +742,11 @@ public class XBayaGUI implements EventListener {
         String title = this.engine.getConfiguration().getTitle();
         this.frame.setTitle(workflowName + " - " + title);
     }
+
+	@Override
+	public void executionModeChanged(XBayaConfiguration config) {
+		this.leftSplitPane.setVisible(config.getXbayaExecutionMode()==XBayaExecutionMode.IDE);
+	}
 
 
 
