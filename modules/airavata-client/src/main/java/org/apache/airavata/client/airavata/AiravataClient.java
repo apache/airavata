@@ -46,6 +46,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.ValueFormatException;
 import javax.xml.namespace.QName;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.WorkflowExecution;
@@ -57,6 +58,9 @@ import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorStub;
+import org.apache.airavata.xbaya.monitor.Monitor;
+import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
+import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.axis2.AxisFault;
@@ -64,7 +68,7 @@ import org.apache.axis2.AxisFault;
 import xsul5.MLogger;
 
 public class AiravataClient {
-	private static final MLogger log = MLogger.getLogger();
+//	private static final MLogger log = MLogger.getLogger();
 
 	public static final String GFAC = "gfac";
 	public static final String JCR = "jcr";
@@ -84,6 +88,7 @@ public class AiravataClient {
 	public static final String WORKFLOWSERVICEURL = "xbaya.service.url";
     public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
     private AiravataClientConfiguration clientConfiguration;
+    private MonitorConfiguration monitorConfiguration;
 	private static String workflow = "";
 
 	private AiravataRegistry registry;
@@ -100,7 +105,7 @@ public class AiravataClient {
 
 	public AiravataClient(String fileName) throws RegistryException,
 			MalformedURLException, IOException {
-		URL url = this.getClass().getClassLoader().getResource(fileName);
+		URL url = this. getClass().getClassLoader().getResource(fileName);
 		if (url == null) {
 			url = (new File(fileName)).toURL();
 		}
@@ -162,7 +167,6 @@ public class AiravataClient {
 		configurations[11].setValue(properties.getProperty(TRUSTED_CERT_LOCATION));
 
 		updateClientConfiguration(configurations);
-
 	}
 
 	private void updateClientConfiguration(NameValue[] configurations)
@@ -320,26 +324,49 @@ public class AiravataClient {
 	}
 
 	public String runWorkflow(String topic, String user, String metadata) {
-		String worflowoutput = null;
-		try {
-			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
-					getClientConfiguration().getXbayaServiceURL().toString());
-			worflowoutput = stub.launchWorkflow(workflow, topic,
-					getClientConfiguration().getMyproxyPassword(),
-					getClientConfiguration().getMyproxyUsername(), null,
-					configurations);
-			runPostWorkflowExecutionTasks(topic, user, metadata);
-			log.info("Workflow output : " + worflowoutput);
-		} catch (AxisFault e) {
-			log.fine(e.getMessage(), e);
+        String worflowoutput = null;
+                try {
+                    WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
+                            getClientConfiguration().getXbayaServiceURL().toString());
+                    worflowoutput = stub.launchWorkflow(workflow, topic,
+                            getClientConfiguration().getMyproxyPassword(),
+                            getClientConfiguration().getMyproxyUsername(), null,
+                            configurations);
+                    runPostWorkflowExecutionTasks(worflowoutput, user, metadata);
+
+                } catch (AxisFault e) {
+//			log.fine(e.getMessage(), e);
 		} catch (RemoteException e) {
-			log.fine(e.getMessage(), e);
+//			log.fine(e.getMessage(), e);
 		} catch (RegistryException e) {
-			log.fine(e.getMessage(), e);
+//			log.fine(e.getMessage(), e);
 		}
-		return worflowoutput;
+//			log.info("Workflow output : " + worflowoutput);
+
+        return worflowoutput;
 	}
 
+    public void startMonitoring(String topic) {
+        final String fTopic = topic;
+        new Thread() {
+            /**
+             * @see java.lang.Thread#run()
+             */
+            @Override
+            public void run() {
+                try {
+                    monitorConfiguration = new MonitorConfiguration(new URI(getParameter(BROKER)), fTopic, true, new URI(getParameter(MSGBOX)));
+                    Monitor monitor = new Monitor(monitorConfiguration);
+                    monitor.setPrint(true);
+                    monitor.start();
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                } catch (MonitorException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+        }.start();
+    }
 	private void runPostWorkflowExecutionTasks(String topic, String user,
 			String metadata) throws RegistryException {
 		if (user != null) {
@@ -369,9 +396,9 @@ public class AiravataClient {
 					getClientConfiguration().getMyproxyUsername(), inputs,
 					configurations);
 			runPostWorkflowExecutionTasks(topic, user, metadata);
-			log.info("Workflow output : " + worflowoutput);
+//			log.info("Workflow output : " + worflowoutput);
 		} catch (RegistryException e) {
-			log.fine(e.getMessage(), e);
+//			log.fine(e.getMessage(), e);
 		}
 		return worflowoutput;
 	}
@@ -604,5 +631,14 @@ public class AiravataClient {
 		}
 		return null;
 	}
+
+    private String getParameter(String paramName){
+        for(NameValue param:configurations){
+            if(paramName.equals(param.getName())){
+                return param.getValue();
+            }
+        }
+        return null;
+    }
 
 }
