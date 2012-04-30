@@ -256,9 +256,9 @@
 			<version>2.5.1</version>
 		</dependency>
 		<dependency>
-			<groupId>lead-security</groupId>
+			<groupId>cog-jglobus</groupId>
 			<artifactId>cog-jglobus</artifactId>
-			<version>1.4</version>
+			<version>1.8.0_1</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
