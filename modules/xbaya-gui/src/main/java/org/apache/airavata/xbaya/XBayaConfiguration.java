@@ -30,6 +30,7 @@ import java.util.Observer;
 
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
+import org.apache.airavata.xbaya.gui.XBayaExecutionModeListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,6 +133,14 @@ public class XBayaConfiguration extends Observable implements Observer {
 
     private String trustedCertLocation = "";
 
+    private XBayaExecutionMode xbayaExecutionMode=XBayaExecutionMode.IDE;
+    
+    private List<XBayaExecutionModeListener> xbayaExecutionModeChangeListners=new ArrayList<XBayaExecutionModeListener>();
+    
+    public enum XBayaExecutionMode{
+    	IDE,
+    	MONITOR
+    }
     /**
      * Constructs an XwfConfiguration.
      */
@@ -844,4 +853,32 @@ public class XBayaConfiguration extends Observable implements Observer {
     public void setTrustedCertLocation(String trustedCertLocation) {
         this.trustedCertLocation = trustedCertLocation;
     }
+
+	public XBayaExecutionMode getXbayaExecutionMode() {
+		return xbayaExecutionMode;
+	}
+
+	public void setXbayaExecutionMode(XBayaExecutionMode xbayaExecutionMode) {
+		boolean modeChanged=(this.xbayaExecutionMode != xbayaExecutionMode);
+		this.xbayaExecutionMode = xbayaExecutionMode;
+		if (modeChanged) {
+			for (XBayaExecutionModeListener listner : xbayaExecutionModeChangeListners) {
+				try {
+					listner.executionModeChanged(this);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public void registerExecutionModeChangeListener(XBayaExecutionModeListener listner){
+		xbayaExecutionModeChangeListners.add(listner);
+	}
+	
+	public void unregisterExecutionModeChangeListener(XBayaExecutionModeListener listner){
+		if (xbayaExecutionModeChangeListners.contains(listner)) {
+			xbayaExecutionModeChangeListners.remove(listner);
+		}
+	}
 }

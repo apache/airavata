@@ -34,6 +34,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
+import org.apache.airavata.xbaya.XBayaConfiguration;
+import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.appwrapper.ApplicationDescriptionDialog;
@@ -43,6 +45,7 @@ import org.apache.airavata.xbaya.component.gui.URLRegistryWindow;
 import org.apache.airavata.xbaya.experiment.gui.RegistryLoaderWindow;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.gui.ToolbarButton;
+import org.apache.airavata.xbaya.gui.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.gui.XBayaToolBar;
 import org.apache.airavata.xbaya.menues.MenuIcons;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
@@ -50,7 +53,9 @@ import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class XBayaMenuItem {
+import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
+
+public class XBayaMenuItem implements XBayaExecutionModeListener {
 
     private static final Logger logger = LoggerFactory.getLogger(XBayaMenuItem.class);
 
@@ -116,7 +121,11 @@ public class XBayaMenuItem {
 
 	private XBayaToolBar toolBar;
 
-	private ToolbarButton saveToolBarButton;
+	private ToolbarButton toolbarButtonSave;
+
+	private ToolbarButton toolbarButtonOpen;
+
+	private ToolbarButton toolbarButtonNew;
 	
 	private static final String FILE_ACTIONS="file";
 	
@@ -141,7 +150,7 @@ public class XBayaMenuItem {
         this.exitItem = createExitItem();
 
         createFileMenu();
-        
+        engine.getConfiguration().registerExecutionModeChangeListener(this);
         XBayaToolBar.setGroupOrder(FILE_ACTIONS, 1);
     }
 
@@ -243,6 +252,7 @@ public class XBayaMenuItem {
 			@Override
 			public void menuCanceled(MenuEvent e) {}
 		});
+        executionModeChanged(engine.getConfiguration());
     }
 
     /**
@@ -368,7 +378,7 @@ public class XBayaMenuItem {
             }
         };
 		menuItem.addActionListener(action);
-		getToolBar().addToolbarButton(FILE_ACTIONS,menuItem.getText(), MenuIcons.NEW_ICON, "Create new workflow", action,1);
+		toolbarButtonNew=getToolBar().addToolbarButton(FILE_ACTIONS,menuItem.getText(), MenuIcons.NEW_ICON, "Create new workflow", action,1);
         return menuItem;
     }
 
@@ -423,7 +433,7 @@ public class XBayaMenuItem {
             }
         };
 		this.openWorkflowItem.addActionListener(action);
-		getToolBar().addToolbarButton(FILE_ACTIONS,openWorkflowItem.getText(), MenuIcons.OPEN_ICON, "Open workflow", action,2);
+		toolbarButtonOpen=getToolBar().addToolbarButton(FILE_ACTIONS,openWorkflowItem.getText(), MenuIcons.OPEN_ICON, "Open workflow", action,2);
     }
 
     private void createSaveWorkflowItem() {
@@ -434,12 +444,12 @@ public class XBayaMenuItem {
 			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
                 XBayaMenuItem.this.graphFiler.saveWorkflow();
-                saveToolBarButton.setEnabled(isSaveShouldBeActive());
+                toolbarButtonSave.setEnabled(isSaveShouldBeActive());
             }
         };
 		saveWorkflowItem.addActionListener(action);
-        saveToolBarButton = getToolBar().addToolbarButton(FILE_ACTIONS,saveWorkflowItem.getText(), MenuIcons.SAVE_ICON, "Save workflow", action,3);
-        saveToolBarButton.setEnabled(false);
+        toolbarButtonSave = getToolBar().addToolbarButton(FILE_ACTIONS,saveWorkflowItem.getText(), MenuIcons.SAVE_ICON, "Save workflow", action,3);
+        toolbarButtonSave.setEnabled(false);
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
             	while(engine.getGUI()==null){
@@ -448,7 +458,7 @@ public class XBayaMenuItem {
                 engine.getGUI().addWorkflowTabChangeListener(new ChangeListener(){
 					@Override
 					public void stateChanged(ChangeEvent event) {
-						saveToolBarButton.setEnabled(isSaveShouldBeActive());						
+						toolbarButtonSave.setEnabled(isSaveShouldBeActive());						
 					}
                 });
             }
@@ -574,5 +584,12 @@ public class XBayaMenuItem {
 
 	private boolean isWorkflowTabPresent() {
 		return engine.getGUI().getGraphCanvas() !=null;
+	}
+
+	@Override
+	public void executionModeChanged(XBayaConfiguration config) {
+		toolbarButtonNew.setVisible(config.getXbayaExecutionMode()==XBayaExecutionMode.IDE);
+		toolbarButtonSave.setVisible(config.getXbayaExecutionMode()==XBayaExecutionMode.IDE);
+		toolbarButtonOpen.setVisible(config.getXbayaExecutionMode()==XBayaExecutionMode.IDE);
 	}
 }

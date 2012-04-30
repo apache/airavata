@@ -28,15 +28,18 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
 import org.apache.airavata.xbaya.gui.ToolbarButton;
+import org.apache.airavata.xbaya.gui.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.gui.XBayaToolBar;
 import org.apache.airavata.xbaya.menues.MenuIcons;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RegistryMenuItem {
+public class RegistryMenuItem implements XBayaExecutionModeListener {
 
 	private static final String REGISTRY_ACTIONS = "registry_actions";
 
@@ -50,7 +53,7 @@ public class RegistryMenuItem {
 
     private XBayaToolBar toolBar;
 
-	private ToolbarButton jcrButton;
+	private ToolbarButton toolbarButtonJCR;
     
     /**
      * Constructs a WorkflowMenu.
@@ -61,6 +64,7 @@ public class RegistryMenuItem {
         this.engine = engine;
         setToolBar(toolBar);
         createWorkflowMenu();
+		engine.getConfiguration().registerExecutionModeChangeListener(this);
     }
 
     /**
@@ -80,6 +84,7 @@ public class RegistryMenuItem {
         registryMenu.setMnemonic(KeyEvent.VK_G);
 
         registryMenu.add(this.jcrRegistryItem);
+        executionModeChanged(engine.getConfiguration());
 
     }
     
@@ -98,7 +103,7 @@ public class RegistryMenuItem {
             }
         };
 		item.addActionListener(action);
-		jcrButton = getToolBar().addToolbarButton(REGISTRY_ACTIONS, item.getText(), MenuIcons.JCR_ICON, item.getText(), action, 1);
+		toolbarButtonJCR = getToolBar().addToolbarButton(REGISTRY_ACTIONS, item.getText(), MenuIcons.JCR_ICON, item.getText(), action, 1);
         return item;
     }
 
@@ -108,5 +113,10 @@ public class RegistryMenuItem {
 
 	public void setToolBar(XBayaToolBar toolBar) {
 		this.toolBar = toolBar;
+	}
+	
+	@Override
+	public void executionModeChanged(XBayaConfiguration config) {
+		toolbarButtonJCR.setVisible(config.getXbayaExecutionMode()==XBayaExecutionMode.IDE);
 	}
 }
