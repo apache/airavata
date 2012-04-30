@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.event.Event;
 import org.apache.airavata.xbaya.event.Event.Type;
@@ -46,6 +47,8 @@ public class Monitor extends EventProducer {
     protected Map<String, MonitorEventData> eventDataMap = new HashMap<String, MonitorEventData>();
 
     protected WsmgClient wsmgClient;
+
+    protected boolean print;
 
     /**
      * Constructs a Monitor.
@@ -175,6 +178,9 @@ public class Monitor extends EventProducer {
     public synchronized void handleNotification(XmlElement event) {
         Set<String> keys = this.eventDataMap.keySet();
         // Remove everthing leaving only the last one
+        if(print){
+            System.out.println(XMLUtil.xmlElementToString(event));
+        }
         for (String key : keys) {
             this.eventDataMap.get(key).addEvent(event);
         }
@@ -195,4 +201,7 @@ public class Monitor extends EventProducer {
         client.unsubscribe();
     }
 
+    public void setPrint(boolean print) {
+        this.print = print;
+    }
 }
