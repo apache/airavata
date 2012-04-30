@@ -249,7 +249,7 @@
                 <include>lead-security:puretls</include>
                 <include>xutil:xutil</include>
                 <include>jython:jython</include>
-                <include>lead-security:cog-jglobus</include>
+                <include>cog-jglobus:cog-jglobus</include>
                 <include>xmlbeans:xbean</include>
                 <include>xmlbeans-ogce:jsr173_api</include>
                 <include>xbaya:pegasuswebservice</include>
