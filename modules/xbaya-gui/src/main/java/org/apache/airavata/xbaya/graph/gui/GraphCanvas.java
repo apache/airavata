@@ -60,8 +60,10 @@ import javax.swing.JScrollPane;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
+import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.component.Component;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.gui.ComponentSourceTransferable;
@@ -81,6 +83,7 @@ import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
+import org.apache.airavata.xbaya.gui.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.interpretor.XBayaExecutionState;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
@@ -92,7 +95,7 @@ import org.xmlpull.infoset.XmlElement;
  * A canvas to display a graph (workflow).
  * 
  */
-public class GraphCanvas {
+public class GraphCanvas implements XBayaExecutionModeListener{
 
     private static final Logger logger = LoggerFactory.getLogger(GraphCanvas.class);
 
@@ -147,6 +150,7 @@ public class GraphCanvas {
 
     private XmlElement originalWorkflowElement;
     
+    boolean editable=false;
     /**
      * Creates a GraphPanel.
      * 
@@ -163,9 +167,10 @@ public class GraphCanvas {
         // are not initialized yet at this point.
         this.workflow = new Workflow();
         this.graph = this.workflow.getGraph();
-
+        engine.getConfiguration().registerExecutionModeChangeListener(this);
         graph.setName(generateNewWorkflowName());
         initGUI();
+        executionModeChanged(engine.getConfiguration());
     }
 
 	private String generateNewWorkflowName() {
@@ -649,100 +654,102 @@ public class GraphCanvas {
     private void mouseDragged(MouseEvent event) {
         Point point = event.getPoint();
 
-        /*
-         * Move nodes
-         */
-        if (this.multipleSelectedNodes != null) {
-            if (point.x < 0) {
-                point.x = 0;
-            }
-            if (point.y < 0) {
-                point.y = 0;
-            }
-            int diffX = point.x - this.mousePoint.x;
-            int diffY = point.y - this.mousePoint.y;
-            for (Node node : this.multipleSelectedNodes) {
-                Point newPoint = new Point();
-                Point currentPoint = node.getPosition();
-                newPoint.x = currentPoint.x + diffX;
-                if (newPoint.x < 0) {
-                    newPoint.x = 0;
-                }
-                newPoint.y = currentPoint.y + diffY;
-                if (newPoint.y < 0) {
-                    newPoint.y = 0;
-                }
-                node.setPosition(newPoint);
-            }
-            this.panel.repaint();
-            event.consume();
-        }
+        if (editable) {
+			/*
+			 * Move nodes
+			 */
+			if (this.multipleSelectedNodes != null) {
+				if (point.x < 0) {
+					point.x = 0;
+				}
+				if (point.y < 0) {
+					point.y = 0;
+				}
+				int diffX = point.x - this.mousePoint.x;
+				int diffY = point.y - this.mousePoint.y;
+				for (Node node : this.multipleSelectedNodes) {
+					Point newPoint = new Point();
+					Point currentPoint = node.getPosition();
+					newPoint.x = currentPoint.x + diffX;
+					if (newPoint.x < 0) {
+						newPoint.x = 0;
+					}
+					newPoint.y = currentPoint.y + diffY;
+					if (newPoint.y < 0) {
+						newPoint.y = 0;
+					}
+					node.setPosition(newPoint);
+				}
+				this.panel.repaint();
+				event.consume();
+			}
+			if (this.draggedNode != null) {
+				if (point.x < 0) {
+					point.x = 0;
+				}
+				if (point.y < 0) {
+					point.y = 0;
+				}
+				int diffX = point.x - this.mousePoint.x;
+				int diffY = point.y - this.mousePoint.y;
+				Point newPoint = new Point();
+				Point currentPoint = this.draggedNode.getPosition();
+				newPoint.x = currentPoint.x + diffX;
+				if (newPoint.x < 0) {
+					newPoint.x = 0;
+				}
+				newPoint.y = currentPoint.y + diffY;
+				if (newPoint.y < 0) {
+					newPoint.y = 0;
+				}
+				this.draggedNode.setPosition(newPoint);
 
-        if (this.draggedNode != null) {
-            if (point.x < 0) {
-                point.x = 0;
-            }
-            if (point.y < 0) {
-                point.y = 0;
-            }
-            int diffX = point.x - this.mousePoint.x;
-            int diffY = point.y - this.mousePoint.y;
-            Point newPoint = new Point();
-            Point currentPoint = this.draggedNode.getPosition();
-            newPoint.x = currentPoint.x + diffX;
-            if (newPoint.x < 0) {
-                newPoint.x = 0;
-            }
-            newPoint.y = currentPoint.y + diffY;
-            if (newPoint.y < 0) {
-                newPoint.y = 0;
-            }
-            this.draggedNode.setPosition(newPoint);
+				this.panel.repaint();
+				event.consume();
+			}
+			if (this.draggedPort != null) {
+				GraphPiece piece = this.graph.getGUI().getGraphPieceAt(point);
+				if (piece instanceof Port) {
+					Port port = (Port) piece;
+					// Display the information of port that is close to the mouse
+					// pointer.
+					if (this.draggedPort.getKind() == Kind.DATA_IN
+							&& port.getKind() == Kind.DATA_OUT) {
+						this.panel.setCursor(SwingUtil.CROSSHAIR_CURSOR);
+						selectOutputPort(port);
+					} else if (this.draggedPort.getKind() == Kind.DATA_OUT
+							&& port.getKind() == Kind.DATA_IN) {
+						this.panel.setCursor(SwingUtil.CROSSHAIR_CURSOR);
+						selectInputPort(port);
+					} else if (this.draggedPort.getKind() == Kind.DATA_IN
+							&& port.getKind() == Kind.EPR) {
+						this.panel.setCursor(SwingUtil.CROSSHAIR_CURSOR);
+						selectOutputPort(port);
+					} else if (this.draggedPort.getKind() == Kind.EPR
+							&& port.getKind() == Kind.DATA_IN) {
+						this.panel.setCursor(SwingUtil.CROSSHAIR_CURSOR);
+						selectInputPort(port);
+					} else {
+						this.panel.setCursor(SwingUtil.DEFAULT_CURSOR);
+					}
+				} else if (piece instanceof PortAddable) {
+					PortAddable dynamicNode = (PortAddable) piece;
+					dynamicNode.getFreeInPort();
+					this.dynamicNodeWithFreePort = dynamicNode;
+				} else {
 
-            this.panel.repaint();
-            event.consume();
-        }
+					this.panel.setCursor(SwingUtil.DEFAULT_CURSOR);
+				}
 
-        if (this.draggedPort != null) {
-            GraphPiece piece = this.graph.getGUI().getGraphPieceAt(point);
-            if (piece instanceof Port) {
-                Port port = (Port) piece;
-                // Display the information of port that is close to the mouse
-                // pointer.
-                if (this.draggedPort.getKind() == Kind.DATA_IN && port.getKind() == Kind.DATA_OUT) {
-                    this.panel.setCursor(SwingUtil.CROSSHAIR_CURSOR);
-                    selectOutputPort(port);
-                } else if (this.draggedPort.getKind() == Kind.DATA_OUT && port.getKind() == Kind.DATA_IN) {
-                    this.panel.setCursor(SwingUtil.CROSSHAIR_CURSOR);
-                    selectInputPort(port);
-                } else if (this.draggedPort.getKind() == Kind.DATA_IN && port.getKind() == Kind.EPR) {
-                    this.panel.setCursor(SwingUtil.CROSSHAIR_CURSOR);
-                    selectOutputPort(port);
-                } else if (this.draggedPort.getKind() == Kind.EPR && port.getKind() == Kind.DATA_IN) {
-                    this.panel.setCursor(SwingUtil.CROSSHAIR_CURSOR);
-                    selectInputPort(port);
-                } else {
-                    this.panel.setCursor(SwingUtil.DEFAULT_CURSOR);
-                }
-            } else if (piece instanceof PortAddable) {
-                PortAddable dynamicNode = (PortAddable) piece;
-                dynamicNode.getFreeInPort();
-                this.dynamicNodeWithFreePort = dynamicNode;
-            } else {
-
-                this.panel.setCursor(SwingUtil.DEFAULT_CURSOR);
-            }
-
-            this.panel.repaint();
-            event.consume();
-        }
-
-        this.mousePoint = point;
-
-        // draw rectangle
-        if (this.mousePointForSelection != null) {
-            this.panel.repaint();
-        }
+				this.panel.repaint();
+				event.consume();
+			}
+			this.mousePoint = point;
+			// draw rectangle
+			if (this.mousePointForSelection != null) {
+				this.panel.repaint();
+			}
+		}
 
     }
 
@@ -1326,5 +1333,11 @@ public class GraphCanvas {
 
 	private void updateOriginalWorkflowElement() {
 		originalWorkflowElement = getWorkflow().toXML();
+	}
+
+	@Override
+	public void executionModeChanged(XBayaConfiguration config) {
+		editable=config.getXbayaExecutionMode()==XBayaExecutionMode.IDE;
+		getGraph().setEditable(editable);
 	}
 }

@@ -42,6 +42,8 @@ import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.xbaya.XBayaConfiguration;
+import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
@@ -65,6 +67,7 @@ import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.graph.ws.WSGraph;
 import org.apache.airavata.xbaya.graph.ws.WSGraphFactory;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
+import org.apache.airavata.xbaya.gui.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.interpretor.XBayaExecutionState;
 import org.apache.airavata.xbaya.ode.ODEBPELTransformer;
 import org.apache.airavata.xbaya.ode.ODEDeploymentDescriptor;
@@ -82,7 +85,7 @@ import org.xmlpull.infoset.XmlNamespace;
 import xsul5.XmlConstants;
 import xsul5.wsdl.WsdlDefinitions;
 
-public class Workflow implements Cloneable {
+public class Workflow implements Cloneable, XBayaExecutionModeListener {
 
     /**
      * Namespace prefix
@@ -140,6 +143,7 @@ public class Workflow implements Cloneable {
 
     private Map<String, WsdlDefinitions> odeWsdlMap;
 
+    private boolean editable=true;
     /**
      * used only during the parsing xwf or loading from GPEL.
      */
@@ -901,5 +905,12 @@ public class Workflow implements Cloneable {
     public synchronized void setExecutionState(XBayaExecutionState state) {
         this.executionState = state;
     }
+
+
+	@Override
+	public void executionModeChanged(XBayaConfiguration config) {
+		editable=config.getXbayaExecutionMode()==XBayaExecutionMode.IDE;
+		getGraph().setEditable(editable);
+	}
 
 }

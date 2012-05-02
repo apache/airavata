@@ -58,7 +58,7 @@ public class GraphGUI implements GraphPieceGUI {
      */
     public void mouseClicked(MouseEvent event, XBayaEngine engine) {
         GraphPiece piece = getGraphPieceAt(event.getPoint());
-        if (piece != null) {
+        if (piece != null && graph.isEditable()) {
             piece.getGUI().mouseClicked(event, engine);
         }
     }

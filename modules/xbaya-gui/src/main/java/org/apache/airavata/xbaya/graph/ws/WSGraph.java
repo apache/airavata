@@ -48,6 +48,7 @@ public class WSGraph extends GraphImpl {
 
     private XmlElement outputMetadata;
 
+    private boolean editable=true;
     /**
      * Constructs a WSGraph.
      * 
@@ -319,6 +320,16 @@ public class WSGraph extends GraphImpl {
         HashMap<String, LinkedList<Node>> partiotionGraph = GraphUtil.partitionGraphOnLabel(this);
         return partiotionGraph;
     }
+
+	@Override
+	public boolean isEditable() {
+		return editable;
+	}
+
+	@Override
+	public void setEditable(boolean editable) {
+		this.editable=editable;
+	}
 
 
 }
