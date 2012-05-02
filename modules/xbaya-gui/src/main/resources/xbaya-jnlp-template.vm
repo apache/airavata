@@ -23,7 +23,7 @@
    href="$outputFile">
 <information>
 	<title>XBaya</title>
-	<vendor>Open Gateway Computing Environments</vendor>
+	<vendor>Apache Airavata</vendor>
 	<offline-allowed/>
 </information>
 <security>
@@ -37,21 +37,7 @@
 <application-desc main-class="$mainClass">
 	<!-- Title -->
 	<argument>-title</argument>
-	<argument>OGCE XBaya Workflow Interface</argument>
-	
-	<!-- MyProxy -->
-	<argument>-myProxyServer</argument>
-	<argument>$myproxyServer</argument>
-	<argument>-myProxyPort</argument>
-	<argument>7512</argument>
-	<argument>-myProxyLifetime</argument>
-	<argument>3600</argument>
-	<argument>-myProxyUsername</argument>
-	<argument>username</argument>
-	
-	<!-- XRegistry -->
-	<argument>-xRegistryURL</argument>
-	<argument>$xregistryEPR</argument>
+	<argument>Apache Airavata Workflow Interface</argument>
 
 	<!-- GFac -->
 	<argument>-gfacURL</argument>
