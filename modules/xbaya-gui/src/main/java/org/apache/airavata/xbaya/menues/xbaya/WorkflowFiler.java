@@ -107,6 +107,8 @@ public class WorkflowFiler {
                 } else {
                     XmlElement workflowElement = XMLUtil.loadXML(file);
                     workflow = new Workflow(workflowElement);
+                    engine.getConfiguration().registerExecutionModeChangeListener(workflow);
+                    workflow.executionModeChanged(engine.getConfiguration());
                 }
                 GraphCanvas newGraphCanvas = engine.getGUI().newGraphCanvas(true);
                 newGraphCanvas.setWorkflow(workflow);

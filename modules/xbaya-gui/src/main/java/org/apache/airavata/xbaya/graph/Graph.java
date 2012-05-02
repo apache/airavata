@@ -35,7 +35,19 @@ public interface Graph extends GraphPiece {
      * @return the gui
      */
     public GraphGUI getGUI();
+    
+    /**
+     * Returns if the graph should be editable
+     * @return
+     */
+    public boolean isEditable();
 
+    /**
+     * set if graph can be edited
+     * @param editable
+     */
+    public void setEditable(boolean editable);
+    
     /**
      * Returns the ID of this graph.
      * 
