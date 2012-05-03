@@ -39,6 +39,12 @@
 	<argument>-title</argument>
 	<argument>Apache Airavata Workflow Interface</argument>
 
+	<!-- Service End Point References -->
+	
+	<!-- Registry -->
+	<argument>-RegistryURL</argument>
+	<argument>$registryEPR</argument>
+
 	<!-- GFac -->
 	<argument>-gfacURL</argument>
 	<argument>$gfacEPR</argument>
@@ -46,16 +52,25 @@
 	<!-- Monitoring -->
 	<argument>-brokerURL</argument>
 	<argument>$messagebrokerEPR</argument>
-	<argument>-pullMode</argument>
-	<argument>true</argument>
 	<argument>-messageBoxURL</argument>
 	<argument>$messageboxEPR</argument>
+	<argument>-pullMode</argument>
+	<argument>true</argument>
+	
+	<argument>-registryUserName</argument>
+	<argument>regUser</argument>
+	<argument>-registryPassphrase</argument>
+	<argument>regPassword</argument>
+	<argument>-workflow</argument>
+	<argument>workflowId</argument>	
 
-	<!-- Start monitoring -->
+	<!-- Monitoring Information-->
 	<!--
 	<argument>-topic</argument>
 	<argument>topicName</argument>
 	<argument>-startMonitor</argument>
+	<argument>-mode</argument>
+	<argument>monitor</argument>
 	-->
 
 </application-desc>

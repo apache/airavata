@@ -43,18 +43,20 @@
 
 				<!-- JNLP Properties -->
 				<!-- Deployment Information -->
-				<jnlpURLPrefix>http://ogceportal.iu.teragrid.org/xbaya</jnlpURLPrefix>
+				<jnlpURLPrefix>http://localhost/airavata-xbaya</jnlpURLPrefix>
 				<jnlpFileName>xbaya.jnlp</jnlpFileName>
 
-				<myproxyServer>myproxy.teragrid.org</myproxyServer>
+				<registryEPR>
+					http://localhost:8090/jackrabbit-webapp-2.4.0/rmi
+				</registryEPR>
 				<gfacEPR>
-					https://ogceportal.iu.teragrid.org:19442/
+					http://localhost:8080/axis2/services/GFacService
 				</gfacEPR>
 				<messagebrokerEPR>
-					http://ogceportal.iu.teragrid.org:12346/
+					http://localhost:8080/axis2/services/EventingService
 				</messagebrokerEPR>
 				<messageboxEPR>
-					http://ogceportal.iu.teragrid.org:13333/MsgBox
+					http://localhost:8080/axis2/services/MsgBoxService
 				</messageboxEPR>
 
 			</properties>
