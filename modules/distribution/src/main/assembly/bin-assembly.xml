@@ -250,6 +250,7 @@
                 <include>xutil:xutil</include>
                 <include>jython:jython</include>
                 <include>cog-jglobus:cog-jglobus</include>
+		<!--include>edu.iub.soic.damsl:jXSP</include>
                 <include>xmlbeans:xbean</include>
                 <include>xmlbeans-ogce:jsr173_api</include>
                 <include>xbaya:pegasuswebservice</include>
