@@ -1,10 +1,10 @@
 <!--Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file 
-	distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under 
-	the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may 
-	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to 
-	in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
-	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
-	the License. -->
+    distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under 
+    the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may 
+    obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to 
+    in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
+    ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
+    the License. -->
 	
 <!DOCTYPE assembly [
         <!ELEMENT assembly (id|includeBaseDirectory|baseDirectory|formats|fileSets|dependencySets)*>
@@ -23,135 +23,120 @@
         <!ELEMENT dependencySet (outputDirectory|includes)*>
         ]>
 <assembly>
-	<id>bin</id>
-	<includeBaseDirectory>true</includeBaseDirectory>
-	<baseDirectory>${archieve.name}-${version}</baseDirectory>
-	<formats>
-		<format>tar.gz</format>
-		<format>zip</format>
-	</formats>
+    <id>bin</id>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>${archieve.name}-${version}</baseDirectory>
+    <formats>
+        <format>tar.gz</format>
+        <format>zip</format>
+    </formats>
 
-
-	<fileSets>
-		<!-- ********************** copy axis2 distribution from messenger folder ********************** -->
-		<fileSet>
-			<directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
-			<outputDirectory>standalone-server/lib</outputDirectory>
-			<includes>
+    <fileSets>
+        <!-- ********************** copy axis2 distribution from messenger folder ********************** -->
+        <fileSet>
+            <directory>target/axis2-${used.axis2.release}/WEB-INF/lib</directory>
+            <outputDirectory>standalone-server/lib</outputDirectory>
+            <includes>
                 <include>*.jar</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
-			<outputDirectory>standalone-server/repository</outputDirectory>
-			<includes>
-				<include>services/*</include>
-				<include>modules/*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>target/axis2-${used.axis2.release}/WEB-INF/classes</directory>
-			<outputDirectory>standalone-server/conf</outputDirectory>
-			<includes>
-				<include>log4j.properties</include>
-				<include>commons-logging.properties</include>
-			</includes>
-		</fileSet>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
+            <outputDirectory>standalone-server/repository</outputDirectory>
+            <includes>
+                <include>services/*</include>
+                <include>modules/*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>target/axis2-${used.axis2.release}/WEB-INF/classes</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
+                <include>log4j.properties</include>
+                <include>commons-logging.properties</include>
+            </includes>
+        </fileSet>
 
+        <!-- ********************** copy wsmg.broker and messagebox property files ********************** -->
+        <fileSet>
+            <directory>../ws-messenger/distribution/src/main/resources</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
+                <include>*properties*</include>
+            </includes>
+        </fileSet>
 
+        <!-- ********************** replace bin directory ********************** -->
+        <fileSet>
+            <directory>../ws-messenger/distribution/src/main/resources/bin</directory>
+            <outputDirectory>standalone-server/bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
 
-		<!-- ********************** copy wsmg.broker and messagebox property files ********************** -->
-		<fileSet>
-			<directory>../ws-messenger/distribution/src/main/resources</directory>
-			<outputDirectory>standalone-server/conf</outputDirectory>
-			<includes>
-				<include>*properties*</include>
-			</includes>
-		</fileSet>
+        <!-- ********************** copy messagebroker+ messagebox samples ********************** -->
+        <fileSet>
+            <directory>../ws-messenger/samples</directory>
+            <outputDirectory>samples</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
 
+        <!-- ********************** copy gui start up script ********************** -->
+        <fileSet>
+            <directory>../ws-messenger/distribution/src/main/resources</directory>
+            <outputDirectory>gui</outputDirectory>
+            <includes>
+                <include>*sh</include>
+            </includes>
+        </fileSet>
 
-		<!-- ********************** replace bin directory ********************** -->
-		<fileSet>
-			<directory>../ws-messenger/distribution/src/main/resources/bin</directory>
-			<outputDirectory>standalone-server/bin</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
+        <!-- ********************** copy readme files ********************** -->
+        <fileSet>
+            <directory>../../</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>DISCLAIMER</include>
+                <include>INSTALL</include>
+                <include>README</include>
+                <include>RELEASE_NOTES</include>
+            </includes>
+        </fileSet>
+        <!-- ********************** copy binary licenses ********************** -->
+        <fileSet>
+            <directory>src/main/resources/</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>LICENSE</include>
+                <include>NOTICE</include>
+            </includes>
+        </fileSet>
 
-
-
-
-
-
-		<!-- ********************** copy messagebroker+ messagebox samples ********************** -->
-		<fileSet>
-			<directory>../ws-messenger/samples</directory>
-			<outputDirectory>samples</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
-
-
-		<!-- ********************** copy gui start up script ********************** -->
-		<fileSet>
-			<directory>../ws-messenger/distribution/src/main/resources</directory>
-			<outputDirectory>gui</outputDirectory>
-			<includes>
-				<include>*sh</include>
-			</includes>
-		</fileSet>
-
-
-
-
-
-		<!-- ********************** copy readme files ********************** -->
-		<fileSet>
-			<directory>../../</directory>
-			<outputDirectory>.</outputDirectory>
-			<includes>
-				<include>DISCLAIMER</include>
-				<include>INSTALL</include>
-				<include>README</include>
-				<include>RELEASE_NOTES</include>
-			</includes>
-		</fileSet>
-		<!-- ********************** copy binary licenses ********************** -->
-		<fileSet>
-			<directory>src/main/resources/</directory>
-			<outputDirectory>.</outputDirectory>
-			<includes>
-				<include>LICENSE</include>
-				<include>NOTICE</include>
-			</includes>
-		</fileSet>
-
-
-		<!-- ********************** copy database scripts ********************** -->
-		<fileSet>
-			<directory>../ws-messenger/messagebroker/src/main/resources/database_scripts</directory>
-			<outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../ws-messenger/messagebox/src/main/resources/database_scripts</directory>
-			<outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-
-		<fileSet>
-			<directory>src/main/resources/bin</directory>
-			<outputDirectory>bin</outputDirectory>
-			<includes>
-				<include>*.sh</include>
-			</includes>
-		</fileSet>
+        <!-- ********************** copy database scripts ********************** -->
+        <fileSet>
+            <directory>../ws-messenger/messagebroker/src/main/resources/database_scripts</directory>
+            <outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
+            <includes>
+                <include>*sql*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../ws-messenger/messagebox/src/main/resources/database_scripts</directory>
+            <outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
+            <includes>
+                <include>*sql*</include>
+            </includes>
+        </fileSet>
+        
+        <fileSet>
+            <directory>src/main/resources/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
         <fileSet>
             <directory>../distribution/src/main/resources/conf</directory>
             <outputDirectory>standalone-server/conf</outputDirectory>
@@ -159,14 +144,14 @@
                 <include>xbaya.properties</include>
             </includes>
         </fileSet>
-           <fileSet>
+        <fileSet>
             <directory>../distribution/src/main/resources/conf</directory>
             <outputDirectory>standalone-server/conf</outputDirectory>
             <includes>
                 <include>jcr.properties</include>
             </includes>
         </fileSet>
-	<fileSet>
+        <fileSet>
             <directory>../distribution/src/main/resources/conf</directory>
             <outputDirectory>standalone-server/conf</outputDirectory>
             <includes>
@@ -175,72 +160,70 @@
         </fileSet>
 
         <fileSet>
-			<directory>../../samples/simple-math-service/target</directory>
-			<outputDirectory>standalone-server/repository/services</outputDirectory>
-			<includes>
-				<include>*.aar</include>
-			</includes>
-		</fileSet>
+            <directory>../../samples/simple-math-service/target</directory>
+            <outputDirectory>standalone-server/repository/services</outputDirectory>
+            <includes>
+                <include>*.aar</include>
+            </includes>
+        </fileSet>
         <fileSet>
-			<directory>../../samples/complex-math-service/target</directory>
-			<outputDirectory>standalone-server/repository/services</outputDirectory>
-			<includes>
-				<include>*.aar</include>
-			</includes>
-		</fileSet>
+            <directory>../../samples/complex-math-service/target</directory>
+            <outputDirectory>standalone-server/repository/services</outputDirectory>
+            <includes>
+                <include>*.aar</include>
+            </includes>
+        </fileSet>
         <fileSet>
-			<directory>../../samples/levenshtein-distance-service/target</directory>
-			<outputDirectory>standalone-server/repository/services</outputDirectory>
-			<includes>
-				<include>*.aar</include>
-			</includes>
-		</fileSet>
+            <directory>../../samples/levenshtein-distance-service/target</directory>
+            <outputDirectory>standalone-server/repository/services</outputDirectory>
+            <includes>
+                <include>*.aar</include>
+            </includes>
+        </fileSet>
         <fileSet>
-			<directory>../xbaya-gui/src/test/resources/</directory>
-			<outputDirectory>samples/workflows</outputDirectory>
-			<includes>
-				<include>*.xwf</include>
-			</includes>
-		</fileSet>
+            <directory>../xbaya-gui/src/test/resources/</directory>
+            <outputDirectory>samples/workflows</outputDirectory>
+            <includes>
+                <include>*.xwf</include>
+            </includes>
+        </fileSet>
 
-		<fileSet>
-			<directory>../../samples</directory>
-			<outputDirectory>samples</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>src/main/resources/conf</directory>
-			<outputDirectory>standalone-server/conf</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
+        <fileSet>
+            <directory>../../samples</directory>
+            <outputDirectory>samples</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/conf</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+    </fileSets>
 
-	</fileSets>
-
-	<dependencySets>
-
-		<dependencySet>
-			<outputDirectory>standalone-server/lib</outputDirectory>
-			<includes>
-				<include>org.apache.derby:derby:jar</include>
-				<include>org.apache.derby:derbytools:jar</include>
-				<include>org.apache.jackrabbit:jackrabbit-core:jar</include>
-				<include>org.apache.jackrabbit:jackrabbit-jcr-rmi:jar</include>
-				<include>org.slf4j:log4j-over-slf4j:jar</include>
-				<include>org.slf4j:slf4j-api:jar</include>
-				<include>org.slf4j:slf4j-simple:jar</include>
-				<include>javax.jcr:jcr:jar</include>
-				<include>commons-collections:commons-collections</include>
-				<include>commons-configuration:commons-configuration</include>
-				<include>commons-lang:commons-lang</include>
-				<include>xpp3:xpp3</include>
-				<include>gpel:gpel_client</include>
-				<include>xpp5:xpp5</include>
-				<include>xpp3:xpp3_xpath</include>
-				<include>xsul:xsul:jar</include>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>standalone-server/lib</outputDirectory>
+            <includes>
+                <include>org.apache.derby:derby:jar</include>
+                <include>org.apache.derby:derbytools:jar</include>
+                <include>org.apache.jackrabbit:jackrabbit-core:jar</include>
+                <include>org.apache.jackrabbit:jackrabbit-jcr-rmi:jar</include>
+                <include>org.slf4j:log4j-over-slf4j:jar</include>
+                <include>org.slf4j:slf4j-api:jar</include>
+                <include>org.slf4j:slf4j-simple:jar</include>
+                <include>javax.jcr:jcr:jar</include>
+                <include>commons-collections:commons-collections</include>
+                <include>commons-configuration:commons-configuration</include>
+                <include>commons-lang:commons-lang</include>
+                <include>xpp3:xpp3</include>
+                <include>gpel:gpel_client</include>
+                <include>xpp5:xpp5</include>
+                <include>xpp3:xpp3_xpath</include>
+                <include>xsul:xsul:jar</include>
                 <include>xsul5-ogce:xsul5-2007-02-27:jar</include>
                 <include>gfac:gfac-schema-utils</include>
                 <include>lead-security:cryptix32</include>
@@ -250,7 +233,7 @@
                 <include>xutil:xutil</include>
                 <include>jython:jython</include>
                 <include>cog-jglobus:cog-jglobus</include>
-		<!--include>edu.iub.soic.damsl:jXSP</include>
+		        <!--include>edu.iub.soic.damsl:jXSP</include> -->
                 <include>xmlbeans:xbean</include>
                 <include>xmlbeans-ogce:jsr173_api</include>
                 <include>xbaya:pegasuswebservice</include>
@@ -260,43 +243,41 @@
                 <include>wsmg:wsmg</include>
                 <include>atomixmiser:atomixmiser</include>
                 <include>globus:transfer-api-client</include>
-                <include>org.apache.airavata:registry-api</include>
-                <include>org.apache.airavata:registry-migrator:jar</include>
+                <include>org.apache.airavata:airavata-registry-api</include>
+                <include>org.apache.airavata:airavata-registry-migrator:jar</include>
                 <include>xregistry:xregistry-client:jar</include>
                 <include>xregistry:xregistry_generated:jar</include>
-                <include>org.apache.airavata:common-registry-api</include>
-                <include>org.apache.airavata:workflow-execution-context</include>
-                <include>org.apache.airavata:workflowtracking</include>
-                <include>org.apache.airavata:gfac-core</include>
-                <include>org.apache.airavata:messenger-client</include>
-                <include>org.apache.airavata:messenger-commons</include>
-                <include>org.apache.airavata:gfac-schema-utils</include>
-                <include>org.apache.airavata:common-utils</include>
+                <include>org.apache.airavata:airavata-common-registry-api</include>
+                <include>org.apache.airavata:airavata-workflow-execution-context</include>
+                <include>org.apache.airavata:airavata-workflow-tracking</include>
+                <include>org.apache.airavata:airavata-gfac-core</include>
+                <include>org.apache.airavata:airavata-messenger-client</include>
+                <include>org.apache.airavata:airavata-messenger-commons</include>
+                <include>org.apache.airavata:airavata-gfac-schema-utils</include>
+                <include>org.apache.airavata:airavata-common-utils</include>
                 <include>edu.berkeley:yfilter</include>
                 <include>javax.servlet:servlet-api</include>
                 <include>org.bouncycastle:bcprov-jdk15</include>
                 <include>org.bouncycastle:bcmail-jdk15</include>
             </includes>
         </dependencySet>
-
         <dependencySet>
             <outputDirectory>standalone-server/repository/services</outputDirectory>
             <includes>
-                <include>org.apache.airavata:messagebox:jar</include>
-                <include>org.apache.airavata:messagebroker:jar</include>
-                <include>org.apache.airavata:xbaya-gui:jar</include>
-                <include>org.apache.airavata:gfac-axis2-interface:jar</include>
-		<include>org.apache.airavata:registry-service:jar</include>
+                <include>org.apache.airavata:airavata-message-box:jar</include>
+                <include>org.apache.airavata:airavata-message-broker:jar</include>
+                <include>org.apache.airavata:airavata-xbaya-gui:jar</include>
+                <include>org.apache.airavata:airavata-gfac-axis2-interface:jar</include>
+                <include>org.apache.airavata:airavata-registry-service:jar</include>
             </includes>
         </dependencySet>
-
         <dependencySet>
             <outputDirectory>lib</outputDirectory>
             <includes>
                 <include>org.apache.jackrabbit:jackrabbit-standalone:jar</include>
-                <include>org.apache.airavata:airavata-client</include>
+                <include>org.apache.airavata:airavata-client-api</include>
             </includes>
         </dependencySet>
-	</dependencySets>
+    </dependencySets>
 
 </assembly>
