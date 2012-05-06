@@ -27,7 +27,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.0-alpha-4</version>
+                <version>2.4</version>
                 <inherited>false</inherited>
                 <executions>
                     <execution>
@@ -73,11 +73,10 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2-beta-5</version>
+                <version>2.3</version>
                 <executions>
                     <execution>
                         <id>distribution-package</id>
@@ -176,19 +175,9 @@
             <version>${org.slf4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${org.slf4j.version}</version>
-        </dependency>
-        <dependency>
             <groupId>gpel</groupId>
             <artifactId>gpel_client</artifactId>
             <version>1.0.7-BETA</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${org.slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.jcr</groupId>
@@ -240,13 +229,9 @@
             <artifactId>cog-jglobus</artifactId>
             <version>1.8.0_1</version>
         </dependency>
-        <!--dependency> <groupId>cog-jglobus</groupId> <artifactId>cog-jglobus</artifactId> <version>1.8.0-mod</version> 
+        <!-- <dependency> <groupId>cog-jglobus</groupId> <artifactId>cog-jglobus</artifactId> <version>1.8.0-mod</version> 
             </dependency> <dependency> <groupId>edu.iub.soic.damsl</groupId> <artifactId>jXSP</artifactId> <version>0.0.1-SNAPSHOT</version> 
-            </dependency -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
+            </dependency> -->
         <dependency>
             <groupId>xsul</groupId>
             <artifactId>xsul</artifactId>
@@ -277,7 +262,6 @@
             <artifactId>jets3t</artifactId>
             <version>0.8.0</version>
         </dependency>
-
         <dependency>
             <groupId>wsmg</groupId>
             <artifactId>wsmg</artifactId>
@@ -395,6 +379,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-common-registry-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15</artifactId>
             <version>1.45</version>
@@ -404,12 +393,6 @@
             <artifactId>bcmail-jdk15</artifactId>
             <version>1.45</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-common-registry-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
