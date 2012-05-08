@@ -48,6 +48,7 @@ import javax.xml.namespace.QName;
 
 import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.WorkflowExecution;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
@@ -90,17 +91,18 @@ public class AiravataClient {
     private AiravataClientConfiguration clientConfiguration;
     private MonitorConfiguration monitorConfiguration;
 	private static String workflow = "";
+    private static WorkflowContextHeaderBuilder builder;
 
 	private AiravataRegistry registry;
 
-	private NameValue[] configurations = new NameValue[12];
+    private Map<String, String> configuration = new HashMap<String, String>();
 
 	// private NameValue[] configurations = new NameValue[7];
 
-	public AiravataClient(NameValue[] configuration)
+	public AiravataClient(Map<String,String> configuration)
 			throws MalformedURLException {
-		configurations = configuration;
-		updateClientConfiguration(configurations);
+		configuration = configuration;
+		updateClientConfiguration(configuration);
 	}
 
 	public AiravataClient(String fileName) throws RegistryException,
@@ -112,106 +114,62 @@ public class AiravataClient {
 		Properties properties = new Properties();
 		properties.load(url.openStream());
 
-		configurations[0] = new NameValue();
-		configurations[0].setName(GFAC);
-		configurations[0].setValue(validateAxisService(properties
+		configuration.put(GFAC,validateAxisService(properties
 				.getProperty(DEFAULT_GFAC_URL)));
-
-		configurations[1] = new NameValue();
-		configurations[1].setName(PROXYSERVER);
-		configurations[1].setValue(properties
+		configuration.put(PROXYSERVER,properties
 				.getProperty(DEFAULT_MYPROXY_SERVER));
-
-		configurations[2] = new NameValue();
-		configurations[2].setName(MSGBOX);
-		configurations[2].setValue(validateAxisService(properties
+		configuration.put(MSGBOX,validateAxisService(properties
 				.getProperty(DEFAULT_MESSAGE_BOX_URL)));
-
-		configurations[3] = new NameValue();
-		configurations[3].setName(BROKER);
-		configurations[3].setValue(validateAxisService(properties
+		configuration.put(BROKER,validateAxisService(properties
 				.getProperty(DEFAULT_BROKER_URL)));
-
-		configurations[4] = new NameValue();
-		configurations[4].setName(MYPROXYUSERNAME);
-		configurations[4].setValue(properties.getProperty(MYPROXYUSERNAME));
-
-		configurations[5] = new NameValue();
-		configurations[5].setName(MYPROXYPASS);
-		configurations[5].setValue(properties.getProperty(MYPROXYPASS));
-
-		configurations[6] = new NameValue();
-		configurations[6].setName(WORKFLOWSERVICEURL);
-		configurations[6].setValue(validateAxisService(properties
+		configuration.put(MYPROXYUSERNAME,properties.getProperty(MYPROXYUSERNAME));
+		configuration.put(MYPROXYPASS,properties.getProperty(MYPROXYPASS));
+		configuration.put(WORKFLOWSERVICEURL,validateAxisService(properties
 				.getProperty(WORKFLOWSERVICEURL)));
-
-		configurations[7] = new NameValue();
-		configurations[7].setName(JCR);
-		configurations[7].setValue(validateURL(properties
+		configuration.put(JCR,validateURL(properties
 				.getProperty(DEFAULT_JCR_URL)));
+		configuration.put(JCR_USERNAME,properties.getProperty(JCR_USERNAME));
 
-		configurations[8] = new NameValue();
-		configurations[8].setName(JCR_USERNAME);
-		configurations[8].setValue(properties.getProperty(JCR_USERNAME));
+		configuration.put(JCR_PASSWORD,properties.getProperty(JCR_PASSWORD));
 
-		configurations[9] = new NameValue();
-		configurations[9].setName(JCR_PASSWORD);
-		configurations[9].setValue(properties.getProperty(JCR_PASSWORD));
+		configuration.put(WITHLISTENER,properties.getProperty(WITHLISTENER));
 
-		configurations[10] = new NameValue();
-		configurations[10].setName(WITHLISTENER);
-		configurations[10].setValue(properties.getProperty(WITHLISTENER));
-
-        configurations[11] = new NameValue();
-		configurations[11].setName(TRUSTED_CERT_LOCATION);
-		configurations[11].setValue(properties.getProperty(TRUSTED_CERT_LOCATION));
-
-		updateClientConfiguration(configurations);
+        configuration.put(TRUSTED_CERT_LOCATION,properties.getProperty(TRUSTED_CERT_LOCATION));
+        // At this point we do not know the workflowExperimentId
+//        builder = new WorkflowContextHeaderBuilder(properties.getProperty(DEFAULT_BROKER_URL),
+//                properties.getProperty(DEFAULT_GFAC_URL),properties.getProperty(DEFAULT_JCR_URL),null,null);
+		updateClientConfiguration(configuration);
 	}
 
-	private void updateClientConfiguration(NameValue[] configurations)
+	private void updateClientConfiguration(Map<String,String> configuration)
 			throws MalformedURLException {
 		AiravataClientConfiguration clientConfiguration = getClientConfiguration();
-		for (NameValue configuration : configurations) {
-			if (configuration.getName().equals(GFAC)) {
+			if (configuration.get(GFAC) != null) {
 				clientConfiguration
-						.setJcrURL(new URL(configuration.getValue()));
+						.setGfacURL(new URL(configuration.get(GFAC)));
 			}
-			if (configuration.getName().equals(PROXYSERVER)) {
-				clientConfiguration.setMyproxyHost(configuration.getValue());
+			if (configuration.get(PROXYSERVER)!= null) {
+				clientConfiguration.setMyproxyHost(configuration.get(PROXYSERVER));
 			}
-			if (configuration.getName().equals(MSGBOX)) {
-				clientConfiguration.setMessageboxURL(new URL(configuration
-						.getValue()));
+			if (configuration.get(MSGBOX)!= null) {
+				clientConfiguration.setMessageboxURL(new URL(configuration.get(MSGBOX)));
 			}
-			if (configuration.getName().equals(BROKER)) {
-				clientConfiguration.setMessagebrokerURL(new URL(configuration
-						.getValue()));
+			if (configuration.get(BROKER)!= null) {
+				clientConfiguration.setMessagebrokerURL(new URL(configuration.get(BROKER)));
 			}
-			if (configuration.getName().equals(MYPROXYUSERNAME)) {
+			if (configuration.get(JCR)!= null) {
 				clientConfiguration
-						.setMyproxyUsername(configuration.getValue());
+						.setJcrURL(new URL(configuration.get(JCR)));
 			}
-			if (configuration.getName().equals(MYPROXYPASS)) {
-				clientConfiguration
-						.setMyproxyPassword(configuration.getValue());
+			if (configuration.get(JCR_USERNAME)!= null) {
+				clientConfiguration.setJcrUsername(configuration.get(JCR_USERNAME));
 			}
-			if (configuration.getName().equals(WORKFLOWSERVICEURL)) {
-				clientConfiguration.setXbayaServiceURL(new URL(configuration
-						.getValue()));
+			if (configuration.get(JCR_PASSWORD)!= null) {
+				clientConfiguration.setJcrPassword(configuration.get(JCR_PASSWORD));
 			}
-			if (configuration.getName().equals(JCR)) {
-				clientConfiguration
-						.setJcrURL(new URL(configuration.getValue()));
+            if (configuration.get(WORKFLOWSERVICEURL)!= null) {
+				clientConfiguration.setXbayaServiceURL(new URL(configuration.get(WORKFLOWSERVICEURL)));
 			}
-			if (configuration.getName().equals(JCR_USERNAME)) {
-				clientConfiguration.setJcrUsername(configuration.getValue());
-			}
-			if (configuration.getName().equals(JCR_PASSWORD)) {
-				clientConfiguration.setJcrPassword(configuration.getValue());
-			}
-		}
-
 	}
 
 	public void loadWorkflowFromaFile(String workflowFile)
@@ -328,14 +286,10 @@ public class AiravataClient {
                 try {
                     WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
                             getClientConfiguration().getXbayaServiceURL().toString());
-                    worflowoutput = stub.launchWorkflow(workflow, topic,
-                            getClientConfiguration().getMyproxyPassword(),
-                            getClientConfiguration().getMyproxyUsername(), null,
-                            configurations);
+                    worflowoutput = stub.launchWorkflow(workflow, topic,null);
                     runPostWorkflowExecutionTasks(worflowoutput, user, metadata);
 
                 } catch (AxisFault e) {
-//			log.fine(e.getMessage(), e);
 		} catch (RemoteException e) {
 //			log.fine(e.getMessage(), e);
 		} catch (RegistryException e) {
@@ -355,7 +309,7 @@ public class AiravataClient {
             @Override
             public void run() {
                 try {
-                    monitorConfiguration = new MonitorConfiguration(new URI(getParameter(BROKER)), fTopic, true, new URI(getParameter(MSGBOX)));
+                    monitorConfiguration = new MonitorConfiguration(new URI(configuration.get(BROKER)), fTopic, true, new URI(configuration.get(MSGBOX)));
                     Monitor monitor = new Monitor(monitorConfiguration);
                     monitor.setPrint(true);
                     monitor.start();
@@ -391,10 +345,7 @@ public class AiravataClient {
 		try {
 			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
 					getClientConfiguration().getXbayaServiceURL().toString());
-			worflowoutput = stub.launchWorkflow(workflow, topic,
-					getClientConfiguration().getMyproxyPassword(),
-					getClientConfiguration().getMyproxyUsername(), inputs,
-					configurations);
+			worflowoutput = stub.launchWorkflow(workflow, topic, inputs);
 			runPostWorkflowExecutionTasks(topic, user, metadata);
 //			log.info("Workflow output : " + worflowoutput);
 		} catch (RegistryException e) {
@@ -632,13 +583,5 @@ public class AiravataClient {
 		return null;
 	}
 
-    private String getParameter(String paramName){
-        for(NameValue param:configurations){
-            if(paramName.equals(param.getName())){
-                return param.getValue();
-            }
-        }
-        return null;
-    }
 
 }
