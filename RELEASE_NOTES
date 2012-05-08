@@ -2,8 +2,60 @@ Apache Airavata Change Log
 
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
-Version 0.1 Released 2011-11-11
-===============================
+Airavata Version 0.2-INCUBATING Released on 2012-04-22
+======================================================
+
+Changes since Version 0.1-INCUBATING
+====================================
+
+** New Feature
+    * [AIRAVATA-104] - Allow creating new account using XBaya GUI for Jackrabbit registry
+
+** Task
+    * [AIRAVATA-78] - Creating a document how to deploy gfac-axis2 service on axis2
+    * [AIRAVATA-145] - Deprecate support for GPEL Client in XBaya
+    * [AIRAVATA-227] - Disable Jython Execution Menu
+    * [AIRAVATA-246] - Update the site documentation
+    * [AIRAVATA-247] - Create new document for advance workflow sample running
+    * [AIRAVATA-248] - Add the Complex-math-service and Levinshtine-distance-service to the maven build, in order to build axis2 service archives
+
+** Improvement
+    * [AIRAVATA-222] - Workflow launch input box requires inserting xml wrapper elements
+    * [AIRAVATA-223] - Workflow Interpreter should go to pause if it waits on a failed service
+    * [AIRAVATA-224] - Popup  save dialog when closing the workflow tab if changed
+    * [AIRAVATA-225] - Add more samples/workflows which demonstrates the use of basic constructs
+    * [AIRAVATA-226] - Allow user to browse the Application during definition of application description
+    * [AIRAVATA-230] - Review XBaya code
+    * [AIRAVATA-231] - Deprecate Stream component
+    * [AIRAVATA-235] - Ability to edit existing application/service and host descriptions
+    * [AIRAVATA-241] - Check App/Service/host descriptions before saving whether it overrides existing document
+
+** Bug
+    * [AIRAVATA-81] - Workflow interpreter- Workflow already running
+    * [AIRAVATA-118] - WS-Notification monitoring tool is failing in airavata
+    * [AIRAVATA-181] - When adding a ServiceDescription through the UI sometimes the out parameter is not added
+    * [AIRAVATA-184] - Messagebox test should skip if a listener port cannot be started on machine due to firewall or system issues. 
+    * [AIRAVATA-194] - XBaya Registry Test throws XML Parsing error
+    * [AIRAVATA-203] - XBaya console error: node does not have a parent
+    * [AIRAVATA-205] - SimpleMathService can be added 2 time but not more than that
+    * [AIRAVATA-217] - GramProvider Test is failing with new schema
+    * [AIRAVATA-218] - Application registration randomly sets application name to Application1
+    * [AIRAVATA-219] - Appearence of dynamic workflow run toolbar during workflow execution
+    * [AIRAVATA-221] - Inconsistency in managing of the Workflow instance status from GUI
+    * [AIRAVATA-228] - XBaya Registry Connection Error Message
+    * [AIRAVATA-233] - ressurect workflow test
+    * [AIRAVATA-234] - HostDescription is allowed to be saved over and over in HostDescriptionDialog
+    * [AIRAVATA-244] - CrossProductWorkflowTest fails with a NP
+    * [AIRAVATA-245] - Fixing a build failure in WorkflowTrackingTest
+
+** Test
+    * [AIRAVATA-238] - Include a workflow tracking test that include the Messaging system
+    * [AIRAVATA-242] - Registry Delete test
+    * [AIRAVATA-243] - Registry Restart while XBaya is running Test
+
+
+Version 0.1 Attempted Release on 2011-11-11 and Cancelled
+=========================================================
 
 ** Initial Setup
     * [AIRAVATA-1 to AIRAVATA-10] - Accepting Code donation from OGCE. Setup and organize SVN, Website JIRA.
