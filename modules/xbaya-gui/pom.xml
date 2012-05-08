@@ -181,11 +181,6 @@
             <version>1.1.4c</version>
         </dependency>
         <dependency>
-            <groupId>wsmg</groupId>
-            <artifactId>wsmg</artifactId>
-            <version>1.76.7</version>
-        </dependency>
-        <dependency>
             <groupId>xpp5</groupId>
             <artifactId>xpp5</artifactId>
             <version>1.2.6</version>
