@@ -64,13 +64,7 @@ public class WorkflowInterpretorMessageReceiverInOut extends org.apache.axis2.re
                                 ,
                                 getTopic(wrappedParam)
                                 ,
-                                (String) msgContext.getConfigurationContext().getProperty(MYPROXY_PASS)
-                                ,
-                                (String) msgContext.getConfigurationContext().getProperty(MYPROXY_USER)
-                                ,
                                 getInputs(wrappedParam)
-                                ,
-                                getConfigurations(wrappedParam)
                         )
 
                 );

@@ -25,10 +25,7 @@ import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.registry.api.impl.JCRRegistry;
@@ -51,6 +48,7 @@ import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.ServiceLifeCycle;
 import org.apache.xmlbeans.XmlObject;
@@ -184,11 +182,14 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	 * @param configurations
 	 */
 
-	public java.lang.String launchWorkflow(java.lang.String workflowAsString, java.lang.String topic, java.lang.String password, java.lang.String username, NameValue[] inputs, NameValue[] configurations) {
-        return setupAndLaunch(workflowAsString, topic, password, username, inputs, configurations,runInThread);
+	public java.lang.String launchWorkflow(java.lang.String workflowAsString, java.lang.String topic, NameValue[] inputs) {
+        MessageContext currentMessageContext = MessageContext.getCurrentMessageContext();
+        Map<String, String> configuration = new HashMap<String, String>();
+        return setupAndLaunch(workflowAsString, topic,
+                (String)configurationContext.getProperty(MYPROXY_USER),(String)configurationContext.getProperty(MYPROXY_PASS),inputs,configuration,runInThread);
 	}
 
-    private String setupAndLaunch(String workflowAsString, String topic, String password, String username, NameValue[] inputs, NameValue[] configurations,boolean inNewThread) {
+    private String setupAndLaunch(String workflowAsString, String topic, String password, String username, NameValue[] inputs,Map<String,String>configurations,boolean inNewThread) {
         System.err.println("Launch is called for topi:");
 
         Workflow workflow = null;
@@ -226,30 +227,17 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         WorkflowInterpretorEventListener listener = null;
         WorkflowInterpreter interpreter = null;
-        for(NameValue each:configurations){
-            if(each.getName().equals(WITH_LISTENER)){
-                if ("true".equals(each.getValue())) {
-                    listener = new WorkflowInterpretorEventListener(workflow, conf);
-                    interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password);
-                    try {
-                        System.err.println("start listener set");
-                        listener.start();
-                    } catch (MonitorException e1) {
-                        e1.printStackTrace();
-                    }
-                }else{
-                    interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password,true);
-                }
-            }else {
-                listener = new WorkflowInterpretorEventListener(workflow, conf);
-                    interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password);
-                    try {
-                        System.err.println("start listener set");
-                        listener.start();
-                    } catch (MonitorException e1) {
-                        e1.printStackTrace();
-                    }
+        if (Boolean.parseBoolean(configurations.get(WITH_LISTENER))) {
+            listener = new WorkflowInterpretorEventListener(workflow, conf);
+            interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password);
+            try {
+                System.err.println("start listener set");
+                listener.start();
+            } catch (MonitorException e1) {
+                e1.printStackTrace();
             }
+        } else {
+            interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password, true);
         }
 
         final WorkflowInterpretorEventListener finalListener = listener;
@@ -299,7 +287,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
     }
 
-    public  XBayaConfiguration getConfiguration(NameValue[] vals) throws URISyntaxException {
+    public  XBayaConfiguration getConfiguration(Map<String,String> vals) throws URISyntaxException {
 		XBayaConfiguration configuration = new XBayaConfiguration();
 		configuration.setBrokerURL(new URI(findValue(vals, BROKER, XBayaConstants.DEFAULT_BROKER_URL.toString())));
 		configuration.setDSCURL(new URI(findValue(vals, DSC, XBayaConstants.DEFAULT_DSC_URL.toString())));
@@ -317,13 +305,10 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		return configuration;
 	}
 
-	public String findValue(NameValue[] vals, String key, String defaultVal) {
-		for (int i = 0; i < vals.length; i++) {
-			if (key.equals(vals[i].getName()) && !"".equals(vals[i].getValue()) && (vals[i].getValue() != null)) {
-				return vals[i].getValue();
-			}
-		}
-
+	public String findValue(Map<String,String> vals, String key, String defaultVal) {
+		if(vals.get(key) != null) {
+            return vals.get(key);
+        }
 		return defaultVal;
 	}
      public void shutDown(ConfigurationContext configctx, AxisService service) {

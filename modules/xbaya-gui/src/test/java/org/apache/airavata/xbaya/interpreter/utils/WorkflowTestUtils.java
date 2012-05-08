@@ -42,34 +42,21 @@ import java.net.URL;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class WorkflowTestUtils implements HeaderConstants{
 
     public static XBayaConfiguration getConfiguration() throws URISyntaxException {
-        NameValue[] configurations = new NameValue[6];
-        configurations[0] = new NameValue();
-        configurations[0].setName(HEADER_ELEMENT_GFAC);
-        configurations[0].setValue(XBayaConstants.DEFAULT_GFAC_URL.toString());
-        configurations[1] = new NameValue();
-        configurations[1].setName(HEADER_ELEMENT_REGISTRY);
-        configurations[1].setValue(XBayaConstants.REGISTRY_URL.toASCIIString());
-        configurations[2] = new NameValue();
-        configurations[2].setName(HEADER_ELEMENT_PROXYSERVER);
-        configurations[2].setValue(XBayaConstants.DEFAULT_MYPROXY_SERVER);
-
-        configurations[3] = new NameValue();
-        configurations[3].setName(HEADER_ELEMENT_MSGBOX);
-        configurations[3].setValue(XBayaConstants.DEFAULT_MESSAGE_BOX_URL.toString());
-
-        configurations[4] = new NameValue();
-        configurations[4].setName(HEADER_ELEMENT_DSC);
-        configurations[4].setValue(XBayaConstants.DEFAULT_DSC_URL.toString());
-
-        configurations[5] = new NameValue();
-        configurations[5].setName(HEADER_ELEMENT_BROKER);
-        configurations[5].setValue(XBayaConstants.DEFAULT_BROKER_URL.toString());
-        return (new WorkflowInterpretorSkeleton()).getConfiguration(configurations);
+        Map<String, String> configuration = new HashMap<String, String>();
+        configuration.put(HEADER_ELEMENT_GFAC,XBayaConstants.DEFAULT_GFAC_URL.toString());
+        configuration.put(HEADER_ELEMENT_REGISTRY,XBayaConstants.REGISTRY_URL.toASCIIString());
+        configuration.put(HEADER_ELEMENT_PROXYSERVER,XBayaConstants.DEFAULT_MYPROXY_SERVER);
+        configuration.put(HEADER_ELEMENT_MSGBOX,XBayaConstants.DEFAULT_MESSAGE_BOX_URL.toString());
+        configuration.put(HEADER_ELEMENT_DSC,XBayaConstants.DEFAULT_DSC_URL.toString());
+        configuration.put(HEADER_ELEMENT_BROKER,XBayaConstants.DEFAULT_BROKER_URL.toString());
+        return (new WorkflowInterpretorSkeleton()).getConfiguration(configuration);
     }
 
     public static String readWorkflow(URL url) throws IOException, URISyntaxException {
