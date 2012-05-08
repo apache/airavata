@@ -340,9 +340,8 @@ public class WorkflowInterpreterLaunchWindow {
 
                     String myProxyUsername = engine.getConfiguration().getRegistryUserName();
                     String myProxyPass = engine.getConfiguration().getRegistryPassphrase();
-
-                    stub.launchWorkflow(workflow.toXMLText(), topicString, myProxyPass, myProxyUsername, inputNameVals,
-                            configurations);
+                    //todo we need to add the workflowContext header in the message
+                    stub.launchWorkflow(workflow.toXMLText(), topicString, inputNameVals);
                 } catch (Exception e) {
                     WorkflowInterpreterLaunchWindow.this.engine.getErrorWindow().error(e);
                 }

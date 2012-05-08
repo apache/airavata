@@ -144,8 +144,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
 
     public java.lang.String launchWorkflow(
 
-    java.lang.String workflowAsString1, java.lang.String topic2, java.lang.String password3,
-            java.lang.String username4, NameValue[] inputs5, NameValue[] configurations6)
+    java.lang.String workflowAsString1, java.lang.String topic2, NameValue[] inputs5)
 
     throws java.rmi.RemoteException
 
@@ -167,7 +166,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
             org.apache.axiom.soap.SOAPEnvelope env = null;
             WorkflowInterpretorStub.LaunchWorkflow dummyWrappedType = null;
             env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()), workflowAsString1, topic2,
-                    password3, username4, inputs5, configurations6, dummyWrappedType,
+                    inputs5, dummyWrappedType,
                     optimizeContent(new javax.xml.namespace.QName("http://interpretor.xbaya.airavata.apache.org",
                             "launchWorkflow")));
 
@@ -278,7 +277,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
         // Style is Doc.
         WorkflowInterpretorStub.LaunchWorkflow dummyWrappedType = null;
         env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()), workflowAsString1, topic2,
-                password3, username4, inputs5, configurations6, dummyWrappedType,
+                 inputs5, dummyWrappedType,
                 optimizeContent(new javax.xml.namespace.QName("http://interpretor.xbaya.airavata.apache.org",
                         "launchWorkflow")));
 
@@ -2090,25 +2089,14 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
     }
 
     private org.apache.axiom.soap.SOAPEnvelope toEnvelope(org.apache.axiom.soap.SOAPFactory factory,
-            java.lang.String param1, java.lang.String param2, java.lang.String param3, java.lang.String param4,
-            NameValue[] param5, NameValue[] param6, WorkflowInterpretorStub.LaunchWorkflow dummyWrappedType,
+            java.lang.String param1, java.lang.String param2,  NameValue[] param5, WorkflowInterpretorStub.LaunchWorkflow dummyWrappedType,
             boolean optimizeContent) throws org.apache.axis2.AxisFault {
 
         try {
             WorkflowInterpretorStub.LaunchWorkflow wrappedType = new WorkflowInterpretorStub.LaunchWorkflow();
-
             wrappedType.setWorkflowAsString(param1);
-
             wrappedType.setTopic(param2);
-
-            wrappedType.setPassword(param3);
-
-            wrappedType.setUsername(param4);
-
             wrappedType.setInputs(param5);
-
-            wrappedType.setConfigurations(param6);
-
             org.apache.axiom.soap.SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
 
             emptyEnvelope.getBody().addChild(

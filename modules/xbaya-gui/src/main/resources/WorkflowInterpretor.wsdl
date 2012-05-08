@@ -8,10 +8,7 @@
                     <xs:sequence>
                         <xs:element minOccurs="0" name="workflowAsString" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="topic" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="password" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="username" nillable="true" type="xs:string"/>
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="inputs" nillable="true" type="ns:NameValue"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="configurations" nillable="true" type="ns:NameValue"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
