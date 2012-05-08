@@ -1,4 +1,4 @@
-Installing  Apache Airavata 0.1-INCUBATING
+Installing  Apache Airavata 0.2-INCUBATING
 ------------------------------------------------
 
 Prerequisites
@@ -17,12 +17,23 @@ Running Tests
 -------------
 Once the binary is unzipped, instructions to run the tests should be followed from README
 
-Advanced Configuration
+Tutorials 
+----------
+The airavata website has instructions for basic tutorials:
+* For basic understanding of how Airavata works - http://incubator.apache.org/airavata/documentation/system/airavata-in-5-minutes.html
+* Advanced understanding of Airavata - http://incubator.apache.org/airavata/documentation/system/airavata-in-10-minutes.html
+* Advanced tutorial to provide understanding of how to run sample workflows distributed with Airavata - http://incubator.apache.org/airavata/documentation/system/advanced-workflow-samples.html
+
+Frequently Asked Questions
+--------------------------
+Common questions and how-to's are listed at - http://incubator.apache.org/airavata/documentation/howto/howto.html
+
+Advanced Configuration (Only needed if default configurations need to be changed)
 =======================
 
 Configuring GFac Service
 ------------------------
-Given below are teh configurations for GFac service to be loaded during axis2 startup. Default configuration file can be
+Given below are the configurations for GFac service to be loaded during axis2 startup. Default configuration file can be
 found at <extracted location>/standalone-server/conf/repository.properties.
 
 Configuration                   Description
