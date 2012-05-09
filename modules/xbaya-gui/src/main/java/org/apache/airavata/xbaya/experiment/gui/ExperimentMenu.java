@@ -31,8 +31,8 @@ import javax.swing.JMenuItem;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
+import org.apache.airavata.xbaya.util.XBayaUtil;
 
 public class ExperimentMenu {
 
@@ -85,13 +85,9 @@ public class ExperimentMenu {
         this.configureRegistryItem = new JMenuItem("Configure Registry");
         configureRegistryItem.setMnemonic(KeyEvent.VK_C);
         configureRegistryItem.addActionListener(new AbstractAction() {
-            private JCRRegistryWindow window;
-
             public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    this.window = new JCRRegistryWindow(ExperimentMenu.this.engine);
-                }
-                this.window.show();
+                XBayaEngine xbayaEngine = ExperimentMenu.this.engine;
+                XBayaUtil.updateJCRRegistryInfo(xbayaEngine);
             }
         });
     }
