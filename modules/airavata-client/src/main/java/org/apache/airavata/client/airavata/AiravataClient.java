@@ -45,8 +45,10 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.ValueFormatException;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.WorkflowExecution;
@@ -64,10 +66,12 @@ import org.apache.airavata.xbaya.monitor.MonitorEventListener;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axis2.AxisFault;
 
 public class AiravataClient {
-	// private static final MLogger log = MLogger.getLogger();
+//	private static final MLogger log = MLogger.getLogger();
 
 	public static final String GFAC = "gfac";
 	public static final String JCR = "jcr";
@@ -85,19 +89,19 @@ public class AiravataClient {
 	public static final String MYPROXYPASS = "myproxy.password";
 	public static final String WITHLISTENER = "with.Listener";
 	public static final String WORKFLOWSERVICEURL = "xbaya.service.url";
-	public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
-	private AiravataClientConfiguration clientConfiguration;
-	private MonitorConfiguration monitorConfiguration;
+    public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
+    private AiravataClientConfiguration clientConfiguration;
+    private MonitorConfiguration monitorConfiguration;
 	private static String workflow = "";
-	private static WorkflowContextHeaderBuilder builder;
+    private static WorkflowContextHeaderBuilder builder;
 
 	private AiravataRegistry registry;
 
-	private Map<String, String> configuration = new HashMap<String, String>();
+    private Map<String, String> configuration = new HashMap<String, String>();
 
 	// private NameValue[] configurations = new NameValue[7];
 
-	public AiravataClient(Map<String, String> configuration)
+	public AiravataClient(Map<String,String> configuration)
 			throws MalformedURLException {
 		this.configuration = configuration;
 		updateClientConfiguration(configuration);
@@ -105,75 +109,56 @@ public class AiravataClient {
 
 	public AiravataClient(String fileName) throws RegistryException,
 			MalformedURLException, IOException {
-		URL url = this.getClass().getClassLoader().getResource(fileName);
+		URL url = this. getClass().getClassLoader().getResource(fileName);
 		if (url == null) {
 			url = (new File(fileName)).toURL();
 		}
 		Properties properties = new Properties();
 		properties.load(url.openStream());
 
-		configuration.put(GFAC,
-				validateAxisService(properties.getProperty(DEFAULT_GFAC_URL)));
-		configuration.put(PROXYSERVER,
-				properties.getProperty(DEFAULT_MYPROXY_SERVER));
-		configuration.put(MSGBOX, validateAxisService(properties
+		configuration.put(GFAC,validateAxisService(properties
+				.getProperty(DEFAULT_GFAC_URL)));
+		configuration.put(MSGBOX,validateAxisService(properties
 				.getProperty(DEFAULT_MESSAGE_BOX_URL)));
-		configuration
-				.put(BROKER, validateAxisService(properties
-						.getProperty(DEFAULT_BROKER_URL)));
-		configuration.put(MYPROXYUSERNAME,
-				properties.getProperty(MYPROXYUSERNAME));
-		configuration.put(MYPROXYPASS, properties.getProperty(MYPROXYPASS));
-		configuration
-				.put(WORKFLOWSERVICEURL, validateAxisService(properties
-						.getProperty(WORKFLOWSERVICEURL)));
-		configuration.put(JCR,
-				validateURL(properties.getProperty(DEFAULT_JCR_URL)));
-		configuration.put(JCR_USERNAME, properties.getProperty(JCR_USERNAME));
+		configuration.put(BROKER,validateAxisService(properties
+				.getProperty(DEFAULT_BROKER_URL)));
+		configuration.put(WORKFLOWSERVICEURL,validateAxisService(properties
+				.getProperty(WORKFLOWSERVICEURL)));
+		configuration.put(JCR,validateURL(properties
+				.getProperty(DEFAULT_JCR_URL)));
+		configuration.put(JCR_USERNAME,properties.getProperty(JCR_USERNAME));
 
-		configuration.put(JCR_PASSWORD, properties.getProperty(JCR_PASSWORD));
+		configuration.put(JCR_PASSWORD,properties.getProperty(JCR_PASSWORD));
 
-		configuration.put(WITHLISTENER, properties.getProperty(WITHLISTENER));
+		configuration.put(WITHLISTENER,properties.getProperty(WITHLISTENER));
 
-		configuration.put(TRUSTED_CERT_LOCATION,
-				properties.getProperty(TRUSTED_CERT_LOCATION));
-		// At this point we do not know the workflowExperimentId
-		// builder = new
-		// WorkflowContextHeaderBuilder(properties.getProperty(DEFAULT_BROKER_URL),
-		// properties.getProperty(DEFAULT_GFAC_URL),properties.getProperty(DEFAULT_JCR_URL),null,null);
+        // At this point we do not know the workflowExperimentId
+        builder = new WorkflowContextHeaderBuilder(properties.getProperty(DEFAULT_BROKER_URL),
+                properties.getProperty(DEFAULT_GFAC_URL),properties.getProperty(DEFAULT_JCR_URL),null,null, null);
+
 		updateClientConfiguration(configuration);
 	}
 
-	private void updateClientConfiguration(Map<String, String> configuration)
+	private void updateClientConfiguration(Map<String,String> configuration)
 			throws MalformedURLException {
 		AiravataClientConfiguration clientConfiguration = getClientConfiguration();
-		if (configuration.get(GFAC) != null) {
-			clientConfiguration.setGfacURL(new URL(configuration.get(GFAC)));
-		}
-		if (configuration.get(PROXYSERVER) != null) {
-			clientConfiguration.setMyproxyHost(configuration.get(PROXYSERVER));
-		}
-		if (configuration.get(MSGBOX) != null) {
-			clientConfiguration.setMessageboxURL(new URL(configuration
-					.get(MSGBOX)));
-		}
-		if (configuration.get(BROKER) != null) {
-			clientConfiguration.setMessagebrokerURL(new URL(configuration
-					.get(BROKER)));
-		}
-		if (configuration.get(JCR) != null) {
-			clientConfiguration.setJcrURL(new URL(configuration.get(JCR)));
-		}
-		if (configuration.get(JCR_USERNAME) != null) {
-			clientConfiguration.setJcrUsername(configuration.get(JCR_USERNAME));
-		}
-		if (configuration.get(JCR_PASSWORD) != null) {
-			clientConfiguration.setJcrPassword(configuration.get(JCR_PASSWORD));
-		}
-		if (configuration.get(WORKFLOWSERVICEURL) != null) {
-			clientConfiguration.setXbayaServiceURL(new URL(configuration
-					.get(WORKFLOWSERVICEURL)));
-		}
+			if (configuration.get(GFAC) != null) {
+				clientConfiguration
+						.setGfacURL(new URL(configuration.get(GFAC)));
+			}
+			if (configuration.get(MSGBOX)!= null) {
+				clientConfiguration.setMessageboxURL(new URL(configuration.get(MSGBOX)));
+			}
+			if (configuration.get(BROKER)!= null) {
+				clientConfiguration.setMessagebrokerURL(new URL(configuration.get(BROKER)));
+			}
+			if (configuration.get(JCR)!= null) {
+				clientConfiguration
+						.setJcrURL(new URL(configuration.get(JCR)));
+			}
+            if (configuration.get(WORKFLOWSERVICEURL)!= null) {
+				clientConfiguration.setXbayaServiceURL(new URL(configuration.get(WORKFLOWSERVICEURL)));
+			}
 	}
 
 	public void loadWorkflowFromaFile(String workflowFile)
@@ -206,8 +191,7 @@ public class AiravataClient {
 		this.workflow = workflowAsaString;
 	}
 
-	public static void updateWorkflowInputValuesFromProperties(
-			List<WorkflowInput> inputs, String fileName) throws IOException {
+	public static void updateWorkflowInputValuesFromProperties(List<WorkflowInput> inputs, String fileName) throws IOException{
 		URL url = AiravataClient.class.getClassLoader().getResource(fileName);
 		if (url == null) {
 			url = (new File(fileName)).toURL();
@@ -215,12 +199,12 @@ public class AiravataClient {
 		Properties properties = new Properties();
 		properties.load(url.openStream());
 		for (WorkflowInput workflowInput : inputs) {
-			if (properties.containsKey(workflowInput.getName())) {
+			if (properties.containsKey(workflowInput.getName())){
 				workflowInput.setValue(properties.get(workflowInput.getName()));
 			}
 		}
 	}
-
+	
 	public NameValue[] setInputs(String fileName) throws IOException {
 		URL url = this.getClass().getClassLoader().getResource(fileName);
 		if (url == null) {
@@ -287,54 +271,58 @@ public class AiravataClient {
 	}
 
 	public String runWorkflow(String topic, String user, String metadata) {
-		String worflowoutput = null;
-		try {
-			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
-					getClientConfiguration().getXbayaServiceURL().toString());
-			worflowoutput = stub.launchWorkflow(workflow, topic, null);
-			runPostWorkflowExecutionTasks(worflowoutput, user, metadata);
+        String worflowoutput = null;
+                try {
+                    WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
+                            getClientConfiguration().getXbayaServiceURL().toString());
+                    OMElement omElement = AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml()));
+                    stub._getServiceClient().addHeader(omElement);
+                    worflowoutput = stub.launchWorkflow(workflow, topic,null);
+                    runPostWorkflowExecutionTasks(worflowoutput, user, metadata);
 
-		} catch (AxisFault e) {
+                } catch (AxisFault e) {
 		} catch (RemoteException e) {
-			// log.fine(e.getMessage(), e);
+//			log.fine(e.getMessage(), e);
 		} catch (RegistryException e) {
-			// log.fine(e.getMessage(), e);
-		}
-		// log.info("Workflow output : " + worflowoutput);
+//			log.fine(e.getMessage(), e);
+		} catch (XMLStreamException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+//			log.info("Workflow output : " + worflowoutput);
 
-		return worflowoutput;
+        return worflowoutput;
 	}
 
-	public Monitor getWorkflowExecutionMonitor(String topic) {
-		return getWorkflowExecutionMonitor(topic, null);
-	}
+  public Monitor getWorkflowExecutionMonitor(String topic) {
+        return getWorkflowExecutionMonitor(topic, null);
+    }
 
-	public Monitor getWorkflowExecutionMonitor(String topic,
-			MonitorEventListener listener) {
-		final String fTopic = topic;
-		try {
-			monitorConfiguration = new MonitorConfiguration(new URI(
-					configuration.get(BROKER)), fTopic, true, new URI(
-							configuration.get(MSGBOX)));
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
-		}
-		final Monitor monitor = new Monitor(monitorConfiguration);
-		monitor.setPrint(true);
-		monitor.getEventData().registerEventListener(listener);
-		new Thread() {
-			@Override
-			public void run() {
-				try {
-					monitor.start();
-				} catch (MonitorException e) {
-					e.printStackTrace();
-				}
-			}
-		}.start();
-		return monitor;
-	}
-
+    public Monitor getWorkflowExecutionMonitor(String topic,
+            MonitorEventListener listener) {
+        final String fTopic = topic;
+        try {
+            monitorConfiguration = new MonitorConfiguration(new URI(
+                    configuration.get(BROKER)), fTopic, true, new URI(
+                            configuration.get(MSGBOX)));
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
+        }
+        final Monitor monitor = new Monitor(monitorConfiguration);
+        monitor.setPrint(true);
+        monitor.getEventData().registerEventListener(listener);
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    monitor.start();
+                } catch (MonitorException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+        return monitor;
+    }
+    
 	private void runPostWorkflowExecutionTasks(String topic, String user,
 			String metadata) throws RegistryException {
 		if (user != null) {
@@ -345,27 +333,26 @@ public class AiravataClient {
 		}
 	}
 
-	public String runWorkflow(String topic, NameValue[] inputs)
-			throws Exception {
+	public String runWorkflow(String topic, NameValue[] inputs) throws Exception {
 		return runWorkflow(topic, inputs, null);
 	}
 
-	public String runWorkflow(String topic, NameValue[] inputs, String user)
-			throws Exception {
+	public String runWorkflow(String topic, NameValue[] inputs, String user) throws Exception {
 		return runWorkflow(topic, inputs, user, null);
 	}
 
 	public String runWorkflow(String topic, NameValue[] inputs, String user,
-			String metadata) throws Exception {
+			String metadata) throws Exception{
 		String worflowoutput = null;
 		try {
 			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
 					getClientConfiguration().getXbayaServiceURL().toString());
+            stub._getServiceClient().addHeader(AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml())));
 			worflowoutput = stub.launchWorkflow(workflow, topic, inputs);
 			runPostWorkflowExecutionTasks(topic, user, metadata);
-			// log.info("Workflow output : " + worflowoutput);
+//			log.info("Workflow output : " + worflowoutput);
 		} catch (RegistryException e) {
-			// log.fine(e.getMessage(), e);
+//			log.fine(e.getMessage(), e);
 		}
 		return worflowoutput;
 	}
@@ -432,7 +419,7 @@ public class AiravataClient {
 
 	private String validateAxisService(String urlString)
 			throws RegistryException {
-		String originalURL = urlString;
+		String originalURL=urlString;
 		if (!urlString.endsWith("?wsdl")) {
 			urlString = urlString + "?wsdl";
 		}
@@ -471,7 +458,6 @@ public class AiravataClient {
 
 	/**
 	 * Retrieve the names of the workflow templates saved in the registry
-	 * 
 	 * @return
 	 */
 	public List<String> getWorkflowTemplateIds() {
@@ -491,23 +477,17 @@ public class AiravataClient {
 	}
 
 	/**
-	 * Execute the given workflow template with the given inputs and return the
-	 * topic id
-	 * 
+	 * Execute the given workflow template with the given inputs and return the topic id 
 	 * @param workflowTemplateId
 	 * @param inputs
 	 * @return
 	 */
-	public String runWorkflow(String workflowTemplateId,
-			List<WorkflowInput> inputs) throws Exception {
-		return runWorkflow(workflowTemplateId, inputs, getRegistry()
-				.getUsername(), null);
+	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs) throws Exception{
+		return runWorkflow(workflowTemplateId,inputs,getRegistry().getUsername(),null);
 	}
-
+	
 	/**
-	 * Execute the given workflow template with the given inputs, user, metadata
-	 * and return the topic id
-	 * 
+	 * Execute the given workflow template with the given inputs, user, metadata and return the topic id
 	 * @param workflowTemplateId
 	 * @param inputs
 	 * @param user
@@ -515,33 +495,29 @@ public class AiravataClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public String runWorkflow(String workflowTemplateId,
-			List<WorkflowInput> inputs, String user, String metadata)
-			throws Exception {
+	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata) throws Exception{
 		try {
 			List<WSComponentPort> ports = getWSComponentPortInputs(workflowTemplateId);
 			for (WorkflowInput input : inputs) {
-				WSComponentPort port = getWSComponentPort(input.getName(),
-						ports);
-				if (port != null) {
+				WSComponentPort port = getWSComponentPort(input.getName(), ports);
+				if (port!=null){
 					port.setValue(input.getValue());
 				}
 			}
-			List<NameValue> inputValues = new ArrayList<NameValue>();
+			List<NameValue> inputValues=new ArrayList<NameValue>();
 			for (WSComponentPort port : ports) {
 				NameValue nameValue = new NameValue();
 				nameValue.setName(port.getName());
-				if (port.getValue() == null) {
+				if (port.getValue()==null){
 					nameValue.setValue(port.getDefaultValue());
-				} else {
+				}else{
 					nameValue.setValue(port.getValue().toString());
 				}
 				inputValues.add(nameValue);
 			}
-			workflow = getWorkflowAsString(workflowTemplateId).getString();
-			String topic = workflowTemplateId + "_" + UUID.randomUUID();
-			return runWorkflow(topic, inputValues.toArray(new NameValue[] {}),
-					user, metadata);
+			workflow=getWorkflowAsString(workflowTemplateId).getString();
+			String topic=workflowTemplateId+"_"+UUID.randomUUID();
+			return runWorkflow(topic, inputValues.toArray(new NameValue[]{}), user, metadata);
 		} catch (PathNotFoundException e) {
 			e.printStackTrace();
 		} catch (RegistryException e) {
@@ -553,22 +529,18 @@ public class AiravataClient {
 		}
 		return null;
 	}
-
+	
 	/**
 	 * Retrieve the inputs for the given workflow template
-	 * 
 	 * @param workflowTemplateId
 	 * @return
 	 */
-	public List<WorkflowInput> getWorkflowInputs(String workflowTemplateId)
-			throws Exception {
+	public List<WorkflowInput> getWorkflowInputs(String workflowTemplateId) throws Exception{
 		try {
 			List<WSComponentPort> inputs = getWSComponentPortInputs(workflowTemplateId);
-			List<WorkflowInput> results = new ArrayList<WorkflowInput>();
+			List<WorkflowInput> results=new ArrayList<WorkflowInput>();
 			for (WSComponentPort port : inputs) {
-				results.add(new WorkflowInput(port.getName(), port.getType()
-						.getLocalPart(), port.getDefaultValue(), port
-						.getValue()));
+				results.add(new WorkflowInput(port.getName(), port.getType().getLocalPart(), port.getDefaultValue(), port.getValue()));
 			}
 			return results;
 		} catch (RegistryException e) {
@@ -584,15 +556,15 @@ public class AiravataClient {
 	public Property getWorkflowAsString(String workflowTemplateId)
 			throws RegistryException, PathNotFoundException,
 			RepositoryException {
-		Map<QName, Node> workflows = getRegistry().getWorkflows(
-				getClientConfiguration().getJcrUsername());
+		Map<QName, Node> workflows = getRegistry().getWorkflows(getClientConfiguration().getJcrUsername());
 		for (QName qname : workflows.keySet()) {
-			if (qname.getLocalPart().equals(workflowTemplateId)) {
+			if (qname.getLocalPart().equals(workflowTemplateId)){
 				return workflows.get(qname).getProperty("workflow");
 			}
 		}
 		return null;
 	}
+	
 
 	private List<WSComponentPort> getWSComponentPortInputs(
 			String workflowTemplateId) throws RegistryException,
@@ -604,15 +576,15 @@ public class AiravataClient {
 		List<WSComponentPort> inputs = workflow.getInputs();
 		return inputs;
 	}
-
-	private WSComponentPort getWSComponentPort(String name,
-			List<WSComponentPort> ports) {
+	
+	private WSComponentPort getWSComponentPort(String name,List<WSComponentPort> ports){
 		for (WSComponentPort port : ports) {
-			if (port.getName().equals(name)) {
+			if (port.getName().equals(name)){
 				return port;
 			}
 		}
 		return null;
 	}
+
 
 }

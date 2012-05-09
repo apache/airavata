@@ -21,7 +21,6 @@
 package org.apache.airavata.common.workflow.execution.context;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -30,7 +29,7 @@ public class WorkflowContextHeaderBuilderTest {
     @Test
     public void testExecute() {
         WorkflowContextHeaderBuilder builder = new WorkflowContextHeaderBuilder("brokerurl", "gfacurl", "registryurl",
-                "experimentid", "workflowid");
+                "experimentid", "workflowid", "msgBox");
 
         try {
             File testFile = new File(this.getClass().getClassLoader().getResource("result.xml").getPath());
