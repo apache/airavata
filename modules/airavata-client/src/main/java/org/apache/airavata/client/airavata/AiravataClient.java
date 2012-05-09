@@ -134,7 +134,8 @@ public class AiravataClient {
 
         // At this point we do not know the workflowExperimentId
         builder = new WorkflowContextHeaderBuilder(properties.getProperty(DEFAULT_BROKER_URL),
-                properties.getProperty(DEFAULT_GFAC_URL),properties.getProperty(DEFAULT_JCR_URL),null,null, null);
+                properties.getProperty(DEFAULT_GFAC_URL),properties.getProperty(DEFAULT_JCR_URL),null,null,
+                properties.getProperty(DEFAULT_MESSAGE_BOX_URL));
 
 		updateClientConfiguration(configuration);
 	}
@@ -158,6 +159,9 @@ public class AiravataClient {
 			}
             if (configuration.get(WORKFLOWSERVICEURL)!= null) {
 				clientConfiguration.setXbayaServiceURL(new URL(configuration.get(WORKFLOWSERVICEURL)));
+			}
+           if (configuration.get(MSGBOX)!= null) {
+				clientConfiguration.setMessageboxURL(new URL(configuration.get(MSGBOX)));
 			}
 	}
 
