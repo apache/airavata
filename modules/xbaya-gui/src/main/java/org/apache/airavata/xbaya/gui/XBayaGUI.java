@@ -145,6 +145,20 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
             throw new XBayaRuntimeException(e);
         } catch (InvocationTargetException e) {
             // Shouldn't happen.
+        	//It happened
+        	/* exception occurs when xbaya is opened twice from the jvm
+        	 * org.apache.airavata.xbaya.XBayaRuntimeException: java.lang.reflect.InvocationTargetException
+				at org.apache.airavata.xbaya.gui.XBayaGUI.<init>(XBayaGUI.java:148)
+				at org.apache.airavata.xbaya.XBayaEngine.<init>(XBayaEngine.java:106)
+				at org.apache.airavata.xbaya.XBaya.<init>(XBaya.java:51)
+				at org.ogce.paramchem.XBayaLauncher.run(XBayaLauncher.java:44)
+				at java.lang.Thread.run(Thread.java:662)
+			Caused by: java.lang.reflect.InvocationTargetException
+				at java.awt.EventQueue.invokeAndWait(EventQueue.java:1042)
+				at javax.swing.SwingUtilities.invokeAndWait(SwingUtilities.java:1326)
+				at org.apache.airavata.xbaya.gui.XBayaGUI.<init>(XBayaGUI.java:138)
+				... 4 more
+        	 */
             throw new XBayaRuntimeException(e);
         }
         
