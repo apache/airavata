@@ -196,6 +196,17 @@
 						</documentation>
 					</annotation>
 				</element>
+                <element name="msg-box-epr" type="anyURI">
+					<annotation>
+						<documentation xml:lang="en"> EPR for WS-Eventing sink
+							where to send errors (optional)
+							NOTE: designed good
+							for debugging
+							and system level warnings, errors,
+							etc
+						</documentation>
+					</annotation>
+				</element>
 			</sequence>
 		</complexType>
 	</element>

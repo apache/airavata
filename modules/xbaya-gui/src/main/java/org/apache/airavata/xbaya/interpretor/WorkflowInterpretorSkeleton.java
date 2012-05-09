@@ -30,9 +30,11 @@ import java.util.*;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.registry.api.impl.JCRRegistry;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
@@ -47,10 +49,13 @@ import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
+import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.ServiceLifeCycle;
+import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -182,12 +187,28 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	 * @param configurations
 	 */
 
-	public java.lang.String launchWorkflow(java.lang.String workflowAsString, java.lang.String topic, NameValue[] inputs) {
+	public java.lang.String launchWorkflow(java.lang.String workflowAsString, java.lang.String topic, NameValue[] inputs) throws XMLStreamException {
         MessageContext currentMessageContext = MessageContext.getCurrentMessageContext();
+        SOAPHeader header = currentMessageContext.getEnvelope().getHeader();
+        Iterator childrenWithName = header.getChildrenWithName(new QName("http://schemas.airavata.apache.org/workflow-execution-context", "context-header"));
+        OMElement workflowContext = (OMElement)childrenWithName.next();
         Map<String, String> configuration = new HashMap<String, String>();
+        parseContextHeader(workflowContext, configuration);
         return setupAndLaunch(workflowAsString, topic,
                 (String)configurationContext.getProperty(MYPROXY_USER),(String)configurationContext.getProperty(MYPROXY_PASS),inputs,configuration,runInThread);
 	}
+
+    private void parseContextHeader(OMElement workflowContext, Map<String, String> configuration) throws XMLStreamException {
+        try {
+            ContextHeaderDocument parse = ContextHeaderDocument.Factory.parse(workflowContext.toStringWithConsume());
+            configuration.put(GFAC,parse.getContextHeader().getWorkflowMonitoringContext().getEventPublishEpr());
+            configuration.put(BROKER, parse.getContextHeader().getWorkflowMonitoringContext().getEventPublishEpr());
+            configuration.put(GFAC, parse.getContextHeader().getSoaServiceEprs().getGfacUrl());
+            configuration.put(MSGBOX, parse.getContextHeader().getWorkflowMonitoringContext().getMsgBoxEpr());
+        } catch (XmlException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
 
     private String setupAndLaunch(String workflowAsString, String topic, String password, String username, NameValue[] inputs,Map<String,String>configurations,boolean inNewThread) {
         System.err.println("Launch is called for topi:");
@@ -290,7 +311,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public  XBayaConfiguration getConfiguration(Map<String,String> vals) throws URISyntaxException {
 		XBayaConfiguration configuration = new XBayaConfiguration();
 		configuration.setBrokerURL(new URI(findValue(vals, BROKER, XBayaConstants.DEFAULT_BROKER_URL.toString())));
-		configuration.setDSCURL(new URI(findValue(vals, DSC, XBayaConstants.DEFAULT_DSC_URL.toString())));
 		configuration.setGFacURL(new URI(findValue(vals, GFAC, XBayaConstants.DEFAULT_GFAC_URL.toString())));
 		configuration.setMessageBoxURL(new URI(findValue(vals, MSGBOX, XBayaConstants.DEFAULT_MESSAGE_BOX_URL.toString())));
 		configuration.setMyProxyLifetime(XBayaConstants.DEFAULT_MYPROXY_LIFTTIME);

@@ -222,7 +222,8 @@ public class GenericInvoker implements Invoker {
 
         // Set LEAD context header.
         WorkflowContextHeaderBuilder builder = new WorkflowContextHeaderBuilder(this.notifier.getEventSink()
-                .getAddress(), this.gfacURL, null, this.notifier.getWorkflowID().toASCIIString(), "xbaya-experiment");
+                .getAddress(), this.gfacURL, null, this.notifier.getWorkflowID().toASCIIString(),
+                "xbaya-experiment", this.messageBoxURL);
         builder.getWorkflowMonitoringContext().setServiceInstanceId(this.nodeID);
         builder.getWorkflowMonitoringContext().setWorkflowNodeId(this.nodeID);
         builder.getWorkflowMonitoringContext().setWorkflowInstanceId(this.notifier.getWorkflowID().toASCIIString());

@@ -42,7 +42,7 @@ public class WorkflowContextHeaderBuilder {
     private WorkflowSchedulingContextDocument.WorkflowSchedulingContext workflowSchedulingContext = null;
 
     public WorkflowContextHeaderBuilder(String brokerUrl, String gfacUrl, String registryUrl, String experimentId,
-            String workflowId) {
+                                        String workflowId, String msgBoxUrl) {
         this.contextHeader = ContextHeaderDocument.ContextHeader.Factory.newInstance();
 
         this.soaServiceEprs = SoaServiceEprsDocument.SoaServiceEprs.Factory.newInstance();
@@ -54,7 +54,7 @@ public class WorkflowContextHeaderBuilder {
         this.workflowMonitoringContext.setEventPublishEpr(brokerUrl);
         this.workflowMonitoringContext.setWorkflowInstanceId(workflowId);
         this.workflowMonitoringContext.setExperimentId(experimentId);
-
+        this.workflowMonitoringContext.setMsgBoxEpr(msgBoxUrl);
         this.contextHeader.setWorkflowMonitoringContext(this.workflowMonitoringContext);
         this.contextHeader.setSoaServiceEprs(this.soaServiceEprs);
 
