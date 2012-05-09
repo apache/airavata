@@ -1149,7 +1149,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 			session = getSession();
 			List<String> matchingExperimentIds = getMatchingExperimentIds(".*", session);
 			for (String id : matchingExperimentIds) {
-				if (user.equals(getWorkflowExecutionUser(id))){
+				if (user==null || user.equals(getWorkflowExecutionUser(id))){
 					ids.add(id);
 				}
 			}

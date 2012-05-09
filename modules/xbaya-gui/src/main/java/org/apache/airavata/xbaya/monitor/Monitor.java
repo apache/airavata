@@ -49,7 +49,7 @@ public class Monitor extends EventProducer {
     protected WsmgClient wsmgClient;
 
     protected boolean print;
-
+    
     /**
      * Constructs a Monitor.
      * 
@@ -204,4 +204,5 @@ public class Monitor extends EventProducer {
     public void setPrint(boolean print) {
         this.print = print;
     }
+
 }

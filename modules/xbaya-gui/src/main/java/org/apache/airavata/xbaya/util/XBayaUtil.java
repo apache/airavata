@@ -21,19 +21,36 @@
 
 package org.apache.airavata.xbaya.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.airavata.xbaya.*;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.airavata.xbaya.XBayaConfiguration;
+import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
-import org.apache.airavata.xbaya.graph.system.*;
+import org.apache.airavata.xbaya.graph.system.ConstantNode;
+import org.apache.airavata.xbaya.graph.system.EndForEachNode;
+import org.apache.airavata.xbaya.graph.system.EndifNode;
+import org.apache.airavata.xbaya.graph.system.ForEachNode;
+import org.apache.airavata.xbaya.graph.system.InputNode;
+import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.apache.airavata.xbaya.interpretor.SystemComponentInvoker;
 import org.apache.airavata.xbaya.interpretor.WorkFlowInterpreterException;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
@@ -42,10 +59,14 @@ import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.axis2.util.XMLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import org.xmlpull.infoset.XmlElement;
+
 import xsul.lead.LeadContextHeader;
 import xsul.lead.LeadResourceMapping;
 import xsul5.XmlConstants;
@@ -297,6 +318,21 @@ public class XBayaUtil {
 			}
 		}
 		throw new XBayaRuntimeException("EndForEachNode not found");
+	}
+	
+	
+	public static List<NameValue> getIOParameterData(String xml) throws ParserConfigurationException, SAXException, IOException{
+		List<NameValue> parameters=new ArrayList<NameValue>();
+		Document parameterDocument = XMLUtils.newDocument(new ByteArrayInputStream(xml.getBytes()));
+		org.w3c.dom.NodeList childNodes = parameterDocument.getDocumentElement().getChildNodes();
+		for(int i=0;i<childNodes.getLength();i++){
+			org.w3c.dom.Node parameterNode = childNodes.item(i);
+			NameValue pair = new NameValue();
+			pair.setName(parameterNode.getLocalName());
+			pair.setValue(parameterNode.getTextContent());
+			parameters.add(pair);
+		}
+		return parameters;
 	}
 
 }

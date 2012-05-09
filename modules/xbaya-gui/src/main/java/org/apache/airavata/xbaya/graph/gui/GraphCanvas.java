@@ -773,7 +773,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 
     private void keyPressed(KeyEvent event) {
         int keyCode = event.getKeyCode();
-        if (keyCode == KeyEvent.VK_DELETE) {
+        if (editable && keyCode == KeyEvent.VK_DELETE) {
             try {
                 removeSelected();
             } catch (GraphException e) {
@@ -1177,29 +1177,32 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 
     private void createNodePopupMenu() {
         this.nodePopup = new JPopupMenu();
-        JMenuItem deleteItem = new JMenuItem("Delete");
-        deleteItem.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent event) {
-                try {
-                    removeSelectedNode();
-                } catch (GraphException e) {
-                    // Should not happen
-                    logger.error(e.getMessage(), e);
-                    GraphCanvas.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-                } catch (RuntimeException e) {
-                    logger.error(e.getMessage(), e);
-                    GraphCanvas.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-                } catch (Error e) {
-                    logger.error(e.getMessage(), e);
-                    GraphCanvas.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-                }
+        if (editable) {
+			JMenuItem deleteItem = new JMenuItem("Delete");
+			deleteItem.addActionListener(new AbstractAction() {
+				public void actionPerformed(ActionEvent event) {
+					try {
+						removeSelectedNode();
+					} catch (GraphException e) {
+						// Should not happen
+						logger.error(e.getMessage(), e);
+						GraphCanvas.this.engine.getGUI().getErrorWindow()
+								.error(ErrorMessages.UNEXPECTED_ERROR, e);
+					} catch (RuntimeException e) {
+						logger.error(e.getMessage(), e);
+						GraphCanvas.this.engine.getGUI().getErrorWindow()
+								.error(ErrorMessages.UNEXPECTED_ERROR, e);
+					} catch (Error e) {
+						logger.error(e.getMessage(), e);
+						GraphCanvas.this.engine.getGUI().getErrorWindow()
+								.error(ErrorMessages.UNEXPECTED_ERROR, e);
+					}
 
-            }
-        });
-
-        this.nodePopup.add(deleteItem);
-
-        rerunItem = new JMenuItem("ReRun");
+				}
+			});
+			this.nodePopup.add(deleteItem);
+		}
+		rerunItem = new JMenuItem("ReRun");
         rerunItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent event) {
                 try {
@@ -1281,16 +1284,17 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 
     private void createEdgePopupMenu() {
         this.edgePopup = new JPopupMenu();
-        JMenuItem deleteItem = new JMenuItem("Delete");
-        deleteItem.addActionListener(new AbstractAction() {
-            private static final long serialVersionUID = 1L;
+        if (editable) {
+			JMenuItem deleteItem = new JMenuItem("Delete");
+			deleteItem.addActionListener(new AbstractAction() {
+				private static final long serialVersionUID = 1L;
 
-            public void actionPerformed(ActionEvent e) {
-                removeSelectedEdge();
-            }
-        });
-
-        this.edgePopup.add(deleteItem);
+				public void actionPerformed(ActionEvent e) {
+					removeSelectedEdge();
+				}
+			});
+			this.edgePopup.add(deleteItem);
+		}
     }
 
     private void maybeShowPopup(MouseEvent event) {

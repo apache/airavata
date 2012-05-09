@@ -31,6 +31,8 @@ import org.xmlpull.infoset.XmlElement;
 public class MonitorEvent {
 
     private String timeText;
+    
+    private Date timestamp;
 
     private String idText;
 
@@ -133,7 +135,7 @@ public class MonitorEvent {
         this.workflowID = MonitorUtil.getWorkflowID(this.event);
         this.nodeID = MonitorUtil.getNodeID(this.event);
 
-        Date timestamp = MonitorUtil.getTimestamp(this.event);
+        timestamp = MonitorUtil.getTimestamp(this.event);
         if (timestamp != null) {
             SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss.S MM/dd/yy ");
             this.timeText = format.format(timestamp);
@@ -154,5 +156,13 @@ public class MonitorEvent {
             this.message = "<html>" + this.message + ": " + "<a href=\"" + url + "\">" + url + " </a></html>";
         }
     }
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
+	}
 
 }
