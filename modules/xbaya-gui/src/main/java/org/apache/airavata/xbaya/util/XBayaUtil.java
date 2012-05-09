@@ -63,7 +63,6 @@ import org.apache.axis2.util.XMLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xmlpull.infoset.XmlElement;
 
@@ -149,11 +148,16 @@ public class XBayaUtil {
     public static boolean acquireJCRRegistry(XBayaEngine engine) {
         XBayaConfiguration configuration = engine.getConfiguration();
         if (configuration.getJcrComponentRegistry() == null) {
-            JCRRegistryWindow window = new JCRRegistryWindow(engine);
-            window.show();
+        	updateJCRRegistryInfo(engine);
         }
         return engine.getConfiguration().getJcrComponentRegistry() != null;
     }
+    
+    public static void updateJCRRegistryInfo(XBayaEngine xbayaEngine) {
+    	JCRRegistryWindow window = new JCRRegistryWindow(xbayaEngine);
+        window.show();
+	}
+    
     public static Object getInputsForForEachNode(final ForEachNode forEachNode,
 			final LinkedList<String> listOfValues, Map<Node, Invoker> invokerMap) throws XBayaException {
 		Node forEachInputNode = forEachNode.getInputPort(0).getFromNode();

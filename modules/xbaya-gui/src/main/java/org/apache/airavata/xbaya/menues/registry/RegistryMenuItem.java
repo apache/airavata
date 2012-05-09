@@ -29,13 +29,14 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import org.apache.airavata.xbaya.XBayaConfiguration;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
+import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
 import org.apache.airavata.xbaya.gui.ToolbarButton;
 import org.apache.airavata.xbaya.gui.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.gui.XBayaToolBar;
 import org.apache.airavata.xbaya.menues.MenuIcons;
+import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,19 +89,16 @@ public class RegistryMenuItem implements XBayaExecutionModeListener {
 
     }
     
-
     private JMenuItem createJCRRegistryItem() {
         JMenuItem item = new JMenuItem("Setup JCR Registry...",MenuIcons.JCR_ICON);
         item.setMnemonic(KeyEvent.VK_J);
         AbstractAction action = new AbstractAction() {
-            private JCRRegistryWindow window;
 
             public void actionPerformed(ActionEvent e) {
-                if (this.window == null) {
-                    this.window = new JCRRegistryWindow(engine);
-                }
-                this.window.show();
+                XBayaEngine xbayaEngine = engine;
+                XBayaUtil.updateJCRRegistryInfo(xbayaEngine);
             }
+
         };
 		item.addActionListener(action);
 		toolbarButtonJCR = getToolBar().addToolbarButton(REGISTRY_ACTIONS, item.getText(), MenuIcons.JCR_ICON, item.getText(), action, 1);
