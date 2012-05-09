@@ -89,6 +89,8 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
 
     private EventFilter filter;
 
+    private List<MonitorEventListener> monitorEventListerners;
+
     /**
      * 
      * Constructs a MonitorEventData.
@@ -135,6 +137,14 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
             // The muxmum of the slider changed regardless whether we move the
             // slider or not.
             fireSliderChanged();
+            for (MonitorEventListener listener : getMonitorEventListerners()) {
+				try {
+					listener.notify(this, event);
+				} catch (Exception e) {
+					//just in case
+					e.printStackTrace();
+				}
+			}
 
         }
 
@@ -420,5 +430,22 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
             listener.stateChanged(this.tableModelChangeEvent);
         }
     }
+	private List<MonitorEventListener> getMonitorEventListerners() {
+		if (monitorEventListerners==null){
+			monitorEventListerners=new ArrayList<MonitorEventListener>();
+		}
+		return monitorEventListerners;
+	}
 
+	public void registerEventListener(MonitorEventListener listener){
+		if (listener!=null) {
+			getMonitorEventListerners().add(listener);
+		}
+	}
+	
+	public void unregisterEventListener(MonitorEventListener listener){
+		if (getMonitorEventListerners().contains(listener)) {
+			getMonitorEventListerners().remove(listener);
+		}
+	}
 }

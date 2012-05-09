@@ -21,7 +21,6 @@
 
 package org.apache.airavata.xbaya.registrybrowser.model;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,10 +33,8 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 import org.apache.airavata.schemas.gfac.Parameter;
-import org.apache.axis2.util.XMLUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.apache.airavata.xbaya.interpretor.NameValue;
+import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.xml.sax.SAXException;
 
 public class XBayaWorkflowExperiments {
@@ -92,13 +89,11 @@ public class XBayaWorkflowExperiments {
 				xbayaWorkflow.add(workflowService);
 			}
 			try {
-				Document parameterDocument = XMLUtils.newDocument(new ByteArrayInputStream(workflowIOData.getValue().getBytes()));
-				NodeList childNodes = parameterDocument.getDocumentElement().getChildNodes();
-				for(int i=0;i<childNodes.getLength();i++){
-					Node parameterNode = childNodes.item(i);
+				List<NameValue> parameterData = XBayaUtil.getIOParameterData(workflowIOData.getValue());
+				for (NameValue pair : parameterData) {
 					Parameter parameter = Parameter.Factory.newInstance();
-					parameter.setParameterName(parameterNode.getLocalName());
-					ServiceParameter serviceParameter = new ServiceParameter(parameter, parameterNode.getTextContent());
+					parameter.setParameterName(pair.getName());
+					ServiceParameter serviceParameter = new ServiceParameter(parameter, pair.getValue());
 					if (inputData) {
 						workflowService.getInputParameters().getParameters()
 								.add(serviceParameter);
@@ -122,6 +117,7 @@ public class XBayaWorkflowExperiments {
 			//TODO setup parameters
 		}
 	}
+		
 	public AiravataRegistry getRegistry() {
 		return registry;
 	}
