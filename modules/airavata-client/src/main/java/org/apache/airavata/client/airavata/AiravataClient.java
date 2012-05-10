@@ -104,7 +104,7 @@ public class AiravataClient {
 	public AiravataClient(Map<String,String> configuration)
 			throws MalformedURLException {
 		this.configuration = configuration;
-		updateClientConfiguration(configuration);
+		initialize();
 	}
 
 	public AiravataClient(String fileName) throws RegistryException,
@@ -132,12 +132,16 @@ public class AiravataClient {
 
 		configuration.put(WITHLISTENER,properties.getProperty(WITHLISTENER));
 
-        // At this point we do not know the workflowExperimentId
-        builder = new WorkflowContextHeaderBuilder(properties.getProperty(DEFAULT_BROKER_URL),
-                properties.getProperty(DEFAULT_GFAC_URL),properties.getProperty(DEFAULT_JCR_URL),null,null,
-                properties.getProperty(DEFAULT_MESSAGE_BOX_URL));
+		initialize();        
+	}
 
+	private void initialize() throws MalformedURLException {
 		updateClientConfiguration(configuration);
+		
+        // At this point we do not know the workflowExperimentId
+		builder = new WorkflowContextHeaderBuilder(configuration.get(DEFAULT_BROKER_URL),
+        		configuration.get(DEFAULT_GFAC_URL),configuration.get(DEFAULT_JCR_URL),null,null,
+        		configuration.get(DEFAULT_MESSAGE_BOX_URL));
 	}
 
 	private void updateClientConfiguration(Map<String,String> configuration)
@@ -163,6 +167,15 @@ public class AiravataClient {
            if (configuration.get(MSGBOX)!= null) {
 				clientConfiguration.setMessageboxURL(new URL(configuration.get(MSGBOX)));
 			}
+		
+		if (clientConfiguration.getJcrURL()!=null && clientConfiguration.getGfacURL()==null){
+			try {
+				clientConfiguration.setGfacURL(new URL(getRegistry().getGFacDescriptorList().get(0)));
+				configuration.put(GFAC,clientConfiguration.getGfacURL().toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void loadWorkflowFromaFile(String workflowFile)
