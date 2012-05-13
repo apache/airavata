@@ -1,3 +1,5 @@
+NOTE: There is no active development on 0.2 branch and is technically frozen. If you find any bugs or issues which need to be addressed in this branch, please try and upgrade to a latest release and see if the issues are previously addressed. Contact airavata-dev mailing list for any clarifications or questions.
+
 Apache Airavata (incubating) - README.txt
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
