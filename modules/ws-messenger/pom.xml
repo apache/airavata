@@ -86,18 +86,7 @@
 
         </dependencies>
     </dependencyManagement>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <skipTests>false</skipTests>
-                </configuration>
-                <version>${surefire.version}</version>
-            </plugin>
-        </plugins>
-    </build>
+
     <profiles>
         <profile>
             <id>profile-messenger-client</id>
@@ -160,7 +149,7 @@
                 <module>client</module>
                 <module>messagebox</module>
                 <module>messagebroker</module>
-                <module>distribution</module>
+                <!-- <module>distribution</module> -->
             </modules>
         </profile>
     </profiles>
@@ -171,7 +160,6 @@
         <release.version>1.1.1</release.version>
         <axis2.version>1.5.1</axis2.version>
         <derby.version>10.7.1.1</derby.version>
-        <surefire.version>2.10</surefire.version>
     </properties>
 
 </project>

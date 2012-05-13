@@ -39,6 +39,9 @@
             <includes>
                 <include>*.jar</include>
             </includes>
+            <excludes>
+                <exclude>xom*.jar</exclude>
+            </excludes>
         </fileSet>
         <fileSet>
             <directory>target/axis2-${used.axis2.release}/WEB-INF/</directory>
@@ -129,7 +132,7 @@
                 <include>*sql*</include>
             </includes>
         </fileSet>
-        
+
         <fileSet>
             <directory>src/main/resources/bin</directory>
             <outputDirectory>bin</outputDirectory>
@@ -233,7 +236,7 @@
                 <include>xutil:xutil</include>
                 <include>jython:jython</include>
                 <include>cog-jglobus:cog-jglobus</include>
-		        <!--include>edu.iub.soic.damsl:jXSP</include> -->
+                <!--include>edu.iub.soic.damsl:jXSP</include> -->
                 <include>xmlbeans:xbean</include>
                 <include>xmlbeans-ogce:jsr173_api</include>
                 <include>xbaya:pegasuswebservice</include>
