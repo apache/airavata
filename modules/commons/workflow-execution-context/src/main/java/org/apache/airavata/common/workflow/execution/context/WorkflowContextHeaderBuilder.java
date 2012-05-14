@@ -37,10 +37,18 @@ public class WorkflowContextHeaderBuilder {
 
     private WorkflowOutputDataHandlingDocument.WorkflowOutputDataHandling workflowOutputDataHandling = null;
 
-    private ContextHeaderDocument.ContextHeader contextHeader = null;
+    private  ContextHeaderDocument.ContextHeader contextHeader = null;
 
     private WorkflowSchedulingContextDocument.WorkflowSchedulingContext workflowSchedulingContext = null;
 
+    private  ThreadLocal threadLocal = null;
+
+    public static ThreadLocal<ContextHeaderDocument.ContextHeader> currentContextHeader = new ThreadLocal<ContextHeaderDocument.ContextHeader>();
+
+
+    public WorkflowContextHeaderBuilder(ContextHeaderDocument.ContextHeader document){
+        this.contextHeader = document;
+    }
     public WorkflowContextHeaderBuilder(String brokerUrl, String gfacUrl, String registryUrl, String experimentId,
                                         String workflowId, String msgBoxUrl) {
         this.contextHeader = ContextHeaderDocument.ContextHeader.Factory.newInstance();
@@ -49,6 +57,25 @@ public class WorkflowContextHeaderBuilder {
         this.soaServiceEprs.setGfacUrl(gfacUrl);
         this.soaServiceEprs.setRegistryUrl(registryUrl);
 
+        addWorkflowMonitoringContext(brokerUrl, experimentId, workflowId, msgBoxUrl);
+        this.contextHeader.setSoaServiceEprs(this.soaServiceEprs);
+
+        this.contextHeader.setSecurityContext(SecurityContextDocument.SecurityContext.Factory.newInstance());
+        this.contextHeader
+                .setWorkflowSchedulingContext(WorkflowSchedulingContextDocument.WorkflowSchedulingContext.Factory
+                        .newInstance());
+        threadLocal = new ThreadLocal();
+        threadLocal.set(contextHeader);
+    }
+
+    public static void setCurrentContextHeader(ContextHeaderDocument.ContextHeader contextHeader){
+        currentContextHeader.set(contextHeader);
+    }
+
+    public static ContextHeaderDocument.ContextHeader getCurrentContextHeader(){
+        return currentContextHeader.get();
+    }
+    public void addWorkflowMonitoringContext(String brokerUrl, String experimentId, String workflowId, String msgBoxUrl) {
         this.workflowMonitoringContext = WorkflowMonitoringContextDocument.WorkflowMonitoringContext.Factory
                 .newInstance();
         this.workflowMonitoringContext.setEventPublishEpr(brokerUrl);
@@ -56,12 +83,6 @@ public class WorkflowContextHeaderBuilder {
         this.workflowMonitoringContext.setExperimentId(experimentId);
         this.workflowMonitoringContext.setMsgBoxEpr(msgBoxUrl);
         this.contextHeader.setWorkflowMonitoringContext(this.workflowMonitoringContext);
-        this.contextHeader.setSoaServiceEprs(this.soaServiceEprs);
-
-        this.contextHeader.setSecurityContext(SecurityContextDocument.SecurityContext.Factory.newInstance());
-        this.contextHeader
-                .setWorkflowSchedulingContext(WorkflowSchedulingContextDocument.WorkflowSchedulingContext.Factory
-                        .newInstance());
     }
 
     public WorkflowContextHeaderBuilder setWorkflowMonitoringContext(
@@ -127,12 +148,24 @@ public class WorkflowContextHeaderBuilder {
 
     public XmlElement getXml() {
         ContextHeaderDocument document = ContextHeaderDocument.Factory.newInstance();
-        this.contextHeader.setWorkflowMonitoringContext(this.workflowMonitoringContext);
-        this.contextHeader.setSoaServiceEprs(this.soaServiceEprs);
-        this.contextHeader.setSecurityContext(this.securityContext);
-        this.contextHeader.setWorkflowSchedulingContext(this.workflowSchedulingContext);
-        this.contextHeader.setUserIdentifier(this.userIdentifier);
-        this.contextHeader.setWorkflowOutputDataHandling(this.workflowOutputDataHandling);
+        if (this.workflowMonitoringContext != null) {
+            this.contextHeader.setWorkflowMonitoringContext(this.workflowMonitoringContext);
+        }
+        if (this.soaServiceEprs != null) {
+            this.contextHeader.setSoaServiceEprs(this.soaServiceEprs);
+        }
+        if (this.securityContext != null) {
+            this.contextHeader.setSecurityContext(this.securityContext);
+        }
+        if (this.workflowSchedulingContext != null) {
+            this.contextHeader.setWorkflowSchedulingContext(this.workflowSchedulingContext);
+        }
+        if (this.userIdentifier != null) {
+            this.contextHeader.setUserIdentifier(this.userIdentifier);
+        }
+        if (this.workflowOutputDataHandling != null) {
+            this.contextHeader.setWorkflowOutputDataHandling(this.workflowOutputDataHandling);
+        }
         document.setContextHeader(this.contextHeader);
         return XMLUtil.stringToXmlElement3(document.xmlText());
     }
