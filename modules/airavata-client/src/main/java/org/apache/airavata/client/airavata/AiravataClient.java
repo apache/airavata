@@ -53,6 +53,7 @@ import org.apache.airavata.common.workflow.execution.context.WorkflowContextHead
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.WorkflowExecution;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.graph.GraphException;
@@ -118,8 +119,8 @@ public class AiravataClient {
 
 		configuration.put(GFAC,validateAxisService(properties
 				.getProperty(DEFAULT_GFAC_URL)));
-		configuration.put(MSGBOX,validateAxisService(properties
-				.getProperty(DEFAULT_MESSAGE_BOX_URL)));
+		configuration.put(MSGBOX, validateAxisService(properties
+                .getProperty(DEFAULT_MESSAGE_BOX_URL)));
 		configuration.put(BROKER,validateAxisService(properties
 				.getProperty(DEFAULT_BROKER_URL)));
 		configuration.put(WORKFLOWSERVICEURL,validateAxisService(properties
@@ -139,9 +140,9 @@ public class AiravataClient {
 		updateClientConfiguration(configuration);
 		
         // At this point we do not know the workflowExperimentId
-		builder = new WorkflowContextHeaderBuilder(configuration.get(DEFAULT_BROKER_URL),
-        		configuration.get(DEFAULT_GFAC_URL),configuration.get(DEFAULT_JCR_URL),null,null,
-        		configuration.get(DEFAULT_MESSAGE_BOX_URL));
+		builder = new WorkflowContextHeaderBuilder(configuration.get(BROKER),
+        		configuration.get(GFAC),configuration.get(JCR),null,null,
+        		configuration.get(MSGBOX));
 	}
 
 	private void updateClientConfiguration(Map<String,String> configuration)
