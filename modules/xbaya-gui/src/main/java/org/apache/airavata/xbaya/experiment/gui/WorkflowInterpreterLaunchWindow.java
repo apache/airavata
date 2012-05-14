@@ -35,8 +35,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
+import com.sun.tools.internal.ws.util.xml.XmlUtil;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -58,6 +60,7 @@ import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
@@ -337,11 +340,15 @@ public class WorkflowInterpreterLaunchWindow {
                         inputNameVals[i].setName(id);
                         inputNameVals[i].setValue(value);
                     }
-
-                    String myProxyUsername = engine.getConfiguration().getRegistryUserName();
-                    String myProxyPass = engine.getConfiguration().getRegistryPassphrase();
+                    XBayaConfiguration configuration = engine.getConfiguration();
+                    String myProxyUsername = configuration.getRegistryUserName();
+                    String myProxyPass = configuration.getRegistryPassphrase();
                     //todo we need to add the workflowContext header in the message
-                    stub.launchWorkflow(workflow.toXMLText(), topicString, inputNameVals);
+                    WorkflowContextHeaderBuilder builder = new WorkflowContextHeaderBuilder(configuration.getBrokerURL().toASCIIString(),
+                            configuration.getGFacURL().toASCIIString(),configuration.getRegistryURL().toASCIIString(),configuration.getTopic()
+                            ,null,configuration.getMessageBoxURL().toASCIIString());
+                    stub._getServiceClient().addHeader(AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml())));
+                    stub.launchWorkflow(workflow.toXMLText(), topicString,inputNameVals);
                 } catch (Exception e) {
                     WorkflowInterpreterLaunchWindow.this.engine.getErrorWindow().error(e);
                 }
