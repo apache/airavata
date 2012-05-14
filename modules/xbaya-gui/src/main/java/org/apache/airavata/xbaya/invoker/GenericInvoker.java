@@ -38,6 +38,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
@@ -75,6 +76,8 @@ public class GenericInvoker implements Invoker {
     private Future<Boolean> result;
 
     private ServiceNotifiable notifier;
+
+    private ContextHeaderDocument.ContextHeader contextHeader;
 
     /**
      * used for notification
@@ -150,6 +153,7 @@ public class GenericInvoker implements Invoker {
         this.gfacURL = gfacURL;
         this.notifier = notifier.createServiceNotificationSender(nodeID);
         this.failerSent = false;
+        this.contextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
     }
 
     /**
@@ -172,6 +176,7 @@ public class GenericInvoker implements Invoker {
         this.gfacURL = gfacURL;
         this.notifier = notifier.createServiceNotificationSender(nodeID);
         this.failerSent = false;
+        this.contextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
     }
 
     /**
@@ -221,12 +226,22 @@ public class GenericInvoker implements Invoker {
     private void setup(WsdlDefinitions definitions) throws XBayaException {
 
         // Set LEAD context header.
-        WorkflowContextHeaderBuilder builder = new WorkflowContextHeaderBuilder(this.notifier.getEventSink()
+        WorkflowContextHeaderBuilder builder;
+        if(contextHeader == null){
+            builder = new WorkflowContextHeaderBuilder(this.notifier.getEventSink()
                 .getAddress(), this.gfacURL, null, this.notifier.getWorkflowID().toASCIIString(),
                 "xbaya-experiment", this.messageBoxURL);
-        builder.getWorkflowMonitoringContext().setServiceInstanceId(this.nodeID);
+        }else{
+             builder = new WorkflowContextHeaderBuilder(contextHeader);
+        }
+        if(builder.getWorkflowMonitoringContext() == null){
+            builder.addWorkflowMonitoringContext(this.notifier.getEventSink().getAddress(),
+                    this.notifier.getWorkflowID().toASCIIString(),this.nodeID,this.messageBoxURL);
+        } else {
+            builder.getWorkflowMonitoringContext().setWorkflowInstanceId(this.notifier.getWorkflowID().toASCIIString());
+        }
         builder.getWorkflowMonitoringContext().setWorkflowNodeId(this.nodeID);
-        builder.getWorkflowMonitoringContext().setWorkflowInstanceId(this.notifier.getWorkflowID().toASCIIString());
+        builder.getWorkflowMonitoringContext().setServiceInstanceId(this.nodeID);
         builder.getWorkflowMonitoringContext().setWorkflowTimeStep(1);
         builder.setUserIdentifier("xbaya-user");
         //todo write a UI component to collect this information and pass it through Header
