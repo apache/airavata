@@ -1,6 +1,0 @@
-ATOMIC_SPECIES
-   Mg   20.0   Mg.vbc3
-ATOMIC_POSITIONS crystal
-Mg      -0.25   -0.25   -0.25
-K_POINTS automatic
-  6 6 6   1 1 1

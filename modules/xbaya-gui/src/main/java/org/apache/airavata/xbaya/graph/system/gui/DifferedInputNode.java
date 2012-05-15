@@ -1,10 +1,24 @@
 /*
- * Copyright (c) 2012 Extreme! Lab, Indiana University. All rights reserved.
  *
- * This software is open source. See the bottom of this file for the license.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * $Id: $
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
  */
+
 package org.apache.airavata.xbaya.graph.system.gui;
 
 import java.util.List;
@@ -30,12 +44,9 @@ import org.xmlpull.infoset.XmlElement;
 
 import xsul5.MLogger;
 
-/**
- * @author Chathura Herath
- */
 public class DifferedInputNode extends ParameterNode {
 
-	private static final String VALUE_TAG_NAME = "value";
+    private static final String VALUE_TAG_NAME = "value";
 
     private static final MLogger logger = MLogger.getLogger();
 
@@ -66,7 +77,7 @@ public class DifferedInputNode extends ParameterNode {
      * @see edu.indiana.extreme.xbaya.graph.Node#getGUI()
      */
     @Override
-	public DifferedInputNodeGUI getGUI() {
+    public DifferedInputNodeGUI getGUI() {
         if (this.gui == null) {
             this.gui = new DifferedInputNodeGUI(this);
         }
@@ -151,8 +162,7 @@ public class DifferedInputNode extends ParameterNode {
      * 
      * @param input
      *            The user input
-     * @return true if the user input is valid against the parameter type; false
-     *         otherwise
+     * @return true if the user input is valid against the parameter type; false otherwise
      */
     public boolean isInputValid(String input) {
         logger.entering(new Object[] { input });
@@ -161,8 +171,7 @@ public class DifferedInputNode extends ParameterNode {
     }
 
     /**
-     * Called whan an Edge was added to the parameter port. Change the name of
-     * this node.
+     * Called whan an Edge was added to the parameter port. Change the name of this node.
      * 
      * @throws GraphException
      * 
@@ -190,10 +199,8 @@ public class DifferedInputNode extends ParameterNode {
             } else if (edges.size() > 1) {
                 // Not the first edge.
                 QName parameterType = getParameterType();
-                if (!toType.equals(WSConstants.XSD_ANY_TYPE)
-                        && !parameterType.equals(toType)) {
-                    throw new GraphException(
-                            "Cannot connect ports with different types.");
+                if (!toType.equals(WSConstants.XSD_ANY_TYPE) && !parameterType.equals(toType)) {
+                    throw new GraphException("Cannot connect ports with different types.");
                 }
 
             } else {
@@ -204,8 +211,7 @@ public class DifferedInputNode extends ParameterNode {
     }
 
     /**
-     * Called whan an Edge was removed from the parameter port. Change the name
-     * of the node.
+     * Called whan an Edge was removed from the parameter port. Change the name of the node.
      * 
      * @see edu.indiana.extreme.xbaya.graph.impl.NodeImpl#edgeWasRemoved(edu.indiana.extreme.xbaya.graph.impl.EdgeImpl)
      */
@@ -277,8 +283,8 @@ public class DifferedInputNode extends ParameterNode {
     @Override
     public XmlElement toXML() {
         XmlElement nodeElement = super.toXML();
-        nodeElement.setAttributeValue(GraphSchema.NS,
-                GraphSchema.NODE_TYPE_ATTRIBUTE, GraphSchema.NODE_TYPE_DIFFERED_INPUT);
+        nodeElement.setAttributeValue(GraphSchema.NS, GraphSchema.NODE_TYPE_ATTRIBUTE,
+                GraphSchema.NODE_TYPE_DIFFERED_INPUT);
         return nodeElement;
     }
 
@@ -286,8 +292,7 @@ public class DifferedInputNode extends ParameterNode {
     protected XmlElement addConfigurationElement(XmlElement nodeElement) {
         XmlElement configElement = super.addConfigurationElement(nodeElement);
         if (this.defaultValue != null) {
-            XmlElement element = configElement.addElement(GraphSchema.NS,
-                    VALUE_TAG_NAME);
+            XmlElement element = configElement.addElement(GraphSchema.NS, VALUE_TAG_NAME);
             element.addChild(this.defaultValue);
         }
         return configElement;
@@ -306,55 +311,3 @@ public class DifferedInputNode extends ParameterNode {
         setMetadata(componentPort.getAppinfo());
     }
 }
-
-
-/*
- * Indiana University Extreme! Lab Software License, Version 1.2
- * 
- * Copyright (c) 2012 The Trustees of Indiana University. All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * 1) All redistributions of source code must retain the above copyright notice,
- * the list of authors in the original source code, this list of conditions and
- * the disclaimer listed in this license;
- * 
- * 2) All redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the disclaimer listed in this license in
- * the documentation and/or other materials provided with the distribution;
- * 
- * 3) Any documentation included with all redistributions must include the
- * following acknowledgement:
- * 
- * "This product includes software developed by the Indiana University Extreme!
- * Lab. For further information please visit http://www.extreme.indiana.edu/"
- * 
- * Alternatively, this acknowledgment may appear in the software itself, and
- * wherever such third-party acknowledgments normally appear.
- * 
- * 4) The name "Indiana University" or "Indiana University Extreme! Lab" shall
- * not be used to endorse or promote products derived from this software without
- * prior written permission from Indiana University. For written permission,
- * please contact http://www.extreme.indiana.edu/.
- * 
- * 5) Products derived from this software may not use "Indiana University" name
- * nor may "Indiana University" appear in their name, without prior written
- * permission of the Indiana University.
- * 
- * Indiana University provides no reassurances that the source code provided
- * does not infringe the patent or any other intellectual property rights of any
- * other entity. Indiana University disclaims any liability to any recipient for
- * claims brought by any other entity based on infringement of intellectual
- * property rights or otherwise.
- * 
- * LICENSEE UNDERSTANDS THAT SOFTWARE IS PROVIDED "AS IS" FOR WHICH NO
- * WARRANTIES AS TO CAPABILITIES OR ACCURACY ARE MADE. INDIANA UNIVERSITY GIVES
- * NO WARRANTIES AND MAKES NO REPRESENTATION THAT SOFTWARE IS FREE OF
- * INFRINGEMENT OF THIRD PARTY PATENT, COPYRIGHT, OR OTHER PROPRIETARY RIGHTS.
- * INDIANA UNIVERSITY MAKES NO WARRANTIES THAT SOFTWARE IS FREE FROM "BUGS",
- * "VIRUSES", "TROJAN HORSES", "TRAP DOORS", "WORMS", OR OTHER HARMFUL CODE.
- * LICENSEE ASSUMES THE ENTIRE RISK AS TO THE PERFORMANCE OF SOFTWARE AND/OR
- * ASSOCIATED MATERIALS, AND TO THE PERFORMANCE AND VALIDITY OF INFORMATION
- * GENERATED USING SOFTWARE.
- */
