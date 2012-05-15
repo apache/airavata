@@ -2,6 +2,58 @@ Apache Airavata Change Log
 
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
+Apache Airavata Version 0.3-INCUBATING Released on 2012-05-14
+=============================================================
+
+** New Feature
+    * [AIRAVATA-100] - Workflow Execution Context Header schema
+    * [AIRAVATA-305] - Allow users to configure provenacne Writer Thread pool size and shutdown the thread pool during service shutdown
+    * [AIRAVATA-348] - Need Maven profiles for building Airavata clients.
+
+** Task
+    * [AIRAVATA-106] - Adding a Sample which demonstares the usage of XMLBean generated POJO classes
+    * [AIRAVATA-301] - create documentation for how to use XBayaClient with a sample code
+    * [AIRAVATA-302] - Document the xbaya.properties file entries used in WorkflowInterpreter service in detail
+    * [AIRAVATA-303] - Document how to invoke echo service in one of the super computers (ranger)
+    
+** Sub-task
+    * [AIRAVATA-291] - Test Foreach when workflow interpreter is  running without the ws-messenger
+    * [AIRAVATA-292] - Long running stress evaluation of workflow interpreter without the ws-messenger
+    * [AIRAVATA-407] - name all module jars with airavata prefix
+
+** Improvement
+    * [AIRAVATA-253] - Remove weps.jar
+    * [AIRAVATA-263] - Improve WorkflowInterpreter to run multiple jobs in parallel
+    * [AIRAVATA-267] - minimize the default size of XBaya Window
+    * [AIRAVATA-273] - Providing multiple port suppor for EndForEach Node
+    * [AIRAVATA-274] - Threads get created during a long run of Interpreter service
+    * [AIRAVATA-279] - xml serialization error in 10 minute tutorial
+    * [AIRAVATA-285] - Remove messenger to attic
+    * [AIRAVATA-293] - Allow users to configure the time interval to delete old messageboxes
+    * [AIRAVATA-294] - Create new api method to initialize the XBaya client without the notificaton listner
+    * [AIRAVATA-319] - Move the XBayaClient to a separate module
+    * [AIRAVATA-398] - remove src and target folders from binary distribution of samples
+
+** Bug
+    * [AIRAVATA-266] - Fix intermittent test failures in XBaya test cases
+    * [AIRAVATA-269] - Hyphen replacement is not working properly
+    * [AIRAVATA-272] - XBaya UI Application Description saving - executable selection doens't work properly
+    * [AIRAVATA-275] - PUBLISHER threads are not interrupted after the workflow inovacation
+    * [AIRAVATA-276] - Unnecessary QueueName element in ApplicationDescription dialog 
+    * [AIRAVATA-283] - Old messagebox deletion doesn't work 
+    * [AIRAVATA-286] - Registry API random test failures
+    * [AIRAVATA-295] - In a long run messagePuller threads are not killing completely
+    * [AIRAVATA-297] - New Deployment Description panel "save" button
+    * [AIRAVATA-310] - Not able to edit existing service description
+    * [AIRAVATA-311] - New Deployment Description panel layout issue
+    * [AIRAVATA-312] - Host Description Advanced Options panel layout issue
+    * [AIRAVATA-378] - Update Gram Configuration Dialog to accept Static Working Directory option
+    * [AIRAVATA-389] - jobs fails with lack of memory in batch submission
+    * [AIRAVATA-399] - Improve GramProvider to support transfer of local files 
+    
+** Test
+    * [AIRAVATA-239] - Create a Edit distance based dot product and cartisian product ForEach test case
+
 Airavata Version 0.2-INCUBATING Released on 2012-04-22
 ======================================================
 

@@ -25,7 +25,8 @@ does indicate that the project has yet to be fully endorsed by the ASF.
 
 Release Notes
 =============
-0.2-INCUBATNG is the first release of Airavata, 0.1-INCUBATNG was attempted but the vote was cancelled. This notes covers both the releases. This release focuses on improving test cases and stability of code, cleaning up of donated code, packaging all components into modular architecture, documentation, and removal of non-compatible license dependencies. For detailed tasks list, please see RELEASE_NOTES.
+0.3-INCUBATNG is the second release of Airavata (skipped 0.1-INCUBATNG). This release focuses on improving test cases
+and stability of code, documentation. For detailed tasks list, please see RELEASE_NOTES.
 
 Building from source
 ====================
@@ -38,7 +39,6 @@ Known Issues in This Release
 ============================
 This is the base release and is focused on a good foundation and less on features. This 
 version is not recommended for production usage.
-
 
 Airavata Binary Distribution Directory Structure
 ================================================
