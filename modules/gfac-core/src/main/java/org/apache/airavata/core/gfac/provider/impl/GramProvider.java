@@ -25,6 +25,7 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -288,11 +289,11 @@ public class GramProvider extends AbstractProvider {
                     // If users has given an output DAta poth we download the output files in to that directory, this will be apath in the machine where GFac is installed
                     if(WorkflowContextHeaderBuilder.getCurrentContextHeader()
                             .getWorkflowOutputDataHandling() != null){
-                        WorkflowOutputDataHandlingDocument.WorkflowOutputDataHandling workflowOutputDataHandling = WorkflowContextHeaderBuilder.getCurrentContextHeader()
-                                .getWorkflowOutputDataHandling();
-                        if(workflowOutputDataHandling.getApplicationOutputDataHandlingArray() != null){
+                        WorkflowOutputDataHandlingDocument.WorkflowOutputDataHandling workflowOutputDataHandling =
+                                WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowOutputDataHandling();
+                        if(workflowOutputDataHandling.getApplicationOutputDataHandlingArray().length != 0){
                             String outputDataDirectory = workflowOutputDataHandling.getApplicationOutputDataHandlingArray()[0].getOutputDataDirectory();
-                            if(outputDataDirectory != null && "".equals(outputDataDirectory)){
+                            if(outputDataDirectory != null && !"".equals(outputDataDirectory)){
                                 stageOutputFiles(invocationContext,outputDataDirectory);
                             }
                         }
@@ -392,17 +393,15 @@ public class GramProvider extends AbstractProvider {
                     .getValue(paramName);
             //TODO: Review this with type
             if ("URI".equals(actualParameter.getType().getType().toString())) {
-                URI gridftpURL;
                 try {
                     GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
-                    ApplicationDeploymentDescriptionType app = invocationContext.getExecutionDescription().getApp().getType();
                     GridFtp ftp = new GridFtp();
                     gssContext = (GSISecurityContext) invocationContext.getSecurityContext(MYPROXY_SECURITY_CONTEXT);
                     GSSCredential gssCred = gssContext.getGssCredentails();
                     for (String endpoint : host.getGridFTPEndPointArray()) {
                         URI srcURI = GfacUtils.createGsiftpURI(endpoint, paramValue);
                         String fileName = new File(srcURI.getPath()).getName();
-                        File outputFile = File.createTempFile(outputFileStagingPath, fileName);
+                        File outputFile = new File(outputFileStagingPath + File.separator + fileName);
                         ftp.readRemoteFile(srcURI,
                                 gssCred, outputFile);
                         ((URIParameterType) actualParameter.getType()).setValue(outputFileStagingPath + File.separator + fileName);
@@ -413,8 +412,6 @@ public class GramProvider extends AbstractProvider {
                     throw new ProviderException(e.getMessage(), e);
                 } catch (SecurityException e) {
                     throw new ProviderException(e.getMessage(), e);
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
             }
             outputNew.add(paramName, actualParameter);
