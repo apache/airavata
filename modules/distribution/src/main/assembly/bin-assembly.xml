@@ -192,13 +192,6 @@
         </fileSet>
 
         <fileSet>
-            <directory>../../samples</directory>
-            <outputDirectory>samples</outputDirectory>
-            <includes>
-                <include>**/*</include>
-            </includes>
-        </fileSet>
-        <fileSet>
             <directory>src/main/resources/conf</directory>
             <outputDirectory>standalone-server/conf</outputDirectory>
             <includes>
