@@ -28,6 +28,7 @@ import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
@@ -46,6 +47,7 @@ import org.apache.airavata.core.gfac.utils.OutputUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
+import org.apache.airavata.schemas.wec.WorkflowOutputDataHandlingDocument;
 import org.apache.xmlbeans.XmlException;
 import org.globus.gram.GramAttributes;
 import org.globus.gram.GramException;
@@ -281,8 +283,21 @@ public class GramProvider extends AbstractProvider {
 
                     String stdout = ftp.readRemoteFile(stdoutURI, gssCred, localStdOutFile);
                     String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
+                    Map<String, ?> stringMap = OutputUtils.fillOutputFromStdout(invocationContext.<ActualParameter>getOutput(), stdout);
 
-                    return OutputUtils.fillOutputFromStdout(invocationContext.<ActualParameter> getOutput(), stdout);
+                    // If users has given an output DAta poth we download the output files in to that directory, this will be apath in the machine where GFac is installed
+                    if(WorkflowContextHeaderBuilder.getCurrentContextHeader()
+                            .getWorkflowOutputDataHandling() != null){
+                        WorkflowOutputDataHandlingDocument.WorkflowOutputDataHandling workflowOutputDataHandling = WorkflowContextHeaderBuilder.getCurrentContextHeader()
+                                .getWorkflowOutputDataHandling();
+                        if(workflowOutputDataHandling.getApplicationOutputDataHandlingArray() != null){
+                            String outputDataDirectory = workflowOutputDataHandling.getApplicationOutputDataHandlingArray()[0].getOutputDataDirectory();
+                            if(outputDataDirectory != null && "".equals(outputDataDirectory)){
+                                stageOutputFiles(invocationContext,outputDataDirectory);
+                            }
+                        }
+                    }
+                    return stringMap;
                 } catch (ToolsException e) {
                     throw new ProviderException(e.getMessage(), e);
                 } catch (URISyntaxException e) {
@@ -367,4 +382,43 @@ public class GramProvider extends AbstractProvider {
         invocationContext.setInput(inputNew);
 		return null;
 	}
+    private void stageOutputFiles(InvocationContext invocationContext,String outputFileStagingPath) throws ProviderException {
+        MessageContext outputNew = new ParameterContextImpl();
+        MessageContext<Object> input = invocationContext.getOutput();
+        for (Iterator<String> iterator = input.getNames(); iterator.hasNext(); ) {
+            String paramName = iterator.next();
+            String paramValue = input.getStringValue(paramName);
+            ActualParameter actualParameter = (ActualParameter) input
+                    .getValue(paramName);
+            //TODO: Review this with type
+            if ("URI".equals(actualParameter.getType().getType().toString())) {
+                URI gridftpURL;
+                try {
+                    GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
+                    ApplicationDeploymentDescriptionType app = invocationContext.getExecutionDescription().getApp().getType();
+                    GridFtp ftp = new GridFtp();
+                    gssContext = (GSISecurityContext) invocationContext.getSecurityContext(MYPROXY_SECURITY_CONTEXT);
+                    GSSCredential gssCred = gssContext.getGssCredentails();
+                    for (String endpoint : host.getGridFTPEndPointArray()) {
+                        URI srcURI = GfacUtils.createGsiftpURI(endpoint, paramValue);
+                        String fileName = new File(srcURI.getPath()).getName();
+                        File outputFile = File.createTempFile(outputFileStagingPath, fileName);
+                        ftp.readRemoteFile(srcURI,
+                                gssCred, outputFile);
+                        ((URIParameterType) actualParameter.getType()).setValue(outputFileStagingPath + File.separator + fileName);
+                    }
+                } catch (URISyntaxException e) {
+                    throw new ProviderException(e.getMessage(), e);
+                } catch (ToolsException e) {
+                    throw new ProviderException(e.getMessage(), e);
+                } catch (SecurityException e) {
+                    throw new ProviderException(e.getMessage(), e);
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+            outputNew.add(paramName, actualParameter);
+        }
+        invocationContext.setOutput(outputNew);
+    }
 }
