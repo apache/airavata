@@ -30,6 +30,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.wsdl.GFacSchemaConstants;
@@ -169,6 +170,9 @@ public class GFacMessageReciever implements MessageReceiver {
         } catch (XmlException e) {
             e.printStackTrace();
         }
+        //Set the WorkflowContext Header to the ThreadLocal of the Gfac Service, so that this can be accessed easilly
+        WorkflowContextHeaderBuilder.setCurrentContextHeader(document.getContextHeader());
+
         Map<Parameter,ActualParameter> actualParameters = new LinkedHashMap<Parameter,ActualParameter>();
         ServiceDescription serviceDescription = getRegistry(context).getServiceDescription(serviceName);
         ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
@@ -183,7 +187,7 @@ public class GFacMessageReciever implements MessageReceiver {
             //todo this implementation doesn't work when there are n number of nodes connecting .. need to fix
             actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, element));
         }
-         DefaultInvocationContext invocationContext = null;
+        DefaultInvocationContext invocationContext = null;
         JobContext jobContext = new JobContext(actualParameters,topic,serviceName,brokerURL);
         if(document.getContextHeader().getSecurityContext().getAmazonWebservices() != null){
 //            invocationContext.getExecutionContext().setSecurityContextHeader(header);
