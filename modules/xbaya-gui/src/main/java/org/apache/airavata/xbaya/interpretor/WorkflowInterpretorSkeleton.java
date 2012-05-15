@@ -206,7 +206,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         ContextHeaderDocument parse = null;
         try {
             parse = ContextHeaderDocument.Factory.parse(workflowContext.toStringWithConsume());
-            configuration.put(GFAC,parse.getContextHeader().getWorkflowMonitoringContext().getEventPublishEpr());
             configuration.put(BROKER, parse.getContextHeader().getWorkflowMonitoringContext().getEventPublishEpr());
             configuration.put(GFAC, parse.getContextHeader().getSoaServiceEprs().getGfacUrl());
             configuration.put(MSGBOX, parse.getContextHeader().getWorkflowMonitoringContext().getMsgBoxEpr());
@@ -269,7 +268,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password, true);
         }
 
-//        interpreter.setBuilder(builder);
         WorkflowContextHeaderBuilder.setCurrentContextHeader(builder.getContextHeader());
 
         final WorkflowInterpretorEventListener finalListener = listener;
