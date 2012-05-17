@@ -235,6 +235,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
         updateSize();
         this.panel.repaint();
         updateOriginalWorkflowElement();
+        executionModeChanged(engine.getConfiguration());
     }
 
     /**

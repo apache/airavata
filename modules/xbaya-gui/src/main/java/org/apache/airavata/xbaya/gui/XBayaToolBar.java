@@ -279,8 +279,10 @@ public class XBayaToolBar implements XBayaComponent {
     	tempToolbarButtons.putAll(toolbarButtons);
     	for (String groupId : groupIds) {
     		tempToolbarButtons.remove(groupId);
-    		List<ToolbarButton> buttons = toolbarButtons.get(groupId);
-			addButtonsToToolbar(buttons);
+    		if (toolbarButtons.containsKey(groupId) && toolbarButtons.get(groupId)!=null) {
+				List<ToolbarButton> buttons = toolbarButtons.get(groupId);
+				addButtonsToToolbar(buttons);
+			}
 		}
     	for (String groupId : tempToolbarButtons.keySet()) {
     		List<ToolbarButton> buttons = tempToolbarButtons.get(groupId);
