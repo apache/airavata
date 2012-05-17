@@ -25,10 +25,8 @@ import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.subworkflow.SubWorkflowNode;
-import org.apache.airavata.xbaya.invoker.ODEClient;
+import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.airavata.xbaya.workflow.WorkflowClient;
-import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
 
 public class SubWorkflowComponent extends WSComponent {
 
@@ -52,8 +50,7 @@ public class SubWorkflowComponent extends WSComponent {
      * @throws WorkflowEngineException
      * @throws GraphException
      */
-    public Workflow getWorkflow(WorkflowClient workflowClient) throws GraphException, WorkflowEngineException,
-            ComponentException {
+    public Workflow getWorkflow() throws GraphException, ComponentException {
         return this.workflow;
     }
 

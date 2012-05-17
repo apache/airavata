@@ -31,7 +31,6 @@ import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,14 +76,11 @@ public class SubWorkflowNodeGUI extends NodeGUI {
     }
 
     public void openWorkflowTab(XBayaEngine engine) {
-        WorkflowClient workflowClient = engine.getWorkflowClient();
         try {
-            Workflow workflow = this.node.getComponent().getWorkflow(workflowClient);
+            Workflow workflow = this.node.getComponent().getWorkflow();
             engine.getGUI().selectOrCreateGraphCanvas(workflow);
         } catch (GraphException e) {
             engine.getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
-        } catch (WorkflowEngineException e) {
-            engine.getErrorWindow().error(ErrorMessages.GPEL_ERROR, e);
         } catch (ComponentException e) {
             engine.getErrorWindow().error(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
         }

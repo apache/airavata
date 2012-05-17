@@ -44,7 +44,6 @@ import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
 import org.apache.airavata.xbaya.graph.ws.WSGraph;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
@@ -88,7 +87,7 @@ public class MetadataTestCase extends TestCase {
      */
     public void testPreInvoke() throws ComponentException, GraphException, IOException, ComponentRegistryException {
         Workflow workflow = createWorkflow();
-        WorkflowClient.createScript(workflow);
+        workflow.createScript();
 
         File workflowWSDLFile = new File("tmp/ADASInitializedWRFForecast-wsdl.xml");
         XMLUtil.saveXML(workflow.getWorkflowWSDL().xml(), workflowWSDLFile);
