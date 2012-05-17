@@ -27,7 +27,7 @@ import java.util.Map;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.amazon.InstanceComponent;
 import org.apache.airavata.workflow.model.component.amazon.TerminateInstanceComponent;
-import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
+import org.apache.airavata.xbaya.ui.component.ComponentTreeNode;
 
 public class AmazonComponentRegistry extends ComponentRegistry {
 

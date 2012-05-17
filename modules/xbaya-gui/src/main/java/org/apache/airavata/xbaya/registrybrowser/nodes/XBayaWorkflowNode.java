@@ -28,8 +28,8 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflow;
+import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflow;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.AbstractBrowserActionItem;
 
 public class XBayaWorkflowNode extends AbstractAiravataTreeNode {
     private XBayaWorkflow xbayaWorkflow;

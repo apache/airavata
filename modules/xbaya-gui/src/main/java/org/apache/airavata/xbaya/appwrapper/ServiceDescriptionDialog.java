@@ -66,9 +66,9 @@ import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.ParameterType;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
-import org.apache.airavata.xbaya.gui.GridPanel;
-import org.apache.airavata.xbaya.gui.XBayaLabel;
-import org.apache.airavata.xbaya.gui.XBayaTextField;
+import org.apache.airavata.xbaya.ui.GridPanel;
+import org.apache.airavata.xbaya.ui.XBayaLabel;
+import org.apache.airavata.xbaya.ui.XBayaTextField;
 import org.apache.xmlbeans.XmlCursor;
 
 public class ServiceDescriptionDialog extends JDialog {

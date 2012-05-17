@@ -33,12 +33,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.gui.GridPanel;
-import org.apache.airavata.xbaya.gui.XBayaComboBox;
-import org.apache.airavata.xbaya.gui.XBayaDialog;
-import org.apache.airavata.xbaya.gui.XBayaLabel;
-import org.apache.airavata.xbaya.gui.XBayaTextField;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
+import org.apache.airavata.xbaya.ui.GridPanel;
+import org.apache.airavata.xbaya.ui.XBayaComboBox;
+import org.apache.airavata.xbaya.ui.XBayaDialog;
+import org.apache.airavata.xbaya.ui.XBayaLabel;
+import org.apache.airavata.xbaya.ui.XBayaTextField;
 
 public class RegisterThroughFileWindow {
     private XBayaDialog dialog;

@@ -46,13 +46,13 @@ import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.interpretor.SystemComponentInvoker;
 import org.apache.airavata.xbaya.interpretor.WorkFlowInterpreterException;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
-import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler;
+import org.apache.airavata.xbaya.ui.graph.NodeGUI;
+import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.impl.XmlElementWithViewsImpl;
 

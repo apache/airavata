@@ -42,9 +42,9 @@ import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.gui.GridPanel;
-import org.apache.airavata.xbaya.gui.XBayaLabel;
-import org.apache.airavata.xbaya.gui.XBayaTextField;
+import org.apache.airavata.xbaya.ui.GridPanel;
+import org.apache.airavata.xbaya.ui.XBayaLabel;
+import org.apache.airavata.xbaya.ui.XBayaTextField;
 
 public class HostDescriptionDialog extends JDialog {
 

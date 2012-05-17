@@ -55,10 +55,10 @@ import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.gui.GridPanel;
-import org.apache.airavata.xbaya.gui.XBayaLabel;
-import org.apache.airavata.xbaya.gui.XBayaLinkButton;
-import org.apache.airavata.xbaya.gui.XBayaTextField;
+import org.apache.airavata.xbaya.ui.GridPanel;
+import org.apache.airavata.xbaya.ui.XBayaLabel;
+import org.apache.airavata.xbaya.ui.XBayaLinkButton;
+import org.apache.airavata.xbaya.ui.XBayaTextField;
 import org.apache.xmlbeans.XmlException;
 
 public class ApplicationDescriptionDialog extends JDialog implements ActionListener {

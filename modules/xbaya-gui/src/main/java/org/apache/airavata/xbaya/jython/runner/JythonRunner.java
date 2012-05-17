@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
-import org.apache.airavata.xbaya.gui.ErrorMessages;
+import org.apache.airavata.xbaya.ui.ErrorMessages;
 
 public class JythonRunner {
 

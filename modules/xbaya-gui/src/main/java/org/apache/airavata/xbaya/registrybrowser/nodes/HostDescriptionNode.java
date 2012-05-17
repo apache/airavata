@@ -31,9 +31,9 @@ import javax.swing.tree.TreeNode;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.xbaya.appwrapper.HostDescriptionDialog;
-import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
-import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.DeleteAction;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.EditAction;
 
 public class HostDescriptionNode extends AbstractAiravataTreeNode {
     private HostDescription hostDescription;

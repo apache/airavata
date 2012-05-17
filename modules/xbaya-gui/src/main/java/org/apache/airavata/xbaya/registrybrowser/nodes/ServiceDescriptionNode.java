@@ -32,12 +32,12 @@ import javax.swing.tree.TreeNode;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.xbaya.appwrapper.ServiceDescriptionDialog;
-import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
-import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
-import org.apache.airavata.xbaya.registrybrowser.model.InputParameters;
-import org.apache.airavata.xbaya.registrybrowser.model.OutputParameters;
-import org.apache.airavata.xbaya.registrybrowser.model.ServiceParameters;
+import org.apache.airavata.xbaya.model.registrybrowser.InputParameters;
+import org.apache.airavata.xbaya.model.registrybrowser.OutputParameters;
+import org.apache.airavata.xbaya.model.registrybrowser.ServiceParameters;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.DeleteAction;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.EditAction;
 
 public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
 	private ServiceDescription serviceDescription;

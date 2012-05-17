@@ -28,9 +28,9 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowExperiments;
+import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowExperiments;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.RefreshAction;
 
 public class XBayaWorkflowExperimentsNode extends AbstractAiravataTreeNode {
 	private XBayaWorkflowExperiments experiments;

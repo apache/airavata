@@ -30,10 +30,10 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.appwrapper.ApplicationDescriptionDialog;
-import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
-import org.apache.airavata.xbaya.registrybrowser.menu.EditAction;
-import org.apache.airavata.xbaya.registrybrowser.model.ApplicationDeploymentDescriptionWrap;
+import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptionWrap;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.DeleteAction;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.EditAction;
 
 public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNode {
     private ApplicationDeploymentDescriptionWrap applicationDeploymentDescriptionWrap;

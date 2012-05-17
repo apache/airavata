@@ -27,9 +27,9 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
-import org.apache.airavata.xbaya.registrybrowser.model.GFacURLs;
+import org.apache.airavata.xbaya.model.registrybrowser.GFacURLs;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.RefreshAction;
 
 public class GFacURLsNode extends AbstractAiravataTreeNode {
     private GFacURLs gfacURLs;

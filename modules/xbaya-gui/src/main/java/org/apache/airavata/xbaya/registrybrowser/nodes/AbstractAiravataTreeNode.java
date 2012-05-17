@@ -39,8 +39,8 @@ import javax.swing.tree.TreePath;
 
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.RefreshAction;
 
 public abstract class AbstractAiravataTreeNode implements TreeNode {
 

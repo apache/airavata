@@ -50,7 +50,7 @@ import org.apache.airavata.xbaya.monitor.MonitorEventData;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.monitor.MonitorUtil.EventType;
-import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
+import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
