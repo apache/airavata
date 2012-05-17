@@ -359,7 +359,7 @@ public class GFacMessageReciever implements MessageReceiver {
         String topic = null;
         try {
             ContextHeaderDocument document = ContextHeaderDocument.Factory.parse(contextHeader.toStringWithConsume());
-            topic = document.getContextHeader().getWorkflowMonitoringContext().getWorkflowInstanceId();
+            topic = document.getContextHeader().getWorkflowMonitoringContext().getExperimentId();
         } catch (XmlException e) {
             e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         } catch (XMLStreamException e) {
