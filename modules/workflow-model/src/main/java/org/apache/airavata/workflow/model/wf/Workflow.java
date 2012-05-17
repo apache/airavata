@@ -62,8 +62,8 @@ import org.apache.airavata.workflow.model.ode.ODEBPELTransformer;
 import org.apache.airavata.workflow.model.ode.ODEDeploymentDescriptor;
 import org.apache.airavata.workflow.model.ode.ODEWSDLTransformer;
 import org.apache.airavata.workflow.model.ode.WSDLCleaner;
-import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.XBayaVersion;
+import org.apache.airavata.workflow.model.utils.WorkflowConstants;
+import org.apache.airavata.workflow.model.utils.ApplicationVersion;
 import org.apache.commons.codec.binary.Base64;
 import org.gpel.GpelConstants;
 import org.gpel.model.GpelProcess;
@@ -86,7 +86,7 @@ public class Workflow implements Cloneable {
     /**
      * Namespace URI
      */
-    public static final String NS_URI_XWF = XBayaConstants.NS_URI_XBAYA + "xwf";
+    public static final String NS_URI_XWF = WorkflowConstants.NS_URI_XBAYA + "xwf";
 
     /**
      * Namespace
@@ -199,7 +199,7 @@ public class Workflow implements Cloneable {
     public URI getUniqueWorkflowName() {
 
         try {
-            return new URI(XBayaConstants.LEAD_NS + "/" + this.getName());
+            return new URI(WorkflowConstants.LEAD_NS + "/" + this.getName());
         } catch (URISyntaxException e) {
             throw new WorkflowRuntimeException(e);
         }
@@ -207,7 +207,7 @@ public class Workflow implements Cloneable {
 
     public URI getNameSpace() {
         try {
-            return new URI(XBayaConstants.LEAD_NS);
+            return new URI(WorkflowConstants.LEAD_NS);
         } catch (URISyntaxException e) {
             throw new WorkflowRuntimeException(e);
         }
@@ -503,7 +503,7 @@ public class Workflow implements Cloneable {
         XmlElement workflowElement = XMLUtil.BUILDER.newFragment(NS_XWF, WORKFLOW_TAG);
 
         // Version
-        workflowElement.setAttributeValue(NS_XWF, VERSION_ATTRIBUTE, XBayaVersion.VERSION);
+        workflowElement.setAttributeValue(NS_XWF, VERSION_ATTRIBUTE, ApplicationVersion.VERSION);
 
         // Date
         // TODO add modification time
@@ -527,7 +527,7 @@ public class Workflow implements Cloneable {
         if (this.image != null) {
             try {
                 ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-                ImageIO.write(this.image, XBayaConstants.PNG_FORMAT_NAME, outStream);
+                ImageIO.write(this.image, WorkflowConstants.PNG_FORMAT_NAME, outStream);
                 byte[] bytes = outStream.toByteArray();
                 byte[] base64 = Base64.encodeBase64Chunked(bytes);
 
@@ -814,7 +814,7 @@ public class Workflow implements Cloneable {
         ODEWSDLTransformer wsdlTransformer = new ODEWSDLTransformer();
         script.create(BPELScriptType.BPEL2);
         this.odeProcess = script.getGpelProcess();
-        this.odeProcess.setTargetNamespace(XBayaConstants.LEAD_NS);
+        this.odeProcess.setTargetNamespace(WorkflowConstants.LEAD_NS);
 
         WsdlDefinitions abstractWorkflowWsdl = script.getWorkflowWSDL().getWsdlDefinitions();
         this.odeWorkflowWSDL = abstractWorkflowWsdl;
@@ -860,7 +860,7 @@ public class Workflow implements Cloneable {
      */
     public QName getQname() {
 
-        return this.qname = new QName(XBayaConstants.LEAD_NS, this.getName());
+        return this.qname = new QName(WorkflowConstants.LEAD_NS, this.getName());
 
     }
 

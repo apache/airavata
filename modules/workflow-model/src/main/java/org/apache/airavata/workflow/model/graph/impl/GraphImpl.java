@@ -47,7 +47,7 @@ import org.apache.airavata.workflow.model.graph.system.StreamSourceNode;
 import org.apache.airavata.workflow.model.graph.system.SystemDataPort;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
-import org.apache.airavata.xbaya.XBayaVersion;
+import org.apache.airavata.workflow.model.utils.ApplicationVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
@@ -437,7 +437,7 @@ public abstract class GraphImpl implements Graph {
 
         XmlElement graphElement = XMLUtil.BUILDER.newFragment(GraphSchema.NS, GraphSchema.GRAPH_TAG);
 
-        graphElement.setAttributeValue(GraphSchema.NS, GraphSchema.XBAYA_VERSION_ATTRIBUTE, XBayaVersion.VERSION);
+        graphElement.setAttributeValue(GraphSchema.NS, GraphSchema.XBAYA_VERSION_ATTRIBUTE, ApplicationVersion.VERSION);
 
         XmlElement idElement = graphElement.addElement(GraphSchema.NS, GraphSchema.GRAPH_ID_TAG);
         idElement.addChild(getID());

@@ -34,7 +34,7 @@ import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.gpel.DSCUtil;
-import org.apache.airavata.xbaya.XBayaConstants;
+import org.apache.airavata.workflow.model.utils.WorkflowConstants;
 import org.xmlpull.infoset.XmlBuilderException;
 import org.xmlpull.infoset.XmlInfosetBuilder;
 import org.xmlpull.infoset.XmlNamespace;
@@ -220,10 +220,10 @@ public class ODEWSDLTransformer {
             Iterator<WsdlPort> portItr = serviceItr.next().ports().iterator();
             if (portItr.hasNext()) {
                 org.xmlpull.infoset.XmlElement address = portItr.next().xml().element("address");
-                if (!(XBayaConstants.DEFAULT_ODE_URL + "/ode/processes/" + StringUtil
+                if (!(WorkflowConstants.DEFAULT_ODE_URL + "/ode/processes/" + StringUtil
                         .convertToJavaIdentifier(workflowName)).equals(address.attributeValue("location"))) {
                     address.removeAllAttributes();
-                    address.setAttributeValue("location", XBayaConstants.DEFAULT_ODE_URL + "/ode/processes/"
+                    address.setAttributeValue("location", WorkflowConstants.DEFAULT_ODE_URL + "/ode/processes/"
                             + StringUtil.convertToJavaIdentifier(workflowName));
                 }
             }

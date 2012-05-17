@@ -21,23 +21,18 @@
 
 package org.apache.airavata.workflow.model.graph.util;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.WSConstants;
-import org.apache.airavata.workflow.model.component.ComponentException;
-import org.apache.airavata.workflow.model.component.SubWorkflowComponent;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.ControlEdge;
 import org.apache.airavata.workflow.model.graph.ControlPort;
@@ -50,16 +45,13 @@ import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
-import org.apache.airavata.workflow.model.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.system.OutputNode;
 import org.apache.airavata.workflow.model.graph.system.StreamSourceNode;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
-import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.gui.ErrorMessages;
+import org.apache.airavata.workflow.model.utils.MessageConstants;
 
 public class GraphUtil {
 	// private static final MLogger logger = MLogger.getLogger();
@@ -262,7 +254,7 @@ public class GraphUtil {
 		Port toPort = edge.getToPort();
 		if (edge instanceof ControlEdge) {
 			if (!(fromPort instanceof ControlPort && toPort instanceof ControlPort)) {
-				throw new GraphException(ErrorMessages.UNEXPECTED_ERROR);
+				throw new GraphException(MessageConstants.UNEXPECTED_ERROR);
 			}
 		} else if (edge instanceof DataEdge) {
 			if (fromPort instanceof EPRPort) {
@@ -271,7 +263,7 @@ public class GraphUtil {
 			}
 			if (!(fromPort instanceof DataPort || fromPort instanceof EPRPort)
 					|| !(toPort instanceof DataPort)) {
-				throw new GraphException(ErrorMessages.UNEXPECTED_ERROR);
+				throw new GraphException(MessageConstants.UNEXPECTED_ERROR);
 			}
 
 			DataPort fromDataPort = (DataPort) fromPort;
@@ -282,7 +274,7 @@ public class GraphUtil {
 
 			if (toDataPort.getEdges().size() > 1) {
 				throw new GraphException(
-						ErrorMessages.MORE_THAN_ONE_CONNECTIONS);
+						MessageConstants.MORE_THAN_ONE_CONNECTIONS);
 			}
 
 			// if connection came from the CEP register component it should be
