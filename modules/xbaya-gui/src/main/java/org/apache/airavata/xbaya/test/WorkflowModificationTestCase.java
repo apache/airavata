@@ -67,7 +67,6 @@ import org.apache.airavata.xbaya.test.service.adder.Adder;
 import org.apache.airavata.xbaya.test.service.multiplier.Multiplier;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.apache.xmlbeans.XmlObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
