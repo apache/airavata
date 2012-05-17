@@ -24,6 +24,7 @@ package org.apache.airavata.xbaya;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
@@ -114,7 +115,7 @@ public class XBaya {
                     } catch (RuntimeException e) {
                         String message = "Error while reading config file, " + configPath;
                         logger.warn(message, e);
-                        this.config.addError(new XBayaException(message, e));
+                        this.config.addError(new WorkflowException(message, e));
                     }
                 } else if ("-title".equalsIgnoreCase(arg)) {
                     index++;
@@ -130,7 +131,7 @@ public class XBaya {
                     } catch (URISyntaxException e) {
                         String message = "The GFac URL is in wrong format: " + url;
                         logger.warn(message, e);
-                        this.config.addError(new XBayaException(message, e));
+                        this.config.addError(new WorkflowException(message, e));
                     }
                 } else if ("-dscURL".equalsIgnoreCase(arg)) {
                     index++;
@@ -140,7 +141,7 @@ public class XBaya {
                     } catch (URISyntaxException e) {
                         String message = "The DSC URL is in wrong format: " + url;
                         logger.warn(message, e);
-                        this.config.addError(new XBayaException(message, e));
+                        this.config.addError(new WorkflowException(message, e));
                     }
                 } else if ("-startMonitor".equalsIgnoreCase(arg)) {
                     this.config.setStartMonitor(true);
@@ -152,7 +153,7 @@ public class XBaya {
                     } catch (URISyntaxException e) {
                         String message = "The broker URL is in wrong format: " + brokerURL;
                         logger.warn(message, e);
-                        this.config.addError(new XBayaException(message, e));
+                        this.config.addError(new WorkflowException(message, e));
                     }
                 } else if ("-odeEngine".equalsIgnoreCase(arg)) {
                     index++;
@@ -180,7 +181,7 @@ public class XBaya {
                         } else {
                             String message = "-pullMode has to be either true or false, not " + nextArg;
                             logger.warn(message);
-                            this.config.addError(new XBayaException(message));
+                            this.config.addError(new WorkflowException(message));
                         }
                     } else {
                         // This is the last arg
@@ -194,7 +195,7 @@ public class XBaya {
                     } catch (URISyntaxException e) {
                         String message = "The message box URL is in wrong format: " + messageBoxURL;
                         logger.warn(message, e);
-                        this.config.addError(new XBayaException(message, e));
+                        this.config.addError(new WorkflowException(message, e));
                     }
                 } else if ("-registryURL".equalsIgnoreCase(arg)) {
                     index++;
@@ -204,7 +205,7 @@ public class XBaya {
                     } catch (URISyntaxException e) {
                         String message = "The message box URL is in wrong format: " + registryURL;
                         logger.warn(message, e);
-                        this.config.addError(new XBayaException(message, e));
+                        this.config.addError(new WorkflowException(message, e));
                     }
                     } else if ("-registryUserName".equalsIgnoreCase(arg)) {
 
@@ -222,7 +223,7 @@ public class XBaya {
                     } catch (NumberFormatException e) {
                         String message = "The width must be an integer: " + width;
                         logger.warn(message, e);
-                        this.config.addError(new XBayaException(message, e));
+                        this.config.addError(new WorkflowException(message, e));
                     }
                 } else if ("-height".equalsIgnoreCase(arg)) {
                     index++;
@@ -232,7 +233,7 @@ public class XBaya {
                     } catch (NumberFormatException e) {
                         String message = "The height must be an integer: " + height;
                         logger.warn(message, e);
-                        this.config.addError(new XBayaException(message, e));
+                        this.config.addError(new WorkflowException(message, e));
                     }
                 } else if ("-exitOnClose".equalsIgnoreCase(arg)) {
                     index++;
@@ -265,7 +266,7 @@ public class XBaya {
                 }  else {
                     String message = "Unknown option: " + arg;
                     logger.error(message);
-                    this.config.addError(new XBayaException(message));
+                    this.config.addError(new WorkflowException(message));
                 }
                 this.config.setJcrComponentRegistry(new
                         JCRComponentRegistry(this.config.getRegistryURL(),this.config.getRegistryUserName(),this.config.getRegistryPassphrase()));
@@ -274,11 +275,11 @@ public class XBaya {
         } catch (ArrayIndexOutOfBoundsException e) {
             String message = "Argument is missing after " + args[args.length - 1];
             logger.error(message, e);
-            this.config.addError(new XBayaException(message));
+            this.config.addError(new WorkflowException(message));
         } catch (Throwable e) {
             logger.error(e.getMessage(), e);
             String message = "Unknown error while parsing the arguments";
-            this.config.addError(new XBayaException(message, e));
+            this.config.addError(new WorkflowException(message, e));
         }
     }
 

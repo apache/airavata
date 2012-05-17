@@ -27,7 +27,7 @@ import java.util.UUID;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
 import org.apache.airavata.xbaya.lead.NotificationHandler;
 import org.slf4j.Logger;
@@ -81,16 +81,16 @@ public class GFacInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#setup()
      */
-    public void setup() throws XBayaException {
+    public void setup() throws WorkflowException {
 
         if (this.gfacURL == null) {
             String message = "The location of the Generic Factory is not specified.";
-            throw new XBayaException(message);
+            throw new WorkflowException(message);
         }
 
         if (this.portTypeQName == null) {
             String message = "Error in finding the service name";
-            throw new XBayaException(message);
+            throw new WorkflowException(message);
         }
 
         try {
@@ -114,10 +114,10 @@ public class GFacInvoker implements Invoker {
             this.invoker = InvokerFactory.createInvoker(this.portTypeQName, concreteWSDL, null, this.messageBoxURL,
                     null, true);
             this.invoker.setup();
-        } catch (XBayaException xe) {
+        } catch (WorkflowException xe) {
             throw xe;
         } catch (Exception e) {
-            throw new XBayaException(e.getMessage(), e);
+            throw new WorkflowException(e.getMessage(), e);
         }
 
     }
@@ -130,33 +130,33 @@ public class GFacInvoker implements Invoker {
     }
 
     /**
-     * @throws XBayaException
+     * @throws WorkflowException
      * @see org.apache.airavata.xbaya.invoker.Invoker#setOperation(java.lang.String)
      */
-    public void setOperation(String operationName) throws XBayaException {
+    public void setOperation(String operationName) throws WorkflowException {
         this.invoker.setOperation(operationName);
     }
 
     /**
-     * @throws XBayaException
+     * @throws WorkflowException
      * @see org.apache.airavata.xbaya.invoker.Invoker#setInput(java.lang.String, java.lang.Object)
      */
-    public void setInput(String name, Object value) throws XBayaException {
+    public void setInput(String name, Object value) throws WorkflowException {
         this.invoker.setInput(name, value);
     }
 
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#getInputs()
      */
-    public WSIFMessage getInputs() throws XBayaException {
+    public WSIFMessage getInputs() throws WorkflowException {
         return this.invoker.getInputs();
     }
 
     /**
-     * @throws XBayaException
+     * @throws WorkflowException
      * @see org.apache.airavata.xbaya.invoker.Invoker#invoke()
      */
-    public boolean invoke() throws XBayaException {
+    public boolean invoke() throws WorkflowException {
 
         WSIFClient client = invoker.getClient();
         // FIXME: Temporary fix
@@ -176,23 +176,23 @@ public class GFacInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#getOutputs()
      */
-    public WSIFMessage getOutputs() throws XBayaException {
+    public WSIFMessage getOutputs() throws WorkflowException {
         return this.invoker.getOutputs();
     }
 
     /**
-     * @throws XBayaException
+     * @throws WorkflowException
      * @see org.apache.airavata.xbaya.invoker.Invoker#getOutput(java.lang.String)
      */
-    public Object getOutput(String name) throws XBayaException {
+    public Object getOutput(String name) throws WorkflowException {
         return this.invoker.getOutput(name);
     }
 
     /**
-     * @throws XBayaException
+     * @throws WorkflowException
      * @see org.apache.airavata.xbaya.invoker.Invoker#getFault()
      */
-    public WSIFMessage getFault() throws XBayaException {
+    public WSIFMessage getFault() throws WorkflowException {
         return this.invoker.getFault();
     }
 

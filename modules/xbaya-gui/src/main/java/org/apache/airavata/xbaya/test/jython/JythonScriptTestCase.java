@@ -24,7 +24,8 @@ package org.apache.airavata.xbaya.test.jython;
 import java.io.IOException;
 
 import org.apache.airavata.common.utils.IOUtil;
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.jython.runner.JythonRunner;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.test.XBayaTestCase;
@@ -33,7 +34,6 @@ import org.apache.airavata.xbaya.test.service.arrayadder.ArrayAdderService;
 import org.apache.airavata.xbaya.test.service.arraygen.ArrayGeneratorService;
 import org.apache.airavata.xbaya.test.service.multiplier.MultiplierService;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
-import org.apache.airavata.xbaya.wf.Workflow;
 
 public class JythonScriptTestCase extends XBayaTestCase {
 
@@ -47,9 +47,9 @@ public class JythonScriptTestCase extends XBayaTestCase {
 
     /**
      * @throws IOException
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void testSimpleMath() throws IOException, XBayaException {
+    public void testSimpleMath() throws IOException, WorkflowException {
         Workflow workflow = this.workflowCreator.createSimpleMathWorkflow();
         JythonScript script = new JythonScript(workflow, this.configuration);
         script.create();
@@ -70,9 +70,9 @@ public class JythonScriptTestCase extends XBayaTestCase {
 
     /**
      * @throws IOException
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void testComplexMath() throws IOException, XBayaException {
+    public void testComplexMath() throws IOException, WorkflowException {
         Workflow workflow = this.workflowCreator.createComplexMathWorkflow();
         JythonScript script = new JythonScript(workflow, this.configuration);
         script.create();
@@ -100,9 +100,9 @@ public class JythonScriptTestCase extends XBayaTestCase {
 
     /**
      * @throws IOException
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void testArray() throws IOException, XBayaException {
+    public void testArray() throws IOException, WorkflowException {
         Workflow workflow = this.workflowCreator.createArrayWorkflow();
         JythonScript script = new JythonScript(workflow, this.configuration);
         script.create();

@@ -29,24 +29,24 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.graph.DataPort;
-import org.apache.airavata.xbaya.graph.Node;
-import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.workflow.model.graph.DataPort;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
+import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
+import org.apache.airavata.workflow.model.graph.system.ConstantNode;
+import org.apache.airavata.workflow.model.graph.system.DifferedInputNode;
+import org.apache.airavata.workflow.model.graph.system.EndForEachNode;
+import org.apache.airavata.workflow.model.graph.system.EndifNode;
+import org.apache.airavata.workflow.model.graph.system.ForEachNode;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.graph.system.SystemDataPort;
+import org.apache.airavata.workflow.model.graph.ws.WSGraph;
+import org.apache.airavata.workflow.model.graph.ws.WSNode;
+import org.apache.airavata.workflow.model.graph.ws.WSPort;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.impl.NodeImpl;
-import org.apache.airavata.xbaya.graph.system.ConstantNode;
-import org.apache.airavata.xbaya.graph.system.DifferedInputNode;
-import org.apache.airavata.xbaya.graph.system.EndForEachNode;
-import org.apache.airavata.xbaya.graph.system.EndifNode;
-import org.apache.airavata.xbaya.graph.system.ForEachNode;
-import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.graph.system.SystemDataPort;
-import org.apache.airavata.xbaya.graph.ws.WSGraph;
-import org.apache.airavata.xbaya.graph.ws.WSNode;
-import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.apache.airavata.xbaya.interpretor.SystemComponentInvoker;
 import org.apache.airavata.xbaya.interpretor.WorkFlowInterpreterException;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
@@ -67,10 +67,10 @@ public class InterpreterUtil {
      * @param listOfValues
      * @param invokerMap
      * @return
-     * @throws XBayaException
+     * @throws WorkflowException
      */
     public static Object getInputsForForEachNode(final ForEachNode forEachNode,
-			final LinkedList<String> listOfValues, Map<Node, Invoker> invokerMap) throws XBayaException {
+			final LinkedList<String> listOfValues, Map<Node, Invoker> invokerMap) throws WorkflowException {
         List<DataPort> inputPorts = forEachNode.getInputPorts();
 
         Object returnValForProvenance = null;
@@ -170,9 +170,9 @@ public class InterpreterUtil {
      * @param inputPort
      * @param invokerMap
      * @return
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-	public static Object  findInputFromPort(DataPort inputPort, Map<Node,Invoker>  invokerMap) throws XBayaException {
+	public static Object  findInputFromPort(DataPort inputPort, Map<Node,Invoker>  invokerMap) throws WorkflowException {
 		Object outputVal = null;
 		Node fromNode = inputPort.getFromNode();
 		if (fromNode instanceof InputNode) {
@@ -215,7 +215,7 @@ public class InterpreterUtil {
 			}
 
             if (((String) outputVal).length() == 0) {
-                throw new XBayaException("Empty Output Generated");
+                throw new WorkflowException("Empty Output Generated");
             }
             outputVal = ((String) outputVal).substring(1,
                     ((String) outputVal).length());
@@ -250,7 +250,7 @@ public class InterpreterUtil {
 
 		Collection<Node> toNodes = node.getOutputPort(0).getToNodes();
 		if(toNodes.size() != 1){
-			throw new XBayaRuntimeException("ForEach output does not contain single out-edge");
+			throw new WorkflowRuntimeException("ForEach output does not contain single out-edge");
 		}
 		Node middleNode = toNodes.iterator().next();
 		List<DataPort> outputPorts = middleNode.getOutputPorts();
@@ -262,11 +262,11 @@ public class InterpreterUtil {
 				}
 			}
 		}
-		throw new XBayaRuntimeException("EndForEachNode not found");
+		throw new WorkflowRuntimeException("EndForEachNode not found");
 	}
 
     public static Integer[] getNumberOfInputsForForEachNode(final ForEachNode forEachNode,
-                                                            Map<Node,Invoker> invokerMap) throws XBayaException {
+                                                            Map<Node,Invoker> invokerMap) throws WorkflowException {
         List<DataPort> inputPorts = forEachNode.getInputPorts();
         Integer[] inputNumbers = new Integer[inputPorts.size()];
         for(DataPort forEachInputPort:inputPorts){

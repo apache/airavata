@@ -35,7 +35,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.graph.system.ParameterNode;
+import org.apache.airavata.workflow.model.graph.system.ParameterNode;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaComponent;
 import org.apache.airavata.xbaya.gui.XBayaList;

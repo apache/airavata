@@ -31,18 +31,18 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.graph.GraphException;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
-import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.jython.lib.GFacServiceCreator;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,9 +56,9 @@ public class GFacServiceCreaterTestCase extends XBayaTestCase {
     private static final Logger logger = LoggerFactory.getLogger(GFacServiceCreaterTestCase.class);
 
     /**
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void testCreate() throws XBayaException {
+    public void testCreate() throws WorkflowException {
         URI gFacURL = this.configuration.getGFacURL();
         URI gFacWSDLURL = WSDLUtil.appendWSDLQuary(gFacURL);
         GFacServiceCreator creator = new GFacServiceCreator(gFacWSDLURL);
@@ -67,9 +67,9 @@ public class GFacServiceCreaterTestCase extends XBayaTestCase {
     }
 
     /**
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void testService() throws XBayaException {
+    public void testService() throws WorkflowException {
         NotificationSender notifier = new NotificationSender(this.configuration.getBrokerURL(), "test-topic2");
         Invoker invoker = new GenericInvoker(QName.valueOf(TEST_SERVICE_QNAME), TEST_AWSDL, "test-node", null,
                 this.configuration.getGFacURL().toString(), notifier);

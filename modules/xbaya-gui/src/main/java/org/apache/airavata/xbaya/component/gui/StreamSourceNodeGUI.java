@@ -23,8 +23,8 @@ package org.apache.airavata.xbaya.component.gui;
 
 import java.awt.Color;
 
+import org.apache.airavata.workflow.model.graph.system.StreamSourceNode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.system.StreamSourceNode;
 import org.apache.airavata.xbaya.graph.system.gui.ConfigurableNodeGUI;
 import org.apache.airavata.xbaya.graph.system.gui.StreamSourceConfigurationDialog;
 

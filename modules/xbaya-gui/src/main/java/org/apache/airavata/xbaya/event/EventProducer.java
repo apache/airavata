@@ -24,8 +24,8 @@ package org.apache.airavata.xbaya.event;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +69,7 @@ public abstract class EventProducer {
             if (exception instanceof RuntimeException) {
                 throw (RuntimeException) exception;
             } else {
-                throw new XBayaRuntimeException(exception);
+                throw new WorkflowRuntimeException(exception);
             }
         }
     }
@@ -78,9 +78,9 @@ public abstract class EventProducer {
      * Sends an event.
      * 
      * @param event
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void sendEvent(Event event) throws XBayaException {
+    public void sendEvent(Event event) throws WorkflowException {
         Throwable exception = null;
         for (EventListener listener : this.listeners) {
             try {
@@ -94,10 +94,10 @@ public abstract class EventProducer {
             }
         }
         if (exception != null) {
-            if (exception instanceof XBayaException) {
-                throw (XBayaException) exception;
+            if (exception instanceof WorkflowException) {
+                throw (WorkflowException) exception;
             } else {
-                throw new XBayaException(exception);
+                throw new WorkflowException(exception);
             }
         }
     }

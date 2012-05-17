@@ -29,9 +29,9 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
+import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 
 public abstract class ConfigurableNodeGUI extends NodeGUI {
 

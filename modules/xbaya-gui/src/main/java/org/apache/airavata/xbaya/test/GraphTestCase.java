@@ -23,13 +23,13 @@ package org.apache.airavata.xbaya.test;
 
 import junit.framework.TestCase;
 
-import org.apache.airavata.xbaya.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.graph.Graph;
+import org.apache.airavata.workflow.model.graph.GraphException;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
-import org.apache.airavata.xbaya.graph.Graph;
-import org.apache.airavata.xbaya.graph.GraphException;
-import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
-import org.apache.airavata.xbaya.wf.Workflow;
 
 public class GraphTestCase extends TestCase {
 

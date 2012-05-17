@@ -24,8 +24,8 @@ package org.apache.airavata.xbaya.component.registry;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.airavata.xbaya.component.Component;
-import org.apache.airavata.xbaya.component.ComponentException;
+import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.component.ComponentException;
 
 public abstract class ComponentReference {
 

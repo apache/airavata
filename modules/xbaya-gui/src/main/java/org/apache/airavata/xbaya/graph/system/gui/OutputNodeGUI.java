@@ -27,9 +27,9 @@ import java.net.URL;
 
 import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.BrowserLauncher;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.graph.system.OutputNode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.graph.system.OutputNode;
 
 public class OutputNodeGUI extends ConfigurableNodeGUI {
 

@@ -27,11 +27,11 @@ import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Point;
 
-import org.apache.airavata.xbaya.graph.Port;
+import org.apache.airavata.workflow.model.graph.Port;
+import org.apache.airavata.workflow.model.graph.system.ExitNode;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.gui.Paintable;
-import org.apache.airavata.xbaya.graph.system.ExitNode;
 
 public class ExitNodeGUI extends NodeGUI {
 

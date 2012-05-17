@@ -26,7 +26,7 @@ import java.net.URISyntaxException;
 import java.util.Date;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
@@ -537,16 +537,16 @@ public class MonitorUtil {
         }
         XmlElement notificationSource = event.element(WOR_NS, NOTIFICATION_SOURCE_TAG);
         if (notificationSource == null) {
-            throw new XBayaRuntimeException("The notification should have " + NOTIFICATION_SOURCE_TAG + " element.");
+            throw new WorkflowRuntimeException("The notification should have " + NOTIFICATION_SOURCE_TAG + " element.");
         }
         String workflowInstanceID = notificationSource.attributeValue(WOR_NS, SERVICE_ID_ATTRIBUTE);
         if (workflowInstanceID == null) {
-            throw new XBayaRuntimeException("The notification should have " + SERVICE_ID_ATTRIBUTE + " attribute.");
+            throw new WorkflowRuntimeException("The notification should have " + SERVICE_ID_ATTRIBUTE + " attribute.");
         }
         try {
             return new URI(workflowInstanceID);
         } catch (URISyntaxException e) {
-            throw new XBayaRuntimeException(e);
+            throw new WorkflowRuntimeException(e);
         }
     }
 

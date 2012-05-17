@@ -28,16 +28,16 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.Pair;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.component.system.InputComponent;
-import org.apache.airavata.xbaya.graph.DataPort;
-import org.apache.airavata.xbaya.graph.GraphException;
-import org.apache.airavata.xbaya.graph.Node;
-import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.graph.impl.NodeImpl;
-import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.graph.ws.WSNode;
-import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.airavata.workflow.model.component.system.InputComponent;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.workflow.model.graph.DataPort;
+import org.apache.airavata.workflow.model.graph.GraphException;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Port;
+import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.graph.ws.WSNode;
+import org.apache.airavata.workflow.model.wf.Workflow;
 
 public class WorkflowHarvester {
 
@@ -53,7 +53,7 @@ public class WorkflowHarvester {
 
             NodeImpl node = clone.getGraph().getNode(pair.getLeft());
             if (null == node) {
-                throw new XBayaRuntimeException("Specified node not found:" + pair.getLeft());
+                throw new WorkflowRuntimeException("Specified node not found:" + pair.getLeft());
             }
             Port candidatePort = null;
             List<DataPort> inPorts = node.getInputPorts();
@@ -64,7 +64,7 @@ public class WorkflowHarvester {
                 }
             }
             if (null == candidatePort) {
-                throw new XBayaRuntimeException("Specifies Port was not found:" + pair.getRight());
+                throw new WorkflowRuntimeException("Specifies Port was not found:" + pair.getRight());
             }
             if (!(candidatePort.getFromNode() instanceof InputNode)) {
                 removeUnnecessaryNodes(node, candidatePort, clone);
@@ -111,7 +111,7 @@ public class WorkflowHarvester {
             try {
                 clone.removeNode(node);
             } catch (GraphException e) {
-                throw new XBayaRuntimeException(e);
+                throw new WorkflowRuntimeException(e);
             }
         }
     }
@@ -144,7 +144,7 @@ public class WorkflowHarvester {
                 }
                 workflow.removeNode(fromNode);
             } catch (GraphException e) {
-                throw new XBayaRuntimeException(e);
+                throw new WorkflowRuntimeException(e);
             }
         }
     }

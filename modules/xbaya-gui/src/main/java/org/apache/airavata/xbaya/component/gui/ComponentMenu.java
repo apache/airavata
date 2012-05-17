@@ -30,9 +30,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.SubWorkflowComponent;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.component.ComponentException;
-import org.apache.airavata.xbaya.component.SubWorkflowComponent;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryLoader;
 import org.apache.airavata.xbaya.component.registry.LocalComponentRegistry;
@@ -40,7 +41,6 @@ import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.file.gui.WorkflowFiler;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.util.RegistryConstants;
-import org.apache.airavata.xbaya.wf.Workflow;
 
 public class ComponentMenu {
 

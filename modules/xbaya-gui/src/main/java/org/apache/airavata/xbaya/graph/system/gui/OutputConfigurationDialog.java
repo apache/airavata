@@ -29,8 +29,8 @@ import javax.swing.JPanel;
 
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.workflow.model.graph.system.OutputNode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.system.OutputNode;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;

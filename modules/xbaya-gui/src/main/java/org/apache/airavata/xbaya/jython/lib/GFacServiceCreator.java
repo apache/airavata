@@ -27,7 +27,7 @@ import java.net.URISyntaxException;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
@@ -71,9 +71,9 @@ public class GFacServiceCreator {
      * @param wsdlURL
      *            The URL of the GFac service
      * @throws URISyntaxException
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public GFacServiceCreator(String wsdlURL) throws URISyntaxException, XBayaException {
+    public GFacServiceCreator(String wsdlURL) throws URISyntaxException, WorkflowException {
         this(new URI(wsdlURL));
     }
 
@@ -82,9 +82,9 @@ public class GFacServiceCreator {
      * 
      * @param wsdlURI
      *            The URI of the GFac service
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public GFacServiceCreator(URI wsdlURI) throws XBayaException {
+    public GFacServiceCreator(URI wsdlURI) throws WorkflowException {
         try {
             WsdlDefinitions definitions = WsdlResolver.getInstance().loadWsdl(wsdlURI);
             WSIFService service = WSIFServiceFactory.newInstance().getService(definitions);
@@ -92,25 +92,25 @@ public class GFacServiceCreator {
             this.gFacOperation = port.createOperation(CREATE_SERVICE_OPERATION);
         } catch (RuntimeException e) {
             String message = "Failed to connect to the Generic Factory: " + wsdlURI;
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
     }
 
     /**
      * @param serviceQName
      * @return The WSDL definitions of the service created.
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public WsdlDefinitions createService(QName serviceQName) throws XBayaException {
+    public WsdlDefinitions createService(QName serviceQName) throws WorkflowException {
         return createService(serviceQName.toString());
     }
 
     /**
      * @param serviceQName
      * @return The WSDL definitions of the service created.
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public WsdlDefinitions createService(String serviceQName) throws XBayaException {
+    public WsdlDefinitions createService(String serviceQName) throws WorkflowException {
         logger.debug(serviceQName);
         try {
             WSIFMessage inputMessage = this.gFacOperation.createInputMessage();
@@ -127,7 +127,7 @@ public class GFacServiceCreator {
                 // An implementation of WSIFMessage, WSIFMessageElement,
                 // implements toString(), which serialize the message XML.
                 String message = "Failed to create a service: " + faultMessage.toString();
-                throw new XBayaException(message);
+                throw new WorkflowException(message);
             }
 
             String wsdl = (String) outputMessage.getObjectPart(WSDL_PART);
@@ -139,16 +139,16 @@ public class GFacServiceCreator {
             return this.serviceDefinitions;
         } catch (RuntimeException e) {
             String message = "Failed to create a service";
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
     }
 
     /**
      * Shutdowns the service created.
      * 
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void shutdownService() throws XBayaException {
+    public void shutdownService() throws WorkflowException {
         WSIFService service = WSIFServiceFactory.newInstance().getService(this.serviceDefinitions);
         WSIFPort port = service.getPort();
         WSIFOperation operation = port.createOperation(SHUTDOWN_OPERATION);
@@ -162,7 +162,7 @@ public class GFacServiceCreator {
             // An implementation of WSIFMessage, WSIFMessageElement,
             // implements toString(), which serialize the message XML.
             String message = "Failed to shutdown the service: " + faultMessage.toString();
-            throw new XBayaException(message);
+            throw new WorkflowException(message);
         }
     }
 }

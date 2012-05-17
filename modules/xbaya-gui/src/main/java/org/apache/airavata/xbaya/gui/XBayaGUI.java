@@ -49,20 +49,21 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.airavata.common.utils.SwingUtil;
+import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Port;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.component.Component;
 import org.apache.airavata.xbaya.component.gui.ComponentSelector;
 import org.apache.airavata.xbaya.component.gui.ComponentViewer;
 import org.apache.airavata.xbaya.event.Event;
 import org.apache.airavata.xbaya.event.Event.Type;
 import org.apache.airavata.xbaya.event.EventListener;
-import org.apache.airavata.xbaya.graph.Node;
-import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvasEvent;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvasEvent.GraphCanvasEventType;
@@ -71,7 +72,6 @@ import org.apache.airavata.xbaya.menues.xbaya.WorkflowFiler;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.gui.MonitorPanel;
 import org.apache.airavata.xbaya.registrybrowser.JCRBrowserPanel;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,7 +142,7 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
             });
         } catch (InterruptedException e) {
             // Shouldn't happen.
-            throw new XBayaRuntimeException(e);
+            throw new WorkflowRuntimeException(e);
         } catch (InvocationTargetException e) {
             // Shouldn't happen.
         	//It happened
@@ -159,7 +159,7 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 				at org.apache.airavata.xbaya.gui.XBayaGUI.<init>(XBayaGUI.java:138)
 				... 4 more
         	 */
-            throw new XBayaRuntimeException(e);
+            throw new WorkflowRuntimeException(e);
         }
         
         // Following suppsed to jump in the middle to save unsaved workflows when exiting xbaya
@@ -692,7 +692,7 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
                 XBayaGUI.this.frame.setVisible(false);
                 try {
                     XBayaGUI.this.engine.dispose();
-                } catch (XBayaException e) {
+                } catch (WorkflowException e) {
                     // Ignore the error.
                     logger.error(e.getMessage(), e);
                 } catch (RuntimeException e) {

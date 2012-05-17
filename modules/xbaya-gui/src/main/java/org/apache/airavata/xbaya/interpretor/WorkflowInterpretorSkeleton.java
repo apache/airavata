@@ -34,18 +34,18 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.workflow.model.graph.GraphException;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.ode.ODEClient;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
-import org.apache.airavata.xbaya.graph.GraphException;
-import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.monitor.MonitorException;
-import org.apache.airavata.xbaya.ode.ODEClient;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.proxy.WorkflowContext;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
@@ -238,7 +238,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                 }
             }
             if (inputNode.getDefaultValue() == null) {
-                throw new XBayaRuntimeException("Could not find a input value for component with name :" + inputNode.getName());
+                throw new WorkflowRuntimeException("Could not find a input value for component with name :" + inputNode.getName());
             }
 
         }
@@ -250,7 +250,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             conf.setTopic(topic);
             conf.setRunWithCrossProduct(true);
         } catch (URISyntaxException e1) {
-            throw new XBayaRuntimeException(e1);
+            throw new WorkflowRuntimeException(e1);
         }
         WorkflowInterpretorEventListener listener = null;
         WorkflowInterpreter interpreter = null;
@@ -303,8 +303,8 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         try {
             interpreter.scheduleDynamically();
             System.err.println("Called the interpreter");
-        } catch (XBayaException e) {
-            throw new XBayaRuntimeException(e);
+        } catch (WorkflowException e) {
+            throw new WorkflowRuntimeException(e);
         } finally {
             /*
              * stop listener no matter what happens

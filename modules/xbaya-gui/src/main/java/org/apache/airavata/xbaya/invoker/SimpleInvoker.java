@@ -24,7 +24,7 @@ package org.apache.airavata.xbaya.invoker;
 import java.util.Iterator;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.jackrabbit.core.cache.ConcurrentCache;
 import org.xmlpull.v1.builder.XmlElement;
 
@@ -70,7 +70,7 @@ public class SimpleInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#setup()
      */
-    public void setup() throws XBayaException {
+    public void setup() throws WorkflowException {
         try {
             WSIFService service = WSIFServiceFactory.newInstance().getService(this.definitions);
             WSIFPort port = service.getPort();
@@ -78,7 +78,7 @@ public class SimpleInvoker implements Invoker {
             this.client.setAsyncResponseTimeoutInMs(999999999);
         } catch (RuntimeException e) {
             String message = "The WSDL is in the wrong format";
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
     }
 
@@ -92,7 +92,7 @@ public class SimpleInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#setOperation(java.lang.String)
      */
-    public void setOperation(String operationName) throws XBayaException {
+    public void setOperation(String operationName) throws WorkflowException {
         try {
             WSIFPort port = this.client.getPort();
             this.operation = port.createOperation(operationName);
@@ -101,14 +101,14 @@ public class SimpleInvoker implements Invoker {
             this.faultMessage = this.operation.createFaultMessage();
         } catch (RuntimeException e) {
             String message = "The WSDL does not conform to the invoking service.";
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
     }
 
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#setInput(java.lang.String, java.lang.Object)
      */
-    public void setInput(String name, Object value) throws XBayaException {
+    public void setInput(String name, Object value) throws WorkflowException {
         try {
             if (value instanceof XmlElement) {
                 // If the value is a complex type, change the name of the
@@ -129,7 +129,7 @@ public class SimpleInvoker implements Invoker {
             this.inputMessage.setObjectPart(name, value);
         } catch (RuntimeException e) {
             String message = "Error in setting an input. name: " + name + " value: " + value;
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
     }
 
@@ -143,7 +143,7 @@ public class SimpleInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#invoke()
      */
-    public boolean invoke() throws XBayaException {
+    public boolean invoke() throws WorkflowException {
         try {
             boolean success = this.operation.executeRequestResponseOperation(this.inputMessage, this.outputMessage,
                     this.faultMessage);
@@ -153,7 +153,7 @@ public class SimpleInvoker implements Invoker {
             return success;
         } catch (RuntimeException e) {
             String message = "Error in invoking a service.";
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
     }
 
@@ -175,7 +175,7 @@ public class SimpleInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.Invoker#getOutput(java.lang.String)
      */
-    public Object getOutput(String name) throws XBayaException {
+    public Object getOutput(String name) throws WorkflowException {
         try {
             // This code doesn't work when the output is a complex type.
             // Object output = this.outputMessage.getObjectPart(name);
@@ -202,7 +202,7 @@ public class SimpleInvoker implements Invoker {
             return valueElement;
         } catch (RuntimeException e) {
             String message = "Error in getting output. name: " + name;
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
     }
 

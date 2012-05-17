@@ -27,19 +27,19 @@ import java.io.IOException;
 
 import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.system.InputComponent;
+import org.apache.airavata.workflow.model.component.system.OutputComponent;
+import org.apache.airavata.workflow.model.graph.Graph;
+import org.apache.airavata.workflow.model.graph.GraphException;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.graph.system.OutputNode;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.component.Component;
-import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.registry.WebComponentRegistry;
-import org.apache.airavata.xbaya.component.system.InputComponent;
-import org.apache.airavata.xbaya.component.system.OutputComponent;
-import org.apache.airavata.xbaya.graph.Graph;
-import org.apache.airavata.xbaya.graph.GraphException;
-import org.apache.airavata.xbaya.graph.Node;
-import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.graph.system.OutputNode;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.xmlpull.infoset.XmlElement;
 
 public class WebComponentRegistryClientTestCase extends XBayaTestCase {

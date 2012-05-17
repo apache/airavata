@@ -21,7 +21,7 @@
 
 package org.apache.airavata.xbaya.component.gui;
 
-import org.apache.airavata.xbaya.component.Component;
+import org.apache.airavata.workflow.model.component.Component;
 
 public class ComponentSelectorEvent {
 

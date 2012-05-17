@@ -34,10 +34,10 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.appwrapper.ApplicationDescriptionDialog;
 import org.apache.airavata.xbaya.appwrapper.HostDescriptionDialog;
 import org.apache.airavata.xbaya.appwrapper.ServiceDescriptionDialog;
@@ -559,7 +559,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
             public void actionPerformed(ActionEvent event) {
                 try {
                     XBayaMenuItem.this.engine.dispose();
-                } catch (XBayaException e) {
+                } catch (WorkflowException e) {
                     logger.error(e.getMessage(), e);
                 } finally {
                     XBayaMenuItem.this.engine.getGUI().getFrame().dispose();

@@ -27,10 +27,10 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 
+import org.apache.airavata.workflow.model.graph.Port;
+import org.apache.airavata.workflow.model.graph.system.ReceiveNode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.graph.system.ReceiveNode;
 
 public class ReceiveNodeGUI extends ConfigurableNodeGUI {
 

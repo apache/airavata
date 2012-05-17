@@ -25,11 +25,12 @@ import java.net.URI;
 import java.util.List;
 
 import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.component.ComponentException;
-import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.gui.Cancelable;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.WaitDialog;
@@ -39,7 +40,6 @@ import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.util.XBayaUtil;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -198,7 +198,7 @@ public class ODEInvoker implements Cancelable {
                         result = XmlConstants.BUILDER.serializeToString(workflowInvoker.getFaultMessage());
                     }
                     logger.info("Done with the execution. result: " + result);
-                } catch (XBayaException e) {
+                } catch (WorkflowException e) {
                     ODEInvoker.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 }
             }

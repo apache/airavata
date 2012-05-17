@@ -21,8 +21,8 @@
 
 package org.apache.airavata.xbaya.graph.system.gui;
 
+import org.apache.airavata.workflow.model.graph.system.ConstantNode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.system.ConstantNode;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 
 public class ConstantNodeGUI extends ConfigurableNodeGUI {

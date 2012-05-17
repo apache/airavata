@@ -29,10 +29,10 @@ import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.geom.CubicCurve2D;
 
+import org.apache.airavata.workflow.model.graph.ControlEdge;
+import org.apache.airavata.workflow.model.graph.Edge;
+import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.ControlEdge;
-import org.apache.airavata.xbaya.graph.Edge;
-import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 
 public class EdgeGUI implements GraphPieceGUI {

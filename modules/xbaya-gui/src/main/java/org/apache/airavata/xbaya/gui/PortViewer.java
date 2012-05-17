@@ -34,8 +34,8 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.xbaya.graph.DataPort;
-import org.apache.airavata.xbaya.graph.Port;
+import org.apache.airavata.workflow.model.graph.DataPort;
+import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvasEvent;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvasEvent.GraphCanvasEventType;

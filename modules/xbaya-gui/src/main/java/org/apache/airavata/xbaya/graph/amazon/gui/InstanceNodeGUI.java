@@ -28,9 +28,9 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.util.List;
 
+import org.apache.airavata.workflow.model.graph.Port;
+import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.PortGUI;
 import org.apache.airavata.xbaya.graph.system.gui.ConfigurableNodeGUI;

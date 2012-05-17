@@ -26,8 +26,8 @@ import java.util.List;
 
 import javax.swing.AbstractListModel;
 
-import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.graph.system.ParameterNode;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.workflow.model.graph.system.ParameterNode;
 
 public class ParameterListModel extends AbstractListModel {
 
@@ -64,7 +64,7 @@ public class ParameterListModel extends AbstractListModel {
      */
     public void up(int index) {
         if (index < 1 || index >= this.parameterNodes.size()) {
-            throw new XBayaRuntimeException("Illegal index: " + index);
+            throw new WorkflowRuntimeException("Illegal index: " + index);
         }
         swap(index - 1, index);
     }
@@ -76,7 +76,7 @@ public class ParameterListModel extends AbstractListModel {
      */
     public void down(int index) {
         if (index < 0 || index >= this.parameterNodes.size() - 1) {
-            throw new XBayaRuntimeException("Illegal index: " + index);
+            throw new WorkflowRuntimeException("Illegal index: " + index);
         }
         swap(index, index + 1);
     }

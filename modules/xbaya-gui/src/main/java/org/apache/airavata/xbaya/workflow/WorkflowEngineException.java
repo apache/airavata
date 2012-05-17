@@ -21,9 +21,9 @@
 
 package org.apache.airavata.xbaya.workflow;
 
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 
-public class WorkflowEngineException extends XBayaException {
+public class WorkflowEngineException extends WorkflowException {
     public WorkflowEngineException() {
         super(); // To change body of overridden methods use File | Settings | File Templates.
     }

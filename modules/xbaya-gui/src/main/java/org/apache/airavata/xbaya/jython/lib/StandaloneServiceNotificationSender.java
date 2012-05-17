@@ -23,11 +23,11 @@ package org.apache.airavata.xbaya.jython.lib;
 
 import java.net.URI;
 
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axis2.addressing.EndpointReference;
 
 import xsul.wsif.WSIFMessage;

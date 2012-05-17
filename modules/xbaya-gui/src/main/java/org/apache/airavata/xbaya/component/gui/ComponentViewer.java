@@ -26,9 +26,9 @@ import java.awt.Color;
 import javax.swing.JEditorPane;
 import javax.swing.SwingUtilities;
 
-import org.apache.airavata.xbaya.component.Component;
+import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.xbaya.component.gui.ComponentSelectorEvent.ComponentSelectorEventType;
-import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvasEvent;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvasEvent.GraphCanvasEventType;

@@ -21,7 +21,7 @@
 
 package org.apache.airavata.xbaya.invoker;
 
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 
 import xsul.wsif.WSIFMessage;
 import xsul.xwsif_runtime.WSIFClient;
@@ -31,9 +31,9 @@ public interface Invoker {
     /**
      * Sets up the service.
      * 
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void setup() throws XBayaException;
+    public void setup() throws WorkflowException;
 
     /**
      * @return The WSIFClient.
@@ -45,9 +45,9 @@ public interface Invoker {
      * 
      * @param operationName
      *            The name of the operation
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void setOperation(String operationName) throws XBayaException;
+    public void setOperation(String operationName) throws WorkflowException;
 
     /**
      * Sets an input parameter
@@ -56,33 +56,33 @@ public interface Invoker {
      *            The name of the input parameter
      * @param value
      *            The value of the input parameter
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void setInput(String name, Object value) throws XBayaException;
+    public void setInput(String name, Object value) throws WorkflowException;
 
     /**
      * Returns the all input parameters
      * 
      * @return The input parameters
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public WSIFMessage getInputs() throws XBayaException;
+    public WSIFMessage getInputs() throws WorkflowException;
 
     /**
      * Invokes the service.
      * 
      * @return true if the invocation succeeds; fase otherwise
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public boolean invoke() throws XBayaException;
+    public boolean invoke() throws WorkflowException;
 
     /**
      * Returns the all output parameters
      * 
      * @return The output parameters
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public WSIFMessage getOutputs() throws XBayaException;
+    public WSIFMessage getOutputs() throws WorkflowException;
 
     /**
      * Returns the output of a specified name.
@@ -90,16 +90,16 @@ public interface Invoker {
      * @param name
      *            The name of the output parameter
      * @return The value of the output
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public Object getOutput(String name) throws XBayaException;
+    public Object getOutput(String name) throws WorkflowException;
 
     /**
      * Returns the fault message.
      * 
      * @return The fault message
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public WSIFMessage getFault() throws XBayaException;
+    public WSIFMessage getFault() throws WorkflowException;
 
 }

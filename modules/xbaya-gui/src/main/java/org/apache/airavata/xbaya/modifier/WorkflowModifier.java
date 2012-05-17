@@ -31,26 +31,26 @@ import java.util.Set;
 
 import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.WSDLUtil;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.component.system.InputComponent;
-import org.apache.airavata.xbaya.component.ws.WSComponent;
-import org.apache.airavata.xbaya.graph.GraphException;
-import org.apache.airavata.xbaya.graph.Node;
-import org.apache.airavata.xbaya.graph.Port;
+import org.apache.airavata.workflow.model.component.system.InputComponent;
+import org.apache.airavata.workflow.model.component.ws.WSComponent;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.workflow.model.graph.GraphException;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Port;
+import org.apache.airavata.workflow.model.graph.impl.PortImpl;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.graph.util.GraphUtil;
+import org.apache.airavata.workflow.model.graph.ws.WSGraph;
+import org.apache.airavata.workflow.model.graph.ws.WSNode;
+import org.apache.airavata.workflow.model.graph.ws.WSPort;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.graph.impl.PortImpl;
-import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.graph.util.GraphUtil;
-import org.apache.airavata.xbaya.graph.ws.WSGraph;
-import org.apache.airavata.xbaya.graph.ws.WSNode;
-import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.apache.airavata.xbaya.monitor.MonitorEvent;
 import org.apache.airavata.xbaya.monitor.MonitorEventData;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.monitor.MonitorUtil.EventType;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
@@ -115,7 +115,7 @@ public class WorkflowModifier {
                 output = getOutput(fromNodeID, messageName, parameterName);
             } else {
                 // This should not happen.
-                throw new XBayaRuntimeException(originalFromNode.getClass().getName());
+                throw new WorkflowRuntimeException(originalFromNode.getClass().getName());
             }
             Port originalToPort = originalFromPort.getToPorts().get(0);
             PortImpl toPort = graph.getPort(originalToPort.getID());

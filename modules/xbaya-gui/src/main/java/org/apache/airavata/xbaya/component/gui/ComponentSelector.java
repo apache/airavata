@@ -51,16 +51,16 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.airavata.common.utils.SwingUtil;
+import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ws.WSComponent;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.component.Component;
-import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.gui.ComponentSelectorEvent.ComponentSelectorEventType;
 import org.apache.airavata.xbaya.component.registry.ComponentOperationReference;
 import org.apache.airavata.xbaya.component.registry.ComponentReference;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistry;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
-import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.XBayaComponent;
 import org.slf4j.Logger;
@@ -184,10 +184,10 @@ public class ComponentSelector implements XBayaComponent {
             });
         } catch (InterruptedException e) {
             // Should not happen.
-            throw new XBayaRuntimeException(e);
+            throw new WorkflowRuntimeException(e);
         } catch (InvocationTargetException e) {
             // Should not happen.
-            throw new XBayaRuntimeException(e);
+            throw new WorkflowRuntimeException(e);
         }
 
         TreePath selectionPath = selectionPathHolder[0];
@@ -230,10 +230,10 @@ public class ComponentSelector implements XBayaComponent {
                 });
             } catch (InterruptedException e) {
                 // Should not happen.
-                throw new XBayaRuntimeException(e);
+                throw new WorkflowRuntimeException(e);
             } catch (InvocationTargetException e) {
                 // Should not happen.
-                throw new XBayaRuntimeException(e);
+                throw new WorkflowRuntimeException(e);
             }
         }
 

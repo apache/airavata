@@ -26,7 +26,7 @@ import java.net.URI;
 
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
 
 import xsul.wsdl.WsdlDefinitions;
@@ -53,7 +53,7 @@ public class DynamicServiceCreator {
         this.dynamicFactoryWSDLLocation = dynamicFactoryWSDLLocation;
     }
 
-    public void createService(String code) throws XBayaException {
+    public void createService(String code) throws WorkflowException {
         try {
             WsdlDefinitions definitions = null;
             if (this.dynamicFactoryWSDLLocation != null && !this.dynamicFactoryWSDLLocation.equals("")) {
@@ -73,12 +73,12 @@ public class DynamicServiceCreator {
             invoker.invoke();
             invoker.getOutput("return");
         } catch (Exception e) {
-            throw new XBayaException(e);
+            throw new WorkflowException(e);
         }
 
     }
 
-    public static void main(String[] args) throws XBayaException {
+    public static void main(String[] args) throws WorkflowException {
         DynamicServiceCreator c = new DynamicServiceCreator("http://127.0.0.1:8080/axis2/services/ServiceCreator?wsdl");
         c.createService(classStr);
     }

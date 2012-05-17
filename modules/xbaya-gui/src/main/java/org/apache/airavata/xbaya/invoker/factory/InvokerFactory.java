@@ -25,7 +25,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.common.utils.WSDLUtil;
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.invoker.AsynchronousInvoker;
 import org.apache.airavata.xbaya.invoker.GFacInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
@@ -42,10 +42,10 @@ public class InvokerFactory {
      * @param gfacURL
      * @param messageBoxURL
      * @return The invoker
-     * @throws XBayaException
+     * @throws WorkflowException
      */
     public static Invoker createInvoker(QName portTypeQName, WsdlDefinitions definitions, String gfacURL,
-            String messageBoxURL, LeadContextHeader leadContext) throws XBayaException {
+            String messageBoxURL, LeadContextHeader leadContext) throws WorkflowException {
         Invoker invoker = null;
 
         if (definitions != null && definitions.getServices().iterator().hasNext()) {
@@ -61,13 +61,13 @@ public class InvokerFactory {
 
         if (invoker == null) {
             String message = "Cannot find an appropriate way to invoke the service";
-            throw new XBayaException(message);
+            throw new WorkflowException(message);
         }
         return invoker;
     }
 
     public static Invoker createInvoker(QName portTypeQName, WsdlDefinitions definitions, String gfacURL,
-            String messageBoxURL, WorkflowContextHeaderBuilder builder, boolean differ) throws XBayaException {
+            String messageBoxURL, WorkflowContextHeaderBuilder builder, boolean differ) throws WorkflowException {
         Invoker invoker = null;
 
         if (definitions != null && definitions.getServices().iterator().hasNext()) {
@@ -83,7 +83,7 @@ public class InvokerFactory {
 
         if (invoker == null) {
             String message = "Cannot find an appropriate way to invoke the service";
-            throw new XBayaException(message);
+            throw new WorkflowException(message);
         }
         return invoker;
     }

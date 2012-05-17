@@ -38,10 +38,10 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
 
 import org.apache.airavata.common.utils.IOUtil;
-import org.apache.airavata.xbaya.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ws.WSComponent;
+import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
-import org.apache.airavata.xbaya.component.ws.WSComponent;
-import org.apache.airavata.xbaya.component.ws.WSComponentFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

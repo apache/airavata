@@ -24,13 +24,13 @@ package org.apache.airavata.xbaya.graph.subworkflow.gui;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.graph.GraphException;
+import org.apache.airavata.workflow.model.graph.subworkflow.SubWorkflowNode;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.component.ComponentException;
-import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

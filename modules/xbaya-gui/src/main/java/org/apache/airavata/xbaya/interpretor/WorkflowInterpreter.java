@@ -44,52 +44,55 @@ import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.registry.api.WorkflowExecutionStatus.ExecutionStatus;
+import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.component.SubWorkflowComponent;
+import org.apache.airavata.workflow.model.component.amazon.InstanceComponent;
+import org.apache.airavata.workflow.model.component.amazon.TerminateInstanceComponent;
+import org.apache.airavata.workflow.model.component.dynamic.DynamicComponent;
+import org.apache.airavata.workflow.model.component.system.ConstantComponent;
+import org.apache.airavata.workflow.model.component.system.DifferedInputComponent;
+import org.apache.airavata.workflow.model.component.system.EndForEachComponent;
+import org.apache.airavata.workflow.model.component.system.EndifComponent;
+import org.apache.airavata.workflow.model.component.system.ForEachComponent;
+import org.apache.airavata.workflow.model.component.system.IfComponent;
+import org.apache.airavata.workflow.model.component.system.InputComponent;
+import org.apache.airavata.workflow.model.component.system.MemoComponent;
+import org.apache.airavata.workflow.model.component.system.OutputComponent;
+import org.apache.airavata.workflow.model.component.system.S3InputComponent;
+import org.apache.airavata.workflow.model.component.ws.WSComponent;
+import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.workflow.model.graph.ControlPort;
+import org.apache.airavata.workflow.model.graph.DataPort;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
+import org.apache.airavata.workflow.model.graph.dynamic.BasicTypeMapping;
+import org.apache.airavata.workflow.model.graph.dynamic.DynamicNode;
+import org.apache.airavata.workflow.model.graph.impl.EdgeImpl;
+import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
+import org.apache.airavata.workflow.model.graph.subworkflow.SubWorkflowNode;
+import org.apache.airavata.workflow.model.graph.system.ConstantNode;
+import org.apache.airavata.workflow.model.graph.system.EndForEachNode;
+import org.apache.airavata.workflow.model.graph.system.EndifNode;
+import org.apache.airavata.workflow.model.graph.system.ForEachNode;
+import org.apache.airavata.workflow.model.graph.system.IfNode;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.graph.system.OutputNode;
+import org.apache.airavata.workflow.model.graph.ws.WSGraph;
+import org.apache.airavata.workflow.model.graph.ws.WSNode;
+import org.apache.airavata.workflow.model.graph.ws.WSPort;
+import org.apache.airavata.workflow.model.ode.ODEClient;
+import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.amazonEC2.gui.AmazonCredential;
-import org.apache.airavata.xbaya.component.Component;
-import org.apache.airavata.xbaya.component.SubWorkflowComponent;
-import org.apache.airavata.xbaya.component.amazon.InstanceComponent;
-import org.apache.airavata.xbaya.component.amazon.TerminateInstanceComponent;
-import org.apache.airavata.xbaya.component.dynamic.DynamicComponent;
-import org.apache.airavata.xbaya.component.system.ConstantComponent;
-import org.apache.airavata.xbaya.component.system.DifferedInputComponent;
-import org.apache.airavata.xbaya.component.system.EndForEachComponent;
-import org.apache.airavata.xbaya.component.system.EndifComponent;
-import org.apache.airavata.xbaya.component.system.ForEachComponent;
-import org.apache.airavata.xbaya.component.system.IfComponent;
-import org.apache.airavata.xbaya.component.system.InputComponent;
-import org.apache.airavata.xbaya.component.system.MemoComponent;
-import org.apache.airavata.xbaya.component.system.OutputComponent;
-import org.apache.airavata.xbaya.component.system.S3InputComponent;
-import org.apache.airavata.xbaya.component.ws.WSComponent;
-import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
-import org.apache.airavata.xbaya.graph.ControlPort;
-import org.apache.airavata.xbaya.graph.DataPort;
-import org.apache.airavata.xbaya.graph.Node;
-import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.graph.dynamic.BasicTypeMapping;
-import org.apache.airavata.xbaya.graph.dynamic.DynamicNode;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.impl.EdgeImpl;
-import org.apache.airavata.xbaya.graph.impl.NodeImpl;
-import org.apache.airavata.xbaya.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.xbaya.graph.subworkflow.gui.SubWorkflowNodeGUI;
-import org.apache.airavata.xbaya.graph.system.ConstantNode;
-import org.apache.airavata.xbaya.graph.system.EndForEachNode;
-import org.apache.airavata.xbaya.graph.system.EndifNode;
-import org.apache.airavata.xbaya.graph.system.ForEachNode;
-import org.apache.airavata.xbaya.graph.system.IfNode;
-import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.graph.system.OutputNode;
 import org.apache.airavata.xbaya.graph.system.gui.DifferedInputHandler;
-import org.apache.airavata.xbaya.graph.ws.WSGraph;
-import org.apache.airavata.xbaya.graph.ws.WSNode;
-import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.apache.airavata.xbaya.gui.Cancelable;
 import org.apache.airavata.xbaya.gui.WaitDialog;
 import org.apache.airavata.xbaya.invoker.DynamicInvoker;
@@ -105,7 +108,6 @@ import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.myproxy.gui.MyProxyChecker;
-import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.provenance.ProvenanceReader;
 import org.apache.airavata.xbaya.provenance.ProvenanceWrite;
 import org.apache.airavata.xbaya.security.SecurityUtil;
@@ -113,8 +115,6 @@ import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.util.AmazonUtil;
 import org.apache.airavata.xbaya.util.InterpreterUtil;
 import org.apache.airavata.xbaya.util.XBayaUtil;
-import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.airavata.xbaya.wf.WorkflowExecutionState;
 import org.apache.axis2.context.ConfigurationContext;
 import org.ietf.jgss.GSSCredential;
 import org.xmlpull.infoset.XmlElement;
@@ -273,9 +273,9 @@ public class WorkflowInterpreter {
 	}
 
 	/**
-	 * @throws XBayaException
+	 * @throws WorkflowException
 	 */
-	public void scheduleDynamically() throws XBayaException {
+	public void scheduleDynamically() throws WorkflowException {
 		try {
 			if (!this.isSubWorkflow
 					&& this.getWorkflow().getExecutionState() != WorkflowExecutionState.NONE) {
@@ -292,7 +292,7 @@ public class WorkflowInterpreter {
 							.saveWorkflowExecutionStatus(this.topic,
 									ExecutionStatus.STARTED);
 				} catch (RegistryException e) {
-					throw new XBayaException(e);
+					throw new WorkflowException(e);
 				}
 			}
 			ArrayList<Node> inputNodes = this.getInputNodesDynamically();
@@ -388,10 +388,10 @@ public class WorkflowInterpreter {
 									.saveWorkflowExecutionStatus(this.topic,
 											ExecutionStatus.FINISHED);
 						} catch (Exception e) {
-							throw new XBayaException(e);
+							throw new WorkflowException(e);
 						}
 					} catch (Exception e) {
-						throw new XBayaException(e);
+						throw new WorkflowException(e);
 					}
 					// System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
 				}
@@ -404,7 +404,7 @@ public class WorkflowInterpreter {
 								.saveWorkflowExecutionStatus(this.topic,
 										ExecutionStatus.FAILED);
 					} catch (RegistryException e) {
-						throw new XBayaException(e);
+						throw new WorkflowException(e);
 					}
 				}
 			}
@@ -450,7 +450,7 @@ public class WorkflowInterpreter {
 	/**
 	 * @param node
 	 * @return
-	 * @throws XBayaException
+	 * @throws WorkflowException
 	 * @throws java.io.IOException
 	 */
 	private boolean readProvenance(Node node) {
@@ -496,7 +496,7 @@ public class WorkflowInterpreter {
 				return true;
 			}
 		} catch (Exception e) {
-			throw new XBayaRuntimeException(e);
+			throw new WorkflowRuntimeException(e);
 		}
 		return false;
 
@@ -504,9 +504,9 @@ public class WorkflowInterpreter {
 
 	/**
 	 * @param node
-	 * @throws XBayaException
+	 * @throws WorkflowException
 	 */
-	private void writeProvenanceLater(Node node) throws XBayaException {
+	private void writeProvenanceLater(Node node) throws WorkflowException {
 
 		if (node instanceof ForEachNode) {
 			node = InterpreterUtil.findEndForEachFor((ForEachNode) node);
@@ -542,7 +542,7 @@ public class WorkflowInterpreter {
 				this.engine.getGUI().getToolbar().getPlayAction()
 						.actionPerformed(null);
 			} else {
-				throw new XBayaRuntimeException("Cannot pause when not running");
+				throw new WorkflowRuntimeException("Cannot pause when not running");
 			}
 		}
 	}
@@ -562,7 +562,7 @@ public class WorkflowInterpreter {
 		}
 	}
 
-	private void sendOutputsDynamically() throws XBayaException {
+	private void sendOutputsDynamically() throws WorkflowException {
 		ArrayList<Node> outputNodes = getReadyOutputNodesDynamically();
 		if (outputNodes.size() != 0) {
 			LinkedList<Object> outputValues = new LinkedList<Object>();
@@ -629,7 +629,7 @@ public class WorkflowInterpreter {
 		}
 	}
 
-	private void finish() throws XBayaException {
+	private void finish() throws WorkflowException {
 		ArrayList<Node> outoutNodes = new ArrayList<Node>();
 		List<NodeImpl> nodes = this.graph.getNodes();
 		for (Node node : nodes) {
@@ -704,7 +704,7 @@ public class WorkflowInterpreter {
 
 	}
 
-	private void executeDynamically(final Node node) throws XBayaException {
+	private void executeDynamically(final Node node) throws WorkflowException {
 		NodeController.getGUI(node).setBodyColor(NodeState.EXECUTING.color);
 		Component component = node.getComponent();
 		if (component instanceof SubWorkflowComponent) {
@@ -747,7 +747,7 @@ public class WorkflowInterpreter {
 
 	}
 
-	private void handleSubWorkComponent(Node node) throws XBayaException {
+	private void handleSubWorkComponent(Node node) throws WorkflowException {
 		if ((this.mode == GUI_MODE) && (node instanceof SubWorkflowNodeGUI)) {
 			((SubWorkflowNodeGUI) NodeController.getGUI(node)).openWorkflowTab(this.engine);
 		}
@@ -795,7 +795,7 @@ public class WorkflowInterpreter {
 		}
 	}
 
-	private void handleWSComponent(Node node) throws XBayaException {
+	private void handleWSComponent(Node node) throws WorkflowException {
 		WSComponent wsComponent = ((WSComponent) node.getComponent());
 		QName portTypeQName = wsComponent.getPortTypeQName();
 		Invoker invoker = this.invokerMap.get(node);
@@ -841,7 +841,7 @@ public class WorkflowInterpreter {
 								wsNode.getID(), null);
 					}
 				} catch (URISyntaxException e) {
-					throw new XBayaException(e);
+					throw new WorkflowException(e);
 				}
 
 				leadCtxHeader.setServiceId(node.getID());
@@ -857,7 +857,7 @@ public class WorkflowInterpreter {
 					XBayaSecurity.init();
 
 				} catch (URISyntaxException e) {
-					throw new XBayaRuntimeException(e);
+					throw new WorkflowRuntimeException(e);
 				}
 
 				/*
@@ -1001,7 +1001,7 @@ public class WorkflowInterpreter {
 		invoker.invoke();
 	}
 
-	private void handleDynamicComponent(Node node) throws XBayaException {
+	private void handleDynamicComponent(Node node) throws WorkflowException {
 		DynamicComponent dynamicComponent = (DynamicComponent) node
 				.getComponent();
 		String className = dynamicComponent.getClassName();
@@ -1055,7 +1055,7 @@ public class WorkflowInterpreter {
 		NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
 	}
 
-	private void handleForEach(Node node) throws XBayaException {
+	private void handleForEach(Node node) throws WorkflowException {
 		final ForEachNode forEachNode = (ForEachNode) node;
 		EndForEachNode endForEachNode = null;
 		Collection<Node> repeatNodes = node.getOutputPort(0).getToNodes();
@@ -1153,7 +1153,7 @@ public class WorkflowInterpreter {
 										runInThread(listOfValues, forEachNode,
 												node1, finalEndForEachNodes,
 												finalMap, counter, inputNumbers);
-									} catch (XBayaException e) {
+									} catch (WorkflowException e) {
 
 										WorkflowInterpreter.this.engine
 												.getErrorWindow().error(e);
@@ -1254,7 +1254,7 @@ public class WorkflowInterpreter {
 								runInThread(listOfValues, forEachNode,
 										foreachWSNode, finalEndForEachNodes,
 										finalInvokerMap, counter, inputNumbers);
-							} catch (XBayaException e) {
+							} catch (WorkflowException e) {
 								WorkflowInterpreter.this.engine
 										.getErrorWindow().error(e);
 							}
@@ -1285,7 +1285,7 @@ public class WorkflowInterpreter {
 		}
 	}
 
-	private void handleIf(Node node) throws XBayaException {
+	private void handleIf(Node node) throws WorkflowException {
 		IfNode ifNode = (IfNode) node;
 
 		/*
@@ -1341,7 +1341,7 @@ public class WorkflowInterpreter {
 		}
 	}
 
-	private void handleEndIf(Node node) throws XBayaException {
+	private void handleEndIf(Node node) throws WorkflowException {
 		EndifNode endIfNode = (EndifNode) node;
 		SystemComponentInvoker invoker = new SystemComponentInvoker();
 
@@ -1377,7 +1377,7 @@ public class WorkflowInterpreter {
 
 	private Invoker createInvokerForEachSingleWSNode(Node foreachWSNode,
 			String gfacURLString, WSComponent wsComponent)
-			throws XBayaException {
+			throws WorkflowException {
 		Invoker invoker;
 		String wsdlLocation = InterpreterUtil.getEPR((WSNode) foreachWSNode);
 		QName portTypeQName = wsComponent.getPortTypeQName();
@@ -1414,7 +1414,7 @@ public class WorkflowInterpreter {
 								foreachWSNode.getID(), null);
 					}
 				} catch (URISyntaxException e) {
-					throw new XBayaException(e);
+					throw new WorkflowException(e);
 				}
 				invoker = new WorkflowInvokerWrapperForGFacInvoker(
 						portTypeQName, gfacURLString, this.configuration
@@ -1449,7 +1449,7 @@ public class WorkflowInterpreter {
 			ForEachNode forEachNode, final Node middleNode,
 			List<Node> endForEachNodes, Map<Node, Invoker> tempInvoker,
 			AtomicInteger counter, final Integer[] inputNumber)
-			throws XBayaException {
+			throws WorkflowException {
 
 		final LinkedList<Invoker> invokerList = new LinkedList<Invoker>();
 
@@ -1475,7 +1475,7 @@ public class WorkflowInterpreter {
 							invokeGFacService(listOfValues, middleNode,
 									inputNumber, input, invoker2);
 
-						} catch (XBayaException e) {
+						} catch (WorkflowException e) {
 							WorkflowInterpreter.this.engine.getErrorWindow()
 									.error(e);
 						}
@@ -1581,7 +1581,7 @@ public class WorkflowInterpreter {
 
 	private void invokeGFacService(LinkedList<String> listOfValues,
 			Node middleNode, Integer[] inputNumber, String input,
-			Invoker invoker) throws XBayaException {
+			Invoker invoker) throws WorkflowException {
 
 		// find inputs
 		List<DataPort> inputPorts = middleNode.getInputPorts();
@@ -1615,7 +1615,7 @@ public class WorkflowInterpreter {
 	}
 
 	private Invoker getInvoker(Node middleNode, Invoker invoker)
-			throws XBayaException {
+			throws WorkflowException {
 		if (middleNode instanceof WSNode) {
 			WSComponent wsComponent = (WSComponent) middleNode.getComponent();
 			invoker.setup();
@@ -1626,7 +1626,7 @@ public class WorkflowInterpreter {
 			// TODO : Need to create a invoker!
 			// new WorkflowInterpreter()
 		} else {
-			throw new XBayaRuntimeException(
+			throw new WorkflowRuntimeException(
 					"Only Web services and subworkflows are supported for For-Each : Found : "
 							+ middleNode);
 		}
@@ -1636,7 +1636,7 @@ public class WorkflowInterpreter {
 
 
 	private List<String> createInputValues(LinkedList<String> listOfValues,
-			Integer[] inputNumbers) throws XBayaException {
+			Integer[] inputNumbers) throws WorkflowException {
 		List<String> inputValues = null;
 		try {
 			inputValues = new ArrayList<String>();
@@ -1690,7 +1690,7 @@ public class WorkflowInterpreter {
 
 			}
 		} catch (ArrayIndexOutOfBoundsException e) {
-			throw new XBayaException("Wrong number of Inputs to For EachNode");
+			throw new WorkflowException("Wrong number of Inputs to For EachNode");
 		}
 		return inputValues;
 	}

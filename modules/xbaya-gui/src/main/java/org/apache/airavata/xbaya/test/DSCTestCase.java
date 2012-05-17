@@ -27,8 +27,8 @@ import java.net.URI;
 import junit.framework.TestSuite;
 
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.workflow.model.gpel.DSCUtil;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
-import org.apache.airavata.xbaya.gpel.DSCUtil;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

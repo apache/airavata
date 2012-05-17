@@ -23,8 +23,8 @@ package org.apache.airavata.xbaya.graph.system.gui;
 
 import java.awt.Color;
 
+import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 
 public class InputNodeGUI extends ConfigurableNodeGUI {

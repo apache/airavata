@@ -21,9 +21,9 @@
 package org.apache.airavata.xbaya.invoker;
 
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.lead.LEADTypes;
 
 import javax.xml.namespace.QName;
@@ -59,7 +59,7 @@ public class ODEClientUtil {
         if (false) {
             // Some user wants to pass empty strings, so this check is disabled.
             if (valueString.length() == 0) {
-                throw new XBayaRuntimeException("Input parameter, " + name + ", cannot be empty");
+                throw new WorkflowRuntimeException("Input parameter, " + name + ", cannot be empty");
             }
         }
         QName type = input.getType();
@@ -72,10 +72,10 @@ public class ODEClientUtil {
                 if(XBayaConstants.HTTP_SCHEMAS_AIRAVATA_APACHE_ORG_GFAC_TYPE.equals(input.getType().getNamespaceURI())){
                     value = XMLUtil.stringToXmlElement3(ODEClientUtil.createInputForGFacService(input, valueString));
                 }else {
-                    throw new XBayaRuntimeException("Input parameter, " + name + ", Unkown Type");
+                    throw new WorkflowRuntimeException("Input parameter, " + name + ", Unkown Type");
                 }
             } catch (RuntimeException e) {
-                throw new XBayaRuntimeException("Input parameter, " + name + ", is not valid XML", e);
+                throw new WorkflowRuntimeException("Input parameter, " + name + ", is not valid XML", e);
             }
         }
         return value;

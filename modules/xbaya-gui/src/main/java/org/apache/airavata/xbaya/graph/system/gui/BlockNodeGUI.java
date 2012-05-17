@@ -26,10 +26,10 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.util.List;
 
-import org.apache.airavata.xbaya.graph.Port;
+import org.apache.airavata.workflow.model.graph.Port;
+import org.apache.airavata.workflow.model.graph.system.BlockNode;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.system.BlockNode;
 
 public class BlockNodeGUI extends NodeGUI {
 

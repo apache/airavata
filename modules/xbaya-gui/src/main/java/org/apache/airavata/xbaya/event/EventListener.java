@@ -21,7 +21,7 @@
 
 package org.apache.airavata.xbaya.event;
 
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 
 public interface EventListener {
 
@@ -29,7 +29,7 @@ public interface EventListener {
      * Called when an event is received.
      * 
      * @param event
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void eventReceived(Event event) throws XBayaException;
+    public void eventReceived(Event event) throws WorkflowException;
 }

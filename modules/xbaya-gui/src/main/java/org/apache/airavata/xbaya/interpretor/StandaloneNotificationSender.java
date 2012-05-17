@@ -25,16 +25,16 @@ import java.net.URI;
 import java.util.List;
 
 import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.graph.system.OutputNode;
+import org.apache.airavata.workflow.model.graph.util.GraphUtil;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.graph.system.OutputNode;
-import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.jython.lib.StandaloneServiceNotificationSender;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axis2.addressing.EndpointReference;
 import org.python.core.PyObject;
 

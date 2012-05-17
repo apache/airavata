@@ -32,14 +32,14 @@ import javax.swing.KeyStroke;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.WSConstants;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.datadriven.WorkflowHarvester;
 import org.apache.airavata.xbaya.graph.dynamic.gui.DynamicWorkflowRunnerWindow;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.gridchem.gui.GridChemRunnerWindow;
 import org.apache.airavata.xbaya.jython.gui.JythonRunnerWindow;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

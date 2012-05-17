@@ -43,7 +43,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.apache.airavata.common.utils.IOUtil;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaVersion;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 import org.python.util.PythonInterpreter;
@@ -221,7 +221,7 @@ public class JythonClassLoader extends SecureClassLoader {
             URL jarURL = new URL(jarURLString);
             return jarURL;
         } catch (MalformedURLException e) {
-            throw new XBayaRuntimeException(e);
+            throw new WorkflowRuntimeException(e);
         }
     }
 
@@ -230,7 +230,7 @@ public class JythonClassLoader extends SecureClassLoader {
         try {
             path = URLDecoder.decode(url.getPath(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new XBayaRuntimeException(e);
+            throw new WorkflowRuntimeException(e);
         }
         logger.info("path: " + path);
         if (path.endsWith("/")) {
@@ -244,7 +244,7 @@ public class JythonClassLoader extends SecureClassLoader {
                 JarFile jarFile = new JarFile(path);
                 return jarFile;
             } catch (IOException e) {
-                throw new XBayaRuntimeException(e);
+                throw new WorkflowRuntimeException(e);
             }
         } else {
             // url = http://example.com/a/b/c.jar
@@ -268,7 +268,7 @@ public class JythonClassLoader extends SecureClassLoader {
                 JarFile jarFile = new JarFile(file);
                 return jarFile;
             } catch (IOException e) {
-                throw new XBayaRuntimeException(e);
+                throw new WorkflowRuntimeException(e);
             }
         }
     }

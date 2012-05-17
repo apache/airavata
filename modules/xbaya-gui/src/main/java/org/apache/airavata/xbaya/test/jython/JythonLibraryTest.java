@@ -23,8 +23,8 @@ package org.apache.airavata.xbaya.test.jython;
 
 import junit.framework.TestCase;
 
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
@@ -39,10 +39,10 @@ public class JythonLibraryTest extends TestCase {
     private static final Logger logger = LoggerFactory.getLogger(JythonLibraryTest.class);
 
     /**
-     * @throws XBayaException
+     * @throws WorkflowException
      */
     @SuppressWarnings("boxing")
-    public void testSimpleMath() throws XBayaException {
+    public void testSimpleMath() throws WorkflowException {
 
         AdderService service = new AdderService();
         service.run();
@@ -64,10 +64,10 @@ public class JythonLibraryTest extends TestCase {
     }
 
     /**
-     * @throws XBayaException
+     * @throws WorkflowException
      */
     @SuppressWarnings("boxing")
-    public void testComplexMath() throws XBayaException {
+    public void testComplexMath() throws WorkflowException {
 
         AdderService adder = new AdderService();
         adder.run();

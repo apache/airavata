@@ -23,8 +23,8 @@ package org.apache.airavata.xbaya.component.registry;
 
 import java.util.List;
 
-import org.apache.airavata.xbaya.component.Component;
-import org.apache.airavata.xbaya.component.ws.WSComponent;
+import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.component.ws.WSComponent;
 
 public class WebComponentReference extends ComponentReference {
 

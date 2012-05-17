@@ -39,8 +39,8 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
@@ -181,9 +181,9 @@ public class GenericInvoker implements Invoker {
 
     /**
      *
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void setup() throws XBayaException {
+    public void setup() throws WorkflowException {
         try {
             WsdlDefinitions definitions = null;
             if (this.wsdlLocation != null && !this.wsdlLocation.equals("")) {
@@ -195,7 +195,7 @@ public class GenericInvoker implements Invoker {
 
             setup(definitions);
 
-        } catch (XBayaException e) {
+        } catch (WorkflowException e) {
             logger.error(e.getMessage(), e);
             // An appropriate message has been set in the exception.
             this.notifier.invocationFailed(e.getMessage(), e);
@@ -204,26 +204,26 @@ public class GenericInvoker implements Invoker {
             logger.error(e.getMessage(), e);
             String message = "The location of the WSDL has to be a valid URL or file path: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         } catch (WsdlException e) {
             logger.error(e.getMessage(), e);
             String message = "Error in processing the WSDL: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
             String message = "Error in processing the WSDL: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }catch (Error e) {
             logger.error(e.getMessage(), e);
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
     }
 
-    private void setup(WsdlDefinitions definitions) throws XBayaException {
+    private void setup(WsdlDefinitions definitions) throws WorkflowException {
 
         // Set LEAD context header.
         WorkflowContextHeaderBuilder builder;
@@ -272,12 +272,12 @@ public class GenericInvoker implements Invoker {
      *
      * @param operationName
      *            The name of the operation
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void setOperation(String operationName) throws XBayaException {
+    public void setOperation(String operationName) throws WorkflowException {
         try {
             this.invoker.setOperation(operationName);
-        } catch (XBayaException e) {
+        } catch (WorkflowException e) {
             logger.error(e.getMessage(), e);
             // An appropriate message has been set in the exception.
             this.notifier.invocationFailed(e.getMessage(), e);
@@ -286,12 +286,12 @@ public class GenericInvoker implements Invoker {
             logger.error(e.getMessage(), e);
             String message = "The WSDL does not conform to the invoking service: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         } catch (Error e) {
             logger.error(e.getMessage(), e);
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
     }
 
@@ -301,9 +301,9 @@ public class GenericInvoker implements Invoker {
      *            The name of the input parameter
      * @param value
      *            The value of the input parameter
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void setInput(String name, Object value) throws XBayaException {
+    public void setInput(String name, Object value) throws WorkflowException {
         try {
             if (value instanceof XmlElement) {
                 logger.info("value: " + XMLUtil.xmlElementToString((XmlElement) value));
@@ -311,7 +311,7 @@ public class GenericInvoker implements Invoker {
             this.inputNames.add(name);
             this.inputValues.add(value);
             this.invoker.setInput(name, value);
-        } catch (XBayaException e) {
+        } catch (WorkflowException e) {
             logger.error(e.getMessage(), e);
             // An appropriate message has been set in the exception.
             this.notifier.invocationFailed(e.getMessage(), e);
@@ -320,21 +320,21 @@ public class GenericInvoker implements Invoker {
             logger.error(e.getMessage(), e);
             String message = "Error in setting an input. name: " + name + " value: " + value;
             this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         } catch (Error e) {
             logger.error(e.getMessage(), e);
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
     }
 
     /**
      *
      * @return
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public synchronized boolean invoke() throws XBayaException {
+    public synchronized boolean invoke() throws WorkflowException {
         try {
             WSIFMessage inputMessage = this.invoker.getInputs();
             logger.info("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) inputMessage));
@@ -364,12 +364,12 @@ public class GenericInvoker implements Invoker {
                             GenericInvoker.this.failerSent = true;
                         }
                         return success;
-                    } catch (XBayaException e) {
+                    } catch (WorkflowException e) {
                         logger.error(e.getMessage(), e);
                         // An appropriate message has been set in the exception.
                         GenericInvoker.this.notifier.invocationFailed(e.getMessage(), e);
                         GenericInvoker.this.failerSent = true;
-                        throw new XBayaRuntimeException(e);
+                        throw new WorkflowRuntimeException(e);
                     } catch (RuntimeException e) {
                         logger.error(e.getMessage(), e);
                         String message = "Error in invoking a service: " + GenericInvoker.this.serviceInformation;
@@ -401,28 +401,28 @@ public class GenericInvoker implements Invoker {
                 // already.
                 logger.error(e.getMessage(), e);
                 String message = "Error in invoking a service: " + this.serviceInformation;
-                throw new XBayaException(message, e);
+                throw new WorkflowException(message, e);
             }
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
             String message = "Error in invoking a service: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         } catch (Error e) {
             logger.error(e.getMessage(), e);
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
         return true;
     }
 
     /**
      *
-     * @throws XBayaException
+     * @throws WorkflowException
      */
     @SuppressWarnings("boxing")
-    public synchronized void waitToFinish() throws XBayaException {
+    public synchronized void waitToFinish() throws WorkflowException {
         try {
             while (this.result == null) {
                 // The job is not submitted yet.
@@ -441,7 +441,7 @@ public class GenericInvoker implements Invoker {
                 // WSIFMessageElement, implements toString(), which
                 // serialize the message XML.
                 message += faultMessage.toString();
-                throw new XBayaException(message);
+                throw new WorkflowException(message);
             }
         } catch (InterruptedException e) {
             logger.error(e.getMessage(), e);
@@ -449,17 +449,17 @@ public class GenericInvoker implements Invoker {
             // The service-failed notification should have been sent already.
             logger.error(e.getMessage(), e);
             String message = "Error in invoking a service: " + this.serviceInformation;
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
             String message = "Error while waiting for a service to finish: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         } catch (Error e) {
             logger.error(e.getMessage(), e);
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
     }
 
@@ -468,9 +468,9 @@ public class GenericInvoker implements Invoker {
      * @param name
      *            The name of the output parameter
      * @return
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public Object getOutput(String name) throws XBayaException {
+    public Object getOutput(String name) throws WorkflowException {
         try {
             waitToFinish();
             Object output = this.invoker.getOutput(name);
@@ -478,7 +478,7 @@ public class GenericInvoker implements Invoker {
                 logger.info("output: " + XMLUtil.xmlElementToString((XmlElement) output));
             }
             return output;
-        } catch (XBayaException e) {
+        } catch (WorkflowException e) {
             logger.error(e.getMessage(), e);
             // An appropriate message has been set in the exception.
             if (!this.failerSent) {
@@ -489,21 +489,21 @@ public class GenericInvoker implements Invoker {
             logger.error(e.getMessage(), e);
             String message = "Error while waiting for a output: " + name;
             this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         } catch (Error e) {
             logger.error(e.getMessage(), e);
             String message = "Unexpected error: " + this.serviceInformation;
             this.notifier.invocationFailed(message, e);
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
     }
 
     /**
      *
      * @return
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public WSIFMessage getOutputs() throws XBayaException {
+    public WSIFMessage getOutputs() throws WorkflowException {
         return this.invoker.getOutputs();
     }
 
@@ -513,12 +513,12 @@ public class GenericInvoker implements Invoker {
     }
 
     @Override
-    public WSIFMessage getInputs() throws XBayaException {
+    public WSIFMessage getInputs() throws WorkflowException {
         return null;
     }
 
     @Override
-    public WSIFMessage getFault() throws XBayaException {
+    public WSIFMessage getFault() throws WorkflowException {
         return null;
     }
 }

@@ -23,34 +23,34 @@ package org.apache.airavata.xbaya.test.util;
 
 import java.awt.Point;
 
-import org.apache.airavata.xbaya.component.Component;
-import org.apache.airavata.xbaya.component.ComponentException;
+import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.system.ConstantComponent;
+import org.apache.airavata.workflow.model.component.system.EndForEachComponent;
+import org.apache.airavata.workflow.model.component.system.EndifComponent;
+import org.apache.airavata.workflow.model.component.system.ForEachComponent;
+import org.apache.airavata.workflow.model.component.system.IfComponent;
+import org.apache.airavata.workflow.model.component.system.InputComponent;
+import org.apache.airavata.workflow.model.component.system.OutputComponent;
+import org.apache.airavata.workflow.model.component.system.ReceiveComponent;
+import org.apache.airavata.workflow.model.graph.Graph;
+import org.apache.airavata.workflow.model.graph.GraphException;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.system.ConstantNode;
+import org.apache.airavata.workflow.model.graph.system.IfNode;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.graph.system.OutputNode;
+import org.apache.airavata.workflow.model.graph.system.ReceiveNode;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
 import org.apache.airavata.xbaya.component.registry.LocalComponentRegistry;
-import org.apache.airavata.xbaya.component.system.ConstantComponent;
-import org.apache.airavata.xbaya.component.system.EndForEachComponent;
-import org.apache.airavata.xbaya.component.system.EndifComponent;
-import org.apache.airavata.xbaya.component.system.ForEachComponent;
-import org.apache.airavata.xbaya.component.system.IfComponent;
-import org.apache.airavata.xbaya.component.system.InputComponent;
-import org.apache.airavata.xbaya.component.system.OutputComponent;
-import org.apache.airavata.xbaya.component.system.ReceiveComponent;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
-import org.apache.airavata.xbaya.graph.Graph;
-import org.apache.airavata.xbaya.graph.GraphException;
-import org.apache.airavata.xbaya.graph.Node;
-import org.apache.airavata.xbaya.graph.system.ConstantNode;
-import org.apache.airavata.xbaya.graph.system.IfNode;
-import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.graph.system.OutputNode;
-import org.apache.airavata.xbaya.graph.system.ReceiveNode;
 import org.apache.airavata.xbaya.test.service.adder.Adder;
 import org.apache.airavata.xbaya.test.service.approver.Approver;
 import org.apache.airavata.xbaya.test.service.arrayadder.ArrayAdder;
 import org.apache.airavata.xbaya.test.service.arraygen.ArrayGenerator;
 import org.apache.airavata.xbaya.test.service.echo.Echo;
 import org.apache.airavata.xbaya.test.service.multiplier.Multiplier;
-import org.apache.airavata.xbaya.wf.Workflow;
 
 public class WorkflowCreator {
 

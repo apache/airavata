@@ -31,16 +31,16 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import org.apache.airavata.workflow.model.graph.Edge;
+import org.apache.airavata.workflow.model.graph.Graph;
+import org.apache.airavata.workflow.model.graph.GraphPiece;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Port;
+import org.apache.airavata.workflow.model.graph.system.MemoNode;
+import org.apache.airavata.workflow.model.graph.system.StreamSourceNode;
+import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.Edge;
-import org.apache.airavata.xbaya.graph.Graph;
-import org.apache.airavata.xbaya.graph.GraphPiece;
-import org.apache.airavata.xbaya.graph.Node;
-import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.graph.system.MemoNode;
-import org.apache.airavata.xbaya.graph.system.StreamSourceNode;
-import org.apache.airavata.xbaya.graph.util.GraphUtil;
 
 public class GraphGUI implements GraphPieceGUI {
 
