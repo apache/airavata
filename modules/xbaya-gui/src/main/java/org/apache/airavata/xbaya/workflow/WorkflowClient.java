@@ -28,15 +28,11 @@ import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.event.EventProducer;
-import org.apache.airavata.xbaya.gpel.script.BPELScript;
-import org.apache.airavata.xbaya.gpel.script.BPELScriptType;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.security.UserX509Credential;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.gpel.client.GcInstance;
 import org.gpel.client.GcSearchList;
-import org.gpel.client.GpelClient;
-import org.gpel.client.security.GpelUserX509Credential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,21 +89,6 @@ public abstract class WorkflowClient extends EventProducer {
     }
 
     /**
-     * Generates a BPEL process.
-     * 
-     * @param workflow
-     * @throws org.apache.airavata.xbaya.graph.GraphException
-     * 
-     */
-    public static void createScript(Workflow workflow) throws GraphException {
-        // Generate a BPEL process.
-        BPELScript script = new BPELScript(workflow);
-        script.create(BPELScriptType.GPEL);
-        workflow.setGpelProcess(script.getGpelProcess());
-        workflow.setWorkflowWSDL(script.getWorkflowWSDL().getWsdlDefinitions());
-    }
-
-    /**
      * Deploys a workflow to the GPEL Engine.
      * 
      * @param workflow
@@ -121,7 +102,7 @@ public abstract class WorkflowClient extends EventProducer {
         logger.debug("Entering: " + workflow.toString());
 
         // Generate a BPEL process.
-        createScript(workflow);
+        workflow.createScript();
 
         return deploy(workflow, redeploy);
     }

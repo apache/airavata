@@ -119,7 +119,7 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
 
         WorkflowCreator creator = new WorkflowCreator();
         Workflow workflow = creator.createComplexMathWorkflow();
-        WorkflowClient.createScript(workflow);
+        workflow.createScript();
 
         Monitor monitor;
         if (this.gui) {

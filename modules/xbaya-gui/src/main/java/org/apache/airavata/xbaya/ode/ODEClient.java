@@ -19,17 +19,11 @@
  *
  */
 
-package org.apache.airavata.xbaya.invoker;
+package org.apache.airavata.xbaya.ode;
 
-import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
-import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
@@ -39,16 +33,7 @@ import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
-import org.apache.airavata.xbaya.lead.LEADTypes;
-import org.apache.airavata.xbaya.lead.LEADWorkflowInvoker;
-import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.ietf.jgss.GSSCredential;
-
-import xsul.XmlConstants;
-import xsul.invoker.gsi.GsiInvoker;
-import xsul.lead.LeadContextHeader;
-import xsul5.wsdl.WsdlDefinitions;
 
 public class ODEClient {
 
@@ -122,72 +107,6 @@ public class ODEClient {
     // throw new XBayaRuntimeException(e);
     // }
     // }
-
-    /**
-     * 
-     * @param workflow
-     * @param credentials
-     * @param dscUrl
-     * @param odeEprEndingWithPort
-     *            https://pagodatree.cs.indiana.edu:17443
-     * @param experimentID
-     * @param leadContext
-     * @param inputs
-     */
-    public void invoke(Workflow workflow, List<WSComponentPort> inputs, GSSCredential credentials, URI dscUrl,
-            String odeEprEndingWithPort, LeadContextHeader leadContext) {
-        try {
-            WsdlDefinitions wsdl = workflow.getOdeInvokableWSDL(dscUrl, odeEprEndingWithPort);
-            for (WSComponentPort componentPort : inputs) {
-                if (null == componentPort.getValue()) {
-                    if (null != componentPort.getDefaultValue()) {
-                        componentPort.setValue(componentPort.getDefaultValue());
-                    } else {
-                        throw new XBayaRuntimeException("Workflow input cannot be null :" + componentPort.getName());
-                    }
-                }
-                // This is a check that we do to make sure if the user didnt bother
-                // to parse the input to a type like a xmlElement or an array we would
-                // do it ourselves
-                if (componentPort.getValue() instanceof String) {
-                    componentPort.setValue(ODEClientUtil.parseValue(componentPort, (String) componentPort.getValue()));
-                }
-
-            }
-
-            GsiInvoker secureInvoker = null;
-            secureInvoker = new GsiInvoker(credentials, XBayaSecurity.getTrustedCertificates());
-
-            LEADWorkflowInvoker invoker = new LEADWorkflowInvoker(wsdl, leadContext, null, secureInvoker);
-            invoker.setInputs(inputs);
-            final LEADWorkflowInvoker finalInvoker = invoker;
-
-            new Thread() {
-                public synchronized void run() {
-                    boolean success;
-                    try {
-                        success = finalInvoker.invoke();
-
-                        if (success) {
-                            XmlConstants.BUILDER.serializeToString(finalInvoker.getOutputMessage());
-                        } else {
-                            XmlConstants.BUILDER.serializeToString(finalInvoker.getFaultMessage());
-                        }
-                    } catch (XBayaException e) {
-                        ODEClient.this.throwException(e);
-                    }
-                }
-            }.start();
-
-        } catch (Exception e) {
-            throw new XBayaRuntimeException(e);
-        }
-
-    }
-
-    private void throwException(Exception e) {
-        throw new XBayaRuntimeException(e);
-    }
 
     // public ResourceData[] getStreamResources(XRegistryClient client) throws XRegistryClientException {
     // ResourceData[] result = client.findResource(STREAM_SOURCE_NS);

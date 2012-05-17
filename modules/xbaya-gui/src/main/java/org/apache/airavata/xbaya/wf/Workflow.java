@@ -907,4 +907,11 @@ public class Workflow implements Cloneable {
 		getGraph().setEditable(isEditable());
 	}
 
+	public void createScript() throws GraphException {
+        // Generate a BPEL process.
+        BPELScript script = new BPELScript(this);
+        script.create(BPELScriptType.GPEL);
+        this.setGpelProcess(script.getGpelProcess());
+        this.setWorkflowWSDL(script.getWorkflowWSDL().getWsdlDefinitions());
+    }
 }

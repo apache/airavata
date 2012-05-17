@@ -66,12 +66,10 @@ public class WorkflowNodeGUI extends NodeGUI {
     public void openWorkflowTab(XBayaEngine engine) {
         WorkflowClient workflowClient = engine.getWorkflowClient();
         try {
-            Workflow workflow = this.node.getComponent().getWorkflow(workflowClient);
+            Workflow workflow = this.node.getComponent().getWorkflow();
             engine.getGUI().selectOrCreateGraphCanvas(workflow);
         } catch (GraphException e) {
             engine.getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
-        } catch (WorkflowEngineException e) {
-            engine.getErrorWindow().error(ErrorMessages.GPEL_ERROR, e);
         } catch (ComponentException e) {
             engine.getErrorWindow().error(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
         }

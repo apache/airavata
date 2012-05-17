@@ -590,7 +590,7 @@ public class AiravataClient {
 			ComponentException, ValueFormatException {
 		Property workflowAsString = getWorkflowAsString(workflowTemplateId);
 		Workflow workflow = new Workflow(workflowAsString.getString());
-		WorkflowClient.createScript(workflow);
+		workflow.createScript();
 		List<WSComponentPort> inputs = workflow.getInputs();
 		return inputs;
 	}
@@ -604,5 +604,21 @@ public class AiravataClient {
 		return null;
 	}
 
+	public static void main(String[] args) throws Exception {
+		HashMap<String, String> config = new HashMap<String,String>();
+		config.put(AiravataClient.BROKER,"http://localhost:8080/axis2/services/EventingService");
+		config.put(AiravataClient.JCR,"http://localhost:8080/jackrabbit-webapp-2.4.0/rmi");
+		config.put(AiravataClient.MSGBOX,"http://localhost:8080/axis2/services/MsgBoxService");
+		config.put(AiravataClient.WORKFLOWSERVICEURL,"http://localhost:8080/axis2/services/WorkflowInterpretor?wsdl");
+		config.put(AiravataClient.JCR_USERNAME,"admin");
+		config.put(AiravataClient.JCR_PASSWORD,"admin");
+		config.put(AiravataClient.WITHLISTENER,"true");
+		AiravataClient airavataClient = new AiravataClient(config);
+		String workflowName = "Workflow1";
+		List<WorkflowInput> workflowInputs = airavataClient.getWorkflowInputs(workflowName);
+		workflowInputs.get(0).setValue("hi");
+		String topicId = airavataClient.runWorkflow(workflowName, workflowInputs);
+		System.out.println(topicId);
+	}
 
 }
