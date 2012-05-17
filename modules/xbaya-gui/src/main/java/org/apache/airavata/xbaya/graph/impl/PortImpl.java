@@ -33,10 +33,6 @@ import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.graph.gui.PortGUI;
-import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.graph.system.OutputNode;
-import org.apache.airavata.xbaya.graph.system.SystemDataPort;
 import org.xmlpull.infoset.XmlElement;
 
 /**
@@ -74,8 +70,6 @@ public abstract class PortImpl implements Port {
 
     private ComponentPort componentPort;
 
-    private PortGUI gui;
-
     /**
      * The ID of the node that this port belongs to. This is used only during parsing the XML.
      */
@@ -98,15 +92,6 @@ public abstract class PortImpl implements Port {
         parse(portElement);
     }
 
-    /**
-     * @see org.apache.airavata.xbaya.graph.Port#getGUI()
-     */
-    public PortGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new PortGUI(this);
-        }
-        return this.gui;
-    }
 
     /**
      * @see org.apache.airavata.xbaya.graph.Port#getID()

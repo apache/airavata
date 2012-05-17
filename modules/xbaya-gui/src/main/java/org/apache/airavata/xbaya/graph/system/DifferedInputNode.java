@@ -5,7 +5,7 @@
  *
  * $Id: $
  */
-package org.apache.airavata.xbaya.graph.system.gui;
+package org.apache.airavata.xbaya.graph.system;
 
 import java.util.List;
 
@@ -14,6 +14,7 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.Component;
+import org.apache.airavata.xbaya.component.system.DifferedInputComponent;
 import org.apache.airavata.xbaya.component.system.InputComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.graph.DataEdge;
@@ -23,8 +24,6 @@ import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.graph.system.ParameterNode;
-import org.apache.airavata.xbaya.graph.system.SystemDataPort;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.xmlpull.infoset.XmlElement;
 
@@ -40,8 +39,6 @@ public class DifferedInputNode extends ParameterNode {
     private static final MLogger logger = MLogger.getLogger();
 
     private Object defaultValue;
-
-    private DifferedInputNodeGUI gui;
 
     /**
      * Creates an InputNode.
@@ -60,17 +57,6 @@ public class DifferedInputNode extends ParameterNode {
      */
     public DifferedInputNode(XmlElement nodeElement) throws GraphException {
         super(nodeElement);
-    }
-
-    /**
-     * @see edu.indiana.extreme.xbaya.graph.Node#getGUI()
-     */
-    @Override
-	public DifferedInputNodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new DifferedInputNodeGUI(this);
-        }
-        return this.gui;
     }
 
     /**

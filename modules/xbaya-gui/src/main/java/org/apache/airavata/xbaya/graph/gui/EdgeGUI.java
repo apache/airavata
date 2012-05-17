@@ -33,6 +33,7 @@ import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.ControlEdge;
 import org.apache.airavata.xbaya.graph.Edge;
 import org.apache.airavata.xbaya.graph.Port;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 
 public class EdgeGUI implements GraphPieceGUI {
 
@@ -130,11 +131,11 @@ public class EdgeGUI implements GraphPieceGUI {
 
     private Point getFromPosition() {
         Port port = this.edge.getFromPort();
-        return port.getGUI().getPosition();
+        return NodeController.getGUI(port).getPosition();
     }
 
     private Point getToPosition() {
         Port port = this.edge.getToPort();
-        return port.getGUI().getPosition();
+        return NodeController.getGUI(port).getPosition();
     }
 }

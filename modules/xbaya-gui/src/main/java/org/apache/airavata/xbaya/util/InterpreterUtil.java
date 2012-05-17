@@ -20,25 +20,30 @@
 */
 package org.apache.airavata.xbaya.util;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
-import org.apache.airavata.xbaya.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.xbaya.graph.system.ConstantNode;
+import org.apache.airavata.xbaya.graph.system.DifferedInputNode;
 import org.apache.airavata.xbaya.graph.system.EndForEachNode;
 import org.apache.airavata.xbaya.graph.system.EndifNode;
 import org.apache.airavata.xbaya.graph.system.ForEachNode;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.SystemDataPort;
-import org.apache.airavata.xbaya.graph.system.gui.DifferedInputNode;
 import org.apache.airavata.xbaya.graph.ws.WSGraph;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
@@ -49,8 +54,8 @@ import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler;
 import org.xmlpull.infoset.XmlElement;
-
 import org.xmlpull.infoset.impl.XmlElementWithViewsImpl;
+
 import xsul5.XmlConstants;
 import xsul5.wsdl.WsdlPort;
 import xsul5.wsdl.WsdlService;
@@ -367,7 +372,7 @@ public class InterpreterUtil {
 		ArrayList<Node> list = new ArrayList<Node>();
 		List<NodeImpl> nodes = graph.getNodes();
 		for (Node node : nodes) {
-			if (node.getGUI().getBodyColor() == color) {
+			if (NodeController.getGUI(node).getBodyColor() == color) {
 				list.add(node);
 			}
 		}
@@ -390,7 +395,7 @@ public class InterpreterUtil {
 		int sum = 0;
 		List<NodeImpl> nodes = graph.getNodes();
 		for (Node node : nodes) {
-			if (node.getGUI().getBodyColor() == color) {
+			if (NodeController.getGUI(node).getBodyColor() == color) {
 				++sum;
 			}
 		}

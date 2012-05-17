@@ -10,6 +10,7 @@ package org.apache.airavata.xbaya.graph.system.gui;
 import java.awt.Color;
 
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.graph.system.DifferedInputNode;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 
 /**

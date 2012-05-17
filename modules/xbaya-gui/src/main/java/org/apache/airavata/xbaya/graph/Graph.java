@@ -24,17 +24,9 @@ package org.apache.airavata.xbaya.graph;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.airavata.xbaya.graph.gui.GraphGUI;
 import org.xmlpull.infoset.XmlElement;
 
 public interface Graph extends GraphPiece {
-
-    /**
-     * Returns the gui.
-     * 
-     * @return the gui
-     */
-    public GraphGUI getGUI();
     
     /**
      * Returns if the graph should be editable

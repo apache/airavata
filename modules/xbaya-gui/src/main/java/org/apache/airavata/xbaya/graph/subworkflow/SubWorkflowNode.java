@@ -21,21 +21,19 @@
 
 package org.apache.airavata.xbaya.graph.subworkflow;
 
+import java.util.List;
+
 import org.apache.airavata.xbaya.component.SubWorkflowComponent;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.Edge;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 
-import java.util.List;
-
 public class SubWorkflowNode extends NodeImpl {
 
-    private SubWorkflowNodeGUI gui;
     private Workflow workflow;
 
     /**
@@ -47,15 +45,6 @@ public class SubWorkflowNode extends NodeImpl {
         super(graph);
     }
 
-    /**
-     * @see org.apache.airavata.xbaya.graph.ws.WSNode#getGUI()
-     */
-    public NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new SubWorkflowNodeGUI(this);
-        }
-        return this.gui;
-    }
 
     /**
      * @see org.apache.airavata.xbaya.graph.ws.WSNode#getComponent()

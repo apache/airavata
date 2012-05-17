@@ -19,14 +19,13 @@
  *
  */
 
-package org.apache.airavata.xbaya.component.dynamic;
+package org.apache.airavata.xbaya.invoker;
 
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
 import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.invoker.Invoker;
 
 import xsul.wsif.WSIFMessage;
 import xsul.xwsif_runtime.WSIFClient;

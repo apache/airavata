@@ -19,30 +19,23 @@
  *
  */
 
-package org.apache.airavata.xbaya.graph.system.gui;
+package org.apache.airavata.xbaya.graph.system;
 
 import java.awt.Point;
 import java.util.ArrayList;
 
 import org.apache.airavata.xbaya.component.Component;
 import org.apache.airavata.xbaya.component.StreamSourceComponent;
-import org.apache.airavata.xbaya.component.gui.StreamSourceNodeGUI;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.graph.system.ParameterNode;
-import org.apache.airavata.xbaya.graph.system.SystemDataPort;
 import org.apache.axiom.om.util.UUIDGenerator;
 import org.xmlpull.infoset.XmlElement;
 
 public class StreamSourceNode extends ParameterNode {
 
     private String streamSourceURL;
-
-    private StreamSourceNodeGUI gui;
 
     private ArrayList<InputNode> inputNodes = new ArrayList<InputNode>();
 
@@ -67,16 +60,6 @@ public class StreamSourceNode extends ParameterNode {
     public StreamSourceNode(XmlElement nodeElement) throws GraphException {
         super(nodeElement);
         this.label = UUIDGenerator.getUUID();
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
-     */
-    public NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new StreamSourceNodeGUI(this);
-        }
-        return this.gui;
     }
 
     /**

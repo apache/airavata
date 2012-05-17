@@ -37,6 +37,7 @@ import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.impl.PortImpl;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
@@ -133,7 +134,7 @@ public class WorkflowModifier {
     private void removeFinishedNodes(WSGraph originalGraph, WSGraph graph) throws GraphException {
         ArrayList<Node> finishedNodes = new ArrayList<Node>();
         for (Node node : originalGraph.getNodes()) {
-            Color color = node.getGUI().getBodyColor();
+            Color color = NodeController.getGUI(node).getBodyColor();
             if (NodeState.FINISHED.color.equals(color)) {
                 finishedNodes.add(node);
             }
@@ -184,7 +185,7 @@ public class WorkflowModifier {
                 graph.addEdge(inputNode.getPort(), toPort);
                 if (first) {
                     first = false;
-                    Point position = originalToPort.getGUI().getPosition();
+                    Point position = NodeController.getGUI(originalToPort).getPosition();
                     Point inputNodePosition = new Point(0, position.y);
                     inputNode.setPosition(inputNodePosition);
                 }

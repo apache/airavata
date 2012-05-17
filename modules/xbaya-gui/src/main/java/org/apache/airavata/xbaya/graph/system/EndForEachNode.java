@@ -38,13 +38,9 @@ import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.Port.Kind;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.system.gui.EndForEachNodeGUI;
 import org.xmlpull.infoset.XmlElement;
 
 public class EndForEachNode extends SystemNode {
-
-    private EndForEachNodeGUI gui;
 
     /**
      * Creates a InputNode.
@@ -63,16 +59,6 @@ public class EndForEachNode extends SystemNode {
      */
     public EndForEachNode(XmlElement nodeElement) throws GraphException {
         super(nodeElement);
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
-     */
-    public NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new EndForEachNodeGUI(this);
-        }
-        return this.gui;
     }
 
     /**

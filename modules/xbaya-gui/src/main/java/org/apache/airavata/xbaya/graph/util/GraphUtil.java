@@ -54,7 +54,7 @@ import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
-import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
+import org.apache.airavata.xbaya.graph.system.StreamSourceNode;
 import org.apache.airavata.xbaya.graph.ws.WSGraph;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.graph.ws.WSPort;

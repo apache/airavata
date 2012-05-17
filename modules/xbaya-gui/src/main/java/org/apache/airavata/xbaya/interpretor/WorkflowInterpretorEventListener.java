@@ -26,10 +26,7 @@ import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.stream.XMLStreamException;
-
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.commons.WorkFlowUtils;
 import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
 import org.apache.airavata.wsmg.client.MsgBrokerClientException;
 import org.apache.airavata.wsmg.client.NotificationHandler;
@@ -41,6 +38,7 @@ import org.apache.airavata.xbaya.graph.Edge;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.system.InputNode;
@@ -269,20 +267,20 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
     }
 
     private void executeNode(Node node) {
-        node.getGUI().setBodyColor(NodeState.EXECUTING.color);
+        NodeController.getGUI(node).setBodyColor(NodeState.EXECUTING.color);
     }
 
     private void finishNode(Node node) {
-        node.getGUI().setBodyColor(NodeState.FINISHED.color);
+        NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
     }
 
     private void failNode(Node node) {
-        node.getGUI().setBodyColor(NodeState.FAILED.color);
+        NodeController.getGUI(node).setBodyColor(NodeState.FAILED.color);
     }
 
     private void resetNode(Node node) {
-        node.getGUI().setBodyColor(NodeGUI.DEFAULT_BODY_COLOR);
-        node.getGUI().resetTokens();
+        NodeController.getGUI(node).setBodyColor(NodeGUI.DEFAULT_BODY_COLOR);
+        NodeController.getGUI(node).resetTokens();
     }
 
     /**

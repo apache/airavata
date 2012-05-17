@@ -21,7 +21,6 @@
 
 package org.apache.airavata.xbaya.wf;
 
-import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -31,7 +30,6 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,23 +40,18 @@ import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.XBayaConfiguration;
-import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaException;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.XBayaVersion;
 import org.apache.airavata.xbaya.component.Component;
 import org.apache.airavata.xbaya.component.ComponentException;
-import org.apache.airavata.xbaya.component.system.InputComponent;
-import org.apache.airavata.xbaya.component.system.OutputComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponent;
 import org.apache.airavata.xbaya.component.ws.WSComponentFactory;
 import org.apache.airavata.xbaya.component.ws.WSComponentKey;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.gpel.script.BPELScript;
 import org.apache.airavata.xbaya.gpel.script.BPELScriptType;
-import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Node;
@@ -67,8 +60,6 @@ import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.graph.ws.WSGraph;
 import org.apache.airavata.xbaya.graph.ws.WSGraphFactory;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
-import org.apache.airavata.xbaya.gui.XBayaExecutionModeListener;
-import org.apache.airavata.xbaya.interpretor.XBayaExecutionState;
 import org.apache.airavata.xbaya.ode.ODEBPELTransformer;
 import org.apache.airavata.xbaya.ode.ODEDeploymentDescriptor;
 import org.apache.airavata.xbaya.ode.ODEWSDLTransformer;
@@ -85,7 +76,7 @@ import org.xmlpull.infoset.XmlNamespace;
 import xsul5.XmlConstants;
 import xsul5.wsdl.WsdlDefinitions;
 
-public class Workflow implements Cloneable, XBayaExecutionModeListener {
+public class Workflow implements Cloneable {
 
     /**
      * Namespace prefix
@@ -153,7 +144,7 @@ public class Workflow implements Cloneable, XBayaExecutionModeListener {
 
     private QName qname;
 
-    private volatile XBayaExecutionState executionState = XBayaExecutionState.NONE;
+    private volatile WorkflowExecutionState executionState = WorkflowExecutionState.NONE;
 
     private WsdlDefinitions tridentWSDL;
 
@@ -895,22 +886,25 @@ public class Workflow implements Cloneable, XBayaExecutionModeListener {
     /**
      * @return
      */
-    public synchronized XBayaExecutionState getExecutionState() {
+    public synchronized WorkflowExecutionState getExecutionState() {
         return this.executionState;
     }
 
     /**
      * @param state
      */
-    public synchronized void setExecutionState(XBayaExecutionState state) {
+    public synchronized void setExecutionState(WorkflowExecutionState state) {
         this.executionState = state;
     }
 
+	public boolean isEditable() {
+		return editable;
+	}
 
-	@Override
-	public void executionModeChanged(XBayaConfiguration config) {
-		editable=config.getXbayaExecutionMode()==XBayaExecutionMode.IDE;
-		getGraph().setEditable(editable);
+
+	public void setEditable(boolean editable) {
+		this.editable = editable;
+		getGraph().setEditable(isEditable());
 	}
 
 }

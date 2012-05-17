@@ -21,11 +21,10 @@
 
 package org.apache.airavata.xbaya.jython.lib;
 
-import java.awt.Color;
 import java.net.URI;
 
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.graph.Node;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.wf.Workflow;
@@ -63,31 +62,35 @@ public class StandaloneServiceNotificationSender implements ServiceNotifiable {
 
     @Override
     public void invokingService(WSIFMessage inputs) {
-        this.workflow.getGraph().getNode(this.serviceID).getGUI().setBodyColor(NodeState.EXECUTING.color);
+        getNodeGUI().setBodyColor(NodeState.EXECUTING.color);
     }
 
     @Override
     public void serviceFinished(WSIFMessage outputs) {
-        this.workflow.getGraph().getNode(this.serviceID).getGUI().setBodyColor(NodeState.FINISHED.color);
+    	getNodeGUI().setBodyColor(NodeState.FINISHED.color);
 
     }
 
     @Override
     public void invocationFailed(String message, Throwable e) {
-        this.workflow.getGraph().getNode(this.serviceID).getGUI().setBodyColor(NodeState.FAILED.color);
+    	getNodeGUI().setBodyColor(NodeState.FAILED.color);
 
     }
 
     @Override
     public void receivedFault(String message) {
-        this.workflow.getGraph().getNode(this.serviceID).getGUI().setBodyColor(NodeState.FAILED.color);
+    	getNodeGUI().setBodyColor(NodeState.FAILED.color);
 
     }
 
     @Override
     public void receivedFault(WSIFMessage fault) {
-        this.workflow.getGraph().getNode(this.serviceID).getGUI().setBodyColor(NodeState.FAILED.color);
+    	getNodeGUI().setBodyColor(NodeState.FAILED.color);
 
     }
+
+	private NodeGUI getNodeGUI() {
+		return NodeController.getGUI(this.workflow.getGraph().getNode(this.serviceID));
+	}
 
 }

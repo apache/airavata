@@ -36,8 +36,6 @@ import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.system.gui.ConstantNodeGUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
@@ -53,8 +51,6 @@ public class ConstantNode extends SystemNode {
     private QName type;
 
     private Object value;
-
-    private ConstantNodeGUI gui;
 
     /**
      * Creates a InputNode.
@@ -73,16 +69,6 @@ public class ConstantNode extends SystemNode {
      */
     public ConstantNode(XmlElement nodeElement) throws GraphException {
         super(nodeElement);
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
-     */
-    public NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new ConstantNodeGUI(this);
-        }
-        return this.gui;
     }
 
     /**

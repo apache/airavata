@@ -25,13 +25,9 @@ import org.apache.airavata.xbaya.component.ws.WorkflowComponent;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.ws.gui.WorkflowNodeGUI;
 import org.xmlpull.infoset.XmlElement;
 
 public class WorkflowNode extends WSNode {
-
-    private WorkflowNodeGUI gui;
 
     /**
      * Constructs a WorkflowNode.
@@ -50,17 +46,6 @@ public class WorkflowNode extends WSNode {
      */
     public WorkflowNode(Graph graph) {
         super(graph);
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.ws.WSNode#getGUI()
-     */
-    @Override
-    public NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new WorkflowNodeGUI(this);
-        }
-        return this.gui;
     }
 
     /**

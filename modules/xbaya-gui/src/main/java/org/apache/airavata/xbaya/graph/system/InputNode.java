@@ -37,8 +37,6 @@ import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.system.gui.InputNodeGUI;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +51,6 @@ public class InputNode extends ParameterNode {
     private static final Logger logger = LoggerFactory.getLogger(InputNode.class);
 
     private Object defaultValue;
-
-    private InputNodeGUI gui;
 
     private boolean visibility;
 
@@ -77,16 +73,6 @@ public class InputNode extends ParameterNode {
      */
     public InputNode(XmlElement nodeElement) throws GraphException {
         super(nodeElement);
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
-     */
-    public NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new InputNodeGUI(this);
-        }
-        return this.gui;
     }
 
     public boolean isVisibility() {

@@ -42,11 +42,10 @@ import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.Port.Kind;
-import org.apache.airavata.xbaya.graph.gui.GraphGUI;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
+import org.apache.airavata.xbaya.graph.system.StreamSourceNode;
 import org.apache.airavata.xbaya.graph.system.SystemDataPort;
-import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.slf4j.Logger;
@@ -80,22 +79,11 @@ public abstract class GraphImpl implements Graph {
 
     private GraphFactory factory;
 
-    private GraphGUI gui;
-
-
     /**
      * @param factory
      */
     public GraphImpl(GraphFactory factory) {
         this.factory = factory;
-        this.gui = new GraphGUI(this);
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Graph#getGUI()
-     */
-    public GraphGUI getGUI() {
-        return this.gui;
     }
 
     /**

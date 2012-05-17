@@ -30,13 +30,9 @@ import org.apache.airavata.xbaya.graph.Edge;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.system.gui.ReceiveNodeGUI;
 import org.xmlpull.infoset.XmlElement;
 
 public class ReceiveNode extends SystemNode {
-
-    private ReceiveNodeGUI gui;
 
     /**
      * Creates a InputNode.
@@ -55,16 +51,6 @@ public class ReceiveNode extends SystemNode {
      */
     public ReceiveNode(XmlElement nodeElement) throws GraphException {
         super(nodeElement);
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
-     */
-    public NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new ReceiveNodeGUI(this);
-        }
-        return this.gui;
     }
 
     /**

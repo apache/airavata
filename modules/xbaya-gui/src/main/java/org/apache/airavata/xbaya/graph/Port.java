@@ -24,7 +24,6 @@ package org.apache.airavata.xbaya.graph;
 import java.util.Collection;
 
 import org.apache.airavata.xbaya.component.ComponentPort;
-import org.apache.airavata.xbaya.graph.gui.PortGUI;
 
 public interface Port extends GraphPiece {
 
@@ -57,13 +56,6 @@ public interface Port extends GraphPiece {
          */
         EPR,
     }
-
-    /**
-     * Returns the gui
-     * 
-     * @return the gui
-     */
-    public PortGUI getGUI();
 
     /**
      * Returns an ID that can be used to distinguish a port, and also can be used as a variable name in scripts

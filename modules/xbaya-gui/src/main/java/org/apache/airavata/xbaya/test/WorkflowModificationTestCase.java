@@ -53,6 +53,7 @@ import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.gpel.DSCUtil;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.Node;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.ws.WSGraph;
@@ -67,7 +68,6 @@ import org.apache.airavata.xbaya.test.service.multiplier.Multiplier;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
-import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -203,9 +203,9 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
         sendNotification(adderWSDL, adder1ID, "add", inputMap1, outputMap1, notifier);
         // These are needed because without GUI, the nodes' color won't be
         // changed.
-        a.getGUI().setBodyColor(NodeState.FINISHED.color);
-        b.getGUI().setBodyColor(NodeState.FINISHED.color);
-        adder.getGUI().setBodyColor(NodeState.FINISHED.color);
+        NodeController.getGUI(a).setBodyColor(NodeState.FINISHED.color);
+        NodeController.getGUI(b).setBodyColor(NodeState.FINISHED.color);
+        NodeController.getGUI(adder).setBodyColor(NodeState.FINISHED.color);
         repaintAndWait(3);
 
         HashMap<String, String> inputMap2 = new HashMap<String, String>();
@@ -215,9 +215,9 @@ public class WorkflowModificationTestCase extends XBayaTestCase {
         outputMap2.put("z", "9");
         sendNotification(adderWSDL, adder2ID, "add", inputMap2, outputMap2, notifier);
 
-        c.getGUI().setBodyColor(NodeState.FINISHED.color);
-        d.getGUI().setBodyColor(NodeState.FINISHED.color);
-        adder2.getGUI().setBodyColor(NodeState.FINISHED.color);
+        NodeController.getGUI(c).setBodyColor(NodeState.FINISHED.color);
+        NodeController.getGUI(d).setBodyColor(NodeState.FINISHED.color);
+        NodeController.getGUI(adder2).setBodyColor(NodeState.FINISHED.color);
         repaintAndWait(3);
     }
 

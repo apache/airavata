@@ -28,6 +28,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 
 import org.apache.airavata.xbaya.graph.Port;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.gui.Paintable;
 import org.apache.airavata.xbaya.graph.system.ExitNode;
@@ -82,7 +83,7 @@ public class ExitNodeGUI extends NodeGUI {
 
         // Paint all ports
         for (Port port : this.node.getAllPorts()) {
-            port.getGUI().paint(g);
+            NodeController.getGUI(port).paint(g);
         }
 
         // Paint extras

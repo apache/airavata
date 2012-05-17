@@ -26,16 +26,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.airavata.xbaya.component.Component;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 
 public interface Node extends GraphPiece {
-
-    /**
-     * Return the gui.
-     * 
-     * @return the gui
-     */
-    public NodeGUI getGUI();
 
     /**
      * Returns the ID of the node.
@@ -202,8 +194,4 @@ public interface Node extends GraphPiece {
      */
     public boolean getRequireJoin();
 
-    /**
-	 * @return
-	 */
-	public boolean isFinished();
 }

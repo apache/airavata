@@ -39,15 +39,11 @@ import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.Port.Kind;
 import org.apache.airavata.xbaya.graph.dynamic.PortAddable;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.system.gui.ForEachNodeGUI;
 import org.xmlpull.infoset.XmlElement;
 
 public class ForEachNode extends SystemNode implements PortAddable{
 
     // private static final MLogger logger = MLogger.getLogger();
-
-    private ForEachNodeGUI gui;
 
     /**
      * Creates a InputNode.
@@ -66,18 +62,6 @@ public class ForEachNode extends SystemNode implements PortAddable{
      */
     public ForEachNode(XmlElement nodeElement) throws GraphException {
         super(nodeElement);
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-	public NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new ForEachNodeGUI(this);
-        }
-        return this.gui;
     }
 
     /**

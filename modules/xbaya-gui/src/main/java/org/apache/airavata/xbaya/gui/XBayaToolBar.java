@@ -43,8 +43,8 @@ import javax.swing.border.Border;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.GraphException;
-import org.apache.airavata.xbaya.interpretor.XBayaExecutionState;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.airavata.xbaya.wf.WorkflowExecutionState;
 
 import com.amazonaws.transform.MapEntry;
 
@@ -174,12 +174,12 @@ public class XBayaToolBar implements XBayaComponent {
             public void actionPerformed(ActionEvent e1) {
                 try {
                     Workflow workflow = engine.getWorkflow();
-                    XBayaExecutionState executionState = workflow.getExecutionState();
-                    if (executionState == XBayaExecutionState.RUNNING || executionState == XBayaExecutionState.STEP) {
-                        workflow.setExecutionState(XBayaExecutionState.PAUSED);
+                    WorkflowExecutionState executionState = workflow.getExecutionState();
+                    if (executionState == WorkflowExecutionState.RUNNING || executionState == WorkflowExecutionState.STEP) {
+                        workflow.setExecutionState(WorkflowExecutionState.PAUSED);
                         play.setIcon(PLAY_ICON);
-                    } else if (executionState == XBayaExecutionState.PAUSED) {
-                        workflow.setExecutionState(XBayaExecutionState.RUNNING);
+                    } else if (executionState == WorkflowExecutionState.PAUSED) {
+                        workflow.setExecutionState(WorkflowExecutionState.RUNNING);
                         play.setIcon(PAUSE_ICON);
                     } else {
                         throw new IllegalStateException("Unknown state :" + executionState);
@@ -201,8 +201,8 @@ public class XBayaToolBar implements XBayaComponent {
              */
             public void actionPerformed(ActionEvent e2) {
                 try {
-                    if (engine.getWorkflow().getExecutionState() == XBayaExecutionState.PAUSED) {
-                        engine.getWorkflow().setExecutionState(XBayaExecutionState.STEP);
+                    if (engine.getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED) {
+                        engine.getWorkflow().setExecutionState(WorkflowExecutionState.STEP);
                     } else {
                         throw new IllegalStateException("Unknown state :" + engine.getWorkflow().getExecutionState());
                     }
@@ -223,9 +223,9 @@ public class XBayaToolBar implements XBayaComponent {
              */
             public void actionPerformed(ActionEvent e1) {
                 try {
-                    if (engine.getWorkflow().getExecutionState() != XBayaExecutionState.NONE
-                            || engine.getWorkflow().getExecutionState() != XBayaExecutionState.STOPPED) {
-                        engine.getWorkflow().setExecutionState(XBayaExecutionState.STOPPED);
+                    if (engine.getWorkflow().getExecutionState() != WorkflowExecutionState.NONE
+                            || engine.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
+                        engine.getWorkflow().setExecutionState(WorkflowExecutionState.STOPPED);
                     } else {
                         throw new IllegalStateException("Unknown state :" + engine.getWorkflow().getExecutionState());
                     }

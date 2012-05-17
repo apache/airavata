@@ -36,6 +36,7 @@ import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
 
 public abstract class NodeGUI implements GraphPieceGUI {
@@ -276,7 +277,7 @@ public abstract class NodeGUI implements GraphPieceGUI {
 
         // Paint all ports
         for (Port port : this.node.getAllPorts()) {
-            port.getGUI().paint(g);
+            NodeController.getGUI(port).paint(g);
         }
 
         // Paint extras
@@ -294,7 +295,7 @@ public abstract class NodeGUI implements GraphPieceGUI {
         for (int i = 0; i < inputPorts.size(); i++) {
             Port port = inputPorts.get(i);
             Point offset = new Point(PortGUI.DATA_PORT_SIZE / 2, this.headHeight + PORT_INITIAL_GAP + PORT_GAP * i);
-            port.getGUI().setOffset(offset);
+            NodeController.getGUI(port).setOffset(offset);
         }
 
         // outputs
@@ -305,13 +306,13 @@ public abstract class NodeGUI implements GraphPieceGUI {
             // overwrite getBounds() to have different shape.
             Point offset = new Point(this.getBounds().width - PortGUI.DATA_PORT_SIZE / 2, this.headHeight
                     + PORT_INITIAL_GAP + PORT_GAP * i);
-            port.getGUI().setOffset(offset);
+            NodeController.getGUI(port).setOffset(offset);
         }
 
         // control-in
         Port controlInPort = this.node.getControlInPort();
         if (controlInPort != null) {
-            controlInPort.getGUI().setOffset(new Point(0, 0));
+        	NodeController.getGUI(controlInPort).setOffset(new Point(0, 0));
         }
 
         // control-outs
@@ -319,7 +320,7 @@ public abstract class NodeGUI implements GraphPieceGUI {
             // By default, all ports will be drawn at the same place. Subclass
             // should rearrange them if there are more than one control-out
             // ports.
-            controlOutPort.getGUI().setOffset(new Point(getBounds().width, getBounds().height));
+        	NodeController.getGUI(controlOutPort).setOffset(new Point(getBounds().width, getBounds().height));
         }
     }
 
@@ -333,18 +334,18 @@ public abstract class NodeGUI implements GraphPieceGUI {
         case EXECUTING:
 
             for (DataPort dataPort : inputPorts) {
-                ((DataPort) dataPort.getFromPort()).getGUI().removeToken(workflowName);
-                dataPort.getGUI().addToken(workflowName);
+            	NodeController.getGUI(((DataPort) dataPort.getFromPort())).removeToken(workflowName);
+            	NodeController.getGUI(dataPort).addToken(workflowName);
             }
             break;
         case FINISHED:
             for (DataPort dataPort : inputPorts) {
-                dataPort.getGUI().removeToken(workflowName);
+            	NodeController.getGUI(dataPort).removeToken(workflowName);
             }
 
             List<DataPort> outputPorts = this.node.getOutputPorts();
             for (DataPort dataPort : outputPorts) {
-                dataPort.getGUI().addToken(workflowName);
+            	NodeController.getGUI(dataPort).addToken(workflowName);
             }
             break;
         case FAILED:
@@ -362,11 +363,11 @@ public abstract class NodeGUI implements GraphPieceGUI {
 
         List<DataPort> inputPorts = this.node.getInputPorts();
         for (DataPort dataPort : inputPorts) {
-            dataPort.getGUI().reset();
+            NodeController.getGUI(dataPort).reset();
         }
         List<DataPort> outputPorts = this.node.getOutputPorts();
         for (DataPort dataPort : outputPorts) {
-            dataPort.getGUI().reset();
+            NodeController.getGUI(dataPort).reset();
         }
     }
 }

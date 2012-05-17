@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.xbaya.ode;
+package org.apache.airavata.xbaya.invoker;
 
 import java.net.URI;
 import java.util.LinkedList;

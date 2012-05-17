@@ -32,15 +32,11 @@ import org.apache.airavata.xbaya.graph.Edge;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.graph.dynamic.gui.DynamicNodeGUI;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.impl.PortImpl;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 
 public class DynamicNode extends NodeImpl implements PortAddable {
-
-    private DynamicNodeGUI gui;
 
     /**
      * Constructs a WSNode.
@@ -53,16 +49,6 @@ public class DynamicNode extends NodeImpl implements PortAddable {
         for (Port port : allPorts) {
             ((DynamicPort) port).setNode(this);
         }
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
-     */
-    public synchronized NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new DynamicNodeGUI(this);
-        }
-        return this.gui;
     }
 
     /**
