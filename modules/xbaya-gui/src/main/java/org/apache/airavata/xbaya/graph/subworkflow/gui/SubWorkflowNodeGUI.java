@@ -31,7 +31,6 @@ import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
