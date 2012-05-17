@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.xbaya.ode;
+package org.apache.airavata.xbaya.ode.gui;
 
 import java.awt.event.ActionEvent;
 import java.net.URI;
@@ -40,7 +40,6 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
-import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
@@ -54,6 +53,7 @@ import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextArea;
 import org.apache.airavata.xbaya.gui.XBayaTextComponent;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
+import org.apache.airavata.xbaya.invoker.ODEInvoker;
 import org.apache.airavata.xbaya.lead.LEADTypes;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;

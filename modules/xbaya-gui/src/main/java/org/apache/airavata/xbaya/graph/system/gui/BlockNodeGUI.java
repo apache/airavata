@@ -27,6 +27,7 @@ import java.awt.Point;
 import java.util.List;
 
 import org.apache.airavata.xbaya.graph.Port;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.system.BlockNode;
 
@@ -68,18 +69,18 @@ public class BlockNodeGUI extends NodeGUI {
 
         Port controlInPort = this.node.getControlInPort();
         if (controlInPort != null) {
-            controlInPort.getGUI().setOffset(new Point(0, 0));
+        	NodeController.getGUI(controlInPort).setOffset(new Point(0, 0));
         }
 
         // There are two controlOutPorts.
         List<? extends Port> controlOutPorts = this.node.getControlOutPorts();
         Port controlOutPort1 = controlOutPorts.get(0);
         Point offset = new Point(getBounds().width, +getBounds().height / 2);
-        controlOutPort1.getGUI().setOffset(offset);
+        NodeController.getGUI(controlOutPort1).setOffset(offset);
 
         Port controlOutPort2 = controlOutPorts.get(1);
         offset = new Point(this.getBounds().width, getBounds().height);
-        controlOutPort2.getGUI().setOffset(offset);
+        NodeController.getGUI(controlOutPort2).setOffset(offset);
 
         // No outputs
     }

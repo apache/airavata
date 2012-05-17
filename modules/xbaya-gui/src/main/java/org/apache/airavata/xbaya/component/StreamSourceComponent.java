@@ -24,7 +24,7 @@ package org.apache.airavata.xbaya.component;
 import org.apache.airavata.xbaya.component.system.SystemComponent;
 import org.apache.airavata.xbaya.component.system.SystemComponentDataPort;
 import org.apache.airavata.xbaya.graph.Graph;
-import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
+import org.apache.airavata.xbaya.graph.system.StreamSourceNode;
 
 public class StreamSourceComponent extends SystemComponent {
 

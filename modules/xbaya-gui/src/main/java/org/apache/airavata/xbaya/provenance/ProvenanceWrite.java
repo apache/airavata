@@ -33,6 +33,7 @@ import org.apache.airavata.xbaya.concurrent.PredicatedExecutable;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.ForEachExecutableNode;
 import org.apache.airavata.xbaya.graph.Node;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.system.EndForEachNode;
 import org.apache.airavata.xbaya.graph.system.ForEachNode;
 import org.apache.airavata.xbaya.graph.system.InputNode;
@@ -81,7 +82,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 	}
 
 	public boolean isReady() {
-		return this.node.isFinished() && invokerMap.get(node) != null;
+		return NodeController.isFinished(this.node) && invokerMap.get(node) != null;
 	}
 
 	private void saveNodeOutputs(Node node,

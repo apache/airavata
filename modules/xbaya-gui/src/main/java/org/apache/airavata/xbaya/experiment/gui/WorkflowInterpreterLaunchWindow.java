@@ -41,6 +41,7 @@ import org.apache.airavata.common.workflow.execution.context.WorkflowContextHead
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
@@ -53,10 +54,10 @@ import org.apache.airavata.xbaya.gui.XBayaTextField;
 import org.apache.airavata.xbaya.interpretor.HeaderConstants;
 import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorStub;
+import org.apache.airavata.xbaya.invoker.ODEClient;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
-import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
@@ -249,7 +250,7 @@ public class WorkflowInterpreterLaunchWindow {
         arguments.add(topic);
         Collection<WSNode> wsNodes = GraphUtil.getWSNodes(this.engine.getWorkflow().getGraph());
         for (WSNode node : wsNodes) {
-            ((WSNodeGUI) node.getGUI()).setInteractiveMode(false);
+            ((WSNodeGUI) NodeController.getGUI(node)).setInteractiveMode(false);
         }
 
         // TODO error check for user inputs

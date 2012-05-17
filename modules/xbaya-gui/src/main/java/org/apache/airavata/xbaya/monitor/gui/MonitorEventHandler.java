@@ -45,6 +45,7 @@ import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
@@ -266,18 +267,18 @@ public class MonitorEventHandler implements ChangeListener {
                 // workflowStarted(graph, forward);
                 LinkedList<InputNode> inputNodes = getInputNodes(graph);
                 for (InputNode inputNode : inputNodes) {
-                    inputNode.getGUI().setToken(instanceName, NodeState.FINISHED);
+                    NodeController.getGUI(inputNode).setToken(instanceName, NodeState.FINISHED);
                 }
             } else if (type == MonitorUtil.EventType.WORKFLOW_INITIALIZED) {
                 // workflowStarted(graph, forward);
                 LinkedList<InputNode> inputNodes = getInputNodes(graph);
                 for (InputNode inputNode : inputNodes) {
-                    inputNode.getGUI().setToken(instanceName, NodeState.FINISHED);
+                    NodeController.getGUI(inputNode).setToken(instanceName, NodeState.FINISHED);
                 }
             } else if (type == MonitorUtil.EventType.WORKFLOW_TERMINATED) {
                 LinkedList<OutputNode> outputNodes = getOutputNodes(graph);
                 for (OutputNode outputNode : outputNodes) {
-                    outputNode.getGUI().setToken(instanceName, NodeState.EXECUTING);
+                	NodeController.getGUI(outputNode).setToken(instanceName, NodeState.EXECUTING);
                 }
             } else if (type == EventType.INVOKING_SERVICE
             // TODO this should be removed when GPEL sends all notification
@@ -286,7 +287,7 @@ public class MonitorEventHandler implements ChangeListener {
                 if (node == null) {
                     logger.warn("There is no node that has ID, " + nodeID);
                 } else {
-                    node.getGUI().setToken(instanceName, NodeState.EXECUTING);
+                    NodeController.getGUI(node).setToken(instanceName, NodeState.EXECUTING);
                 }
             } else if (type == MonitorUtil.EventType.RECEIVED_RESULT
             // TODO this should be removed when GPEL sends all notification
@@ -295,7 +296,7 @@ public class MonitorEventHandler implements ChangeListener {
                 if (node == null) {
                     logger.warn("There is no node that has ID, " + nodeID);
                 } else {
-                    node.getGUI().setToken(instanceName, NodeState.FINISHED);
+                    NodeController.getGUI(node).setToken(instanceName, NodeState.FINISHED);
                 }
             } else if (type == EventType.INVOKING_SERVICE_FAILED || type == EventType.RECEIVED_FAULT
             // TODO
@@ -303,7 +304,7 @@ public class MonitorEventHandler implements ChangeListener {
                 if (node == null) {
                     logger.warn("There is no node that has ID, " + nodeID);
                 } else {
-                    node.getGUI().setToken(instanceName, NodeState.FAILED);
+                    NodeController.getGUI(node).setToken(instanceName, NodeState.FAILED);
                 }
             } else if (type == MonitorUtil.EventType.RESOURCE_MAPPING) {
                 if (node == null) {
@@ -462,7 +463,7 @@ public class MonitorEventHandler implements ChangeListener {
 
     private void nodeStarted(Node node, boolean forward) {
         if (forward) {
-            if (!node.getGUI().getBodyColor().equals(NodeState.FINISHED.color)) {
+            if (!NodeController.getGUI(node).getBodyColor().equals(NodeState.FINISHED.color)) {
                 executeNode(node);
                 finishPredecessorNodes(node);
             }
@@ -492,7 +493,7 @@ public class MonitorEventHandler implements ChangeListener {
     private void nodeResourceMapped(Node node, XmlElement event, boolean forward) {
         String resource = MonitorUtil.getMappedResource(event);
         String retryCount = MonitorUtil.getRetryCount(event);
-        NodeGUI nodeGUI = node.getGUI();
+        NodeGUI nodeGUI = NodeController.getGUI(node);
         if (forward) {
             LinkedList<ResourcePaintable> paintables = this.resourcePaintableMap.get(node);
             if (paintables == null) {
@@ -537,20 +538,20 @@ public class MonitorEventHandler implements ChangeListener {
     }
 
     private void executeNode(Node node) {
-        node.getGUI().setBodyColor(NodeState.EXECUTING.color);
+        NodeController.getGUI(node).setBodyColor(NodeState.EXECUTING.color);
     }
 
     private void finishNode(Node node) {
-        node.getGUI().setBodyColor(NodeState.FINISHED.color);
+        NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
     }
 
     private void failNode(Node node) {
-        node.getGUI().setBodyColor(NodeState.FAILED.color);
+        NodeController.getGUI(node).setBodyColor(NodeState.FAILED.color);
     }
 
     private void resetNode(Node node) {
-        node.getGUI().setBodyColor(NodeGUI.DEFAULT_BODY_COLOR);
-        node.getGUI().resetTokens();
+        NodeController.getGUI(node).setBodyColor(NodeGUI.DEFAULT_BODY_COLOR);
+        NodeController.getGUI(node).resetTokens();
     }
 
     /**

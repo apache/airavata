@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.Port;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.PortGUI;
 import org.apache.airavata.xbaya.graph.system.EndifNode;
 
@@ -118,7 +119,7 @@ public class EndifNodeGUI extends ConfigurableNodeGUI {
 
         // Paint all ports
         for (Port port : this.node.getAllPorts()) {
-            port.getGUI().paint(g);
+            NodeController.getGUI(port).paint(g);
         }
 
         paintConfiguration(g);
@@ -139,7 +140,7 @@ public class EndifNodeGUI extends ConfigurableNodeGUI {
             } else {
                 offset = new Point(PortGUI.DATA_PORT_SIZE / 2, this.headHeight + PORT_INITIAL_GAP + PORT_GAP * (i + 1));
             }
-            port.getGUI().setOffset(offset);
+            NodeController.getGUI(port).setOffset(offset);
         }
 
         // outputs
@@ -148,18 +149,18 @@ public class EndifNodeGUI extends ConfigurableNodeGUI {
             Port port = outputPorts.get(i);
             Point offset = new Point(this.getBounds().width - PortGUI.DATA_PORT_SIZE / 2, (int) (this.headHeight
                     + PORT_INITIAL_GAP + PORT_GAP * (outputPorts.size() / 2.0 + i)));
-            port.getGUI().setOffset(offset);
+            NodeController.getGUI(port).setOffset(offset);
         }
 
         // control-in
         Port controlInPort = this.node.getControlInPort();
         if (controlInPort != null) {
-            controlInPort.getGUI().setOffset(new Point(0, 0));
+        	NodeController.getGUI(controlInPort).setOffset(new Point(0, 0));
         }
 
         // control-out
         for (Port controlOutPort : this.node.getControlOutPorts()) {
-            controlOutPort.getGUI().setOffset(new Point(getBounds().width, getBounds().height - this.headHeight / 2));
+        	NodeController.getGUI(controlOutPort).setOffset(new Point(getBounds().width, getBounds().height - this.headHeight / 2));
             break; // Has only one
         }
 

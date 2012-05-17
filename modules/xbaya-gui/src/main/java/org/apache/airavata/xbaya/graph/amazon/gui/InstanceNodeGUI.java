@@ -31,6 +31,7 @@ import java.util.List;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.PortGUI;
 import org.apache.airavata.xbaya.graph.system.gui.ConfigurableNodeGUI;
 
@@ -119,7 +120,7 @@ public class InstanceNodeGUI extends ConfigurableNodeGUI {
 
         // Paint all ports
         for (Port port : this.node.getAllPorts()) {
-            port.getGUI().paint(g);
+            NodeController.getGUI(port).paint(g);
         }
 
         paintConfiguration(g);
@@ -135,7 +136,7 @@ public class InstanceNodeGUI extends ConfigurableNodeGUI {
         for (int i = 0; i < inputPorts.size(); i++) {
             Port port = inputPorts.get(i);
             Point offset = new Point(PortGUI.DATA_PORT_SIZE / 2, this.headHeight + PORT_INITIAL_GAP + PORT_GAP * i);
-            port.getGUI().setOffset(offset);
+            NodeController.getGUI(port).setOffset(offset);
         }
 
         // outputs
@@ -146,14 +147,14 @@ public class InstanceNodeGUI extends ConfigurableNodeGUI {
             // overwrite getBounds() to have different shape.
             Point offset = new Point(this.getBounds().width - PortGUI.DATA_PORT_SIZE / 2, this.headHeight
                     + PORT_INITIAL_GAP + PORT_GAP * i);
-            port.getGUI().setOffset(offset);
+            NodeController.getGUI(port).setOffset(offset);
         }
 
         // control out port
         List<? extends Port> controlOutPorts = this.node.getControlOutPorts();
         Port controlOutPort1 = controlOutPorts.get(0);
         Point offset = new Point(getBounds().width / 2, getBounds().height);
-        controlOutPort1.getGUI().setOffset(offset);
+        NodeController.getGUI(controlOutPort1).setOffset(offset);
     }
 
     private void calculatePositions() {

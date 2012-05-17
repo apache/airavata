@@ -5,11 +5,10 @@
  *
  * $Id: $
  */
-package org.apache.airavata.xbaya.graph.system.gui;
+package org.apache.airavata.xbaya.component.system;
 
-import org.apache.airavata.xbaya.component.system.SystemComponent;
-import org.apache.airavata.xbaya.component.system.SystemComponentDataPort;
 import org.apache.airavata.xbaya.graph.Graph;
+import org.apache.airavata.xbaya.graph.system.DifferedInputNode;
 
 /**
  * @author Chathura Herath

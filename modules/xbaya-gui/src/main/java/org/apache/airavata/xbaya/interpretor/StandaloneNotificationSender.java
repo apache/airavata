@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.xbaya.XBayaConstants;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.system.OutputNode;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
@@ -56,7 +57,7 @@ public class StandaloneNotificationSender implements WorkflowNotifiable {
     public void workflowStarted(PyObject[] args, String[] keywords) {
         List<InputNode> inputs = GraphUtil.getInputNodes(this.workflow.getGraph());
         for (InputNode inputNode : inputs) {
-            inputNode.getGUI().setBodyColor(NodeState.FINISHED.color);
+            NodeController.getGUI(inputNode).setBodyColor(NodeState.FINISHED.color);
         }
 
     }
@@ -65,7 +66,7 @@ public class StandaloneNotificationSender implements WorkflowNotifiable {
     public void workflowStarted(Object[] args, String[] keywords) {
         List<InputNode> inputs = GraphUtil.getInputNodes(this.workflow.getGraph());
         for (InputNode inputNode : inputs) {
-            inputNode.getGUI().setBodyColor(NodeState.FINISHED.color);
+            NodeController.getGUI(inputNode).setBodyColor(NodeState.FINISHED.color);
         }
     }
 
@@ -73,7 +74,7 @@ public class StandaloneNotificationSender implements WorkflowNotifiable {
     public void workflowFinished(Object[] args, String[] keywords) {
         List<OutputNode> outputs = GraphUtil.getOutputNodes(this.workflow.getGraph());
         for (OutputNode outputNode : outputs) {
-            outputNode.getGUI().setBodyColor(NodeState.EXECUTING.color);
+        	NodeController.getGUI(outputNode).setBodyColor(NodeState.EXECUTING.color);
         }
 
     }
@@ -88,7 +89,7 @@ public class StandaloneNotificationSender implements WorkflowNotifiable {
     public void workflowFinished(PyObject[] args, String[] keywords) {
         List<OutputNode> outputs = GraphUtil.getOutputNodes(this.workflow.getGraph());
         for (OutputNode outputNode : outputs) {
-            outputNode.getGUI().setBodyColor(NodeState.EXECUTING.color);
+        	NodeController.getGUI(outputNode).setBodyColor(NodeState.EXECUTING.color);
         }
 
     }

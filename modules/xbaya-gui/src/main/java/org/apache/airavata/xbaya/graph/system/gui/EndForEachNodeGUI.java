@@ -29,6 +29,7 @@ import java.awt.Rectangle;
 
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.Port;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.system.EndForEachNode;
 
 public class EndForEachNodeGUI extends ConfigurableNodeGUI {
@@ -116,7 +117,7 @@ public class EndForEachNodeGUI extends ConfigurableNodeGUI {
 
         // Paint all ports
         for (Port port : this.node.getAllPorts()) {
-            port.getGUI().paint(g);
+            NodeController.getGUI(port).paint(g);
         }
 
         paintConfiguration(g);
@@ -140,7 +141,7 @@ public class EndForEachNodeGUI extends ConfigurableNodeGUI {
         super.setPortPositions();
 
         for (Port controlOutPort : this.node.getControlOutPorts()) {
-            controlOutPort.getGUI().setOffset(new Point(getBounds().width, getBounds().height - this.headHeight / 2));
+        	NodeController.getGUI(controlOutPort).setOffset(new Point(getBounds().width, getBounds().height - this.headHeight / 2));
             break; // Has only one
         }
 

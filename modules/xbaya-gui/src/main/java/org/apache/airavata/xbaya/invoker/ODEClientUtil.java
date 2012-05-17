@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.xbaya.ode;
+package org.apache.airavata.xbaya.invoker;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConstants;

@@ -25,7 +25,6 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.graph.Edge;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
-import org.apache.airavata.xbaya.graph.gui.EdgeGUI;
 import org.xmlpull.infoset.XmlElement;
 
 /**
@@ -39,9 +38,6 @@ public abstract class EdgeImpl implements Edge {
     private PortImpl fromPort;
 
     private PortImpl toPort;
-
-    private EdgeGUI gui;
-
     // The followings are used only during parsing the XML.
 
     private String fromPortID;
@@ -64,16 +60,6 @@ public abstract class EdgeImpl implements Edge {
      */
     public EdgeImpl(XmlElement edgeXml) {
         parse(edgeXml);
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Edge#getGUI()
-     */
-    public EdgeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new EdgeGUI(this);
-        }
-        return this.gui;
     }
 
     /**

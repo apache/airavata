@@ -29,15 +29,11 @@ import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.system.gui.IfNodeGUI;
 import org.xmlpull.infoset.XmlElement;
 
 public class IfNode extends SystemNode {
 
     private static final String XPATH_TAG_NAME = "xpath";
-
-    private IfNodeGUI gui;
 
     private String xpath;
 
@@ -81,16 +77,6 @@ public class IfNode extends SystemNode {
      */
     public void setXPath(String xpath) {
         this.xpath = xpath;
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
-     */
-    public NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new IfNodeGUI(this);
-        }
-        return this.gui;
     }
 
     /**

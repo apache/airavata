@@ -48,7 +48,6 @@ import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.ToolbarButton;
 import org.apache.airavata.xbaya.gui.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.gui.XBayaToolBar;
-import org.apache.airavata.xbaya.interpretor.XBayaExecutionState;
 import org.apache.airavata.xbaya.jython.gui.JythonRunnerWindow;
 import org.apache.airavata.xbaya.menues.MenuIcons;
 import org.apache.airavata.xbaya.monitor.Monitor;
@@ -56,6 +55,7 @@ import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.gui.MonitorConfigurationWindow;
 import org.apache.airavata.xbaya.monitor.gui.MonitorStarter;
+import org.apache.airavata.xbaya.wf.WorkflowExecutionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -313,7 +313,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
                     int count = 0;
                     //there is a possibility the ealier run is not yet cleanedup yet.. so wait until it finishes
                     // and sets the execution state to NONE as the last task of scheduleDynamically
-                    while(engine.getWorkflow().getExecutionState() != XBayaExecutionState.NONE){
+                    while(engine.getWorkflow().getExecutionState() != WorkflowExecutionState.NONE){
                         try {
                             Thread.sleep(500);
                         } catch (InterruptedException e) {

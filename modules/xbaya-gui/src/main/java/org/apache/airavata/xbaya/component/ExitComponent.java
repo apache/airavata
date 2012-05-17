@@ -19,10 +19,8 @@
  *
  */
 
-package org.apache.airavata.xbaya.component.registry;
+package org.apache.airavata.xbaya.component;
 
-import org.apache.airavata.xbaya.component.ComponentControlPort;
-import org.apache.airavata.xbaya.component.ComponentDataPort;
 import org.apache.airavata.xbaya.component.system.SystemComponent;
 import org.apache.airavata.xbaya.component.system.SystemComponentDataPort;
 import org.apache.airavata.xbaya.graph.ControlPort;

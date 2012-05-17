@@ -24,9 +24,9 @@ package org.apache.airavata.xbaya.component.gui;
 import java.awt.Color;
 
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.graph.system.StreamSourceNode;
 import org.apache.airavata.xbaya.graph.system.gui.ConfigurableNodeGUI;
 import org.apache.airavata.xbaya.graph.system.gui.StreamSourceConfigurationDialog;
-import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
 
 public class StreamSourceNodeGUI extends ConfigurableNodeGUI {
 

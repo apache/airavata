@@ -21,16 +21,8 @@
 
 package org.apache.airavata.xbaya.graph;
 
-import org.apache.airavata.xbaya.graph.gui.EdgeGUI;
 
 public interface Edge extends GraphPiece {
-
-    /**
-     * Returns the gui.
-     * 
-     * @return the gui
-     */
-    public EdgeGUI getGUI();
 
     /**
      * @return the port that the edget connected from

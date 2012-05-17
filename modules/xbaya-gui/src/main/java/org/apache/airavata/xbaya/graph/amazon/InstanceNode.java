@@ -30,8 +30,6 @@ import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.graph.amazon.gui.InstanceNodeGUI;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.xmlpull.infoset.XmlElement;
 
 public class InstanceNode extends ResourceNode {
@@ -44,8 +42,6 @@ public class InstanceNode extends ResourceNode {
     private static final String INSTANCE_ID_TAG_NAME = "instance";
     private static final String INSTANCE_TYPE_TAG_NAME = "type";
     private static final String USERNAME_TAG_NAME = "username";
-
-    private InstanceNodeGUI gui;
 
     private boolean startNewInstance;
 
@@ -78,17 +74,6 @@ public class InstanceNode extends ResourceNode {
      */
     public InstanceNode(XmlElement nodeElement) throws GraphException {
         super(nodeElement);
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
-     */
-    @Override
-    public NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new InstanceNodeGUI(this);
-        }
-        return this.gui;
     }
 
     public boolean isStartNewInstance() {

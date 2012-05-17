@@ -34,13 +34,9 @@ import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
 import org.apache.airavata.xbaya.graph.Port.Kind;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.system.gui.EndifNodeGUI;
 import org.xmlpull.infoset.XmlElement;
 
 public class EndifNode extends SystemNode {
-
-    private EndifNodeGUI gui;
 
     /**
      * Creates a InputNode.
@@ -61,15 +57,6 @@ public class EndifNode extends SystemNode {
         super(nodeElement);
     }
 
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
-     */
-    public NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new EndifNodeGUI(this);
-        }
-        return this.gui;
-    }
 
     /**
      * @see org.apache.airavata.xbaya.graph.impl.NodeImpl#getComponent()

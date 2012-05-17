@@ -25,13 +25,9 @@ import org.apache.airavata.xbaya.component.system.BlockComponent;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.system.gui.BlockNodeGUI;
 import org.xmlpull.infoset.XmlElement;
 
 public class BlockNode extends SystemNode {
-
-    private BlockNodeGUI gui;
 
     /**
      * Creates a InputNode.
@@ -50,16 +46,6 @@ public class BlockNode extends SystemNode {
      */
     public BlockNode(XmlElement nodeElement) throws GraphException {
         super(nodeElement);
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
-     */
-    public NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new BlockNodeGUI(this);
-        }
-        return this.gui;
     }
 
     /**

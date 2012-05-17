@@ -24,13 +24,9 @@ package org.apache.airavata.xbaya.graph.system;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.system.gui.MemoNodeGUI;
 import org.xmlpull.infoset.XmlElement;
 
 public class MemoNode extends SystemNode {
-
-    private MemoNodeGUI gui;
 
     private String memo;
 
@@ -72,16 +68,6 @@ public class MemoNode extends SystemNode {
      */
     public void setMemo(String memo) {
         this.memo = memo;
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
-     */
-    public NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new MemoNodeGUI(this);
-        }
-        return this.gui;
     }
 
     @Override

@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.xbaya.graph.dynamic;
+package org.apache.airavata.xbaya.invoker;
 
 import java.io.File;
 import java.net.URI;
@@ -27,7 +27,6 @@ import java.net.URI;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
 
 import xsul.wsdl.WsdlDefinitions;

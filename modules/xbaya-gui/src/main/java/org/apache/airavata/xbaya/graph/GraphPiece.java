@@ -21,12 +21,7 @@
 
 package org.apache.airavata.xbaya.graph;
 
-import org.apache.airavata.xbaya.graph.gui.GraphPieceGUI;
 
 public interface GraphPiece {
 
-    /**
-     * @return The GUI of the piece.
-     */
-    public GraphPieceGUI getGUI();
 }

@@ -17,6 +17,8 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.graph.system.DifferedInputNode;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
@@ -126,7 +128,7 @@ public class DifferedInputConfigurationDialog {
     private void hide() {
     	
         this.dialog.hide();
-        this.node.getGUI().closingDisplay();
+        ((DifferedInputNodeGUI)NodeController.getGUI(this.node)).closingDisplay();
     }
 
     private void setInput() {
@@ -184,7 +186,7 @@ public class DifferedInputConfigurationDialog {
         this.node.setDescription(description);
         this.node.setDefaultValue(value);
         this.node.setMetadata(metadata);
-        this.node.getGUI().setBodyColor(NodeState.FINISHED.color);
+        NodeController.getGUI(this.node).setBodyColor(NodeState.FINISHED.color);
         
         hide();
         this.engine.getGUI().getGraphCanvas().repaint();

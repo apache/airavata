@@ -23,20 +23,16 @@ package org.apache.airavata.xbaya.graph.system;
 
 import java.util.List;
 
-import org.apache.airavata.xbaya.component.registry.ExitComponent;
+import org.apache.airavata.xbaya.component.ExitComponent;
 import org.apache.airavata.xbaya.graph.ControlEdge;
 import org.apache.airavata.xbaya.graph.Edge;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.impl.PortImpl;
-import org.apache.airavata.xbaya.graph.system.gui.ExitNodeGUI;
 import org.xmlpull.infoset.XmlElement;
 
 public class ExitNode extends SystemNode {
-
-    private ExitNodeGUI gui;
 
     /**
      * Constructs a BPELExitNode.
@@ -46,16 +42,6 @@ public class ExitNode extends SystemNode {
     public ExitNode(Graph graph) {
         super(graph);
         // TODO Auto-generated constructor stub
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
-     */
-    public NodeGUI getGUI() {
-        if (gui == null) {
-            this.gui = new ExitNodeGUI(this);
-        }
-        return gui;
     }
 
     @Override

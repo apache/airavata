@@ -19,9 +19,9 @@
  *
  */
 
-package org.apache.airavata.xbaya.interpretor;
+package org.apache.airavata.xbaya.wf;
 
-public enum XBayaExecutionState {
+public enum WorkflowExecutionState {
 
     NONE, RUNNING, PAUSED, STEP, STOPPED
 }

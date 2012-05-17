@@ -26,13 +26,9 @@ import org.apache.airavata.xbaya.component.amazon.TerminateInstanceComponent;
 import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.GraphSchema;
-import org.apache.airavata.xbaya.graph.amazon.gui.TerminateInstanceNodeGUI;
-import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.xmlpull.infoset.XmlElement;
 
 public class TerminateInstanceNode extends ResourceNode {
-
-    private TerminateInstanceNodeGUI gui;
 
     private boolean startNewInstance;
 
@@ -81,17 +77,6 @@ public class TerminateInstanceNode extends ResourceNode {
         XmlElement nodeElement = super.toXML();
         nodeElement.setAttributeValue(GraphSchema.NS, GraphSchema.NODE_TYPE_ATTRIBUTE, GraphSchema.NODE_TYPE_TERMINATE);
         return nodeElement;
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.graph.Node#getGUI()
-     */
-    @Override
-    public NodeGUI getGUI() {
-        if (this.gui == null) {
-            this.gui = new TerminateInstanceNodeGUI(this);
-        }
-        return this.gui;
     }
 
     public boolean isStartNewInstance() {

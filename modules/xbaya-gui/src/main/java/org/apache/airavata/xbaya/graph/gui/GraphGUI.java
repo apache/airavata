@@ -37,8 +37,9 @@ import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.GraphPiece;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.system.MemoNode;
-import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
+import org.apache.airavata.xbaya.graph.system.StreamSourceNode;
 import org.apache.airavata.xbaya.graph.util.GraphUtil;
 
 public class GraphGUI implements GraphPieceGUI {
@@ -59,7 +60,7 @@ public class GraphGUI implements GraphPieceGUI {
     public void mouseClicked(MouseEvent event, XBayaEngine engine) {
         GraphPiece piece = getGraphPieceAt(event.getPoint());
         if (piece != null && graph.isEditable()) {
-            piece.getGUI().mouseClicked(event, engine);
+            NodeController.getGUI(piece).mouseClicked(event, engine);
         }
     }
 
@@ -71,7 +72,7 @@ public class GraphGUI implements GraphPieceGUI {
     protected Rectangle getBounds() {
         Rectangle bounds = new Rectangle();
         for (Node node : this.graph.getNodes()) {
-            bounds.add(node.getGUI().getBounds());
+            bounds.add(NodeController.getGUI(node).getBounds());
         }
         final int margin = 10;
         bounds.height += margin;
@@ -86,7 +87,7 @@ public class GraphGUI implements GraphPieceGUI {
 
         // Calcurate the widge of the nodes.
         for (Node node : this.graph.getNodes()) {
-            node.getGUI().calculatePositions(g);
+        	NodeController.getGUI(node).calculatePositions(g);
         }
 
         LinkedList<Node> nodes = new LinkedList<Node>(this.graph.getNodes());
@@ -95,25 +96,25 @@ public class GraphGUI implements GraphPieceGUI {
 
         // Paints the edges before nodes.
         for (Edge edge : this.graph.getEdges()) {
-            edge.getGUI().paint(g);
+            NodeController.getGUI(edge).paint(g);
         }
 
         // Paint regular nodes.
         // The ports are painted from inside of each node.
         for (Node node : nodes) {
-            node.getGUI().paint(g);
+        	NodeController.getGUI(node).paint(g);
         }
 
         // Print memoNodes at last so that they stay on top of everything.
         for (MemoNode node : memoNodes) {
-            node.getGUI().paint(g);
+            NodeController.getGUI(node).paint(g);
         }
     }
 
     protected StreamSourceNode getStreamSourceAt(Point point) {
         for (Node node : this.graph.getNodes()) {
             // Check the node first
-            if (node.getGUI().isIn(point) && node instanceof StreamSourceNode) {
+            if (NodeController.getGUI(node).isIn(point) && node instanceof StreamSourceNode) {
                 return (StreamSourceNode) node;
             }
         }
@@ -136,7 +137,7 @@ public class GraphGUI implements GraphPieceGUI {
         double minEdgeDist = Double.MAX_VALUE;
         Edge closestEdge = null;
         for (Edge edge : this.graph.getEdges()) {
-            double dist = edge.getGUI().getMiddlePosition().distance(point);
+            double dist = NodeController.getGUI(edge).getMiddlePosition().distance(point);
             if (dist < minEdgeDist) {
                 closestEdge = edge;
                 minEdgeDist = dist;
@@ -149,7 +150,7 @@ public class GraphGUI implements GraphPieceGUI {
         // Then, each node and ports of it.
         for (Node node : this.graph.getNodes()) {
             // Check the node first
-            if (node.getGUI().isIn(point)) {
+            if (NodeController.getGUI(node).isIn(point)) {
                 piece = node;
             }
 
@@ -157,7 +158,7 @@ public class GraphGUI implements GraphPieceGUI {
             double minPortDist = Double.MAX_VALUE;
             Port closestPort = null;
             for (Port port : node.getAllPorts()) {
-                double dist = port.getGUI().getPosition().distance(point);
+                double dist = NodeController.getGUI(port).getPosition().distance(point);
                 if (dist < minPortDist) {
                     closestPort = port;
                     minPortDist = dist;
@@ -185,7 +186,7 @@ public class GraphGUI implements GraphPieceGUI {
 
         // Then, each node and ports of it.
         for (Node node : this.graph.getNodes()) {
-            Rectangle inter = SwingUtilities.computeIntersection(rec.x, rec.y, rec.width, rec.height, node.getGUI()
+            Rectangle inter = SwingUtilities.computeIntersection(rec.x, rec.y, rec.width, rec.height, NodeController.getGUI(node)
                     .getBounds());
             if (inter.width != 0 && inter.height != 0)
                 pieces.add(node);

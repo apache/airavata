@@ -25,12 +25,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.airavata.xbaya.component.Component;
+import org.apache.airavata.xbaya.component.ExitComponent;
 import org.apache.airavata.xbaya.component.StreamSourceComponent;
 import org.apache.airavata.xbaya.component.SubWorkflowComponent;
 import org.apache.airavata.xbaya.component.dynamic.DynamicComponent;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 import org.apache.airavata.xbaya.component.system.BlockComponent;
 import org.apache.airavata.xbaya.component.system.ConstantComponent;
+import org.apache.airavata.xbaya.component.system.DifferedInputComponent;
 import org.apache.airavata.xbaya.component.system.EndBlockComponent;
 import org.apache.airavata.xbaya.component.system.EndForEachComponent;
 import org.apache.airavata.xbaya.component.system.EndifComponent;
@@ -41,7 +43,6 @@ import org.apache.airavata.xbaya.component.system.MemoComponent;
 import org.apache.airavata.xbaya.component.system.OutputComponent;
 import org.apache.airavata.xbaya.component.system.ReceiveComponent;
 import org.apache.airavata.xbaya.component.system.S3InputComponent;
-import org.apache.airavata.xbaya.graph.system.gui.DifferedInputComponent;
 
 public class SystemComponentRegistry extends ComponentRegistry {
 

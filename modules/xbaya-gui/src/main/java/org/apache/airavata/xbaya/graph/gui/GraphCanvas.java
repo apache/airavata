@@ -48,11 +48,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -61,9 +59,9 @@ import javax.swing.JScrollPane;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.XBayaConfiguration;
+import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.component.Component;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.gui.ComponentSourceTransferable;
@@ -77,15 +75,15 @@ import org.apache.airavata.xbaya.graph.GraphPiece;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.Port.Kind;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.dynamic.DynamicNode;
 import org.apache.airavata.xbaya.graph.dynamic.PortAddable;
 import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.graph.system.gui.StreamSourceNode;
-import org.apache.airavata.xbaya.graph.util.GraphUtil;
+import org.apache.airavata.xbaya.graph.system.StreamSourceNode;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.XBayaExecutionModeListener;
-import org.apache.airavata.xbaya.interpretor.XBayaExecutionState;
 import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.airavata.xbaya.wf.WorkflowExecutionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
@@ -459,7 +457,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
          * selected
          */
         Point point = event.getPoint();
-        GraphPiece clicked = this.graph.getGUI().getGraphPieceAt(point);
+        GraphPiece clicked = NodeController.getGUI(this.graph).getGraphPieceAt(point);
         if ((clicked instanceof Node) && this.multipleSelectedNodes != null) {
             Node node = (Node) clicked;
             if (!this.crtlPressed) {
@@ -469,7 +467,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
         }
 
         // delegate the event.
-        this.graph.getGUI().mouseClicked(event, this.engine);
+        NodeController.getGUI(this.graph).mouseClicked(event, this.engine);
     }
 
     private void mousePressed(MouseEvent event) {
@@ -479,7 +477,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
         this.panel.requestFocusInWindow();
 
         // Get select item
-        GraphPiece selected = this.graph.getGUI().getGraphPieceAt(point);
+        GraphPiece selected = NodeController.getGUI(this.graph).getGraphPieceAt(point);
 
         /*
          * Doing Nothing if pressed is on the selected node
@@ -519,15 +517,15 @@ public class GraphCanvas implements XBayaExecutionModeListener{
         if (selected instanceof Node) {
             Node node = (Node) selected;
             selectNode(node);
-            if (!node.getGUI().isInConfig(point)) {
+            if (!NodeController.getGUI(node).isInConfig(point)) {
                 this.draggedNode = node;
-                node.getGUI().setDraggedFlag(true);
+                NodeController.getGUI(node).setDraggedFlag(true);
                 this.panel.setCursor(SwingUtil.MOVE_CURSOR);
             }
 
         } else if (selected instanceof Port) {
             Port port = (Port) selected;
-            port.getGUI().setSelectedFlag(true);
+            NodeController.getGUI(port).setSelectedFlag(true);
             switch (port.getKind()) {
             case DATA_IN:
             case CONTROL_IN:
@@ -562,12 +560,12 @@ public class GraphCanvas implements XBayaExecutionModeListener{
     private void mouseReleased(MouseEvent event) {
         Point point = event.getPoint();
         if (this.draggedNode != null) {
-            this.draggedNode.getGUI().setDraggedFlag(false);
+            NodeController.getGUI(this.draggedNode).setDraggedFlag(false);
             this.panel.setCursor(SwingUtil.DEFAULT_CURSOR);
 
             // Check if it s stream grouping
             if (draggedNode instanceof InputNode) {
-                StreamSourceNode streamNode = this.graph.getGUI().getStreamSourceAt(point);
+                StreamSourceNode streamNode = NodeController.getGUI(this.graph).getStreamSourceAt(point);
                 if (streamNode != null) {
                     streamNode.addInputNode((InputNode) draggedNode);
                 }
@@ -578,7 +576,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
         }
 
         if (this.draggedPort != null) {
-            GraphPiece graphPiece = this.graph.getGUI().getGraphPieceAt(point);
+            GraphPiece graphPiece = NodeController.getGUI(this.graph).getGraphPieceAt(point);
             if (graphPiece instanceof DynamicNode) {
                 if (this.draggedPort.getKind() == Kind.DATA_OUT && draggedPort instanceof DataPort) {
                     this.panel.setCursor(SwingUtil.CROSSHAIR_CURSOR);
@@ -634,7 +632,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
             int y = (int) (this.mousePoint.getY() > this.mousePointForSelection.getY() ? this.mousePointForSelection
                     .getY() : this.mousePoint.getY());
 
-            this.multipleSelectedNodes = this.graph.getGUI().getNodesIn(new Rectangle(x, y, (int) width, (int) height));
+            this.multipleSelectedNodes = NodeController.getGUI(this.graph).getNodesIn(new Rectangle(x, y, (int) width, (int) height));
             selectNodes(this.multipleSelectedNodes);
 
             // clear mousepoint
@@ -709,7 +707,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 				event.consume();
 			}
 			if (this.draggedPort != null) {
-				GraphPiece piece = this.graph.getGUI().getGraphPieceAt(point);
+				GraphPiece piece = NodeController.getGUI(this.graph).getGraphPieceAt(point);
 				if (piece instanceof Port) {
 					Port port = (Port) piece;
 					// Display the information of port that is close to the mouse
@@ -756,10 +754,10 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 
     private void mouseMoved(MouseEvent event) {
         Point point = event.getPoint();
-        GraphPiece graphPiece = this.graph.getGUI().getGraphPieceAt(point);
+        GraphPiece graphPiece = NodeController.getGUI(this.graph).getGraphPieceAt(point);
         if (graphPiece instanceof Node) {
             Node node = (Node) graphPiece;
-            if (node.getGUI().isInConfig(point)) {
+            if (NodeController.getGUI(node).isInConfig(point)) {
                 this.panel.setCursor(SwingUtil.HAND_CURSOR);
             } else {
                 this.panel.setCursor(SwingUtil.DEFAULT_CURSOR);
@@ -851,7 +849,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
      * @return The image
      */
     private BufferedImage createImage() {
-        Rectangle bounds = this.graph.getGUI().getBounds();
+        Rectangle bounds = NodeController.getGUI(this.graph).getBounds();
         BufferedImage image = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = image.createGraphics();
 
@@ -886,18 +884,18 @@ public class GraphCanvas implements XBayaExecutionModeListener{
     }
 
     private void paintComponent(Graphics2D g) {
-        this.graph.getGUI().paint(g);
+        NodeController.getGUI(this.graph).paint(g);
 
         // Draws a creating edge.
         if (this.draggedPort != null) {
             Point p1, p2;
             Kind kind = this.draggedPort.getKind();
             if (kind == Kind.DATA_OUT || kind == Kind.CONTROL_OUT || kind == Kind.EPR) {
-                p1 = this.draggedPort.getGUI().getPosition();
+                p1 = NodeController.getGUI(this.draggedPort).getPosition();
                 p2 = this.mousePoint;
             } else if (kind == Kind.DATA_IN || kind == Kind.CONTROL_IN) {
                 p1 = this.mousePoint;
-                p2 = this.draggedPort.getGUI().getPosition();
+                p2 = NodeController.getGUI(this.draggedPort).getPosition();
             } else {
                 // This should not happen.
                 throw new XBayaRuntimeException();
@@ -949,7 +947,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
      */
     private void updateSize() {
 
-        Rectangle bounds = this.graph.getGUI().getBounds();
+        Rectangle bounds = NodeController.getGUI(this.graph).getBounds();
         Dimension newDimention = new Dimension(bounds.width, bounds.height);
 
         if (!newDimention.equals(this.graphDimention)) {
@@ -985,15 +983,15 @@ public class GraphCanvas implements XBayaExecutionModeListener{
      */
     private void selectNode(Node node) {
         deselectNode();
-        node.getGUI().setSelectedFlag(true);
+        NodeController.getGUI(node).setSelectedFlag(true);
         setSelectedNode(node);
     }
 
     private void selectNodes(List<Node> nodes) {
         deselectNode();
         for (Node node : nodes) {
-            node.getGUI().setSelectedFlag(true);
-            node.getGUI().setDraggedFlag(true);
+            NodeController.getGUI(node).setSelectedFlag(true);
+            NodeController.getGUI(node).setDraggedFlag(true);
         }
         this.multipleSelectedNodes = nodes;
         notifyListeners(new GraphCanvasEvent(GraphCanvasEvent.GraphCanvasEventType.NODE_SELECTED, this, this.workflow));
@@ -1004,14 +1002,14 @@ public class GraphCanvas implements XBayaExecutionModeListener{
      */
     private void deselectNode() {
         if (this.selectedNode != null) {
-            this.selectedNode.getGUI().setSelectedFlag(false);
-            this.selectedNode.getGUI().setDraggedFlag(false);
+            NodeController.getGUI(this.selectedNode).setSelectedFlag(false);
+            NodeController.getGUI(this.selectedNode).setDraggedFlag(false);
             setSelectedNode(null);
         }
         if (this.multipleSelectedNodes != null) {
             for (Node node : this.multipleSelectedNodes) {
-                node.getGUI().setSelectedFlag(false);
-                node.getGUI().setDraggedFlag(false);
+                NodeController.getGUI(node).setSelectedFlag(false);
+                NodeController.getGUI(node).setDraggedFlag(false);
             }
             this.multipleSelectedNodes = null;
         }
@@ -1019,8 +1017,8 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 
     private void deselectNode(Node node) {
         if (this.multipleSelectedNodes != null && this.multipleSelectedNodes.contains(node)) {
-            node.getGUI().setSelectedFlag(false);
-            node.getGUI().setDraggedFlag(false);
+            NodeController.getGUI(node).setSelectedFlag(false);
+            NodeController.getGUI(node).setDraggedFlag(false);
             this.multipleSelectedNodes.remove(node);
         }
     }
@@ -1033,13 +1031,13 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 
     private void selectInputPort(Port port) {
         deselectInputPort();
-        port.getGUI().setSelectedFlag(true);
+        NodeController.getGUI(port).setSelectedFlag(true);
         setSelectedInputPort(port);
     }
 
     private void deselectInputPort() {
         if (this.selectedInputPort != null) {
-            this.selectedInputPort.getGUI().setSelectedFlag(false);
+        	NodeController.getGUI(this.selectedInputPort).setSelectedFlag(false);
             setSelectedInputPort(null);
         }
     }
@@ -1052,13 +1050,13 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 
     private void selectOutputPort(Port port) {
         deselectOutputPort();
-        port.getGUI().setSelectedFlag(true);
+        NodeController.getGUI(port).setSelectedFlag(true);
         setSelectedOutputPort(port);
     }
 
     private void deselectOutputPort() {
         if (this.selectedOutputPort != null) {
-            this.selectedOutputPort.getGUI().setSelectedFlag(false);
+        	NodeController.getGUI(this.selectedOutputPort).setSelectedFlag(false);
             setSelectedOutputPort(null);
         }
     }
@@ -1066,7 +1064,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
     private void selectEdge(Edge edge) {
         if (edge != null) {
             deselectEdge();
-            edge.getGUI().setSelectedFlag(true);
+            NodeController.getGUI(edge).setSelectedFlag(true);
             this.selectedEdge = edge;
 
             // When an edge is selected, ports on both sides will be selected
@@ -1078,7 +1076,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 
     private void deselectEdge() {
         if (this.selectedEdge != null) {
-            this.selectedEdge.getGUI().setSelectedFlag(false);
+        	NodeController.getGUI(this.selectedEdge).setSelectedFlag(false);
             this.selectedEdge = null;
         }
     }
@@ -1256,7 +1254,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
                 for (DataPort dataPort : outputPorts) {
                     exploreNodes.addAll(dataPort.getToNodes());
                 }
-                node.getGUI().setBodyColor(NodeGUI.DEFAULT_BODY_COLOR);
+                NodeController.getGUI(node).setBodyColor(NodeGUI.DEFAULT_BODY_COLOR);
 
                 exploreNodes.remove(0);
             }
@@ -1268,11 +1266,11 @@ public class GraphCanvas implements XBayaExecutionModeListener{
         this.nodePopup.remove(rerunItem);
         this.nodePopup.remove(breakPointItem);
 
-        if (this.engine.getWorkflow().getExecutionState() == XBayaExecutionState.PAUSED && !(node instanceof InputNode)) {
+        if (this.engine.getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED && !(node instanceof InputNode)) {
             this.nodePopup.add(rerunItem);
 
         }
-        if (this.engine.getWorkflow().getExecutionState() != XBayaExecutionState.NONE) {
+        if (this.engine.getWorkflow().getExecutionState() != WorkflowExecutionState.NONE) {
             if (node.isBreak()) {
                 breakPointItem.setText("Remove break Point");
             } else {
@@ -1300,7 +1298,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 
     private void maybeShowPopup(MouseEvent event) {
         if (event.isPopupTrigger()) {
-            GraphPiece piece = this.graph.getGUI().getGraphPieceAt(event.getPoint());
+            GraphPiece piece = NodeController.getGUI(this.graph).getGraphPieceAt(event.getPoint());
             if (piece instanceof Node) {
                 prepareNodePopupMenu((Node) piece);
                 this.nodePopup.show(event.getComponent(), event.getX(), event.getY());
@@ -1344,5 +1342,6 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 	public void executionModeChanged(XBayaConfiguration config) {
 		editable=config.getXbayaExecutionMode()==XBayaExecutionMode.IDE;
 		getGraph().setEditable(editable);
+		this.workflow.setEditable(config.getXbayaExecutionMode()==XBayaExecutionMode.IDE);
 	}
 }
