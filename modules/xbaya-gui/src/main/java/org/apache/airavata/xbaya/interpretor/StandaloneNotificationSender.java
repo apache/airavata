@@ -34,7 +34,7 @@ import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.jython.lib.StandaloneServiceNotificationSender;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
-import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
+import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.axis2.addressing.EndpointReference;
 import org.python.core.PyObject;
 

@@ -22,8 +22,8 @@
 package org.apache.airavata.xbaya.test;
 
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.gui.Cancelable;
-import org.apache.airavata.xbaya.gui.WaitDialog;
+import org.apache.airavata.xbaya.ui.Cancelable;
+import org.apache.airavata.xbaya.ui.WaitDialog;
 
 public class WaitDialogTestCase extends XBayaTestCase {
 

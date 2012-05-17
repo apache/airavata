@@ -29,10 +29,10 @@ import org.apache.airavata.schemas.gfac.JobTypeType;
 import org.apache.airavata.schemas.gfac.JobTypeType.Enum;
 import org.apache.airavata.schemas.gfac.ProjectAccountType;
 import org.apache.airavata.schemas.gfac.QueueType;
-import org.apache.airavata.xbaya.gui.GridPanel;
-import org.apache.airavata.xbaya.gui.XBayaComboBox;
-import org.apache.airavata.xbaya.gui.XBayaLabel;
-import org.apache.airavata.xbaya.gui.XBayaTextField;
+import org.apache.airavata.xbaya.ui.GridPanel;
+import org.apache.airavata.xbaya.ui.XBayaComboBox;
+import org.apache.airavata.xbaya.ui.XBayaLabel;
+import org.apache.airavata.xbaya.ui.XBayaTextField;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

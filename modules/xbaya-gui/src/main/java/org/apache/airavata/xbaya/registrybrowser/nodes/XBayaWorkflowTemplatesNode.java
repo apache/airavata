@@ -29,10 +29,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.registrybrowser.menu.AddAction;
-import org.apache.airavata.xbaya.registrybrowser.menu.RefreshAction;
-import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowTemplates;
+import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowTemplates;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.AddAction;
+import org.apache.airavata.xbaya.ui.registrybrowser.menu.RefreshAction;
 
 public class XBayaWorkflowTemplatesNode extends AbstractAiravataTreeNode {
     private XBayaWorkflowTemplates xbayaWorkflows;

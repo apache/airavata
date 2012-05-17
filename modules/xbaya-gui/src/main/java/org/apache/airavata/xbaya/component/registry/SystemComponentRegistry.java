@@ -42,7 +42,7 @@ import org.apache.airavata.workflow.model.component.system.MemoComponent;
 import org.apache.airavata.workflow.model.component.system.OutputComponent;
 import org.apache.airavata.workflow.model.component.system.ReceiveComponent;
 import org.apache.airavata.workflow.model.component.system.S3InputComponent;
-import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
+import org.apache.airavata.xbaya.ui.component.ComponentTreeNode;
 
 public class SystemComponentRegistry extends ComponentRegistry {
 

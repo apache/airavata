@@ -24,7 +24,7 @@ package org.apache.airavata.xbaya.registrybrowser.nodes;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.registrybrowser.model.*;
+import org.apache.airavata.xbaya.model.registrybrowser.*;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;

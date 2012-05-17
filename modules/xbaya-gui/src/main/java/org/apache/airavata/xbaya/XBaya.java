@@ -27,7 +27,7 @@ import java.net.URISyntaxException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
-import org.apache.airavata.xbaya.gui.ErrorMessages;
+import org.apache.airavata.xbaya.ui.ErrorMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

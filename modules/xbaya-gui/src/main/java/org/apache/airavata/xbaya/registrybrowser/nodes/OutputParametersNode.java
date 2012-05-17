@@ -24,7 +24,7 @@ package org.apache.airavata.xbaya.registrybrowser.nodes;
 import javax.swing.Icon;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.xbaya.registrybrowser.model.OutputParameters;
+import org.apache.airavata.xbaya.model.registrybrowser.OutputParameters;
 
 public class OutputParametersNode extends ParametersNode {
 

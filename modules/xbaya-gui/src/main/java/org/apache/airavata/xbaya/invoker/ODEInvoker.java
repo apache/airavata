@@ -31,14 +31,14 @@ import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.gui.Cancelable;
-import org.apache.airavata.xbaya.gui.ErrorMessages;
-import org.apache.airavata.xbaya.gui.WaitDialog;
 import org.apache.airavata.xbaya.lead.LEADWorkflowInvoker;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
+import org.apache.airavata.xbaya.ui.Cancelable;
+import org.apache.airavata.xbaya.ui.ErrorMessages;
+import org.apache.airavata.xbaya.ui.WaitDialog;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +69,7 @@ public class ODEInvoker implements Cancelable {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.gui.Cancelable#cancel()
+     * @see org.apache.airavata.xbaya.ui.Cancelable#cancel()
      */
     public void cancel() {
         this.canceled = true;

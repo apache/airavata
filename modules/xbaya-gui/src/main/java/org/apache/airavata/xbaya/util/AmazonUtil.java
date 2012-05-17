@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.airavata.xbaya.amazonEC2.gui.AmazonCredential;
+import org.apache.airavata.xbaya.ui.amazonEC2.AmazonCredential;
 
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.AmazonEC2;
