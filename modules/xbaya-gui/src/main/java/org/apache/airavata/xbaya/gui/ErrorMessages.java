@@ -44,11 +44,6 @@ public interface ErrorMessages {
     public static final String PASSWORD_EMPTY = "Password cannot be empty.";
 
     /**
-     * Error message for XML format errors.
-     */
-    public static final String XML_ERROR = "XML format error.";
-
-    /**
      * Error message when it fails to open the file.
      */
     public static final String OPEN_FILE_ERROR = "Failed to open the file.";
@@ -238,10 +233,6 @@ public interface ErrorMessages {
      */
     public static final String CONSTANT_NOT_CONNECTED_WARNING = "You need to connect the constant to an input of a service first to configure.";
 
-    /**
-     * MORE_THAN_ONE_CONNECTIONS
-     */
-    public static final String MORE_THAN_ONE_CONNECTIONS = "Cannot connect more than one output ports to an input port.";
     String CREDENTIALS_WRONG = "Please check credentials";
     String GIVEN_WORKFLOW_NAME_IS_WRONG = "Given Workflow Name is Wrong ";
     String REPOSITORY_CONFIGURATION_IS_WRONG_FAILED_TO_LOAD_THE_WORKFLOW = "Repository Configuration is Wrong, Failed to load the Workflow";

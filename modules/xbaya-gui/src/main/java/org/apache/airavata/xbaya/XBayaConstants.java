@@ -45,11 +45,6 @@ public class XBayaConstants {
      */
     public static final URI WEB_URL = URI.create("http://airavata.org");
 
-    /**
-     * Namespace URI
-     */
-    public static final String NS_URI_XBAYA = "http://airavata.apache.org/xbaya/";
-
     // Default values
 
     /**

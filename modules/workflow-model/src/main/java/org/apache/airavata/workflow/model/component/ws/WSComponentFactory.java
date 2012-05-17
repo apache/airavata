@@ -30,7 +30,7 @@ import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.ComponentException;
-import org.apache.airavata.xbaya.gui.ErrorMessages;
+import org.apache.airavata.workflow.model.utils.MessageConstants;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul5.wsdl.WsdlDefinitions;
@@ -48,7 +48,7 @@ public class WSComponentFactory {
         try {
             return createComponents(XMLUtil.stringToXmlElement(wsdlString));
         } catch (RuntimeException e) {
-            throw new ComponentException(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
+            throw new ComponentException(MessageConstants.COMPONENT_FORMAT_ERROR, e);
         }
 
     }
@@ -63,7 +63,7 @@ public class WSComponentFactory {
             WsdlDefinitions definitions = new WsdlDefinitions(componentElement);
             return createComponents(definitions);
         } catch (RuntimeException e) {
-            throw new ComponentException(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
+            throw new ComponentException(MessageConstants.COMPONENT_FORMAT_ERROR, e);
         }
     }
 
@@ -83,7 +83,7 @@ public class WSComponentFactory {
                 components.add(component);
             }
         } catch (Exception e) {
-            throw new ComponentException(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
+            throw new ComponentException(MessageConstants.COMPONENT_FORMAT_ERROR, e);
         }
         return components;
     }
@@ -139,9 +139,9 @@ public class WSComponentFactory {
             }
             return component;
         } catch (RuntimeException e) {
-            throw new ComponentException(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
+            throw new ComponentException(MessageConstants.COMPONENT_FORMAT_ERROR, e);
         } catch (UtilsException e) {
-            throw new ComponentException(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
+            throw new ComponentException(MessageConstants.COMPONENT_FORMAT_ERROR, e);
         }
     }
 }

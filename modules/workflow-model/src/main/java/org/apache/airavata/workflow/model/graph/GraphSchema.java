@@ -22,7 +22,7 @@
 package org.apache.airavata.workflow.model.graph;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.XBayaConstants;
+import org.apache.airavata.workflow.model.utils.WorkflowConstants;
 import org.xmlpull.infoset.XmlNamespace;
 
 public class GraphSchema {
@@ -35,7 +35,7 @@ public class GraphSchema {
     /**
      * Namespace URI
      */
-    public static final String NS_URI_XGR = XBayaConstants.NS_URI_XBAYA + "graph";
+    public static final String NS_URI_XGR = WorkflowConstants.NS_URI_XBAYA + "graph";
 
     /**
      * Namespace

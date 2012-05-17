@@ -33,7 +33,7 @@ import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
-import org.apache.airavata.xbaya.gui.ErrorMessages;
+import org.apache.airavata.workflow.model.utils.MessageConstants;
 import org.xmlpull.infoset.XmlElement;
 
 public class WSNode extends NodeImpl implements ForEachExecutableNode{
@@ -181,7 +181,7 @@ public class WSNode extends NodeImpl implements ForEachExecutableNode{
             WSComponent wsdlComponent = WSComponentFactory.createComponent(componentString);
             setComponent(wsdlComponent);
         } catch (ComponentException e) {
-            throw new GraphException(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
+            throw new GraphException(MessageConstants.COMPONENT_FORMAT_ERROR, e);
         }
     }
 }

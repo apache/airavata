@@ -18,46 +18,13 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-xbaya-gui</artifactId>
+    <artifactId>airavata-workflow-model</artifactId>
     <packaging>jar</packaging>
-    <name>Airavata XBaya</name>
+    <name>Airavata Workflow Model</name>
     <url>http://incubator.apache.org/airavata/</url>
 
     <!-- Edit the following properties. -->
     <profiles>
-        <profile>
-            <id>standalone</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <trustedCertsLocation>${project.home}/certificates/
-                </trustedCertsLocation>
-                <ssl.trustedCertsFile>${trustedCertsLocation}</ssl.trustedCertsFile>
-                <build.scope>provided</build.scope>
-                <build.jsf>compile</build.jsf>
-
-                <!-- JNLP Properties -->
-                <!-- Deployment Information -->
-                <jnlpURLPrefix>http://localhost/airavata-xbaya</jnlpURLPrefix>
-                <jnlpFileName>xbaya.jnlp</jnlpFileName>
-
-                <registryEPR>
-                    http://localhost:8090/jackrabbit-webapp-2.4.0/rmi
-                </registryEPR>
-                <gfacEPR>
-                    http://localhost:8080/axis2/services/GFacService
-                </gfacEPR>
-                <messagebrokerEPR>
-                    http://localhost:8080/axis2/services/EventingService
-                </messagebrokerEPR>
-                <messageboxEPR>
-                    http://localhost:8080/axis2/services/MsgBoxService
-                </messageboxEPR>
-
-            </properties>
-        </profile>
-
         <profile>
             <id>collective</id>
             <activation>
@@ -76,25 +43,6 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>restore-persistence</id>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <tasks>
-                                <copy file="${project.build.outputDirectory}/services.xml" tofile="${project.build.outputDirectory}/META-INF/services.xml" />
-                                <copy file="src/main/resources/WorkflowInterpretor.wsdl" tofile="${project.build.outputDirectory}/META-INF/service.wsdl" />
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
@@ -108,63 +56,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/jnlp/lib</outputDirectory>
-                            <overWriteReleases>false</overWriteReleases>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                            <excludeTransitive>false</excludeTransitive>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>webstart-maven-plugin</artifactId>
-                <version>1.0-beta-3</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jnlp</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <jnlp>
-                        <inputTemplate>src/main/resources/xbaya-jnlp-template.vm</inputTemplate>
-                        <outputFile>${jnlpFileName}</outputFile>
-                        <mainClass>org.apache.airavata.xbaya.XBaya</mainClass>
-                    </jnlp>
-                    <libPath>lib</libPath>
-                    <sign>
-                        <keystore>${basedir}/target/keystore</keystore>
-                        <keypass>xbaya-secret</keypass>
-                        <storepass>xbaya-secret</storepass>
-                        <alias>xbaya</alias>
-                        <validity>365</validity>
-
-                        <dnameCn>Airavata</dnameCn>
-                        <dnameOu>Apache</dnameOu>
-                        <dnameO>Apache Software Foundation</dnameO>
-
-                        <keystoreConfig>
-                            <delete>true</delete>
-                            <gen>true</gen>
-                        </keystoreConfig>
-                    </sign>
-                    <verifyjar>true</verifyjar>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
 
@@ -331,11 +222,6 @@
         </dependency>
 
         <!-- AIRAVATA modules -->
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-workflow-model</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-message-broker</artifactId>

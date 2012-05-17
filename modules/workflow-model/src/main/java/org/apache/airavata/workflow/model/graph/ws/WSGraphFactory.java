@@ -55,7 +55,7 @@ import org.apache.airavata.workflow.model.graph.system.OutputNode;
 import org.apache.airavata.workflow.model.graph.system.ReceiveNode;
 import org.apache.airavata.workflow.model.graph.system.StreamSourceNode;
 import org.apache.airavata.workflow.model.graph.system.SystemDataPort;
-import org.apache.airavata.xbaya.gui.ErrorMessages;
+import org.apache.airavata.workflow.model.utils.MessageConstants;
 import org.xmlpull.infoset.XmlElement;
 
 /**
@@ -96,7 +96,7 @@ public class WSGraphFactory implements GraphFactory {
         try {
             graphElement = XMLUtil.stringToXmlElement(graphString);
         } catch (RuntimeException e) {
-            throw new GraphException(ErrorMessages.XML_ERROR, e);
+            throw new GraphException(MessageConstants.XML_ERROR, e);
         }
         return createGraph(graphElement);
     }
@@ -112,7 +112,7 @@ public class WSGraphFactory implements GraphFactory {
             graph.parse(graphElement);
             return graph;
         } catch (RuntimeException e) {
-            throw new GraphException(ErrorMessages.XML_ERROR, e);
+            throw new GraphException(MessageConstants.XML_ERROR, e);
         }
     }
 
