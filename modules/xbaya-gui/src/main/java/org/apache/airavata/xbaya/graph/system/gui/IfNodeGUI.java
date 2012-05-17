@@ -28,12 +28,12 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.util.List;
 
+import org.apache.airavata.workflow.model.graph.Port;
+import org.apache.airavata.workflow.model.graph.impl.PortImpl;
+import org.apache.airavata.workflow.model.graph.system.IfNode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.PortGUI;
-import org.apache.airavata.xbaya.graph.impl.PortImpl;
-import org.apache.airavata.xbaya.graph.system.IfNode;
 
 public class IfNodeGUI extends ConfigurableNodeGUI {
 

@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.event.Event;
 import org.apache.airavata.xbaya.event.Event.Type;
 import org.apache.airavata.xbaya.event.EventProducer;
@@ -131,7 +131,7 @@ public class Monitor extends EventProducer {
                 public void run() {
                     try {
                         unsubscribe(client);
-                    } catch (XBayaException e) {
+                    } catch (WorkflowException e) {
                         // Ignore the error in unsubscription.
                         logger.error(e.getMessage(), e);
                     }

@@ -28,7 +28,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.xbaya.XBayaRuntimeException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.globus.gsi.ptls.PureTLSContext;
 
 import xsul.invoker.puretls.PuretlsInvoker;
@@ -79,7 +79,7 @@ public class XBayaSecurity {
             // This is a temporary solution
             InputStream anonymousCertificateStream = XBayaSecurity.class.getResourceAsStream(ANONYMOUS_CERTIFICATE);
             if (anonymousCertificateStream == null) {
-                throw new XBayaRuntimeException("Failed to get InputStream to " + ANONYMOUS_CERTIFICATE);
+                throw new WorkflowRuntimeException("Failed to get InputStream to " + ANONYMOUS_CERTIFICATE);
             }
 
             sslContext.loadEAYKeyFile(anonymousCertificateStream, "");
@@ -95,9 +95,9 @@ public class XBayaSecurity {
             WsdlResolver.getInstance().setSecureInvoker(invoker);
 
         } catch (GeneralSecurityException e) {
-            throw new XBayaRuntimeException(e);
+            throw new WorkflowRuntimeException(e);
         } catch (IOException e) {
-            throw new XBayaRuntimeException(e);
+            throw new WorkflowRuntimeException(e);
         }
 
     }
@@ -105,7 +105,7 @@ public class XBayaSecurity {
     private static List<X509Certificate> getTrustedCertificates(String pass) {
         InputStream stream = XBayaSecurity.class.getResourceAsStream(pass);
         if (stream == null) {
-            throw new XBayaRuntimeException("Failed to get InputStream to " + pass);
+            throw new WorkflowRuntimeException("Failed to get InputStream to " + pass);
         }
         return SecurityUtil.readTrustedCertificates(stream);
     }

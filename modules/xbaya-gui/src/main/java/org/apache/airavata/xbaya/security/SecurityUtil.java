@@ -33,8 +33,8 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.globus.gsi.CertUtil;
 import org.globus.myproxy.MyProxyException;
@@ -68,10 +68,10 @@ public class SecurityUtil {
                 certificate = CertUtil.readCertificate(bufferedReader);
             } catch (IOException e) {
                 String message = "Failed to read certificates";
-                throw new XBayaRuntimeException(message, e);
+                throw new WorkflowRuntimeException(message, e);
             } catch (GeneralSecurityException e) {
                 String message = "Certificates are invalid";
-                throw new XBayaRuntimeException(message, e);
+                throw new WorkflowRuntimeException(message, e);
             }
             if (certificate == null) {
                 break;
@@ -92,7 +92,7 @@ public class SecurityUtil {
         } else if ("https".equalsIgnoreCase(scheme)) {
             return true;
         } else {
-            throw new XBayaRuntimeException("Protocol, " + scheme + ", is not supported");
+            throw new WorkflowRuntimeException("Protocol, " + scheme + ", is not supported");
         }
     }
 
@@ -111,7 +111,7 @@ public class SecurityUtil {
         try {
             myProxyClient.load();
         } catch (MyProxyException e) {
-            throw new XBayaRuntimeException("Failed loading the myproxy", e);
+            throw new WorkflowRuntimeException("Failed loading the myproxy", e);
         }
         GSSCredential gssCredential = myProxyClient.getProxy();
         return gssCredential;

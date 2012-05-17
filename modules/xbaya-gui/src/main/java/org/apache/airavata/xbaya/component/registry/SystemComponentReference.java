@@ -24,7 +24,7 @@ package org.apache.airavata.xbaya.component.registry;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.airavata.xbaya.component.Component;
+import org.apache.airavata.workflow.model.component.Component;
 
 public class SystemComponentReference extends ComponentReference {
 

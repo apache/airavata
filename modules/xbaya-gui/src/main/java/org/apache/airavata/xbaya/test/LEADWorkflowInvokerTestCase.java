@@ -32,11 +32,11 @@ import junit.framework.TestSuite;
 
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.component.ComponentException;
-import org.apache.airavata.xbaya.component.ws.WSComponentPort;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.gpel.DSCUtil;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
-import org.apache.airavata.xbaya.gpel.DSCUtil;
 import org.apache.airavata.xbaya.lead.LEADWorkflowInvoker;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.test.service.adder.Adder;
@@ -145,9 +145,9 @@ public class LEADWorkflowInvokerTestCase extends XBayaTestCase {
 
     /**
      * @throws WsdlException
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void test() throws WsdlException, XBayaException {
+    public void test() throws WsdlException, WorkflowException {
         // WsdlDefinitions definitions = WsdlResolver.getInstance().loadWsdl(
         // new File(SAMPLE_AWSDL).toURI());
 

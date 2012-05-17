@@ -28,16 +28,16 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.graph.DataPort;
+import org.apache.airavata.workflow.model.graph.ForEachExecutableNode;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.system.EndForEachNode;
+import org.apache.airavata.workflow.model.graph.system.ForEachNode;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.xbaya.concurrent.PredicatedExecutable;
-import org.apache.airavata.xbaya.graph.DataPort;
-import org.apache.airavata.xbaya.graph.ForEachExecutableNode;
-import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.graph.system.EndForEachNode;
-import org.apache.airavata.xbaya.graph.system.ForEachNode;
-import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.xmlpull.infoset.XmlElement;
@@ -74,7 +74,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 
 		try {
 			saveNodeOutputs(node, invokerMap, workflowName);
-		} catch (XBayaException e) {
+		} catch (WorkflowException e) {
 			// do nothing its a failure but go on
 			e.printStackTrace();
 		}
@@ -87,7 +87,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 
 	private void saveNodeOutputs(Node node,
 			Map<Node, Invoker> invokerMap, String workflowName)
-			throws XBayaException {
+			throws WorkflowException {
 
 		if (null != node && !(node instanceof InputNode)) {
 			XmlElement elem = XmlConstants.BUILDER.newFragment("previousdat");
@@ -179,7 +179,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 							xsul5.XmlConstants.BUILDER.serializeToString(inputs),
 							experimentId, node.getID(), this.workflowName));
 				} catch (RegistryException e) {
-					throw new XBayaException(e);
+					throw new WorkflowException(e);
 				}
 				// deal with the outputs
 			}
@@ -209,7 +209,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
             try {
 				this.registry.saveWorkflowExecutionServiceOutput(new WorkflowServiceIOData(xsul5.XmlConstants.BUILDER.serializeToString(outputs), experimentId, node.getID(),this.workflowName));
             } catch (RegistryException e) {
-				throw new XBayaException(e);
+				throw new WorkflowException(e);
 			}
 		}
 	}

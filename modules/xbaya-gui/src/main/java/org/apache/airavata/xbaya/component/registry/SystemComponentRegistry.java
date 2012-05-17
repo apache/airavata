@@ -24,25 +24,25 @@ package org.apache.airavata.xbaya.component.registry;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.airavata.xbaya.component.Component;
-import org.apache.airavata.xbaya.component.ExitComponent;
-import org.apache.airavata.xbaya.component.StreamSourceComponent;
-import org.apache.airavata.xbaya.component.SubWorkflowComponent;
-import org.apache.airavata.xbaya.component.dynamic.DynamicComponent;
+import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.component.ExitComponent;
+import org.apache.airavata.workflow.model.component.StreamSourceComponent;
+import org.apache.airavata.workflow.model.component.SubWorkflowComponent;
+import org.apache.airavata.workflow.model.component.dynamic.DynamicComponent;
+import org.apache.airavata.workflow.model.component.system.BlockComponent;
+import org.apache.airavata.workflow.model.component.system.ConstantComponent;
+import org.apache.airavata.workflow.model.component.system.DifferedInputComponent;
+import org.apache.airavata.workflow.model.component.system.EndBlockComponent;
+import org.apache.airavata.workflow.model.component.system.EndForEachComponent;
+import org.apache.airavata.workflow.model.component.system.EndifComponent;
+import org.apache.airavata.workflow.model.component.system.ForEachComponent;
+import org.apache.airavata.workflow.model.component.system.IfComponent;
+import org.apache.airavata.workflow.model.component.system.InputComponent;
+import org.apache.airavata.workflow.model.component.system.MemoComponent;
+import org.apache.airavata.workflow.model.component.system.OutputComponent;
+import org.apache.airavata.workflow.model.component.system.ReceiveComponent;
+import org.apache.airavata.workflow.model.component.system.S3InputComponent;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
-import org.apache.airavata.xbaya.component.system.BlockComponent;
-import org.apache.airavata.xbaya.component.system.ConstantComponent;
-import org.apache.airavata.xbaya.component.system.DifferedInputComponent;
-import org.apache.airavata.xbaya.component.system.EndBlockComponent;
-import org.apache.airavata.xbaya.component.system.EndForEachComponent;
-import org.apache.airavata.xbaya.component.system.EndifComponent;
-import org.apache.airavata.xbaya.component.system.ForEachComponent;
-import org.apache.airavata.xbaya.component.system.IfComponent;
-import org.apache.airavata.xbaya.component.system.InputComponent;
-import org.apache.airavata.xbaya.component.system.MemoComponent;
-import org.apache.airavata.xbaya.component.system.OutputComponent;
-import org.apache.airavata.xbaya.component.system.ReceiveComponent;
-import org.apache.airavata.xbaya.component.system.S3InputComponent;
 
 public class SystemComponentRegistry extends ComponentRegistry {
 

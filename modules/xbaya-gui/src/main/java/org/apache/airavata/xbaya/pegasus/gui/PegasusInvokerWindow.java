@@ -36,6 +36,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -45,7 +46,6 @@ import org.apache.airavata.xbaya.gui.XBayaLabel;
 import org.apache.airavata.xbaya.gui.XBayaTextField;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.myproxy.gui.MyProxyChecker;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axis2.AxisFault;
 
 import edu.indiana.extreme.pegasuswebservice.PegasusWebserviceStub;

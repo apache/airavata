@@ -29,9 +29,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.ode.ODEDeploymentDescriptor;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.ode.ODEDeploymentDescriptor;
 import org.apache.airavata.xbaya.wf.gui.WorkflowMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -215,7 +215,7 @@ public class FileMenu {
             public void actionPerformed(ActionEvent event) {
                 try {
                     FileMenu.this.engine.dispose();
-                } catch (XBayaException e) {
+                } catch (WorkflowException e) {
                     logger.error(e.getMessage(), e);
                 } finally {
                     FileMenu.this.engine.getGUI().getFrame().dispose();

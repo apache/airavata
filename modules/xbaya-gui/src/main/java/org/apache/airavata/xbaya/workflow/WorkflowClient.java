@@ -24,13 +24,13 @@ package org.apache.airavata.xbaya.workflow;
 import java.net.URI;
 import java.util.Map;
 
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.workflow.model.graph.GraphException;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.event.EventProducer;
-import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.security.UserX509Credential;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.gpel.client.GcInstance;
 import org.gpel.client.GcSearchList;
 import org.slf4j.Logger;
@@ -115,7 +115,7 @@ public abstract class WorkflowClient extends EventProducer {
      * @return The workflow loaded
      * @throws GraphException
      * @throws WorkflowEngineException
-     * @throws org.apache.airavata.xbaya.component.ComponentException
+     * @throws org.apache.airavata.workflow.model.component.ComponentException
      * 
      */
     public Workflow load(URI templateID) throws GraphException, WorkflowEngineException, ComponentException {
@@ -162,7 +162,7 @@ public abstract class WorkflowClient extends EventProducer {
      * @return true if the client is connected to the BPEL engine; false otherwise.
      */
     protected synchronized boolean isConnected() {
-        throw new XBayaRuntimeException("Critical Error: Called a unsupported API");
+        throw new WorkflowRuntimeException("Critical Error: Called a unsupported API");
     }
 
     // ===========================================================================

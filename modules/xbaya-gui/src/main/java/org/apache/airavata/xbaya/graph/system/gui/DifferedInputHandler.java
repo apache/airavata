@@ -9,11 +9,11 @@ package org.apache.airavata.xbaya.graph.system.gui;
 
 import java.util.List;
 
+import org.apache.airavata.workflow.model.graph.DataPort;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.system.DifferedInputNode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.DataPort;
-import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.graph.system.DifferedInputNode;
 
 /**
  * @author Chathura Herath

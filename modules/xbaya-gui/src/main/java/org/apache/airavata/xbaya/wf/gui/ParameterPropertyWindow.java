@@ -31,12 +31,12 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.graph.system.OutputNode;
+import org.apache.airavata.workflow.model.graph.util.GraphUtil;
+import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.Node;
-import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.graph.system.OutputNode;
-import org.apache.airavata.xbaya.graph.util.GraphUtil;
-import org.apache.airavata.xbaya.graph.ws.WSGraph;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.xmlpull.infoset.XmlElement;
 

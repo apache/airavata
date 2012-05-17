@@ -26,12 +26,12 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.airavata.common.utils.IOUtil;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ws.WSComponent;
+import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
-import org.apache.airavata.xbaya.component.ws.WSComponent;
-import org.apache.airavata.xbaya.component.ws.WSComponentFactory;
 
 public class LocalComponentRegistry extends ComponentRegistry {
 
@@ -114,7 +114,7 @@ public class LocalComponentRegistry extends ComponentRegistry {
 
     private ComponentTreeNode getComponentTree(File dir) {
         if (!dir.isDirectory()) {
-            throw new XBayaRuntimeException(dir + "is not a directory.");
+            throw new WorkflowRuntimeException(dir + "is not a directory.");
         }
 
         boolean found = false;

@@ -21,7 +21,7 @@
 
 package org.apache.airavata.xbaya.graph.gui;
 
-import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.airavata.workflow.model.wf.Workflow;
 
 public class GraphCanvasEvent {
 

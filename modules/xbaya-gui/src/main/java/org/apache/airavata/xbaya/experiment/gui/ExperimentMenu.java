@@ -29,8 +29,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 
@@ -100,7 +100,7 @@ public class ExperimentMenu {
                     ExperimentMenu.this.registryAccesser.deleteOGCEWorkflow(ExperimentMenu.this.engine.getWorkflow()
                             .getQname());
                 } catch (RegistryException e1) {
-                    throw new XBayaRuntimeException(e1);
+                    throw new WorkflowRuntimeException(e1);
                 }
             }
         });

@@ -24,9 +24,9 @@ package org.apache.airavata.xbaya.component.registry;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.airavata.xbaya.component.Component;
-import org.apache.airavata.xbaya.component.amazon.InstanceComponent;
-import org.apache.airavata.xbaya.component.amazon.TerminateInstanceComponent;
+import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.component.amazon.InstanceComponent;
+import org.apache.airavata.workflow.model.component.amazon.TerminateInstanceComponent;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 
 public class AmazonComponentRegistry extends ComponentRegistry {

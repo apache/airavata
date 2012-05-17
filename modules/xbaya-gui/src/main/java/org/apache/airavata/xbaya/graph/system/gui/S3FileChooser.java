@@ -31,12 +31,12 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.apache.airavata.workflow.model.graph.system.S3InputNode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.amazonEC2.gui.AmazonCredential;
 import org.apache.airavata.xbaya.amazonEC2.gui.BucketsLoader;
 import org.apache.airavata.xbaya.amazonEC2.gui.ChangeCredentialWindow;
 import org.apache.airavata.xbaya.amazonEC2.gui.S3Tree;
-import org.apache.airavata.xbaya.graph.system.S3InputNode;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.S3ServiceException;

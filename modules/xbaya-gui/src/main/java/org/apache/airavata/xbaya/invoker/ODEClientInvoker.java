@@ -24,12 +24,12 @@ package org.apache.airavata.xbaya.invoker;
 import java.net.URI;
 import java.util.List;
 
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
-import org.apache.airavata.xbaya.component.ws.WSComponentPort;
+import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.lead.LEADWorkflowInvoker;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.ietf.jgss.GSSCredential;
 
 import xsul.XmlConstants;
@@ -61,7 +61,7 @@ public class ODEClientInvoker {
                     if (null != componentPort.getDefaultValue()) {
                         componentPort.setValue(componentPort.getDefaultValue());
                     } else {
-                        throw new XBayaRuntimeException("Workflow input cannot be null :" + componentPort.getName());
+                        throw new WorkflowRuntimeException("Workflow input cannot be null :" + componentPort.getName());
                     }
                 }
                 // This is a check that we do to make sure if the user didnt bother
@@ -91,20 +91,20 @@ public class ODEClientInvoker {
                         } else {
                             XmlConstants.BUILDER.serializeToString(finalInvoker.getFaultMessage());
                         }
-                    } catch (XBayaException e) {
+                    } catch (WorkflowException e) {
                         ODEClientInvoker.this.throwException(e);
                     }
                 }
             }.start();
 
         } catch (Exception e) {
-            throw new XBayaRuntimeException(e);
+            throw new WorkflowRuntimeException(e);
         }
 
     }
 
     private void throwException(Exception e) {
-        throw new XBayaRuntimeException(e);
+        throw new WorkflowRuntimeException(e);
     }
 
  }

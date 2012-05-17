@@ -37,19 +37,20 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.workflow.model.graph.DataPort;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
+import org.apache.airavata.workflow.model.graph.system.ConstantNode;
+import org.apache.airavata.workflow.model.graph.system.EndForEachNode;
+import org.apache.airavata.workflow.model.graph.system.EndifNode;
+import org.apache.airavata.workflow.model.graph.system.ForEachNode;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.gui.JCRRegistryWindow;
-import org.apache.airavata.xbaya.graph.DataPort;
-import org.apache.airavata.xbaya.graph.Node;
-import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
-import org.apache.airavata.xbaya.graph.system.ConstantNode;
-import org.apache.airavata.xbaya.graph.system.EndForEachNode;
-import org.apache.airavata.xbaya.graph.system.EndifNode;
-import org.apache.airavata.xbaya.graph.system.ForEachNode;
-import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.apache.airavata.xbaya.interpretor.SystemComponentInvoker;
 import org.apache.airavata.xbaya.interpretor.WorkFlowInterpreterException;
@@ -58,7 +59,6 @@ import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axis2.util.XMLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,7 +159,7 @@ public class XBayaUtil {
 	}
     
     public static Object getInputsForForEachNode(final ForEachNode forEachNode,
-			final LinkedList<String> listOfValues, Map<Node, Invoker> invokerMap) throws XBayaException {
+			final LinkedList<String> listOfValues, Map<Node, Invoker> invokerMap) throws WorkflowException {
 		Node forEachInputNode = forEachNode.getInputPort(0).getFromNode();
 		// if input node for for-each is WSNode
 		Object returnValForProvenance = null;
@@ -247,9 +247,9 @@ public class XBayaUtil {
      * @param inputPort
      * @param invokerMap
      * @return
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-	public static Object findInputFromPort(DataPort inputPort, Map<Node, Invoker>  invokerMap) throws XBayaException {
+	public static Object findInputFromPort(DataPort inputPort, Map<Node, Invoker>  invokerMap) throws WorkflowException {
 		Object outputVal = null;
 		Node fromNode = inputPort.getFromNode();
 		if (fromNode instanceof InputNode) {
@@ -309,7 +309,7 @@ public class XBayaUtil {
 
 		Collection<Node> toNodes = node.getOutputPort(0).getToNodes();
 		if(toNodes.size() != 1){
-			throw new XBayaRuntimeException("ForEach output does not contain single out-edge");
+			throw new WorkflowRuntimeException("ForEach output does not contain single out-edge");
 		}
 		Node middleNode = toNodes.iterator().next();
 		List<DataPort> outputPorts = middleNode.getOutputPorts();
@@ -321,7 +321,7 @@ public class XBayaUtil {
 				}
 			}
 		}
-		throw new XBayaRuntimeException("EndForEachNode not found");
+		throw new WorkflowRuntimeException("EndForEachNode not found");
 	}
 	
 	

@@ -21,9 +21,9 @@
 
 package org.apache.airavata.xbaya.component.registry;
 
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 
-public class ComponentRegistryException extends XBayaException {
+public class ComponentRegistryException extends WorkflowException {
 
     /**
      * Constructs a ComponentRegistryException.

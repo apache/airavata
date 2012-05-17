@@ -27,7 +27,7 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.jar.JarFile;
 
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
 import org.slf4j.Logger;
@@ -38,10 +38,10 @@ public class JythonOneTimeRunnerImpl implements JythonOneTimeRunner {
     private static final Logger logger = LoggerFactory.getLogger(JythonOneTimeRunnerImpl.class);
 
     /**
-     * @throws XBayaException
+     * @throws WorkflowException
      * @see org.apache.airavata.xbaya.jython.runner.JythonOneTimeRunner#run(java.lang.String, java.lang.String[])
      */
-    public void run(final String script, final String[] arguments) throws XBayaException {
+    public void run(final String script, final String[] arguments) throws WorkflowException {
 
         try {
             AccessController.doPrivileged(new PrivilegedExceptionAction<Void>() {
@@ -77,7 +77,7 @@ public class JythonOneTimeRunnerImpl implements JythonOneTimeRunner {
             });
         } catch (PrivilegedActionException e) {
             logger.error(e.getMessage(), e);
-            throw new XBayaException(e.getCause());
+            throw new WorkflowException(e.getCause());
         }
 
     }

@@ -25,10 +25,10 @@ import java.net.URI;
 import java.util.List;
 
 import org.apache.airavata.common.utils.WSDLUtil;
-import org.apache.airavata.xbaya.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ws.WSComponent;
+import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
-import org.apache.airavata.xbaya.component.ws.WSComponent;
-import org.apache.airavata.xbaya.component.ws.WSComponentFactory;
 
 import xsul.wsdl.WsdlDefinitions;
 import xsul.wsdl.WsdlResolver;

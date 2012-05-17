@@ -30,14 +30,14 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.ode.ODEClient;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.component.ws.WSComponentPort;
-import org.apache.airavata.xbaya.ode.ODEClient;
 import org.apache.airavata.xbaya.security.SecurityUtil;
 import org.apache.airavata.common.utils.Pair;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.workflow.proxy.WorkflowClient;
 import org.apache.airavata.xbaya.workflow.proxy.WorkflowContext;
 import org.ietf.jgss.GSSException;
@@ -46,7 +46,7 @@ import xsul5.wsdl.WsdlDefinitions;
 
 public class TestWorkflowInterpreter {
 
-    public static void main(String[] args) throws XBayaException, URISyntaxException, GSSException, IOException {
+    public static void main(String[] args) throws WorkflowException, URISyntaxException, GSSException, IOException {
         String workflowAsString = getWorkflow();
 
         Workflow workflow = new Workflow(workflowAsString);

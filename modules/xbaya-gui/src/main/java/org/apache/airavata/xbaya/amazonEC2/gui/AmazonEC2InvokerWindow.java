@@ -29,8 +29,8 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
@@ -222,7 +222,7 @@ public class AmazonEC2InvokerWindow {
 
         @Override
         public void receiveErrorjobStatus(java.lang.Exception e) {
-            throw new XBayaRuntimeException(e);
+            throw new WorkflowRuntimeException(e);
         }
 
     }

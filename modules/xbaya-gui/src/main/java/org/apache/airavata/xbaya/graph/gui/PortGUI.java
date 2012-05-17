@@ -31,9 +31,9 @@ import java.awt.geom.Ellipse2D;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.airavata.workflow.model.graph.Port;
+import org.apache.airavata.workflow.model.graph.Port.Kind;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.graph.Port.Kind;
 
 public class PortGUI implements GraphPieceGUI {
 

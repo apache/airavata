@@ -28,8 +28,8 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.util.List;
 
-import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.graph.amazon.TerminateInstanceNode;
+import org.apache.airavata.workflow.model.graph.Port;
+import org.apache.airavata.workflow.model.graph.amazon.TerminateInstanceNode;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.gui.PortGUI;

@@ -21,11 +21,11 @@
 
 package org.apache.airavata.xbaya.interpreter;
 
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.graph.system.InputNode;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.interpreter.utils.WorkflowTestUtils;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.MethodRule;
@@ -50,7 +50,7 @@ public class WorkflowTest{
     };
 
     @Test
-    public void testScheduleDynamically() throws IOException, URISyntaxException, XBayaException {
+    public void testScheduleDynamically() throws IOException, URISyntaxException, WorkflowException {
         logger.info("Running WorkflowTest...");
         URL systemResource = this.getClass().getClassLoader().getSystemResource("SimpleEcho.xwf");
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));

@@ -23,21 +23,21 @@ package org.apache.airavata.xbaya.test.jython;
 
 import java.util.LinkedList;
 
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.jython.runner.JythonRunner;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.test.XBayaTestCase;
 import org.apache.airavata.xbaya.test.service.adder.AdderService;
 import org.apache.airavata.xbaya.test.service.multiplier.MultiplierService;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
-import org.apache.airavata.xbaya.wf.Workflow;
 
 public class JythonRunnerTestCase extends XBayaTestCase {
 
     /**
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void testRun() throws XBayaException {
+    public void testRun() throws WorkflowException {
 
         WorkflowCreator creator = new WorkflowCreator();
         Workflow workflow = creator.createComplexMathWorkflow();

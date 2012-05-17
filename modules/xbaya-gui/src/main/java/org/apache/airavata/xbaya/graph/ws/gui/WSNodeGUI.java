@@ -29,10 +29,10 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
+import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.apache.airavata.xbaya.graph.interaction.gui.ServiceInteractionWindow;
-import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.monitor.gui.MonitorEventHandler.NodeState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

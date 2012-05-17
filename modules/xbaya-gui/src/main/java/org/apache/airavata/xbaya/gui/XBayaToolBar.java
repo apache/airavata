@@ -41,10 +41,10 @@ import javax.swing.JToolBar;
 import javax.swing.border.Border;
 
 import org.apache.airavata.common.utils.SwingUtil;
+import org.apache.airavata.workflow.model.graph.GraphException;
+import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.GraphException;
-import org.apache.airavata.xbaya.wf.Workflow;
-import org.apache.airavata.xbaya.wf.WorkflowExecutionState;
 
 import com.amazonaws.transform.MapEntry;
 

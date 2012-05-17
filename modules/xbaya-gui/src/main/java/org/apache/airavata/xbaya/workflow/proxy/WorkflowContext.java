@@ -23,7 +23,7 @@ package org.apache.airavata.xbaya.workflow.proxy;
 
 import java.net.URISyntaxException;
 
-import org.apache.airavata.xbaya.wf.Workflow;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 

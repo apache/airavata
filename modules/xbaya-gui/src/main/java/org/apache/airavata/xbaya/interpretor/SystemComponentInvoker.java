@@ -24,7 +24,7 @@ package org.apache.airavata.xbaya.interpretor;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.invoker.Invoker;
 
 import xsul.wsif.WSIFMessage;
@@ -103,12 +103,12 @@ public class SystemComponentInvoker implements Invoker {
     }
 
     @Override
-    public WSIFMessage getInputs() throws XBayaException {
+    public WSIFMessage getInputs() throws WorkflowException {
         return null;
     }
 
     @Override
-    public WSIFMessage getFault() throws XBayaException {
+    public WSIFMessage getFault() throws WorkflowException {
         return null;
     }
 }

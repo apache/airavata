@@ -21,7 +21,7 @@
 
 package org.apache.airavata.xbaya.invoker;
 
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +61,7 @@ public class AsynchronousInvoker extends SimpleInvoker {
      * @see org.apache.airavata.xbaya.invoker.SimpleInvoker#setup()
      */
     @Override
-    public void setup() throws XBayaException {
+    public void setup() throws WorkflowException {
         super.setup();
         /* Set the output message to null to set teh output from async Listener */
         WSIFAsyncResponsesCorrelator correlator;
@@ -76,7 +76,7 @@ public class AsynchronousInvoker extends SimpleInvoker {
         this.client.useAsyncMessaging(correlator);
     }
 
-     public boolean invoke() throws XBayaException {
+     public boolean invoke() throws WorkflowException {
          final WSIFOperation  operation = this.getOperation();
          final WSIFMessage inputMessage = this.getInputMessage();
          this.setOutputMessage(null);
@@ -98,7 +98,7 @@ public class AsynchronousInvoker extends SimpleInvoker {
             return true;
         } catch (RuntimeException e) {
             String message = "Error in invoking a service.";
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
     }
 }

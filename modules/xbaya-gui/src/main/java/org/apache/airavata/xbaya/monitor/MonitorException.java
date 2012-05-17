@@ -21,9 +21,9 @@
 
 package org.apache.airavata.xbaya.monitor;
 
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 
-public class MonitorException extends XBayaException {
+public class MonitorException extends WorkflowException {
 
     /**
      * Constructs a MonitorException.

@@ -31,9 +31,9 @@ import java.awt.event.MouseEvent;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
+import org.apache.airavata.workflow.model.graph.system.MemoNode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
-import org.apache.airavata.xbaya.graph.system.MemoNode;
 
 public class MemoNodeGUI extends NodeGUI {
 

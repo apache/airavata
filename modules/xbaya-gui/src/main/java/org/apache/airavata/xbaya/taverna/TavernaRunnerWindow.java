@@ -35,11 +35,12 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.graph.GraphException;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.graph.util.GraphUtil;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.graph.GraphException;
-import org.apache.airavata.xbaya.graph.system.InputNode;
-import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
@@ -49,7 +50,6 @@ import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.scufl.script.ScuflScript;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
@@ -265,7 +265,7 @@ public class TavernaRunnerWindow {
                     TavernaRunnerWindow.this.engine.getMonitor().start();
                     notifConfig.setTopic(topicString);
                     new WorkflowInterpreter(TavernaRunnerWindow.this.engine, topicString).scheduleDynamically();
-                } catch (XBayaException e) {
+                } catch (WorkflowException e) {
                     TavernaRunnerWindow.this.engine.getErrorWindow().error(e);
                 }
 

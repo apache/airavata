@@ -36,8 +36,8 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 
 import org.apache.airavata.common.utils.SwingUtil;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
 
 public class XBayaDialog {
 
@@ -243,7 +243,7 @@ public class XBayaDialog {
             this.dialog = new JDialog((Dialog) this.owner);
         } else {
             // This should not happen.
-            throw new XBayaRuntimeException("The owner component was neither Frame or Dialog.");
+            throw new WorkflowRuntimeException("The owner component was neither Frame or Dialog.");
         }
         this.dialog.setTitle(this.title);
         this.dialog.setModal(true);

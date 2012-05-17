@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 
 import xsul.wsif.WSIFMessage;
 import xsul.xwsif_runtime.WSIFClient;
@@ -59,7 +59,7 @@ public class DynamicInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutput(java.lang.String)
      */
-    public Object getOutput(String name) throws XBayaException {
+    public Object getOutput(String name) throws WorkflowException {
         waitToFinish();
         return result;
     }
@@ -67,7 +67,7 @@ public class DynamicInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#invoke()
      */
-    public boolean invoke() throws XBayaException {
+    public boolean invoke() throws WorkflowException {
         try {
             Class<?> targetClass = Class.forName(this.className);
             Object obj = targetClass.newInstance();
@@ -81,14 +81,14 @@ public class DynamicInvoker implements Invoker {
                 }
             }
             if (targetMethod == null) {
-                throw new XBayaException("Could not find the method using reflection: " + this.operationName);
+                throw new WorkflowException("Could not find the method using reflection: " + this.operationName);
             }
 
             targetMethod.setAccessible(true);
             this.result = targetMethod.invoke(obj, inputs);
 
         } catch (Exception e) {
-            throw new XBayaException(e);
+            throw new WorkflowException(e);
         }
         return true;
     }
@@ -96,21 +96,21 @@ public class DynamicInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setInput(java.lang.String, java.lang.Object)
      */
-    public void setInput(String name, Object value) throws XBayaException {
+    public void setInput(String name, Object value) throws WorkflowException {
 
     }
 
     /**
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setOperation(java.lang.String)
      */
-    public void setOperation(String operationName) throws XBayaException {
+    public void setOperation(String operationName) throws WorkflowException {
         this.operationName = operationName;
     }
 
     /**
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#setup()
      */
-    public void setup() throws XBayaException {
+    public void setup() throws WorkflowException {
         Class[] parameters = new Class[] { URL.class };
         URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
         Class sysclass = URLClassLoader.class;
@@ -121,14 +121,14 @@ public class DynamicInvoker implements Invoker {
             method.invoke(sysloader, new Object[] { this.jarUrl });
         } catch (Throwable t) {
             t.printStackTrace();
-            throw new XBayaException("Error, could not add URL to system classloader");
+            throw new WorkflowException("Error, could not add URL to system classloader");
         }
     }
 
     /**
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#waitToFinish()
      */
-    public void waitToFinish() throws XBayaException {
+    public void waitToFinish() throws WorkflowException {
         while (this.result == null) {
             try {
                 Thread.sleep(200);
@@ -143,7 +143,7 @@ public class DynamicInvoker implements Invoker {
     /**
      * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutputs()
      */
-    public WSIFMessage getOutputs() throws XBayaException {
+    public WSIFMessage getOutputs() throws WorkflowException {
         waitToFinish();
         return (WSIFMessage) this.result;
 
@@ -155,12 +155,12 @@ public class DynamicInvoker implements Invoker {
     }
 
     @Override
-    public WSIFMessage getInputs() throws XBayaException {
+    public WSIFMessage getInputs() throws WorkflowException {
         return null;
     }
 
     @Override
-    public WSIFMessage getFault() throws XBayaException {
+    public WSIFMessage getFault() throws WorkflowException {
         return null;
     }
 

@@ -27,12 +27,15 @@ import java.util.List;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.component.ComponentException;
-import org.apache.airavata.xbaya.component.SubWorkflowComponent;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.SubWorkflowComponent;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.workflow.model.graph.GraphException;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.component.gui.ComponentSelector;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 import org.apache.airavata.xbaya.component.registry.*;
-import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.gui.ErrorMessages;
 import org.apache.airavata.xbaya.gui.ErrorWindow;
 import org.apache.airavata.xbaya.gui.XBayaGUI;
@@ -42,7 +45,6 @@ import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.gui.MonitorStarter;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
-import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.airavata.xbaya.wf.gui.WorkflowPropertyWindow;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.slf4j.Logger;
@@ -190,9 +192,9 @@ public class XBayaEngine {
     /**
      * Disposes on exit.
      *
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void dispose() throws XBayaException {
+    public void dispose() throws WorkflowException {
         this.monitor.stop();
     }
 
@@ -392,7 +394,7 @@ public class XBayaEngine {
 
 	public void registerWorkflowInterpreter(WorkflowInterpreter workflowInterpreter) {
 		if (getWorkflowInterpreter()!=null){
-			throw new XBayaRuntimeException("Critical Error!!! Workflow interpretter already running. Cleanup first");
+			throw new WorkflowRuntimeException("Critical Error!!! Workflow interpretter already running. Cleanup first");
 		}
 		this.workflowInterpreter = workflowInterpreter;
 	}

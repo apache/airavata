@@ -36,20 +36,20 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.workflow.model.graph.DataPort;
+import org.apache.airavata.workflow.model.graph.Graph;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Port;
+import org.apache.airavata.workflow.model.graph.dynamic.BasicTypeMapping;
+import org.apache.airavata.workflow.model.graph.dynamic.DynamicNode;
+import org.apache.airavata.workflow.model.graph.dynamic.SchemaCompilerUtil;
+import org.apache.airavata.workflow.model.graph.ws.WSNode;
+import org.apache.airavata.workflow.model.graph.ws.WSPort;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.XBayaRuntimeException;
 import org.apache.airavata.xbaya.component.gui.ComponentTreeNode;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryLoader;
 import org.apache.airavata.xbaya.component.registry.URLComponentRegistry;
-import org.apache.airavata.xbaya.graph.DataPort;
-import org.apache.airavata.xbaya.graph.Graph;
-import org.apache.airavata.xbaya.graph.Node;
-import org.apache.airavata.xbaya.graph.Port;
-import org.apache.airavata.xbaya.graph.dynamic.BasicTypeMapping;
-import org.apache.airavata.xbaya.graph.dynamic.DynamicNode;
-import org.apache.airavata.xbaya.graph.dynamic.SchemaCompilerUtil;
-import org.apache.airavata.xbaya.graph.ws.WSNode;
-import org.apache.airavata.xbaya.graph.ws.WSPort;
 import org.apache.airavata.xbaya.gui.GridPanel;
 import org.apache.airavata.xbaya.gui.XBayaDialog;
 import org.apache.airavata.xbaya.gui.XBayaLabel;
@@ -140,7 +140,7 @@ public class DynamicNodeWindow {
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int ret = fileChooser.showOpenDialog(this.engine.getGUI().getFrame());
         if (JFileChooser.APPROVE_OPTION != ret) {
-            throw new XBayaRuntimeException("Cannot proceed without valid directory");
+            throw new WorkflowRuntimeException("Cannot proceed without valid directory");
         }
         File selectedDir = fileChooser.getSelectedFile();
         File rootDir = new File(selectedDir, "xbaya");
@@ -257,23 +257,23 @@ public class DynamicNodeWindow {
                 returnElement = outPort.getComponentPort().getElement();
                 returnType = outPort.getType();
             } else {
-                throw new XBayaRuntimeException("Unhandled  port type for Dynamic component or to many outputs");
+                throw new WorkflowRuntimeException("Unhandled  port type for Dynamic component or to many outputs");
             }
             for (Port port : toNodes) {
                 if (toNodes.get(0) instanceof DataPort) {
                     if (!returnType.equals(((DataPort) toNodes.get(0)).getType())) {
-                        throw new XBayaRuntimeException(
+                        throw new WorkflowRuntimeException(
                                 "Dynamic output port connected to input ports of different types.");
                     }
                 } else {
-                    throw new XBayaRuntimeException("Unhandled  port type for Dynamic component");
+                    throw new WorkflowRuntimeException("Unhandled  port type for Dynamic component");
                 }
             }
             int index = BasicTypeMapping.getSimpleTypeIndex(returnElement);
             if (-1 != index) {
                 function += SPACE + BasicTypeMapping.getTypeName(index);
             } else {
-                throw new XBayaRuntimeException("WIll be fixed with complex type mappign");
+                throw new WorkflowRuntimeException("WIll be fixed with complex type mappign");
             }
         }
 
@@ -299,10 +299,10 @@ public class DynamicNodeWindow {
                     function += BasicTypeMapping.getTypeName(typeIndex) + SPACE
                             + BasicTypeMapping.getTypeVariableName(typeIndex);
                 } else {
-                    throw new XBayaRuntimeException("Complex Type occured:This will be fixed!!!!!");
+                    throw new WorkflowRuntimeException("Complex Type occured:This will be fixed!!!!!");
                 }
             } else {
-                throw new XBayaRuntimeException("Dynamic Node connected to non data port");
+                throw new WorkflowRuntimeException("Dynamic Node connected to non data port");
             }
         }
 
@@ -372,10 +372,10 @@ public class DynamicNodeWindow {
                     }
 
                 } else {
-                    throw new XBayaRuntimeException("Unknown port for code generation" + fromPort);
+                    throw new WorkflowRuntimeException("Unknown port for code generation" + fromPort);
                 }
             } else {
-                throw new XBayaRuntimeException("Unknown from node for code generation" + fromNode);
+                throw new WorkflowRuntimeException("Unknown from node for code generation" + fromNode);
             }
         }
     }
@@ -421,7 +421,7 @@ public class DynamicNodeWindow {
             }
         }
         if (index == -1) {
-            throw new XBayaRuntimeException("Operation name not found");
+            throw new WorkflowRuntimeException("Operation name not found");
         }
         return publicSplit[index].substring(0, publicSplit[index].indexOf(searchStr)).trim().split(" ")[1];
     }

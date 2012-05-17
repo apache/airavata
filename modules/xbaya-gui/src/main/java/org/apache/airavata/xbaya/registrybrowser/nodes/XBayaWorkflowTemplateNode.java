@@ -32,13 +32,13 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.graph.gui.GraphCanvas;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.apache.airavata.xbaya.registrybrowser.menu.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.registrybrowser.menu.DeleteAction;
 import org.apache.airavata.xbaya.registrybrowser.menu.ImportAction;
 import org.apache.airavata.xbaya.registrybrowser.model.XBayaWorkflowTemplate;
-import org.apache.airavata.xbaya.wf.Workflow;
 
 public class XBayaWorkflowTemplateNode extends AbstractAiravataTreeNode {
     private XBayaWorkflowTemplate xbayaWorkflow;

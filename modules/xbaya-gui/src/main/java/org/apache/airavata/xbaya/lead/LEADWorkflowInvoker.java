@@ -29,11 +29,11 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.XBayaException;
-import org.apache.airavata.xbaya.component.ComponentException;
-import org.apache.airavata.xbaya.component.ws.WSComponent;
-import org.apache.airavata.xbaya.component.ws.WSComponentFactory;
-import org.apache.airavata.xbaya.component.ws.WSComponentPort;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ws.WSComponent;
+import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
+import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
@@ -196,9 +196,9 @@ public class LEADWorkflowInvoker {
 
     /**
      * @return true if it succeeds; false otherwise
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public boolean invoke() throws XBayaException {
+    public boolean invoke() throws WorkflowException {
         try {
             logger.info("leadContext: " + XMLUtil.xmlElementToString(this.leadContext));
             logger.info("inputMessage: " + XMLUtil.xmlElementToString((XmlElement) this.inputMessage));
@@ -214,7 +214,7 @@ public class LEADWorkflowInvoker {
             return this.success;
         } catch (RuntimeException e) {
             String message = "Error in invoking a service.";
-            throw new XBayaException(message, e);
+            throw new WorkflowException(message, e);
         }
     }
 

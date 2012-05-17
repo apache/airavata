@@ -23,8 +23,8 @@ package org.apache.airavata.xbaya.graph.dynamic.gui;
 
 import java.awt.event.MouseEvent;
 
+import org.apache.airavata.workflow.model.graph.dynamic.DynamicNode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.dynamic.DynamicNode;
 import org.apache.airavata.xbaya.graph.gui.NodeGUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

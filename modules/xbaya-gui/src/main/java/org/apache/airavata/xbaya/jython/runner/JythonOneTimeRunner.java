@@ -21,15 +21,15 @@
 
 package org.apache.airavata.xbaya.jython.runner;
 
-import org.apache.airavata.xbaya.XBayaException;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 
 public interface JythonOneTimeRunner {
 
     /**
      * @param script
      * @param arguments
-     * @throws XBayaException
+     * @throws WorkflowException
      */
-    public void run(String script, String[] arguments) throws XBayaException;
+    public void run(String script, String[] arguments) throws WorkflowException;
 
 }
