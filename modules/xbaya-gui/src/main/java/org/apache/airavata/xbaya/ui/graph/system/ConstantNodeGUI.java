@@ -23,7 +23,8 @@ package org.apache.airavata.xbaya.ui.graph.system;
 
 import org.apache.airavata.workflow.model.graph.system.ConstantNode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.ui.ErrorMessages;
+import org.apache.airavata.xbaya.ui.dialogs.graph.system.ConstantConfigurationDialog;
+import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 
 public class ConstantNodeGUI extends ConfigurableNodeGUI {
 

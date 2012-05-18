@@ -52,9 +52,9 @@ import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.ParameterType;
-import org.apache.airavata.xbaya.ui.GridPanel;
-import org.apache.airavata.xbaya.ui.XBayaLabel;
-import org.apache.airavata.xbaya.ui.XBayaTextField;
+import org.apache.airavata.xbaya.ui.widgets.GridPanel;
+import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
+import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 import org.apache.xmlbeans.XmlCursor;
 
 public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {

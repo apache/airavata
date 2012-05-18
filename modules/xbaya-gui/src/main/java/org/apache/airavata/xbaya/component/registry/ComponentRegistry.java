@@ -22,7 +22,7 @@
 package org.apache.airavata.xbaya.component.registry;
 
 import org.apache.airavata.registry.api.AiravataRegistry;
-import org.apache.airavata.xbaya.ui.component.ComponentTreeNode;
+import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 
 public abstract class ComponentRegistry {
 

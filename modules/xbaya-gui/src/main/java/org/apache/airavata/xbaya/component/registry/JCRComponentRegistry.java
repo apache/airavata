@@ -33,7 +33,7 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.common.registry.api.user.UserManager;
-import org.apache.airavata.xbaya.ui.component.ComponentTreeNode;
+import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

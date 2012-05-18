@@ -58,7 +58,7 @@ import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
-import org.apache.airavata.xbaya.ui.component.JCRRegistryWindow;
+import org.apache.airavata.xbaya.ui.dialogs.registry.JCRRegistryWindow;
 import org.apache.axis2.util.XMLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

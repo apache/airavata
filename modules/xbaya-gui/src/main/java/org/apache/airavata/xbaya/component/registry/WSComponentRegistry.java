@@ -33,7 +33,7 @@ import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.SubWorkflowComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
-import org.apache.airavata.xbaya.ui.component.ComponentTreeNode;
+import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 
 import xsul.wsdl.WsdlDefinitions;
 import xsul.wsdl.WsdlException;

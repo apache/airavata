@@ -25,7 +25,8 @@ import java.awt.Color;
 
 import org.apache.airavata.workflow.model.graph.system.S3InputNode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.ui.ErrorMessages;
+import org.apache.airavata.xbaya.ui.dialogs.graph.system.S3FileChooser;
+import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 
 public class S3InputNodeGUI extends ConfigurableNodeGUI {
 

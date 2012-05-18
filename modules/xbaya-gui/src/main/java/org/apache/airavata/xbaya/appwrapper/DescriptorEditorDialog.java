@@ -51,8 +51,8 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.registrybrowser.nodes.JCRBrowserIcons;
-import org.apache.airavata.xbaya.ui.GridPanel;
-import org.apache.airavata.xbaya.ui.XBayaDialog;
+import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
+import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 
 public class DescriptorEditorDialog extends JDialog {
 

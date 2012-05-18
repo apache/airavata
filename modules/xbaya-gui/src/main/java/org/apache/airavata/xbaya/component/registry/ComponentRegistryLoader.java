@@ -29,10 +29,10 @@ import java.util.Observer;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.ui.Cancelable;
-import org.apache.airavata.xbaya.ui.ErrorMessages;
-import org.apache.airavata.xbaya.ui.WaitDialog;
-import org.apache.airavata.xbaya.ui.component.ComponentTreeNode;
+import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
+import org.apache.airavata.xbaya.ui.utils.Cancelable;
+import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
+import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +70,7 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.ui.Cancelable#cancel()
+     * @see org.apache.airavata.xbaya.ui.utils.Cancelable#cancel()
      */
     public void cancel() {
         this.canceled = true;

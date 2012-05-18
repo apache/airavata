@@ -34,11 +34,11 @@ import javax.swing.JPanel;
 
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
-import org.apache.airavata.xbaya.ui.GridPanel;
-import org.apache.airavata.xbaya.ui.XBayaComboBox;
-import org.apache.airavata.xbaya.ui.XBayaDialog;
-import org.apache.airavata.xbaya.ui.XBayaLabel;
-import org.apache.airavata.xbaya.ui.XBayaTextField;
+import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
+import org.apache.airavata.xbaya.ui.widgets.GridPanel;
+import org.apache.airavata.xbaya.ui.widgets.XBayaComboBox;
+import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
+import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 
 public class RegisterThroughFileWindow {
     private XBayaDialog dialog;

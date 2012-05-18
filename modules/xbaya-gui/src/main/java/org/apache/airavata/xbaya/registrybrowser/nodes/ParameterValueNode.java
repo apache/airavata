@@ -29,7 +29,7 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.schemas.gfac.Parameter;
-import org.apache.airavata.xbaya.ui.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 
 public class ParameterValueNode extends AbstractAiravataTreeNode {
 	private Parameter parameter;

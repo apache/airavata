@@ -25,6 +25,7 @@ import java.awt.event.MouseEvent;
 
 import org.apache.airavata.workflow.model.graph.dynamic.DynamicNode;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.dialogs.graph.dynamic.DynamicNodeWindow;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

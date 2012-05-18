@@ -11,7 +11,8 @@ import java.awt.Color;
 
 import org.apache.airavata.workflow.model.graph.system.DifferedInputNode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.ui.ErrorMessages;
+import org.apache.airavata.xbaya.ui.dialogs.graph.system.DifferedInputConfigurationDialog;
+import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 
 /**
  * @author Chathura Herath
@@ -70,7 +71,7 @@ public class DifferedInputNodeGUI extends ConfigurableNodeGUI {
 		return false;
 	}
 
-	protected synchronized void closingDisplay() {
+	public synchronized void closingDisplay() {
 		this.configCanBeDisplayed = true;
 	}
 

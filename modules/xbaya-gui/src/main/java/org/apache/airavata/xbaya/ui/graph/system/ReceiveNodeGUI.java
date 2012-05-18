@@ -31,6 +31,7 @@ import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.system.ReceiveNode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.ui.dialogs.graph.system.ReceiveConfigurationDialog;
 
 public class ReceiveNodeGUI extends ConfigurableNodeGUI {
 

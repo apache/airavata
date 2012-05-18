@@ -31,8 +31,9 @@ import java.awt.event.MouseEvent;
 
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.dialogs.graph.ws.ServiceInteractionWindow;
+import org.apache.airavata.xbaya.ui.dialogs.graph.ws.WSNodeWindow;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
-import org.apache.airavata.xbaya.ui.graph.interaction.ServiceInteractionWindow;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
