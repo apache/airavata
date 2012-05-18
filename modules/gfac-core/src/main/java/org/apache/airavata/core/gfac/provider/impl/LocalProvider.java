@@ -38,6 +38,7 @@ import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.provider.AbstractProvider;
+import org.apache.airavata.core.gfac.provider.utils.InputStreamToFileWriter;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.InputUtils;
@@ -48,50 +49,11 @@ import org.apache.xmlbeans.XmlException;
 
 /**
  * {@link LocalProvider} will execute jobs (application) on local machine.
- *
  */
 public class LocalProvider extends AbstractProvider {
 
     private ProcessBuilder builder;
     private List<String> cmdList;
-
-    private class ReadStreamWriteFile extends Thread {
-        private BufferedReader in;
-        private BufferedWriter out;
-
-        public ReadStreamWriteFile(InputStream in, String out) throws IOException {
-            this.in = new BufferedReader(new InputStreamReader(in));
-            this.out = new BufferedWriter(new FileWriter(out));
-        }
-
-        public void run() {
-            try {
-                String line = null;
-                while ((line = in.readLine()) != null) {
-                    log.debug(line);
-                    out.write(line);
-                    out.newLine();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-    }
 
     private void makeFileSystemDir(String dir) throws ProviderException {
         File f = new File(dir);
@@ -119,7 +81,7 @@ public class LocalProvider extends AbstractProvider {
 
         // input parameter
         ArrayList<String> tmp = new ArrayList<String>();
-        for (Iterator<String> iterator = context.getInput().getNames(); iterator.hasNext();) {
+        for (Iterator<String> iterator = context.getInput().getNames(); iterator.hasNext(); ) {
             String key = iterator.next();
             tmp.add(context.getInput().getStringValue(key));
         }
@@ -174,8 +136,8 @@ public class LocalProvider extends AbstractProvider {
             // running cmd
             Process process = builder.start();
 
-            Thread t1 = new ReadStreamWriteFile(process.getInputStream(), app.getStandardOutput());
-            Thread t2 = new ReadStreamWriteFile(process.getErrorStream(), app.getStandardError());
+            Thread t1 = new InputStreamToFileWriter(process.getInputStream(), app.getStandardOutput());
+            Thread t2 = new InputStreamToFileWriter(process.getErrorStream(), app.getStandardError());
 
             // start output threads
             t1.setDaemon(true);
@@ -223,7 +185,7 @@ public class LocalProvider extends AbstractProvider {
             String stdOutStr = GfacUtils.readFileToString(app.getStandardOutput());
 
             // set to context
-            return OutputUtils.fillOutputFromStdout(context.<ActualParameter> getOutput(), stdOutStr);
+            return OutputUtils.fillOutputFromStdout(context.<ActualParameter>getOutput(), stdOutStr);
         } catch (XmlException e) {
             throw new ProviderException("Cannot read output:" + e.getMessage(), e);
         } catch (IOException io) {
@@ -231,10 +193,10 @@ public class LocalProvider extends AbstractProvider {
         }
     }
 
-	@Override
-	protected Map<String, ?> processInput(InvocationContext invocationContext)
-			throws ProviderException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected Map<String, ?> processInput(InvocationContext invocationContext)
+            throws ProviderException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
