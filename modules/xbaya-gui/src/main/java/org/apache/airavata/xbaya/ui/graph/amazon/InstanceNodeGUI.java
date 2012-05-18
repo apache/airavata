@@ -32,6 +32,7 @@ import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.ui.dialogs.graph.amazon.InstanceConfigurationDialog;
 import org.apache.airavata.xbaya.ui.graph.PortGUI;
 import org.apache.airavata.xbaya.ui.graph.system.ConfigurableNodeGUI;
 

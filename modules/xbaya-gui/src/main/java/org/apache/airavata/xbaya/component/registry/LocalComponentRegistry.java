@@ -31,7 +31,7 @@ import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.ui.component.ComponentTreeNode;
+import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 
 public class LocalComponentRegistry extends ComponentRegistry {
 

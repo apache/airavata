@@ -36,9 +36,9 @@ import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
-import org.apache.airavata.xbaya.ui.Cancelable;
-import org.apache.airavata.xbaya.ui.ErrorMessages;
-import org.apache.airavata.xbaya.ui.WaitDialog;
+import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
+import org.apache.airavata.xbaya.ui.utils.Cancelable;
+import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +69,7 @@ public class ODEInvoker implements Cancelable {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.ui.Cancelable#cancel()
+     * @see org.apache.airavata.xbaya.ui.utils.Cancelable#cancel()
      */
     public void cancel() {
         this.canceled = true;

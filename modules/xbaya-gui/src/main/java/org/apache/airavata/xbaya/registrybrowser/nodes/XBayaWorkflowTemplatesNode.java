@@ -30,9 +30,9 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowTemplates;
-import org.apache.airavata.xbaya.ui.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.ui.registrybrowser.menu.AddAction;
-import org.apache.airavata.xbaya.ui.registrybrowser.menu.RefreshAction;
+import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.AddAction;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.RefreshAction;
 
 public class XBayaWorkflowTemplatesNode extends AbstractAiravataTreeNode {
     private XBayaWorkflowTemplates xbayaWorkflows;

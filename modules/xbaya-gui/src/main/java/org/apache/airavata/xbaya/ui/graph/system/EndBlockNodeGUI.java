@@ -32,6 +32,7 @@ import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.system.EndBlockNode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.ui.dialogs.graph.system.EndBlockConfigurationDialog;
 import org.apache.airavata.xbaya.ui.graph.PortGUI;
 
 public class EndBlockNodeGUI extends ConfigurableNodeGUI {

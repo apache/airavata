@@ -35,9 +35,9 @@ import org.apache.airavata.xbaya.appwrapper.ServiceDescriptionDialog;
 import org.apache.airavata.xbaya.model.registrybrowser.InputParameters;
 import org.apache.airavata.xbaya.model.registrybrowser.OutputParameters;
 import org.apache.airavata.xbaya.model.registrybrowser.ServiceParameters;
-import org.apache.airavata.xbaya.ui.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.ui.registrybrowser.menu.DeleteAction;
-import org.apache.airavata.xbaya.ui.registrybrowser.menu.EditAction;
+import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.DeleteAction;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.EditAction;
 
 public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
 	private ServiceDescription serviceDescription;

@@ -29,7 +29,7 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.xbaya.model.registrybrowser.ServiceParameters;
-import org.apache.airavata.xbaya.ui.registrybrowser.menu.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 
 public class ParametersNode extends AbstractAiravataTreeNode {
 	private ServiceParameters parametersList;

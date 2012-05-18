@@ -33,6 +33,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.apache.airavata.workflow.model.graph.system.MemoNode;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.dialogs.graph.system.MemoConfigurationDialog;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
 
 public class MemoNodeGUI extends NodeGUI {

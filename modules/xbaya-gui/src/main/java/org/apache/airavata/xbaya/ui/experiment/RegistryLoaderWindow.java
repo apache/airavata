@@ -43,11 +43,11 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
-import org.apache.airavata.xbaya.ui.ErrorMessages;
-import org.apache.airavata.xbaya.ui.GridPanel;
-import org.apache.airavata.xbaya.ui.XBayaDialog;
-import org.apache.airavata.xbaya.ui.XbayaEnhancedList;
+import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
+import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
+import org.apache.airavata.xbaya.ui.widgets.GridPanel;
+import org.apache.airavata.xbaya.ui.widgets.XbayaEnhancedList;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 
 public class RegistryLoaderWindow {

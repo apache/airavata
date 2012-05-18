@@ -26,7 +26,7 @@ import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.ui.TableRenderable;
+import org.apache.airavata.xbaya.ui.widgets.TableRenderable;
 
 public class RegistrySearchResult implements TableRenderable {
 
@@ -116,7 +116,7 @@ public class RegistrySearchResult implements TableRenderable {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.ui.TableRenderable#getColumnCount()
+     * @see org.apache.airavata.xbaya.ui.widgets.TableRenderable#getColumnCount()
      */
     @Override
     public int getColumnCount() {
@@ -124,7 +124,7 @@ public class RegistrySearchResult implements TableRenderable {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.ui.TableRenderable#getColumnTitle(int)
+     * @see org.apache.airavata.xbaya.ui.widgets.TableRenderable#getColumnTitle(int)
      */
     @Override
     public String getColumnTitle(int index) {
@@ -132,7 +132,7 @@ public class RegistrySearchResult implements TableRenderable {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.ui.TableRenderable#getValue(int)
+     * @see org.apache.airavata.xbaya.ui.widgets.TableRenderable#getValue(int)
      */
     @Override
     public Object getValue(int index) {

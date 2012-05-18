@@ -32,6 +32,7 @@ import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.system.EndifNode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.ui.dialogs.graph.system.EndifConfigurationDialog;
 import org.apache.airavata.xbaya.ui.graph.PortGUI;
 
 public class EndifNodeGUI extends ConfigurableNodeGUI {

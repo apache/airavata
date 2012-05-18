@@ -22,7 +22,7 @@
 package org.apache.airavata.xbaya.menues.tools;
 
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.ui.component.GlobusFileTransferWindow;
+import org.apache.airavata.xbaya.ui.dialogs.GlobusFileTransferWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

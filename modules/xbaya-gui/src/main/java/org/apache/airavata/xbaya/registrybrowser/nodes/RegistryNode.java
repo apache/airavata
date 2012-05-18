@@ -36,8 +36,8 @@ import org.apache.airavata.xbaya.model.registrybrowser.HostDescriptions;
 import org.apache.airavata.xbaya.model.registrybrowser.ServiceDescriptions;
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowExperiments;
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowTemplates;
-import org.apache.airavata.xbaya.ui.registrybrowser.menu.AbstractBrowserActionItem;
-import org.apache.airavata.xbaya.ui.registrybrowser.menu.RefreshAction;
+import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.RefreshAction;
 
 public class RegistryNode extends AbstractAiravataTreeNode {
     private AiravataRegistry registry;

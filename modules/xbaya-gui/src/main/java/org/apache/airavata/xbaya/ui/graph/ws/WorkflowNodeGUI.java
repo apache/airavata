@@ -28,8 +28,8 @@ import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.ws.WorkflowNode;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.ui.ErrorMessages;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
+import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

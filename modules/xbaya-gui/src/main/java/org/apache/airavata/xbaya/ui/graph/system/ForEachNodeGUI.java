@@ -32,6 +32,7 @@ import org.apache.airavata.workflow.model.graph.impl.PortImpl;
 import org.apache.airavata.workflow.model.graph.system.ForEachNode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.ui.dialogs.graph.system.ForEachConfigurationDialog;
 
 public class ForEachNodeGUI extends ConfigurableNodeGUI {
 
