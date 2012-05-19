@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
+import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.slf4j.Logger;

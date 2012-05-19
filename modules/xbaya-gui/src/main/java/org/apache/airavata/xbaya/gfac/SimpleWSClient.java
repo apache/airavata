@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
+import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;

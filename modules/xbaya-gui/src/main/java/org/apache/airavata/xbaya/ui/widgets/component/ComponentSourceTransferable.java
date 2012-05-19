@@ -24,7 +24,7 @@ package org.apache.airavata.xbaya.ui.widgets.component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 
-import org.apache.airavata.xbaya.component.registry.ComponentReference;
+import org.apache.airavata.workflow.model.component.ComponentReference;
 
 /**
  * To transfer ComponentSource by drag-and-drop. This is really over-spec, but this is the only way.

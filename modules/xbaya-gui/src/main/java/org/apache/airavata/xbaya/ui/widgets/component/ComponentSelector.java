@@ -53,13 +53,14 @@ import javax.swing.tree.TreeSelectionModel;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ComponentReference;
+import org.apache.airavata.workflow.model.component.ComponentRegistryException;
+import org.apache.airavata.workflow.model.component.registry.ComponentOperationReference;
+import org.apache.airavata.workflow.model.component.registry.ComponentRegistry;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.component.registry.ComponentOperationReference;
-import org.apache.airavata.xbaya.component.registry.ComponentReference;
-import org.apache.airavata.xbaya.component.registry.ComponentRegistry;
-import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
+import org.apache.airavata.xbaya.component.registry.ComponentController;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.XBayaComponent;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentSelectorEvent.ComponentSelectorEventType;
@@ -199,7 +200,7 @@ public class ComponentSelector implements XBayaComponent {
         if (selectionPath.getPathCount() >= 2) {
             final ComponentTreeNode selectedNode = (ComponentTreeNode) selectionPath.getPath()[1];
             ComponentRegistry registry = selectedNode.getComponentRegistry();
-            final ComponentTreeNode componentTree = registry.getComponentTree();
+            final ComponentTreeNode componentTree = ComponentController.getComponentTree(registry);
 
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
@@ -239,7 +240,7 @@ public class ComponentSelector implements XBayaComponent {
 
         final List<ComponentTreeNode> newSubTrees = new ArrayList<ComponentTreeNode>();
         for (ComponentRegistry registry : registries) {
-            ComponentTreeNode componentTree = registry.getComponentTree();
+            ComponentTreeNode componentTree = ComponentController.getComponentTree(registry);
             newSubTrees.add(componentTree);
         }
 

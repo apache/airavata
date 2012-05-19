@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.xbaya.appwrapper;
+package org.apache.airavata.xbaya.ui.dialogs.descriptors;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;

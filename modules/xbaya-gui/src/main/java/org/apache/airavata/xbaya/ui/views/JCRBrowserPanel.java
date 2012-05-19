@@ -43,8 +43,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.registrybrowser.nodes.AbstractAiravataTreeNode;
 import org.apache.airavata.xbaya.registrybrowser.nodes.AiravataTreeNodeFactory;
 import org.apache.airavata.xbaya.registrybrowser.nodes.RegistryTreeCellRenderer;

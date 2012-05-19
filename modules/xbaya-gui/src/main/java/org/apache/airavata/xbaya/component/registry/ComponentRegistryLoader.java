@@ -27,6 +27,9 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.workflow.model.component.ComponentRegistryException;
+import org.apache.airavata.workflow.model.component.registry.ComponentRegistry;
+import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
@@ -107,7 +110,7 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
         		this.getEngine().getGUI().getComponentSelector().removeComponentTree(getComponentTreeNodesMap().get(registry.getName()));
         		getComponentTreeNodesMap().remove(registry.getName());
         	}
-            componentTree = registry.getComponentTree();
+            componentTree = ComponentController.getComponentTree(registry);
             if (this.canceled) {
                 return;
             }

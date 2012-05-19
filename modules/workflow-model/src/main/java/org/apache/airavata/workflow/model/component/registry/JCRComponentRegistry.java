@@ -19,21 +19,21 @@
  *
  */
 
-package org.apache.airavata.xbaya.component.registry;
+package org.apache.airavata.workflow.model.component.registry;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.jcr.RepositoryException;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.common.registry.api.user.UserManager;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
-import org.apache.airavata.common.registry.api.user.UserManager;
-import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
+import org.apache.airavata.workflow.model.component.ComponentReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,17 +71,17 @@ public class JCRComponentRegistry extends ComponentRegistry {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentRegistry#getComponentTree()
+     * @see org.apache.airavata.workflow.model.component.registry.ComponentRegistry#getComponentReferenceList()
      */
     @Override
-    public ComponentTreeNode getComponentTree() {
-    	ComponentTreeNode tree = new ComponentTreeNode(this);
+    public List<ComponentReference> getComponentReferenceList() {
+        List<ComponentReference> tree = new ArrayList<ComponentReference>();
         try {
             List<ServiceDescription> services = this.registry.searchServiceDescription("");
             for (ServiceDescription serviceDescription : services) {
                 String serviceName = serviceDescription.getType().getName();
                 JCRComponentReference jcr = new JCRComponentReference(serviceName, registry.getWSDL(serviceName));
-                tree.add(new ComponentTreeNode(jcr));
+                tree.add(jcr);
             }
         } catch (RegistryException e) {
             log.error(e.getMessage(), e);
@@ -93,7 +93,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentRegistry#getName()
+     * @see org.apache.airavata.workflow.model.component.registry.ComponentRegistry#getName()
      */
     @Override
     public String getName() {

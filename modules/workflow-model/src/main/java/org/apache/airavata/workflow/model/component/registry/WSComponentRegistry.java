@@ -19,10 +19,11 @@
  *
  */
 
-package org.apache.airavata.xbaya.component.registry;
+package org.apache.airavata.workflow.model.component.registry;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +31,11 @@ import java.util.Map;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ComponentReference;
+import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.SubWorkflowComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
-import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 
 import xsul.wsdl.WsdlDefinitions;
 import xsul.wsdl.WsdlException;
@@ -45,7 +47,7 @@ public class WSComponentRegistry extends ComponentRegistry {
 
     private Map<String, Component> componentMap;
 
-    private ComponentTreeNode treeLeaf;
+    private ComponentReference treeLeaf;
 
     /**
      * Create a WSComponentRegistry
@@ -67,8 +69,7 @@ public class WSComponentRegistry extends ComponentRegistry {
 
             String urlString = url.toString();
             String name = urlString.substring(urlString.lastIndexOf('/') + 1);
-            URLComponentReference componentReference = new URLComponentReference(name, components);
-            this.treeLeaf = new ComponentTreeNode(componentReference);
+            treeLeaf = new URLComponentReference(name, components);
 
         } catch (ComponentException e) {
             e.printStackTrace();
@@ -81,7 +82,7 @@ public class WSComponentRegistry extends ComponentRegistry {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentRegistry#getName()
+     * @see org.apache.airavata.workflow.model.component.registry.ComponentRegistry#getName()
      */
     @Override
     public String getName() {
@@ -94,15 +95,9 @@ public class WSComponentRegistry extends ComponentRegistry {
      * @return The ComponentTree
      */
     @Override
-    public ComponentTreeNode getComponentTree() {
-        ComponentTreeNode tree = new ComponentTreeNode(this);
-        /*
-         * for (String name : this.componentMap.keySet()) { Component component = this.componentMap.get(name);
-         * WSComponentReference componentReference = new WSComponentReference( name, component); tree.add(new
-         * ComponentTreeNode(componentReference)); }
-         */
-
-        tree.add(this.treeLeaf);
+    public List<ComponentReference> getComponentReferenceList() throws ComponentRegistryException {
+        List<ComponentReference> tree = new ArrayList<ComponentReference>();
+    	tree.add(this.treeLeaf);
         return tree;
     }
 

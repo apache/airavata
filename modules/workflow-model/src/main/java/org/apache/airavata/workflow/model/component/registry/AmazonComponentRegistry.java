@@ -19,15 +19,17 @@
  *
  */
 
-package org.apache.airavata.xbaya.component.registry;
+package org.apache.airavata.workflow.model.component.registry;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.component.ComponentReference;
 import org.apache.airavata.workflow.model.component.amazon.InstanceComponent;
 import org.apache.airavata.workflow.model.component.amazon.TerminateInstanceComponent;
-import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 
 public class AmazonComponentRegistry extends ComponentRegistry {
 
@@ -47,21 +49,21 @@ public class AmazonComponentRegistry extends ComponentRegistry {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentRegistry#getComponentTree()
+     * @see org.apache.airavata.workflow.model.component.registry.ComponentRegistry#getComponentReferenceList()
      */
     @Override
-    public ComponentTreeNode getComponentTree() {
-        ComponentTreeNode tree = new ComponentTreeNode(this);
+    public List<ComponentReference> getComponentReferenceList() {
+        List<ComponentReference> tree = new ArrayList<ComponentReference>();
         for (String name : this.componentMap.keySet()) {
             Component component = this.componentMap.get(name);
             SystemComponentReference componentReference = new SystemComponentReference(name, component);
-            tree.add(new ComponentTreeNode(componentReference));
+            tree.add(componentReference);
         }
         return tree;
     }
 
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentRegistry#getName()
+     * @see org.apache.airavata.workflow.model.component.registry.ComponentRegistry#getName()
      */
     @Override
     public String getName() {

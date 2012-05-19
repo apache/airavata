@@ -19,23 +19,23 @@
  *
  */
 
-package org.apache.airavata.xbaya.component.registry;
+package org.apache.airavata.workflow.model.component.registry;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ComponentReference;
+import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
-import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 
 import xsul.wsdl.WsdlDefinitions;
 import xsul.wsdl.WsdlResolver;
 
 public class URLComponentRegistry extends ComponentRegistry {
-
-    private ComponentTreeNode tree;
 
     private URI url;
 
@@ -46,11 +46,10 @@ public class URLComponentRegistry extends ComponentRegistry {
      */
     public URLComponentRegistry(URI url) {
         this.url = url;
-        this.tree = new ComponentTreeNode(this);
     }
-
+    
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentRegistry#getName()
+     * @see org.apache.airavata.workflow.model.component.registry.ComponentRegistry#getName()
      */
     @Override
     public String getName() {
@@ -59,30 +58,23 @@ public class URLComponentRegistry extends ComponentRegistry {
 
     /**
      * @throws ComponentRegistryException
-     * @see org.apache.airavata.xbaya.component.registry.ComponentRegistry#getComponentTree()
+     * @see org.apache.airavata.workflow.model.component.registry.ComponentRegistry#getComponentReferenceList()
      */
     @Override
-    public ComponentTreeNode getComponentTree() throws ComponentRegistryException {
-        this.tree = new ComponentTreeNode(this);
+    public List<ComponentReference> getComponentReferenceList() throws ComponentRegistryException {
+        List<ComponentReference> tree = new ArrayList<ComponentReference>();
         try {
-            loadComponents();
-            return this.tree;
+            loadComponents(tree);
+            return tree;
         } catch (ComponentException e) {
             throw new ComponentRegistryException(e);
         }
     }
 
     /**
-     * @return The tree.
-     */
-    public ComponentTreeNode getComponentTreeWithoutRefresh() {
-        return this.tree;
-    }
-
-    /**
      * @throws ComponentException
      */
-    private void loadComponents() throws ComponentException {
+    private void loadComponents(List<ComponentReference> tree) throws ComponentException {
         // XXX need to use wsdlResolver from xsul, not xsul5, to handle
         // security.
         WsdlResolver wsdlResolver = WsdlResolver.getInstance();
@@ -92,7 +84,6 @@ public class URLComponentRegistry extends ComponentRegistry {
         String urlString = this.url.toString();
         String name = urlString.substring(urlString.lastIndexOf('/') + 1);
         URLComponentReference componentReference = new URLComponentReference(name, components);
-        ComponentTreeNode treeLeaf = new ComponentTreeNode(componentReference);
-        this.tree.add(treeLeaf);
+	        tree.add(componentReference);
     }
 }

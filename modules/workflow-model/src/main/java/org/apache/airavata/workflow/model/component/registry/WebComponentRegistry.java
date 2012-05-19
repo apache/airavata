@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.xbaya.component.registry;
+package org.apache.airavata.workflow.model.component.registry;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,9 +40,10 @@ import javax.swing.text.html.parser.ParserDelegator;
 
 import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ComponentReference;
+import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
-import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +53,7 @@ public class WebComponentRegistry extends ComponentRegistry {
 
     private URL url;
 
-    private ComponentTreeNode tree;
+    private List<ComponentReference> tree;
 
     private Map<String, List<WSComponent>> componentsMap;
 
@@ -78,7 +80,7 @@ public class WebComponentRegistry extends ComponentRegistry {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentRegistry#getName()
+     * @see org.apache.airavata.workflow.model.component.registry.ComponentRegistry#getName()
      */
     @Override
     public String getName() {
@@ -86,11 +88,11 @@ public class WebComponentRegistry extends ComponentRegistry {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentRegistry#getComponentTree()
+     * @see org.apache.airavata.workflow.model.component.registry.ComponentRegistry#getComponentReferenceList()
      */
     @Override
-    public ComponentTreeNode getComponentTree() throws ComponentRegistryException {
-        this.tree = new ComponentTreeNode(this);
+    public List<ComponentReference> getComponentReferenceList() throws ComponentRegistryException {
+        tree = new ArrayList<ComponentReference>();
         parse();
         return this.tree;
     }
@@ -168,8 +170,7 @@ public class WebComponentRegistry extends ComponentRegistry {
     private void addComponents(String name, List<WSComponent> components) {
         this.componentsMap.put(name, components);
         WebComponentReference componentReference = new WebComponentReference(name, components);
-        ComponentTreeNode treeLeaf = new ComponentTreeNode(componentReference);
-        this.tree.add(treeLeaf);
+        this.tree.add(componentReference);
     }
 
     private class HtmlRegistryParserCallback extends HTMLEditorKit.ParserCallback {

@@ -25,6 +25,8 @@ import java.awt.Point;
 
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ComponentRegistryException;
+import org.apache.airavata.workflow.model.component.registry.LocalComponentRegistry;
 import org.apache.airavata.workflow.model.component.system.ConstantComponent;
 import org.apache.airavata.workflow.model.component.system.EndForEachComponent;
 import org.apache.airavata.workflow.model.component.system.EndifComponent;
@@ -42,8 +44,6 @@ import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.system.OutputNode;
 import org.apache.airavata.workflow.model.graph.system.ReceiveNode;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.xbaya.component.registry.ComponentRegistryException;
-import org.apache.airavata.xbaya.component.registry.LocalComponentRegistry;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.test.service.adder.Adder;
 import org.apache.airavata.xbaya.test.service.approver.Approver;

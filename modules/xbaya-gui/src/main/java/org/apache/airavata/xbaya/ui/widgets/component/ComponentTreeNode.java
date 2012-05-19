@@ -26,8 +26,8 @@ import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
-import org.apache.airavata.xbaya.component.registry.ComponentReference;
-import org.apache.airavata.xbaya.component.registry.ComponentRegistry;
+import org.apache.airavata.workflow.model.component.ComponentReference;
+import org.apache.airavata.workflow.model.component.registry.ComponentRegistry;
 
 public class ComponentTreeNode extends DefaultMutableTreeNode {
 

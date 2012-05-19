@@ -29,8 +29,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.appwrapper.DescriptorEditorDialog;
-import org.apache.airavata.xbaya.appwrapper.DescriptorEditorDialog.DescriptorType;
+import org.apache.airavata.xbaya.ui.dialogs.descriptors.DescriptorEditorDialog;
+import org.apache.airavata.xbaya.ui.dialogs.descriptors.DescriptorEditorDialog.DescriptorType;
 import org.apache.airavata.xbaya.ui.dialogs.workflow.ParameterPropertyWindow;
 import org.apache.airavata.xbaya.ui.dialogs.workflow.WorkflowPropertyWindow;
 import org.apache.airavata.xbaya.util.XBayaUtil;

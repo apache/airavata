@@ -19,38 +19,36 @@
  *
  */
 
-package org.apache.airavata.xbaya.component.registry;
+package org.apache.airavata.workflow.model.component.registry;
 
-import org.apache.airavata.workflow.model.exceptions.WorkflowException;
+import java.util.List;
 
-public class ComponentRegistryException extends WorkflowException {
+import org.apache.airavata.workflow.model.component.ComponentReference;
+import org.apache.airavata.workflow.model.component.ComponentRegistryException;
+
+public abstract class ComponentRegistry {
 
     /**
-     * Constructs a ComponentRegistryException.
+     * Returns a List of hirarchical Component References. This method should refresh the list even if subclass uses the cache.
+     * 
+     * @return The ComponentTreeR
+     * @throws ComponentRegistryException
      */
-    public ComponentRegistryException() {
-        super();
+    public abstract List<ComponentReference> getComponentReferenceList() throws ComponentRegistryException;
+
+    /**
+     * Used by the ComponentTreeViewer to display a node.
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return getName();
     }
 
     /**
-     * @param message
+     * @return The name to show in the tree.
      */
-    public ComponentRegistryException(String message) {
-        super(message);
-    }
-
-    /**
-     * @param cause
-     */
-    public ComponentRegistryException(Throwable cause) {
-        super(cause);
-    }
-
-    /**
-     * @param message
-     * @param cause
-     */
-    public ComponentRegistryException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    public abstract String getName();
+    
 }

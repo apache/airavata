@@ -29,6 +29,7 @@ import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.registry.WebComponentRegistry;
 import org.apache.airavata.workflow.model.component.system.InputComponent;
 import org.apache.airavata.workflow.model.component.system.OutputComponent;
 import org.apache.airavata.workflow.model.graph.Graph;
@@ -38,7 +39,6 @@ import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.system.OutputNode;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.component.registry.WebComponentRegistry;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.xmlpull.infoset.XmlElement;
 
@@ -70,7 +70,7 @@ public class WebComponentRegistryClientTestCase extends XBayaTestCase {
         this.temporaryDirectory.mkdir();
 
         this.componentRegistry = new WebComponentRegistry(XBayaConstants.DEFAULT_WEB_REGISTRY.toURL());
-        this.componentRegistry.getComponentTree(); // To read components
+        this.componentRegistry.getComponentReferenceList(); // To read components
         this.inputComponent = new InputComponent();
         this.outputComponent = new OutputComponent();
     }

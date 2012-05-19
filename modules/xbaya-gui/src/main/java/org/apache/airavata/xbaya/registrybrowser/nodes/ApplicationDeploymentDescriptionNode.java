@@ -29,11 +29,11 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.xbaya.appwrapper.ApplicationDescriptionDialog;
 import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptionWrap;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.DeleteAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.EditAction;
+import org.apache.airavata.xbaya.ui.dialogs.descriptors.ApplicationDescriptionDialog;
 
 public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNode {
     private ApplicationDeploymentDescriptionWrap applicationDeploymentDescriptionWrap;
