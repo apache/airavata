@@ -19,38 +19,42 @@
  *
  */
 
-package org.apache.airavata.xbaya.component.registry;
+package org.apache.airavata.workflow.model.component.registry;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.airavata.workflow.model.component.Component;
-import org.apache.airavata.workflow.model.component.ws.WSComponent;
+import org.apache.airavata.workflow.model.component.ComponentReference;
 
-public class URLComponentReference extends ComponentReference {
+public class WSComponentReference extends ComponentReference {
 
-    private List<WSComponent> components;
+    private Component component;
+
+    private List<Component> components;
 
     /**
-     * Constructs a URLComponentReference.
+     * Constructs a SystemComponentNode.
      * 
      * @param name
-     * @param components
+     * @param component
      */
-    public URLComponentReference(String name, List<WSComponent> components) {
+    public WSComponentReference(String name, Component component) {
         super(name);
-        this.components = components;
+        this.component = component;
+        this.components = Collections.singletonList(component);
     }
 
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentReference#getComponent()
+     * @see org.apache.airavata.workflow.model.component.ComponentReference#getComponent()
      */
     @Override
     public Component getComponent() {
-        return this.components.get(0);
+        return this.component;
     }
 
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentReference#getComponents()
+     * @see org.apache.airavata.workflow.model.component.ComponentReference#getComponents()
      */
     @Override
     public List<? extends Component> getComponents() {

@@ -25,15 +25,26 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.xml.namespace.QName;
+
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.SubWorkflowComponent;
+import org.apache.airavata.workflow.model.component.registry.AmazonComponentRegistry;
+import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
+import org.apache.airavata.workflow.model.component.registry.LocalComponentRegistry;
+import org.apache.airavata.workflow.model.component.registry.SystemComponentReference;
+import org.apache.airavata.workflow.model.component.registry.SystemComponentRegistry;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.xbaya.component.registry.*;
+import org.apache.airavata.xbaya.component.registry.ComponentController;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
@@ -50,11 +61,6 @@ import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.xml.namespace.QName;
 
 public class XBayaEngine {
 
@@ -255,16 +261,19 @@ public class XBayaEngine {
         try {
             this.componentRegistry = new SystemComponentRegistry();
             // This does not take time, so we can do it in the same thread.
-            this.systemComponentTree = this.componentRegistry.getComponentTree();
+            this.systemComponentTree = ComponentController.getComponentTree(this.componentRegistry);
             componentTreeViewer.addComponentTree(0, this.systemComponentTree);
 
-            componentTreeViewer.addComponentTree(1, new AmazonComponentRegistry().getComponentTree());
+            componentTreeViewer.addComponentTree(1, ComponentController.getComponentTree(new AmazonComponentRegistry()));
 
         } catch (RuntimeException e) {
             // This should not happen
             e.printStackTrace();
             getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-        }
+        } catch (ComponentRegistryException e) {
+        	e.printStackTrace();
+            getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+		}
 
         List<String> localRegistryPaths = this.configuration.getLocalRegistry();
         for (String path : localRegistryPaths) {
@@ -272,7 +281,7 @@ public class XBayaEngine {
                 LocalComponentRegistry registry = new LocalComponentRegistry(path);
                 // XXX This might take time, so it's better to move to another
                 // thread.
-                ComponentTreeNode componentTree = registry.getComponentTree();
+                ComponentTreeNode componentTree = ComponentController.getComponentTree(registry);
                 componentTreeViewer.addComponentTree(componentTree);
             } catch (ComponentRegistryException e) {
                 getErrorWindow().error(ErrorMessages.COMPONENT_LIST_LOAD_ERROR, e);

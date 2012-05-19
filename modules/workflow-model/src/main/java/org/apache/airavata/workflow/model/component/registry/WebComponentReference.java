@@ -19,55 +19,42 @@
  *
  */
 
-package org.apache.airavata.xbaya.component.registry;
+package org.apache.airavata.workflow.model.component.registry;
 
-import java.io.File;
 import java.util.List;
 
 import org.apache.airavata.workflow.model.component.Component;
-import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ComponentReference;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 
-public class LocalComponentReference extends ComponentReference {
-
-    private LocalComponentRegistry registry;
-
-    private File file;
+public class WebComponentReference extends ComponentReference {
 
     private List<WSComponent> components;
 
     /**
-     * Constructs a LocalComponentNode.
+     * Constructs a WebComponentNode.
      * 
      * @param name
-     * @param file
-     * @param registry
+     * @param components
      */
-    public LocalComponentReference(String name, File file, LocalComponentRegistry registry) {
+    public WebComponentReference(String name, List<WSComponent> components) {
         super(name);
-        this.file = file;
-        this.registry = registry;
+        this.components = components;
     }
 
     /**
-     * @throws ComponentException
-     * @throws ComponentRegistryException
-     * @see org.apache.airavata.xbaya.component.registry.ComponentReference#getComponent()
+     * @see org.apache.airavata.workflow.model.component.ComponentReference#getComponent()
      */
     @Override
-    @Deprecated
-    public Component getComponent() throws ComponentException, ComponentRegistryException {
-        return getComponents().get(0);
+    public Component getComponent() {
+        return this.components.get(0);
     }
 
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentReference#getComponents()
+     * @see org.apache.airavata.workflow.model.component.ComponentReference#getComponents()
      */
     @Override
-    public List<WSComponent> getComponents() throws ComponentRegistryException, ComponentException {
-        if (this.components == null) {
-            this.components = this.registry.getComponents(this.file);
-        }
+    public List<? extends Component> getComponents() {
         return this.components;
     }
 }

@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.xbaya.appwrapper;
+package org.apache.airavata.xbaya.ui.dialogs.descriptors;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;

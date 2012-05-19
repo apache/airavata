@@ -19,12 +19,13 @@
  *
  */
 
-package org.apache.airavata.xbaya.component.registry;
+package org.apache.airavata.workflow.model.component.registry;
 
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.component.ComponentReference;
 
 public class SystemComponentReference extends ComponentReference {
 
@@ -45,7 +46,7 @@ public class SystemComponentReference extends ComponentReference {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentReference#getComponent()
+     * @see org.apache.airavata.workflow.model.component.ComponentReference#getComponent()
      */
     @Override
     public Component getComponent() {
@@ -53,7 +54,7 @@ public class SystemComponentReference extends ComponentReference {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentReference#getComponents()
+     * @see org.apache.airavata.workflow.model.component.ComponentReference#getComponents()
      */
     @Override
     public List<? extends Component> getComponents() {

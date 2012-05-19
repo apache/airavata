@@ -31,12 +31,12 @@ import javax.swing.tree.TreeNode;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.AiravataRegistry;
-import org.apache.airavata.xbaya.appwrapper.HostDescriptionDialog;
 import org.apache.airavata.xbaya.model.registrybrowser.HostDescriptions;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.AddAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.DeleteAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.RefreshAction;
+import org.apache.airavata.xbaya.ui.dialogs.descriptors.HostDescriptionDialog;
 
 public class HostDescriptionsNode extends AbstractAiravataTreeNode {
     private HostDescriptions hostDescriptions;

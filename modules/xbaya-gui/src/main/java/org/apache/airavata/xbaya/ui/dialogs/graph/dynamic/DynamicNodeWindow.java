@@ -36,6 +36,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.workflow.model.component.registry.URLComponentRegistry;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.Graph;
@@ -47,8 +48,8 @@ import org.apache.airavata.workflow.model.graph.dynamic.SchemaCompilerUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.component.registry.ComponentController;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryLoader;
-import org.apache.airavata.xbaya.component.registry.URLComponentRegistry;
 import org.apache.airavata.xbaya.invoker.DynamicServiceCreator;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
@@ -179,7 +180,7 @@ public class DynamicNodeWindow {
                     .getGUI()
                     .getGraphCanvas()
                     .addNode(
-                            ((ComponentTreeNode) registry.getComponentTree().getFirstLeaf()).getComponentReference()
+                            ((ComponentTreeNode) ComponentController.getComponentTree(registry).getFirstLeaf()).getComponentReference()
                                     .getComponent(), this.node.getPosition());
             List<DataPort> inputPorts = newNode.getInputPorts();
             Graph graph = this.engine.getGUI().getGraphCanvas().getGraph();

@@ -19,12 +19,15 @@
  *
  */
 
-package org.apache.airavata.xbaya.component.registry;
+package org.apache.airavata.workflow.model.component.registry;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.component.ComponentReference;
 import org.apache.airavata.workflow.model.component.ExitComponent;
 import org.apache.airavata.workflow.model.component.StreamSourceComponent;
 import org.apache.airavata.workflow.model.component.SubWorkflowComponent;
@@ -42,7 +45,6 @@ import org.apache.airavata.workflow.model.component.system.MemoComponent;
 import org.apache.airavata.workflow.model.component.system.OutputComponent;
 import org.apache.airavata.workflow.model.component.system.ReceiveComponent;
 import org.apache.airavata.workflow.model.component.system.S3InputComponent;
-import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 
 public class SystemComponentRegistry extends ComponentRegistry {
 
@@ -76,7 +78,7 @@ public class SystemComponentRegistry extends ComponentRegistry {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentRegistry#getName()
+     * @see org.apache.airavata.workflow.model.component.registry.ComponentRegistry#getName()
      */
     @Override
     public String getName() {
@@ -89,12 +91,12 @@ public class SystemComponentRegistry extends ComponentRegistry {
      * @return The ComponentTree
      */
     @Override
-    public ComponentTreeNode getComponentTree() {
-        ComponentTreeNode tree = new ComponentTreeNode(this);
+    public List<ComponentReference> getComponentReferenceList() {
+        List<ComponentReference> tree = new ArrayList<ComponentReference>();
         for (String name : this.componentMap.keySet()) {
             Component component = this.componentMap.get(name);
             SystemComponentReference componentReference = new SystemComponentReference(name, component);
-            tree.add(new ComponentTreeNode(componentReference));
+            tree.add(componentReference);
         }
         return tree;
     }

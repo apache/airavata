@@ -19,12 +19,14 @@
  *
  */
 
-package org.apache.airavata.xbaya.component.registry;
+package org.apache.airavata.workflow.model.component.registry;
 
 import java.util.List;
 
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.ComponentReference;
+import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
 
@@ -42,7 +44,7 @@ public class JCRComponentReference extends ComponentReference {
     /**
      * @throws ComponentException
      * @throws ComponentRegistryException
-     * @see org.apache.airavata.xbaya.component.registry.ComponentReference#getComponent()
+     * @see org.apache.airavata.workflow.model.component.ComponentReference#getComponent()
      */
     @Override
     @Deprecated
@@ -51,7 +53,7 @@ public class JCRComponentReference extends ComponentReference {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.component.registry.ComponentReference#getComponents()
+     * @see org.apache.airavata.workflow.model.component.ComponentReference#getComponents()
      */
     @Override
     public List<WSComponent> getComponents() throws ComponentRegistryException, ComponentException {
