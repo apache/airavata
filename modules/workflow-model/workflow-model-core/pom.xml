@@ -12,9 +12,9 @@
 
     <parent>
         <groupId>org.apache.airavata</groupId>
-        <artifactId>airavata</artifactId>
+        <artifactId>airavata-workflow-model-parent</artifactId>
         <version>0.4-incubating-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
