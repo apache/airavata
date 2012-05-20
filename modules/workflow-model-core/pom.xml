@@ -18,9 +18,9 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-workflow-model</artifactId>
+    <artifactId>airavata-workflow-model-core</artifactId>
     <packaging>jar</packaging>
-    <name>Airavata Workflow Model</name>
+    <name>Airavata Workflow Model Core</name>
     <url>http://incubator.apache.org/airavata/</url>
 
     <!-- Edit the following properties. -->

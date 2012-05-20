@@ -389,7 +389,7 @@
             <modules>
                 <module>modules/commons</module>
                 <module>modules/ws-messenger</module>
-                <module>modules/workflow-model</module>
+                <module>modules/workflow-model-core</module>
                 <module>modules/xbaya-gui</module>
                 <module>modules/workflow-interpreter</module>
             </modules>
@@ -433,7 +433,7 @@
                 <module>modules/commons</module>
                 <module>modules/ws-messenger</module>
                 <module>modules/registry-migrator</module>
-                <module>modules/workflow-model</module>
+                <module>modules/workflow-model-core</module>
                 <module>modules/xbaya-gui</module>
             </modules>
         </profile>
@@ -463,7 +463,7 @@
                 <module>modules/commons</module>
                 <module>modules/ws-messenger</module>
                 <module>modules/registry-migrator</module>
-                <module>modules/workflow-model</module>
+                <module>modules/workflow-model-core</module>
                 <module>modules/xbaya-gui</module>
                 <module>modules/airavata-client</module>
             </modules>
@@ -567,7 +567,7 @@
                 <module>modules/gfac-core</module>
                 <module>modules/gfac-axis2</module>
                 <module>modules/ws-messenger</module>
-                <module>modules/workflow-model</module>
+                <module>modules/workflow-model-core</module>
                 <module>modules/xbaya-gui</module>
                 <module>modules/commons</module>
                 <module>modules/registry-migrator</module>
