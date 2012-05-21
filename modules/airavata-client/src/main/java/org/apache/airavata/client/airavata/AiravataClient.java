@@ -604,5 +604,7 @@ public class AiravataClient {
 		return null;
 	}
 
-
+    public static WorkflowContextHeaderBuilder getBuilder() {
+        return builder;
+    }
 }
