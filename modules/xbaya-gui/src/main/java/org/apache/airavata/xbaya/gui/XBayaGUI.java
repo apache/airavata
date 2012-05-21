@@ -665,9 +665,8 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
         int width = config.getWidth();
         int height = config.getHeight();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        final int inset = 50;
-        this.frame.setLocation(inset, inset);
-        Dimension size = new Dimension(screenSize.width - inset * 2, screenSize.height - inset * 2);
+        this.frame.setLocation(config.getX(), config.getY());
+        Dimension size = new Dimension(screenSize.width - config.getX() * 2, screenSize.height - config.getY() * 2);
         if (width != 0) {
             size.width = width;
         }

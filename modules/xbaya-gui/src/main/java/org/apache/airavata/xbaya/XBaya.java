@@ -88,7 +88,8 @@ public class XBaya {
                 + " [-karmaWorkflowInstanceID]" + " [-myProxyPort port]" + " [-myProxyUsername username]"
                 + " [-myProxyLifetime sec]" + " [-loadMyProxy {true,false}]" + " [-messageBoxURL url]"
                 + " [-width width]" + " [-height height]" + " [-exitOnClose false/true]" + "[-enableProvenance false/true]"
-                + "[-enableProvenanceSmartRun false/true]" + "[-runWithCrossProduct true/false]"+"[-mode ide/monitor]");
+                + "[-enableProvenanceSmartRun false/true]" + "[-runWithCrossProduct true/false]"+"[-mode ide/monitor]" + "[--x x-coordinates of left top corner] " +
+                "+ [--y y-coordinate of left top corner]");
     }
 
     private void parseArguments(String[] args) {
@@ -262,7 +263,13 @@ public class XBaya {
                 	index++;
                 	String modeValue = args[index].toUpperCase();
                 	this.config.setXbayaExecutionMode(XBayaExecutionMode.valueOf(modeValue));
-                }  else {
+                } else if ("-x".equalsIgnoreCase(arg)) {
+                    index++;
+                    this.config.setX(Integer.parseInt(args[index]));
+                } else if ("-y".equalsIgnoreCase(arg)) {
+                    index++;
+                    this.config.setY(Integer.parseInt(args[index]));
+                } else {
                     String message = "Unknown option: " + arg;
                     logger.error(message);
                     this.config.addError(new XBayaException(message));
