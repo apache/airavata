@@ -601,6 +601,10 @@ public class AiravataClient {
 		}
 		return null;
 	}
+	
+	public static WorkflowContextHeaderBuilder getBuilder() {
+	       return builder;
+	}
 
 	public static void main(String[] args) throws Exception {
 		HashMap<String, String> config = new HashMap<String,String>();
