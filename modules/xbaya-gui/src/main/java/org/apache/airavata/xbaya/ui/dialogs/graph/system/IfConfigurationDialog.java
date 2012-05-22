@@ -109,12 +109,12 @@ public class IfConfigurationDialog {
                 // Do nothing.
             }
         } catch (GraphException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         }
 
         if (xpathString.length() == 0) {
             String warning = "XPath cannot be empty.";
-            this.engine.getErrorWindow().error(warning);
+            this.engine.getGUI().getErrorWindow().error(warning);
             return;
         }
         // Check if it's a valid XPath.
@@ -126,7 +126,7 @@ public class IfConfigurationDialog {
         // xpath = new XisXPath(xpathString);
         // } catch (RuntimeException e) {
         // String warning = "XPath is in wrong format.";
-        // this.engine.getErrorWindow().error(warning, e);
+        // this.engine.getGUI().getErrorWindow().error(warning, e);
         // return;
         // }
         this.node.setXPath(xpathString);
@@ -183,7 +183,7 @@ public class IfConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "If Configuration", gridPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "If Configuration", gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 

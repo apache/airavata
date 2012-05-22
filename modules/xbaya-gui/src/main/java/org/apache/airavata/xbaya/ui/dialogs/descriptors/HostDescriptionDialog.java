@@ -370,7 +370,7 @@ public class HostDescriptionDialog extends JDialog {
 			getRegistry().saveHostDescription(desc);
 			setHostCreated(true);
 		} catch (RegistryException e) {
-			getEngine().getErrorWindow().error(e);
+			getEngine().getGUI().getErrorWindow().error(e);
 		}
     }
 

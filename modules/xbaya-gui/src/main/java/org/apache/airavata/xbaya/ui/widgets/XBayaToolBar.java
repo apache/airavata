@@ -174,7 +174,7 @@ public class XBayaToolBar implements XBayaComponent {
              */
             public void actionPerformed(ActionEvent e1) {
                 try {
-                    Workflow workflow = engine.getWorkflow();
+                    Workflow workflow = engine.getGUI().getWorkflow();
                     WorkflowExecutionState executionState = workflow.getExecutionState();
                     if (executionState == WorkflowExecutionState.RUNNING || executionState == WorkflowExecutionState.STEP) {
                         workflow.setExecutionState(WorkflowExecutionState.PAUSED);
@@ -202,10 +202,10 @@ public class XBayaToolBar implements XBayaComponent {
              */
             public void actionPerformed(ActionEvent e2) {
                 try {
-                    if (engine.getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED) {
-                        engine.getWorkflow().setExecutionState(WorkflowExecutionState.STEP);
+                    if (engine.getGUI().getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED) {
+                        engine.getGUI().getWorkflow().setExecutionState(WorkflowExecutionState.STEP);
                     } else {
-                        throw new IllegalStateException("Unknown state :" + engine.getWorkflow().getExecutionState());
+                        throw new IllegalStateException("Unknown state :" + engine.getGUI().getWorkflow().getExecutionState());
                     }
                 } catch (RuntimeException e) {
                     XBayaToolBar.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
@@ -224,11 +224,11 @@ public class XBayaToolBar implements XBayaComponent {
              */
             public void actionPerformed(ActionEvent e1) {
                 try {
-                    if (engine.getWorkflow().getExecutionState() != WorkflowExecutionState.NONE
-                            || engine.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
-                        engine.getWorkflow().setExecutionState(WorkflowExecutionState.STOPPED);
+                    if (engine.getGUI().getWorkflow().getExecutionState() != WorkflowExecutionState.NONE
+                            || engine.getGUI().getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
+                        engine.getGUI().getWorkflow().setExecutionState(WorkflowExecutionState.STOPPED);
                     } else {
-                        throw new IllegalStateException("Unknown state :" + engine.getWorkflow().getExecutionState());
+                        throw new IllegalStateException("Unknown state :" + engine.getGUI().getWorkflow().getExecutionState());
                     }
                 } catch (RuntimeException e) {
                     XBayaToolBar.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);

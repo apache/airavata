@@ -111,7 +111,7 @@ public class BucketsLoader implements Cancelable {
                     S3TreeModel.getInstance().connect();
 
                 } catch (S3ServiceException ex) {
-                    BucketsLoader.this.engine.getErrorWindow().error(BucketsLoader.this.parent,
+                    BucketsLoader.this.engine.getGUI().getErrorWindow().error(BucketsLoader.this.parent,
                             "Cannot List S3 buckets", ex);
                 } finally {
                     BucketsLoader.this.loadingDialog.hide();

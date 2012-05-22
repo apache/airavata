@@ -186,7 +186,7 @@ public class ODEInvokerWindow {
         buttonPanel.add(this.invokeButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Execute Workflow (BPEL)", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Execute Workflow (BPEL)", mainPanel, buttonPanel);
     }
 
     protected void execute(boolean redeploy) {
@@ -197,15 +197,15 @@ public class ODEInvokerWindow {
         try {
             inputs = this.workflow.getInputs();
         } catch (ComponentException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             hide();
             return;
         } catch (RuntimeException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             hide();
             return;
         } catch (Error e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             hide();
             return;
         }
@@ -226,7 +226,7 @@ public class ODEInvokerWindow {
         // Topic
         String topic = this.topicTextField.getText();
         if (topic.length() == 0) {
-            this.engine.getErrorWindow().error(ErrorMessages.TOPIC_EMPTY_ERROR);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.TOPIC_EMPTY_ERROR);
             return;
         }
         URI workfowInstanceID = URI.create(StringUtil.convertToJavaIdentifier(topic));
@@ -236,14 +236,14 @@ public class ODEInvokerWindow {
         // String xRegistry = this.xRegistryTextField.getText();
         // URI xRegistryURL;
         // if (xRegistry.length() == 0) {
-        // this.engine.getErrorWindow().error("X-registry url is required");
+        // this.engine.getGUI().getErrorWindow().error("X-registry url is required");
         // return;
         // } else {
         // try {
         // xRegistryURL = new URI(xRegistry).parseServerAuthority();
         //
         // } catch (URISyntaxException e) {
-        // this.engine.getErrorWindow().error(ErrorMessages.XREGISTRY_URL_WRONG, e);
+        // this.engine.getGUI().getErrorWindow().error(ErrorMessages.XREGISTRY_URL_WRONG, e);
         // return;
         // }
         // }
@@ -257,7 +257,7 @@ public class ODEInvokerWindow {
             try {
                 gfacURL = new URI(gfac).parseServerAuthority();
             } catch (URISyntaxException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.GFAC_URL_WRONG, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GFAC_URL_WRONG, e);
                 return;
             }
         }
@@ -280,7 +280,7 @@ public class ODEInvokerWindow {
                     resourceMapping.setGatekeeperEPR(new URI(this.gatekeeperField.getText()));
                 } catch (URISyntaxException e) {
                     hide();
-                    this.engine.getErrorWindow().error(e);
+                    this.engine.getGUI().getErrorWindow().error(e);
                     return;
                 }
             }
@@ -295,7 +295,7 @@ public class ODEInvokerWindow {
 
         hide();
 
-        String workflowName = this.engine.getWorkflow().getName();
+        String workflowName = this.engine.getGUI().getWorkflow().getName();
 
     }
 
@@ -323,16 +323,16 @@ public class ODEInvokerWindow {
             try {
                 workflowClient.setUserX509Credential(credential);
             } catch (WorkflowEngineException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.GPEL_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GPEL_ERROR, e);
                 return;
             }
         }
 
-        this.workflow = this.engine.getWorkflow();
+        this.workflow = this.engine.getGUI().getWorkflow();
 
         MonitorConfiguration notifConfig = this.engine.getMonitor().getConfiguration();
         if (notifConfig.getBrokerURL() == null) {
-            this.engine.getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
             return;
         }
 
@@ -347,7 +347,7 @@ public class ODEInvokerWindow {
                 buf.append(warning);
                 buf.append("\n");
             }
-            this.engine.getErrorWindow().warning(buf.toString());
+            this.engine.getGUI().getErrorWindow().warning(buf.toString());
             return;
         }
 
@@ -357,7 +357,7 @@ public class ODEInvokerWindow {
             this.workflow.setGpelProcess(bpel.getGpelProcess());
             this.workflow.setWorkflowWSDL(bpel.getWorkflowWSDL().getWsdlDefinitions());
         } catch (GraphException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
             return;
         }
 
@@ -369,7 +369,7 @@ public class ODEInvokerWindow {
         } catch (ComponentException e) {
             // This should not happen when we create WSDL here, but if we use
             // precompiled workflow, it might happen.
-            this.engine.getErrorWindow().error(ErrorMessages.WORKFLOW_WSDL_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.WORKFLOW_WSDL_ERROR, e);
             return;
         }
         List<Double> columnWeights = new ArrayList<Double>();
@@ -378,10 +378,10 @@ public class ODEInvokerWindow {
         for (WSComponentPort input : inputs) {
 
             // Somethign special for the control workflow
-            if (-1 != engine.getWorkflow().getName().indexOf("Control_")) {
+            if (-1 != engine.getGUI().getWorkflow().getName().indexOf("Control_")) {
                 if ("epr".equals(input.getName())) {
                     input.setDefaultValue("https://pagodatree.cs.indiana.edu:17443/ode/processes/"
-                            + engine.getWorkflow().getName() + "?wsdl");
+                            + engine.getGUI().getWorkflow().getName() + "?wsdl");
                 } else if ("operation".equals(input.getName())) {
                     input.setDefaultValue("Run");
                 } else if ("startTime".equals(input.getName())) {
@@ -481,7 +481,7 @@ public class ODEInvokerWindow {
         if (false) {
             // Some user wants to pass empty strings, so this check is disabled.
             if (valueString.length() == 0) {
-                this.engine.getErrorWindow().error("Input parameter, " + name + ", cannot be empty");
+                this.engine.getGUI().getErrorWindow().error("Input parameter, " + name + ", cannot be empty");
                 return null;
             }
         }
@@ -494,7 +494,7 @@ public class ODEInvokerWindow {
             try {
                 value = XMLUtil.stringToXmlElement3(valueString);
             } catch (RuntimeException e) {
-                this.engine.getErrorWindow().error("Input parameter, " + name + ", is not valid XML", e);
+                this.engine.getGUI().getErrorWindow().error("Input parameter, " + name + ", is not valid XML", e);
                 return null;
             }
         }

@@ -121,18 +121,18 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
             if (this.canceled) {
                 logger.error(e.getMessage(), e);
             } else {
-                this.getEngine().getErrorWindow().error(ErrorMessages.COMPONENT_LIST_LOAD_ERROR, e);
+                this.getEngine().getGUI().getErrorWindow().error(ErrorMessages.COMPONENT_LIST_LOAD_ERROR, e);
                 this.loadingDialog.hide();
             }
         } catch (RuntimeException e) {
             if (this.canceled) {
                 logger.error(e.getMessage(), e);
             } else {
-                this.getEngine().getErrorWindow().error(ErrorMessages.COMPONENT_LIST_LOAD_ERROR, e);
+                this.getEngine().getGUI().getErrorWindow().error(ErrorMessages.COMPONENT_LIST_LOAD_ERROR, e);
                 this.loadingDialog.hide();
             }
         } catch (Error e) {
-            this.getEngine().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.getEngine().getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             this.loadingDialog.hide();
         }
     }

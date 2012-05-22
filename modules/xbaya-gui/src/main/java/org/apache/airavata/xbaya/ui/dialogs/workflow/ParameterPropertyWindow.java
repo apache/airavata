@@ -73,7 +73,7 @@ public class ParameterPropertyWindow {
      * Shows the dialog.
      */
     public void show() {
-        this.graph = this.engine.getWorkflow().getGraph();
+        this.graph = this.engine.getGUI().getWorkflow().getGraph();
         this.nodes = this.graph.getNodes();
         this.inputNodes = GraphUtil.getInputNodes(this.graph);
         this.outputNodes = GraphUtil.getOutputNodes(this.graph);
@@ -100,7 +100,7 @@ public class ParameterPropertyWindow {
                 inputMetadata = XMLUtil.stringToXmlElement(inputMetadataText);
             } catch (RuntimeException e) {
                 String warning = "The input metadata is ill-formed.";
-                this.engine.getErrorWindow().error(warning, e);
+                this.engine.getGUI().getErrorWindow().error(warning, e);
                 return;
             }
         }
@@ -114,7 +114,7 @@ public class ParameterPropertyWindow {
                 outputMetadata = XMLUtil.stringToXmlElement(outputMetadataText);
             } catch (RuntimeException e) {
                 String warning = "The output metadata is ill-formed.";
-                this.engine.getErrorWindow().error(warning, e);
+                this.engine.getGUI().getErrorWindow().error(warning, e);
                 return;
             }
         }
@@ -164,7 +164,7 @@ public class ParameterPropertyWindow {
         });
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Workflow Paremeter Properties", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Workflow Paremeter Properties", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(this.okButton);
     }
 }

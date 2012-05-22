@@ -121,7 +121,7 @@ public class WaitDialog {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, this.title, label, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), this.title, label, buttonPanel);
 
         this.dialog.getDialog().setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         this.dialog.getDialog().setCursor(SwingUtil.WAIT_CURSOR);

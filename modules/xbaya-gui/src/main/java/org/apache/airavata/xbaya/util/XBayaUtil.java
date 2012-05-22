@@ -79,7 +79,7 @@ public class XBayaUtil {
             throws URISyntaxException {
 
         XBayaConfiguration configuration = engine.getConfiguration();
-        Workflow workflow = engine.getWorkflow();
+        Workflow workflow = engine.getGUI().getWorkflow();
 
         LeadContextHeader leadContext = buildLeadContextHeader(workflow, configuration, monitorConfiguration, nodeId,
                 resourceMapping);

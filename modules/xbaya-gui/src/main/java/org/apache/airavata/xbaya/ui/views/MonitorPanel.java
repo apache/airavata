@@ -198,7 +198,7 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
                                 try {
                                     BrowserLauncher.openURL(url);
                                 } catch (Exception e) {
-                                    MonitorPanel.this.engine.getErrorWindow().error(e.getMessage(), e);
+                                    MonitorPanel.this.engine.getGUI().getErrorWindow().error(e.getMessage(), e);
                                 }
                             }
                         } else if (MonitorUtil.getType(message) == MonitorUtil.EventType.SENDING_RESULT) {

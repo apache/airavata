@@ -62,7 +62,7 @@ public class InputNodeGUI extends ConfigurableNodeGUI {
             this.configurationWindow.show();
 
         } else {
-            engine.getErrorWindow().info(ErrorMessages.INPUT_NOT_CONNECTED_WARNING);
+            engine.getGUI().getErrorWindow().info(ErrorMessages.INPUT_NOT_CONNECTED_WARNING);
         }
     }
 

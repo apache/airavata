@@ -103,7 +103,7 @@ public class ReceiveConfigurationDialog {
                 // Do nothing.
             }
         } catch (GraphException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         }
 
         hide();
@@ -153,7 +153,7 @@ public class ReceiveConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Receive Configuration", gridPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Receive Configuration", gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 

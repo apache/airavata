@@ -81,7 +81,7 @@ public class JythonFiler {
      * Exports a Jython script to the local file
      */
     public void exportJythonScript() {
-        Workflow workflow = this.engine.getWorkflow();
+        Workflow workflow = this.engine.getGUI().getWorkflow();
         JythonScript script = new JythonScript(workflow, this.engine.getConfiguration());
 
         // Check if there is any errors in the workflow first.
@@ -93,7 +93,7 @@ public class JythonFiler {
                 buf.append(warning);
                 buf.append("\n");
             }
-            this.engine.getErrorWindow().warning(buf.toString());
+            this.engine.getGUI().getErrorWindow().warning(buf.toString());
             return;
         }
 
@@ -114,13 +114,13 @@ public class JythonFiler {
                 // Write to a file
                 IOUtil.writeToFile(script.getJythonString(), file);
             } catch (IOException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
             } catch (GraphException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
             } catch (RuntimeException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             } catch (Error e) {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             }
         }
     }

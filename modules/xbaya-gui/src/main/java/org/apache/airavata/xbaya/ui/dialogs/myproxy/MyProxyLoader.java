@@ -90,7 +90,7 @@ public class MyProxyLoader implements Cancelable {
                 logger.error(e.getMessage(), e);
             } else {
                 String message = ErrorMessages.MYPROXY_LOAD_ERROR + "\n" + e.getMessage();
-                this.engine.getErrorWindow().error(message, e);
+                this.engine.getGUI().getErrorWindow().error(message, e);
                 this.waitDialog.hide();
             }
 
@@ -98,11 +98,11 @@ public class MyProxyLoader implements Cancelable {
             if (this.canceled) {
                 logger.error(e.getMessage(), e);
             } else {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 this.waitDialog.hide();
             }
         } catch (Error e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             this.waitDialog.hide();
         }
     }

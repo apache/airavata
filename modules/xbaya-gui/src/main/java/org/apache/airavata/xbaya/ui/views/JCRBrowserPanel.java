@@ -255,7 +255,7 @@ public class JCRBrowserPanel extends JPanel implements Observer {
 				}
             } catch (Exception e) {
                 e.printStackTrace();
-                getEngine().getErrorWindow().error(e);
+                getEngine().getGUI().getErrorWindow().error(e);
             }
         }
     }

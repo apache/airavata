@@ -116,12 +116,12 @@ public class DynamicWorkflowRunnerWindow {
      * Shows the dialog.
      */
     public void show() {
-        this.workflow = this.engine.getWorkflow();
+        this.workflow = this.engine.getGUI().getWorkflow();
         List<String> urlList=null;
 		try {
 			urlList = this.engine.getConfiguration().getJcrComponentRegistry().getRegistry().getGFacDescriptorList();
 		} catch (RegistryException e) {
-			engine.getErrorWindow().error(e);
+			engine.getGUI().getErrorWindow().error(e);
 		}
         // When run xbaya continously urls can be repeating, so first remove everything and then add
         this.gfacUrlListField.removeAllItems();
@@ -133,7 +133,7 @@ public class DynamicWorkflowRunnerWindow {
         this.gfacUrlListField.setEditable(true);
         MonitorConfiguration notifConfig = this.engine.getMonitor().getConfiguration();
         if (notifConfig.getBrokerURL() == null) {
-            this.engine.getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
             return;
         }
 
@@ -287,7 +287,7 @@ public class DynamicWorkflowRunnerWindow {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Invoke workflow", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Invoke workflow", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 
@@ -296,7 +296,7 @@ public class DynamicWorkflowRunnerWindow {
 
         String topic = this.topicTextField.getText();
         if (topic.length() == 0) {
-            this.engine.getErrorWindow().error(ErrorMessages.TOPIC_EMPTY_ERROR);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.TOPIC_EMPTY_ERROR);
             return;
         }
 
@@ -309,7 +309,7 @@ public class DynamicWorkflowRunnerWindow {
         notifConfig.setTopic(topic);
         arguments.add("-" + JythonScript.TOPIC_VARIABLE);
         arguments.add(topic);
-        Collection<WSNode> wsNodes = GraphUtil.getWSNodes(this.engine.getWorkflow().getGraph());
+        Collection<WSNode> wsNodes = GraphUtil.getWSNodes(this.engine.getGUI().getWorkflow().getGraph());
         // This is to enable service interaction with the back end
         if (this.interactChkBox.isSelected()) {
             LinkedList<String> nodeIDs = new LinkedList<String>();
@@ -343,7 +343,7 @@ public class DynamicWorkflowRunnerWindow {
         // try {
         // this.engine.getConfiguration().setXRegistryURL(new URI(xregistryUrl));
         // } catch (URISyntaxException e) {
-        // this.engine.getErrorWindow().error(e);
+        // this.engine.getGUI().getErrorWindow().error(e);
         // }
         // }
 
@@ -352,7 +352,7 @@ public class DynamicWorkflowRunnerWindow {
             try {
                 this.engine.getConfiguration().setGFacURL(new URI(gFacUrl));
             } catch (URISyntaxException e) {
-                this.engine.getErrorWindow().error(e);
+                this.engine.getGUI().getErrorWindow().error(e);
             }
         }
         this.engine.getConfiguration().setTopic(topic);
@@ -377,7 +377,7 @@ public class DynamicWorkflowRunnerWindow {
         // try {
         // mapping.setGatekeeperEPR(new URI(hostBean.getGateKeeperendPointReference()));
         // } catch (Exception e) {
-        // this.engine.getErrorWindow().error(e);
+        // this.engine.getGUI().getErrorWindow().error(e);
         // }
         //
         // }
@@ -408,9 +408,9 @@ public class DynamicWorkflowRunnerWindow {
                     try {
                         workflowInterpreter.cleanup();
                     } catch (MonitorException e1) {
-                        DynamicWorkflowRunnerWindow.this.engine.getErrorWindow().error(e1);
+                        DynamicWorkflowRunnerWindow.this.engine.getGUI().getErrorWindow().error(e1);
                     }
-                    DynamicWorkflowRunnerWindow.this.engine.getErrorWindow().error(e);
+                    DynamicWorkflowRunnerWindow.this.engine.getGUI().getErrorWindow().error(e);
                 }
 
             }

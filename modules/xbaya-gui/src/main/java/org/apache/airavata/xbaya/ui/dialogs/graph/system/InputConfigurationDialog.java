@@ -159,7 +159,7 @@ public class InputConfigurationDialog {
 
         if (name.length() == 0) {
             String warning = "The name cannot be empty.";
-            this.engine.getErrorWindow().error(warning);
+            this.engine.getGUI().getErrorWindow().error(warning);
             return;
         }
         Object value = null;
@@ -167,7 +167,7 @@ public class InputConfigurationDialog {
             if (LEADTypes.isKnownType(type)) {
                 if (!this.node.isInputValid(valueString)) {
                     String warning = "The defalut value is not valid for " + this.node.getParameterType() + ".";
-                    this.engine.getErrorWindow().error(warning);
+                    this.engine.getGUI().getErrorWindow().error(warning);
                 }
                 value = valueString;
             } else {
@@ -175,7 +175,7 @@ public class InputConfigurationDialog {
                     value = XMLUtil.stringToXmlElement(valueString);
                 } catch (RuntimeException e) {
                     String warning = "The XML for the default value is not valid.";
-                    this.engine.getErrorWindow().error(warning, e);
+                    this.engine.getGUI().getErrorWindow().error(warning, e);
                 }
             }
         }
@@ -187,7 +187,7 @@ public class InputConfigurationDialog {
                 metadata = XMLUtil.stringToXmlElement(metadataText);
             } catch (RuntimeException e) {
                 String warning = "The metadata is ill-formed.";
-                this.engine.getErrorWindow().error(warning, e);
+                this.engine.getGUI().getErrorWindow().error(warning, e);
                 return;
             }
         }
@@ -254,7 +254,7 @@ public class InputConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Input Parameter Configuration", this.gridPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Input Parameter Configuration", this.gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 

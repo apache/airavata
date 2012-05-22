@@ -108,7 +108,7 @@ public class RegistryAccesser {
         if (XBayaUtil.acquireJCRRegistry(this.engine)) {
             try {
 
-                Workflow workflow = this.engine.getWorkflow();
+                Workflow workflow = this.engine.getGUI().getWorkflow();
                 JythonScript script = new JythonScript(workflow, this.engine.getConfiguration());
 
                 // Check if there is any errors in the workflow first.
@@ -120,7 +120,7 @@ public class RegistryAccesser {
                         buf.append(warning);
                         buf.append("\n");
                     }
-                    this.engine.getErrorWindow().warning(buf.toString());
+                    this.engine.getGUI().getErrorWindow().warning(buf.toString());
                     return false;
                 }
                 RegistryWorkflowPublisherWindow registryPublishingWindow = new RegistryWorkflowPublisherWindow(
@@ -163,7 +163,7 @@ public class RegistryAccesser {
                 registryPublishingWindow.hide();
                 return result;
             } catch (Exception e) {
-                this.engine.getErrorWindow().error(e.getMessage(), e);
+                this.engine.getGUI().getErrorWindow().error(e.getMessage(), e);
             }
         }
 		return false;

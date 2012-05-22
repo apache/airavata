@@ -114,7 +114,7 @@ public class RegistryLoaderWindow {
                                 try {
                                     session = val.getSession();
                                 } catch (RepositoryException e) {
-                                    RegistryLoaderWindow.this.engine.getErrorWindow().error(
+                                    RegistryLoaderWindow.this.engine.getGUI().getErrorWindow().error(
                                             ErrorMessages.UNEXPECTED_ERROR, e);
                                 }
                                 if (session != null && session.isLive()) {
@@ -126,14 +126,14 @@ public class RegistryLoaderWindow {
                         }
                     });
                 } catch (RuntimeException e) {
-                    RegistryLoaderWindow.this.engine.getErrorWindow().error(
+                    RegistryLoaderWindow.this.engine.getGUI().getErrorWindow().error(
                             ErrorMessages.REGISTRY_WORKFLOW_LIST_LOAD_ERROR, e);
                     hide();
                 } catch (Error e) {
-                    RegistryLoaderWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                    RegistryLoaderWindow.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                     hide();
                 } catch (RegistryException e) {
-                    RegistryLoaderWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                    RegistryLoaderWindow.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                     hide();
                 }
             }
@@ -162,7 +162,7 @@ public class RegistryLoaderWindow {
             engine.getGUI().getGraphCanvas().setWorkflowFile(null);
 //            RegistryLoaderWindow.this.engine.setWorkflow(workflow);
         } catch (Exception e) {
-            RegistryLoaderWindow.this.engine.getErrorWindow().error(e);
+            RegistryLoaderWindow.this.engine.getGUI().getErrorWindow().error(e);
         }
     }
 
@@ -238,7 +238,7 @@ public class RegistryLoaderWindow {
         });
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Load a Workflow from the Registry", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Load a Workflow from the Registry", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(this.okButton);
     }
 }

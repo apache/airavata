@@ -80,7 +80,7 @@ public class RegistryWorkflowPublisherWindow {
      * Show the workflow name and description
      */
     public void show() {
-        this.workflow = this.engine.getWorkflow();
+        this.workflow = this.engine.getGUI().getWorkflow();
         String name = this.workflow.getName();
         this.nameTextField.setText(name);
 
@@ -129,7 +129,7 @@ public class RegistryWorkflowPublisherWindow {
         mainPanel.add(chkMakePublic);
         mainPanel.layout(2, 2, 0, 0);
 
-        this.dialog = new XBayaDialog(this.engine, "Save Workflow to Registry", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Save Workflow to Registry", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(this.okButton);
     }
 

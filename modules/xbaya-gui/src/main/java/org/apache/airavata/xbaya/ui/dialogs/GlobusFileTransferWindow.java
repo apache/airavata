@@ -94,10 +94,10 @@ public class GlobusFileTransferWindow {
         try {
             c = new JSONTransferAPIClient(username, caFile, certFile, keyFile, GLOBUSONLINE_BASE_URL_V0_10);
         } catch (KeyManagementException e) {
-            this.engine.getErrorWindow().error("Key Management Error.", e);
+            this.engine.getGUI().getErrorWindow().error("Key Management Error.", e);
             return;
         } catch (NoSuchAlgorithmException e) {
-            this.engine.getErrorWindow().error("No Such Algorithm Error.", e);
+            this.engine.getGUI().getErrorWindow().error("No Such Algorithm Error.", e);
             return;
         }
         System.out.println("base url: " + c.getBaseUrl());
@@ -105,16 +105,16 @@ public class GlobusFileTransferWindow {
         try {
             e.transfer(sourceEndpoint, sourceFilePath, destEndpoint, destFilePath);
         } catch (IOException e1) {
-            this.engine.getErrorWindow().error("IO Error.", e1);
+            this.engine.getGUI().getErrorWindow().error("IO Error.", e1);
             return;
         } catch (JSONException e1) {
-            this.engine.getErrorWindow().error("JSON Error.", e1);
+            this.engine.getGUI().getErrorWindow().error("JSON Error.", e1);
             return;
         } catch (GeneralSecurityException e1) {
-            this.engine.getErrorWindow().error("Key Management Error.", e1);
+            this.engine.getGUI().getErrorWindow().error("Key Management Error.", e1);
             return;
         } catch (APIError apiError) {
-            this.engine.getErrorWindow().error("Globus Transfer API Calling Error.", apiError);
+            this.engine.getGUI().getErrorWindow().error("Globus Transfer API Calling Error.", apiError);
             return;
         }
 
@@ -193,7 +193,7 @@ public class GlobusFileTransferWindow {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Globus file transfer", infoPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Globus file transfer", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

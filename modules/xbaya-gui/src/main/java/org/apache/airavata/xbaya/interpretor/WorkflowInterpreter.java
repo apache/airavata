@@ -237,7 +237,7 @@ public class WorkflowInterpreter {
 	 * @param topic
 	 */
 	public WorkflowInterpreter(XBayaEngine engine, String topic) {
-		this(engine, topic, engine.getWorkflow(), false, engine
+		this(engine, topic, engine.getGUI().getWorkflow(), false, engine
 				.getConfiguration().isCollectProvenance());
 	}
 
@@ -524,7 +524,7 @@ public class WorkflowInterpreter {
 	 */
 	public void raiseException(Throwable e) {
 		if (this.mode == GUI_MODE) {
-			this.engine.getErrorWindow().error(e);
+			this.engine.getGUI().getErrorWindow().error(e);
 		} else {
 			throw new RuntimeException(e);
 		}
@@ -1156,7 +1156,7 @@ public class WorkflowInterpreter {
 									} catch (WorkflowException e) {
 
 										WorkflowInterpreter.this.engine
-												.getErrorWindow().error(e);
+												.getGUI().getErrorWindow().error(e);
 									}
 								}
 
@@ -1256,7 +1256,7 @@ public class WorkflowInterpreter {
 										finalInvokerMap, counter, inputNumbers);
 							} catch (WorkflowException e) {
 								WorkflowInterpreter.this.engine
-										.getErrorWindow().error(e);
+										.getGUI().getErrorWindow().error(e);
 							}
 						}
 
@@ -1476,7 +1476,7 @@ public class WorkflowInterpreter {
 									inputNumber, input, invoker2);
 
 						} catch (WorkflowException e) {
-							WorkflowInterpreter.this.engine.getErrorWindow()
+							WorkflowInterpreter.this.engine.getGUI().getErrorWindow()
 									.error(e);
 						}
 					}
@@ -1486,7 +1486,7 @@ public class WorkflowInterpreter {
 				try {
 					Thread.sleep(3000);
 				} catch (InterruptedException e) {
-					WorkflowInterpreter.this.engine.getErrorWindow().error(e);
+					WorkflowInterpreter.this.engine.getGUI().getErrorWindow().error(e);
 				}
 			}
 		} else {

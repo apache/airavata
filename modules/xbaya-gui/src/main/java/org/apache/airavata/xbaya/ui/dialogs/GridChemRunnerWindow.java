@@ -114,12 +114,12 @@ public class GridChemRunnerWindow {
      * Shows the dialog.
      */
     public void show() {
-        this.workflow = this.engine.getWorkflow();
+        this.workflow = this.engine.getGUI().getWorkflow();
         this.script = new JythonScript(this.workflow, this.engine.getConfiguration());
 
         MonitorConfiguration notifConfig = this.engine.getMonitor().getConfiguration();
         if (notifConfig.getBrokerURL() == null) {
-            this.engine.getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
             return;
         }
 
@@ -133,7 +133,7 @@ public class GridChemRunnerWindow {
                 buf.append(warning);
                 buf.append("\n");
             }
-            this.engine.getErrorWindow().warning(buf.toString());
+            this.engine.getGUI().getErrorWindow().warning(buf.toString());
             return;
         }
 
@@ -142,15 +142,15 @@ public class GridChemRunnerWindow {
         try {
             this.script.create();
         } catch (GraphException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
             hide();
             return;
         } catch (RuntimeException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             hide();
             return;
         } catch (Error e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             hide();
             return;
         }
@@ -267,7 +267,7 @@ public class GridChemRunnerWindow {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Execute Workflow (Jython)", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Execute Workflow (Jython)", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 
@@ -276,7 +276,7 @@ public class GridChemRunnerWindow {
 
         String topic = this.topicTextField.getText();
         if (topic.length() == 0) {
-            this.engine.getErrorWindow().error(ErrorMessages.TOPIC_EMPTY_ERROR);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.TOPIC_EMPTY_ERROR);
             return;
         }
 
@@ -310,7 +310,7 @@ public class GridChemRunnerWindow {
                 URI uri = new URI(gfacString).parseServerAuthority();
                 config.setGFacURL(uri);
             } catch (URISyntaxException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.GFAC_URL_WRONG, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GFAC_URL_WRONG, e);
                 return;
             }
             arguments.add("-" + JythonScript.GFAC_VARIABLE);
@@ -341,7 +341,7 @@ public class GridChemRunnerWindow {
                 arguments.add(wsdlURL);
             }
         } catch (IOException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             hide();
             return;
         }
@@ -376,11 +376,11 @@ public class GridChemRunnerWindow {
                     int ret_status = httpClient.executeMethod(method);
 
                     if (ret_status != HttpStatus.SC_OK) {
-                        GridChemRunnerWindow.this.engine.getErrorWindow().error(
+                        GridChemRunnerWindow.this.engine.getGUI().getErrorWindow().error(
                                 "GridChem Bridge Service Error " + bridgeURL + ", return code:" + ret_status);
                     }
                 } catch (Exception e) {
-                    GridChemRunnerWindow.this.engine.getErrorWindow().error(e);
+                    GridChemRunnerWindow.this.engine.getGUI().getErrorWindow().error(e);
                 } finally {
                     if (method != null) {
                         method.releaseConnection();
@@ -409,11 +409,11 @@ public class GridChemRunnerWindow {
                     // logger.error(e.getMessage(), e);
                     // }
                 } catch (WorkflowException e) {
-                    GridChemRunnerWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                    GridChemRunnerWindow.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 } catch (RuntimeException e) {
-                    GridChemRunnerWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                    GridChemRunnerWindow.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 } catch (Error e) {
-                    GridChemRunnerWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                    GridChemRunnerWindow.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 } finally {
                     // We don't need this because this might stop a new
                     // subscription initiated by a user.

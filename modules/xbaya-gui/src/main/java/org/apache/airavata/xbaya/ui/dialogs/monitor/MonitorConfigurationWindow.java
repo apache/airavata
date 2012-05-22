@@ -93,7 +93,7 @@ public class MonitorConfigurationWindow {
         boolean pull = this.pullCheckBox.isSelected();
 
         if (broker.length() == 0) {
-            this.engine.getErrorWindow().error("Broker URL cannot be empty");
+            this.engine.getGUI().getErrorWindow().error("Broker URL cannot be empty");
             return;
         }
         URI brokerURL;
@@ -101,27 +101,27 @@ public class MonitorConfigurationWindow {
             brokerURL = new URI(broker).parseServerAuthority();
         } catch (URISyntaxException e) {
             String message = "Broker URL is in a wrong format";
-            this.engine.getErrorWindow().error(message, e);
+            this.engine.getGUI().getErrorWindow().error(message, e);
             return;
         }
 
         if (topic.length() == 0) {
             String message = "Topic cannot be empty";
-            this.engine.getErrorWindow().error(message);
+            this.engine.getGUI().getErrorWindow().error(message);
             return;
         }
 
         URI messageBoxURL = null;
         if (pull) {
             if (messageBox.length() == 0) {
-                this.engine.getErrorWindow().error("Message box URL cannot be empty");
+                this.engine.getGUI().getErrorWindow().error("Message box URL cannot be empty");
                 return;
             }
             try {
                 messageBoxURL = new URI(messageBox).parseServerAuthority();
             } catch (URISyntaxException e) {
                 String message = "Message box URL is in a wrong format";
-                this.engine.getErrorWindow().error(message, e);
+                this.engine.getGUI().getErrorWindow().error(message, e);
                 return;
             }
         } else {
@@ -190,7 +190,7 @@ public class MonitorConfigurationWindow {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Notification Configuration", infoPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Notification Configuration", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

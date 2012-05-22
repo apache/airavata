@@ -354,7 +354,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
         } catch (GraphException e) {
             // Should not happen
             logger.error(e.getMessage(), e);
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
@@ -392,7 +392,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
         } catch (GraphException e) {
             // Should not happen
             logger.error(e.getMessage(), e);
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
@@ -586,7 +586,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
                     try {
                         freePort.copyType((DataPort) draggedPort);
                     } catch (GraphException e) {
-                        engine.getErrorWindow().error(e);
+                        engine.getGUI().getErrorWindow().error(e);
                         return;
                     }
                     // selectInputPort(freePort);
@@ -617,7 +617,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
             try {
                 this.dynamicNodeWithFreePort.removeLastDynamicallyAddedInPort();
             } catch (GraphException e) {
-                this.engine.getErrorWindow().error(e);
+                this.engine.getGUI().getErrorWindow().error(e);
             }
         }
 
@@ -876,10 +876,10 @@ public class GraphCanvas implements XBayaExecutionModeListener{
             selectEdge(edge);
         } catch (GraphException e) {
             logger.error(e.getMessage(), e);
-            this.engine.getErrorWindow().warning(e.getMessage());
+            this.engine.getGUI().getErrorWindow().warning(e.getMessage());
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR);
         }
     }
 
@@ -1266,11 +1266,11 @@ public class GraphCanvas implements XBayaExecutionModeListener{
         this.nodePopup.remove(rerunItem);
         this.nodePopup.remove(breakPointItem);
 
-        if (this.engine.getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED && !(node instanceof InputNode)) {
+        if (this.engine.getGUI().getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED && !(node instanceof InputNode)) {
             this.nodePopup.add(rerunItem);
 
         }
-        if (this.engine.getWorkflow().getExecutionState() != WorkflowExecutionState.NONE) {
+        if (this.engine.getGUI().getWorkflow().getExecutionState() != WorkflowExecutionState.NONE) {
             if (node.isBreak()) {
                 breakPointItem.setText("Remove break Point");
             } else {

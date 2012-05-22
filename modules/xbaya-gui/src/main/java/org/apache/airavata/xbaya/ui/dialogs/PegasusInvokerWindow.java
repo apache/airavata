@@ -125,7 +125,7 @@ public class PegasusInvokerWindow {
         buttonPanel.add(this.invokeButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Execute Workflow (Pegasus)", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Execute Workflow (Pegasus)", mainPanel, buttonPanel);
     }
 
     /**
@@ -133,7 +133,7 @@ public class PegasusInvokerWindow {
      */
     protected void execute() {
         /* ID of workflow (must be unique) */
-        String workflowID = this.engine.getWorkflow().getName();
+        String workflowID = this.engine.getGUI().getWorkflow().getName();
 
         try {
             PegasusWebserviceStub stub;
@@ -195,7 +195,7 @@ public class PegasusInvokerWindow {
      * restore all the field if workflow has been loaded before
      */
     public void show() {
-        this.workflow = this.engine.getWorkflow();
+        this.workflow = this.engine.getGUI().getWorkflow();
 
         XBayaConfiguration configuration = this.engine.getConfiguration();
         MonitorConfiguration monitorConfiguration = this.engine.getMonitor().getConfiguration();

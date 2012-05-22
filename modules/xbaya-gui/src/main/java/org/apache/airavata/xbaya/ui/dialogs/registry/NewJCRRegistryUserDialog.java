@@ -115,16 +115,16 @@ public class NewJCRRegistryUserDialog {
                 setUserCreated(true);
             } catch (URISyntaxException e) {
                 e.printStackTrace();
-                engine.getErrorWindow().error(e.getMessage());
+                engine.getGUI().getErrorWindow().error(e.getMessage());
             } catch (AuthorizableExistsException e) {
                 e.printStackTrace();
-                engine.getErrorWindow().error(e.getMessage());
+                engine.getGUI().getErrorWindow().error(e.getMessage());
             } catch (RepositoryException e) {
                 e.printStackTrace();
-                engine.getErrorWindow().error(e.getMessage());
+                engine.getGUI().getErrorWindow().error(e.getMessage());
             }
         } else {
-            engine.getErrorWindow().error(status);
+            engine.getGUI().getErrorWindow().error(status);
         }
     }
 
@@ -218,7 +218,7 @@ public class NewJCRRegistryUserDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "JCR Registry New User", infoPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "JCR Registry New User", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
         updateControlData();
     }

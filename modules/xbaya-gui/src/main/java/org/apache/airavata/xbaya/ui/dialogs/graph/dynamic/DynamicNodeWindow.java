@@ -198,10 +198,10 @@ public class DynamicNodeWindow {
 
             }
 
-            this.engine.getWorkflow().removeNode(this.node);
+            this.engine.getGUI().getWorkflow().removeNode(this.node);
 
         } catch (Exception e) {
-            this.engine.getErrorWindow().error(e);
+            this.engine.getGUI().getErrorWindow().error(e);
         }
 
     }
@@ -235,7 +235,7 @@ public class DynamicNodeWindow {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(okButton);
 
-        this.dialog = new XBayaDialog(this.engine, this.node.getName(), infoPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), this.node.getName(), infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 
@@ -333,7 +333,7 @@ public class DynamicNodeWindow {
                 WSNode fromWsNode = (WSNode) fromNode;
                 if (null != fromPort && fromPort instanceof DataPort) {
                     DataPort fromDataPort = (DataPort) fromPort;
-                    WsdlDefinitions wsdl = engine.getWorkflow().getWSDLs().get(fromWsNode.getWSDLID());
+                    WsdlDefinitions wsdl = engine.getGUI().getWorkflow().getWSDLs().get(fromWsNode.getWSDLID());
                     Iterator<XmlNamespace> itr = wsdl.xml().namespaces().iterator();
                     try {
                         XmlElement schema = wsdl.getTypes().element("schema").clone();
@@ -364,9 +364,9 @@ public class DynamicNodeWindow {
                         SchemaCompilerUtil.compile(args);
 
                     } catch (XmlBuilderException e) {
-                        this.engine.getErrorWindow().error(e);
+                        this.engine.getGUI().getErrorWindow().error(e);
                     } catch (CloneNotSupportedException e) {
-                        this.engine.getErrorWindow().error(e);
+                        this.engine.getGUI().getErrorWindow().error(e);
                     } catch (IOException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -406,7 +406,7 @@ public class DynamicNodeWindow {
         // node.setOperationName(getOperationName(code));
         // node.setClassName(getPackageName(code)+"."+getClassName(code));
         // } catch (IOException e) {
-        // this.engine.getErrorWindow().error(e);
+        // this.engine.getGUI().getErrorWindow().error(e);
         // }
 
     }

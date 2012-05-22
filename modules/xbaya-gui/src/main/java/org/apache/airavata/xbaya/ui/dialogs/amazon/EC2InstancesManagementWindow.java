@@ -133,7 +133,7 @@ public class EC2InstancesManagementWindow {
                 List<EC2InstanceResult> selected = EC2InstancesManagementWindow.this.list.getSelectedValues();
 
                 if (selected.size() == 0) {
-                    EC2InstancesManagementWindow.this.engine.getErrorWindow().info(
+                    EC2InstancesManagementWindow.this.engine.getGUI().getErrorWindow().info(
                             EC2InstancesManagementWindow.this.dialog.getDialog(), "Warning", "No instances selected");
                     return;
                 }
@@ -181,7 +181,7 @@ public class EC2InstancesManagementWindow {
         buttonPanel.add(terminateButton);
         buttonPanel.add(closeButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Amazon EC2 Managment Console", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Amazon EC2 Managment Console", mainPanel, buttonPanel);
         this.dialog.getDialog().setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.dialog.setDefaultButton(closeButton);
 
@@ -190,7 +190,7 @@ public class EC2InstancesManagementWindow {
     private boolean credentialSet() {
         if (AmazonCredential.getInstance().getAwsAccessKeyId().isEmpty()
                 || AmazonCredential.getInstance().getAwsSecretAccessKey().isEmpty()) {
-            EC2InstancesManagementWindow.this.engine.getErrorWindow().warning(
+            EC2InstancesManagementWindow.this.engine.getGUI().getErrorWindow().warning(
                     EC2InstancesManagementWindow.this.dialog.getDialog(), "Error", "Aws Access Key not set!");
 
             if (this.credentialWindow == null) {
@@ -200,7 +200,7 @@ public class EC2InstancesManagementWindow {
                 this.credentialWindow.show();
                 return false;
             } catch (Exception e1) {
-                EC2InstancesManagementWindow.this.engine.getErrorWindow().error(e1);
+                EC2InstancesManagementWindow.this.engine.getGUI().getErrorWindow().error(e1);
             }
         }
         return true;

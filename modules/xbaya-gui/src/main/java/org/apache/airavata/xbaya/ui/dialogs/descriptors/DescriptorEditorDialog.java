@@ -177,7 +177,7 @@ public class DescriptorEditorDialog extends JDialog {
         		title="Application Descriptions";
         		break;
         }
-		this.dialog = new XBayaDialog(this.engine, title, infoPanel, buttonPanel);
+		this.dialog = new XBayaDialog(this.engine.getGUI(), title, infoPanel, buttonPanel);
         this.dialog.setDefaultButton(editButton);
         editButton.setEnabled(false);
         removeButton.setEnabled(false);
@@ -291,7 +291,7 @@ public class DescriptorEditorDialog extends JDialog {
             	}
 				loadDescriptors();
 			} catch (RegistryException e) {
-				this.engine.getErrorWindow().error(e);
+				this.engine.getGUI().getErrorWindow().error(e);
 			}
         }
         return true;
@@ -317,7 +317,7 @@ public class DescriptorEditorDialog extends JDialog {
 				((DefaultListModel)descriptorList.getModel()).addElement(d);
 			}
 		} catch (RegistryException e) {
-			engine.getErrorWindow().error(e);
+			engine.getGUI().getErrorWindow().error(e);
 		}
 	}
     

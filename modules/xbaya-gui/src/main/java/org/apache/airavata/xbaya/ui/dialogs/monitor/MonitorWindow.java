@@ -127,7 +127,7 @@ public class MonitorWindow {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(okButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Notification", infoPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Notification", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

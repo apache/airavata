@@ -311,7 +311,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
                                         .getRegistry());
                         serviceDescriptionDialog.open();
                     } catch (Exception e1) {
-                        engine.getErrorWindow().error(e1);
+                        engine.getGUI().getErrorWindow().error(e1);
                     }
                 }
             }
@@ -332,7 +332,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
                                 engine);
                         applicationDescriptionDialog.open();
                     } catch (Exception e1) {
-                        engine.getErrorWindow().error(e1);
+                        engine.getGUI().getErrorWindow().error(e1);
                     }
                 }
             }
@@ -353,7 +353,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
                                 engine);
                         hostDescriptionDialog.open();
                     } catch (Exception e1) {
-                        engine.getErrorWindow().error(e1);
+                        engine.getGUI().getErrorWindow().error(e1);
                     }
                 }
             }

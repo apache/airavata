@@ -93,7 +93,7 @@ public class S3Uploader implements Cancelable {
                         s3.deleteObject(bucket, s3Object.getKey());
                     } else {
 
-                        S3Uploader.this.engine.getErrorWindow().info(S3Uploader.this.parent, "",
+                        S3Uploader.this.engine.getGUI().getErrorWindow().info(S3Uploader.this.parent, "",
                                 "Uploaded successfully!");
 
                         // add key to S3Tree
@@ -112,7 +112,7 @@ public class S3Uploader implements Cancelable {
                     }
 
                 } catch (Exception ex) {
-                    S3Uploader.this.engine.getErrorWindow().error(S3Uploader.this.parent,
+                    S3Uploader.this.engine.getGUI().getErrorWindow().error(S3Uploader.this.parent,
                             "Upload failed! Please ensure every fields are filled correctly", ex);
                 } finally {
                     // close loading dialog

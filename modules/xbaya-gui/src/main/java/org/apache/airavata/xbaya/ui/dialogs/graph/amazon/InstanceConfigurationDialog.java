@@ -178,13 +178,13 @@ public class InstanceConfigurationDialog {
             public void actionPerformed(ActionEvent e) {
                 if (InstanceConfigurationDialog.this.idTextField.getText() == null
                         || InstanceConfigurationDialog.this.idTextField.getText().isEmpty()) {
-                    InstanceConfigurationDialog.this.engine.getErrorWindow()
+                    InstanceConfigurationDialog.this.engine.getGUI().getErrorWindow()
                             .error("Please input AMI ID or Instance ID");
                     return;
                 }
                 if (InstanceConfigurationDialog.this.usernameTextField.getText() == null
                         || InstanceConfigurationDialog.this.usernameTextField.getText().isEmpty()) {
-                    InstanceConfigurationDialog.this.engine.getErrorWindow().error(
+                    InstanceConfigurationDialog.this.engine.getGUI().getErrorWindow().error(
                             "Please input username to access instance");
                     return;
                 }
@@ -218,7 +218,7 @@ public class InstanceConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Instance Configuration", gridPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Instance Configuration", gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

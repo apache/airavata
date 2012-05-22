@@ -105,7 +105,7 @@ public class ForEachConfigurationDialog {
                 // Do nothing.
             }
         } catch (GraphException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         }
 
         hide();
@@ -155,7 +155,7 @@ public class ForEachConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "ForEach Configuration", gridPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "ForEach Configuration", gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

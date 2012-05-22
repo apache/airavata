@@ -92,13 +92,13 @@ public class TavernaRunnerWindow {
      * Shows the dialog.
      */
     public void show() {
-        this.workflow = this.engine.getWorkflow();
+        this.workflow = this.engine.getGUI().getWorkflow();
 
         this.script = new ScuflScript(this.workflow, this.engine.getConfiguration());
 
         MonitorConfiguration notifConfig = this.engine.getMonitor().getConfiguration();
         if (notifConfig.getBrokerURL() == null) {
-            this.engine.getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
             return;
         }
 
@@ -113,7 +113,7 @@ public class TavernaRunnerWindow {
                 buf.append(warning);
                 buf.append("\n");
             }
-            this.engine.getErrorWindow().warning(buf.toString());
+            this.engine.getGUI().getErrorWindow().warning(buf.toString());
             return;
         }
 
@@ -122,15 +122,15 @@ public class TavernaRunnerWindow {
         try {
             this.script.create();
         } catch (GraphException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
             hide();
             return;
         } catch (RuntimeException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             hide();
             return;
         } catch (Error e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             hide();
             return;
         }
@@ -216,7 +216,7 @@ public class TavernaRunnerWindow {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Invoke  workflow", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Invoke  workflow", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 
@@ -225,7 +225,7 @@ public class TavernaRunnerWindow {
 
         String topic = this.topicTextField.getText();
         if (topic.length() == 0) {
-            this.engine.getErrorWindow().error(ErrorMessages.TOPIC_EMPTY_ERROR);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.TOPIC_EMPTY_ERROR);
             return;
         }
 
@@ -266,7 +266,7 @@ public class TavernaRunnerWindow {
                     notifConfig.setTopic(topicString);
                     new WorkflowInterpreter(TavernaRunnerWindow.this.engine, topicString).scheduleDynamically();
                 } catch (WorkflowException e) {
-                    TavernaRunnerWindow.this.engine.getErrorWindow().error(e);
+                    TavernaRunnerWindow.this.engine.getGUI().getErrorWindow().error(e);
                 }
 
             }

@@ -99,7 +99,7 @@ public class AmazonS3UtilsWindow {
             s3Service = new RestS3Service(new AWSCredentials(AmazonCredential.getInstance().getAwsAccessKeyId(),
                     AmazonCredential.getInstance().getAwsSecretAccessKey()));
         } catch (S3ServiceException s3ex) {
-            xBayaEngine.getErrorWindow().error(s3ex);
+            xBayaEngine.getGUI().getErrorWindow().error(s3ex);
         }
         return s3Service;
     }
@@ -173,7 +173,7 @@ public class AmazonS3UtilsWindow {
                     try {
                         this.credentialWindow.show();
                     } catch (Exception e1) {
-                        xBayaEngine.getErrorWindow().error(e1);
+                        xBayaEngine.getGUI().getErrorWindow().error(e1);
                     }
 
                     return;
@@ -198,7 +198,7 @@ public class AmazonS3UtilsWindow {
                     window.fileTextField.setText("");
                     window.folderTextField.setText("");
                 } else {
-                    xBayaEngine.getErrorWindow().error(window.dialog.getDialog(),
+                    xBayaEngine.getGUI().getErrorWindow().error(window.dialog.getDialog(),
                             "Please give input to every upload fields");
                 }
             }
@@ -221,7 +221,7 @@ public class AmazonS3UtilsWindow {
                     window.folderTextField.setText("");
 
                 } else {
-                    xBayaEngine.getErrorWindow().error(window.dialog.getDialog(),
+                    xBayaEngine.getGUI().getErrorWindow().error(window.dialog.getDialog(),
                             "Please give input to every download fields");
                 }
             }
@@ -315,7 +315,7 @@ public class AmazonS3UtilsWindow {
             }
         });
 
-        this.dialog = new XBayaDialog(xBayaEngine, "Amazon S3 Upload/Download Tool", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(xBayaEngine.getGUI(), "Amazon S3 Upload/Download Tool", mainPanel, buttonPanel);
 
     }
 

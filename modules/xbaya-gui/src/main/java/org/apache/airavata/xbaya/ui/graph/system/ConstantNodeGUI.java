@@ -57,7 +57,7 @@ public class ConstantNodeGUI extends ConfigurableNodeGUI {
             this.configurationWindow.show();
 
         } else {
-            engine.getErrorWindow().info(ErrorMessages.CONSTANT_NOT_CONNECTED_WARNING);
+            engine.getGUI().getErrorWindow().info(ErrorMessages.CONSTANT_NOT_CONNECTED_WARNING);
         }
     }
 }

@@ -107,10 +107,10 @@ public class S3Downloader implements Cancelable {
                         out.newLine();
                     }
 
-                    S3Downloader.this.engine.getErrorWindow().info(S3Downloader.this.parent, "",
+                    S3Downloader.this.engine.getGUI().getErrorWindow().info(S3Downloader.this.parent, "",
                             "Downloaded successfully!");
                 } catch (Exception ex) {
-                    S3Downloader.this.engine.getErrorWindow().error(S3Downloader.this.parent,
+                    S3Downloader.this.engine.getGUI().getErrorWindow().error(S3Downloader.this.parent,
                             "Download failed! Please ensure every fields are filled correctly", ex);
                 } finally {
                     if (in != null) {

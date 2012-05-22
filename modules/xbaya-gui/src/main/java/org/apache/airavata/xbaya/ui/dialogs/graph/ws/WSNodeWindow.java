@@ -133,7 +133,7 @@ public class WSNodeWindow {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(okButton);
 
-        this.dialog = new XBayaDialog(this.engine, this.node.getName(), infoPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), this.node.getName(), infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 

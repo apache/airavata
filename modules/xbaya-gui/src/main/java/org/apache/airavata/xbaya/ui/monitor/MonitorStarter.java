@@ -107,18 +107,18 @@ public class MonitorStarter implements Cancelable {
             if (this.canceled) {
                 logger.error(e.getMessage(), e);
             } else {
-                this.engine.getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
                 this.startingDialog.hide();
             }
         } catch (RuntimeException e) {
             if (this.canceled) {
                 logger.error(e.getMessage(), e);
             } else {
-                this.engine.getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
                 this.startingDialog.hide();
             }
         } catch (Error e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             this.startingDialog.hide();
         }
     }

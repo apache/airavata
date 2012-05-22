@@ -116,7 +116,7 @@ public class ChangeCredentialWindow {
         buttonPanel.add(cancelButton);
 
         if (this.owner == null) {
-            this.dialog = new XBayaDialog(this.engine, "S3 Toolkits", mainPanel, buttonPanel);
+            this.dialog = new XBayaDialog(this.engine.getGUI(), "S3 Toolkits", mainPanel, buttonPanel);
         } else {
             this.dialog = new XBayaDialog(this.owner, "S3 Toolkits", mainPanel, buttonPanel);
         }

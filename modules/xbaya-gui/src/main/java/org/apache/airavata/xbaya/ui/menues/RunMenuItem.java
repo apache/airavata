@@ -237,9 +237,9 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
                 try {
                     engine.getMonitor().asynchronousStop();
                 } catch (RuntimeException e) {
-                    engine.getErrorWindow().error(ErrorMessages.MONITOR_ERROR, e);
+                    engine.getGUI().getErrorWindow().error(ErrorMessages.MONITOR_ERROR, e);
                 } catch (Error e) {
-                    engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                    engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 }
             }
         };
@@ -312,7 +312,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
                     int count = 0;
                     //there is a possibility the ealier run is not yet cleanedup yet.. so wait until it finishes
                     // and sets the execution state to NONE as the last task of scheduleDynamically
-                    while(engine.getWorkflow().getExecutionState() != WorkflowExecutionState.NONE){
+                    while(engine.getGUI().getWorkflow().getExecutionState() != WorkflowExecutionState.NONE){
                         try {
                             Thread.sleep(500);
                         } catch (InterruptedException e) {
@@ -368,7 +368,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
                 try {
                     this.window.show();
                 } catch (Exception e1) {
-                    engine.getErrorWindow().error(e1);
+                    engine.getGUI().getErrorWindow().error(e1);
                 }
 
             }
@@ -429,7 +429,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
             }
             engine.getWorkflowInterpreter().cleanup();
 		} catch (MonitorException e) {
-			this.engine.getErrorWindow().error(e);
+			this.engine.getGUI().getErrorWindow().error(e);
 		}
 	}
 
