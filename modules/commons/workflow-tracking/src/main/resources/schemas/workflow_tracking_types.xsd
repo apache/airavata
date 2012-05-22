@@ -73,6 +73,15 @@
 		</annotation>
 		<restriction base="anyURI" />
 	</simpleType>
+    <simpleType name="ExperimentIDType">
+		<annotation>
+			<documentation>
+				String that identifies uniquely a node in workflow graph.
+				The node ID is unique in the scope of a workflow ID.
+			</documentation>
+		</annotation>
+		<restriction base="string" />
+	</simpleType>
 
 	<!-- ========================================================================================== -->
 
@@ -98,6 +107,13 @@
 			</annotation>
 		</attribute>
 
+        <attribute name="experimentID" type="wft:ExperimentIDType" use="required">
+			<annotation>
+				<documentation>
+					ID to uniquely identify a workflow invocation.
+				</documentation>
+			</annotation>
+		</attribute>
 		<attribute name="workflowNodeID" type="wft:WorkflowNodeIDType" use="optional">
 			<annotation>
 				<documentation>
