@@ -108,7 +108,7 @@ public class MemoConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Memo", gridPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Memo", gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 

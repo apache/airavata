@@ -57,7 +57,7 @@ public class S3InputNodeGUI extends ConfigurableNodeGUI {
     protected void showConfigurationDialog(XBayaEngine engine) {
 
         if (!this.inputNode.isConnected()) {
-            engine.getErrorWindow().info(ErrorMessages.INPUT_NOT_CONNECTED_WARNING);
+            engine.getGUI().getErrorWindow().info(ErrorMessages.INPUT_NOT_CONNECTED_WARNING);
         } else {
             if (this.s3FileChooser == null) {
                 this.s3FileChooser = new S3FileChooser(engine, this.inputNode);

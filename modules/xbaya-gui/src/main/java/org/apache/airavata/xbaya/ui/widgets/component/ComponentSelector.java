@@ -345,16 +345,16 @@ public class ComponentSelector implements XBayaComponent {
 
                     } catch (ComponentException e) {
                         selectComponent(null);
-                        ComponentSelector.this.engine.getErrorWindow().error(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
+                        ComponentSelector.this.engine.getGUI().getErrorWindow().error(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
                     } catch (ComponentRegistryException e) {
                         selectComponent(null);
-                        ComponentSelector.this.engine.getErrorWindow().error(ErrorMessages.COMPONENT_LOAD_ERROR, e);
+                        ComponentSelector.this.engine.getGUI().getErrorWindow().error(ErrorMessages.COMPONENT_LOAD_ERROR, e);
                     } catch (RuntimeException e) {
                         selectComponent(null);
-                        ComponentSelector.this.engine.getErrorWindow().error(ErrorMessages.COMPONENT_LOAD_ERROR, e);
+                        ComponentSelector.this.engine.getGUI().getErrorWindow().error(ErrorMessages.COMPONENT_LOAD_ERROR, e);
                     } catch (Exception e) {
                         selectComponent(null);
-                        ComponentSelector.this.engine.getErrorWindow().error(ErrorMessages.COMPONENT_LOAD_ERROR, e);
+                        ComponentSelector.this.engine.getGUI().getErrorWindow().error(ErrorMessages.COMPONENT_LOAD_ERROR, e);
                     }
                 }
             }.start();
@@ -487,13 +487,13 @@ public class ComponentSelector implements XBayaComponent {
                         try {
                             updateSelectedRegistry();
                         } catch (ComponentRegistryException e) {
-                            ComponentSelector.this.engine.getErrorWindow().error(
+                            ComponentSelector.this.engine.getGUI().getErrorWindow().error(
                                     ErrorMessages.COMPONENT_LIST_LOAD_ERROR, e);
                         } catch (RuntimeException e) {
-                            ComponentSelector.this.engine.getErrorWindow().error(
+                            ComponentSelector.this.engine.getGUI().getErrorWindow().error(
                                     ErrorMessages.COMPONENT_LIST_LOAD_ERROR, e);
                         } catch (Error e) {
-                            ComponentSelector.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                            ComponentSelector.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                         }
                     }
                 }.start();

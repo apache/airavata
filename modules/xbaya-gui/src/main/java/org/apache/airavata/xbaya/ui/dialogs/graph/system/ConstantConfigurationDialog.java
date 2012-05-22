@@ -130,7 +130,7 @@ public class ConstantConfigurationDialog {
 
         if (name.length() == 0) {
             String warning = "The name cannot be empty.";
-            this.engine.getErrorWindow().error(warning);
+            this.engine.getGUI().getErrorWindow().error(warning);
             return;
         }
         Object value = null;
@@ -138,7 +138,7 @@ public class ConstantConfigurationDialog {
             if (LEADTypes.isKnownType(type)) {
                 if (!this.node.isInputValid(valueString)) {
                     String warning = "The defalut value is not valid for " + this.node.getType() + ".";
-                    this.engine.getErrorWindow().error(warning);
+                    this.engine.getGUI().getErrorWindow().error(warning);
                 }
                 value = valueString;
             } else {
@@ -146,7 +146,7 @@ public class ConstantConfigurationDialog {
                     value = XMLUtil.stringToXmlElement(valueString);
                 } catch (RuntimeException e) {
                     String warning = "The XML for the default value is not valid.";
-                    this.engine.getErrorWindow().error(warning, e);
+                    this.engine.getGUI().getErrorWindow().error(warning, e);
                 }
             }
         }
@@ -206,7 +206,7 @@ public class ConstantConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Constant Configuration", this.gridPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Constant Configuration", this.gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 

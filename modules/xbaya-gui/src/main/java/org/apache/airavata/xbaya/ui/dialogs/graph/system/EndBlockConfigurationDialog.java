@@ -107,7 +107,7 @@ public class EndBlockConfigurationDialog {
                 // Do nothing.
             }
         } catch (GraphException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         }
 
         hide();
@@ -157,7 +157,7 @@ public class EndBlockConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Endif Configuration", gridPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Endif Configuration", gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

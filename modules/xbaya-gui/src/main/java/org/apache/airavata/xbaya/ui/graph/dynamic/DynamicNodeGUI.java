@@ -67,7 +67,7 @@ public class DynamicNodeGUI extends NodeGUI {
         try {
             this.window.show();
         } catch (Throwable e) {
-            engine.getErrorWindow().error(e);
+            engine.getGUI().getErrorWindow().error(e);
         }
     }
 }

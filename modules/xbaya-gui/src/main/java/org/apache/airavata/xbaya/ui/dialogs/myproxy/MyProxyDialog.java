@@ -119,37 +119,37 @@ public class MyProxyDialog {
         String lifetimeString = this.lifetimeField.getText();
 
         if (server.length() == 0) {
-            this.engine.getErrorWindow().error(ErrorMessages.MYPROXY_HOST_EMPTY);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.MYPROXY_HOST_EMPTY);
             return;
         }
         if (portString.length() == 0) {
-            this.engine.getErrorWindow().error(ErrorMessages.MYPROXY_PORT_EMPTY);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.MYPROXY_PORT_EMPTY);
             return;
         }
         int port;
         try {
             port = Integer.parseInt(portString);
         } catch (NumberFormatException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.MYPROXY_PORT_WRONG, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.MYPROXY_PORT_WRONG, e);
             return;
         }
         if (username.length() == 0) {
-            this.engine.getErrorWindow().error(ErrorMessages.USERNAME_EMPTY);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.USERNAME_EMPTY);
             return;
         }
         if (passphrase.length() < 6) {
-            this.engine.getErrorWindow().error(ErrorMessages.MYPROXY_PASSPHRASE_WRONG);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.MYPROXY_PASSPHRASE_WRONG);
             return;
         }
         if (lifetimeString.length() == 0) {
-            this.engine.getErrorWindow().error(ErrorMessages.MYPROXY_LIFETIME_EMPTY);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.MYPROXY_LIFETIME_EMPTY);
             return;
         }
         int lifetime;
         try {
             lifetime = Integer.parseInt(lifetimeString);
         } catch (NumberFormatException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.MYPROXY_LIFETIME_WRONG, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.MYPROXY_LIFETIME_WRONG, e);
             return;
         }
 
@@ -218,7 +218,7 @@ public class MyProxyDialog {
         buttonPanel.add(this.okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, TITLE, DESCRIPTION, mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), TITLE, DESCRIPTION, mainPanel, buttonPanel);
         this.dialog.setDefaultButton(this.okButton);
     }
 }

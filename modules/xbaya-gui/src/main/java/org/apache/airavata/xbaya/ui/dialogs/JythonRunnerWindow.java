@@ -97,7 +97,7 @@ public class JythonRunnerWindow {
     public JythonRunnerWindow(XBayaEngine engine, XBayaTextField topicTextField,
             List<XBayaTextField> parameterTextFields) {
         this.engine = engine;
-        this.workflow = this.engine.getWorkflow();
+        this.workflow = this.engine.getGUI().getWorkflow();
         this.topicTextField = topicTextField;
         this.parameterTextFields = parameterTextFields;
         this.gfacTextField = new XBayaTextField();
@@ -105,7 +105,7 @@ public class JythonRunnerWindow {
 
         MonitorConfiguration notifConfig = this.engine.getMonitor().getConfiguration();
         if (notifConfig.getBrokerURL() == null) {
-            this.engine.getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
             return;
         }
 
@@ -119,7 +119,7 @@ public class JythonRunnerWindow {
                 buf.append(warning);
                 buf.append("\n");
             }
-            this.engine.getErrorWindow().warning(buf.toString());
+            this.engine.getGUI().getErrorWindow().warning(buf.toString());
             return;
         }
 
@@ -148,12 +148,12 @@ public class JythonRunnerWindow {
      * Shows the dialog.
      */
     public void show() {
-        this.workflow = this.engine.getWorkflow();
+        this.workflow = this.engine.getGUI().getWorkflow();
         this.script = new JythonScript(this.workflow, this.engine.getConfiguration());
 
         MonitorConfiguration notifConfig = this.engine.getMonitor().getConfiguration();
         if (notifConfig.getBrokerURL() == null) {
-            this.engine.getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
             return;
         }
 
@@ -167,7 +167,7 @@ public class JythonRunnerWindow {
                 buf.append(warning);
                 buf.append("\n");
             }
-            this.engine.getErrorWindow().warning(buf.toString());
+            this.engine.getGUI().getErrorWindow().warning(buf.toString());
             return;
         }
 
@@ -176,15 +176,15 @@ public class JythonRunnerWindow {
         try {
             this.script.create();
         } catch (GraphException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
             hide();
             return;
         } catch (RuntimeException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             hide();
             return;
         } catch (Error e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             hide();
             return;
         }
@@ -278,7 +278,7 @@ public class JythonRunnerWindow {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Execute Workflow (Jython)", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Execute Workflow (Jython)", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 
@@ -287,7 +287,7 @@ public class JythonRunnerWindow {
 
         String topic = this.topicTextField.getText();
         if (topic.length() == 0) {
-            this.engine.getErrorWindow().error(ErrorMessages.TOPIC_EMPTY_ERROR);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.TOPIC_EMPTY_ERROR);
             return;
         }
 
@@ -321,7 +321,7 @@ public class JythonRunnerWindow {
                 URI uri = new URI(gfacString).parseServerAuthority();
                 config.setGFacURL(uri);
             } catch (URISyntaxException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.GFAC_URL_WRONG, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GFAC_URL_WRONG, e);
                 return;
             }
             arguments.add("-" + JythonScript.GFAC_VARIABLE);
@@ -352,7 +352,7 @@ public class JythonRunnerWindow {
                 arguments.add(wsdlURL);
             }
         } catch (IOException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             hide();
             return;
         }
@@ -377,11 +377,11 @@ public class JythonRunnerWindow {
                     // logger.error(e.getMessage(), e);
                     // }
                 } catch (WorkflowException e) {
-                    JythonRunnerWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                    JythonRunnerWindow.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 } catch (RuntimeException e) {
-                    JythonRunnerWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                    JythonRunnerWindow.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 } catch (Error e) {
-                    JythonRunnerWindow.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                    JythonRunnerWindow.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 } finally {
                     // We don't need this because this might stop a new
                     // subscription initiated by a user.

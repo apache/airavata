@@ -104,7 +104,7 @@ public class EditMenuItem {
 
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
-                    this.window = engine.getWorkflowPropertyWindow();
+                    this.window = engine.getGUI().getWorkflowPropertyWindow();
                 }
                 this.window.show();
             }

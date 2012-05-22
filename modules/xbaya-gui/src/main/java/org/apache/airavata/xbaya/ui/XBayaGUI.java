@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
@@ -47,11 +49,17 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
+import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.Component;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.wf.Workflow;
@@ -66,11 +74,13 @@ import org.apache.airavata.xbaya.event.Event.Type;
 import org.apache.airavata.xbaya.event.EventListener;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ui.dialogs.ErrorWindow;
+import org.apache.airavata.xbaya.ui.dialogs.workflow.WorkflowPropertyWindow;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvasEvent;
-import org.apache.airavata.xbaya.ui.graph.GraphCanvasListener;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvasEvent.GraphCanvasEventType;
+import org.apache.airavata.xbaya.ui.graph.GraphCanvasListener;
 import org.apache.airavata.xbaya.ui.menues.XBayaMenu;
+import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.views.ComponentViewer;
 import org.apache.airavata.xbaya.ui.views.JCRBrowserPanel;
 import org.apache.airavata.xbaya.ui.views.MonitorPanel;
@@ -81,6 +91,7 @@ import org.apache.airavata.xbaya.ui.widgets.XBayaToolBar;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xmlpull.infoset.XmlElement;
 
 public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 
@@ -129,6 +140,8 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
     private ScrollPanel compTreeXBayapanel;
 
 	private WorkflowFiler graphFiler;
+
+    private WorkflowPropertyWindow workflowPropertiesWindow;
 
     /**
      * Constructs an XBayaEngine.
@@ -355,7 +368,7 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 			}
         });
         if (withID){
-        	engine.getWorkflowPropertyWindow().show();
+        	getWorkflowPropertyWindow().show();
         }
         return newGraphCanvas;
     }
@@ -533,6 +546,8 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 //        newGraphCanvas(true);
 
         this.frame.setVisible(true);
+    	loadDefaultGraph();
+
         executionModeChanged(this.engine.getConfiguration());
     }
 
@@ -770,5 +785,56 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 	}
 
 
+    /**
+     * @return
+     */
+    public WorkflowPropertyWindow getWorkflowPropertyWindow() {
+        if (this.workflowPropertiesWindow == null) {
+            this.workflowPropertiesWindow = new WorkflowPropertyWindow(this);
+        }
+        return this.workflowPropertiesWindow;
+    }
+    
+    /**
+     * Sets the workflow.
+     *
+     * @param workflow
+     *            The workflow
+     */
+    public void setWorkflow(Workflow workflow) {
+        this.getGraphCanvas().setWorkflow(workflow);
+    }
 
+    /**
+     * Return the current workflow.
+     *
+     * @return The current workflow
+     */
+    public Workflow getWorkflow() {
+        return this.getGraphCanvas().getWorkflowWithImage();
+    }
+    
+    private void loadDefaultGraph() {
+        if (this.engine.getConfiguration().getWorkflow() != null) {
+            this.newGraphCanvas(true, false);
+            JCRComponentRegistry jcrComponentRegistry = this.engine.getConfiguration().getJcrComponentRegistry();
+            try {
+            	javax.jcr.Node node = jcrComponentRegistry.getRegistry().getWorkflow(new QName(XBayaConstants.LEAD_NS, this.engine.getConfiguration().getWorkflow()), this.engine.getConfiguration().getRegistryUserName());
+                XmlElement xwf = XMLUtil.stringToXmlElement(node.getProperty("workflow").getString());
+                Workflow workflow = new Workflow(xwf);
+                setWorkflow(workflow);
+            } catch (RegistryException e) {
+               getErrorWindow().error(ErrorMessages.REPOSITORY_CONFIGURATION_IS_WRONG_FAILED_TO_LOAD_THE_WORKFLOW, e);
+            } catch (PathNotFoundException e) {
+                getErrorWindow().error(ErrorMessages.GIVEN_WORKFLOW_NAME_IS_WRONG, e);
+            } catch (RepositoryException e) {
+                getErrorWindow().error(ErrorMessages.REPOSITORY_CONFIGURATION_IS_WRONG_FAILED_TO_LOAD_THE_WORKFLOW, e);
+            } catch (GraphException e) {
+                getErrorWindow().error(ErrorMessages.WORKFLOW_IS_WRONG, e);
+            } catch (ComponentException e) {
+                getErrorWindow().error(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
+            }
+        }
+
+    }
 }

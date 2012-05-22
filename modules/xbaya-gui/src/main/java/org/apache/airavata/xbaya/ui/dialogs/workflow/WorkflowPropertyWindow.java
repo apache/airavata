@@ -31,21 +31,21 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextArea;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
-import org.apache.airavata.common.utils.WSConstants;
 import org.xmlpull.infoset.XmlElement;
 
 public class WorkflowPropertyWindow {
 
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
 
     private XBayaDialog dialog;
 
@@ -67,8 +67,8 @@ public class WorkflowPropertyWindow {
     /**
      * @param engine
      */
-    public WorkflowPropertyWindow(XBayaEngine engine) {
-        this.engine = engine;
+    public WorkflowPropertyWindow(XBayaGUI xbayaGUI) {
+        this.xbayaGUI = xbayaGUI;
         initGui();
     }
 
@@ -76,7 +76,7 @@ public class WorkflowPropertyWindow {
      * Shows the dialog.
      */
     public void show() {
-        this.workflow = this.engine.getWorkflow();
+        this.workflow = this.xbayaGUI.getWorkflow();
 
         String name = this.workflow.getName();
         this.nameTextField.setText(name);
@@ -118,9 +118,9 @@ public class WorkflowPropertyWindow {
     }
 
     private boolean isWorkflowNameAlreadyPresent(String name){
-    	List<GraphCanvas> graphCanvases = engine.getGUI().getGraphCanvases();
+    	List<GraphCanvas> graphCanvases = xbayaGUI.getGraphCanvases();
     	for (GraphCanvas graphCanvas : graphCanvases) {
-    		if (graphCanvas!=engine.getGUI().getGraphCanvas()){
+    		if (graphCanvas!=xbayaGUI.getGraphCanvas()){
 				String existingName = graphCanvas.getWorkflow().getGraph().getName();
 				if (name.equals(existingName)){
 					return true;
@@ -144,18 +144,18 @@ public class WorkflowPropertyWindow {
                     metadata = XMLUtil.stringToXmlElement(metadataText);
                 } catch (RuntimeException e) {
                     String warning = "The metadata is ill-formed.";
-                    this.engine.getErrorWindow().error(warning, e);
+                    this.xbayaGUI.getErrorWindow().error(warning, e);
                     return;
                 }
             }
 
-            GraphCanvas graphCanvas = this.engine.getGUI().getGraphCanvas();
+            GraphCanvas graphCanvas = this.xbayaGUI.getGraphCanvas();
             graphCanvas.setNameAndDescription(name, description);
             graphCanvas.getWorkflow().setMetadata(metadata);
             hide();
         } else {
             this.nameTextField.setText(StringUtil.convertToJavaIdentifier(name));
-            JOptionPane.showMessageDialog(this.engine.getGUI().getFrame(),
+            JOptionPane.showMessageDialog(this.xbayaGUI.getFrame(),
                     "Invalid Name or a Workflow under the same name already exists. Please consider the Name suggsted", "Invalid Name", JOptionPane.OK_OPTION);
         }
     }
@@ -210,7 +210,7 @@ public class WorkflowPropertyWindow {
         buttonPanel.add(this.okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Workflow Properties", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.xbayaGUI, "Workflow Properties", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(this.okButton);
     }
 }

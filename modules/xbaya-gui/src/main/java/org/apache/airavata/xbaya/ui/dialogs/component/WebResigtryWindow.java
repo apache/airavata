@@ -77,14 +77,14 @@ public class WebResigtryWindow {
         String urlString = this.urlTextField.getText();
 
         if (urlString.length() == 0) {
-            this.engine.getErrorWindow().error(ErrorMessages.URL_EMPTY);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.URL_EMPTY);
             return;
         }
         URL url;
         try {
             url = new URL(urlString);
         } catch (MalformedURLException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.URL_WRONG, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.URL_WRONG, e);
             return;
         }
 
@@ -125,7 +125,7 @@ public class WebResigtryWindow {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Web Registry", infoPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Web Registry", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

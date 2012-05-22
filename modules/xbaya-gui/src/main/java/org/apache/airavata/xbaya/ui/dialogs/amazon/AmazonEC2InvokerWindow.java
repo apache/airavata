@@ -159,7 +159,7 @@ public class AmazonEC2InvokerWindow {
         buttonPanel.add(this.invokeButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Deploy Workflow", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Deploy Workflow", mainPanel, buttonPanel);
     }
 
     /**

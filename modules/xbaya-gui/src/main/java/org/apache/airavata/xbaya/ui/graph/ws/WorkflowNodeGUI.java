@@ -66,9 +66,9 @@ public class WorkflowNodeGUI extends NodeGUI {
             Workflow workflow = this.node.getComponent().getWorkflow();
             engine.getGUI().selectOrCreateGraphCanvas(workflow);
         } catch (GraphException e) {
-            engine.getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
+            engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
         } catch (ComponentException e) {
-            engine.getErrorWindow().error(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
+            engine.getGUI().getErrorWindow().error(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
         }
     }
 }

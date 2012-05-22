@@ -148,7 +148,7 @@ public class DifferedInputConfigurationDialog {
 
         if (name.length() == 0) {
             String warning = "The name cannot be empty.";
-            this.engine.getErrorWindow().error(warning);
+            this.engine.getGUI().getErrorWindow().error(warning);
             return;
         }
         Object value = null;
@@ -157,7 +157,7 @@ public class DifferedInputConfigurationDialog {
                 if (!this.node.isInputValid(valueString)) {
                     String warning = "The defalut value is not valid for "
                             + this.node.getParameterType() + ".";
-                    this.engine.getErrorWindow().error(warning);
+                    this.engine.getGUI().getErrorWindow().error(warning);
                 }
                 value = valueString;
             } else {
@@ -165,7 +165,7 @@ public class DifferedInputConfigurationDialog {
                     value = XMLUtil.stringToXmlElement(valueString);
                 } catch (RuntimeException e) {
                     String warning = "The XML for the default value is not valid.";
-                    this.engine.getErrorWindow().error(warning, e);
+                    this.engine.getGUI().getErrorWindow().error(warning, e);
                 }
             }
         }
@@ -177,7 +177,7 @@ public class DifferedInputConfigurationDialog {
                 metadata = XMLUtil.stringToXmlElement(metadataText);
             } catch (RuntimeException e) {
                 String warning = "The metadata is ill-formed.";
-                this.engine.getErrorWindow().error(warning, e);
+                this.engine.getGUI().getErrorWindow().error(warning, e);
                 return;
             }
         }
@@ -244,7 +244,7 @@ public class DifferedInputConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine,
+        this.dialog = new XBayaDialog(this.engine.getGUI(),
                 "Input Parameter Configuration", this.gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }

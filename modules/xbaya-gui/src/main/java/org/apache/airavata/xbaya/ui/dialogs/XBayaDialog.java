@@ -37,7 +37,7 @@ import javax.swing.JLabel;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.widgets.XBayaComponent;
 
 public class XBayaDialog {
@@ -62,8 +62,8 @@ public class XBayaDialog {
      * @param mainPanel
      * @param buttonPanel
      */
-    public XBayaDialog(XBayaEngine engine, String title, XBayaComponent mainPanel, XBayaComponent buttonPanel) {
-        this(engine.getGUI().getFrame(), title, mainPanel.getSwingComponent(), buttonPanel.getSwingComponent());
+    public XBayaDialog(XBayaGUI xbayaGUI, String title, XBayaComponent mainPanel, XBayaComponent buttonPanel) {
+        this(xbayaGUI.getFrame(), title, mainPanel.getSwingComponent(), buttonPanel.getSwingComponent());
     }
 
     /**
@@ -74,8 +74,8 @@ public class XBayaDialog {
      * @param mainPanel
      * @param buttonPanel
      */
-    public XBayaDialog(XBayaEngine engine, String title, XBayaComponent mainPanel, JComponent buttonPanel) {
-        this(engine.getGUI().getFrame(), title, mainPanel.getSwingComponent(), buttonPanel);
+    public XBayaDialog(XBayaGUI xbayaGUI, String title, XBayaComponent mainPanel, JComponent buttonPanel) {
+        this(xbayaGUI.getFrame(), title, mainPanel.getSwingComponent(), buttonPanel);
     }
 
     /**
@@ -87,9 +87,9 @@ public class XBayaDialog {
      * @param mainPanel
      * @param buttonPanel
      */
-    public XBayaDialog(XBayaEngine engine, String title, String description, XBayaComponent mainPanel,
+    public XBayaDialog(XBayaGUI xbayaGUI, String title, String description, XBayaComponent mainPanel,
             JComponent buttonPanel) {
-        this(engine.getGUI().getFrame(), title, description, mainPanel.getSwingComponent(), buttonPanel);
+        this(xbayaGUI.getFrame(), title, description, mainPanel.getSwingComponent(), buttonPanel);
     }
 
     /**
@@ -100,8 +100,8 @@ public class XBayaDialog {
      * @param mainPanel
      * @param buttonPanel
      */
-    public XBayaDialog(XBayaEngine engine, String title, JComponent mainPanel, JComponent buttonPanel) {
-        this(engine.getGUI().getFrame(), title, mainPanel, buttonPanel);
+    public XBayaDialog(XBayaGUI xbayaGUI, String title, JComponent mainPanel, JComponent buttonPanel) {
+        this(xbayaGUI.getFrame(), title, mainPanel, buttonPanel);
     }
 
     /**

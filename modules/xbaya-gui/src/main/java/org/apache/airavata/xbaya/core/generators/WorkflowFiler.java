@@ -113,15 +113,15 @@ public class WorkflowFiler {
                 //this.engine.setWorkflow(workflow);
                 engine.getGUI().getGraphCanvas().setWorkflowFile(file);
             } catch (IOException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.OPEN_FILE_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.OPEN_FILE_ERROR, e);
             } catch (GraphException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
             } catch (ComponentException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
             } catch (RuntimeException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             } catch (Error e) {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             }
         }
         
@@ -182,11 +182,11 @@ public class WorkflowFiler {
 		try {
 		    XMLUtil.saveXML(workflow.toXML(), file);
 		} catch (IOException e) {
-		    this.engine.getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
+		    this.engine.getGUI().getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
 		} catch (RuntimeException e) {
-		    this.engine.getErrorWindow().error(ErrorMessages.GRAPH_SAVE_ERROR, e);
+		    this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_SAVE_ERROR, e);
 		} catch (Error e) {
-		    this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+		    this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
 		}
 	}
 
@@ -198,7 +198,7 @@ public class WorkflowFiler {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.graphFileChooser.getSelectedFile();
 
-            Workflow workflow = this.engine.getWorkflow();
+            Workflow workflow = this.engine.getGUI().getWorkflow();
             try {
 
                 String path = file.getPath();
@@ -211,17 +211,17 @@ public class WorkflowFiler {
                     importedWorkflow = new Workflow(importedWorkflowElement);
                 }
                 workflow.importWorkflow(importedWorkflow);
-                this.engine.setWorkflow(workflow);
+                this.engine.getGUI().setWorkflow(workflow);
             } catch (IOException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.OPEN_FILE_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.OPEN_FILE_ERROR, e);
             } catch (GraphException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
             } catch (ComponentException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
             } catch (RuntimeException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             } catch (Error e) {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             }
         }
     }
@@ -249,15 +249,15 @@ public class WorkflowFiler {
                 }
 
             } catch (IOException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.OPEN_FILE_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.OPEN_FILE_ERROR, e);
             } catch (GraphException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
             } catch (ComponentException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
             } catch (RuntimeException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             } catch (Error e) {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             }
         }
         return workflow;

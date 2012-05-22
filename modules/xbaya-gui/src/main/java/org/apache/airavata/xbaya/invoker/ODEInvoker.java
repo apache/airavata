@@ -116,7 +116,7 @@ public class ODEInvoker implements Cancelable {
             WsdlDefinitions wsdl = workflow.getOdeInvokableWSDL(configuration.getDSCURL(), configuration.getODEURL());
 
             LeadContextHeader leadContext = XBayaUtil.buildLeadContextHeader(this.engine, monitorConfiguration,
-                    StringUtil.convertToJavaIdentifier(engine.getWorkflow().getName()), resourceMapping);
+                    StringUtil.convertToJavaIdentifier(engine.getGUI().getWorkflow().getName()), resourceMapping);
             // /////////////////////////////////////
             leadContext.setExperimentId(monitorConfiguration.getTopic());
 
@@ -141,7 +141,7 @@ public class ODEInvoker implements Cancelable {
             if (this.canceled) {
                 logger.error(e.getMessage(), e);
             } else {
-                this.engine.getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
                 this.invokingDialog.hide();
             }
             return;
@@ -149,12 +149,12 @@ public class ODEInvoker implements Cancelable {
             if (this.canceled) {
                 logger.error(e.getMessage(), e);
             } else {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 this.invokingDialog.hide();
             }
             return;
         } catch (Exception e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             this.invokingDialog.hide();
             return;
         }
@@ -168,7 +168,7 @@ public class ODEInvoker implements Cancelable {
             if (this.canceled) {
                 logger.error(e.getMessage(), e);
             } else {
-                this.engine.getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
                 this.invokingDialog.hide();
             }
             return;
@@ -176,12 +176,12 @@ public class ODEInvoker implements Cancelable {
             if (this.canceled) {
                 logger.error(e.getMessage(), e);
             } else {
-                this.engine.getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
                 this.invokingDialog.hide();
             }
             return;
         } catch (Error e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             this.invokingDialog.hide();
         }
 
@@ -199,7 +199,7 @@ public class ODEInvoker implements Cancelable {
                     }
                     logger.info("Done with the execution. result: " + result);
                 } catch (WorkflowException e) {
-                    ODEInvoker.this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                    ODEInvoker.this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
                 }
             }
         }.start();

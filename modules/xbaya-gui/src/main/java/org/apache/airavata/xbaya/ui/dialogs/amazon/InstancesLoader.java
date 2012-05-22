@@ -92,10 +92,10 @@ public class InstancesLoader implements Cancelable {
                     }
 
                 } catch (AmazonServiceException ex) {
-                    InstancesLoader.this.engine.getErrorWindow().error(InstancesLoader.this.parent,
+                    InstancesLoader.this.engine.getGUI().getErrorWindow().error(InstancesLoader.this.parent,
                             "Cannot load EC2 instances", ex);
                 } catch (AmazonClientException ex) {
-                    InstancesLoader.this.engine.getErrorWindow().error(InstancesLoader.this.parent,
+                    InstancesLoader.this.engine.getGUI().getErrorWindow().error(InstancesLoader.this.parent,
                             "Cannot load EC2 instances", ex);
                 } finally {
                     InstancesLoader.this.loadingDialog.hide();

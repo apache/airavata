@@ -112,14 +112,14 @@ public class AboutWindow {
                     try {
                         BrowserLauncher.openURL(url.toString());
                     } catch (Exception e) {
-                        AboutWindow.this.engine.getErrorWindow().error(AboutWindow.this.dialog.getDialog(),
+                        AboutWindow.this.engine.getGUI().getErrorWindow().error(AboutWindow.this.dialog.getDialog(),
                                 e.getMessage(), e);
                     }
                 }
             }
         });
 
-        this.dialog = new XBayaDialog(this.engine, XBayaConstants.PROJECT_NAME, editorPane, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), XBayaConstants.PROJECT_NAME, editorPane, buttonPanel);
         this.dialog.setDefaultButton(okButton);
 //        this.dialog.setCancelButton(okButton);
     }

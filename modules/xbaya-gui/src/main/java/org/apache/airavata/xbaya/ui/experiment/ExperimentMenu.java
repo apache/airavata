@@ -97,7 +97,7 @@ public class ExperimentMenu {
         this.deleteWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    ExperimentMenu.this.registryAccesser.deleteOGCEWorkflow(ExperimentMenu.this.engine.getWorkflow()
+                    ExperimentMenu.this.registryAccesser.deleteOGCEWorkflow(ExperimentMenu.this.engine.getGUI().getWorkflow()
                             .getQname());
                 } catch (RegistryException e1) {
                     throw new WorkflowRuntimeException(e1);

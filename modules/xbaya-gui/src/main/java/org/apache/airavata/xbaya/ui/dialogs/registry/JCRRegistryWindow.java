@@ -89,21 +89,21 @@ public class JCRRegistryWindow {
         String password = new String(this.passwordTextField.getPassword());
 
         if (urlString.length() == 0) {
-            this.engine.getErrorWindow().error(ErrorMessages.URL_EMPTY);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.URL_EMPTY);
             return;
         }
         URI url;
         try {
             url = new URI(urlString);
         } catch (URISyntaxException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.URL_WRONG, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.URL_WRONG, e);
             return;
         }
         JCRComponentRegistry registry = null;
         try {
             registry = new JCRComponentRegistry(url, username, password);
         } catch (Exception e) {
-            this.engine.getErrorWindow().error(e.getMessage());
+            this.engine.getGUI().getErrorWindow().error(e.getMessage());
             return;
         }
         XBayaConfiguration configuration = this.engine.getConfiguration();
@@ -192,7 +192,7 @@ public class JCRRegistryWindow {
         buttonPanel.add(cancelButton);
         buttonPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
-        this.dialog = new XBayaDialog(this.engine, "JCR Registry", infoPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "JCR Registry", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

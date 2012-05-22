@@ -101,7 +101,7 @@ public class OutputConfigurationDialog {
 
         if (name.length() == 0) {
             String warning = "The name cannot be empty.";
-            this.engine.getErrorWindow().error(warning);
+            this.engine.getGUI().getErrorWindow().error(warning);
             return;
         }
 
@@ -113,7 +113,7 @@ public class OutputConfigurationDialog {
                 metadata = XMLUtil.stringToXmlElement(metadataText);
             } catch (RuntimeException e) {
                 String warning = "The metadata is ill-formed.";
-                this.engine.getErrorWindow().error(warning, e);
+                this.engine.getGUI().getErrorWindow().error(warning, e);
                 return;
             }
         }
@@ -166,7 +166,7 @@ public class OutputConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Input Parameter Configuration", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Input Parameter Configuration", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

@@ -122,7 +122,7 @@ public class StreamSourceConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Configure Streaming Data source", this.gridPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Configure Streaming Data source", this.gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 

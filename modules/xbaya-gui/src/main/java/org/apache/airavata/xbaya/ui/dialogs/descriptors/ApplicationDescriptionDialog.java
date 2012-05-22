@@ -568,12 +568,12 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 							getOriginalHost(),getOriginalDeploymentDescription().getType()
 							.getApplicationName().getStringValue());
 				} catch (RegistryException e) {
-					engine.getErrorWindow().error(e);
+					engine.getGUI().getErrorWindow().error(e);
 				}
 			}
 			setApplicationDescCreated(true);
 		} catch (RegistryException e) {
-			engine.getErrorWindow().error(e);
+			engine.getGUI().getErrorWindow().error(e);
 		}
     }
 

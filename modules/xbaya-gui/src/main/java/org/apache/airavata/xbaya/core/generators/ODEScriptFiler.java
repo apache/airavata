@@ -89,9 +89,9 @@ public class ODEScriptFiler {
 	 * 
 	 */
     public void save() {
-        Workflow wf = this.engine.getWorkflow();
+        Workflow wf = this.engine.getGUI().getWorkflow();
         if (0 == wf.getGraph().getNodes().size()) {
-            this.engine.getErrorWindow().warning("Workflow is Empty");
+            this.engine.getGUI().getErrorWindow().warning("Workflow is Empty");
             return;
         }
         GpelProcess process;
@@ -149,15 +149,15 @@ public class ODEScriptFiler {
             }
 
         } catch (IOException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
         } catch (GraphException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
         } catch (RuntimeException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         } catch (Error e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         } catch (ComponentException e) {
-            this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         }
 
     }

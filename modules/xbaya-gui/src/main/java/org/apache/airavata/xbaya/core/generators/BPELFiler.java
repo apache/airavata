@@ -87,7 +87,7 @@ public class BPELFiler {
      * Exports a BPEL process to the local file
      */
     public void exportBPEL() {
-        Workflow workflow = this.engine.getWorkflow();
+        Workflow workflow = this.engine.getGUI().getWorkflow();
         BPELScript bpel = new BPELScript(workflow);
 
         // Check if there is any errors in the workflow first.
@@ -99,7 +99,7 @@ public class BPELFiler {
                 buf.append(warning);
                 buf.append("\n");
             }
-            this.engine.getErrorWindow().warning(buf.toString());
+            this.engine.getGUI().getErrorWindow().warning(buf.toString());
             return;
         }
 
@@ -131,13 +131,13 @@ public class BPELFiler {
                 XMLUtil.saveXML(workflowWSDL.getWsdlDefinitions().xml(), wsdlFile);
 
             } catch (IOException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
             } catch (GraphException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
             } catch (RuntimeException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             } catch (Error e) {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             }
         }
     }

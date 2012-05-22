@@ -91,14 +91,14 @@ public class ImageFiler {
 
             BufferedImage image;
             try {
-                image = this.engine.getWorkflow().getImage();
+                image = this.engine.getGUI().getWorkflow().getImage();
                 ImageIO.write(image, XBayaConstants.PNG_FORMAT_NAME, file);
             } catch (IOException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
             } catch (RuntimeException e) {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             } catch (Error e) {
-                this.engine.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
             }
         }
     }

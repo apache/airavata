@@ -145,7 +145,7 @@ public class EC2LaunchWindow {
                 if (EC2LaunchWindow.this.amiTextField.getText() == null
                         || EC2LaunchWindow.this.amiTextField.getText().isEmpty()
                         || ((Integer) EC2LaunchWindow.this.numberOfInstanceSpinner.getValue()).intValue() <= 0) {
-                    EC2LaunchWindow.this.engine.getErrorWindow().info(EC2LaunchWindow.this.dialog.getDialog(),
+                    EC2LaunchWindow.this.engine.getGUI().getErrorWindow().info(EC2LaunchWindow.this.dialog.getDialog(),
                             "Warning", "Please input all fields");
                     return;
                 }
@@ -167,10 +167,10 @@ public class EC2LaunchWindow {
                     EC2LaunchWindow.this.hide();
 
                 } catch (NumberFormatException nfe) {
-                    EC2LaunchWindow.this.engine.getErrorWindow().info(EC2LaunchWindow.this.dialog.getDialog(),
+                    EC2LaunchWindow.this.engine.getGUI().getErrorWindow().info(EC2LaunchWindow.this.dialog.getDialog(),
                             "Warning", "Number of Instances is not numeric");
                 } catch (Exception ex) {
-                    EC2LaunchWindow.this.engine.getErrorWindow().error(EC2LaunchWindow.this.dialog.getDialog(),
+                    EC2LaunchWindow.this.engine.getGUI().getErrorWindow().error(EC2LaunchWindow.this.dialog.getDialog(),
                             "Cannot start EC2 instances: " + ex.getMessage(), ex);
                 }
             }
@@ -188,7 +188,7 @@ public class EC2LaunchWindow {
         buttonPanel.add(lunchButton);
         buttonPanel.add(closeButton);
 
-        this.dialog = new XBayaDialog(this.engine, "Amazon EC2 Launcher", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Amazon EC2 Launcher", mainPanel, buttonPanel);
     }
 
     /**
