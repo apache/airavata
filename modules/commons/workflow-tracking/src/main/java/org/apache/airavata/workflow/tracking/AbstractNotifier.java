@@ -150,6 +150,7 @@ public abstract class AbstractNotifier {
             setIDAndTimestamp(context, xmlMessage, context.getMyself(), activityTimestamp != null ? activityTimestamp
                     : new Date());
             setDescAndAnno(context, xmlMessage, descriptionAndAnnotation, defaultDesc);
+            xmlMessage.getNotificationSource().setExperimentID(context.getTopic());
             // System.out.println(xmldata);
             if (log.isDebugEnabled()) {
                 log.debug(xmldata.toString());
