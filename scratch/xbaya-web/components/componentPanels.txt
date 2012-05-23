@@ -1,2 +1,0 @@
-id:calc,label:Calculator,component_list:components/calculator/components_calculator.txt
-id:logic,label:Logic,component_list:components/logic/components_logic.txt 
