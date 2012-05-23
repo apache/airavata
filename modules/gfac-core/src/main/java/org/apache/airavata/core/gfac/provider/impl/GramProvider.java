@@ -203,6 +203,21 @@ public class GramProvider extends AbstractProvider {
              * Fail job
              */
             int jobStatus = listener.getStatus();
+
+            if(job.getExitCode() != 0){
+                int errCode = listener.getError();
+                String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress() + " Job Exit Code = "
+                        + job.getExitCode();
+                JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
+                        gateKeeper, job.getRSL());
+                if (errCode == 8) {
+                    error.setReason(JobSubmissionFault.JOB_CANCEL);
+                } else {
+                    error.setReason(JobSubmissionFault.JOB_FAILED + " With Exit Code:" + job.getExitCode());
+                }
+                invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,error,errorMsg);
+                throw error;
+            }
             if (jobStatus == GramJob.STATUS_FAILED) {
                 int errCode = listener.getError();
                 String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress() + " Error Code = "
@@ -214,6 +229,7 @@ public class GramProvider extends AbstractProvider {
                 } else {
                     error.setReason(JobSubmissionFault.JOB_FAILED);
                 }
+                invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,error,errorMsg);
                 throw error;
             }
 
@@ -286,6 +302,24 @@ public class GramProvider extends AbstractProvider {
                     String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
                     Map<String, ?> stringMap = OutputUtils.fillOutputFromStdout(invocationContext.<ActualParameter>getOutput(), stdout);
 
+                    MessageContext<Object> input = invocationContext.getOutput();
+                    for (Iterator<String> iterator = input.getNames(); iterator.hasNext(); ) {
+                        String paramName = iterator.next();
+                        String paramValue = input.getStringValue(paramName);
+                        if("".equals(paramValue) || paramValue == null){
+                            int errCode = listener.getError();
+                            String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress();
+                            JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
+                                    gateKeeper, job.getRSL());
+                            if (errCode == 8) {
+                                error.setReason(JobSubmissionFault.JOB_CANCEL);
+                            } else {
+                                error.setReason(JobSubmissionFault.JOB_FAILED + " With Exit Code:" + job.getExitCode());
+                            }
+                            invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,error,errorMsg);
+                            throw error;
+                        }
+                    }
                     // If users has given an output DAta poth we download the output files in to that directory, this will be apath in the machine where GFac is installed
                     if(WorkflowContextHeaderBuilder.getCurrentContextHeader()
                             .getWorkflowOutputDataHandling() != null){
