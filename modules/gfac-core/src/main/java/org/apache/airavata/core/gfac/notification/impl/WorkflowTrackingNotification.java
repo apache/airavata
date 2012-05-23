@@ -53,15 +53,15 @@ public class WorkflowTrackingNotification implements GFacNotifiable {
 
     private org.apache.airavata.workflow.tracking.common.InvocationContext invocationContext;
 
-    public WorkflowTrackingNotification(String brokerURL, String topic) {
+    public WorkflowTrackingNotification(String brokerURL, String topic,String workflowNodeID,String workflowID) {
         this.topic = topic;
         this.workflowID = URI.create(this.topic);
         Properties props = new Properties();
 
         this.notifier = NotifierFactory.createNotifier();
-        URI initiatorWorkflowID = null;
+        URI initiatorWorkflowID = URI.create(workflowID);
         URI initiatorServiceID = URI.create(topic);
-        String initiatorWorkflowNodeID = null;
+        String initiatorWorkflowNodeID = workflowNodeID;
         Integer initiatorWorkflowTimeStep = null;
         this.context = this.notifier.createTrackingContext(props, brokerURL, initiatorWorkflowID, initiatorServiceID,
                 initiatorWorkflowNodeID, initiatorWorkflowTimeStep);
