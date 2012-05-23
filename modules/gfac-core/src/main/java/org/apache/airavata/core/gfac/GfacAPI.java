@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.core.gfac;
 
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.core.gfac.context.GFacConfiguration;
@@ -47,7 +48,10 @@ public class GfacAPI {
     public static final String REPOSITORY_PROPERTIES = "repository.properties";
 
     public DefaultInvocationContext gridJobSubmit(JobContext jobContext,GFacConfiguration gfacConfig) throws Exception {
-        WorkflowTrackingNotification workflowNotification = new WorkflowTrackingNotification(jobContext.getBrokerURL(), jobContext.getTopic());
+        String workflowNodeId = WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getWorkflowNodeId();
+        String workflowInstanceId = WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getWorkflowInstanceId();
+        WorkflowTrackingNotification workflowNotification = new WorkflowTrackingNotification(jobContext.getBrokerURL(),
+                jobContext.getTopic(),workflowNodeId,workflowInstanceId);
         LoggingNotification loggingNotification = new LoggingNotification();
         DefaultInvocationContext invocationContext = new DefaultInvocationContext();
         invocationContext.setExecutionContext(new DefaultExecutionContext());
