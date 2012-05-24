@@ -347,8 +347,10 @@ public class GramProvider extends AbstractProvider {
                     }
                     return stringMap;
                 } catch (ToolsException e) {
+                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
                     throw new ProviderException(e.getMessage(), e);
                 } catch (URISyntaxException e) {
+                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
                     throw new ProviderException("URI is malformatted:" + e.getMessage(), e);
                 }
             }
@@ -359,8 +361,10 @@ public class GramProvider extends AbstractProvider {
             throw pe;
 
         } catch (IOException e) {
+            invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
             throw new ProviderException(e.getMessage(), e);
         } catch (SecurityException e) {
+            invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
             throw new ProviderException(e.getMessage(), e);
         }
 
@@ -370,6 +374,7 @@ public class GramProvider extends AbstractProvider {
 	protected Map<String, ?> processInput(InvocationContext invocationContext)
             throws ProviderException {
         MessageContext inputNew = new ParameterContextImpl();
+        try {
 		MessageContext<Object> input = invocationContext.getInput();
         for (Iterator<String> iterator = input.getNames(); iterator.hasNext();) {
 			String paramName = iterator.next();
@@ -378,42 +383,21 @@ public class GramProvider extends AbstractProvider {
 					.getValue(paramName);
 			//TODO: Review this with type
 			if ("URI".equals(actualParameter.getType().getType().toString())) {
-					try {
                         ((URIParameterType) actualParameter.getType()).setValue(stageInputFiles(invocationContext, paramValue, actualParameter).getPath());
-                    } catch (URISyntaxException e) {
-                        throw new ProviderException(e.getMessage(), e);
-                    } catch (ToolsException e) {
-                        throw new ProviderException(e.getMessage(), e);
-                    } catch (SecurityException e) {
-                        throw new ProviderException(e.getMessage(), e);
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    } catch (IOException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
-
             }else if("URIArray".equals(actualParameter.getType().getType().toString())){
                 List<String> split = Arrays.asList(paramValue.split(","));
                 List<String> newFiles = new ArrayList<String>();
-                try {
                     for (String paramValueEach : split) {
                         newFiles.add(stageInputFiles(invocationContext, paramValueEach, actualParameter).getPath());
                     }
-                } catch (URISyntaxException e) {
-                    throw new ProviderException(e.getMessage(), e);
-                } catch (ToolsException e) {
-                    throw new ProviderException(e.getMessage(), e);
-                } catch (SecurityException e) {
-                    throw new ProviderException(e.getMessage(), e);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-                ((URIArrayType) actualParameter.getType()).setValueArray((String[]) newFiles.toArray());
+                ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
             }
 			inputNew.add(paramName, actualParameter);
 		}
+        }catch (Exception e){
+           invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,"Error during Input File staging");
+            throw new ProviderException("Error while input File Staging", e.getCause());
+        }
         invocationContext.setInput(inputNew);
 		return null;
 	}
@@ -482,7 +466,7 @@ public class GramProvider extends AbstractProvider {
                         for (String paramValueEach : split) {
                             newFiles.add(stageOutputFiles(outputFileStagingPath, paramValueEach, actualParameter, ftp, gssCred, endpoint));
                         }
-                        ((URIArrayType) actualParameter.getType()).setValueArray((String[])newFiles.toArray());
+                        ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
                     }
 
                 }
