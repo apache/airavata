@@ -26,7 +26,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
@@ -300,8 +302,23 @@ public class GramProvider extends AbstractProvider {
 
                     String stdout = ftp.readRemoteFile(stdoutURI, gssCred, localStdOutFile);
                     String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
-                    Map<String, ?> stringMap = OutputUtils.fillOutputFromStdout(invocationContext.<ActualParameter>getOutput(), stdout);
-
+                    Map<String,?> stringMap = null;
+                    // This is to handle exception during the output parsing.
+                    try{
+                         stringMap = OutputUtils.fillOutputFromStdout(invocationContext.<ActualParameter>getOutput(), stdout);
+                    }catch(Exception e){
+                        int errCode = listener.getError();
+                            String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress();
+                            JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
+                                    gateKeeper, job.getRSL());
+                            if (errCode == 8) {
+                                error.setReason(JobSubmissionFault.JOB_CANCEL);
+                            } else {
+                                error.setReason(JobSubmissionFault.JOB_FAILED + " With Null Output Value :");
+                            }
+                            invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,error,errorMsg);
+                            throw error;
+                    }
                     MessageContext<Object> input = invocationContext.getOutput();
                     for (Iterator<String> iterator = input.getNames(); iterator.hasNext(); ) {
                         String paramName = iterator.next();
@@ -345,8 +362,6 @@ public class GramProvider extends AbstractProvider {
              */
             throw pe;
 
-        } catch (XmlException e) {
-            throw new ProviderException("Cannot read output:" + e.getMessage(), e);
         } catch (IOException e) {
             throw new ProviderException(e.getMessage(), e);
         } catch (SecurityException e) {
@@ -426,30 +441,51 @@ public class GramProvider extends AbstractProvider {
             ActualParameter actualParameter = (ActualParameter) input
                     .getValue(paramName);
             //TODO: Review this with type
-            if ("URI".equals(actualParameter.getType().getType().toString())) {
-                try {
-                    GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
-                    GridFtp ftp = new GridFtp();
-                    gssContext = (GSISecurityContext) invocationContext.getSecurityContext(MYPROXY_SECURITY_CONTEXT);
-                    GSSCredential gssCred = gssContext.getGssCredentails();
+            GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
+            GridFtp ftp = new GridFtp();
+            gssContext = (GSISecurityContext) invocationContext.getSecurityContext(MYPROXY_SECURITY_CONTEXT);
+            GSSCredential gssCred = null;
+            try {
+                gssCred = gssContext.getGssCredentails();
+            } catch (SecurityException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            try {
+                if ("URI".equals(actualParameter.getType().getType().toString())) {
                     for (String endpoint : host.getGridFTPEndPointArray()) {
-                        URI srcURI = GfacUtils.createGsiftpURI(endpoint, paramValue);
-                        String fileName = new File(srcURI.getPath()).getName();
-                        File outputFile = new File(outputFileStagingPath + File.separator + fileName);
-                        ftp.readRemoteFile(srcURI,
-                                gssCred, outputFile);
-                        ((URIParameterType) actualParameter.getType()).setValue(outputFileStagingPath + File.separator + fileName);
+                        ((URIParameterType) actualParameter.getType()).setValue(stageInputFiles(outputFileStagingPath,
+                                paramValue, actualParameter, ftp, gssCred, endpoint));
                     }
-                } catch (URISyntaxException e) {
-                    throw new ProviderException(e.getMessage(), e);
-                } catch (ToolsException e) {
-                    throw new ProviderException(e.getMessage(), e);
-                } catch (SecurityException e) {
-                    throw new ProviderException(e.getMessage(), e);
+                } else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
+                    List<String> split = Arrays.asList(paramValue.split(","));
+                    StringBuffer stringBuffer = new StringBuffer("");
+                    for (String endpoint : host.getGridFTPEndPointArray()) {
+                        for (String paramValueEach : split) {
+                            stringBuffer.append(stageInputFiles(outputFileStagingPath, paramValueEach, actualParameter, ftp, gssCred, endpoint));
+                            if (split.size() != split.indexOf(paramValueEach) - 1) {
+                                stringBuffer.append(",");
+                            }
+                        }
+                        ((URIParameterType) actualParameter.getType()).setValue(stringBuffer.toString());
+                    }
+
                 }
+            } catch (URISyntaxException e) {
+                throw new ProviderException(e.getMessage(), e);
+            } catch (ToolsException e) {
+                throw new ProviderException(e.getMessage(), e);
             }
             outputNew.add(paramName, actualParameter);
         }
         invocationContext.setOutput(outputNew);
+    }
+
+    private String stageInputFiles(String outputFileStagingPath, String paramValue, ActualParameter actualParameter, GridFtp ftp, GSSCredential gssCred, String endpoint) throws URISyntaxException, ToolsException {
+        URI srcURI = GfacUtils.createGsiftpURI(endpoint, paramValue);
+        String fileName = new File(srcURI.getPath()).getName();
+        File outputFile = new File(outputFileStagingPath + File.separator + fileName);
+        ftp.readRemoteFile(srcURI,
+                gssCred, outputFile);
+        return outputFileStagingPath + File.separator + fileName;
     }
 }
