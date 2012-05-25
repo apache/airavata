@@ -31,7 +31,7 @@ import javax.swing.SpinnerNumberModel;
 
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.system.EndForEachNode;
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
@@ -40,7 +40,7 @@ import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 
 public class EndForEachConfigurationDialog {
 
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
 
     private EndForEachNode node;
 
@@ -58,8 +58,8 @@ public class EndForEachConfigurationDialog {
      * @param node
      * @param engine
      */
-    public EndForEachConfigurationDialog(EndForEachNode node, XBayaEngine engine) {
-        this.engine = engine;
+    public EndForEachConfigurationDialog(EndForEachNode node, XBayaGUI xbayaGUI) {
+        this.xbayaGUI=xbayaGUI;
         this.node = node;
         initGui();
     }
@@ -105,11 +105,11 @@ public class EndForEachConfigurationDialog {
                 // Do nothing.
             }
         } catch (GraphException e) {
-            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+            this.xbayaGUI.getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         }
 
         hide();
-        this.engine.getGUI().getGraphCanvas().repaint();
+        this.xbayaGUI.getGraphCanvas().repaint();
     }
 
     /**
@@ -155,7 +155,7 @@ public class EndForEachConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "EndForEach Configuration", gridPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.xbayaGUI, "EndForEach Configuration", gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

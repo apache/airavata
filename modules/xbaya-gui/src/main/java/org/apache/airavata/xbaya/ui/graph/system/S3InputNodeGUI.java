@@ -24,7 +24,7 @@ package org.apache.airavata.xbaya.ui.graph.system;
 import java.awt.Color;
 
 import org.apache.airavata.workflow.model.graph.system.S3InputNode;
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.graph.system.S3FileChooser;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 
@@ -54,13 +54,13 @@ public class S3InputNodeGUI extends ConfigurableNodeGUI {
      * @param engine
      */
     @Override
-    protected void showConfigurationDialog(XBayaEngine engine) {
+    protected void showConfigurationDialog(XBayaGUI xbayaGUI) {
 
         if (!this.inputNode.isConnected()) {
-            engine.getGUI().getErrorWindow().info(ErrorMessages.INPUT_NOT_CONNECTED_WARNING);
+        	xbayaGUI.getErrorWindow().info(ErrorMessages.INPUT_NOT_CONNECTED_WARNING);
         } else {
             if (this.s3FileChooser == null) {
-                this.s3FileChooser = new S3FileChooser(engine, this.inputNode);
+                this.s3FileChooser = new S3FileChooser(xbayaGUI, this.inputNode);
             }
             this.s3FileChooser.show();
         }

@@ -12,8 +12,8 @@ import java.util.List;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.system.DifferedInputNode;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 
 /**
  * @author Chathura Herath
@@ -21,7 +21,7 @@ import org.apache.airavata.xbaya.graph.controller.NodeController;
 public class DifferedInputHandler {
 	
 	
-	public static void handleDifferredInputsofDependentNodes(Node node, final XBayaEngine engine){
+	public static void handleDifferredInputsofDependentNodes(Node node, final XBayaGUI xbayaGUI){
 		List<DataPort> inputPorts = node.getInputPorts();
 		for (DataPort dataPort : inputPorts) {
 			Node fromNode = dataPort.getFromNode();
@@ -34,7 +34,7 @@ public class DifferedInputHandler {
 						
 						@Override
 						public void run() {
-							((DifferedInputNodeGUI)NodeController.getGUI(differedInputNode)).showConfigurationDialog(engine );
+							((DifferedInputNodeGUI)NodeController.getGUI(differedInputNode)).showConfigurationDialog(xbayaGUI);
 						}
 					};
 					new Thread(task).start();

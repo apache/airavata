@@ -24,8 +24,10 @@ package org.apache.airavata.xbaya.interpreter;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.interpreter.utils.WorkflowTestUtils;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
+import org.apache.airavata.xbaya.interpretor.WorkflowInterpreterConfiguration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.MethodRule;
@@ -55,7 +57,9 @@ public class WorkflowTest{
         URL systemResource = this.getClass().getClassLoader().getSystemResource("SimpleEcho.xwf");
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
         ((InputNode) workflow.getGraph().getNode("input")).setDefaultValue("1");
-        WorkflowInterpreter interpretor = new WorkflowInterpreter(WorkflowTestUtils.getConfiguration(), UUID.randomUUID().toString(),
+        XBayaConfiguration conf = WorkflowTestUtils.getConfiguration();
+        WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, null,null,null);
+        WorkflowInterpreter interpretor = new WorkflowInterpreter(workflowInterpreterConfiguration, UUID.randomUUID().toString(),
                 workflow, "NA", "NA",true);
         interpretor.scheduleDynamically();
     }

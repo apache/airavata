@@ -50,7 +50,7 @@ public class MonitorStarter implements Cancelable {
         this.engine = engine;
 
         this.startingDialog = new WaitDialog(this, "Starting Monitoring", "Subscribing to notification.\n"
-                + "Please wait for a moment.", this.engine);
+                + "Please wait for a moment.", this.engine.getGUI());
     }
 
     /**

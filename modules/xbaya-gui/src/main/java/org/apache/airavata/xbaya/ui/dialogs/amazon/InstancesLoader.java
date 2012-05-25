@@ -57,7 +57,7 @@ public class InstancesLoader implements Cancelable {
         this.engine = engine;
         this.parent = parent;
         this.loadingDialog = new WaitDialog(this, "Loading EC2 Instances.", "Loading EC2 Instances.\n"
-                + "Please wait for a moment.", this.engine);
+                + "Please wait for a moment.", this.engine.getGUI());
     }
 
     /**

@@ -30,8 +30,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.graph.system.ConstantNode;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.lead.LEADTypes;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
@@ -42,7 +42,7 @@ import org.xmlpull.infoset.XmlElement;
 
 public class ConstantConfigurationDialog {
 
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
 
     private ConstantNode node;
 
@@ -68,8 +68,8 @@ public class ConstantConfigurationDialog {
      * @param node
      * @param engine
      */
-    public ConstantConfigurationDialog(ConstantNode node, XBayaEngine engine) {
-        this.engine = engine;
+    public ConstantConfigurationDialog(ConstantNode node, XBayaGUI xbayaGUI) {
+        this.xbayaGUI=xbayaGUI;
         this.node = node;
         initGui();
     }
@@ -130,7 +130,7 @@ public class ConstantConfigurationDialog {
 
         if (name.length() == 0) {
             String warning = "The name cannot be empty.";
-            this.engine.getGUI().getErrorWindow().error(warning);
+            this.xbayaGUI.getErrorWindow().error(warning);
             return;
         }
         Object value = null;
@@ -138,7 +138,7 @@ public class ConstantConfigurationDialog {
             if (LEADTypes.isKnownType(type)) {
                 if (!this.node.isInputValid(valueString)) {
                     String warning = "The defalut value is not valid for " + this.node.getType() + ".";
-                    this.engine.getGUI().getErrorWindow().error(warning);
+                    this.xbayaGUI.getErrorWindow().error(warning);
                 }
                 value = valueString;
             } else {
@@ -146,7 +146,7 @@ public class ConstantConfigurationDialog {
                     value = XMLUtil.stringToXmlElement(valueString);
                 } catch (RuntimeException e) {
                     String warning = "The XML for the default value is not valid.";
-                    this.engine.getGUI().getErrorWindow().error(warning, e);
+                    this.xbayaGUI.getErrorWindow().error(warning, e);
                 }
             }
         }
@@ -154,7 +154,7 @@ public class ConstantConfigurationDialog {
         this.node.setName(name);
         this.node.setValue(value);
         hide();
-        this.engine.getGUI().getGraphCanvas().repaint();
+        this.xbayaGUI.getGraphCanvas().repaint();
     }
 
     /**
@@ -206,7 +206,7 @@ public class ConstantConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "Constant Configuration", this.gridPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.xbayaGUI, "Constant Configuration", this.gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 

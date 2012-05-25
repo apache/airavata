@@ -31,6 +31,8 @@ import java.awt.event.MouseEvent;
 
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.monitor.Monitor;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.graph.ws.ServiceInteractionWindow;
 import org.apache.airavata.xbaya.ui.dialogs.graph.ws.WSNodeWindow;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
@@ -76,8 +78,8 @@ public class WSNodeGUI extends NodeGUI {
         this.window.show();
     }
 
-    protected void showConfigurationDialog(XBayaEngine engine) {
-        new ServiceInteractionWindow(engine, this.node.getID()).show();
+    protected void showConfigurationDialog(XBayaGUI xbayaGUI, Monitor monitor) {
+        new ServiceInteractionWindow(xbayaGUI, this.node.getID(),monitor).show();
 
     }
 
@@ -106,7 +108,7 @@ public class WSNodeGUI extends NodeGUI {
         if (event.getClickCount() >= 2) {
             showWindow(engine);
         } else if (this.interactiveMode && (isInteractable()) && isInConfig(event.getPoint())) {
-            showConfigurationDialog(engine);
+            showConfigurationDialog(engine.getGUI(),engine.getMonitor());
         }
     }
 

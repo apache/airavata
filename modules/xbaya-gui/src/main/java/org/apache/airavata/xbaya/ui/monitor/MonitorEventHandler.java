@@ -35,12 +35,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.airavata.common.utils.WSDLUtil;
-import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.graph.ControlPort;
 import org.apache.airavata.workflow.model.graph.EPRPort;
 import org.apache.airavata.workflow.model.graph.Edge;
 import org.apache.airavata.workflow.model.graph.Graph;
-import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
@@ -50,17 +48,14 @@ import org.apache.airavata.workflow.model.graph.system.OutputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.monitor.MonitorEvent;
 import org.apache.airavata.xbaya.monitor.MonitorEventData;
 import org.apache.airavata.xbaya.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.monitor.MonitorUtil.EventType;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
-import org.apache.airavata.xbaya.workflow.WorkflowClient;
-import org.apache.airavata.xbaya.workflow.WorkflowClient.WorkflowType;
-import org.apache.airavata.xbaya.workflow.WorkflowEngineException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
@@ -99,7 +94,7 @@ public class MonitorEventHandler implements ChangeListener {
 
     private static Logger logger = LoggerFactory.getLogger(MonitorEventHandler.class);
 
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
 
     private int sliderValue;
 
@@ -115,8 +110,8 @@ public class MonitorEventHandler implements ChangeListener {
      * @param engine
      * @param dataModel
      */
-    public MonitorEventHandler(XBayaEngine engine) {
-        this.engine = engine;
+    public MonitorEventHandler(XBayaGUI xbayaGUI) {
+        this.xbayaGUI=xbayaGUI;
         this.incorrectWorkflowIDs = Collections.synchronizedSet(new HashSet<URI>());
         this.triedWorkflowIDs = Collections.synchronizedSet(new HashSet<URI>());
         this.resourcePaintableMap = new HashMap<Node, LinkedList<ResourcePaintable>>();
@@ -163,14 +158,14 @@ public class MonitorEventHandler implements ChangeListener {
         this.sliderValue = newValue;
 
         // Repaints only the active canvas.
-        this.engine.getGUI().getGraphCanvas().repaint();
+        this.xbayaGUI.getGraphCanvas().repaint();
     }
 
     private void handleEvent(MonitorEvent event, boolean forward) {
         EventType type = event.getType();
         URI workflowID = event.getWorkflowID();
 
-        List<GraphCanvas> graphCanvases = this.engine.getGUI().getGraphCanvases();
+        List<GraphCanvas> graphCanvases = this.xbayaGUI.getGraphCanvases();
         boolean found = false;
         for (GraphCanvas graphCanvas : graphCanvases) {
             Workflow workflow = graphCanvas.getWorkflow();
@@ -420,19 +415,20 @@ public class MonitorEventHandler implements ChangeListener {
                 // Do not try to load a workflow that failed before.
                 return;
             }
-            WorkflowClient client = this.engine.getWorkflowClient();
-            Workflow loadedWorkflow = client.load(workflowInstanceID, WorkflowType.INSTANCE);
-            GraphCanvas canvas = this.engine.getGUI().newGraphCanvas(true);
-            canvas.setWorkflow(loadedWorkflow);
-        } catch (GraphException e) {
-            this.incorrectWorkflowIDs.add(workflowInstanceID);
-            logger.error(e.getMessage(), e);
-        } catch (WorkflowEngineException e) {
-            this.incorrectWorkflowIDs.add(workflowInstanceID);
-            logger.error(e.getMessage(), e);
-        } catch (ComponentException e) {
-            this.incorrectWorkflowIDs.add(workflowInstanceID);
-            logger.error(e.getMessage(), e);
+            //There is not workflow client assigned in the engine. thus the following code is commented
+//            WorkflowClient client = this.engine.getWorkflowClient();
+//            Workflow loadedWorkflow = client.load(workflowInstanceID, WorkflowType.INSTANCE);
+//            GraphCanvas canvas = this.xbayaGUI.newGraphCanvas(true);
+//            canvas.setWorkflow(loadedWorkflow);
+//        } catch (GraphException e) {
+//            this.incorrectWorkflowIDs.add(workflowInstanceID);
+//            logger.error(e.getMessage(), e);
+//        } catch (WorkflowEngineException e) {
+//            this.incorrectWorkflowIDs.add(workflowInstanceID);
+//            logger.error(e.getMessage(), e);
+//        } catch (ComponentException e) {
+//            this.incorrectWorkflowIDs.add(workflowInstanceID);
+//            logger.error(e.getMessage(), e);
         } catch (RuntimeException e) {
             this.incorrectWorkflowIDs.add(workflowInstanceID);
             logger.error(e.getMessage(), e);
@@ -528,7 +524,7 @@ public class MonitorEventHandler implements ChangeListener {
     }
 
     private void resetAll() {
-        List<GraphCanvas> graphCanvases = this.engine.getGUI().getGraphCanvases();
+        List<GraphCanvas> graphCanvases = this.xbayaGUI.getGraphCanvases();
         for (GraphCanvas graphCanvas : graphCanvases) {
             Graph graph = graphCanvas.getGraph();
             for (Node node : graph.getNodes()) {

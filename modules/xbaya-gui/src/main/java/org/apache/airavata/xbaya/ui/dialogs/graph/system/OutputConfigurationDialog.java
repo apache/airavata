@@ -30,7 +30,7 @@ import javax.swing.JPanel;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.graph.system.OutputNode;
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
@@ -40,7 +40,7 @@ import org.xmlpull.infoset.XmlElement;
 
 public class OutputConfigurationDialog {
 
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
 
     private OutputNode node;
 
@@ -58,8 +58,8 @@ public class OutputConfigurationDialog {
      * @param node
      * @param engine
      */
-    public OutputConfigurationDialog(OutputNode node, XBayaEngine engine) {
-        this.engine = engine;
+    public OutputConfigurationDialog(OutputNode node, XBayaGUI xbayaGUI) {
+        this.xbayaGUI=xbayaGUI;
         this.node = node;
         initGui();
     }
@@ -101,7 +101,7 @@ public class OutputConfigurationDialog {
 
         if (name.length() == 0) {
             String warning = "The name cannot be empty.";
-            this.engine.getGUI().getErrorWindow().error(warning);
+            this.xbayaGUI.getErrorWindow().error(warning);
             return;
         }
 
@@ -113,7 +113,7 @@ public class OutputConfigurationDialog {
                 metadata = XMLUtil.stringToXmlElement(metadataText);
             } catch (RuntimeException e) {
                 String warning = "The metadata is ill-formed.";
-                this.engine.getGUI().getErrorWindow().error(warning, e);
+                this.xbayaGUI.getErrorWindow().error(warning, e);
                 return;
             }
         }
@@ -123,7 +123,7 @@ public class OutputConfigurationDialog {
         this.node.setDescription(description);
         this.node.setMetadata(metadata);
         hide();
-        this.engine.getGUI().getGraphCanvas().repaint();
+        this.xbayaGUI.getGraphCanvas().repaint();
     }
 
     /**
@@ -166,7 +166,7 @@ public class OutputConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "Input Parameter Configuration", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.xbayaGUI, "Input Parameter Configuration", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

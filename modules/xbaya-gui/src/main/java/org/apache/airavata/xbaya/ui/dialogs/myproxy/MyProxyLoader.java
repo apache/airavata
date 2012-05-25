@@ -51,7 +51,7 @@ public class MyProxyLoader implements Cancelable {
         this.engine = engine;
 
         this.waitDialog = new WaitDialog(this, "Loading Proxy", "Loading a proxy.\n" + "Please wait for a moment.",
-                this.engine);
+                this.engine.getGUI());
     }
 
     /**

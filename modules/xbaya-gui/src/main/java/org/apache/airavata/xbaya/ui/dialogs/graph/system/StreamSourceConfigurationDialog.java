@@ -28,7 +28,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.apache.airavata.workflow.model.graph.system.StreamSourceNode;
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
@@ -36,7 +36,7 @@ import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 
 public class StreamSourceConfigurationDialog {
 
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
 
     private StreamSourceNode node;
 
@@ -58,8 +58,8 @@ public class StreamSourceConfigurationDialog {
      * @param node
      * @param engine
      */
-    public StreamSourceConfigurationDialog(StreamSourceNode node, XBayaEngine engine) {
-        this.engine = engine;
+    public StreamSourceConfigurationDialog(StreamSourceNode node, XBayaGUI xbayaGUI) {
+        this.xbayaGUI = xbayaGUI;
         this.node = node;
         initGui();
     }
@@ -84,7 +84,7 @@ public class StreamSourceConfigurationDialog {
         this.node.setConfigured(true);
         this.node.setDescription(this.descriptionTextField.getText());
         hide();
-        this.engine.getGUI().getGraphCanvas().repaint();
+        this.xbayaGUI.getGraphCanvas().repaint();
     }
 
     /**
@@ -122,7 +122,7 @@ public class StreamSourceConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "Configure Streaming Data source", this.gridPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.xbayaGUI, "Configure Streaming Data source", this.gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 

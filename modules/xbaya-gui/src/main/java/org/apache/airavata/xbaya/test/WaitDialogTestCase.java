@@ -49,7 +49,7 @@ public class WaitDialogTestCase extends XBayaTestCase {
                 // Nothing
             }
         };
-        final WaitDialog dialog = new WaitDialog(cancelable, "title", "message", engine);
+        final WaitDialog dialog = new WaitDialog(cancelable, "title", "message", engine.getGUI());
         Thread showThread = new Thread() {
             @Override
             public void run() {
@@ -77,7 +77,7 @@ public class WaitDialogTestCase extends XBayaTestCase {
                 // Nothing
             }
         };
-        final WaitDialog dialog = new WaitDialog(cancelable, "title", "message", engine);
+        final WaitDialog dialog = new WaitDialog(cancelable, "title", "message", engine.getGUI());
         Thread showThread1 = new Thread() {
             @Override
             public void run() {
@@ -125,7 +125,7 @@ public class WaitDialogTestCase extends XBayaTestCase {
                 // Nothing
             }
         };
-        final WaitDialog dialog = new WaitDialog(cancelable, "title", "message", engine);
+        final WaitDialog dialog = new WaitDialog(cancelable, "title", "message", engine.getGUI());
         Thread showThread1 = new Thread() {
             @Override
             public void run() {
@@ -186,7 +186,7 @@ public class WaitDialogTestCase extends XBayaTestCase {
                 // Nothing
             }
         };
-        final WaitDialog dialog = new WaitDialog(cancelable, "title", "message", engine);
+        final WaitDialog dialog = new WaitDialog(cancelable, "title", "message", engine.getGUI());
         Thread showThread1 = new Thread() {
             @Override
             public void run() {
@@ -233,7 +233,7 @@ public class WaitDialogTestCase extends XBayaTestCase {
                 // Nothing
             }
         };
-        final WaitDialog dialog = new WaitDialog(cancelable, "title", "message", engine);
+        final WaitDialog dialog = new WaitDialog(cancelable, "title", "message", engine.getGUI());
         Thread showThread1 = new Thread() {
             @Override
             public void run() {

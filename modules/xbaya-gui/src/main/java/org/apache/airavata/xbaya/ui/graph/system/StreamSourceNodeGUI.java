@@ -24,7 +24,7 @@ package org.apache.airavata.xbaya.ui.graph.system;
 import java.awt.Color;
 
 import org.apache.airavata.workflow.model.graph.system.StreamSourceNode;
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.graph.system.StreamSourceConfigurationDialog;
 
 public class StreamSourceNodeGUI extends ConfigurableNodeGUI {
@@ -54,9 +54,9 @@ public class StreamSourceNodeGUI extends ConfigurableNodeGUI {
      * @param engine
      */
     @Override
-    protected void showConfigurationDialog(XBayaEngine engine) {
+    protected void showConfigurationDialog(XBayaGUI xbayaGUI) {
         if (this.configurationWindow == null) {
-            this.configurationWindow = new StreamSourceConfigurationDialog(this.inputNode, engine);
+            this.configurationWindow = new StreamSourceConfigurationDialog(this.inputNode, xbayaGUI);
         }
         this.configurationWindow.show();
     }

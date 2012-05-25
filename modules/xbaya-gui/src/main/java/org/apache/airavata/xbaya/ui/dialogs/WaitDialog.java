@@ -33,7 +33,7 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.utils.Cancelable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class WaitDialog {
 
     private static final Logger logger = LoggerFactory.getLogger(WaitDialog.class);
 
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
 
     private Cancelable cancelable;
 
@@ -62,11 +62,11 @@ public class WaitDialog {
      * @param message
      * @param engine
      */
-    public WaitDialog(Cancelable cancelable, String title, String message, XBayaEngine engine) {
+    public WaitDialog(Cancelable cancelable, String title, String message, XBayaGUI xbayaGUI) {
         this.cancelable = cancelable;
         this.title = title;
         this.message = message;
-        this.engine = engine;
+        this.xbayaGUI = xbayaGUI;
         this.done = true;
     }
 
@@ -121,7 +121,7 @@ public class WaitDialog {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), this.title, label, buttonPanel);
+        this.dialog = new XBayaDialog(this.xbayaGUI, this.title, label, buttonPanel);
 
         this.dialog.getDialog().setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         this.dialog.getDialog().setCursor(SwingUtil.WAIT_CURSOR);

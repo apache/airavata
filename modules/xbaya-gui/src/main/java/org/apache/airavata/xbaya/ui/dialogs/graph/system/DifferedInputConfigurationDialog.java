@@ -17,9 +17,9 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.graph.system.DifferedInputNode;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.lead.LEADTypes;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.graph.system.DifferedInputNodeGUI;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
@@ -34,7 +34,7 @@ import org.xmlpull.infoset.XmlElement;
  * @author Chathura Herath
  */
 public class DifferedInputConfigurationDialog {
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
 
     private DifferedInputNode node;
 
@@ -60,8 +60,8 @@ public class DifferedInputConfigurationDialog {
      * @param node
      * @param engine
      */
-    public DifferedInputConfigurationDialog(DifferedInputNode node, XBayaEngine engine) {
-        this.engine = engine;
+    public DifferedInputConfigurationDialog(DifferedInputNode node, XBayaGUI xbayaGUI) {
+        this.xbayaGUI=xbayaGUI;
         this.node = node;
         initGui();
     }
@@ -148,7 +148,7 @@ public class DifferedInputConfigurationDialog {
 
         if (name.length() == 0) {
             String warning = "The name cannot be empty.";
-            this.engine.getGUI().getErrorWindow().error(warning);
+            this.xbayaGUI.getErrorWindow().error(warning);
             return;
         }
         Object value = null;
@@ -157,7 +157,7 @@ public class DifferedInputConfigurationDialog {
                 if (!this.node.isInputValid(valueString)) {
                     String warning = "The defalut value is not valid for "
                             + this.node.getParameterType() + ".";
-                    this.engine.getGUI().getErrorWindow().error(warning);
+                    this.xbayaGUI.getErrorWindow().error(warning);
                 }
                 value = valueString;
             } else {
@@ -165,7 +165,7 @@ public class DifferedInputConfigurationDialog {
                     value = XMLUtil.stringToXmlElement(valueString);
                 } catch (RuntimeException e) {
                     String warning = "The XML for the default value is not valid.";
-                    this.engine.getGUI().getErrorWindow().error(warning, e);
+                    this.xbayaGUI.getErrorWindow().error(warning, e);
                 }
             }
         }
@@ -177,7 +177,7 @@ public class DifferedInputConfigurationDialog {
                 metadata = XMLUtil.stringToXmlElement(metadataText);
             } catch (RuntimeException e) {
                 String warning = "The metadata is ill-formed.";
-                this.engine.getGUI().getErrorWindow().error(warning, e);
+                this.xbayaGUI.getErrorWindow().error(warning, e);
                 return;
             }
         }
@@ -190,7 +190,7 @@ public class DifferedInputConfigurationDialog {
         NodeController.getGUI(this.node).setBodyColor(NodeState.FINISHED.color);
         
         hide();
-        this.engine.getGUI().getGraphCanvas().repaint();
+        this.xbayaGUI.getGraphCanvas().repaint();
     }
 
     /**
@@ -244,7 +244,7 @@ public class DifferedInputConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(),
+        this.dialog = new XBayaDialog(this.xbayaGUI,
                 "Input Parameter Configuration", this.gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }

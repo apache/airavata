@@ -55,7 +55,7 @@ public class S3Downloader implements Cancelable {
         this.engine = engine;
         this.parent = parent;
         this.loadingDialog = new WaitDialog(this, "Downloading file from S3.", "Downloading file from S3.\n"
-                + "Please wait for a moment.", this.engine);
+                + "Please wait for a moment.", this.engine.getGUI());
     }
 
     /**

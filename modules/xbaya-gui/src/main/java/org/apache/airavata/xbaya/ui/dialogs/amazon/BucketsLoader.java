@@ -25,7 +25,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.utils.Cancelable;
 import org.apache.airavata.xbaya.ui.widgets.amazon.S3Tree;
@@ -37,7 +37,7 @@ import org.jets3t.service.model.S3Object;
 
 public class BucketsLoader implements Cancelable {
 
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
     private JDialog parent;
 
     private boolean canceled;
@@ -50,11 +50,11 @@ public class BucketsLoader implements Cancelable {
      * @param engine
      * @param parent
      */
-    public BucketsLoader(XBayaEngine engine, JDialog parent) {
-        this.engine = engine;
+    public BucketsLoader(XBayaGUI xbayaGUI, JDialog parent) {
+        this.xbayaGUI=xbayaGUI;
         this.parent = parent;
         this.loadingDialog = new WaitDialog(this, "Loading S3 Buckets.", "Loading S3 Buckets.\n"
-                + "Please wait for a moment.", this.engine);
+                + "Please wait for a moment.", this.xbayaGUI);
     }
 
     /**
@@ -111,7 +111,7 @@ public class BucketsLoader implements Cancelable {
                     S3TreeModel.getInstance().connect();
 
                 } catch (S3ServiceException ex) {
-                    BucketsLoader.this.engine.getGUI().getErrorWindow().error(BucketsLoader.this.parent,
+                    BucketsLoader.this.xbayaGUI.getErrorWindow().error(BucketsLoader.this.parent,
                             "Cannot List S3 buckets", ex);
                 } finally {
                     BucketsLoader.this.loadingDialog.hide();

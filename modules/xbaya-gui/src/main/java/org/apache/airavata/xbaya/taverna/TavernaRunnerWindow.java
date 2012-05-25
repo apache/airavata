@@ -40,13 +40,17 @@ import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.interpretor.GUIWorkflowInterpreterInteractorImpl;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
+import org.apache.airavata.xbaya.interpretor.WorkflowInterpreterConfiguration;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.scufl.script.ScuflScript;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
+import org.apache.airavata.xbaya.ui.utils.MyProxyChecker;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
@@ -264,7 +268,12 @@ public class TavernaRunnerWindow {
                     MonitorConfiguration notifConfig = TavernaRunnerWindow.this.engine.getMonitor().getConfiguration();
                     TavernaRunnerWindow.this.engine.getMonitor().start();
                     notifConfig.setTopic(topicString);
-                    new WorkflowInterpreter(TavernaRunnerWindow.this.engine, topicString).scheduleDynamically();
+                    XBayaConfiguration conf = TavernaRunnerWindow.this.engine.getConfiguration();
+                    WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, TavernaRunnerWindow.this.engine.getGUI(), new MyProxyChecker(TavernaRunnerWindow.this.engine), TavernaRunnerWindow.this.engine.getMonitor());
+
+                    WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, topicString, new GUIWorkflowInterpreterInteractorImpl(engine, engine.getGUI().getWorkflow()));
+                    TavernaRunnerWindow.this.engine.registerWorkflowInterpreter(workflowInterpreter);
+					workflowInterpreter.scheduleDynamically();
                 } catch (WorkflowException e) {
                     TavernaRunnerWindow.this.engine.getGUI().getErrorWindow().error(e);
                 }
