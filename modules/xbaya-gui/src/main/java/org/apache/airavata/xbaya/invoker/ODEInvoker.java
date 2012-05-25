@@ -65,7 +65,7 @@ public class ODEInvoker implements Cancelable {
         this.engine = engine;
 
         this.invokingDialog = new WaitDialog(this, "Invoking the Workflow.", "Invoking the Workflow."
-                + "Please wait for a moment.", this.engine);
+                + "Please wait for a moment.", this.engine.getGUI());
     }
 
     /**

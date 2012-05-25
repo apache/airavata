@@ -21,11 +21,25 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.jcr.RepositoryException;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.registry.api.impl.JCRRegistry;
@@ -46,32 +60,16 @@ import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
 import org.apache.airavata.xbaya.monitor.MonitorException;
-import org.apache.airavata.xbaya.workflow.proxy.WorkflowContext;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
-import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.ServiceLifeCycle;
 import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import xsul5.MLogger;
 
-import javax.jcr.RepositoryException;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
+import xsul5.MLogger;
 
 /**
  * WorkflowInterpretorSkeleton java skeleton for the axisService
@@ -254,9 +252,10 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         WorkflowInterpretorEventListener listener = null;
         WorkflowInterpreter interpreter = null;
+        WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, null, null, null);
         if (Boolean.parseBoolean(configurations.get(WITH_LISTENER))) {
             listener = new WorkflowInterpretorEventListener(workflow, conf);
-            interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password);
+            interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, topic, workflow, username, password, new SSWorkflowInterpreterInteractorImpl(workflow));
 
             try {
                 System.err.println("start listener set");
@@ -265,7 +264,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                 e1.printStackTrace();
             }
         } else {
-            interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password, true);
+            interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, topic, workflow, username, password, true);
         }
 
         WorkflowContextHeaderBuilder.setCurrentContextHeader(builder.getContextHeader());

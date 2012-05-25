@@ -68,7 +68,7 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
         this.setEngine(engine);
 
         this.loadingDialog = new WaitDialog(this, "Loading a Component List.", "Loading a Component List. "
-                + "Please wait for a moment.", this.getEngine());
+                + "Please wait for a moment.", this.getEngine().getGUI());
         getEngine().getConfiguration().addObserver(this);
     }
 

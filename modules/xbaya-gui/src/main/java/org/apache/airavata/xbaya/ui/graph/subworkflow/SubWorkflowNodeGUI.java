@@ -29,6 +29,7 @@ import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.slf4j.Logger;
@@ -61,7 +62,7 @@ public class SubWorkflowNodeGUI extends NodeGUI {
     public void mouseClicked(MouseEvent event, XBayaEngine engine) {
         logger.info(event.toString());
         if (event.getClickCount() >= 2) {
-            openWorkflowTab(engine);
+            openWorkflowTab(engine.getGUI());
         }
     }
 
@@ -74,14 +75,14 @@ public class SubWorkflowNodeGUI extends NodeGUI {
         }
     }
 
-    public void openWorkflowTab(XBayaEngine engine) {
+    public void openWorkflowTab(XBayaGUI xbayaGUI) {
         try {
             Workflow workflow = this.node.getComponent().getWorkflow();
-            engine.getGUI().selectOrCreateGraphCanvas(workflow);
+            xbayaGUI.selectOrCreateGraphCanvas(workflow);
         } catch (GraphException e) {
-            engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
+        	xbayaGUI.getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
         } catch (ComponentException e) {
-            engine.getGUI().getErrorWindow().error(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
+        	xbayaGUI.getErrorWindow().error(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
         }
     }
 

@@ -29,8 +29,8 @@ import java.awt.Rectangle;
 
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.system.ReceiveNode;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.graph.system.ReceiveConfigurationDialog;
 
 public class ReceiveNodeGUI extends ConfigurableNodeGUI {
@@ -56,9 +56,9 @@ public class ReceiveNodeGUI extends ConfigurableNodeGUI {
      * @param engine
      */
     @Override
-    protected void showConfigurationDialog(XBayaEngine engine) {
+    protected void showConfigurationDialog(XBayaGUI xbayaGUI) {
         if (this.configurationDialog == null) {
-            this.configurationDialog = new ReceiveConfigurationDialog(this.node, engine);
+            this.configurationDialog = new ReceiveConfigurationDialog(this.node, xbayaGUI);
         }
         this.configurationDialog.show();
     }

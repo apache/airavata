@@ -27,7 +27,8 @@ import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.monitor.Monitor;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.views.MonitorPanel;
@@ -38,7 +39,7 @@ import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 
 public class ServiceInteractionWindow {
 
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
 
     private XBayaDialog dialog;
 
@@ -50,9 +51,12 @@ public class ServiceInteractionWindow {
 
     private String nodeID;
 
-    public ServiceInteractionWindow(XBayaEngine engine, String nodeID) {
-        this.engine = engine;
+    private Monitor monitor;
+    
+    public ServiceInteractionWindow(XBayaGUI xbayaGUI, String nodeID, Monitor monitor) {
+        this.xbayaGUI=xbayaGUI;
         this.nodeID = nodeID;
+        this.monitor=monitor;
         initGui();
     }
 
@@ -63,7 +67,7 @@ public class ServiceInteractionWindow {
 
         GridPanel mainPanel = new GridPanel();
 
-        MonitorPanel monitorPanel = new MonitorPanel(this.engine, this.nodeID);
+        MonitorPanel monitorPanel = new MonitorPanel(this.xbayaGUI, this.nodeID, monitor);
         this.consoleTextArea = new XBayaTextArea();
         XBayaLabel consoleLabel = new XBayaLabel("Console", this.consoleTextArea);
 
@@ -102,7 +106,7 @@ public class ServiceInteractionWindow {
         buttonPanel.add(sendButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "Deploy workflow to ODE and Registry", mainPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.xbayaGUI, "Deploy workflow to ODE and Registry", mainPanel, buttonPanel);
         this.dialog.setDefaultButton(sendButton);
 
     }

@@ -50,7 +50,7 @@ public class S3Uploader implements Cancelable {
         this.engine = engine;
         this.parent = parent;
         this.loadingDialog = new WaitDialog(this, "Uploading file to S3.", "Uploading file to S3.\n"
-                + "Please wait for a moment.", this.engine);
+                + "Please wait for a moment.", this.engine.getGUI());
     }
 
     /**

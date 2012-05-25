@@ -42,9 +42,10 @@ import javax.swing.table.TableColumnModel;
 
 import org.apache.airavata.common.utils.BrowserLauncher;
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.monitor.MonitorEventData;
 import org.apache.airavata.xbaya.monitor.MonitorUtil;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.monitor.MonitorWindow;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler;
 import org.apache.airavata.xbaya.ui.widgets.XBayaComponent;
@@ -57,7 +58,7 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
      */
     public static final String TITLE = "Monitoring";
 
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
 
     private MonitorEventData tableSliderModel;
 
@@ -75,8 +76,8 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
      * 
      * @param engine
      */
-    public MonitorPanel(XBayaEngine engine) {
-        this(engine, null);
+    public MonitorPanel(XBayaGUI xbayaGUI, Monitor monitor) {
+        this(xbayaGUI, null, monitor);
     }
 
     /**
@@ -85,18 +86,18 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
      * @param engine
      *            The XBayaEngine.
      */
-    public MonitorPanel(XBayaEngine engine, String nodeID) {
-        this.engine = engine;
+    public MonitorPanel(XBayaGUI xbayaGUI, String nodeID, Monitor monitor) {
+        this.xbayaGUI=xbayaGUI;
         if (null == nodeID) {
-            this.tableSliderModel = this.engine.getMonitor().getEventData();
+            this.tableSliderModel = monitor.getEventData();
         } else {
-            this.tableSliderModel = this.engine.getMonitor().getEventData(nodeID);
+            this.tableSliderModel = monitor.getEventData(nodeID);
         }
         init();
         this.tableSliderModel.addTableModelListener(this);
 
         // Also create a handler to change colors of graphs here.
-        MonitorEventHandler eventHandler = new MonitorEventHandler(this.engine);
+        MonitorEventHandler eventHandler = new MonitorEventHandler(this.xbayaGUI);
         this.tableSliderModel.addChangeListener(eventHandler);
     }
 
@@ -198,7 +199,7 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
                                 try {
                                     BrowserLauncher.openURL(url);
                                 } catch (Exception e) {
-                                    MonitorPanel.this.engine.getGUI().getErrorWindow().error(e.getMessage(), e);
+                                    MonitorPanel.this.xbayaGUI.getErrorWindow().error(e.getMessage(), e);
                                 }
                             }
                         } else if (MonitorUtil.getType(message) == MonitorUtil.EventType.SENDING_RESULT) {
@@ -233,7 +234,7 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
                     } else if (clickCount >= 2) {
                         // Handle double clicks to pop up a window.
                         if (this.window == null) {
-                            this.window = new MonitorWindow(MonitorPanel.this.engine);
+                            this.window = new MonitorWindow(MonitorPanel.this.xbayaGUI);
                         }
                         this.window.show(message);
                     }

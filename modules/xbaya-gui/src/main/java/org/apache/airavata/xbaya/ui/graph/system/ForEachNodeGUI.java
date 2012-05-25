@@ -30,8 +30,8 @@ import java.awt.Rectangle;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.impl.PortImpl;
 import org.apache.airavata.workflow.model.graph.system.ForEachNode;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.graph.system.ForEachConfigurationDialog;
 
 public class ForEachNodeGUI extends ConfigurableNodeGUI {
@@ -60,9 +60,9 @@ public class ForEachNodeGUI extends ConfigurableNodeGUI {
      * @param engine
      */
     @Override
-    protected void showConfigurationDialog(XBayaEngine engine) {
+    protected void showConfigurationDialog(XBayaGUI xbayaGUI) {
         if (this.configurationWindow == null) {
-            this.configurationWindow = new ForEachConfigurationDialog(this.node, engine);
+            this.configurationWindow = new ForEachConfigurationDialog(this.node, xbayaGUI);
         }
         this.configurationWindow.show();
     }

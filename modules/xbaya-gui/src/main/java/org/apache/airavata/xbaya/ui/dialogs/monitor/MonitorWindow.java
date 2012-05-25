@@ -29,9 +29,9 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.monitor.MonitorEventData;
 import org.apache.airavata.xbaya.monitor.MonitorUtil;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
@@ -41,7 +41,7 @@ import org.xmlpull.infoset.XmlElement;
 
 public class MonitorWindow {
 
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
 
     private XBayaDialog dialog;
 
@@ -59,8 +59,8 @@ public class MonitorWindow {
      * @param engine
      *            The XBayaEngine
      */
-    public MonitorWindow(XBayaEngine engine) {
-        this.engine = engine;
+    public MonitorWindow(XBayaGUI xbayaGUI) {
+        this.xbayaGUI=xbayaGUI;
         init();
     }
 
@@ -127,7 +127,7 @@ public class MonitorWindow {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(okButton);
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "Notification", infoPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.xbayaGUI, "Notification", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

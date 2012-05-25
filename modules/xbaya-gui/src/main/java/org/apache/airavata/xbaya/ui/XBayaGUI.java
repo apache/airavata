@@ -566,7 +566,7 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
         this.componentViewer = new ComponentViewer();
         this.componentSelector = new ComponentSelector(this.engine);
         this.componentSelector.addComponentSelectorListener(this.componentViewer);
-        this.monitorPane = new MonitorPanel(this.engine);
+        this.monitorPane = new MonitorPanel(this.engine.getGUI(),this.engine.getMonitor());
 
         compTreeXBayapanel = new ScrollPanel(this.componentSelector, ComponentSelector.TITLE);
         ScrollPanel compViewXBayaPanel = new ScrollPanel(this.componentViewer, ComponentViewer.TITLE);
@@ -837,4 +837,8 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
         }
 
     }
+
+	public XBayaConfiguration getConfiguration() {
+		return engine.getConfiguration();
+	}
 }

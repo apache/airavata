@@ -31,6 +31,7 @@ import java.awt.event.MouseEvent;
 
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
 
 public abstract class ConfigurableNodeGUI extends NodeGUI {
@@ -72,14 +73,14 @@ public abstract class ConfigurableNodeGUI extends NodeGUI {
     @Override
     public void mouseClicked(MouseEvent event, XBayaEngine engine) {
         if (isInConfig(event.getPoint())) {
-            showConfigurationDialog(engine);
+            showConfigurationDialog(engine.getGUI());
         }
     }
 
     /**
      * @param engine
      */
-    protected abstract void showConfigurationDialog(XBayaEngine engine);
+    protected abstract void showConfigurationDialog(XBayaGUI xbayaGUI);
 
     /**
      * Checks if a user's click is to select the configuration

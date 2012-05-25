@@ -48,15 +48,19 @@ import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.ode.ODEClient;
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.interpretor.GUIWorkflowInterpreterInteractorImpl;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
+import org.apache.airavata.xbaya.interpretor.WorkflowInterpreterConfiguration;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.graph.ws.WSNodeGUI;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
+import org.apache.airavata.xbaya.ui.utils.MyProxyChecker;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
@@ -390,9 +394,12 @@ public class DynamicWorkflowRunnerWindow {
              */
             @Override
             public void run() {
+                XBayaConfiguration conf = DynamicWorkflowRunnerWindow.this.engine.getConfiguration();
+                WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, DynamicWorkflowRunnerWindow.this.engine.getGUI(), new MyProxyChecker(DynamicWorkflowRunnerWindow.this.engine), DynamicWorkflowRunnerWindow.this.engine.getMonitor());
 
                 WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(
-                        DynamicWorkflowRunnerWindow.this.engine, topicString);
+                		workflowInterpreterConfiguration, topicString, new GUIWorkflowInterpreterInteractorImpl(engine, engine.getGUI().getWorkflow()));
+                DynamicWorkflowRunnerWindow.this.engine.registerWorkflowInterpreter(workflowInterpreter);
                 workflowInterpreter.setRunWithCrossProduct(isRunCrossProduct);
                 try {
                     MonitorConfiguration notifConfig = DynamicWorkflowRunnerWindow.this.engine.getMonitor()

@@ -32,8 +32,8 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.airavata.workflow.model.graph.system.S3InputNode;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.amazon.AmazonCredential;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.dialogs.amazon.BucketsLoader;
 import org.apache.airavata.xbaya.ui.dialogs.amazon.ChangeCredentialWindow;
@@ -46,7 +46,7 @@ import org.jets3t.service.security.AWSCredentials;
 public class S3FileChooser implements TreeSelectionListener {
 
     private XBayaDialog dialog;
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
     protected S3InputNode inputNode;
     private String chosenFile;
 
@@ -59,8 +59,8 @@ public class S3FileChooser implements TreeSelectionListener {
      * @param engine
      * @param inputNode
      */
-    public S3FileChooser(XBayaEngine engine, S3InputNode inputNode) {
-        this.engine = engine;
+    public S3FileChooser(XBayaGUI xbayaGUI, S3InputNode inputNode) {
+        this.xbayaGUI=xbayaGUI;
         this.inputNode = inputNode;
         initGUI();
     }
@@ -88,7 +88,7 @@ public class S3FileChooser implements TreeSelectionListener {
             public void actionPerformed(ActionEvent e) {
                 if (AmazonCredential.getInstance().getAwsAccessKeyId().isEmpty()
                         || AmazonCredential.getInstance().getAwsSecretAccessKey().isEmpty()) {
-                    S3FileChooser.this.engine.getGUI().getErrorWindow().warning(S3FileChooser.this.dialog.getDialog(), "Error",
+                    S3FileChooser.this.xbayaGUI.getErrorWindow().warning(S3FileChooser.this.dialog.getDialog(), "Error",
                             "Aws Access Key not set!");
 
                     if (this.credentialWindow == null) {
@@ -97,7 +97,7 @@ public class S3FileChooser implements TreeSelectionListener {
                     try {
                         this.credentialWindow.show();
                     } catch (Exception e1) {
-                        S3FileChooser.this.engine.getGUI().getErrorWindow().error(e1);
+                        S3FileChooser.this.xbayaGUI.getErrorWindow().error(e1);
                     }
 
                     return;
@@ -110,12 +110,12 @@ public class S3FileChooser implements TreeSelectionListener {
                     S3Service s3Service = new RestS3Service(new AWSCredentials(AmazonCredential.getInstance()
                             .getAwsAccessKeyId(), AmazonCredential.getInstance().getAwsSecretAccessKey()));
 
-                    BucketsLoader bucketsLoader = new BucketsLoader(S3FileChooser.this.engine,
+                    BucketsLoader bucketsLoader = new BucketsLoader(S3FileChooser.this.xbayaGUI,
                             S3FileChooser.this.dialog.getDialog());
                     bucketsLoader.load(s3Service, S3FileChooser.this.s3Tree);
 
                 } catch (S3ServiceException s3ex) {
-                    S3FileChooser.this.engine.getGUI().getErrorWindow().error(s3ex);
+                    S3FileChooser.this.xbayaGUI.getErrorWindow().error(s3ex);
                 }
             }
         });
@@ -146,7 +146,7 @@ public class S3FileChooser implements TreeSelectionListener {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "Amazon S3 Input Chooser", scrollPane, buttonPanel);
+        this.dialog = new XBayaDialog(this.xbayaGUI, "Amazon S3 Input Chooser", scrollPane, buttonPanel);
     }
 
     /**

@@ -10,7 +10,7 @@ package org.apache.airavata.xbaya.ui.graph.system;
 import java.awt.Color;
 
 import org.apache.airavata.workflow.model.graph.system.DifferedInputNode;
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.graph.system.DifferedInputConfigurationDialog;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 
@@ -47,17 +47,17 @@ public class DifferedInputNodeGUI extends ConfigurableNodeGUI {
 	 * @param engine
 	 */
 	@Override
-	public void showConfigurationDialog(XBayaEngine engine) {
+	public void showConfigurationDialog(XBayaGUI xbayaGUI) {
 		if (testAndSetConfigDisplay()) {
 			if (this.inputNode.isConnected()) {
 				if (this.configurationWindow == null) {
 					this.configurationWindow = new DifferedInputConfigurationDialog(
-							this.inputNode, engine);
+							this.inputNode, xbayaGUI);
 				}
 				this.configurationWindow.show();
 
 			} else {
-				engine.getGUI().getErrorWindow().info(
+				xbayaGUI.getErrorWindow().info(
 						ErrorMessages.INPUT_NOT_CONNECTED_WARNING);
 			}
 		}

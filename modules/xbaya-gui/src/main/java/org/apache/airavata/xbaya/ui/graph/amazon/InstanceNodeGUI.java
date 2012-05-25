@@ -30,8 +30,8 @@ import java.util.List;
 
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.graph.amazon.InstanceConfigurationDialog;
 import org.apache.airavata.xbaya.ui.graph.PortGUI;
 import org.apache.airavata.xbaya.ui.graph.system.ConfigurableNodeGUI;
@@ -59,9 +59,9 @@ public class InstanceNodeGUI extends ConfigurableNodeGUI {
      * @see org.apache.airavata.xbaya.ui.graph.system.ConfigurableNodeGUI#showConfigurationDialog(org.apache.airavata.xbaya.XBayaEngine)
      */
     @Override
-    protected void showConfigurationDialog(XBayaEngine engine) {
+    protected void showConfigurationDialog(XBayaGUI xbayaGUI) {
         if (this.configDialog == null) {
-            this.configDialog = new InstanceConfigurationDialog(this.node, engine);
+            this.configDialog = new InstanceConfigurationDialog(this.node, xbayaGUI);
         }
         this.configDialog.show();
     }

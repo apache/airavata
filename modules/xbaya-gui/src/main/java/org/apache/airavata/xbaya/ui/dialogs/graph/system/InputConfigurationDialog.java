@@ -31,8 +31,8 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.lead.LEADTypes;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
@@ -43,7 +43,7 @@ import org.xmlpull.infoset.XmlElement;
 
 public class InputConfigurationDialog {
 
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
 
     private InputNode node;
 
@@ -71,8 +71,8 @@ public class InputConfigurationDialog {
      * @param node
      * @param engine
      */
-    public InputConfigurationDialog(InputNode node, XBayaEngine engine) {
-        this.engine = engine;
+    public InputConfigurationDialog(InputNode node, XBayaGUI xbayaGUI) {
+        this.xbayaGUI=xbayaGUI;
         this.node = node;
         initGui();
     }
@@ -159,7 +159,7 @@ public class InputConfigurationDialog {
 
         if (name.length() == 0) {
             String warning = "The name cannot be empty.";
-            this.engine.getGUI().getErrorWindow().error(warning);
+            this.xbayaGUI.getErrorWindow().error(warning);
             return;
         }
         Object value = null;
@@ -167,7 +167,7 @@ public class InputConfigurationDialog {
             if (LEADTypes.isKnownType(type)) {
                 if (!this.node.isInputValid(valueString)) {
                     String warning = "The defalut value is not valid for " + this.node.getParameterType() + ".";
-                    this.engine.getGUI().getErrorWindow().error(warning);
+                    this.xbayaGUI.getErrorWindow().error(warning);
                 }
                 value = valueString;
             } else {
@@ -175,7 +175,7 @@ public class InputConfigurationDialog {
                     value = XMLUtil.stringToXmlElement(valueString);
                 } catch (RuntimeException e) {
                     String warning = "The XML for the default value is not valid.";
-                    this.engine.getGUI().getErrorWindow().error(warning, e);
+                    this.xbayaGUI.getErrorWindow().error(warning, e);
                 }
             }
         }
@@ -187,7 +187,7 @@ public class InputConfigurationDialog {
                 metadata = XMLUtil.stringToXmlElement(metadataText);
             } catch (RuntimeException e) {
                 String warning = "The metadata is ill-formed.";
-                this.engine.getGUI().getErrorWindow().error(warning, e);
+                this.xbayaGUI.getErrorWindow().error(warning, e);
                 return;
             }
         }
@@ -199,7 +199,7 @@ public class InputConfigurationDialog {
         this.node.setMetadata(metadata);
         this.node.setVisibility(Boolean.parseBoolean(visibilityText));
         hide();
-        this.engine.getGUI().getGraphCanvas().repaint();
+        this.xbayaGUI.getGraphCanvas().repaint();
     }
 
     /**
@@ -254,7 +254,7 @@ public class InputConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "Input Parameter Configuration", this.gridPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.xbayaGUI, "Input Parameter Configuration", this.gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 

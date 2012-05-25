@@ -22,7 +22,7 @@
 package org.apache.airavata.xbaya.ui.graph.system;
 
 import org.apache.airavata.workflow.model.graph.system.ConstantNode;
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.graph.system.ConstantConfigurationDialog;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 
@@ -49,15 +49,15 @@ public class ConstantNodeGUI extends ConfigurableNodeGUI {
      * @param engine
      */
     @Override
-    protected void showConfigurationDialog(XBayaEngine engine) {
+    protected void showConfigurationDialog(XBayaGUI xbayaGUI) {
         if (this.node.isConnected()) {
             if (this.configurationWindow == null) {
-                this.configurationWindow = new ConstantConfigurationDialog(this.node, engine);
+                this.configurationWindow = new ConstantConfigurationDialog(this.node, xbayaGUI);
             }
             this.configurationWindow.show();
 
         } else {
-            engine.getGUI().getErrorWindow().info(ErrorMessages.CONSTANT_NOT_CONNECTED_WARNING);
+        	xbayaGUI.getErrorWindow().info(ErrorMessages.CONSTANT_NOT_CONNECTED_WARNING);
         }
     }
 }

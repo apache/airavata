@@ -85,11 +85,10 @@ import org.apache.airavata.workflow.model.graph.ws.WSPort;
 import org.apache.airavata.workflow.model.ode.ODEClient;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
-import org.apache.airavata.xbaya.XBayaConfiguration;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
 import org.apache.airavata.xbaya.core.amazon.AmazonCredential;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.interpretor.WorkflowInterpreterInteractor.WorkflowExecutionData;
 import org.apache.airavata.xbaya.invoker.DynamicInvoker;
 import org.apache.airavata.xbaya.invoker.EmbeddedGFacInvoker;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
@@ -100,10 +99,8 @@ import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
-import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.provenance.ProvenanceReader;
 import org.apache.airavata.xbaya.provenance.ProvenanceWrite;
-import org.apache.airavata.xbaya.security.SecurityUtil;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
@@ -111,12 +108,9 @@ import org.apache.airavata.xbaya.ui.graph.subworkflow.SubWorkflowNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.system.DifferedInputHandler;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.ui.utils.Cancelable;
-import org.apache.airavata.xbaya.ui.utils.MyProxyChecker;
 import org.apache.airavata.xbaya.util.AmazonUtil;
 import org.apache.airavata.xbaya.util.InterpreterUtil;
 import org.apache.airavata.xbaya.util.XBayaUtil;
-import org.apache.axis2.context.ConfigurationContext;
-import org.ietf.jgss.GSSCredential;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul.lead.LeadContextHeader;
@@ -135,8 +129,10 @@ public class WorkflowInterpreter {
 	public static final String WORKFLOW_STARTED = "Workflow Running";
 	public static final String WORKFLOW_FINISHED = "Workflow Finished";
 
-	private XBayaEngine engine;
+//	private XBayaEngine engine;
 
+	private WorkflowInterpreterConfiguration config;
+	
 //	private Map<Node, Integer> retryCounter = new HashMap<Node, Integer>();
 
 	private Map<Node, Invoker> invokerMap = new HashMap<Node, Invoker>();
@@ -145,15 +141,13 @@ public class WorkflowInterpreter {
 
 //	private boolean retryFailed = false;
 
-	private MyProxyChecker myProxyChecker;
-
 	private Workflow workflow;
 
     private WSGraph graph;
 
 	private boolean isSubWorkflow;
 
-	private XBayaConfiguration configuration;
+//	private XBayaConfiguration configuration;
 
 	private int mode;
 
@@ -174,8 +168,8 @@ public class WorkflowInterpreter {
 	private boolean runWithCrossProduct = false;
 
 	private boolean isoffline = false;
-
-    private ConfigurationContext configurationContext;
+	
+	private WorkflowInterpreterInteractor interactor;
 
 	/**
 	 * 
@@ -187,18 +181,19 @@ public class WorkflowInterpreter {
 	 * @param username
 	 * @param password
 	 */
-	public WorkflowInterpreter(XBayaConfiguration configuration, String topic,
-			Workflow workflow, String username, String password) {
-		this.configuration = configuration;
-		this.username = username;
-		this.password = password;
-		this.topic = topic;
+	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, String topic,
+			Workflow workflow, String username, String password, WorkflowInterpreterInteractor interactor) {
+		this.setConfig(config);
+		this.setUsername(username);
+		this.setPassword(password);
+		this.setTopic(topic);
 		this.workflow = workflow;
         this.graph = workflow.getGraph();
         this.notifier = new NotificationSender(
-				this.configuration.getBrokerURL(), topic);
+				this.getConfig().getConfiguration().getBrokerURL(), topic);
 		this.mode = SERVER_MODE;
-		this.runWithCrossProduct = this.configuration.isRunWithCrossProduct();
+		this.runWithCrossProduct = this.getConfig().getConfiguration().isRunWithCrossProduct();
+		this.interactor=interactor;
 	}
 
 	/**
@@ -211,13 +206,13 @@ public class WorkflowInterpreter {
 	 * @param username
 	 * @param password
 	 */
-	public WorkflowInterpreter(XBayaConfiguration configuration, String topic,
+	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, String topic,
 			Workflow workflow, String username, String password, boolean offline) {
 		this.isoffline = offline;
-		this.configuration = configuration;
-		this.username = username;
-		this.password = password;
-		this.topic = topic;
+		this.setConfig(config);
+		this.setUsername(username);
+		this.setPassword(password);
+		this.setTopic(topic);
 		this.workflow = workflow;
         this.graph = workflow.getGraph();
 		if (this.isoffline) {
@@ -236,9 +231,9 @@ public class WorkflowInterpreter {
 	 * @param engine
 	 * @param topic
 	 */
-	public WorkflowInterpreter(XBayaEngine engine, String topic) {
-		this(engine, topic, engine.getGUI().getWorkflow(), false, engine
-				.getConfiguration().isCollectProvenance());
+	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, String topic, WorkflowInterpreterInteractor interactor) {
+		this(config, topic, config.getGUI().getWorkflow(), false, config
+				.getConfiguration().isCollectProvenance(),interactor);
 	}
 
 	/**
@@ -250,21 +245,21 @@ public class WorkflowInterpreter {
 	 * @param workflow
 	 * @param subWorkflow
 	 */
-	public WorkflowInterpreter(XBayaEngine engine, String topic,
-			Workflow workflow, boolean subWorkflow, boolean actOnProvenance) {
-		this.engine = engine;
-		this.configuration = engine.getConfiguration();
-		this.myProxyChecker = new MyProxyChecker(this.engine);
+	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, String topic,
+			Workflow workflow, boolean subWorkflow, boolean actOnProvenance, WorkflowInterpreterInteractor interactor) {
+//		this.engine = engine;
+		this.setConfig(config);
 		this.workflow = workflow;
         this.graph = workflow.getGraph();
 		this.isSubWorkflow = subWorkflow;
 		this.mode = GUI_MODE;
 		this.notifier = new NotificationSender(
-				this.configuration.getBrokerURL(), topic);
-		this.topic = topic;
+				this.getConfig().getConfiguration().getBrokerURL(), topic);
+		this.setTopic(topic);
 		this.actOnProvenance = actOnProvenance;
-		this.runWithCrossProduct = this.configuration.isRunWithCrossProduct();
-		engine.registerWorkflowInterpreter(this);
+		this.runWithCrossProduct = this.getConfig().getConfiguration().isRunWithCrossProduct();
+//		engine.registerWorkflowInterpreter(this);
+		this.interactor=interactor;
 
 	}
 
@@ -272,6 +267,15 @@ public class WorkflowInterpreter {
 		this.resourceMapping = resourceMapping;
 	}
 
+	private void notifyViaInteractor(WorkflowExecutionMessage messageType, Object data){
+		interactor.notify(messageType, data);
+	}
+	
+	private Object getInputViaInteractor(WorkflowExecutionMessage messageType, Object data) throws Exception{
+		return interactor.retrieveData(messageType, data);
+	}
+	
+	
 	/**
 	 * @throws WorkflowException
 	 */
@@ -286,10 +290,10 @@ public class WorkflowInterpreter {
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.RUNNING);
 			if (actOnProvenance) {
 				try {
-					this.configuration
+					this.getConfig().getConfiguration()
 							.getJcrComponentRegistry()
 							.getRegistry()
-							.saveWorkflowExecutionStatus(this.topic,
+							.saveWorkflowExecutionStatus(this.getTopic(),
 									ExecutionStatus.STARTED);
 				} catch (RegistryException e) {
 					throw new WorkflowException(e);
@@ -301,15 +305,14 @@ public class WorkflowInterpreter {
 			for (int i = 0; i < inputNodes.size(); ++i) {
 				Node node = inputNodes.get(i);
 				NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
-				if (this.mode == GUI_MODE) {
-					this.engine.getGUI().getGraphCanvas().repaint();
-				}
+				interactor.notify(WorkflowExecutionMessage.NODE_STATE_CHANGED, null);
 				keywords[i] = ((InputNode) node).getName();
 				values[i] = ((InputNode) node).getDefaultValue();
 			}
 			this.notifier.workflowStarted(values, keywords);
 			while (this.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
 				if (getRemainNodesDynamically() == 0) {
+//					notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
 					if (this.mode == GUI_MODE) {
 						this.notifyPause();
 					} else {
@@ -382,10 +385,10 @@ public class WorkflowInterpreter {
 				if (actOnProvenance) {
 					try {
 						try {
-							this.configuration
+							this.getConfig().getConfiguration()
 									.getJcrComponentRegistry()
 									.getRegistry()
-									.saveWorkflowExecutionStatus(this.topic,
+									.saveWorkflowExecutionStatus(this.getTopic(),
 											ExecutionStatus.FINISHED);
 						} catch (Exception e) {
 							throw new WorkflowException(e);
@@ -393,15 +396,15 @@ public class WorkflowInterpreter {
 					} catch (Exception e) {
 						throw new WorkflowException(e);
 					}
-					// System.out.println(this.configuration.getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
+					// System.out.println(this.config.getConfiguration().getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
 				}
 			} else {
 				if (actOnProvenance) {
 					try {
-						this.configuration
+						this.getConfig().getConfiguration()
 								.getJcrComponentRegistry()
 								.getRegistry()
-								.saveWorkflowExecutionStatus(this.topic,
+								.saveWorkflowExecutionStatus(this.getTopic(),
 										ExecutionStatus.FAILED);
 					} catch (RegistryException e) {
 						throw new WorkflowException(e);
@@ -416,7 +419,7 @@ public class WorkflowInterpreter {
 						// Do nothing
 					}
 				}, "Stop Workflow", "Cleaning up resources for Workflow",
-						this.engine);
+						this.config.getGUI());
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
@@ -437,6 +440,22 @@ public class WorkflowInterpreter {
 			} else {
 				finish();
 			}
+//			UUID uuid = UUID.randomUUID();
+//			notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_TASK_START, new WorkflowInterpreterInteractor.TaskNotification("Stop Workflow", "Cleaning up resources for Workflow",uuid.toString()));
+//			// Send Notification for output values
+//			finish();
+//			// Sleep to provide for notification delay
+//			try {
+//				Thread.sleep(1000);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//			cleanup();
+//			if (notifier!=null){
+//				this.notifier.cleanup();
+//			}
+//			notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_TASK_END, new WorkflowInterpreterInteractor.TaskNotification("Stop Workflow", "Cleaning up resources for Workflow",uuid.toString()));
+
 			this.workflow.setExecutionState(WorkflowExecutionState.NONE);
 		} catch (RuntimeException e) {
 			// we reset all the state
@@ -515,31 +534,37 @@ public class WorkflowInterpreter {
 			this.provenanceWriter = new PredicatedTaskRunner(1);
 		}
 		this.provenanceWriter.scedule(new ProvenanceWrite(node, this
-				.getWorkflow().getName(), invokerMap, this.topic,
-				this.configuration.getJcrComponentRegistry().getRegistry()));
+				.getWorkflow().getName(), invokerMap, this.getTopic(),
+				this.getConfig().getConfiguration().getJcrComponentRegistry().getRegistry()));
 	}
 
 	/**
 	 * @param e
 	 */
 	public void raiseException(Throwable e) {
+//		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_ERROR, e);
+//		throw new RuntimeException(e);
 		if (this.mode == GUI_MODE) {
-			this.engine.getGUI().getErrorWindow().error(e);
+			this.config.getGUI().getErrorWindow().error(e);
 		} else {
 			throw new RuntimeException(e);
 		}
-
 	}
 
 	/**
      *
      */
 	private void notifyPause() {
+//		if (this.getWorkflow().getExecutionState() != WorkflowExecutionState.RUNNING
+//				&& this.getWorkflow().getExecutionState() != WorkflowExecutionState.STEP) {
+//			throw new WorkflowRuntimeException("Cannot pause when not running");
+//		}
+//		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
 		if (this.mode == GUI_MODE) {
 
 			if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.RUNNING
 					|| this.getWorkflow().getExecutionState() == WorkflowExecutionState.STEP) {
-				this.engine.getGUI().getToolbar().getPlayAction()
+				this.config.getGUI().getToolbar().getPlayAction()
 						.actionPerformed(null);
 			} else {
 				throw new WorkflowRuntimeException("Cannot pause when not running");
@@ -552,14 +577,15 @@ public class WorkflowInterpreter {
 	 */
 	public void cleanup() throws MonitorException {
 		this.workflow.setExecutionState(WorkflowExecutionState.STOPPED);
-		if (this.mode == GUI_MODE) {
-			this.engine.resetWorkflowInterpreter();
-			try {
-				this.engine.getMonitor().stop();
-			} finally {
-				this.engine.getMonitor().reset();
-			}
-		}
+		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_CLEANUP, null);
+//		if (this.mode == GUI_MODE) {
+//			this.engine.resetWorkflowInterpreter();
+//			try {
+//				this.engine.getMonitor().stop();
+//			} finally {
+//				this.engine.getMonitor().reset();
+//			}
+//		}
 	}
 
 	private void sendOutputsDynamically() throws WorkflowException {
@@ -597,18 +623,18 @@ public class WorkflowInterpreter {
 					if (actOnProvenance) {
 						try {
 							if (val instanceof String) {
-								this.configuration
+								this.getConfig().getConfiguration()
 										.getJcrComponentRegistry()
 										.getRegistry()
 										.saveWorkflowExecutionOutput(
-												this.topic, node.getName(),
+												this.getTopic(), node.getName(),
 												val.toString());
 							} else if (val instanceof org.xmlpull.v1.builder.XmlElement) {
-								this.configuration
+								this.getConfig().getConfiguration()
 										.getJcrComponentRegistry()
 										.getRegistry()
 										.saveWorkflowExecutionOutput(
-												this.topic,
+												this.getTopic(),
 												node.getName(),
 												XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
 							}
@@ -663,18 +689,18 @@ public class WorkflowInterpreter {
 					if (actOnProvenance) {
 						try {
 							if (val instanceof String) {
-								this.configuration
+								this.getConfig().getConfiguration()
 										.getJcrComponentRegistry()
 										.getRegistry()
 										.saveWorkflowExecutionOutput(
-												this.topic, node.getName(),
+												this.getTopic(), node.getName(),
 												val.toString());
 							} else if (val instanceof org.xmlpull.v1.builder.XmlElement) {
-								this.configuration
+								this.getConfig().getConfiguration()
 										.getJcrComponentRegistry()
 										.getRegistry()
 										.saveWorkflowExecutionOutput(
-												this.topic,
+												this.getTopic(),
 												node.getName(),
 												XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
 							}
@@ -748,8 +774,9 @@ public class WorkflowInterpreter {
 	}
 
 	private void handleSubWorkComponent(Node node) throws WorkflowException {
+//		notifyViaInteractor(WorkflowExecutionMessage.OPEN_SUBWORKFLOW, node);
 		if ((this.mode == GUI_MODE) && (node instanceof SubWorkflowNodeGUI)) {
-			((SubWorkflowNodeGUI) NodeController.getGUI(node)).openWorkflowTab(this.engine);
+			((SubWorkflowNodeGUI) NodeController.getGUI(node)).openWorkflowTab(this.config.getGUI());
 		}
 		// setting the inputs
 		Workflow subWorkflow = ((SubWorkflowNode) node).getWorkflow();
@@ -785,14 +812,20 @@ public class WorkflowInterpreter {
 
 		}
 
-		if (this.mode == GUI_MODE) {
-			new WorkflowInterpreter(this.engine, this.topic, subWorkflow, true,
-					false).scheduleDynamically();
-		} else {
-			new WorkflowInterpreter(this.configuration, this.topic,
-					subWorkflow, this.username, this.password)
-					.scheduleDynamically();
+		try {
+			WorkflowInterpreter subworkflowInterpreter = (WorkflowInterpreter)getInputViaInteractor(WorkflowExecutionMessage.INPUT_WORKFLOWINTERPRETER_FOR_WORKFLOW, new WorkflowExecutionData(subWorkflow,this.getTopic(), this));
+			subworkflowInterpreter.scheduleDynamically();
+		} catch (Exception e) {
+			throw new WorkflowException(e);
 		}
+//		if (this.mode == GUI_MODE) {
+//			new WorkflowInterpreter(getConfig(), this.topic, subWorkflow, true,
+//					false, new GUIWorkflowInterpreterInteractorImpl(engine, workflow)).scheduleDynamically();
+//		} else {
+//			new WorkflowInterpreter(this.getConfig(), this.topic,
+//					subWorkflow, this.getUsername(), this.getPassword(),new SSWorkflowInterpreterInteractorImpl(workflow))
+//					.scheduleDynamically();
+//		}
 	}
 
 	private void handleWSComponent(Node node) throws WorkflowException {
@@ -806,38 +839,31 @@ public class WorkflowInterpreter {
 		}
 		final WSNode wsNode = (WSNode) node;
 		String wsdlLocation = InterpreterUtil.getEPR(wsNode);
-		final String gfacURLString = this.configuration.getGFacURL().toString();
+		final String gfacURLString = this.getConfig().getConfiguration().getGFacURL().toString();
 		if (null == wsdlLocation) {
 			if (gfacURLString.startsWith("https")) {
-				GSSCredential proxy = null;
-				if (this.mode == GUI_MODE) {
-					this.myProxyChecker.loadIfNecessary();
-					MyProxyClient myProxyClient = this.engine
-							.getMyProxyClient();
-					proxy = myProxyClient.getProxy();
-				} else {
-					proxy = SecurityUtil.getGSSCredential(this.username,
-							this.password,
-							this.configuration.getMyProxyServer());
-				}
-
-				LeadContextHeader leadCtxHeader = null;
+				LeadContextHeader leadCtxHeader=null;
+//				try {
+//					leadCtxHeader = (LeadContextHeader)getInputViaInteractor(WorkflowExecutionMessage.INPUT_LEAD_CONTEXT_HEADER, new WSNodeData(wsNode,this));
+//				} catch (Exception e1) {
+//					throw new WorkflowException(e1);
+//				}
 				try {
 					if (this.mode == GUI_MODE) {
 						leadCtxHeader = XBayaUtil.buildLeadContextHeader(
 								this.getWorkflow(),
-								this.configuration,
-								new MonitorConfiguration(this.configuration
-										.getBrokerURL(), this.topic, true,
-										this.configuration.getMessageBoxURL()),
+								this.getConfig().getConfiguration(),
+								new MonitorConfiguration(this.getConfig().getConfiguration()
+										.getBrokerURL(), this.getTopic(), true,
+										this.getConfig().getConfiguration().getMessageBoxURL()),
 								wsNode.getID(), null);
 					} else {
 						leadCtxHeader = XBayaUtil.buildLeadContextHeader(
 								this.getWorkflow(),
-								this.configuration,
-								new MonitorConfiguration(this.configuration
-										.getBrokerURL(), this.topic, true,
-										this.configuration.getMessageBoxURL()),
+								this.getConfig().getConfiguration(),
+								new MonitorConfiguration(this.getConfig().getConfiguration()
+										.getBrokerURL(), this.getTopic(), true,
+										this.getConfig().getConfiguration().getMessageBoxURL()),
 								wsNode.getID(), null);
 					}
 				} catch (URISyntaxException e) {
@@ -901,49 +927,62 @@ public class WorkflowInterpreter {
 				}
 
 				invoker = new WorkflowInvokerWrapperForGFacInvoker(
-						portTypeQName, gfacURLString, this.engine.getMonitor()
+						portTypeQName, gfacURLString, this.config.getMonitor()
 								.getConfiguration().getMessageBoxURL()
 								.toString(), leadCtxHeader,
 						this.notifier.createServiceNotificationSender(node
 								.getID()));
 
 			} else {
+//				invoker=(Invoker)getInputViaInteractor(WorkflowExecutionMessage.INPUT_GFAC_INVOKER, new GFacInvokerData(gfacEmbeddedMode,portTypeQName,
+//                        WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
+//                                .getComponent().getWSDL()), node.getID(),
+//                        this.engine.getMonitor().getConfiguration()
+//                                .getMessageBoxURL().toASCIIString(),
+//                        this.engine.getMonitor().getConfiguration().getBrokerURL().toASCIIString(), this.notifier, this.getTopic(),
+//                        this.engine.getConfiguration().getJcrComponentRegistry().getRegistry(),
+//                        portTypeQName.getLocalPart(),this.engine.getConfiguration()));
 				if (this.mode == GUI_MODE) {
 					// if user configure the msgBox url using the UI we have to
 					// pick the latest one which
 					// set by the UI
                     if (this.gfacEmbeddedMode) {
                         invoker = new EmbeddedGFacInvoker(portTypeQName,
-                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
-                                        .getComponent().getWSDL()), node.getID(),
-                                this.engine.getMonitor().getConfiguration()
-                                        .getMessageBoxURL().toASCIIString(),
-                                this.engine.getMonitor().getConfiguration().getBrokerURL().toASCIIString(), this.notifier, this.topic,
-                                this.engine.getConfiguration().getJcrComponentRegistry().getRegistry(),
-                                portTypeQName.getLocalPart(),this.engine.getConfiguration());
+                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), 
+                                node.getID(),
+                                this.config.getMonitor().getConfiguration().getMessageBoxURL().toASCIIString(),
+                                this.config.getMonitor().getConfiguration().getBrokerURL().toASCIIString(), 
+                                this.notifier, 
+                                this.getTopic(),
+                                this.config.getRegistry(),
+                                portTypeQName.getLocalPart(),
+                                this.config.getConfiguration());
                     } else {
                         invoker = new GenericInvoker(portTypeQName,
-                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
-                                        .getComponent().getWSDL()), node.getID(),
-                                this.engine.getMonitor().getConfiguration()
-                                        .getMessageBoxURL().toASCIIString(),
-                                gfacURLString, this.notifier);
+                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), 
+                                node.getID(),
+                                this.config.getMonitor().getConfiguration().getMessageBoxURL().toASCIIString(),
+                                gfacURLString, 
+                                this.notifier);
                     }
 				} else {
                     if(this.gfacEmbeddedMode){
                         invoker = new EmbeddedGFacInvoker(portTypeQName,
-                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
-                                        .getComponent().getWSDL()), node.getID(),
-                                this.configuration.getMessageBoxURL()
-                                        .toASCIIString(),
-                                this.configuration.getBrokerURL().toASCIIString(), this.notifier, this.topic, configuration.getJcrComponentRegistry().getRegistry(),
-                                portTypeQName.getLocalPart(),this.configuration);
+                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), 
+                                node.getID(),
+                                this.getConfig().getMessageBoxURL().toASCIIString(),
+                                this.getConfig().getMessageBrokerURL().toASCIIString(), 
+                                this.notifier, 
+                                this.getTopic(), 
+                                getConfig().getRegistry(),
+                                portTypeQName.getLocalPart(),
+                                this.getConfig().getConfiguration());
                     }else{
                         invoker = new GenericInvoker(portTypeQName,
-                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
-                                        .getComponent().getWSDL()), node.getID(),
-                                this.configuration.getMessageBoxURL()
-                                        .toASCIIString(), gfacURLString,
+                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), 
+                                node.getID(),
+                                this.getConfig().getMessageBoxURL().toASCIIString(), 
+                                gfacURLString,
                                 this.notifier);
 
                     }
@@ -959,7 +998,7 @@ public class WorkflowInterpreter {
 				wsdlLocation += "?wsdl";
 			}
 			invoker = new GenericInvoker(portTypeQName, wsdlLocation,
-					node.getID(), this.configuration.getMessageBoxURL()
+					node.getID(), this.getConfig().getConfiguration().getMessageBoxURL()
 							.toString(), gfacURLString, this.notifier);
 		}
 		invoker.setup();
@@ -1155,7 +1194,7 @@ public class WorkflowInterpreter {
 												finalMap, counter, inputNumbers);
 									} catch (WorkflowException e) {
 
-										WorkflowInterpreter.this.engine
+										WorkflowInterpreter.this.config
 												.getGUI().getErrorWindow().error(e);
 									}
 								}
@@ -1255,7 +1294,7 @@ public class WorkflowInterpreter {
 										foreachWSNode, finalEndForEachNodes,
 										finalInvokerMap, counter, inputNumbers);
 							} catch (WorkflowException e) {
-								WorkflowInterpreter.this.engine
+								WorkflowInterpreter.this.config
 										.getGUI().getErrorWindow().error(e);
 							}
 						}
@@ -1383,48 +1422,37 @@ public class WorkflowInterpreter {
 		QName portTypeQName = wsComponent.getPortTypeQName();
 		if (null == wsdlLocation) {
 			if (gfacURLString.startsWith("https")) {
-				GSSCredential proxy = null;
-				if (this.mode == GUI_MODE) {
-					this.myProxyChecker.loadIfNecessary();
-					MyProxyClient myProxyClient = this.engine
-							.getMyProxyClient();
-					proxy = myProxyClient.getProxy();
-				} else {
-					proxy = SecurityUtil.getGSSCredential(this.username,
-							this.password,
-							this.configuration.getMyProxyServer());
-				}
 				LeadContextHeader leadCtxHeader = null;
 				try {
 					if (this.mode == GUI_MODE) {
 						leadCtxHeader = XBayaUtil.buildLeadContextHeader(
 								this.getWorkflow(),
-								this.configuration,
-								new MonitorConfiguration(this.configuration
-										.getBrokerURL(), this.topic, true,
-										this.configuration.getMessageBoxURL()),
+								this.getConfig().getConfiguration(),
+								new MonitorConfiguration(this.getConfig().getConfiguration()
+										.getBrokerURL(), this.getTopic(), true,
+										this.getConfig().getConfiguration().getMessageBoxURL()),
 								foreachWSNode.getID(), null);
 					} else {
 						leadCtxHeader = XBayaUtil.buildLeadContextHeader(
 								this.getWorkflow(),
-								this.configuration,
-								new MonitorConfiguration(this.configuration
-										.getBrokerURL(), this.topic, true,
-										this.configuration.getMessageBoxURL()),
+								this.getConfig().getConfiguration(),
+								new MonitorConfiguration(this.getConfig().getConfiguration()
+										.getBrokerURL(), this.getTopic(), true,
+										this.getConfig().getConfiguration().getMessageBoxURL()),
 								foreachWSNode.getID(), null);
 					}
 				} catch (URISyntaxException e) {
 					throw new WorkflowException(e);
 				}
 				invoker = new WorkflowInvokerWrapperForGFacInvoker(
-						portTypeQName, gfacURLString, this.configuration
+						portTypeQName, gfacURLString, this.getConfig().getConfiguration()
 								.getMessageBoxURL().toString(), leadCtxHeader,
 						this.notifier
 								.createServiceNotificationSender(foreachWSNode
 										.getID()));
 			} else {
 				invoker = new GenericInvoker(portTypeQName, wsdlLocation,
-						foreachWSNode.getID(), this.configuration
+						foreachWSNode.getID(), this.getConfig().getConfiguration()
 								.getMessageBoxURL().toString(), gfacURLString,
 						this.notifier);
 			}
@@ -1438,7 +1466,7 @@ public class WorkflowInterpreter {
 				wsdlLocation += "?wsdl";
 			}
 			invoker = new GenericInvoker(portTypeQName, wsdlLocation,
-					foreachWSNode.getID(), this.configuration
+					foreachWSNode.getID(), this.getConfig().getConfiguration()
 							.getMessageBoxURL().toString(), gfacURLString,
 					this.notifier);
 		}
@@ -1458,7 +1486,7 @@ public class WorkflowInterpreter {
 					inputNumber);
 			for (final Iterator<String> iterator = inputValues.iterator(); iterator
 					.hasNext();) {
-				final String gfacURLString = this.configuration.getGFacURL()
+				final String gfacURLString = this.getConfig().getConfiguration().getGFacURL()
 						.toString();
 				final String input = iterator.next();
 				WSComponent wsComponent = (WSComponent) middleNode
@@ -1476,7 +1504,7 @@ public class WorkflowInterpreter {
 									inputNumber, input, invoker2);
 
 						} catch (WorkflowException e) {
-							WorkflowInterpreter.this.engine.getGUI().getErrorWindow()
+							WorkflowInterpreter.this.config.getGUI().getErrorWindow()
 									.error(e);
 						}
 					}
@@ -1486,7 +1514,7 @@ public class WorkflowInterpreter {
 				try {
 					Thread.sleep(3000);
 				} catch (InterruptedException e) {
-					WorkflowInterpreter.this.engine.getGUI().getErrorWindow().error(e);
+					WorkflowInterpreter.this.config.getGUI().getErrorWindow().error(e);
 				}
 			}
 		} else {
@@ -1494,7 +1522,7 @@ public class WorkflowInterpreter {
 			for (Iterator<String> iterator = listOfValues.iterator(); iterator
 					.hasNext();) {
 				String input = iterator.next();
-				final String gfacURLString = this.configuration.getGFacURL()
+				final String gfacURLString = this.getConfig().getConfiguration().getGFacURL()
 						.toString();
 
 				WSComponent wsComponent = (WSComponent) middleNode
@@ -1622,7 +1650,7 @@ public class WorkflowInterpreter {
 			invoker.setOperation(wsComponent.getOperationName());
 		} else if (middleNode instanceof SubWorkflowNode) {
 			// ((SubWorkflowNode) middleNode).getWorkflow();
-			// this.configuration;
+			// this.config.getConfiguration();
 			// TODO : Need to create a invoker!
 			// new WorkflowInterpreter()
 		} else {
@@ -1836,7 +1864,7 @@ public class WorkflowInterpreter {
 			ArrayList<Node> waitingNodes = InterpreterUtil.getWaitingNodesDynamically(this.graph);
 			for (Node readyNode : waitingNodes) {
 				DifferedInputHandler.handleDifferredInputsofDependentNodes(
-						readyNode, engine);
+						readyNode, config.getGUI());
 			}
 		}
 
@@ -1871,11 +1899,35 @@ public class WorkflowInterpreter {
         return gfacEmbeddedMode;
     }
 
-    public XBayaConfiguration getConfiguration() {
-        return configuration;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public void setConfiguration(XBayaConfiguration configuration) {
-        this.configuration = configuration;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getTopic() {
+		return topic;
+	}
+
+	public void setTopic(String topic) {
+		this.topic = topic;
+	}
+
+	public WorkflowInterpreterConfiguration getConfig() {
+		return config;
+	}
+
+	public void setConfig(WorkflowInterpreterConfiguration config) {
+		this.config = config;
+	}
 }

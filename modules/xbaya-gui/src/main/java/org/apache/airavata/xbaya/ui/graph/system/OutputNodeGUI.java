@@ -22,14 +22,11 @@
 package org.apache.airavata.xbaya.ui.graph.system;
 
 import java.awt.Color;
-import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.BrowserLauncher;
-import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.graph.system.OutputNode;
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.graph.system.OutputConfigurationDialog;
 
 public class OutputNodeGUI extends ConfigurableNodeGUI {
@@ -58,7 +55,7 @@ public class OutputNodeGUI extends ConfigurableNodeGUI {
      * @param engine
      */
     @Override
-    protected void showConfigurationDialog(XBayaEngine engine) {
+    protected void showConfigurationDialog(XBayaGUI xbayaGUI) {
 
         if (this.node instanceof OutputNode) {
 
@@ -77,7 +74,7 @@ public class OutputNodeGUI extends ConfigurableNodeGUI {
             }
         }
         if (this.configurationWindow == null) {
-            this.configurationWindow = new OutputConfigurationDialog(this.outputNode, engine);
+            this.configurationWindow = new OutputConfigurationDialog(this.outputNode, xbayaGUI);
         }
         this.configurationWindow.show();
 

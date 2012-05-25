@@ -32,7 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
-import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaComboBox;
@@ -41,7 +41,7 @@ import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 import org.apache.airavata.xbaya.util.AmazonUtil;
 
 public class InstanceConfigurationDialog {
-    private XBayaEngine engine;
+    private XBayaGUI xbayaGUI;
 
     private InstanceNode node;
 
@@ -62,8 +62,8 @@ public class InstanceConfigurationDialog {
      * @param node
      * @param engine
      */
-    public InstanceConfigurationDialog(InstanceNode node, XBayaEngine engine) {
-        this.engine = engine;
+    public InstanceConfigurationDialog(InstanceNode node, XBayaGUI xbayaGUI) {
+        this.xbayaGUI=xbayaGUI;
         this.node = node;
         initGui();
     }
@@ -178,13 +178,13 @@ public class InstanceConfigurationDialog {
             public void actionPerformed(ActionEvent e) {
                 if (InstanceConfigurationDialog.this.idTextField.getText() == null
                         || InstanceConfigurationDialog.this.idTextField.getText().isEmpty()) {
-                    InstanceConfigurationDialog.this.engine.getGUI().getErrorWindow()
+                    InstanceConfigurationDialog.this.xbayaGUI.getErrorWindow()
                             .error("Please input AMI ID or Instance ID");
                     return;
                 }
                 if (InstanceConfigurationDialog.this.usernameTextField.getText() == null
                         || InstanceConfigurationDialog.this.usernameTextField.getText().isEmpty()) {
-                    InstanceConfigurationDialog.this.engine.getGUI().getErrorWindow().error(
+                    InstanceConfigurationDialog.this.xbayaGUI.getErrorWindow().error(
                             "Please input username to access instance");
                     return;
                 }
@@ -218,7 +218,7 @@ public class InstanceConfigurationDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "Instance Configuration", gridPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.xbayaGUI, "Instance Configuration", gridPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

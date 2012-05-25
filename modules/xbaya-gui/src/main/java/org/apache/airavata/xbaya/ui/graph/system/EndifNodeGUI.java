@@ -30,8 +30,8 @@ import java.util.List;
 
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.system.EndifNode;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.graph.system.EndifConfigurationDialog;
 import org.apache.airavata.xbaya.ui.graph.PortGUI;
 
@@ -58,9 +58,9 @@ public class EndifNodeGUI extends ConfigurableNodeGUI {
      * @param engine
      */
     @Override
-    protected void showConfigurationDialog(XBayaEngine engine) {
+    protected void showConfigurationDialog(XBayaGUI xbayaGUI) {
         if (this.configurationWindow == null) {
-            this.configurationWindow = new EndifConfigurationDialog(this.node, engine);
+            this.configurationWindow = new EndifConfigurationDialog(this.node, xbayaGUI);
         }
         this.configurationWindow.show();
     }

@@ -179,7 +179,7 @@ public class AmazonS3UtilsWindow {
                     return;
                 }
                 AmazonS3UtilsWindow.this.s3Tree.clean();
-                BucketsLoader bucketsLoader = new BucketsLoader(xBayaEngine, window.dialog.getDialog());
+                BucketsLoader bucketsLoader = new BucketsLoader(xBayaEngine.getGUI(), window.dialog.getDialog());
                 bucketsLoader.load(getS3Service(), AmazonS3UtilsWindow.this.s3Tree);
             }
         });
