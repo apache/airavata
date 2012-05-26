@@ -33,6 +33,9 @@ import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.utils.MyProxyChecker;
 
 public class WorkflowInterpreterConfiguration {
+	public static final int GUI_MODE = 1;
+	public static final int SERVER_MODE = 2;
+	
 	private URI messageBoxURL;
 	private URI messageBrokerURL;
 	private AiravataRegistry registry;
@@ -155,6 +158,10 @@ public class WorkflowInterpreterConfiguration {
 
 	public void setTopic(String topic) {
 		this.topic = topic;
+	}
+
+	public int getMode() {
+		return getMonitor()==null? SERVER_MODE:GUI_MODE;
 	}
 
 }

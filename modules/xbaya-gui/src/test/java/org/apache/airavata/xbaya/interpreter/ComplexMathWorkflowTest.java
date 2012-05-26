@@ -21,6 +21,7 @@
 
 package org.apache.airavata.xbaya.interpreter;
 
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
@@ -59,7 +60,8 @@ public class ComplexMathWorkflowTest {
         URL systemResource = this.getClass().getClassLoader().getSystemResource("ComplexMath.xwf");
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
         XBayaConfiguration conf = WorkflowTestUtils.getConfiguration();
-        WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,UUID.randomUUID().toString(),conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, null,null,null,true);
+        AiravataRegistry registry = conf.getJcrComponentRegistry()==null? null:conf.getJcrComponentRegistry().getRegistry();
+		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow, UUID.randomUUID().toString(),conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null,null,null,true);
         SSWorkflowInterpreterInteractorImpl ssWorkflowInterpreterInteractorImpl = new SSWorkflowInterpreterInteractorImpl(workflow);
         WorkflowInterpreter interpretor = new WorkflowInterpreter(workflowInterpreterConfiguration,ssWorkflowInterpreterInteractorImpl);
         interpretor.scheduleDynamically();
