@@ -117,9 +117,9 @@ import xsul5.XmlConstants;
 
 public class WorkflowInterpreter {
 
-	private static final int GUI_MODE = 1;
-
-	private static final int SERVER_MODE = 2;
+//	private static final int WorkflowInterpreterConfiguration.GUI_MODE = 1;
+//
+//	private static final int SERVER_MODE = 2;
 
 
 //	private static final int MAXIMUM_RETRY_TIME = 2;
@@ -147,7 +147,7 @@ public class WorkflowInterpreter {
 
 //	private XBayaConfiguration configuration;
 
-	private int mode;
+//	private int mode;
 
 //	private String password;
 //
@@ -186,7 +186,7 @@ public class WorkflowInterpreter {
 ////		this.setTopic(topic);
 ////        this.config.getNotifier() = new NotificationSender(
 ////				this.getConfig().getConfiguration().getBrokerURL(), topic);
-//		this.mode = SERVER_MODE;
+//		this.config.getMode() = SERVER_MODE;
 //		this.interactor=interactor;
 //	}
 
@@ -210,7 +210,7 @@ public class WorkflowInterpreter {
 //		} else {
 //			throw new Error("Cannot Initialize workflow with offline false");
 //		}
-//		this.mode = SERVER_MODE;
+//		this.config.getMode() = SERVER_MODE;
 //	}
 
 	/**
@@ -239,7 +239,7 @@ public class WorkflowInterpreter {
 //		this.engine = engine;
 		this.setConfig(config);
 		this.isSubWorkflow = subWorkflow;
-		this.mode = GUI_MODE;
+//		this.config.getMode() = WorkflowInterpreterConfiguration.GUI_MODE;
 		config.validateNotifier();
 //		this.setTopic(topic);
 		this.actOnProvenance = actOnProvenance;
@@ -298,7 +298,7 @@ public class WorkflowInterpreter {
 			while (this.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
 				if (getRemainNodesDynamically() == 0) {
 //					notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
-					if (this.mode == GUI_MODE) {
+					if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
 						this.notifyPause();
 					} else {
 						this.getWorkflow().setExecutionState(
@@ -397,7 +397,7 @@ public class WorkflowInterpreter {
 				}
 			}
 			this.config.getNotifier().workflowTerminated();
-			if (this.mode == GUI_MODE) {
+			if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
 				final WaitDialog waitDialog = new WaitDialog(new Cancelable() {
 					@Override
 					public void cancel() {
@@ -529,7 +529,7 @@ public class WorkflowInterpreter {
 	public void raiseException(Throwable e) {
 //		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_ERROR, e);
 //		throw new RuntimeException(e);
-		if (this.mode == GUI_MODE) {
+		if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
 			this.config.getGUI().getErrorWindow().error(e);
 		} else {
 			throw new RuntimeException(e);
@@ -545,7 +545,7 @@ public class WorkflowInterpreter {
 //			throw new WorkflowRuntimeException("Cannot pause when not running");
 //		}
 //		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
-		if (this.mode == GUI_MODE) {
+		if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
 
 			if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.RUNNING
 					|| this.getWorkflow().getExecutionState() == WorkflowExecutionState.STEP) {
@@ -563,7 +563,7 @@ public class WorkflowInterpreter {
 	public void cleanup() throws MonitorException {
 		this.getWorkflow().setExecutionState(WorkflowExecutionState.STOPPED);
 		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_CLEANUP, null);
-//		if (this.mode == GUI_MODE) {
+//		if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
 //			this.engine.resetWorkflowInterpreter();
 //			try {
 //				this.engine.getMonitor().stop();
@@ -760,7 +760,7 @@ public class WorkflowInterpreter {
 
 	private void handleSubWorkComponent(Node node) throws WorkflowException {
 //		notifyViaInteractor(WorkflowExecutionMessage.OPEN_SUBWORKFLOW, node);
-		if ((this.mode == GUI_MODE) && (node instanceof SubWorkflowNodeGUI)) {
+		if ((this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) && (node instanceof SubWorkflowNodeGUI)) {
 			((SubWorkflowNodeGUI) NodeController.getGUI(node)).openWorkflowTab(this.config.getGUI());
 		}
 		// setting the inputs
@@ -803,7 +803,7 @@ public class WorkflowInterpreter {
 		} catch (Exception e) {
 			throw new WorkflowException(e);
 		}
-//		if (this.mode == GUI_MODE) {
+//		if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
 //			new WorkflowInterpreter(getConfig(), this.topic, subWorkflow, true,
 //					false, new GUIWorkflowInterpreterInteractorImpl(engine, workflow)).scheduleDynamically();
 //		} else {
@@ -834,7 +834,7 @@ public class WorkflowInterpreter {
 //					throw new WorkflowException(e1);
 //				}
 				try {
-					if (this.mode == GUI_MODE) {
+					if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
 						leadCtxHeader = XBayaUtil.buildLeadContextHeader(
 								this.getWorkflow(),
 								this.getConfig().getConfiguration(),
@@ -927,7 +927,7 @@ public class WorkflowInterpreter {
 //                        this.engine.getMonitor().getConfiguration().getBrokerURL().toASCIIString(), this.config.getNotifier(), this.config.getTopic(),
 //                        this.engine.getConfiguration().getJcrComponentRegistry().getRegistry(),
 //                        portTypeQName.getLocalPart(),this.engine.getConfiguration()));
-				if (this.mode == GUI_MODE) {
+				if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
 					// if user configure the msgBox url using the UI we have to
 					// pick the latest one which
 					// set by the UI
@@ -1409,7 +1409,7 @@ public class WorkflowInterpreter {
 			if (gfacURLString.startsWith("https")) {
 				LeadContextHeader leadCtxHeader = null;
 				try {
-					if (this.mode == GUI_MODE) {
+					if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
 						leadCtxHeader = XBayaUtil.buildLeadContextHeader(
 								this.getWorkflow(),
 								this.getConfig().getConfiguration(),
@@ -1845,7 +1845,7 @@ public class WorkflowInterpreter {
 		}
 
 
-		if (this.mode == GUI_MODE) {
+		if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
 			ArrayList<Node> waitingNodes = InterpreterUtil.getWaitingNodesDynamically(this.getGraph());
 			for (Node readyNode : waitingNodes) {
 				DifferedInputHandler.handleDifferredInputsofDependentNodes(
