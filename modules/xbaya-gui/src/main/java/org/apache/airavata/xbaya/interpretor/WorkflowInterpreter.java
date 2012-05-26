@@ -95,8 +95,6 @@ import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.ODEClientUtil;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
-import org.apache.airavata.xbaya.jython.lib.NotificationSender;
-import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.provenance.ProvenanceReader;
@@ -137,13 +135,13 @@ public class WorkflowInterpreter {
 
 	private Map<Node, Invoker> invokerMap = new HashMap<Node, Invoker>();
 
-	private WorkflowNotifiable notifier;
+//	private WorkflowNotifiable notifier;
 
 //	private boolean retryFailed = false;
 
-	private Workflow workflow;
-
-    private WSGraph graph;
+//	private Workflow workflow;
+//
+//    private WSGraph graph;
 
 	private boolean isSubWorkflow;
 
@@ -151,11 +149,11 @@ public class WorkflowInterpreter {
 
 	private int mode;
 
-	private String password;
+//	private String password;
+//
+//	private String username;
 
-	private String username;
-
-	private String topic;
+//	private String topic;
 
     private Boolean gfacEmbeddedMode = false;
 
@@ -165,64 +163,55 @@ public class WorkflowInterpreter {
 
 	private PredicatedTaskRunner provenanceWriter;
 
-	private boolean runWithCrossProduct = false;
+//	private boolean runWithCrossProduct = false;
 
-	private boolean isoffline = false;
+//	private boolean isoffline = false;
 	
 	private WorkflowInterpreterInteractor interactor;
 
-	/**
-	 * 
-	 * Constructs a WorkflowInterpreter.
-	 * 
-	 * @param configuration
-	 * @param topic
-	 * @param workflow
-	 * @param username
-	 * @param password
-	 */
-	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, String topic,
-			Workflow workflow, String username, String password, WorkflowInterpreterInteractor interactor) {
-		this.setConfig(config);
-		this.setUsername(username);
-		this.setPassword(password);
-		this.setTopic(topic);
-		this.workflow = workflow;
-        this.graph = workflow.getGraph();
-        this.notifier = new NotificationSender(
-				this.getConfig().getConfiguration().getBrokerURL(), topic);
-		this.mode = SERVER_MODE;
-		this.runWithCrossProduct = this.getConfig().getConfiguration().isRunWithCrossProduct();
-		this.interactor=interactor;
-	}
+//	/**
+//	 * 
+//	 * Constructs a WorkflowInterpreter.
+//	 * 
+//	 * @param configuration
+//	 * @param topic
+//	 * @param workflow
+//	 * @param username
+//	 * @param password
+//	 */
+//	public WorkflowInterpreter(WorkflowInterpreterConfiguration config,WorkflowInterpreterInteractor interactor) {
+//		this.setConfig(config);
+////		this.setUsername(username);
+////		this.setPassword(password);
+////		this.setTopic(topic);
+////        this.config.getNotifier() = new NotificationSender(
+////				this.getConfig().getConfiguration().getBrokerURL(), topic);
+//		this.mode = SERVER_MODE;
+//		this.interactor=interactor;
+//	}
 
-	/**
-	 * 
-	 * Constructs a WorkflowInterpreter.
-	 * 
-	 * @param configuration
-	 * @param topic
-	 * @param workflow
-	 * @param username
-	 * @param password
-	 */
-	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, String topic,
-			Workflow workflow, String username, String password, boolean offline) {
-		this.isoffline = offline;
-		this.setConfig(config);
-		this.setUsername(username);
-		this.setPassword(password);
-		this.setTopic(topic);
-		this.workflow = workflow;
-        this.graph = workflow.getGraph();
-		if (this.isoffline) {
-			this.notifier = new StandaloneNotificationSender(topic,
-					this.workflow);
-		} else {
-			throw new Error("Cannot Initialize workflow with offline false");
-		}
-		this.mode = SERVER_MODE;
-	}
+//	/**
+//	 * 
+//	 * Constructs a WorkflowInterpreter.
+//	 * 
+//	 * @param configuration
+//	 * @param topic
+//	 * @param workflow
+//	 * @param username
+//	 * @param password
+//	 */
+//	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, String topic, WorkflowInterpreterInteractor interactor) {
+////		this.isoffline = offline;
+//		this.setConfig(config);
+//		this.setTopic(topic);
+//		if (config.isOffline()) {
+//			this.config.getNotifier() = new StandaloneNotificationSender(topic,
+//					this.getWorkflow());
+//		} else {
+//			throw new Error("Cannot Initialize workflow with offline false");
+//		}
+//		this.mode = SERVER_MODE;
+//	}
 
 	/**
 	 * 
@@ -231,8 +220,8 @@ public class WorkflowInterpreter {
 	 * @param engine
 	 * @param topic
 	 */
-	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, String topic, WorkflowInterpreterInteractor interactor) {
-		this(config, topic, config.getGUI().getWorkflow(), false, config
+	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, WorkflowInterpreterInteractor interactor) {
+		this(config, false, config
 				.getConfiguration().isCollectProvenance(),interactor);
 	}
 
@@ -245,19 +234,15 @@ public class WorkflowInterpreter {
 	 * @param workflow
 	 * @param subWorkflow
 	 */
-	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, String topic,
-			Workflow workflow, boolean subWorkflow, boolean actOnProvenance, WorkflowInterpreterInteractor interactor) {
+	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, 
+			boolean subWorkflow, boolean actOnProvenance, WorkflowInterpreterInteractor interactor) {
 //		this.engine = engine;
 		this.setConfig(config);
-		this.workflow = workflow;
-        this.graph = workflow.getGraph();
 		this.isSubWorkflow = subWorkflow;
 		this.mode = GUI_MODE;
-		this.notifier = new NotificationSender(
-				this.getConfig().getConfiguration().getBrokerURL(), topic);
-		this.setTopic(topic);
+		config.validateNotifier();
+//		this.setTopic(topic);
 		this.actOnProvenance = actOnProvenance;
-		this.runWithCrossProduct = this.getConfig().getConfiguration().isRunWithCrossProduct();
 //		engine.registerWorkflowInterpreter(this);
 		this.interactor=interactor;
 
@@ -293,7 +278,7 @@ public class WorkflowInterpreter {
 					this.getConfig().getConfiguration()
 							.getJcrComponentRegistry()
 							.getRegistry()
-							.saveWorkflowExecutionStatus(this.getTopic(),
+							.saveWorkflowExecutionStatus(this.config.getTopic(),
 									ExecutionStatus.STARTED);
 				} catch (RegistryException e) {
 					throw new WorkflowException(e);
@@ -309,7 +294,7 @@ public class WorkflowInterpreter {
 				keywords[i] = ((InputNode) node).getName();
 				values[i] = ((InputNode) node).getDefaultValue();
 			}
-			this.notifier.workflowStarted(values, keywords);
+			this.config.getNotifier().workflowStarted(values, keywords);
 			while (this.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
 				if (getRemainNodesDynamically() == 0) {
 //					notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
@@ -367,8 +352,8 @@ public class WorkflowInterpreter {
 					// and there are failed nodes then workflow is stuck because
 					// of failure
 					// so we should pause the execution
-					if (InterpreterUtil.getRunningNodeCountDynamically(this.graph) == 0
-							&& InterpreterUtil.getFailedNodeCountDynamically(this.graph) != 0) {
+					if (InterpreterUtil.getRunningNodeCountDynamically(this.getGraph()) == 0
+							&& InterpreterUtil.getFailedNodeCountDynamically(this.getGraph()) != 0) {
 						this.getWorkflow().setExecutionState(
 								WorkflowExecutionState.PAUSED);
 					}
@@ -381,14 +366,14 @@ public class WorkflowInterpreter {
 				}
 			}
 
-			if (InterpreterUtil.getFailedNodeCountDynamically(this.graph) == 0) {
+			if (InterpreterUtil.getFailedNodeCountDynamically(this.getGraph()) == 0) {
 				if (actOnProvenance) {
 					try {
 						try {
 							this.getConfig().getConfiguration()
 									.getJcrComponentRegistry()
 									.getRegistry()
-									.saveWorkflowExecutionStatus(this.getTopic(),
+									.saveWorkflowExecutionStatus(this.config.getTopic(),
 											ExecutionStatus.FINISHED);
 						} catch (Exception e) {
 							throw new WorkflowException(e);
@@ -404,14 +389,14 @@ public class WorkflowInterpreter {
 						this.getConfig().getConfiguration()
 								.getJcrComponentRegistry()
 								.getRegistry()
-								.saveWorkflowExecutionStatus(this.getTopic(),
+								.saveWorkflowExecutionStatus(this.config.getTopic(),
 										ExecutionStatus.FAILED);
 					} catch (RegistryException e) {
 						throw new WorkflowException(e);
 					}
 				}
 			}
-			this.notifier.workflowTerminated();
+			this.config.getNotifier().workflowTerminated();
 			if (this.mode == GUI_MODE) {
 				final WaitDialog waitDialog = new WaitDialog(new Cancelable() {
 					@Override
@@ -435,7 +420,7 @@ public class WorkflowInterpreter {
 					e.printStackTrace();
 				}
 				cleanup();
-				this.notifier.cleanup();
+				this.config.getNotifier().cleanup();
 				waitDialog.hide();
 			} else {
 				finish();
@@ -452,16 +437,16 @@ public class WorkflowInterpreter {
 //			}
 //			cleanup();
 //			if (notifier!=null){
-//				this.notifier.cleanup();
+//				this.config.getNotifier().cleanup();
 //			}
 //			notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_TASK_END, new WorkflowInterpreterInteractor.TaskNotification("Stop Workflow", "Cleaning up resources for Workflow",uuid.toString()));
 
-			this.workflow.setExecutionState(WorkflowExecutionState.NONE);
+			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
 		} catch (RuntimeException e) {
 			// we reset all the state
 			cleanup();
-			this.notifier.cleanup();
-			this.workflow.setExecutionState(WorkflowExecutionState.NONE);
+			this.config.getNotifier().cleanup();
+			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
 			raiseException(e);
 		}
 	}
@@ -534,7 +519,7 @@ public class WorkflowInterpreter {
 			this.provenanceWriter = new PredicatedTaskRunner(1);
 		}
 		this.provenanceWriter.scedule(new ProvenanceWrite(node, this
-				.getWorkflow().getName(), invokerMap, this.getTopic(),
+				.getWorkflow().getName(), invokerMap, this.config.getTopic(),
 				this.getConfig().getConfiguration().getJcrComponentRegistry().getRegistry()));
 	}
 
@@ -576,7 +561,7 @@ public class WorkflowInterpreter {
 	 * @throws MonitorException
 	 */
 	public void cleanup() throws MonitorException {
-		this.workflow.setExecutionState(WorkflowExecutionState.STOPPED);
+		this.getWorkflow().setExecutionState(WorkflowExecutionState.STOPPED);
 		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_CLEANUP, null);
 //		if (this.mode == GUI_MODE) {
 //			this.engine.resetWorkflowInterpreter();
@@ -627,14 +612,14 @@ public class WorkflowInterpreter {
 										.getJcrComponentRegistry()
 										.getRegistry()
 										.saveWorkflowExecutionOutput(
-												this.getTopic(), node.getName(),
+												this.config.getTopic(), node.getName(),
 												val.toString());
 							} else if (val instanceof org.xmlpull.v1.builder.XmlElement) {
 								this.getConfig().getConfiguration()
 										.getJcrComponentRegistry()
 										.getRegistry()
 										.saveWorkflowExecutionOutput(
-												this.getTopic(),
+												this.config.getTopic(),
 												node.getName(),
 												XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
 							}
@@ -649,7 +634,7 @@ public class WorkflowInterpreter {
 				}
 				System.out.println("Looping");
 			}
-			this.notifier.sendingPartialResults(outputValues.toArray(),
+			this.config.getNotifier().sendingPartialResults(outputValues.toArray(),
 					outputKeywords.toArray(new String[outputKeywords.size()]));
 
 		}
@@ -657,7 +642,7 @@ public class WorkflowInterpreter {
 
 	private void finish() throws WorkflowException {
 		ArrayList<Node> outoutNodes = new ArrayList<Node>();
-		List<NodeImpl> nodes = this.graph.getNodes();
+		List<NodeImpl> nodes = this.getGraph().getNodes();
 		for (Node node : nodes) {
 			if (node instanceof OutputNode) {
 				if (NodeController.getGUI(node.getInputPort(0).getFromNode()).getBodyColor() == NodeState.FINISHED.color) {
@@ -693,14 +678,14 @@ public class WorkflowInterpreter {
 										.getJcrComponentRegistry()
 										.getRegistry()
 										.saveWorkflowExecutionOutput(
-												this.getTopic(), node.getName(),
+												this.config.getTopic(), node.getName(),
 												val.toString());
 							} else if (val instanceof org.xmlpull.v1.builder.XmlElement) {
 								this.getConfig().getConfiguration()
 										.getJcrComponentRegistry()
 										.getRegistry()
 										.saveWorkflowExecutionOutput(
-												this.getTopic(),
+												this.config.getTopic(),
 												node.getName(),
 												XMLUtil.xmlElementToString((org.xmlpull.v1.builder.XmlElement) val));
 							}
@@ -723,10 +708,10 @@ public class WorkflowInterpreter {
 			}
 
 		}
-		this.notifier.sendingPartialResults(outputValues.toArray(),
+		this.config.getNotifier().sendingPartialResults(outputValues.toArray(),
 				outputKeywords.toArray(new String[outputKeywords.size()]));
 		cleanup();
-		this.notifier.cleanup();
+		this.config.getNotifier().cleanup();
 
 	}
 
@@ -813,7 +798,7 @@ public class WorkflowInterpreter {
 		}
 
 		try {
-			WorkflowInterpreter subworkflowInterpreter = (WorkflowInterpreter)getInputViaInteractor(WorkflowExecutionMessage.INPUT_WORKFLOWINTERPRETER_FOR_WORKFLOW, new WorkflowExecutionData(subWorkflow,this.getTopic(), this));
+			WorkflowInterpreter subworkflowInterpreter = (WorkflowInterpreter)getInputViaInteractor(WorkflowExecutionMessage.INPUT_WORKFLOWINTERPRETER_FOR_WORKFLOW, new WorkflowExecutionData(subWorkflow,this.config.getTopic(), this));
 			subworkflowInterpreter.scheduleDynamically();
 		} catch (Exception e) {
 			throw new WorkflowException(e);
@@ -854,7 +839,7 @@ public class WorkflowInterpreter {
 								this.getWorkflow(),
 								this.getConfig().getConfiguration(),
 								new MonitorConfiguration(this.getConfig().getConfiguration()
-										.getBrokerURL(), this.getTopic(), true,
+										.getBrokerURL(), this.config.getTopic(), true,
 										this.getConfig().getConfiguration().getMessageBoxURL()),
 								wsNode.getID(), null);
 					} else {
@@ -862,7 +847,7 @@ public class WorkflowInterpreter {
 								this.getWorkflow(),
 								this.getConfig().getConfiguration(),
 								new MonitorConfiguration(this.getConfig().getConfiguration()
-										.getBrokerURL(), this.getTopic(), true,
+										.getBrokerURL(), this.config.getTopic(), true,
 										this.getConfig().getConfiguration().getMessageBoxURL()),
 								wsNode.getID(), null);
 					}
@@ -930,7 +915,7 @@ public class WorkflowInterpreter {
 						portTypeQName, gfacURLString, this.config.getMonitor()
 								.getConfiguration().getMessageBoxURL()
 								.toString(), leadCtxHeader,
-						this.notifier.createServiceNotificationSender(node
+						this.config.getNotifier().createServiceNotificationSender(node
 								.getID()));
 
 			} else {
@@ -939,7 +924,7 @@ public class WorkflowInterpreter {
 //                                .getComponent().getWSDL()), node.getID(),
 //                        this.engine.getMonitor().getConfiguration()
 //                                .getMessageBoxURL().toASCIIString(),
-//                        this.engine.getMonitor().getConfiguration().getBrokerURL().toASCIIString(), this.notifier, this.getTopic(),
+//                        this.engine.getMonitor().getConfiguration().getBrokerURL().toASCIIString(), this.config.getNotifier(), this.config.getTopic(),
 //                        this.engine.getConfiguration().getJcrComponentRegistry().getRegistry(),
 //                        portTypeQName.getLocalPart(),this.engine.getConfiguration()));
 				if (this.mode == GUI_MODE) {
@@ -952,8 +937,8 @@ public class WorkflowInterpreter {
                                 node.getID(),
                                 this.config.getMonitor().getConfiguration().getMessageBoxURL().toASCIIString(),
                                 this.config.getMonitor().getConfiguration().getBrokerURL().toASCIIString(), 
-                                this.notifier, 
-                                this.getTopic(),
+                                this.config.getNotifier(), 
+                                this.config.getTopic(),
                                 this.config.getRegistry(),
                                 portTypeQName.getLocalPart(),
                                 this.config.getConfiguration());
@@ -963,7 +948,7 @@ public class WorkflowInterpreter {
                                 node.getID(),
                                 this.config.getMonitor().getConfiguration().getMessageBoxURL().toASCIIString(),
                                 gfacURLString, 
-                                this.notifier);
+                                this.config.getNotifier());
                     }
 				} else {
                     if(this.gfacEmbeddedMode){
@@ -972,8 +957,8 @@ public class WorkflowInterpreter {
                                 node.getID(),
                                 this.getConfig().getMessageBoxURL().toASCIIString(),
                                 this.getConfig().getMessageBrokerURL().toASCIIString(), 
-                                this.notifier, 
-                                this.getTopic(), 
+                                this.config.getNotifier(), 
+                                this.config.getTopic(), 
                                 getConfig().getRegistry(),
                                 portTypeQName.getLocalPart(),
                                 this.getConfig().getConfiguration());
@@ -983,7 +968,7 @@ public class WorkflowInterpreter {
                                 node.getID(),
                                 this.getConfig().getMessageBoxURL().toASCIIString(), 
                                 gfacURLString,
-                                this.notifier);
+                                this.config.getNotifier());
 
                     }
 				}
@@ -999,7 +984,7 @@ public class WorkflowInterpreter {
 			}
 			invoker = new GenericInvoker(portTypeQName, wsdlLocation,
 					node.getID(), this.getConfig().getConfiguration().getMessageBoxURL()
-							.toString(), gfacURLString, this.notifier);
+							.toString(), gfacURLString, this.config.getNotifier());
 		}
 		invoker.setup();
 		this.invokerMap.put(node, invoker);
@@ -1429,7 +1414,7 @@ public class WorkflowInterpreter {
 								this.getWorkflow(),
 								this.getConfig().getConfiguration(),
 								new MonitorConfiguration(this.getConfig().getConfiguration()
-										.getBrokerURL(), this.getTopic(), true,
+										.getBrokerURL(), this.config.getTopic(), true,
 										this.getConfig().getConfiguration().getMessageBoxURL()),
 								foreachWSNode.getID(), null);
 					} else {
@@ -1437,7 +1422,7 @@ public class WorkflowInterpreter {
 								this.getWorkflow(),
 								this.getConfig().getConfiguration(),
 								new MonitorConfiguration(this.getConfig().getConfiguration()
-										.getBrokerURL(), this.getTopic(), true,
+										.getBrokerURL(), this.config.getTopic(), true,
 										this.getConfig().getConfiguration().getMessageBoxURL()),
 								foreachWSNode.getID(), null);
 					}
@@ -1447,14 +1432,14 @@ public class WorkflowInterpreter {
 				invoker = new WorkflowInvokerWrapperForGFacInvoker(
 						portTypeQName, gfacURLString, this.getConfig().getConfiguration()
 								.getMessageBoxURL().toString(), leadCtxHeader,
-						this.notifier
+						this.config.getNotifier()
 								.createServiceNotificationSender(foreachWSNode
 										.getID()));
 			} else {
 				invoker = new GenericInvoker(portTypeQName, wsdlLocation,
 						foreachWSNode.getID(), this.getConfig().getConfiguration()
 								.getMessageBoxURL().toString(), gfacURLString,
-						this.notifier);
+						this.config.getNotifier());
 			}
 
 		} else {
@@ -1468,7 +1453,7 @@ public class WorkflowInterpreter {
 			invoker = new GenericInvoker(portTypeQName, wsdlLocation,
 					foreachWSNode.getID(), this.getConfig().getConfiguration()
 							.getMessageBoxURL().toString(), gfacURLString,
-					this.notifier);
+					this.config.getNotifier());
 		}
 		return invoker;
 	}
@@ -1671,7 +1656,7 @@ public class WorkflowInterpreter {
 			if (inputNumbers.length == 1) {
 				return listOfValues;
 			}
-			if (this.runWithCrossProduct) {
+			if (this.config.isRunWithCrossProduct()) {
 				for (int i = 0; i < inputNumbers[0]; i++) {
 					for (int j = 0; j < inputNumbers[1]; j++) {
 						inputValues.add(listOfValues.get(i) + ","
@@ -1725,7 +1710,7 @@ public class WorkflowInterpreter {
 
 	private ArrayList<Node> getReadyOutputNodesDynamically() {
 		ArrayList<Node> list = new ArrayList<Node>();
-		List<NodeImpl> nodes = this.graph.getNodes();
+		List<NodeImpl> nodes = this.getGraph().getNodes();
 		for (Node node : nodes) {
 			if (node instanceof OutputNode
 					&& NodeController.getGUI(node).getBodyColor() == NodeGUI.DEFAULT_BODY_COLOR
@@ -1739,8 +1724,8 @@ public class WorkflowInterpreter {
 	}
 
 	private int getRemainNodesDynamically() {
-		return InterpreterUtil.getWaitingNodeCountDynamically(this.graph)
-				+ InterpreterUtil.getRunningNodeCountDynamically(this.graph) ;
+		return InterpreterUtil.getWaitingNodeCountDynamically(this.getGraph())
+				+ InterpreterUtil.getRunningNodeCountDynamically(this.getGraph()) ;
 	}
 
 	private ArrayList<Node> getInputNodesDynamically() {
@@ -1763,8 +1748,8 @@ public class WorkflowInterpreter {
 
 	private ArrayList<Node> getReadyNodesDynamically() {
 		ArrayList<Node> list = new ArrayList<Node>();
-		ArrayList<Node> waiting = InterpreterUtil.getWaitingNodesDynamically(this.graph);
-		ArrayList<Node> finishedNodes = InterpreterUtil.getFinishedNodesDynamically(this.graph);
+		ArrayList<Node> waiting = InterpreterUtil.getWaitingNodesDynamically(this.getGraph());
+		ArrayList<Node> finishedNodes = InterpreterUtil.getFinishedNodesDynamically(this.getGraph());
 		for (Node node : waiting) {
 			Component component = node.getComponent();
 			if (component instanceof WSComponent
@@ -1861,7 +1846,7 @@ public class WorkflowInterpreter {
 
 
 		if (this.mode == GUI_MODE) {
-			ArrayList<Node> waitingNodes = InterpreterUtil.getWaitingNodesDynamically(this.graph);
+			ArrayList<Node> waitingNodes = InterpreterUtil.getWaitingNodesDynamically(this.getGraph());
 			for (Node readyNode : waitingNodes) {
 				DifferedInputHandler.handleDifferredInputsofDependentNodes(
 						readyNode, config.getGUI());
@@ -1871,16 +1856,9 @@ public class WorkflowInterpreter {
 		return list;
 
 	}
-	public boolean isRunWithCrossProduct() {
-		return runWithCrossProduct;
-	}
-
-	public void setRunWithCrossProduct(boolean runWithCrossProduct) {
-		this.runWithCrossProduct = runWithCrossProduct;
-	}
 
 	public Workflow getWorkflow() {
-		return workflow;
+		return this.config.getWorkflow();
 	}
 
 	public void setActOnProvenance(boolean actOnProvenance) {
@@ -1899,29 +1877,29 @@ public class WorkflowInterpreter {
         return gfacEmbeddedMode;
     }
 
-	public String getUsername() {
-		return username;
-	}
+//	public String getUsername() {
+//		return username;
+//	}
+//
+//	public void setUsername(String username) {
+//		this.username = username;
+//	}
+//
+//	public String getPassword() {
+//		return password;
+//	}
+//
+//	public void setPassword(String password) {
+//		this.password = password;
+//	}
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getTopic() {
-		return topic;
-	}
-
-	public void setTopic(String topic) {
-		this.topic = topic;
-	}
+//	public String getTopic() {
+//		return topic;
+//	}
+//
+//	public void setTopic(String topic) {
+//		this.topic = topic;
+//	}
 
 	public WorkflowInterpreterConfiguration getConfig() {
 		return config;
@@ -1929,5 +1907,9 @@ public class WorkflowInterpreter {
 
 	public void setConfig(WorkflowInterpreterConfiguration config) {
 		this.config = config;
+	}
+
+	private WSGraph getGraph() {
+		return this.getWorkflow().getGraph();
 	}
 }

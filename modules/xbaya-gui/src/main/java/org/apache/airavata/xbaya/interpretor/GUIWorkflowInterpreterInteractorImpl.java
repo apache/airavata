@@ -126,9 +126,9 @@ public class GUIWorkflowInterpreterInteractorImpl implements
 		case INPUT_WORKFLOWINTERPRETER_FOR_WORKFLOW:
 			WorkflowExecutionData widata = (WorkflowExecutionData) data;
             XBayaConfiguration conf = this.engine.getConfiguration();
-            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, engine.getGUI(), new MyProxyChecker(this.engine), this.engine.getMonitor());
-			result = new WorkflowInterpreter(workflowInterpreterConfiguration, widata.topic,
-					widata.workflow, true, false,
+            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(widata.workflow,widata.topic,conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, engine.getGUI(), new MyProxyChecker(this.engine), this.engine.getMonitor());
+			result = new WorkflowInterpreter(workflowInterpreterConfiguration, 
+					true, false,
 					new GUIWorkflowInterpreterInteractorImpl(engine,
 							widata.workflow));
 			this.engine.registerWorkflowInterpreter((WorkflowInterpreter)result);
@@ -145,7 +145,7 @@ public class GUIWorkflowInterpreterInteractorImpl implements
 					w.currentInterpreter.getConfig().getConfiguration(),
 					new MonitorConfiguration(w.currentInterpreter
 							.getConfig().getMessageBrokerURL(),
-							w.currentInterpreter.getTopic(), true,
+							w.currentInterpreter.getConfig().getTopic(), true,
 							w.currentInterpreter.getConfig()
 									.getMessageBoxURL()), w.wsNode.getID(),
 					null);

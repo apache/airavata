@@ -252,10 +252,10 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         WorkflowInterpretorEventListener listener = null;
         WorkflowInterpreter interpreter = null;
-        WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, null, null, null);
+        WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,topic,conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, null, null, null);
         if (Boolean.parseBoolean(configurations.get(WITH_LISTENER))) {
             listener = new WorkflowInterpretorEventListener(workflow, conf);
-            interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, topic, workflow, username, password, new SSWorkflowInterpreterInteractorImpl(workflow));
+            interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, new SSWorkflowInterpreterInteractorImpl(workflow));
 
             try {
                 System.err.println("start listener set");
@@ -264,7 +264,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                 e1.printStackTrace();
             }
         } else {
-            interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, topic, workflow, username, password, true);
+            interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, new SSWorkflowInterpreterInteractorImpl(workflow));
         }
 
         WorkflowContextHeaderBuilder.setCurrentContextHeader(builder.getContextHeader());
