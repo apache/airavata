@@ -24,7 +24,6 @@ package org.apache.airavata.xbaya.interpretor;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
-import org.apache.airavata.xbaya.security.SecurityUtil;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 
 public class SSWorkflowInterpreterInteractorImpl implements
@@ -62,25 +61,23 @@ public class SSWorkflowInterpreterInteractorImpl implements
 		switch (messageType) {
 		case INPUT_WORKFLOWINTERPRETER_FOR_WORKFLOW:
 			WorkflowExecutionData widata = (WorkflowExecutionData) data;
-            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(widata.currentInterpreter.getConfig().getMessageBoxURL(), widata.currentInterpreter.getConfig().getMessageBrokerURL(), widata.currentInterpreter.getConfig().getRegistry(), widata.currentInterpreter.getConfig().getConfiguration(), widata.currentInterpreter.getConfig().getGUI(), widata.currentInterpreter.getConfig().getMyProxyChecker(), widata.currentInterpreter.getConfig().getMonitor());
+            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(widata.workflow,widata.topic,widata.currentInterpreter.getConfig().getMessageBoxURL(), widata.currentInterpreter.getConfig().getMessageBrokerURL(), widata.currentInterpreter.getConfig().getRegistry(), widata.currentInterpreter.getConfig().getConfiguration(), widata.currentInterpreter.getConfig().getGUI(), widata.currentInterpreter.getConfig().getMyProxyChecker(), widata.currentInterpreter.getConfig().getMonitor());
 			result = new WorkflowInterpreter(workflowInterpreterConfiguration
-					, widata.topic,
-					widata.workflow, widata.currentInterpreter.getUsername(),
-					widata.currentInterpreter.getPassword(),
+					, 
 					new SSWorkflowInterpreterInteractorImpl(widata.workflow));
 			break;
-		case INPUT_GSS_CREDENTIAL:
-			WorkflowInterpreter w = (WorkflowInterpreter) data;
-			result = SecurityUtil.getGSSCredential(w.getUsername(),
-					w.getPassword(), w.getConfig().getConfiguration().getMyProxyServer());
-			break;
+//		case INPUT_GSS_CREDENTIAL:
+//			WorkflowInterpreter w = (WorkflowInterpreter) data;
+//			result = SecurityUtil.getGSSCredential(w.getUsername(),
+//					w.getPassword(), w.getConfig().getConfiguration().getMyProxyServer());
+//			break;
 		case INPUT_LEAD_CONTEXT_HEADER:
 			WSNodeData d = (WSNodeData) data;
 			result = XBayaUtil.buildLeadContextHeader(d.currentInterpreter
 					.getWorkflow(), d.currentInterpreter.getConfig().getConfiguration(),
 					new MonitorConfiguration(d.currentInterpreter
 							.getConfig().getMessageBrokerURL(),
-							d.currentInterpreter.getTopic(), true,
+							d.currentInterpreter.getConfig().getTopic(), true,
 							d.currentInterpreter.getConfig().getMessageBoxURL()), d.wsNode.getID(),
 					null);
 			break;

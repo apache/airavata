@@ -269,9 +269,9 @@ public class TavernaRunnerWindow {
                     TavernaRunnerWindow.this.engine.getMonitor().start();
                     notifConfig.setTopic(topicString);
                     XBayaConfiguration conf = TavernaRunnerWindow.this.engine.getConfiguration();
-                    WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, TavernaRunnerWindow.this.engine.getGUI(), new MyProxyChecker(TavernaRunnerWindow.this.engine), TavernaRunnerWindow.this.engine.getMonitor());
+                    WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(engine.getGUI().getWorkflow(),topicString,conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, TavernaRunnerWindow.this.engine.getGUI(), new MyProxyChecker(TavernaRunnerWindow.this.engine), TavernaRunnerWindow.this.engine.getMonitor());
 
-                    WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, topicString, new GUIWorkflowInterpreterInteractorImpl(engine, engine.getGUI().getWorkflow()));
+                    WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, new GUIWorkflowInterpreterInteractorImpl(engine, engine.getGUI().getWorkflow()));
                     TavernaRunnerWindow.this.engine.registerWorkflowInterpreter(workflowInterpreter);
 					workflowInterpreter.scheduleDynamically();
                 } catch (WorkflowException e) {

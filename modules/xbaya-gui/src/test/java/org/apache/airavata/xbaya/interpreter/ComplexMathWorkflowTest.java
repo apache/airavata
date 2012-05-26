@@ -25,6 +25,7 @@ import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.interpreter.utils.WorkflowTestUtils;
+import org.apache.airavata.xbaya.interpretor.SSWorkflowInterpreterInteractorImpl;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreterConfiguration;
 import org.apache.airavata.xbaya.ui.dialogs.graph.dynamic.DynamicWorkflowRunnerWindow;
@@ -58,10 +59,9 @@ public class ComplexMathWorkflowTest {
         URL systemResource = this.getClass().getClassLoader().getSystemResource("ComplexMath.xwf");
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
         XBayaConfiguration conf = WorkflowTestUtils.getConfiguration();
-        WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, null,null,null);
-
-        WorkflowInterpreter interpretor = new WorkflowInterpreter(workflowInterpreterConfiguration, UUID.randomUUID().toString(),
-                workflow, "NA", "NA",true);
+        WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,UUID.randomUUID().toString(),conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, null,null,null,true);
+        SSWorkflowInterpreterInteractorImpl ssWorkflowInterpreterInteractorImpl = new SSWorkflowInterpreterInteractorImpl(workflow);
+        WorkflowInterpreter interpretor = new WorkflowInterpreter(workflowInterpreterConfiguration,ssWorkflowInterpreterInteractorImpl);
         interpretor.scheduleDynamically();
     }
 }

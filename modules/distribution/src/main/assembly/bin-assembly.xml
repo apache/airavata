@@ -251,6 +251,7 @@
                 <include>org.apache.airavata:airavata-messenger-commons</include>
                 <include>org.apache.airavata:airavata-gfac-schema-utils</include>
                 <include>org.apache.airavata:airavata-common-utils</include>
+                <include>org.apache.airavata:airavata-workflow-model-core:jar</include>
                 <include>edu.berkeley:yfilter</include>
                 <include>javax.servlet:servlet-api</include>
                 <include>org.bouncycastle:bcprov-jdk15</include>
@@ -262,7 +263,6 @@
             <includes>
                 <include>org.apache.airavata:airavata-message-box:jar</include>
                 <include>org.apache.airavata:airavata-message-broker:jar</include>
-                <include>org.apache.airavata:airavata-workflow-model-core:jar</include>
                 <include>org.apache.airavata:airavata-xbaya-gui:jar</include>
                 <include>org.apache.airavata:airavata-gfac-axis2-interface:jar</include>
                 <include>org.apache.airavata:airavata-registry-service:jar</include>

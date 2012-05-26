@@ -24,7 +24,10 @@ package org.apache.airavata.xbaya.interpretor;
 import java.net.URI;
 
 import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
+import org.apache.airavata.xbaya.jython.lib.NotificationSender;
+import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.utils.MyProxyChecker;
@@ -37,8 +40,17 @@ public class WorkflowInterpreterConfiguration {
 	private XBayaGUI gui;
 	private MyProxyChecker myProxyChecker;
 	private Monitor monitor;
+	private boolean offline=false;
+	private boolean runWithCrossProduct=false;
+	private Workflow workflow;
+	private WorkflowNotifiable notifier;
+	private String topic;
 	
-	public WorkflowInterpreterConfiguration(URI messageBoxURL,URI messageBrokerURL,AiravataRegistry registry,XBayaConfiguration configuration,XBayaGUI gui,MyProxyChecker myProxyChecker,Monitor monitor) {
+	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry registry,XBayaConfiguration configuration,XBayaGUI gui,MyProxyChecker myProxyChecker,Monitor monitor) {
+		this(workflow, topic, messageBoxURL,messageBrokerURL,registry,configuration,gui,myProxyChecker,monitor, false);
+	}
+	
+	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry registry,XBayaConfiguration configuration,XBayaGUI gui,MyProxyChecker myProxyChecker,Monitor monitor, boolean offline) {
 		this.messageBoxURL = messageBoxURL;
 		this.messageBrokerURL = messageBrokerURL;
 		this.registry = registry;
@@ -46,6 +58,9 @@ public class WorkflowInterpreterConfiguration {
 		this.gui = gui;
 		this.myProxyChecker = myProxyChecker;
 		this.monitor = monitor;
+		this.offline = offline;
+		this.workflow = workflow;
+		this.topic = topic;
 	}
 	
 	public URI getMessageBoxURL() {
@@ -90,5 +105,56 @@ public class WorkflowInterpreterConfiguration {
 	public void setMonitor(Monitor monitor) {
 		this.monitor = monitor;
 	}
+
+	public boolean isOffline() {
+		return offline;
+	}
+
+	public void setOffline(boolean offline) {
+		this.offline = offline;
+	}
+
+	public boolean isRunWithCrossProduct() {
+		return runWithCrossProduct;
+	}
+
+	public void setRunWithCrossProduct(boolean runWithCrossProduct) {
+		this.runWithCrossProduct = runWithCrossProduct;
+	}
+
+	public Workflow getWorkflow() {
+		return workflow;
+	}
+
+	public void setWorkflow(Workflow workflow) {
+		this.workflow = workflow;
+	}
+
+	public WorkflowNotifiable getNotifier() {
+		if (notifier==null){
+			if (getMonitor()==null){
+				if (isOffline()) {
+					notifier = new StandaloneNotificationSender(getTopic(),getWorkflow());
+				} else {
+					throw new Error("Cannot Initialize workflow with offline false");
+				}
+			}else{
+				notifier=new NotificationSender(getMessageBrokerURL(), getTopic());
+			}
+		}
+		return notifier;
+	}
+
+	public void validateNotifier(){
+		getNotifier();
+	}
 	
+	public String getTopic() {
+		return topic;
+	}
+
+	public void setTopic(String topic) {
+		this.topic = topic;
+	}
+
 }

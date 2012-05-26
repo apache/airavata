@@ -395,12 +395,12 @@ public class DynamicWorkflowRunnerWindow {
             @Override
             public void run() {
                 XBayaConfiguration conf = DynamicWorkflowRunnerWindow.this.engine.getConfiguration();
-                WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, DynamicWorkflowRunnerWindow.this.engine.getGUI(), new MyProxyChecker(DynamicWorkflowRunnerWindow.this.engine), DynamicWorkflowRunnerWindow.this.engine.getMonitor());
+                WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(engine.getGUI().getWorkflow(),topicString,conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, DynamicWorkflowRunnerWindow.this.engine.getGUI(), new MyProxyChecker(DynamicWorkflowRunnerWindow.this.engine), DynamicWorkflowRunnerWindow.this.engine.getMonitor());
+                workflowInterpreterConfiguration.setRunWithCrossProduct(isRunCrossProduct);
 
                 WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(
-                		workflowInterpreterConfiguration, topicString, new GUIWorkflowInterpreterInteractorImpl(engine, engine.getGUI().getWorkflow()));
+                		workflowInterpreterConfiguration, new GUIWorkflowInterpreterInteractorImpl(engine, engine.getGUI().getWorkflow()));
                 DynamicWorkflowRunnerWindow.this.engine.registerWorkflowInterpreter(workflowInterpreter);
-                workflowInterpreter.setRunWithCrossProduct(isRunCrossProduct);
                 try {
                     MonitorConfiguration notifConfig = DynamicWorkflowRunnerWindow.this.engine.getMonitor()
                             .getConfiguration();
