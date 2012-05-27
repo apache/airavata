@@ -143,7 +143,7 @@ public class WorkflowInterpreter {
 //
 //    private WSGraph graph;
 
-	private boolean isSubWorkflow;
+//	private boolean isSubWorkflow;
 
 //	private XBayaConfiguration configuration;
 
@@ -155,11 +155,11 @@ public class WorkflowInterpreter {
 
 //	private String topic;
 
-    private Boolean gfacEmbeddedMode = false;
+//    private Boolean gfacEmbeddedMode = false;
 
 	private LeadResourceMapping resourceMapping;
 
-	private boolean actOnProvenance = false;
+//	private boolean actOnProvenance = false;
 
 	private PredicatedTaskRunner provenanceWriter;
 
@@ -213,17 +213,17 @@ public class WorkflowInterpreter {
 //		this.config.getMode() = SERVER_MODE;
 //	}
 
-	/**
-	 * 
-	 * Constructs a WorkflowInterpreter.
-	 * 
-	 * @param engine
-	 * @param topic
-	 */
-	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, WorkflowInterpreterInteractor interactor) {
-		this(config, false, config
-				.getConfiguration().isCollectProvenance(),interactor);
-	}
+//	/**
+//	 * 
+//	 * Constructs a WorkflowInterpreter.
+//	 * 
+//	 * @param engine
+//	 * @param topic
+//	 */
+//	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, WorkflowInterpreterInteractor interactor) {
+//		this(config, interactor);
+//
+//	}
 
 	/**
 	 * 
@@ -234,17 +234,18 @@ public class WorkflowInterpreter {
 	 * @param workflow
 	 * @param subWorkflow
 	 */
-	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, 
-			boolean subWorkflow, boolean actOnProvenance, WorkflowInterpreterInteractor interactor) {
+	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, WorkflowInterpreterInteractor interactor) {
 //		this.engine = engine;
 		this.setConfig(config);
-		this.isSubWorkflow = subWorkflow;
+//		this.isSubWorkflow = subWorkflow;
 //		this.config.getMode() = WorkflowInterpreterConfiguration.GUI_MODE;
 		config.validateNotifier();
 //		this.setTopic(topic);
-		this.actOnProvenance = actOnProvenance;
+//		this.config.isActOnProvenance() = actOnProvenance;
 //		engine.registerWorkflowInterpreter(this);
 		this.interactor=interactor;
+		config.setActOnProvenance(config.getConfiguration().isCollectProvenance());
+		config.setSubWorkflow(false);
 
 	}
 
@@ -266,14 +267,14 @@ public class WorkflowInterpreter {
 	 */
 	public void scheduleDynamically() throws WorkflowException {
 		try {
-			if (!this.isSubWorkflow
+			if (!this.config.isSubWorkflow()
 					&& this.getWorkflow().getExecutionState() != WorkflowExecutionState.NONE) {
 				throw new WorkFlowInterpreterException(
 						"XBaya is already running a workflow");
 			}
 
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.RUNNING);
-			if (actOnProvenance) {
+			if (this.config.isActOnProvenance()) {
 				try {
 					this.getConfig().getConfiguration()
 							.getJcrComponentRegistry()
@@ -329,7 +330,7 @@ public class WorkflowInterpreter {
 					}
 
 					// boolean nodeOutputLoadedFromProvenance = false;
-					if (this.actOnProvenance) {
+					if (this.config.isActOnProvenance()) {
 						// nodeOutputLoadedFromProvenance =
 						// readProvenance(node);
 						// } else {
@@ -367,7 +368,7 @@ public class WorkflowInterpreter {
 			}
 
 			if (InterpreterUtil.getFailedNodeCountDynamically(this.getGraph()) == 0) {
-				if (actOnProvenance) {
+				if (this.config.isActOnProvenance()) {
 					try {
 						try {
 							this.getConfig().getConfiguration()
@@ -384,7 +385,7 @@ public class WorkflowInterpreter {
 					// System.out.println(this.config.getConfiguration().getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
 				}
 			} else {
-				if (actOnProvenance) {
+				if (this.config.isActOnProvenance()) {
 					try {
 						this.getConfig().getConfiguration()
 								.getJcrComponentRegistry()
@@ -605,7 +606,7 @@ public class WorkflowInterpreter {
 						((OutputNode) node).setDescription(val.toString());
 					}
 
-					if (actOnProvenance) {
+					if (this.config.isActOnProvenance()) {
 						try {
 							if (val instanceof String) {
 								this.getConfig().getConfiguration()
@@ -671,7 +672,7 @@ public class WorkflowInterpreter {
 				}
 				// Some node not yet updated
 				if (NodeController.getGUI(node).getBodyColor() != NodeState.FINISHED.color) {
-					if (actOnProvenance) {
+					if (this.config.isActOnProvenance()) {
 						try {
 							if (val instanceof String) {
 								this.getConfig().getConfiguration()
@@ -927,51 +928,26 @@ public class WorkflowInterpreter {
 //                        this.engine.getMonitor().getConfiguration().getBrokerURL().toASCIIString(), this.config.getNotifier(), this.config.getTopic(),
 //                        this.engine.getConfiguration().getJcrComponentRegistry().getRegistry(),
 //                        portTypeQName.getLocalPart(),this.engine.getConfiguration()));
-				if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
-					// if user configure the msgBox url using the UI we have to
-					// pick the latest one which
-					// set by the UI
-                    if (this.gfacEmbeddedMode) {
-                        invoker = new EmbeddedGFacInvoker(portTypeQName,
-                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), 
-                                node.getID(),
-                                this.config.getMonitor().getConfiguration().getMessageBoxURL().toASCIIString(),
-                                this.config.getMonitor().getConfiguration().getBrokerURL().toASCIIString(), 
-                                this.config.getNotifier(), 
-                                this.config.getTopic(),
-                                this.config.getRegistry(),
-                                portTypeQName.getLocalPart(),
-                                this.config.getConfiguration());
-                    } else {
-                        invoker = new GenericInvoker(portTypeQName,
-                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), 
-                                node.getID(),
-                                this.config.getMonitor().getConfiguration().getMessageBoxURL().toASCIIString(),
-                                gfacURLString, 
-                                this.config.getNotifier());
-                    }
-				} else {
-                    if(this.gfacEmbeddedMode){
-                        invoker = new EmbeddedGFacInvoker(portTypeQName,
-                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), 
-                                node.getID(),
-                                this.getConfig().getMessageBoxURL().toASCIIString(),
-                                this.getConfig().getMessageBrokerURL().toASCIIString(), 
-                                this.config.getNotifier(), 
-                                this.config.getTopic(), 
-                                getConfig().getRegistry(),
-                                portTypeQName.getLocalPart(),
-                                this.getConfig().getConfiguration());
-                    }else{
-                        invoker = new GenericInvoker(portTypeQName,
-                                WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), 
-                                node.getID(),
-                                this.getConfig().getMessageBoxURL().toASCIIString(), 
-                                gfacURLString,
-                                this.config.getNotifier());
-
-                    }
-				}
+				if (this.config.isGfacEmbeddedMode()) {
+                    invoker = new EmbeddedGFacInvoker(portTypeQName,
+                            WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), 
+                            node.getID(),
+                            this.config.getMessageBoxURL().toASCIIString(),
+                            this.config.getMessageBrokerURL().toASCIIString(), 
+                            this.config.getNotifier(), 
+                            this.config.getTopic(),
+                            this.config.getRegistry(),
+                            portTypeQName.getLocalPart(),
+                            this.config.getConfiguration());
+                } else {
+                    invoker = new GenericInvoker(portTypeQName,
+                            WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), 
+                            node.getID(),
+                            this.config.getMessageBoxURL().toASCIIString(),
+                            gfacURLString, 
+                            this.config.getNotifier());
+                }
+				
 			}
 
 		} else {
@@ -1861,21 +1837,21 @@ public class WorkflowInterpreter {
 		return this.config.getWorkflow();
 	}
 
-	public void setActOnProvenance(boolean actOnProvenance) {
-		this.actOnProvenance = actOnProvenance;
-	}
+//	public void setActOnProvenance(boolean actOnProvenance) {
+//		this.config.isActOnProvenance() = actOnProvenance;
+//	}
 
 	public void setProvenanceWriter(PredicatedTaskRunner provenanceWriter) {
 		this.provenanceWriter = provenanceWriter;
 	}
 
-    public void setGfacEmbeddedMode(Boolean gfacEmbeddedMode) {
-        this.gfacEmbeddedMode = gfacEmbeddedMode;
-    }
-
-    public Boolean getGfacEmbeddedMode() {
-        return gfacEmbeddedMode;
-    }
+//    public void setGfacEmbeddedMode(Boolean gfacEmbeddedMode) {
+//        this.gfacEmbeddedMode = gfacEmbeddedMode;
+//    }
+//
+//    public Boolean getGfacEmbeddedMode() {
+//        return gfacEmbeddedMode;
+//    }
 
 //	public String getUsername() {
 //		return username;

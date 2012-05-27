@@ -48,7 +48,10 @@ public class WorkflowInterpreterConfiguration {
 	private Workflow workflow;
 	private WorkflowNotifiable notifier;
 	private String topic;
-	
+    private boolean gfacEmbeddedMode = false;
+	private boolean actOnProvenance = false;
+	private boolean subWorkflow;
+
 	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry registry,XBayaConfiguration configuration,XBayaGUI gui,MyProxyChecker myProxyChecker,Monitor monitor) {
 		this(workflow, topic, messageBoxURL,messageBrokerURL,registry,configuration,gui,myProxyChecker,monitor, false);
 	}
@@ -162,6 +165,30 @@ public class WorkflowInterpreterConfiguration {
 
 	public int getMode() {
 		return getMonitor()==null? SERVER_MODE:GUI_MODE;
+	}
+
+	public boolean isGfacEmbeddedMode() {
+		return gfacEmbeddedMode;
+	}
+
+	public void setGfacEmbeddedMode(boolean gfacEmbeddedMode) {
+		this.gfacEmbeddedMode = gfacEmbeddedMode;
+	}
+
+	public boolean isActOnProvenance() {
+		return actOnProvenance;
+	}
+
+	public void setActOnProvenance(boolean actOnProvenance) {
+		this.actOnProvenance = actOnProvenance;
+	}
+
+	public boolean isSubWorkflow() {
+		return subWorkflow;
+	}
+
+	public void setSubWorkflow(boolean subWorkflow) {
+		this.subWorkflow = subWorkflow;
 	}
 
 }
