@@ -79,6 +79,8 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
     public static final String WORKFLOW_STATUS_TIME_PROPERTY = "Status_Time";
     public static final String WORKFLOW_METADATA_PROPERTY = "Metadata";
     public static final String WORKFLOW_USER_PROPERTY = "User";
+    public static final String NOTIFICATION_STORE = "User";
+
 
     private static Logger log = LoggerFactory.getLogger(AiravataJCRRegistry.class);
 
@@ -565,12 +567,19 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             ServiceName name = type.addNewServiceName();
             name.setStringValue(service.getType().getName());
             name.setTargetNamespace("http://schemas.airavata.apache.org/gfac/type");
-            
-            PortTypeType portType = service.getType().addNewPortType();
-            MethodType methodType = portType.addNewMethod();
-            
-            methodType.setMethodName("invoke");
-            
+            if(service.getType().getPortType() == null){
+                PortTypeType portType = service.getType().addNewPortType();
+                MethodType methodType = portType.addNewMethod();
+                methodType.setMethodName("invoke");
+            }else{
+                MethodType method = service.getType().getPortType().getMethod();
+                if (method == null) {
+                    MethodType methodType = service.getType().getPortType().addNewMethod();
+                    methodType.setMethodName("invoke");
+                } else {
+                    service.getType().getPortType().getMethod().setMethodName("invoke");
+                }
+            }
             WSDLGenerator generator = new WSDLGenerator();
             Hashtable table = generator.generateWSDL(null, null, null, service.getType(), true);            
             return (String) table.get(WSDLConstants.AWSDL);
