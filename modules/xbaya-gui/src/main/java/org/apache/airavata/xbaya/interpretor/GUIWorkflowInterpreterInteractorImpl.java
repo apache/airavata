@@ -127,8 +127,9 @@ public class GUIWorkflowInterpreterInteractorImpl implements
 			WorkflowExecutionData widata = (WorkflowExecutionData) data;
             XBayaConfiguration conf = this.engine.getConfiguration();
             WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(widata.workflow,widata.topic,conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, engine.getGUI(), new MyProxyChecker(this.engine), this.engine.getMonitor());
+            workflowInterpreterConfiguration.setActOnProvenance(false);
+            workflowInterpreterConfiguration.setSubWorkflow(true);
 			result = new WorkflowInterpreter(workflowInterpreterConfiguration, 
-					true, false,
 					new GUIWorkflowInterpreterInteractorImpl(engine,
 							widata.workflow));
 			this.engine.registerWorkflowInterpreter((WorkflowInterpreter)result);

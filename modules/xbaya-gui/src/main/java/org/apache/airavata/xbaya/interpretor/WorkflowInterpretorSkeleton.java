@@ -253,6 +253,8 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         WorkflowInterpretorEventListener listener = null;
         WorkflowInterpreter interpreter = null;
         WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,topic,conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, null, null, null);
+        workflowInterpreterConfiguration.setGfacEmbeddedMode(gfacEmbeddedMode);
+        workflowInterpreterConfiguration.setGfacEmbeddedMode(provenance);
         if (Boolean.parseBoolean(configurations.get(WITH_LISTENER))) {
             listener = new WorkflowInterpretorEventListener(workflow, conf);
             interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, new SSWorkflowInterpreterInteractorImpl(workflow));
@@ -274,9 +276,8 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 
        
         final WorkflowInterpreter finalInterpreter = interpreter;
-        interpreter.setActOnProvenance(provenance);
+//        interpreter.setActOnProvenance(provenance);
         interpreter.setProvenanceWriter(runner);
-        interpreter.setGfacEmbeddedMode(gfacEmbeddedMode);
         final String experimentId = topic;
         System.err.println("Created the interpreter");
         if(inNewThread){
