@@ -211,9 +211,14 @@ public class WorkflowFiler {
                 } else {
                     XmlElement importedWorkflowElement = XMLUtil.loadXML(file);
                     importedWorkflow = new Workflow(importedWorkflowElement);
+                     engine.getConfiguration().registerExecutionModeChangeListener(workflow);
+                    workflow.executionModeChanged(engine.getConfiguration());
                 }
+                GraphCanvas newGraphCanvas = engine.getGUI().newGraphCanvas(true);
+                newGraphCanvas.setWorkflow(importedWorkflow);
                 workflow.importWorkflow(importedWorkflow);
-                this.engine.setWorkflow(workflow);
+                this.engine.setWorkflow(importedWorkflow);
+                engine.getGUI().getGraphCanvas().setWorkflowFile(file);
             } catch (IOException e) {
                 this.engine.getErrorWindow().error(ErrorMessages.OPEN_FILE_ERROR, e);
             } catch (GraphException e) {
