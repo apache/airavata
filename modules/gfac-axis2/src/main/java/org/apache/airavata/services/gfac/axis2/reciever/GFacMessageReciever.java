@@ -353,20 +353,17 @@ public class GFacMessageReciever implements MessageReceiver {
     }
 
     private String getTopic(MessageContext context) {
-        SOAPHeader header = context.getEnvelope().getHeader();
-        OMElement contextHeader = header.getFirstChildWithName(new QName(
-                "http://schemas.airavata.apache.org/workflow-execution-context", "context-header"));
+        OMElement contextHeader = getHeader(context);
         String topic = null;
         try {
             ContextHeaderDocument document = ContextHeaderDocument.Factory.parse(contextHeader.toStringWithConsume());
             topic = document.getContextHeader().getWorkflowMonitoringContext().getExperimentId();
         } catch (XmlException e) {
-            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (XMLStreamException e) {
-            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         }
-        topic = topic.substring(1);
-        return topic.replaceAll("_", "-");
+        return topic;
     }
 
     private OMElement getHeader(MessageContext context) {
