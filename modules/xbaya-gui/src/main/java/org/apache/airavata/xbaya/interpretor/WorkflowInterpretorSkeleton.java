@@ -45,6 +45,7 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.registry.api.impl.JCRRegistry;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
@@ -108,6 +109,30 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static final String WITH_LISTENER = "with.Listener";
     public static final String OUTPUT_DATA_PATH = "outputDataPath";
 
+    private AiravataRegistry getRegistry(){
+        Properties properties = new Properties();
+        try {
+            URL url = getXBayaPropertiesURL();
+            properties.load(url.openStream());
+            jcrUserName = (String)properties.get(JCR_USER);
+            jcrPassword = (String) properties.get(JCR_PASS);
+            jcrURL = (String) properties.get(JCR_URL);
+            jcrComponentRegistry = new JCRComponentRegistry(new URI(jcrURL),jcrUserName,jcrPassword);
+            return jcrComponentRegistry.getRegistry();
+        } catch (RepositoryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (URISyntaxException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IOException e) {
+			e.printStackTrace();
+		}
+        return null;
+    }
+
+	private URL getXBayaPropertiesURL() {
+		return this.getClass().getClassLoader().getResource("xbaya.properties");
+	}
+	
     public void startUp(final ConfigurationContext configctx, AxisService service) {
     	new Thread(){
     		@Override
@@ -117,7 +142,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
-		        URL url = this.getClass().getClassLoader().getResource("xbaya.properties");
+		        URL url = getXBayaPropertiesURL();
 		        Properties properties = new Properties();
 		        try {
 		            properties.load(url.openStream());
@@ -140,9 +165,10 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                             List<HostDescription> hostList = getDefinedHostDescriptions();
                             for(HostDescription host:hostList){
                                 // This will avoid the changes user is doing to one of the predefined Hosts during a restart of the system
-                                if(jcrComponentRegistry.getRegistry().getHostDescription(host.getType().getHostName()) == null){
+                                AiravataRegistry registry = jcrComponentRegistry.getRegistry();
+								if(registry.getHostDescription(host.getType().getHostName()) == null){
                                     log.info("Saving the predefined Host: " + host.getType().getHostName());
-                                    jcrComponentRegistry.getRegistry().saveHostDescription(host);
+                                    registry.saveHostDescription(host);
                                 }
                             }
 		                } catch (RepositoryException e) {
@@ -252,9 +278,10 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         WorkflowInterpretorEventListener listener = null;
         WorkflowInterpreter interpreter = null;
-        WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,topic,conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, null, null, null);
+        AiravataRegistry registry = getRegistry();
+		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,topic,conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null, null, null);
         workflowInterpreterConfiguration.setGfacEmbeddedMode(gfacEmbeddedMode);
-        workflowInterpreterConfiguration.setGfacEmbeddedMode(provenance);
+        workflowInterpreterConfiguration.setActOnProvenance(provenance);
         if (Boolean.parseBoolean(configurations.get(WITH_LISTENER))) {
             listener = new WorkflowInterpretorEventListener(workflow, conf);
             interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, new SSWorkflowInterpreterInteractorImpl(workflow));
@@ -273,7 +300,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 
         final WorkflowInterpretorEventListener finalListener = listener;
         conf.setJcrComponentRegistry(jcrComponentRegistry);
-
        
         final WorkflowInterpreter finalInterpreter = interpreter;
 //        interpreter.setActOnProvenance(provenance);

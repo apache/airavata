@@ -53,7 +53,7 @@ public class WorkflowInterpreterConfiguration {
 	private boolean subWorkflow;
 
 	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry registry,XBayaConfiguration configuration,XBayaGUI gui,MyProxyChecker myProxyChecker,Monitor monitor) {
-		this(workflow, topic, messageBoxURL,messageBrokerURL,registry,configuration,gui,myProxyChecker,monitor, false);
+		this(workflow, topic, messageBoxURL,messageBrokerURL,registry,configuration,gui,myProxyChecker,monitor, true);
 	}
 	
 	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry registry,XBayaConfiguration configuration,XBayaGUI gui,MyProxyChecker myProxyChecker,Monitor monitor, boolean offline) {
