@@ -79,6 +79,8 @@ public class GenericInvoker implements Invoker {
 
     private ContextHeaderDocument.ContextHeader contextHeader;
 
+    private String topic;
+
     /**
      * used for notification
      */
@@ -154,6 +156,7 @@ public class GenericInvoker implements Invoker {
         this.notifier = notifier.createServiceNotificationSender(nodeID);
         this.failerSent = false;
         this.contextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
+        this.topic = notifier.getTopic();
     }
 
     /**
@@ -177,6 +180,7 @@ public class GenericInvoker implements Invoker {
         this.notifier = notifier.createServiceNotificationSender(nodeID);
         this.failerSent = false;
         this.contextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
+        this.topic = notifier.getTopic();
     }
 
     /**
@@ -229,7 +233,7 @@ public class GenericInvoker implements Invoker {
         WorkflowContextHeaderBuilder builder;
         if(contextHeader == null){
             builder = new WorkflowContextHeaderBuilder(this.notifier.getEventSink()
-                .getAddress(), this.gfacURL, null, this.notifier.getWorkflowID().toASCIIString(),
+                .getAddress(), this.gfacURL, null, this.topic,
                 "xbaya-experiment", this.messageBoxURL);
         }else{
              builder = new WorkflowContextHeaderBuilder(contextHeader);
