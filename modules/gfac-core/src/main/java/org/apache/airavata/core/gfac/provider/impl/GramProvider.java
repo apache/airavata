@@ -21,10 +21,16 @@
 
 package org.apache.airavata.core.gfac.provider.impl;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
@@ -98,6 +104,8 @@ public class GramProvider extends AbstractProvider {
                     ftp.makeDir(tmpdirURI, gssCred);
                     ftp.makeDir(workingDirURI, gssCred);
                     ftp.makeDir(inputURI, gssCred);
+                    ftp.makeDir(outputURI, gssCred);
+
                     success = true;
                     break;
                 } catch (URISyntaxException e) {
