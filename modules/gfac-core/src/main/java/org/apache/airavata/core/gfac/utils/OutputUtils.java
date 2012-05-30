@@ -56,7 +56,7 @@ public class OutputUtils {
         return result;
     }
 
-    private static String parseStdout(String stdout, String outParam) {
+    private static String parseStdout(String stdout, String outParam)throws NullPointerException {
         String regex = Pattern.quote(outParam) + "\\s*=\\s*([^\\[\\s'\"][^\\s]*|\"[^\"]*\"|'[^']*'|\\[[^\\[]*\\])";
         String match = null;
         Pattern pattern = Pattern.compile(regex);
@@ -68,7 +68,7 @@ public class OutputUtils {
             match = match.trim();
             return match;
         } else {
-            return null;
+            throw new NullPointerException();
         }
     }
 }

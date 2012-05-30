@@ -22,7 +22,6 @@
 package org.apache.airavata.core.gfac.provider.impl;
 
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -383,12 +382,12 @@ public class GramProvider extends AbstractProvider {
 					.getValue(paramName);
 			//TODO: Review this with type
 			if ("URI".equals(actualParameter.getType().getType().toString())) {
-                        ((URIParameterType) actualParameter.getType()).setValue(stageInputFiles(invocationContext, paramValue, actualParameter).getPath());
+                        ((URIParameterType) actualParameter.getType()).setValue(stageInputFiles(invocationContext, paramValue, actualParameter));
             }else if("URIArray".equals(actualParameter.getType().getType().toString())){
                 List<String> split = Arrays.asList(paramValue.split(","));
                 List<String> newFiles = new ArrayList<String>();
                     for (String paramValueEach : split) {
-                        newFiles.add(stageInputFiles(invocationContext, paramValueEach, actualParameter).getPath());
+                        newFiles.add(stageInputFiles(invocationContext, paramValueEach, actualParameter));
                     }
                 ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
             }
@@ -402,7 +401,7 @@ public class GramProvider extends AbstractProvider {
 		return null;
 	}
 
-    private URI stageInputFiles(InvocationContext invocationContext, String paramValue, ActualParameter actualParameter) throws URISyntaxException, SecurityException, ToolsException, IOException {
+    private String stageInputFiles(InvocationContext invocationContext, String paramValue, ActualParameter actualParameter) throws URISyntaxException, SecurityException, ToolsException, IOException {
         URI gridftpURL;
         gridftpURL = new URI(paramValue);
         GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
@@ -415,9 +414,9 @@ public class GramProvider extends AbstractProvider {
             URI inputURI = GfacUtils.createGsiftpURI(endpoint, app.getInputDataDirectory());
             String fileName = new File(gridftpURL.getPath()).getName();
             String s = inputURI.getPath() + File.separator + fileName;
-            destURI = GfacUtils.createGsiftpURI(endpoint, s);
             //if user give a url just to refer an endpoint, not a web resource we are not doing any transfer
             if (fileName != null && !"".equals(fileName)) {
+                destURI = GfacUtils.createGsiftpURI(endpoint, s);
                 if (paramValue.startsWith("gsiftp")) {
                     ftp.uploadFile(gridftpURL, destURI, gssCred);
                 } else if (paramValue.startsWith("file")) {
@@ -428,11 +427,14 @@ public class GramProvider extends AbstractProvider {
                             gssCred, (gridftpURL.toURL().openStream()));
                 }else {
                     //todo throw exception telling unsupported protocol
-//                                    new
+                    return paramValue;
                 }
+            }else{
+                // When the given input is not a web resource but a URI type input, then we don't do any transfer just keep the same value as it isin the input
+                return paramValue;
             }
         }
-        return destURI;
+        return destURI.getPath();
     }
 
     private void stageOutputFiles(InvocationContext invocationContext,String outputFileStagingPath) throws ProviderException {
@@ -456,7 +458,7 @@ public class GramProvider extends AbstractProvider {
             try {
                 if ("URI".equals(actualParameter.getType().getType().toString())) {
                     for (String endpoint : host.getGridFTPEndPointArray()) {
-                        ((URIParameterType) actualParameter.getType()).setValue(stageOutputFiles(outputFileStagingPath,
+                        ((URIParameterType) actualParameter.getType()).setValue(doStaging(outputFileStagingPath,
                                 paramValue, actualParameter, ftp, gssCred, endpoint));
                     }
                 } else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
@@ -464,7 +466,7 @@ public class GramProvider extends AbstractProvider {
                     List<String> newFiles = new ArrayList<String>();
                     for (String endpoint : host.getGridFTPEndPointArray()) {
                         for (String paramValueEach : split) {
-                            newFiles.add(stageOutputFiles(outputFileStagingPath, paramValueEach, actualParameter, ftp, gssCred, endpoint));
+                            newFiles.add(doStaging(outputFileStagingPath, paramValueEach, actualParameter, ftp, gssCred, endpoint));
                         }
                         ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
                     }
@@ -480,7 +482,7 @@ public class GramProvider extends AbstractProvider {
         invocationContext.setOutput(outputNew);
     }
 
-    private String stageOutputFiles(String outputFileStagingPath, String paramValue, ActualParameter actualParameter, GridFtp ftp, GSSCredential gssCred, String endpoint) throws URISyntaxException, ToolsException {
+    private String doStaging(String outputFileStagingPath, String paramValue, ActualParameter actualParameter, GridFtp ftp, GSSCredential gssCred, String endpoint) throws URISyntaxException, ToolsException {
         URI srcURI = GfacUtils.createGsiftpURI(endpoint, paramValue);
         String fileName = new File(srcURI.getPath()).getName();
         File outputFile = new File(outputFileStagingPath + File.separator + fileName);
