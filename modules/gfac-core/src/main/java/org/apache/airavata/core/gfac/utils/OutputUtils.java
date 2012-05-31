@@ -37,7 +37,7 @@ public class OutputUtils {
     private OutputUtils() {
     }
 
-    public static Map<String, ?> fillOutputFromStdout(MessageContext<ActualParameter> outMessage, String stdout) throws XmlException{
+    public static Map<String, ActualParameter> fillOutputFromStdout(MessageContext<ActualParameter> outMessage, String stdout) throws XmlException{
 
         Map<String, ActualParameter> result = new HashMap<String, ActualParameter>();
 
@@ -48,10 +48,13 @@ public class OutputUtils {
             if (outMessage.getValue(parameterName) == null) {
                 continue;
             }
-            
+
             ActualParameter actual = outMessage.getValue(parameterName);
-            MappingFactory.fromString(actual, parseStdout(stdout, parameterName));
+            String parseStdout = parseStdout(stdout, parameterName);
+            if(parseStdout != null){
+			MappingFactory.fromString(actual, parseStdout);
             result.put(parameterName, actual);
+            }
         }
         return result;
     }
