@@ -72,7 +72,7 @@ public class GramRSLGenerator {
             }
         }
         jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getInputDataDirectory());
-        jobAttr.addEnvVariable(GFacConstants.INPUT_DATA_DIR_VAR_NAME, app.getOutputDataDirectory());
+        jobAttr.addEnvVariable(GFacConstants.OUTPUT_DATA_DIR_VAR_NAME, app.getOutputDataDirectory());
 
         if (app.getMaxWallTime() > 0) {
             log.info("Setting max wall clock time to " + app.getMaxWallTime());

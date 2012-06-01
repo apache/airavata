@@ -47,6 +47,7 @@ import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.airavata.schemas.wec.WorkflowOutputDataHandlingDocument;
+import org.apache.xmlbeans.XmlException;
 import org.globus.gram.GramAttributes;
 import org.globus.gram.GramException;
 import org.globus.gram.GramJob;
@@ -100,6 +101,7 @@ public class GramProvider extends AbstractProvider {
                     ftp.makeDir(tmpdirURI, gssCred);
                     ftp.makeDir(workingDirURI, gssCred);
                     ftp.makeDir(inputURI, gssCred);
+                    ftp.makeDir(outputURI, gssCred);
                     success = true;
                     break;
                 } catch (URISyntaxException e) {
@@ -203,38 +205,20 @@ public class GramProvider extends AbstractProvider {
              */
             int jobStatus = listener.getStatus();
 
-            if(job.getExitCode() != 0){
+            if(job.getExitCode() != 0 || jobStatus == GramJob.STATUS_FAILED){
                 int errCode = listener.getError();
                 String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress() + " Job Exit Code = "
-                        + job.getExitCode();
+                        + listener.getError();
                 JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
                         gateKeeper, job.getRSL());
-                if (errCode == 8) {
-                    error.setReason(JobSubmissionFault.JOB_CANCEL);
-                } else {
-                    error.setReason(JobSubmissionFault.JOB_FAILED + " With Exit Code:" + job.getExitCode());
-                }
+                errorReason(errCode, error);
                 invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,error,errorMsg);
                 throw error;
             }
-            if (jobStatus == GramJob.STATUS_FAILED) {
-                int errCode = listener.getError();
-                String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress() + " Error Code = "
-                        + errCode;
-                JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
-                        gateKeeper, job.getRSL());
-                if (errCode == 8) {
-                    error.setReason(JobSubmissionFault.JOB_CANCEL);
-                } else {
-                    error.setReason(JobSubmissionFault.JOB_FAILED);
-                }
-                invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,error,errorMsg);
-                throw error;
-            }
-
-        } catch (GramException e) {
-            invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
-            throw new ProviderException(e.getMessage(), e);
+         } catch (GramException e) {
+            JobSubmissionFault error = new JobSubmissionFault(this, e, host.getHostAddress(), gateKeeper, job.getRSL());
+            int errCode = listener.getError();
+		    throw errorReason(errCode, error);
         } catch (GSSException e) {
             invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
             throw new ProviderException(e.getMessage(), e);
@@ -244,20 +228,20 @@ public class GramProvider extends AbstractProvider {
         } catch (SecurityException e) {
             invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
             throw new ProviderException(e.getMessage(), e);
-        } finally {
-            if (job != null) {
-                try {
-                    job.cancel();
-                } catch (Exception e) {
-//                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
-//                    throw new ProviderException(e.getMessage(), e);
-                }
-            }
-        }
+        } 
 
     }
+    private JobSubmissionFault errorReason(int errCode, JobSubmissionFault error) {
+		if (errCode == 8) {
+		    error.setReason(JobSubmissionFault.JOB_CANCEL);
+		} else {
+		    error.setReason(JobSubmissionFault.JOB_FAILED + " With Exit Code:" + job.getExitCode());
+		}
+		return error;
+	}
 
-    public Map<String, ?> processOutput(InvocationContext invocationContext) throws ProviderException {
+    @Override
+    protected Map<String, ?> processOutput(InvocationContext invocationContext) throws ProviderException {
         GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
         ApplicationDeploymentDescriptionType app = invocationContext.getExecutionDescription().getApp().getType();
         GridFtp ftp = new GridFtp();
@@ -268,18 +252,13 @@ public class GramProvider extends AbstractProvider {
             if (hostgridFTP == null || hostgridFTP.length == 0) {
                 hostgridFTP = new String[] { host.getHostAddress() };
             }
-
             boolean success = false;
             ProviderException pe = new ProviderException("");
-
             for (String endpoint : host.getGridFTPEndPointArray()) {
-
                 try {
-
                     /*
-                     * Stdout and Stderror
+                     *  Read Stdout and Stderror
                      */
-
                     URI stdoutURI = GfacUtils.createGsiftpURI(endpoint, app.getStandardOutput());
                     URI stderrURI = GfacUtils.createGsiftpURI(endpoint, app.getStandardError());
 
@@ -291,7 +270,6 @@ public class GramProvider extends AbstractProvider {
                         logDir.mkdir();
                     }
 
-                    // Get the Stdouts and StdErrs
                     String timeStampedServiceName = GfacUtils.createUniqueNameForService(invocationContext
                             .getServiceName());
                     File localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
@@ -299,40 +277,38 @@ public class GramProvider extends AbstractProvider {
 
                     String stdout = ftp.readRemoteFile(stdoutURI, gssCred, localStdOutFile);
                     String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
-                    Map<String,?> stringMap = null;
-                    // This is to handle exception during the output parsing.
-                    try{
-                         stringMap = OutputUtils.fillOutputFromStdout(invocationContext.<ActualParameter>getOutput(), stdout);
-                    }catch(Exception e){
-                        int errCode = listener.getError();
-                            String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress();
-                            JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
-                                    gateKeeper, job.getRSL());
-                            if (errCode == 8) {
-                                error.setReason(JobSubmissionFault.JOB_CANCEL);
-                            } else {
-                                error.setReason(JobSubmissionFault.JOB_FAILED + " With Null Output Value :");
-                            }
-                            invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,error,errorMsg);
-                            throw error;
-                    }
-                    MessageContext<Object> input = invocationContext.getOutput();
-                    for (Iterator<String> iterator = input.getNames(); iterator.hasNext(); ) {
+                    Map<String,ActualParameter> stringMap = null;
+                    MessageContext<Object> output = invocationContext.getOutput();
+                    for (Iterator<String> iterator = output.getNames(); iterator.hasNext(); ) {
                         String paramName = iterator.next();
-                        String paramValue = input.getStringValue(paramName);
-                        if("".equals(paramValue) || paramValue == null){
+                        ActualParameter actualParameter = (ActualParameter) output.getValue(paramName);
+						if ("URIArray".equals(actualParameter.getType().getType().toString())) {
+							URI outputURI = GfacUtils.createGsiftpURI(endpoint,app.getOutputDataDirectory());
+							List<String> outputList = ftp.listDir(outputURI,gssCred);
+							String[] valueList = outputList.toArray(new String[outputList.size()]);
+							((URIArrayType) actualParameter.getType()).setValueArray(valueList);
+							stringMap = new HashMap<String, ActualParameter>();
+							stringMap.put(paramName, actualParameter);
+						}
+                    	else{
+                    	// This is to handle exception during the output parsing.
+                        stringMap = OutputUtils.fillOutputFromStdout(invocationContext.<ActualParameter>getOutput(), stdout);
+                        String paramValue = output.getStringValue(paramName);
+                        if(paramValue == null || paramValue.isEmpty()){
                             int errCode = listener.getError();
                             String errorMsg = "Job " + job.getID() + " on host " + host.getHostAddress();
                             JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
                                     gateKeeper, job.getRSL());
-                            if (errCode == 8) {
-                                error.setReason(JobSubmissionFault.JOB_CANCEL);
-                            } else {
-                                error.setReason(JobSubmissionFault.JOB_FAILED + " With Exit Code:" + job.getExitCode());
-                            }
+                            errorReason(errCode, error);
                             invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,error,errorMsg);
                             throw error;
                         }
+                        }
+                    }
+                    if(stringMap == null || stringMap.isEmpty()){
+                    	ProviderException exception = new ProviderException("Error creating job output");
+                    	 invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,exception,exception.getLocalizedMessage());
+                         throw exception;
                     }
                     // If users has given an output DAta poth we download the output files in to that directory, this will be apath in the machine where GFac is installed
                     if(WorkflowContextHeaderBuilder.getCurrentContextHeader()
@@ -347,7 +323,11 @@ public class GramProvider extends AbstractProvider {
                         }
                     }
                     return stringMap;
-                } catch (ToolsException e) {
+                }catch (XmlException e) {
+                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
+                    throw new ProviderException(e.getMessage(), e);
+                }
+                catch (ToolsException e) {
                     invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
                     throw new ProviderException(e.getMessage(), e);
                 } catch (URISyntaxException e) {
@@ -370,7 +350,6 @@ public class GramProvider extends AbstractProvider {
         }
 
     }
-
 	@Override
 	protected Map<String, ?> processInput(InvocationContext invocationContext)
             throws ProviderException {

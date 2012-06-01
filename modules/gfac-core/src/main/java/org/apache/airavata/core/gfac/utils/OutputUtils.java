@@ -37,7 +37,7 @@ public class OutputUtils {
     private OutputUtils() {
     }
 
-    public static Map<String, ?> fillOutputFromStdout(MessageContext<ActualParameter> outMessage, String stdout) throws XmlException{
+    public static Map<String, ActualParameter> fillOutputFromStdout(MessageContext<ActualParameter> outMessage, String stdout) throws XmlException{
 
         Map<String, ActualParameter> result = new HashMap<String, ActualParameter>();
 
