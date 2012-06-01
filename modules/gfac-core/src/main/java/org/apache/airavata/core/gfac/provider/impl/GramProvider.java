@@ -74,6 +74,8 @@ public class GramProvider extends AbstractProvider {
             gssContext = (GSISecurityContext)invocationContext.getSecurityContext(MYPROXY_SECURITY_CONTEXT);
             GSSCredential gssCred = gssContext.getGssCredentails();
             String[] hostgridFTP = host.getGridFTPEndPointArray();
+
+
             if (hostgridFTP == null || hostgridFTP.length == 0) {
                 hostgridFTP = new String[] { host.getHostAddress() };
             }
@@ -232,6 +234,7 @@ public class GramProvider extends AbstractProvider {
 
         } catch (GramException e) {
             invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
+            throw new ProviderException(e.getMessage(), e);
         } catch (GSSException e) {
             invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
             throw new ProviderException(e.getMessage(), e);
@@ -246,7 +249,8 @@ public class GramProvider extends AbstractProvider {
                 try {
                     job.cancel();
                 } catch (Exception e) {
-                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
+//                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
+//                    throw new ProviderException(e.getMessage(), e);
                 }
             }
         }
