@@ -21,10 +21,17 @@
 
 package org.apache.airavata.core.gfac.provider.impl;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
@@ -278,21 +285,23 @@ public class GramProvider extends AbstractProvider {
                     String stdout = ftp.readRemoteFile(stdoutURI, gssCred, localStdOutFile);
                     String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
                     Map<String,ActualParameter> stringMap = null;
+                    stringMap = OutputUtils.fillOutputFromStdout(invocationContext.<ActualParameter>getOutput(), stdout);
                     MessageContext<Object> output = invocationContext.getOutput();
                     for (Iterator<String> iterator = output.getNames(); iterator.hasNext(); ) {
                         String paramName = iterator.next();
-                        ActualParameter actualParameter = (ActualParameter) output.getValue(paramName);
-						if ("URIArray".equals(actualParameter.getType().getType().toString())) {
-							URI outputURI = GfacUtils.createGsiftpURI(endpoint,app.getOutputDataDirectory());
-							List<String> outputList = ftp.listDir(outputURI,gssCred);
-							String[] valueList = outputList.toArray(new String[outputList.size()]);
-							((URIArrayType) actualParameter.getType()).setValueArray(valueList);
-							stringMap = new HashMap<String, ActualParameter>();
-							stringMap.put(paramName, actualParameter);
-						}
-                    	else{
+//                        ActualParameter actualParameter = (ActualParameter) output.getValue(paramName);
+//						if ("URIArray".equals(actualParameter.getType().getType().toString())) {
+//							URI outputURI = GfacUtils.createGsiftpURI(endpoint,app.getOutputDataDirectory());
+//							List<String> outputList = ftp.listDir(outputURI,gssCred);
+//							String[] valueList = outputList.toArray(new String[outputList.size()]);
+//							((URIArrayType) actualParameter.getType()).setValueArray(valueList);
+//							stringMap = new HashMap<String, ActualParameter>();
+//							stringMap.put(paramName, actualParameter);
+//							invocationContext.getExecutionContext().getNotifier().output(invocationContext, actualParameter.toString());
+//						}
+//                    	else{
                     	// This is to handle exception during the output parsing.
-                        stringMap = OutputUtils.fillOutputFromStdout(invocationContext.<ActualParameter>getOutput(), stdout);
+                       
                         String paramValue = output.getStringValue(paramName);
                         if(paramValue == null || paramValue.isEmpty()){
                             int errCode = listener.getError();
@@ -304,12 +313,12 @@ public class GramProvider extends AbstractProvider {
                             throw error;
                         }
                         }
-                    }
-                    if(stringMap == null || stringMap.isEmpty()){
-                    	ProviderException exception = new ProviderException("Error creating job output");
-                    	 invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,exception,exception.getLocalizedMessage());
-                         throw exception;
-                    }
+//                    }
+//                    if(stringMap == null || stringMap.isEmpty()){
+//                    	ProviderException exception = new ProviderException("Error creating job output");
+//                    	 invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,exception,exception.getLocalizedMessage());
+//                         throw exception;
+//                    }
                     // If users has given an output DAta poth we download the output files in to that directory, this will be apath in the machine where GFac is installed
                     if(WorkflowContextHeaderBuilder.getCurrentContextHeader()
                             .getWorkflowOutputDataHandling() != null){
@@ -353,7 +362,7 @@ public class GramProvider extends AbstractProvider {
 	@Override
 	protected Map<String, ?> processInput(InvocationContext invocationContext)
             throws ProviderException {
-        MessageContext inputNew = new ParameterContextImpl();
+        MessageContext<ActualParameter> inputNew = new ParameterContextImpl();
         try {
 		    MessageContext<Object> input = invocationContext.getInput();
         for (Iterator<String> iterator = input.getNames(); iterator.hasNext();) {
@@ -419,7 +428,7 @@ public class GramProvider extends AbstractProvider {
     }
 
     private void stageOutputFiles(InvocationContext invocationContext,String outputFileStagingPath) throws ProviderException {
-        MessageContext outputNew = new ParameterContextImpl();
+        MessageContext<ActualParameter> outputNew = new ParameterContextImpl();
         MessageContext<Object> input = invocationContext.getOutput();
         for (Iterator<String> iterator = input.getNames(); iterator.hasNext(); ) {
             String paramName = iterator.next();
