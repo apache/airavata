@@ -128,4 +128,7 @@ public class StandaloneNotificationSender implements WorkflowNotifiable {
 
     }
 
+    public String getTopic() {
+        return this.workflowID.toASCIIString();
+    }
 }
