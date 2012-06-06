@@ -85,6 +85,8 @@ public interface WorkflowNotifiable {
      */
     public abstract ServiceNotifiable createServiceNotificationSender(String nodeID);
 
+    public String getTopic();
+
     public abstract void cleanup();
 
 }

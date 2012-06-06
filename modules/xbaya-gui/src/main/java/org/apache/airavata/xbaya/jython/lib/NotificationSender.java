@@ -281,4 +281,8 @@ public class NotificationSender implements WorkflowNotifiable {
     public void cleanup(){
         this.notifier.delete();
     }
+
+    public String getTopic() {
+        return topic;
+    }
 }
