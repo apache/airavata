@@ -21,9 +21,7 @@
 
 package org.apache.airavata.core.gfac.provider.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -252,6 +250,7 @@ public class GramProvider extends AbstractProvider {
         GlobusHostType host = (GlobusHostType) invocationContext.getExecutionDescription().getHost().getType();
         ApplicationDeploymentDescriptionType app = invocationContext.getExecutionDescription().getApp().getType();
         GridFtp ftp = new GridFtp();
+        File localStdErrFile = null;
         try {
             GSSCredential gssCred = gssContext.getGssCredentails();
 
@@ -280,7 +279,7 @@ public class GramProvider extends AbstractProvider {
                     String timeStampedServiceName = GfacUtils.createUniqueNameForService(invocationContext
                             .getServiceName());
                     File localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
-                    File localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
+                    localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
 
                     String stdout = ftp.readRemoteFile(stdoutURI, gssCred, localStdOutFile);
                     String stderr = ftp.readRemoteFile(stderrURI, gssCred, localStdErrFile);
@@ -309,7 +308,7 @@ public class GramProvider extends AbstractProvider {
                             JobSubmissionFault error = new JobSubmissionFault(this, new Exception(errorMsg), "GFAC HOST",
                                     gateKeeper, job.getRSL());
                             errorReason(errCode, error);
-                            invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,error,errorMsg);
+                            invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,error,readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                             throw error;
                         }
                         }
@@ -332,29 +331,27 @@ public class GramProvider extends AbstractProvider {
                         }
                     }
                     return stringMap;
-                }catch (XmlException e) {
-                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
-                    throw new ProviderException(e.getMessage(), e);
-                }
-                catch (ToolsException e) {
-                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
-                    throw new ProviderException(e.getMessage(), e);
+
                 } catch (URISyntaxException e) {
-                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
+                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                     throw new ProviderException("URI is malformatted:" + e.getMessage(), e);
+                }
+                catch (NullPointerException e) {
+                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,readLastLinesofStdOut(localStdErrFile.getPath(), 20));
+                    throw new ProviderException("Empty output generated:" + e.getMessage(), e);
+                } catch (Exception e) {
+                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext, e, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
+                    throw new ProviderException(e.getMessage(), e);
                 }
             }
 
-            /*
-             * If the execution reach here, all GridFTP Endpoint is failed.
-             */
+                /*
+                * If the execution reach here, all GridFTP Endpoint is failed.
+                */
             throw pe;
 
-        } catch (IOException e) {
-            invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
-            throw new ProviderException(e.getMessage(), e);
-        } catch (SecurityException e) {
-            invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
+        } catch (Exception e) {
+            invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,readLastLinesofStdOut(localStdErrFile.getPath(), 20));
             throw new ProviderException(e.getMessage(), e);
         }
 
@@ -480,4 +477,37 @@ public class GramProvider extends AbstractProvider {
                 gssCred, outputFile);
         return outputFileStagingPath + File.separator + fileName;
     }
+
+    private String readLastLinesofStdOut(String path, int count) {
+        StringBuffer buffer = new StringBuffer();
+        FileInputStream in = null;
+        try {
+            in = new FileInputStream(path);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        List<String> strLine = new ArrayList<String>();
+        String tmp = null;
+        int numberofLines = 0;
+        try {
+            while ((tmp = br.readLine()) != null) {
+                strLine.add(tmp);
+                numberofLines++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        for (int i = numberofLines - count; i < numberofLines; i++) {
+            buffer.append(strLine.get(i));
+            buffer.append("\n");
+        }
+        try {
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return buffer.toString();
+    }
 }
+
