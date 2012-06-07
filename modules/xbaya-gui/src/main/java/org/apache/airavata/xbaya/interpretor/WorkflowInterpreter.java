@@ -40,6 +40,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import com.sun.tools.internal.ws.util.xml.XmlUtil;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
@@ -345,16 +346,15 @@ public class WorkflowInterpreter {
 						// recalculate the execution stack
 					}
 
-					// boolean nodeOutputLoadedFromProvenance = false;
+					boolean nodeOutputLoadedFromProvenance = false;
 					if (this.actOnProvenance) {
-						// nodeOutputLoadedFromProvenance =
-						// readProvenance(node);
-						// } else {
+						nodeOutputLoadedFromProvenance = readProvenance(node);
+						} else {
 						writeProvenanceLater(node);
 					}
-					// if (!nodeOutputLoadedFromProvenance) {
-					executeDynamically(node);
-					// }
+					if (!nodeOutputLoadedFromProvenance) {
+					    executeDynamically(node);
+					}
 					if (this.getWorkflow().getExecutionState() == XBayaExecutionState.STEP) {
 						this.getWorkflow().setExecutionState(
 								XBayaExecutionState.PAUSED);
@@ -474,12 +474,14 @@ public class WorkflowInterpreter {
 						+ inputTagname + ">");
 			}
 
-			XmlElement result = (XmlElement) new ProvenanceReader().read(
-					node.getID(), inputs);
-			if (null == result) {
-				writeProvenanceLater(node);
+            String output = ((String)new ProvenanceReader(node,this.topic,this.configuration
+								.getJcrComponentRegistry()
+								.getRegistry()).read());
+            if(output == null){
+                writeProvenanceLater(node);
 			} else {
-				SystemComponentInvoker invoker = new SystemComponentInvoker();
+            XmlElement result = XMLUtil.stringToXmlElement(output);
+            SystemComponentInvoker invoker = new SystemComponentInvoker();
 				List<DataPort> outPorts = node.getOutputPorts();
 				for (DataPort dataPort : outPorts) {
 

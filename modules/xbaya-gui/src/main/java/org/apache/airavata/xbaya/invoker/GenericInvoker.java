@@ -240,7 +240,7 @@ public class GenericInvoker implements Invoker {
         }
         if(builder.getWorkflowMonitoringContext() == null){
             builder.addWorkflowMonitoringContext(this.notifier.getEventSink().getAddress(),
-                    this.notifier.getWorkflowID().toASCIIString(),this.nodeID,this.messageBoxURL);
+                    this.topic,this.nodeID,this.messageBoxURL);
         } else {
             builder.getWorkflowMonitoringContext().setWorkflowInstanceId(this.notifier.getWorkflowID().toASCIIString());
         }
