@@ -26,11 +26,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
+import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.globus.gram.GramAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,7 +98,23 @@ public class GramRSLGenerator {
                 jobAttr.addArgument(context.getInput().getStringValue(key));
             }
         }
-
+        // Using the workflowContext Header values if user provided them in the request and overwrite the default values in DD
+        ContextHeaderDocument.ContextHeader currentContextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
+        if (currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray() != null &&
+                currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray().length > 0) {
+            try {
+                int cpuCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getCpuCount();
+                app.setCpuCount(cpuCount);
+            } catch (NullPointerException e) {
+                log.info("No Value sent in WorkflowContextHeader for CPU Count, value in the Deployment Descriptor will be used");
+            }
+            try {
+                int nodeCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getNodeCount();
+                app.setNodeCount(nodeCount);
+            } catch (NullPointerException e) {
+                log.info("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
+            }
+        }
         if (app.getNodeCount() > 0) {
             jobAttr.set("hostCount", String.valueOf(app.getNodeCount()));
         }
