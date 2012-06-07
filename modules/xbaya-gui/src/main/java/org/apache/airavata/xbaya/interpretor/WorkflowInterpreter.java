@@ -329,16 +329,15 @@ public class WorkflowInterpreter {
 						// recalculate the execution stack
 					}
 
-					// boolean nodeOutputLoadedFromProvenance = false;
+					boolean nodeOutputLoadedFromProvenance = false;
 					if (this.config.isActOnProvenance()) {
-						// nodeOutputLoadedFromProvenance =
-						// readProvenance(node);
-						// } else {
+						nodeOutputLoadedFromProvenance = readProvenance(node);
+						} else {
 						writeProvenanceLater(node);
 					}
-					// if (!nodeOutputLoadedFromProvenance) {
-					executeDynamically(node);
-					// }
+					if (!nodeOutputLoadedFromProvenance) {
+						executeDynamically(node);
+					}
 					if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.STEP) {
 						this.getWorkflow().setExecutionState(
 								WorkflowExecutionState.PAUSED);
@@ -474,11 +473,11 @@ public class WorkflowInterpreter {
 						+ inputTagname + ">");
 			}
 
-			XmlElement result = (XmlElement) new ProvenanceReader().read(
-					node.getID(), inputs);
-			if (null == result) {
+			String output = ((String)new ProvenanceReader(node,this.config.getTopic(),this.config.getRegistry()).read());
+			if(output == null){
 				writeProvenanceLater(node);
 			} else {
+				XmlElement result = XMLUtil.stringToXmlElement(output);
 				SystemComponentInvoker invoker = new SystemComponentInvoker();
 				List<DataPort> outPorts = node.getOutputPorts();
 				for (DataPort dataPort : outPorts) {

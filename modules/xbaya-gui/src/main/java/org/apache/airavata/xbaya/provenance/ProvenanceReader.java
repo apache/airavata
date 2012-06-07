@@ -20,78 +20,44 @@
 */
 package org.apache.airavata.xbaya.provenance;
 
-import org.apache.airavata.common.utils.Pair;
-import org.apache.airavata.common.utils.XMLUtil;
-import org.xmlpull.infoset.XmlElement;
+import java.util.List;
 
-import java.io.File;
-import java.io.FileFilter;
+import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.WorkflowExecution;
+import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
+import org.apache.airavata.workflow.model.graph.Node;
 
 public class ProvenanceReader {
 
     public String DEFAULT_LIBRARY_FOLDER_NAME = "provenance";
 
-	public ProvenanceReader() {
+    private String experimentId;
 
+    private AiravataRegistry registry;
+
+    private Node node;
+
+    public ProvenanceReader(Node node,String experimentId,AiravataRegistry registry) {
+       this.experimentId = experimentId;
+        this.registry = registry;
+        this.node = node;
 	}
 
-	public Object read(final String nodeName, Pair<String, String>[] inputs)
-			throws Exception {
-
-		File directory = new File(DEFAULT_LIBRARY_FOLDER_NAME);
-		if (!directory.isDirectory()) {
-			return null;
-		}
-		File[] componentMatchFiles = directory.listFiles(new FileFilter() {
-
-			@Override
-			public boolean accept(File pathname) {
-				if (pathname.isDirectory()) {
-					return false;
-				} else {
-					String fileName = pathname.getName();
-					return -1 != fileName.indexOf(nodeName);
-				}
-			}
-		});
-
-		for (File file : componentMatchFiles) {
-			if (!file.isDirectory()) {
-				XmlElement xml = XMLUtil.loadXML(file);
-				XmlElement root = xml;
-				XmlElement wsnode;
-
-				XmlElement foreach;
-				if (null != (wsnode = root.element("wsnode"))) {
-					XmlElement inputElems = root.element("inputs");
-					Iterable inputValElems = inputElems.children();
-					for (Object object : inputValElems) {
-						if (object instanceof XmlElement) {
-							XmlElement inputElem = (XmlElement)object;
-							for (Pair<String, String> pair : inputs) {
-								String inputName = pair.getLeft();
-								//issue "x".equals("CreateCoordinatePortType_createCoordinate_in_0")
-								if(inputName.equals(inputElem.getName())){
-									//found the input now check whether values are the same
-									if(XMLUtil.isEqual(inputElem, XMLUtil.stringToXmlElement(pair.getRight()))){
-										//match found return output
-										XmlElement output = root.element("output");
-										return output.children().iterator().next();
-
-									}
-								}
-
-							}
-						}
-					}
-
-				} else if (null != (foreach = root.element("foreach"))) {
-
-				}
-
-			}
-		}
-
-		return null;
-	}
+    public Object read() throws Exception {
+        try {
+            WorkflowExecution workflowExecution = registry.getWorkflowExecution(experimentId);
+            List<WorkflowServiceIOData> serviceOutput = workflowExecution.getServiceOutput();
+            if (serviceOutput.size() == 0) {
+                return null;
+            }
+            for (WorkflowServiceIOData data : serviceOutput) {
+                if (this.node.getID().equals(data.getNodeId())) {
+                    return data.getValue();
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
