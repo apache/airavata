@@ -21,7 +21,7 @@
     <artifactId>commons</artifactId>
     <packaging>pom</packaging>
     <name>Airavata Commons</name>
-    <url>http://www.airavata.org</url>
+    <url>http://incubator.apache.org/airavata/</url>
     <profiles>
         <profile>
             <id>default</id>
