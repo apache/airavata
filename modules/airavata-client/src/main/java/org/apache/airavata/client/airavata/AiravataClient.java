@@ -53,7 +53,6 @@ import org.apache.airavata.common.workflow.execution.context.WorkflowContextHead
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.WorkflowExecution;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
-import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.xbaya.component.ComponentException;
 import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.graph.GraphException;
@@ -558,7 +557,7 @@ public class AiravataClient {
 			List<WSComponentPort> inputs = getWSComponentPortInputs(workflowTemplateId);
 			List<WorkflowInput> results=new ArrayList<WorkflowInput>();
 			for (WSComponentPort port : inputs) {
-				results.add(new WorkflowInput(port.getName(), port.getType().getLocalPart(), port.getDefaultValue(), port.getValue()));
+				results.add(new WorkflowInput(port.getName(), port.getType().getLocalPart(), port.getDefaultValue(), port.getValue(), port.isOptional()));
 			}
 			return results;
 		} catch (RegistryException e) {
