@@ -653,20 +653,24 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
-        HostDescription hostDescription;
-		try {
-			hostDescription = registry.getHostDescription(hostName);
-			if (hostDescription.getType() instanceof GlobusHostType){
-	        	getShellApplicationDescription().getType().changeType(GramApplicationDeploymentType.type);
-	        }else{
-	        	getShellApplicationDescription().getType().changeType(ApplicationDeploymentDescriptionType.type);
-	        }
-			btnHostAdvanceOptions.setVisible(hostDescription.getType() instanceof GlobusHostType);
-		} catch (RegistryException e) {
-			//not there - ouch
+        if (hostName!=null) {
+			HostDescription hostDescription;
+			try {
+				hostDescription = registry.getHostDescription(hostName);
+				if (hostDescription.getType() instanceof GlobusHostType) {
+					getShellApplicationDescription().getType().changeType(
+							GramApplicationDeploymentType.type);
+				} else {
+					getShellApplicationDescription().getType().changeType(
+							ApplicationDeploymentDescriptionType.type);
+				}
+				btnHostAdvanceOptions
+						.setVisible(hostDescription.getType() instanceof GlobusHostType);
+			} catch (RegistryException e) {
+				//not there - ouch
+			}
 		}
-        
-        updateDialogStatus();
+		updateDialogStatus();
     }
 
     private void updateServiceName() {
