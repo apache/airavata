@@ -21,7 +21,6 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
-import java.awt.Color;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -40,14 +39,11 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import com.sun.tools.internal.ws.util.xml.XmlUtil;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.WorkflowExecutionStatus.ExecutionStatus;
-import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
@@ -73,7 +69,6 @@ import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
 import org.apache.airavata.xbaya.graph.ControlPort;
 import org.apache.airavata.xbaya.graph.DataPort;
-import org.apache.airavata.xbaya.graph.Graph;
 import org.apache.airavata.xbaya.graph.Node;
 import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
 import org.apache.airavata.xbaya.graph.dynamic.BasicTypeMapping;
@@ -121,13 +116,10 @@ import org.apache.airavata.xbaya.wf.Workflow;
 import org.apache.axis2.context.ConfigurationContext;
 import org.ietf.jgss.GSSCredential;
 import org.xmlpull.infoset.XmlElement;
-import org.xmlpull.infoset.impl.XmlElementWithViewsImpl;
 
 import xsul.lead.LeadContextHeader;
 import xsul.lead.LeadResourceMapping;
 import xsul5.XmlConstants;
-import xsul5.wsdl.WsdlPort;
-import xsul5.wsdl.WsdlService;
 
 public class WorkflowInterpreter {
 
