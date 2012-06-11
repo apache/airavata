@@ -357,20 +357,32 @@ public class AiravataClient {
 		return runWorkflow(topic, inputs, user, null);
 	}
 
-	public String runWorkflow(String topic, NameValue[] inputs, String user,
-			String metadata) throws Exception{
-		String worflowoutput = null;
-		try {
-			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
-					getClientConfiguration().getXbayaServiceURL().toString());
-            stub._getServiceClient().addHeader(AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml())));
-			worflowoutput = stub.launchWorkflow(workflow, topic, inputs);
-			runPostWorkflowExecutionTasks(topic, user, metadata);
-//			log.info("Workflow output : " + worflowoutput);
-		} catch (RegistryException e) {
-//			log.fine(e.getMessage(), e);
-		}
-		return worflowoutput;
+	public String runWorkflow(final String topic, final NameValue[] inputs, final String user,
+			final String metadata) throws Exception{
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
+							getClientConfiguration().getXbayaServiceURL()
+									.toString());
+					stub._getServiceClient().addHeader(
+							AXIOMUtil.stringToOM(XMLUtil
+									.xmlElementToString(builder.getXml())));
+					stub.launchWorkflow(workflow, topic, inputs);
+					runPostWorkflowExecutionTasks(topic, user, metadata);
+					//			log.info("Workflow output : " + worflowoutput);
+				} catch (RegistryException e) {
+					//			log.fine(e.getMessage(), e);
+				} catch (AxisFault e) {
+					e.printStackTrace();
+				} catch (XMLStreamException e) {
+					e.printStackTrace();
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+		return topic;
 	}
 
 	public List<WorkflowExecution> getWorkflowExecutionDataByUser(String user)
@@ -556,7 +568,7 @@ public class AiravataClient {
 			List<WSComponentPort> inputs = getWSComponentPortInputs(workflowTemplateId);
 			List<WorkflowInput> results=new ArrayList<WorkflowInput>();
 			for (WSComponentPort port : inputs) {
-				results.add(new WorkflowInput(port.getName(), port.getType().getLocalPart(), port.getDefaultValue(), port.getValue()));
+				results.add(new WorkflowInput(port.getName(), port.getType().getLocalPart(), port.getDefaultValue(), port.getValue(),port.isOptional()));
 			}
 			return results;
 		} catch (RegistryException e) {
