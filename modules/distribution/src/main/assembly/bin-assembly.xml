@@ -190,7 +190,13 @@
                 <include>*.xwf</include>
             </includes>
         </fileSet>
-
+		<fileSet>
+            <directory>../../samples</directory>
+            <outputDirectory>samples</outputDirectory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
         <fileSet>
             <directory>src/main/resources/conf</directory>
             <outputDirectory>standalone-server/conf</outputDirectory>

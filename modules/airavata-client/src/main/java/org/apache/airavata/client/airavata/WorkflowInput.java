@@ -26,12 +26,14 @@ public class WorkflowInput {
 	private String type;
 	private Object defaultValue;
 	private Object value;
+	private boolean optional;
 	
-	public WorkflowInput(String name,String type,Object defaultValue,Object value) {
+	public WorkflowInput(String name,String type,Object defaultValue,Object value, boolean optional) {
 		setName(name);
 		setType(type);
 		setDefaultValue(defaultValue);
 		setValue(value);
+		setOptional(optional);
 	}
 	
 	public String getName() {
@@ -64,5 +66,13 @@ public class WorkflowInput {
 	
 	public void setValue(Object value) {
 		this.value = value;
+	}
+
+	public boolean isOptional() {
+		return optional;
+	}
+
+	public void setOptional(boolean optional) {
+		this.optional = optional;
 	}
 }
