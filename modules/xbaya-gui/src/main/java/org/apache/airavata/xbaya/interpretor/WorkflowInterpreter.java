@@ -339,14 +339,14 @@ public class WorkflowInterpreter {
 					}
 
 					boolean nodeOutputLoadedFromProvenance = false;
-					if (this.actOnProvenance) {
-						nodeOutputLoadedFromProvenance = readProvenance(node);
-						} else {
-						writeProvenanceLater(node);
-					}
-					if (!nodeOutputLoadedFromProvenance) {
-					    executeDynamically(node);
-					}
+                    if (this.actOnProvenance) {
+                        nodeOutputLoadedFromProvenance = readProvenance(node);
+                        if (!nodeOutputLoadedFromProvenance) {
+                            executeDynamically(node);
+                        }
+                    }else{
+                        executeDynamically(node);
+                    }
 					if (this.getWorkflow().getExecutionState() == XBayaExecutionState.STEP) {
 						this.getWorkflow().setExecutionState(
 								XBayaExecutionState.PAUSED);
@@ -469,9 +469,7 @@ public class WorkflowInterpreter {
             String output = ((String)new ProvenanceReader(node,this.topic,this.configuration
 								.getJcrComponentRegistry()
 								.getRegistry()).read());
-            if(output == null){
-                writeProvenanceLater(node);
-			} else {
+            if(output != null){
             XmlElement result = XMLUtil.stringToXmlElement(output);
             SystemComponentInvoker invoker = new SystemComponentInvoker();
 				List<DataPort> outPorts = node.getOutputPorts();
@@ -493,7 +491,9 @@ public class WorkflowInterpreter {
 				this.invokerMap.put(node, invoker);
 				node.getGUI().setBodyColor(NodeState.FINISHED.color);
 				return true;
-			}
+			}else{
+                writeProvenanceLater(node);
+            }
 		} catch (Exception e) {
 			throw new XBayaRuntimeException(e);
 		}
