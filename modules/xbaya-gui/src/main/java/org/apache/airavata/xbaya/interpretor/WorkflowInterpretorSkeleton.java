@@ -254,22 +254,16 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
         WorkflowInterpretorEventListener listener = null;
         WorkflowInterpreter interpreter = null;
-        if (Boolean.parseBoolean(configurations.get(WITH_LISTENER))) {
-            listener = new WorkflowInterpretorEventListener(workflow, conf);
-            interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password);
-
-            try {
-                System.err.println("start listener set");
-                listener.start();
-            } catch (MonitorException e1) {
-                e1.printStackTrace();
-            }
-        } else {
-            interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password, true);
+        listener = new WorkflowInterpretorEventListener(workflow, conf);
+        interpreter = new WorkflowInterpreter(conf, topic, workflow, username, password);
+        try {
+            System.err.println("start listener set");
+            listener.start();
+        } catch (MonitorException e1) {
+            e1.printStackTrace();
         }
 
         WorkflowContextHeaderBuilder.setCurrentContextHeader(builder.getContextHeader());
-
         final WorkflowInterpretorEventListener finalListener = listener;
         conf.setJcrComponentRegistry(jcrComponentRegistry);
 
