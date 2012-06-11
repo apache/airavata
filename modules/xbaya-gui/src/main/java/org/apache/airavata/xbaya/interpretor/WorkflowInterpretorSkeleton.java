@@ -106,7 +106,6 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
     public static final String GFAC_EMBEDDED = "gfac.embedded";
     public static  ConfigurationContext configurationContext;
-    public static final String WITH_LISTENER = "with.Listener";
     public static final String OUTPUT_DATA_PATH = "outputDataPath";
 
     private AiravataRegistry getRegistry(){
@@ -282,18 +281,13 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,topic,conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null, null, null);
         workflowInterpreterConfiguration.setGfacEmbeddedMode(gfacEmbeddedMode);
         workflowInterpreterConfiguration.setActOnProvenance(provenance);
-        if (Boolean.parseBoolean(configurations.get(WITH_LISTENER))) {
-            listener = new WorkflowInterpretorEventListener(workflow, conf);
-            interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, new SSWorkflowInterpreterInteractorImpl(workflow));
-
-            try {
-                System.err.println("start listener set");
-                listener.start();
-            } catch (MonitorException e1) {
-                e1.printStackTrace();
-            }
-        } else {
-            interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, new SSWorkflowInterpreterInteractorImpl(workflow));
+        listener = new WorkflowInterpretorEventListener(workflow, conf);
+        interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, new SSWorkflowInterpreterInteractorImpl(workflow));
+        try {
+            System.err.println("start listener set");
+            listener.start();
+        } catch (MonitorException e1) {
+            e1.printStackTrace();
         }
 
         WorkflowContextHeaderBuilder.setCurrentContextHeader(builder.getContextHeader());
