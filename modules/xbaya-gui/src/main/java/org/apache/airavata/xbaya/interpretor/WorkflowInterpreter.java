@@ -332,10 +332,10 @@ public class WorkflowInterpreter {
 					boolean nodeOutputLoadedFromProvenance = false;
 					if (this.config.isActOnProvenance()) {
 						nodeOutputLoadedFromProvenance = readProvenance(node);
-						} else {
-						writeProvenanceLater(node);
-					}
-					if (!nodeOutputLoadedFromProvenance) {
+						if (!nodeOutputLoadedFromProvenance) {
+							executeDynamically(node);
+						}
+					}else{
 						executeDynamically(node);
 					}
 					if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.STEP) {
@@ -474,9 +474,7 @@ public class WorkflowInterpreter {
 			}
 
 			String output = ((String)new ProvenanceReader(node,this.config.getTopic(),this.config.getRegistry()).read());
-			if(output == null){
-				writeProvenanceLater(node);
-			} else {
+			if(output != null){
 				XmlElement result = XMLUtil.stringToXmlElement(output);
 				SystemComponentInvoker invoker = new SystemComponentInvoker();
 				List<DataPort> outPorts = node.getOutputPorts();
@@ -498,6 +496,8 @@ public class WorkflowInterpreter {
 				this.invokerMap.put(node, invoker);
 				NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
 				return true;
+			}else{
+				writeProvenanceLater(node);
 			}
 		} catch (Exception e) {
 			throw new WorkflowRuntimeException(e);
