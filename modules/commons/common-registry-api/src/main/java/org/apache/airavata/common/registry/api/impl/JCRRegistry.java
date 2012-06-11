@@ -108,7 +108,7 @@ public class JCRRegistry extends Observable implements Registry{
 
 	private void setupRegistryModifyHandler() {
 		workspaceChangeEventListener=new EventListener() {
-			
+
 			public void onEvent(EventIterator events) {
 				for(;events.hasNext();){
 					Event event=events.nextEvent();
@@ -158,7 +158,7 @@ public class JCRRegistry extends Observable implements Registry{
 						}
 						triggerObservers(this);
 					} catch (RepositoryException e) {
-						e.printStackTrace();
+						log.error(e.getMessage());
 					}
 				}
 				
