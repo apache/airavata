@@ -68,6 +68,37 @@
 		</complexContent>
 	</complexType>
 
+    <complexType name="hadoopApplicationDeploymentDescriptionType">
+        <complexContent>
+            <extension base="gfac:applicationDeploymentDescriptionType">
+                <sequence>
+                    <element name="whirrConfigurationFile" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+                    <element name="byonClusterConfigurationFile" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+                    <element name="whirrConfiguration" minOccurs="0" maxOccurs="1">
+                        <complexType>
+                            <sequence>
+                                <element name="configuration" maxOccurs="1" minOccurs="1">
+                                    <complexType>
+                                        <sequence>
+                                            <element name="property" maxOccurs="unbounded">
+                                                <complexType>
+                                                    <sequence>
+                                                        <element name="name" maxOccurs="1" minOccurs="1"/>
+                                                        <element name="value" maxOccurs="1" minOccurs="1"/>
+                                                    </sequence>
+                                                </complexType>
+                                            </element>
+                                        </sequence>
+                                    </complexType>
+                                </element>
+                            </sequence>
+                        </complexType>
+                    </element>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
 	<simpleType name="jobTypeType">
 		<restriction base="xsd:string">
 			<enumeration value="serial" />
