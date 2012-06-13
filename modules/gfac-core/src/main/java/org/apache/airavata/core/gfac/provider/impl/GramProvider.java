@@ -321,8 +321,8 @@ public class GramProvider extends AbstractProvider {
                          throw exception;
                     }
                     // If users has given an output DAta poth we download the output files in to that directory, this will be apath in the machine where GFac is installed
-                    if(WorkflowContextHeaderBuilder.getCurrentContextHeader()
-                            .getWorkflowOutputDataHandling() != null){
+                    if(WorkflowContextHeaderBuilder.getCurrentContextHeader() != null &&
+                            WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowOutputDataHandling() != null){
                         WorkflowOutputDataHandlingDocument.WorkflowOutputDataHandling workflowOutputDataHandling =
                                 WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowOutputDataHandling();
                         if(workflowOutputDataHandling.getApplicationOutputDataHandlingArray().length != 0){
