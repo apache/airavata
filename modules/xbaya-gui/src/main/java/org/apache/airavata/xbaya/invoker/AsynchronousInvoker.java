@@ -94,6 +94,11 @@ public class AsynchronousInvoker extends SimpleInvoker {
             }.start();
 
             while(this.getOutputMessage() == null){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    logger.error("Error Waiting for the response from backend");
+                }
             }
             return true;
         } catch (RuntimeException e) {
