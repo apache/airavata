@@ -100,7 +100,8 @@ public class GramRSLGenerator {
         }
         // Using the workflowContext Header values if user provided them in the request and overwrite the default values in DD
         ContextHeaderDocument.ContextHeader currentContextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
-        if (currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray() != null &&
+        if (currentContextHeader != null &&
+                currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray() != null &&
                 currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray().length > 0) {
             try {
                 int cpuCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getCpuCount();
