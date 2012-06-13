@@ -479,6 +479,7 @@ public class GramProvider extends AbstractProvider {
                 gssCred, outputFile);
         return outputFileStagingPath + File.separator + fileName;
     }
+
     private String readLastLinesofStdOut(String path, int count) {
         StringBuffer buffer = new StringBuffer();
         FileInputStream in = null;
