@@ -178,17 +178,17 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
             	while(engine.getGUI()==null){
             		Thread.yield();
             	}
-//                engine.getGUI().addWorkflowTabChangeListener(new ChangeListener(){
-//					@Override
-//					public void stateChanged(ChangeEvent event) {
-//						boolean runShouldBeActive = isRunShouldBeActive();
-//						toolbarButtonRunWorkflow.setEnabled(runShouldBeActive);	
-//						launchDynamicWorkflowItem.setEnabled(runShouldBeActive);
-//						launchXBayaInterpreterItem.setEnabled(runShouldBeActive);
-//                        launchGridChemWorkflowItem.setEnabled(false);
-//                        launchAndSaveInGridChemWorkflowItem.setEnabled(false);
-//					}
-//                });
+                engine.getGUI().addWorkflowTabChangeListener(new ChangeListener(){
+					@Override
+					public void stateChanged(ChangeEvent event) {
+						boolean runShouldBeActive = isRunShouldBeActive();
+						toolbarButtonRunWorkflow.setEnabled(runShouldBeActive);	
+						launchDynamicWorkflowItem.setEnabled(runShouldBeActive);
+						launchXBayaInterpreterItem.setEnabled(runShouldBeActive);
+                        launchGridChemWorkflowItem.setEnabled(false);
+                        launchAndSaveInGridChemWorkflowItem.setEnabled(false);
+					}
+                });
             }
         });
 	}
