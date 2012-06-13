@@ -325,7 +325,8 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
                 case OUTPUT_PORT_SELECTED:
                     // Do nothing
                 case WORKFLOW_CHANGED:
-                	updateTabTitle(graphCanvas,graphCanvas.getWorkflow());
+                	//temporary disable changing tab title to reflec whether the workflow has changed or not
+//                	updateTabTitle(graphCanvas,graphCanvas.getWorkflow());
                 	setFrameName(workflow.getName());
                 	for (ChangeListener listener:tabChangeListeners){
                 		try{

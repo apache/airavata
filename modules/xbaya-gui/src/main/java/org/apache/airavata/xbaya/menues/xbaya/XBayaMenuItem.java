@@ -455,12 +455,12 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
             	while(engine.getGUI()==null){
             		Thread.yield();
             	}
-                engine.getGUI().addWorkflowTabChangeListener(new ChangeListener(){
-					@Override
-					public void stateChanged(ChangeEvent event) {
-						toolbarButtonSave.setEnabled(isSaveShouldBeActive());						
-					}
-                });
+//                engine.getGUI().addWorkflowTabChangeListener(new ChangeListener(){
+//					@Override
+//					public void stateChanged(ChangeEvent event) {
+//						toolbarButtonSave.setEnabled(isSaveShouldBeActive());						
+//					}
+//                });
             }
         });
     }
@@ -591,5 +591,8 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
 		toolbarButtonNew.setVisible(config.getXbayaExecutionMode()==XBayaExecutionMode.IDE);
 		toolbarButtonSave.setVisible(config.getXbayaExecutionMode()==XBayaExecutionMode.IDE);
 		toolbarButtonOpen.setVisible(config.getXbayaExecutionMode()==XBayaExecutionMode.IDE);
+		
+		//temporary remove this - testing cpu usage
+		toolbarButtonSave.setVisible(false);
 	}
 }
