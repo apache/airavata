@@ -39,6 +39,8 @@ import org.apache.airavata.xbaya.graph.system.InputNode;
 import org.apache.airavata.xbaya.graph.ws.WSNode;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.util.XBayaUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul5.XmlConstants;
@@ -47,6 +49,7 @@ import xsul5.XmlConstants;
  * @author Chathura Herath
  */
 public final class ProvenanceWrite implements PredicatedExecutable {
+    private static final Logger logger = LoggerFactory.getLogger(ProvenanceWrite.class);
 
 	private static final String PROVENANCE_DIR = "provenance";
 
@@ -182,22 +185,27 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 				}
 				// deal with the outputs
 			}
-			XmlElement outputs = elem.newElement("outputs");
-			elem.addChild(outputs);
-
-			List<DataPort> outputPorts = node.getOutputPorts();
-			for (DataPort outputPort : outputPorts) {
-				String outputName = outputPort.getName();
-
-				XmlElement outputParamElement = outputs.newElement(outputName);
-				outputs.addChild(outputParamElement);
-				Object ouputParamValue = invokerMap.get(node).getOutput(
+            System.out.println("TEstingTEstingTEstingTEstingTEstingTEstingTEstingTEstingTEstingTEstingTEsting");
+            XmlElement outputs = elem.newElement("outputs");
+            elem.addChild(outputs);
+            int index;
+            List<DataPort> inputPorts = node.getInputPorts();
+            for (DataPort inputPort : inputPorts) {
+                String outputName = inputPort.getFromPort().getName();
+                XmlElement outputParamElement = outputs.newElement(outputName);
+                outputs.addChild(outputParamElement);
+                Object ouputParamValue = invokerMap.get(node).getOutput(
 						outputName);
-
 				if (ouputParamValue instanceof org.xmlpull.v1.builder.XmlElement) {
 					ouputParamValue = XMLUtil
 							.xmlElement3ToXmlElement5((org.xmlpull.v1.builder.XmlElement) ouputParamValue);
-				}
+				}else {
+                    try {
+                        ouputParamValue = XMLUtil.stringToXmlElement((String) ouputParamValue);
+                    } catch (Exception e) {
+                        logger.error("Error processing the output of ForEachNode");
+                    }
+                }
 
 				if (ouputParamValue != null) {
 					outputParamElement.addChild(ouputParamValue);
@@ -206,6 +214,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 				}
 			}
             try {
+                System.out.println(xsul5.XmlConstants.BUILDER.serializeToString(outputs));
 				this.registry.saveWorkflowExecutionServiceOutput(new WorkflowServiceIOData(xsul5.XmlConstants.BUILDER.serializeToString(outputs), experimentId, node.getID(),this.workflowName));
             } catch (RegistryException e) {
 				throw new XBayaException(e);

@@ -70,6 +70,7 @@ import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
 import org.apache.airavata.xbaya.graph.ControlPort;
 import org.apache.airavata.xbaya.graph.DataPort;
 import org.apache.airavata.xbaya.graph.Node;
+import org.apache.airavata.xbaya.graph.Port;
 import org.apache.airavata.xbaya.graph.amazon.InstanceNode;
 import org.apache.airavata.xbaya.graph.dynamic.BasicTypeMapping;
 import org.apache.airavata.xbaya.graph.dynamic.DynamicNode;
@@ -472,24 +473,59 @@ public class WorkflowInterpreter {
             if(output != null){
             XmlElement result = XMLUtil.stringToXmlElement(output);
             SystemComponentInvoker invoker = new SystemComponentInvoker();
-				List<DataPort> outPorts = node.getOutputPorts();
-				for (DataPort dataPort : outPorts) {
+                if(node instanceof ForEachNode) {
+                    //todo only supports foreach node with single output ports at the middle node, implement proper
+                    // provesioning support with foreach scenarios
+                    Node endForEachFor = InterpreterUtil.findEndForEachFor((ForEachNode) node);
+                    List<DataPort> inputPorts1 = endForEachFor.getInputPorts();
+                    for(DataPort inputPort:inputPorts1){
+                        Port fromPort = inputPort.getFromPort();
+                                    invoker.addOutput(fromPort.getName(),
+                                            (((XmlElement) result.children().iterator().next()).children().iterator().next()));
+                        node.getGUI().setBodyColor(NodeState.FINISHED.color);
+                        Collection<Node> toNodes = node.getOutputPort(0).getToNodes();
+                        for(Node middleNode:toNodes){
+                            middleNode.getGUI().setBodyColor(NodeState.FINISHED.color);
+                        }
+                        endForEachFor.getGUI().setBodyColor(NodeState.FINISHED.color);
+                        List<DataPort> outputPorts = endForEachFor.getOutputPorts();
+                        for(DataPort outport:outputPorts){
+                            List<Node> toNodes1 = outport.getToNodes();
+                            for(Node endNode:toNodes1){
+                                if(endNode instanceof OutputNode){
+                                    endNode.getGUI().setBodyColor(NodeState.FINISHED.color);
+                                }
+                            }
+                        }
 
-					Iterable itr = result.children();
-					for (Object outputElem : itr) {
-						if (outputElem instanceof XmlElement) {
-							if (((XmlElement) outputElem).getName().equals(
-									dataPort.getName())) {
-								invoker.addOutput(dataPort.getName(),
-										((XmlElement) outputElem).children()
-												.iterator().next());
-							}
-						}
-					}
-				}
-
-				this.invokerMap.put(node, invoker);
-				node.getGUI().setBodyColor(NodeState.FINISHED.color);
+                    }
+                }else{
+                    List<DataPort> outPorts = node.getOutputPorts();
+                    for (DataPort dataPort : outPorts) {
+                        Iterable itr = result.children();
+                        for (Object outputElem : itr) {
+                            if (outputElem instanceof XmlElement) {
+                                if (((XmlElement) outputElem).getName().equals(
+                                        dataPort.getName())) {
+                                    invoker.addOutput(dataPort.getName(),
+                                            ((XmlElement) outputElem).children()
+                                                    .iterator().next());
+                                }
+                            }
+                        }
+                    }
+                    node.getGUI().setBodyColor(NodeState.FINISHED.color);
+                }
+                List<DataPort> outputPorts = node.getOutputPorts();
+                for(DataPort outputPort:outputPorts){
+                    List<Node> toNodes = outputPort.getToNodes();
+                    for(Node outNode:toNodes){
+                        if(outNode instanceof OutputNode){
+                            outNode.getGUI().setBodyColor(NodeState.FINISHED.color);
+                        }
+                    }
+                }
+                this.invokerMap.put(node, invoker);
 				return true;
 			}else{
                 writeProvenanceLater(node);
