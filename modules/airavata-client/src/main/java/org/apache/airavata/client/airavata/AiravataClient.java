@@ -58,6 +58,7 @@ import org.apache.airavata.xbaya.component.ws.WSComponentPort;
 import org.apache.airavata.xbaya.graph.GraphException;
 import org.apache.airavata.xbaya.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.graph.system.InputNode;
+import org.apache.airavata.xbaya.graph.util.GraphUtil;
 import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorStub;
 import org.apache.airavata.xbaya.monitor.Monitor;
@@ -554,10 +555,17 @@ public class AiravataClient {
 	 */
 	public List<WorkflowInput> getWorkflowInputs(String workflowTemplateId) throws Exception{
 		try {
-			List<WSComponentPort> inputs = getWSComponentPortInputs(workflowTemplateId);
+			Workflow workflowTemplate = getWorkflow(workflowTemplateId);
+			List<WSComponentPort> inputs = getWSComponentPortInputs(workflowTemplate);
+			List<InputNode> inputNodes = getInputNodes(workflowTemplate);
 			List<WorkflowInput> results=new ArrayList<WorkflowInput>();
-			for (WSComponentPort port : inputs) {
-				results.add(new WorkflowInput(port.getName(), port.getType().getLocalPart(), port.getDefaultValue(), port.getValue(), port.isOptional()));
+			for (InputNode port : inputNodes) {
+				Object value=null;
+				WSComponentPort wsComponentPort = getWSComponentPort(port.getName(), inputs);
+				if (wsComponentPort!=null){
+					value=wsComponentPort.getValue();
+				}
+				results.add(new WorkflowInput(port.getName(), port.getParameterType().getLocalPart(), port.getDefaultValue(), value, !port.isVisibility()));
 			}
 			return results;
 		} catch (RegistryException e) {
@@ -587,11 +595,35 @@ public class AiravataClient {
 			String workflowTemplateId) throws RegistryException,
 			PathNotFoundException, RepositoryException, GraphException,
 			ComponentException, ValueFormatException {
+		Workflow workflow = getWorkflow(workflowTemplateId);
+		return getWSComponentPortInputs(workflow);
+	}
+
+	private Workflow getWorkflow(String workflowTemplateId)
+			throws RegistryException, PathNotFoundException,
+			RepositoryException, GraphException, ComponentException,
+			ValueFormatException {
 		Property workflowAsString = getWorkflowAsString(workflowTemplateId);
 		Workflow workflow = new Workflow(workflowAsString.getString());
+		return workflow;
+	}
+
+	private List<WSComponentPort> getWSComponentPortInputs(Workflow workflow)
+			throws GraphException, ComponentException {
 		WorkflowClient.createScript(workflow);
 		List<WSComponentPort> inputs = workflow.getInputs();
 		return inputs;
+	}
+	
+	private List<InputNode> getInputNodes(
+			String workflowTemplateId) throws PathNotFoundException, GraphException, ComponentException, ValueFormatException, RegistryException, RepositoryException{
+		Workflow workflow = getWorkflow(workflowTemplateId);
+		return getInputNodes(workflow);
+	}
+
+	private List<InputNode> getInputNodes(Workflow workflow) {
+		List<InputNode> inputNodes = GraphUtil.getInputNodes(workflow.getGraph());
+		return inputNodes;
 	}
 	
 	private WSComponentPort getWSComponentPort(String name,List<WSComponentPort> ports){
