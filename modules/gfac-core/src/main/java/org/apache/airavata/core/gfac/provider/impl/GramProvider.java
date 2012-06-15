@@ -120,6 +120,7 @@ public class GramProvider extends AbstractProvider {
                 throw pe;
             }
         } catch (SecurityException e) {
+            invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
             throw new ProviderException(e.getMessage(), e);
         }
     }
@@ -152,6 +153,7 @@ public class GramProvider extends AbstractProvider {
             job.addListener(listener);
 
         } catch (ToolsException te) {
+            invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,te,te.getMessage());
             throw new ProviderException(te.getMessage(), te);
         }
 
