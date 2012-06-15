@@ -89,7 +89,7 @@ public class WorkflowTrackingNotification implements GFacNotifiable {
     public void input(InvocationContext context, String... data) {
     }
 
-    public void output(Object notifier, InvocationContext context, String... data) {
+    public void output(InvocationContext context, String... data) {
     }
 
     public void startExecution(InvocationContext context) {

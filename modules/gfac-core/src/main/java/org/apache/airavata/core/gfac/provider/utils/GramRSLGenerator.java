@@ -27,11 +27,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
+import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
+import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.globus.gram.GramAttributes;
 import org.slf4j.Logger;
@@ -91,13 +94,22 @@ public class GramRSLGenerator {
 
         if (app.getStandardInput() != null && !"".equals(app.getStandardInput())) {
             jobAttr.setStdin(app.getStandardInput());
-        } else {
-            // input parameter
-            for (Iterator<String> iterator = context.getInput().getNames(); iterator.hasNext();) {
-                String key = iterator.next();
-                jobAttr.addArgument(context.getInput().getStringValue(key));
-            }
-        }
+		} else {
+			MessageContext<Object> input = context.getInput();
+			for (Iterator<String> iterator = input.getNames(); iterator.hasNext();) {
+				String paramName = iterator.next();
+				ActualParameter actualParameter = (ActualParameter) input.getValue(paramName);
+				if ("URIArray".equals(actualParameter.getType().getType().toString())) {
+					String[] values = ((URIArrayType) actualParameter.getType()).getValueArray();
+					for (String value : values) {
+						jobAttr.addArgument(value);
+					}
+				} else {
+					String paramValue = input.getStringValue(paramName);
+					jobAttr.addArgument(paramValue);
+				}
+			}
+		}
         // Using the workflowContext Header values if user provided them in the request and overwrite the default values in DD
         ContextHeaderDocument.ContextHeader currentContextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
         if (currentContextHeader != null &&

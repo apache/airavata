@@ -41,7 +41,7 @@ public interface Subject {
      */
     void input(InvocationContext context, String... data);
 
-    void output(Object notifier, InvocationContext context, String... data);
+    void output(InvocationContext context, String... data);
 
     /*
      * 
