@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({XBayaClientTest.class, SimpleMathWorkflowTest.class, WorkflowTest.class,
         ComplexMathWorkflowTest.class, CrossProductWorkflowTest.class, ForEachWorkflowTest.class,
-        SimpleForEachWorkflowTest.class,
+        SimpleForEachWorkflowTest.class, ComplexForEachWorkflowTest.class,
         WorkflowTrackingTest.class, RegistryServiceTest.class})
 public class XBayaConsolidatedTestSuite {
     private static ListenerManager manager = null;
