@@ -55,9 +55,8 @@ public class SimpleForEachWorkflowTest {
     @Test
     public void testScheduleDynamically() throws IOException, URISyntaxException, WorkflowException {
         logger.info("Running SimpleForEachWorkflowTest...");
-        URL systemResource = this.getClass().getClassLoader().getSystemResource("SimpleEcho.xwf");
+        URL systemResource = this.getClass().getClassLoader().getSystemResource("SimpleForEach.xwf");
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
-        ((InputNode) workflow.getGraph().getNode("input")).setDefaultValue("1");
         XBayaConfiguration conf = WorkflowTestUtils.getConfiguration();
         AiravataRegistry registry = conf.getJcrComponentRegistry()==null? null:conf.getJcrComponentRegistry().getRegistry();
 		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow, UUID.randomUUID().toString(),conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null,null,null,true);
