@@ -1,0 +1,179 @@
+<?xml version="1.0"?><xwf:workflow xwf:version="0.3-INCUBATING" xmlns:xwf="http://airavata.apache.org/xbaya/xwf">
+  <xgr:graph xgr:version="0.3-INCUBATING" xgr:type="ws" xmlns:xgr="http://airavata.apache.org/xbaya/graph">
+    <xgr:id>Workflow1</xgr:id>
+    <xgr:name>RangerEchoWorkflow</xgr:name>
+    <xgr:description>Executes /bin/echo in Ranger.</xgr:description>
+    <xgr:metadata>
+      <appinfo xmlns="http://www.w3.org/2001/XMLSchema">
+
+</appinfo>
+    </xgr:metadata>
+    <xgr:node xgr:type="ws">
+      <xgr:id>RangerService_invoke</xgr:id>
+      <xgr:name>RangerService:invoke</xgr:name>
+      <xgr:outputPort>RangerService_invoke_out_0</xgr:outputPort>
+      <xgr:inputPort>RangerService_invoke_in_0</xgr:inputPort>
+      <xgr:controlInPort>RangerService_invoke_ctrl_in_0</xgr:controlInPort>
+      <xgr:controlOutPort>RangerService_invoke_ctrl_out_0</xgr:controlOutPort>
+      <xgr:x>366</xgr:x>
+      <xgr:y>121</xgr:y>
+      <xgr:wsdl>RangerService</xgr:wsdl>
+      <xgr:portType>{http://schemas.airavata.apache.org/gfac/type}RangerService</xgr:portType>
+      <xgr:operation>invoke</xgr:operation>
+    </xgr:node>
+    <xgr:node xgr:type="input">
+      <xgr:id>echo_input</xgr:id>
+      <xgr:name>echo_input</xgr:name>
+      <xgr:outputPort>Input_out_2</xgr:outputPort>
+      <xgr:x>129</xgr:x>
+      <xgr:y>75</xgr:y>
+      <xgr:config>
+        <xgr:description></xgr:description>
+        <xgr:dataType>{http://schemas.airavata.apache.org/gfac/type}StringParameterType</xgr:dataType>
+        <xgr:value>testing123</xgr:value>
+        <xgr:visibility>true</xgr:visibility>
+      </xgr:config>
+    </xgr:node>
+    <xgr:node xgr:type="output">
+      <xgr:id>echo_output</xgr:id>
+      <xgr:name>echo_output</xgr:name>
+      <xgr:inputPort>Output_in_2</xgr:inputPort>
+      <xgr:x>613</xgr:x>
+      <xgr:y>92</xgr:y>
+      <xgr:config>
+        <xgr:description></xgr:description>
+        <xgr:dataType>{http://schemas.airavata.apache.org/gfac/type}StringParameterType</xgr:dataType>
+      </xgr:config>
+    </xgr:node>
+    <xgr:port xgr:type="ws">
+      <xgr:id>RangerService_invoke_in_0</xgr:id>
+      <xgr:name>echo_input</xgr:name>
+      <xgr:node>RangerService_invoke</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="ws">
+      <xgr:id>RangerService_invoke_out_0</xgr:id>
+      <xgr:name>echo_output</xgr:name>
+      <xgr:node>RangerService_invoke</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="control">
+      <xgr:id>RangerService_invoke_ctrl_in_0</xgr:id>
+      <xgr:name>control</xgr:name>
+      <xgr:node>RangerService_invoke</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="control">
+      <xgr:id>RangerService_invoke_ctrl_out_0</xgr:id>
+      <xgr:name>control</xgr:name>
+      <xgr:node>RangerService_invoke</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="systemData">
+      <xgr:id>Input_out_2</xgr:id>
+      <xgr:name>Parameter</xgr:name>
+      <xgr:node>echo_input</xgr:node>
+    </xgr:port>
+    <xgr:port xgr:type="systemData">
+      <xgr:id>Output_in_2</xgr:id>
+      <xgr:name>Parameter</xgr:name>
+      <xgr:node>echo_output</xgr:node>
+    </xgr:port>
+    <xgr:edge xgr:type="data">
+      <xgr:fromPort>RangerService_invoke_out_0</xgr:fromPort>
+      <xgr:toPort>Output_in_2</xgr:toPort>
+    </xgr:edge>
+    <xgr:edge xgr:type="data">
+      <xgr:fromPort>Input_out_2</xgr:fromPort>
+      <xgr:toPort>RangerService_invoke_in_0</xgr:toPort>
+    </xgr:edge>
+  </xgr:graph>
+  <xwf:wsdls>
+    <xwf:wsdl xwf:id="RangerService">&lt;wsdl:definitions name="RangerService" targetNamespace="http://schemas.airavata.apache.org/gfac/type"
+  xmlns:typens="http://schemas.airavata.apache.org/gfac/type/RangerService/xsd" xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:globalTypens="http://schemas.airavata.apache.org/gfac/type/xsd"
+  xmlns:wsdlns="http://schemas.airavata.apache.org/gfac/type" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+  xmlns:gfac="http://schemas.airavata.apache.org/gfac/type" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  &lt;wsdl:types>
+    &lt;schema elementFormDefault="unqualified" targetNamespace="http://schemas.airavata.apache.org/gfac/type/RangerService/xsd" xmlns="http://www.w3.org/2001/XMLSchema">
+      &lt;import namespace="http://schemas.airavata.apache.org/gfac/type" schemaLocation="http://people.apache.org/~lahiru/GFacParameterTypes.xsd" />
+      &lt;element name="invoke_InputParams" type="typens:invoke_InputParamsType" />
+      &lt;complexType name="invoke_InputParamsType">
+        &lt;sequence>
+          &lt;element name="echo_input" type="gfac:StringParameterType">
+            &lt;annotation>
+              &lt;documentation />
+            &lt;/annotation>
+          &lt;/element>
+        &lt;/sequence>
+      &lt;/complexType>
+      &lt;element name="invoke_OutputParams" type="typens:invoke_OutputParamsType" />
+      &lt;complexType name="invoke_OutputParamsType">
+        &lt;sequence>
+          &lt;element name="echo_output" type="gfac:StringParameterType">
+            &lt;annotation>
+              &lt;documentation />
+            &lt;/annotation>
+          &lt;/element>
+        &lt;/sequence>
+      &lt;/complexType>
+    &lt;/schema>
+  &lt;/wsdl:types>
+  &lt;wsdl:message name="invoke_ResponseMessage_1f9688a9-6c2b-4832-a3aa-ebab1916f5a3">
+    &lt;wsdl:part name="parameters" element="typens:invoke_OutputParams">
+    &lt;/wsdl:part>
+  &lt;/wsdl:message>
+  &lt;wsdl:message name="invoke_RequestMessage_9bb3f6b7-cc5e-47be-9f48-3f4fc3c2739b">
+    &lt;wsdl:part name="parameters" element="typens:invoke_InputParams">
+    &lt;/wsdl:part>
+  &lt;/wsdl:message>
+  &lt;wsdl:portType name="RangerService">
+&lt;wsdl:documentation />
+    &lt;wsdl:operation name="invoke">
+&lt;wsdl:documentation />
+      &lt;wsdl:input name="invoke_RequestMessage_9bb3f6b7-cc5e-47be-9f48-3f4fc3c2739b" message="wsdlns:invoke_RequestMessage_9bb3f6b7-cc5e-47be-9f48-3f4fc3c2739b">
+    &lt;/wsdl:input>
+      &lt;wsdl:output name="invoke_ResponseMessage_1f9688a9-6c2b-4832-a3aa-ebab1916f5a3" message="wsdlns:invoke_ResponseMessage_1f9688a9-6c2b-4832-a3aa-ebab1916f5a3">
+    &lt;/wsdl:output>
+    &lt;/wsdl:operation>
+  &lt;/wsdl:portType>
+&lt;/wsdl:definitions></xwf:wsdl>
+  </xwf:wsdls>
+  <xwf:image>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
+</xwf:image>
+</xwf:workflow>
