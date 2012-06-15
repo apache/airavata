@@ -261,7 +261,6 @@ public class GramProvider extends AbstractProvider {
             if (hostgridFTP == null || hostgridFTP.length == 0) {
                 hostgridFTP = new String[] { host.getHostAddress() };
             }
-            boolean success = false;
             ProviderException pe = new ProviderException("");
             for (String endpoint : host.getGridFTPEndPointArray()) {
                 try {
@@ -298,6 +297,7 @@ public class GramProvider extends AbstractProvider {
 							((URIArrayType) actualParameter.getType()).setValueArray(valueList);
 							stringMap = new HashMap<String, ActualParameter>();
 							stringMap.put(paramName, actualParameter);
+							invocationContext.getExecutionContext().getNotifier().output(invocationContext, actualParameter.toString());
 						}
                     	else{
                     	// This is to handle exception during the output parsing.
@@ -343,6 +343,9 @@ public class GramProvider extends AbstractProvider {
                 } catch (URISyntaxException e) {
                     invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                     throw new ProviderException("URI is malformatted:" + e.getMessage(), e);
+                }catch (NullPointerException e) {
+                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
+                    throw new ProviderException("Outupt is not produced in stdout:" + e.getMessage(), e);
                 }
             }
 
@@ -361,7 +364,7 @@ public class GramProvider extends AbstractProvider {
 	@Override
 	protected Map<String, ?> processInput(InvocationContext invocationContext)
             throws ProviderException {
-        MessageContext inputNew = new ParameterContextImpl();
+        MessageContext<ActualParameter> inputNew = new ParameterContextImpl();
         try {
 		MessageContext<Object> input = invocationContext.getInput();
         for (Iterator<String> iterator = input.getNames(); iterator.hasNext();) {
@@ -427,7 +430,7 @@ public class GramProvider extends AbstractProvider {
     }
 
     private void stageOutputFiles(InvocationContext invocationContext,String outputFileStagingPath) throws ProviderException {
-        MessageContext outputNew = new ParameterContextImpl();
+        MessageContext<ActualParameter> outputNew = new ParameterContextImpl();
         MessageContext<Object> input = invocationContext.getOutput();
         for (Iterator<String> iterator = input.getNames(); iterator.hasNext(); ) {
             String paramName = iterator.next();

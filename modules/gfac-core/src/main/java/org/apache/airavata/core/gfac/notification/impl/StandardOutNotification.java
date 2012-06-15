@@ -40,7 +40,8 @@ public class StandardOutNotification implements GFacNotifiable {
         printOut(context, data);
     }
 
-    public void output(Object notifier, InvocationContext context, String... data) {
+    public void output(InvocationContext context, String... data) {
+    	 printOut(context, data);
     }
 
     public void startExecution(InvocationContext context) {

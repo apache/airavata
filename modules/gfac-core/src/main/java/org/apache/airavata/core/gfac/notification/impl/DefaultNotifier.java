@@ -79,10 +79,10 @@ public class DefaultNotifier implements GFacNotifier {
         }
     }
 
-    public void output(Object notifier, InvocationContext context, String... data) {
+    public void output(InvocationContext context, String... data) {
         for (GFacNotifiable notif : notifiableObjects) {
             try {
-                notif.output(notifier, context, data);
+                notif.output(context, data);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
