@@ -21,15 +21,6 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
-import javax.xml.namespace.QName;
-
-import org.apache.airavata.registry.api.AiravataRegistry;
-import org.apache.airavata.workflow.model.graph.ws.WSNode;
-import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.xbaya.XBayaConfiguration;
-import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
-
-import xsul.wsdl.WsdlDefinitions;
 
 public interface WorkflowInterpreterInteractor {
 	public boolean notify(WorkflowExecutionMessage messageType, WorkflowInterpreterConfiguration config, Object data);
@@ -45,52 +36,52 @@ public interface WorkflowInterpreterInteractor {
 		}
 	}
 	
-	public static class WorkflowExecutionData{
-		Workflow workflow;
-		String topic;
-		WorkflowInterpreter currentInterpreter;
-		public WorkflowExecutionData(Workflow workflow,String topic, WorkflowInterpreter currentInterpreter) {
-			this.workflow=workflow;
-			this.topic=topic;
-			this.currentInterpreter=currentInterpreter;
-		}
-	}
-	
-	public static class WSNodeData{
-		WSNode wsNode;
-		WorkflowInterpreter currentInterpreter;
-		public WSNodeData(WSNode wsNode, WorkflowInterpreter currentInterpreter) {
-			this.wsNode=wsNode;
-			this.currentInterpreter=currentInterpreter;
-		}
-	}
-	
-	public static class GFacInvokerData{
-		QName portTypeQName;
-		WsdlDefinitions wsdl;
-		String nodeID;
-		String messageBoxURL;
-        String gfacURL;
-        WorkflowNotifiable notifier;
-        String topic;
-        AiravataRegistry registry;
-        String serviceName;
-        XBayaConfiguration config;
-        boolean embeddedMode;
-        
-        public GFacInvokerData(boolean embeddedMode, QName portTypeQName, WsdlDefinitions wsdl, String nodeID, String messageBoxURL,
-                String gfacURL, WorkflowNotifiable notifier,String topic,AiravataRegistry registry,String serviceName,XBayaConfiguration config) {
-        	this.embeddedMode=embeddedMode;
-        	this.portTypeQName = portTypeQName;
-        	this.wsdl = wsdl;
-        	this.nodeID = nodeID;
-        	this.messageBoxURL = messageBoxURL;
-        	this.gfacURL = gfacURL;
-        	this.notifier = notifier;
-        	this.topic = topic;
-        	this.registry = registry;
-        	this.serviceName = serviceName;
-        	this.config = config;
-		}
-	}
+//	public static class WorkflowExecutionData{
+//		Workflow workflow;
+//		String topic;
+//		WorkflowInterpreter currentInterpreter;
+//		public WorkflowExecutionData(Workflow workflow,String topic, WorkflowInterpreter currentInterpreter) {
+//			this.workflow=workflow;
+//			this.topic=topic;
+//			this.currentInterpreter=currentInterpreter;
+//		}
+//	}
+//	
+//	public static class WSNodeData{
+//		WSNode wsNode;
+//		WorkflowInterpreter currentInterpreter;
+//		public WSNodeData(WSNode wsNode, WorkflowInterpreter currentInterpreter) {
+//			this.wsNode=wsNode;
+//			this.currentInterpreter=currentInterpreter;
+//		}
+//	}
+//	
+//	public static class GFacInvokerData{
+//		QName portTypeQName;
+//		WsdlDefinitions wsdl;
+//		String nodeID;
+//		String messageBoxURL;
+//        String gfacURL;
+//        WorkflowNotifiable notifier;
+//        String topic;
+//        AiravataRegistry registry;
+//        String serviceName;
+//        XBayaConfiguration config;
+//        boolean embeddedMode;
+//        
+//        public GFacInvokerData(boolean embeddedMode, QName portTypeQName, WsdlDefinitions wsdl, String nodeID, String messageBoxURL,
+//                String gfacURL, WorkflowNotifiable notifier,String topic,AiravataRegistry registry,String serviceName,XBayaConfiguration config) {
+//        	this.embeddedMode=embeddedMode;
+//        	this.portTypeQName = portTypeQName;
+//        	this.wsdl = wsdl;
+//        	this.nodeID = nodeID;
+//        	this.messageBoxURL = messageBoxURL;
+//        	this.gfacURL = gfacURL;
+//        	this.notifier = notifier;
+//        	this.topic = topic;
+//        	this.registry = registry;
+//        	this.serviceName = serviceName;
+//        	this.config = config;
+//		}
+//	}
 }

@@ -282,7 +282,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         workflowInterpreterConfiguration.setGfacEmbeddedMode(gfacEmbeddedMode);
         workflowInterpreterConfiguration.setActOnProvenance(provenance);
         listener = new WorkflowInterpretorEventListener(workflow, conf);
-        interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, new SSWorkflowInterpreterInteractorImpl(workflow));
+        interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, new SSWorkflowInterpreterInteractorImpl());
         try {
             System.err.println("start listener set");
             listener.start();

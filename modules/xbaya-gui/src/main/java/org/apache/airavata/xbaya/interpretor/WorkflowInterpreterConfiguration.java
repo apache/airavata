@@ -33,9 +33,9 @@ import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.utils.MyProxyChecker;
 
 public class WorkflowInterpreterConfiguration {
-	public static final int GUI_MODE = 1;
-	public static final int SERVER_MODE = 2;
-	
+//	public static final int GUI_MODE = 1;
+//	public static final int SERVER_MODE = 2;
+//	
 	private URI messageBoxURL;
 	private URI messageBrokerURL;
 	private AiravataRegistry registry;
@@ -51,7 +51,8 @@ public class WorkflowInterpreterConfiguration {
     private boolean gfacEmbeddedMode = false;
 	private boolean actOnProvenance = false;
 	private boolean subWorkflow;
-
+	private boolean testMode=false;
+	
 	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry registry,XBayaConfiguration configuration,XBayaGUI gui,MyProxyChecker myProxyChecker,Monitor monitor) {
 		this(workflow, topic, messageBoxURL,messageBrokerURL,registry,configuration,gui,myProxyChecker,monitor, true);
 	}
@@ -138,7 +139,7 @@ public class WorkflowInterpreterConfiguration {
 
 	public WorkflowNotifiable getNotifier() {
 		if (notifier==null){
-				notifier=new NotificationSender(getMessageBrokerURL(), getTopic());
+			notifier=new NotificationSender(getMessageBrokerURL(), getTopic());
 		}
 		return notifier;
 	}
@@ -182,5 +183,17 @@ public class WorkflowInterpreterConfiguration {
 	public void setSubWorkflow(boolean subWorkflow) {
 		this.subWorkflow = subWorkflow;
 	}
+	
+	public void setNotifier(WorkflowNotifiable notifier) {
+		this.notifier = notifier;
+		setTestMode(notifier instanceof StandaloneNotificationSender);
+	}
 
+	public boolean isTestMode() {
+		return testMode;
+	}
+
+	private void setTestMode(boolean testMode) {
+		this.testMode = testMode;
+	}
 }
