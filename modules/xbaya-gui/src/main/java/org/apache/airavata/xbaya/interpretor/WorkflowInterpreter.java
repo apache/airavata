@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.namespace.QName;
@@ -100,12 +101,10 @@ import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.provenance.ProvenanceReader;
 import org.apache.airavata.xbaya.provenance.ProvenanceWrite;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
-import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
 import org.apache.airavata.xbaya.ui.graph.subworkflow.SubWorkflowNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.system.DifferedInputHandler;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
-import org.apache.airavata.xbaya.ui.utils.Cancelable;
 import org.apache.airavata.xbaya.util.AmazonUtil;
 import org.apache.airavata.xbaya.util.InterpreterUtil;
 import org.apache.airavata.xbaya.util.XBayaUtil;
@@ -117,113 +116,18 @@ import xsul5.XmlConstants;
 
 public class WorkflowInterpreter {
 
-//	private static final int WorkflowInterpreterConfiguration.GUI_MODE = 1;
-//
-//	private static final int SERVER_MODE = 2;
-
-
-//	private static final int MAXIMUM_RETRY_TIME = 2;
-
 	public static final String WORKFLOW_STARTED = "Workflow Running";
 	public static final String WORKFLOW_FINISHED = "Workflow Finished";
 
-//	private XBayaEngine engine;
-
 	private WorkflowInterpreterConfiguration config;
 	
-//	private Map<Node, Integer> retryCounter = new HashMap<Node, Integer>();
-
 	private Map<Node, Invoker> invokerMap = new HashMap<Node, Invoker>();
-
-//	private WorkflowNotifiable notifier;
-
-//	private boolean retryFailed = false;
-
-//	private Workflow workflow;
-//
-//    private WSGraph graph;
-
-//	private boolean isSubWorkflow;
-
-//	private XBayaConfiguration configuration;
-
-//	private int mode;
-
-//	private String password;
-//
-//	private String username;
-
-//	private String topic;
-
-//    private Boolean gfacEmbeddedMode = false;
 
 	private LeadResourceMapping resourceMapping;
 
-//	private boolean actOnProvenance = false;
-
 	private PredicatedTaskRunner provenanceWriter;
 
-//	private boolean runWithCrossProduct = false;
-
-//	private boolean isoffline = false;
-	
 	private WorkflowInterpreterInteractor interactor;
-
-//	/**
-//	 * 
-//	 * Constructs a WorkflowInterpreter.
-//	 * 
-//	 * @param configuration
-//	 * @param topic
-//	 * @param workflow
-//	 * @param username
-//	 * @param password
-//	 */
-//	public WorkflowInterpreter(WorkflowInterpreterConfiguration config,WorkflowInterpreterInteractor interactor) {
-//		this.setConfig(config);
-////		this.setUsername(username);
-////		this.setPassword(password);
-////		this.setTopic(topic);
-////        this.config.getNotifier() = new NotificationSender(
-////				this.getConfig().getConfiguration().getBrokerURL(), topic);
-//		this.config.getMode() = SERVER_MODE;
-//		this.interactor=interactor;
-//	}
-
-//	/**
-//	 * 
-//	 * Constructs a WorkflowInterpreter.
-//	 * 
-//	 * @param configuration
-//	 * @param topic
-//	 * @param workflow
-//	 * @param username
-//	 * @param password
-//	 */
-//	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, String topic, WorkflowInterpreterInteractor interactor) {
-////		this.isoffline = offline;
-//		this.setConfig(config);
-//		this.setTopic(topic);
-//		if (config.isOffline()) {
-//			this.config.getNotifier() = new StandaloneNotificationSender(topic,
-//					this.getWorkflow());
-//		} else {
-//			throw new Error("Cannot Initialize workflow with offline false");
-//		}
-//		this.config.getMode() = SERVER_MODE;
-//	}
-
-//	/**
-//	 * 
-//	 * Constructs a WorkflowInterpreter.
-//	 * 
-//	 * @param engine
-//	 * @param topic
-//	 */
-//	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, WorkflowInterpreterInteractor interactor) {
-//		this(config, interactor);
-//
-//	}
 
 	/**
 	 * 
@@ -235,18 +139,11 @@ public class WorkflowInterpreter {
 	 * @param subWorkflow
 	 */
 	public WorkflowInterpreter(WorkflowInterpreterConfiguration config, WorkflowInterpreterInteractor interactor) {
-//		this.engine = engine;
 		this.setConfig(config);
-//		this.isSubWorkflow = subWorkflow;
-//		this.config.getMode() = WorkflowInterpreterConfiguration.GUI_MODE;
 		config.validateNotifier();
-//		this.setTopic(topic);
-//		this.config.isActOnProvenance() = actOnProvenance;
-//		engine.registerWorkflowInterpreter(this);
 		this.interactor=interactor;
 		config.setActOnProvenance(config.getConfiguration().isCollectProvenance());
 		config.setSubWorkflow(false);
-
 	}
 
 	public void setResourceMapping(LeadResourceMapping resourceMapping) {
@@ -254,11 +151,11 @@ public class WorkflowInterpreter {
 	}
 
 	private void notifyViaInteractor(WorkflowExecutionMessage messageType, Object data){
-		interactor.notify(messageType, data);
+		interactor.notify(messageType, config, data);
 	}
 	
 	private Object getInputViaInteractor(WorkflowExecutionMessage messageType, Object data) throws Exception{
-		return interactor.retrieveData(messageType, data);
+		return interactor.retrieveData(messageType, config, data);
 	}
 	
 	
@@ -291,20 +188,20 @@ public class WorkflowInterpreter {
 			for (int i = 0; i < inputNodes.size(); ++i) {
 				Node node = inputNodes.get(i);
 				NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
-				interactor.notify(WorkflowExecutionMessage.NODE_STATE_CHANGED, null);
+				notifyViaInteractor(WorkflowExecutionMessage.NODE_STATE_CHANGED, null);
 				keywords[i] = ((InputNode) node).getName();
 				values[i] = ((InputNode) node).getDefaultValue();
 			}
 			this.config.getNotifier().workflowStarted(values, keywords);
 			while (this.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
 				if (getRemainNodesDynamically() == 0) {
-//					notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
-					if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
-						this.notifyPause();
-					} else {
-						this.getWorkflow().setExecutionState(
-								WorkflowExecutionState.STOPPED);
-					}
+					notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
+//					if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
+//						this.notifyPause();
+//					} else {
+//						this.getWorkflow().setExecutionState(
+//								WorkflowExecutionState.STOPPED);
+//					}
 				}
 				// ok we have paused sleep
 				while (this.getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED) {
@@ -397,49 +294,49 @@ public class WorkflowInterpreter {
 				}
 			}
 			this.config.getNotifier().workflowTerminated();
-			if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
-				final WaitDialog waitDialog = new WaitDialog(new Cancelable() {
-					@Override
-					public void cancel() {
-						// Do nothing
-					}
-				}, "Stop Workflow", "Cleaning up resources for Workflow",
-						this.config.getGUI());
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						waitDialog.show();
-					}
-				}).start();
-				// Send Notification for output values
-				finish();
-				// Sleep to provide for notification delay
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				cleanup();
-				this.config.getNotifier().cleanup();
-				waitDialog.hide();
-			} else {
-				finish();
-			}
-//			UUID uuid = UUID.randomUUID();
-//			notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_TASK_START, new WorkflowInterpreterInteractor.TaskNotification("Stop Workflow", "Cleaning up resources for Workflow",uuid.toString()));
-//			// Send Notification for output values
-//			finish();
-//			// Sleep to provide for notification delay
-//			try {
-//				Thread.sleep(1000);
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
-//			cleanup();
-//			if (notifier!=null){
+//			if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
+//				final WaitDialog waitDialog = new WaitDialog(new Cancelable() {
+//					@Override
+//					public void cancel() {
+//						// Do nothing
+//					}
+//				}, "Stop Workflow", "Cleaning up resources for Workflow",
+//						this.config.getGUI());
+//				new Thread(new Runnable() {
+//					@Override
+//					public void run() {
+//						waitDialog.show();
+//					}
+//				}).start();
+//				// Send Notification for output values
+//				finish();
+//				// Sleep to provide for notification delay
+//				try {
+//					Thread.sleep(1000);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//				cleanup();
 //				this.config.getNotifier().cleanup();
+//				waitDialog.hide();
+//			} else {
+//				finish();
 //			}
-//			notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_TASK_END, new WorkflowInterpreterInteractor.TaskNotification("Stop Workflow", "Cleaning up resources for Workflow",uuid.toString()));
+			UUID uuid = UUID.randomUUID();
+			notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_TASK_START, new WorkflowInterpreterInteractor.TaskNotification("Stop Workflow", "Cleaning up resources for Workflow",uuid.toString()));
+			// Send Notification for output values
+			finish();
+			// Sleep to provide for notification delay
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			cleanup();
+			if (config.getNotifier()!=null){
+				this.config.getNotifier().cleanup();
+			}
+			notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_TASK_END, new WorkflowInterpreterInteractor.TaskNotification("Stop Workflow", "Cleaning up resources for Workflow",uuid.toString()));
 
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
 		} catch (RuntimeException e) {
@@ -527,34 +424,34 @@ public class WorkflowInterpreter {
 	 * @param e
 	 */
 	public void raiseException(Throwable e) {
-//		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_ERROR, e);
-//		throw new RuntimeException(e);
-		if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
-			this.config.getGUI().getErrorWindow().error(e);
-		} else {
-			throw new RuntimeException(e);
-		}
+		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_ERROR, e);
+////		throw new RuntimeException(e);
+//		if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
+//			this.config.getGUI().getErrorWindow().error(e);
+//		} else {
+//			throw new RuntimeException(e);
+//		}
 	}
 
 	/**
      *
      */
 	private void notifyPause() {
-//		if (this.getWorkflow().getExecutionState() != WorkflowExecutionState.RUNNING
-//				&& this.getWorkflow().getExecutionState() != WorkflowExecutionState.STEP) {
-//			throw new WorkflowRuntimeException("Cannot pause when not running");
-//		}
-//		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
-		if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
-
-			if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.RUNNING
-					|| this.getWorkflow().getExecutionState() == WorkflowExecutionState.STEP) {
-				this.config.getGUI().getToolbar().getPlayAction()
-						.actionPerformed(null);
-			} else {
-				throw new WorkflowRuntimeException("Cannot pause when not running");
-			}
+		if (this.getWorkflow().getExecutionState() != WorkflowExecutionState.RUNNING
+				&& this.getWorkflow().getExecutionState() != WorkflowExecutionState.STEP) {
+			throw new WorkflowRuntimeException("Cannot pause when not running");
 		}
+		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
+//		if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
+//
+//			if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.RUNNING
+//					|| this.getWorkflow().getExecutionState() == WorkflowExecutionState.STEP) {
+//				this.config.getGUI().getToolbar().getPlayAction()
+//						.actionPerformed(null);
+//			} else {
+//				throw new WorkflowRuntimeException("Cannot pause when not running");
+//			}
+//		}
 	}
 
 	/**
@@ -759,10 +656,10 @@ public class WorkflowInterpreter {
 	}
 
 	private void handleSubWorkComponent(Node node) throws WorkflowException {
-//		notifyViaInteractor(WorkflowExecutionMessage.OPEN_SUBWORKFLOW, node);
-		if ((this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) && (node instanceof SubWorkflowNodeGUI)) {
-			((SubWorkflowNodeGUI) NodeController.getGUI(node)).openWorkflowTab(this.config.getGUI());
-		}
+		notifyViaInteractor(WorkflowExecutionMessage.OPEN_SUBWORKFLOW, node);
+//		if ((this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) && (node instanceof SubWorkflowNodeGUI)) {
+//			((SubWorkflowNodeGUI) NodeController.getGUI(node)).openWorkflowTab(this.config.getGUI());
+//		}
 		// setting the inputs
 		Workflow subWorkflow = ((SubWorkflowNode) node).getWorkflow();
 		// List<WSComponentPort> subWorkflowdInputs = new ODEClient()
@@ -829,28 +726,35 @@ public class WorkflowInterpreter {
 			if (gfacURLString.startsWith("https")) {
 				LeadContextHeader leadCtxHeader=null;
 //				try {
-//					leadCtxHeader = (LeadContextHeader)getInputViaInteractor(WorkflowExecutionMessage.INPUT_LEAD_CONTEXT_HEADER, new WSNodeData(wsNode,this));
+//					leadCtxHeader = (LeadContextHeader)getInputViaInteractor(WorkflowExecutionMessage.INPUT_LEAD_CONTEXT_HEADER, wsNode);
 //				} catch (Exception e1) {
 //					throw new WorkflowException(e1);
 //				}
 				try {
-					if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
-						leadCtxHeader = XBayaUtil.buildLeadContextHeader(
-								this.getWorkflow(),
-								this.getConfig().getConfiguration(),
-								new MonitorConfiguration(this.getConfig().getConfiguration()
-										.getBrokerURL(), this.config.getTopic(), true,
-										this.getConfig().getConfiguration().getMessageBoxURL()),
-								wsNode.getID(), null);
-					} else {
-						leadCtxHeader = XBayaUtil.buildLeadContextHeader(
-								this.getWorkflow(),
-								this.getConfig().getConfiguration(),
-								new MonitorConfiguration(this.getConfig().getConfiguration()
-										.getBrokerURL(), this.config.getTopic(), true,
-										this.getConfig().getConfiguration().getMessageBoxURL()),
-								wsNode.getID(), null);
-					}
+					leadCtxHeader = XBayaUtil.buildLeadContextHeader(
+							this.getWorkflow(),
+							this.getConfig().getConfiguration(),
+							new MonitorConfiguration(this.getConfig().getConfiguration()
+									.getBrokerURL(), this.config.getTopic(), true,
+									this.getConfig().getConfiguration().getMessageBoxURL()),
+							wsNode.getID(), null);
+//					if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
+//						leadCtxHeader = XBayaUtil.buildLeadContextHeader(
+//								this.getWorkflow(),
+//								this.getConfig().getConfiguration(),
+//								new MonitorConfiguration(this.getConfig().getConfiguration()
+//										.getBrokerURL(), this.config.getTopic(), true,
+//										this.getConfig().getConfiguration().getMessageBoxURL()),
+//								wsNode.getID(), null);
+//					} else {
+//						leadCtxHeader = XBayaUtil.buildLeadContextHeader(
+//								this.getWorkflow(),
+//								this.getConfig().getConfiguration(),
+//								new MonitorConfiguration(this.getConfig().getConfiguration()
+//										.getBrokerURL(), this.config.getTopic(), true,
+//										this.getConfig().getConfiguration().getMessageBoxURL()),
+//								wsNode.getID(), null);
+//					}
 				} catch (URISyntaxException e) {
 					throw new WorkflowException(e);
 				}
@@ -1384,23 +1288,30 @@ public class WorkflowInterpreter {
 			if (gfacURLString.startsWith("https")) {
 				LeadContextHeader leadCtxHeader = null;
 				try {
-					if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
-						leadCtxHeader = XBayaUtil.buildLeadContextHeader(
-								this.getWorkflow(),
-								this.getConfig().getConfiguration(),
-								new MonitorConfiguration(this.getConfig().getConfiguration()
-										.getBrokerURL(), this.config.getTopic(), true,
-										this.getConfig().getConfiguration().getMessageBoxURL()),
-								foreachWSNode.getID(), null);
-					} else {
-						leadCtxHeader = XBayaUtil.buildLeadContextHeader(
-								this.getWorkflow(),
-								this.getConfig().getConfiguration(),
-								new MonitorConfiguration(this.getConfig().getConfiguration()
-										.getBrokerURL(), this.config.getTopic(), true,
-										this.getConfig().getConfiguration().getMessageBoxURL()),
-								foreachWSNode.getID(), null);
-					}
+					leadCtxHeader = XBayaUtil.buildLeadContextHeader(
+							this.getWorkflow(),
+							this.getConfig().getConfiguration(),
+							new MonitorConfiguration(this.getConfig().getConfiguration()
+									.getBrokerURL(), this.config.getTopic(), true,
+									this.getConfig().getConfiguration().getMessageBoxURL()),
+							foreachWSNode.getID(), null);
+//					if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
+//						leadCtxHeader = XBayaUtil.buildLeadContextHeader(
+//								this.getWorkflow(),
+//								this.getConfig().getConfiguration(),
+//								new MonitorConfiguration(this.getConfig().getConfiguration()
+//										.getBrokerURL(), this.config.getTopic(), true,
+//										this.getConfig().getConfiguration().getMessageBoxURL()),
+//								foreachWSNode.getID(), null);
+//					} else {
+//						leadCtxHeader = XBayaUtil.buildLeadContextHeader(
+//								this.getWorkflow(),
+//								this.getConfig().getConfiguration(),
+//								new MonitorConfiguration(this.getConfig().getConfiguration()
+//										.getBrokerURL(), this.config.getTopic(), true,
+//										this.getConfig().getConfiguration().getMessageBoxURL()),
+//								foreachWSNode.getID(), null);
+//					}
 				} catch (URISyntaxException e) {
 					throw new WorkflowException(e);
 				}
@@ -1819,14 +1730,14 @@ public class WorkflowInterpreter {
 			}
 		}
 
-
-		if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
-			ArrayList<Node> waitingNodes = InterpreterUtil.getWaitingNodesDynamically(this.getGraph());
-			for (Node readyNode : waitingNodes) {
-				DifferedInputHandler.handleDifferredInputsofDependentNodes(
-						readyNode, config.getGUI());
-			}
-		}
+		notifyViaInteractor(WorkflowExecutionMessage.HANDLE_DEPENDENT_NODES_DIFFERED_INPUTS, this.getGraph());
+//		if (this.config.getMode() == WorkflowInterpreterConfiguration.GUI_MODE) {
+//			ArrayList<Node> waitingNodes = InterpreterUtil.getWaitingNodesDynamically(this.getGraph());
+//			for (Node readyNode : waitingNodes) {
+//				DifferedInputHandler.handleDifferredInputsofDependentNodes(
+//						readyNode, config.getGUI());
+//			}
+//		}
 
 		return list;
 
@@ -1836,45 +1747,9 @@ public class WorkflowInterpreter {
 		return this.config.getWorkflow();
 	}
 
-//	public void setActOnProvenance(boolean actOnProvenance) {
-//		this.config.isActOnProvenance() = actOnProvenance;
-//	}
-
 	public void setProvenanceWriter(PredicatedTaskRunner provenanceWriter) {
 		this.provenanceWriter = provenanceWriter;
 	}
-
-//    public void setGfacEmbeddedMode(Boolean gfacEmbeddedMode) {
-//        this.gfacEmbeddedMode = gfacEmbeddedMode;
-//    }
-//
-//    public Boolean getGfacEmbeddedMode() {
-//        return gfacEmbeddedMode;
-//    }
-
-//	public String getUsername() {
-//		return username;
-//	}
-//
-//	public void setUsername(String username) {
-//		this.username = username;
-//	}
-//
-//	public String getPassword() {
-//		return password;
-//	}
-//
-//	public void setPassword(String password) {
-//		this.password = password;
-//	}
-
-//	public String getTopic() {
-//		return topic;
-//	}
-//
-//	public void setTopic(String topic) {
-//		this.topic = topic;
-//	}
 
 	public WorkflowInterpreterConfiguration getConfig() {
 		return config;

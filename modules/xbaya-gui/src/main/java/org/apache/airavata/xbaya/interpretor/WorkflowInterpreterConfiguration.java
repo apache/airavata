@@ -163,9 +163,9 @@ public class WorkflowInterpreterConfiguration {
 		this.topic = topic;
 	}
 
-	public int getMode() {
-		return getMonitor()==null? SERVER_MODE:GUI_MODE;
-	}
+//	public int getMode() {
+//		return getMonitor()==null? SERVER_MODE:GUI_MODE;
+//	}
 
 	public boolean isGfacEmbeddedMode() {
 		return gfacEmbeddedMode;

@@ -32,8 +32,8 @@ import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import xsul.wsdl.WsdlDefinitions;
 
 public interface WorkflowInterpreterInteractor {
-	public boolean notify(WorkflowExecutionMessage messageType, Object data);
-	public Object retrieveData(WorkflowExecutionMessage messageType, Object data) throws Exception;
+	public boolean notify(WorkflowExecutionMessage messageType, WorkflowInterpreterConfiguration config, Object data);
+	public Object retrieveData(WorkflowExecutionMessage messageType, WorkflowInterpreterConfiguration config, Object data) throws Exception;
 	public static class TaskNotification{
 		String messageTitle;
 		String message;
