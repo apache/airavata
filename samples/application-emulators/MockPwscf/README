@@ -1,10 +1,9 @@
 OVERVIEW
 --------
-This is a sample application which emulates three inputs.
-The First Input is Pwscf_Input, it has all data setup manually by the user over the Web Portal.
-The second and third inputs are pseudo_1 and pseudo_2. Those file usually are created by a third
-part software containing atomic positions.
-The real PWscf uses those pseudo files to simulate atomic postions of the atoms involved on the
+This is a sample application which emulates three inputs. The First Input is Pwscf_Input, it has
+all data setup manually by the user over the Web Portal. The second and third inputs are pseudo_1
+and pseudo_2. Those file usually are created by a third party software containing atomic positions.
+The real PWscf uses those pseudo files to simulate atomic positions of the atoms involved on the
 calculations.
 
 
@@ -19,7 +18,7 @@ tmp directory.
 
 MOCK APPLICATION
 ----------------
-This application is similar to a thermo dynamics application PWscf. MOCK APPLICATION
+This application is similar to a thermo dynamics application PWscf.
 
 
 APPLICATION INPUT/OUPUTS
