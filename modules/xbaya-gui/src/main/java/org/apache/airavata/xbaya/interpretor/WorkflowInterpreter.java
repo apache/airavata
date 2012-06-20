@@ -89,7 +89,6 @@ import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
 import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
 import org.apache.airavata.xbaya.core.amazon.AmazonCredential;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.interpretor.WorkflowInterpreterInteractor.WorkflowExecutionData;
 import org.apache.airavata.xbaya.invoker.DynamicInvoker;
 import org.apache.airavata.xbaya.invoker.EmbeddedGFacInvoker;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
@@ -102,8 +101,6 @@ import org.apache.airavata.xbaya.provenance.ProvenanceReader;
 import org.apache.airavata.xbaya.provenance.ProvenanceWrite;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
-import org.apache.airavata.xbaya.ui.graph.subworkflow.SubWorkflowNodeGUI;
-import org.apache.airavata.xbaya.ui.graph.system.DifferedInputHandler;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.util.AmazonUtil;
 import org.apache.airavata.xbaya.util.InterpreterUtil;
@@ -695,7 +692,7 @@ public class WorkflowInterpreter {
 		}
 
 		try {
-			WorkflowInterpreter subworkflowInterpreter = (WorkflowInterpreter)getInputViaInteractor(WorkflowExecutionMessage.INPUT_WORKFLOWINTERPRETER_FOR_WORKFLOW, new WorkflowExecutionData(subWorkflow,this.config.getTopic(), this));
+			WorkflowInterpreter subworkflowInterpreter = (WorkflowInterpreter)getInputViaInteractor(WorkflowExecutionMessage.INPUT_WORKFLOWINTERPRETER_FOR_WORKFLOW, subWorkflow);
 			subworkflowInterpreter.scheduleDynamically();
 		} catch (Exception e) {
 			throw new WorkflowException(e);

@@ -142,9 +142,13 @@ public class GUIWorkflowInterpreterInteractorImpl implements
 		Object result = null;
 		switch (messageType) {
 		case INPUT_WORKFLOWINTERPRETER_FOR_WORKFLOW:
-            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(config.getWorkflow(),config.getTopic(),config.getMessageBoxURL(), config.getMessageBrokerURL(), config.getRegistry(), config.getConfiguration(), config.getGUI(), new MyProxyChecker(this.engine), this.engine.getMonitor());
+			Workflow subWorkflow= (Workflow) data;
+            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(subWorkflow,config.getTopic(),config.getMessageBoxURL(), config.getMessageBrokerURL(), config.getRegistry(), config.getConfiguration(), config.getGUI(), new MyProxyChecker(this.engine), this.engine.getMonitor());
             workflowInterpreterConfiguration.setActOnProvenance(false);
             workflowInterpreterConfiguration.setSubWorkflow(true);
+            if (config.isTestMode()){
+        		workflowInterpreterConfiguration.setNotifier(new StandaloneNotificationSender(workflowInterpreterConfiguration.getTopic(),workflowInterpreterConfiguration.getWorkflow()));
+            }
 			result = new WorkflowInterpreter(workflowInterpreterConfiguration, 
 					new GUIWorkflowInterpreterInteractorImpl(engine,
 							config.getWorkflow()));

@@ -60,7 +60,7 @@ public class SimpleForEachWorkflowTest {
         XBayaConfiguration conf = WorkflowTestUtils.getConfiguration();
         AiravataRegistry registry = conf.getJcrComponentRegistry()==null? null:conf.getJcrComponentRegistry().getRegistry();
 		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow, UUID.randomUUID().toString(),conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null,null,null,true);
-        SSWorkflowInterpreterInteractorImpl ssWorkflowInterpreterInteractorImpl = new SSWorkflowInterpreterInteractorImpl(workflow);
+        SSWorkflowInterpreterInteractorImpl ssWorkflowInterpreterInteractorImpl = new SSWorkflowInterpreterInteractorImpl();
 
         WorkflowInterpreter interpretor = new WorkflowInterpreter(workflowInterpreterConfiguration,ssWorkflowInterpreterInteractorImpl);
         interpretor.scheduleDynamically();

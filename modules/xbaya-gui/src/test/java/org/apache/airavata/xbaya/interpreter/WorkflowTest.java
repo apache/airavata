@@ -28,6 +28,7 @@ import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.interpreter.utils.WorkflowTestUtils;
 import org.apache.airavata.xbaya.interpretor.SSWorkflowInterpreterInteractorImpl;
+import org.apache.airavata.xbaya.interpretor.StandaloneNotificationSender;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreterConfiguration;
 import org.junit.Rule;
@@ -62,7 +63,8 @@ public class WorkflowTest{
         XBayaConfiguration conf = WorkflowTestUtils.getConfiguration();
         AiravataRegistry registry = conf.getJcrComponentRegistry()==null? null:conf.getJcrComponentRegistry().getRegistry();
 		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow, UUID.randomUUID().toString(),conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null,null,null,true);
-        SSWorkflowInterpreterInteractorImpl ssWorkflowInterpreterInteractorImpl = new SSWorkflowInterpreterInteractorImpl(workflow);
+		workflowInterpreterConfiguration.setNotifier(new StandaloneNotificationSender(workflowInterpreterConfiguration.getTopic(),workflowInterpreterConfiguration.getWorkflow()));
+        SSWorkflowInterpreterInteractorImpl ssWorkflowInterpreterInteractorImpl = new SSWorkflowInterpreterInteractorImpl();
 
         WorkflowInterpreter interpretor = new WorkflowInterpreter(workflowInterpreterConfiguration, ssWorkflowInterpreterInteractorImpl);
         interpretor.scheduleDynamically();
