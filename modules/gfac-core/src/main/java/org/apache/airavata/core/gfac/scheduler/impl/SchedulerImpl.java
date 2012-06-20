@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -54,7 +55,8 @@ import org.slf4j.LoggerFactory;
  */
 public class SchedulerImpl implements Scheduler {
 
-    private static Logger log = LoggerFactory.getLogger(SchedulerImpl.class);
+    private static Logger log = LoggerFactory.getLogger(SchedulerImpl.class+
+            "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());
 
     public Provider schedule(InvocationContext context) throws SchedulerException {
 
