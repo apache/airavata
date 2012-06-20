@@ -138,15 +138,7 @@ public class WorkflowInterpreterConfiguration {
 
 	public WorkflowNotifiable getNotifier() {
 		if (notifier==null){
-			if (getMonitor()==null){
-				if (isOffline()) {
-					notifier = new StandaloneNotificationSender(getTopic(),getWorkflow());
-				} else {
-					throw new Error("Cannot Initialize workflow with offline false");
-				}
-			}else{
 				notifier=new NotificationSender(getMessageBrokerURL(), getTopic());
-			}
 		}
 		return notifier;
 	}
