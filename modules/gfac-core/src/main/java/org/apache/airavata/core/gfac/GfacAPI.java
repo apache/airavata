@@ -44,7 +44,8 @@ import java.net.URI;
 import java.util.Map;
 
 public class GfacAPI {
-    private static final Logger log = LoggerFactory.getLogger(GfacAPI.class);
+    private static final Logger log = LoggerFactory.getLogger(GfacAPI.class +
+            "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());
     public static final String REPOSITORY_PROPERTIES = "repository.properties";
 
     public DefaultInvocationContext gridJobSubmit(JobContext jobContext,GFacConfiguration gfacConfig) throws Exception {

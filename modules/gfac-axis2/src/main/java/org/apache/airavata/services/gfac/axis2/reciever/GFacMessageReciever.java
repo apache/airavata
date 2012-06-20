@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
 
 public class GFacMessageReciever implements MessageReceiver {
 
-    private static final Logger log = LoggerFactory.getLogger(GFacMessageReciever.class);
+    private static Logger log = LoggerFactory.getLogger(GFacMessageReciever.class);
     public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
     public static final String MYPROXY_SERVER = "myproxy.server";
     public static final String MYPROXY_USER = "myproxy.user";
@@ -81,7 +81,7 @@ public class GFacMessageReciever implements MessageReceiver {
     private GFacConfiguration gfacContext;
     private GenericService service;
     private Axis2Registry registry;
-    private final GfacAPI gfacAPI = new GfacAPI();
+    private  GfacAPI gfacAPI;
 
     public void receive(org.apache.axis2.context.MessageContext axisRequestMsgCtx) throws AxisFault {
         GFacServiceOperations operation = GFacServiceOperations.valueFrom(axisRequestMsgCtx.getOperationContext()
@@ -99,6 +99,8 @@ public class GFacMessageReciever implements MessageReceiver {
             break;
         case INVOKE:
             try {
+                ContextHeaderDocument document  = ContextHeaderDocument.Factory.parse(getHeader(axisRequestMsgCtx).toStringWithConsume());
+                log = LoggerFactory.getLogger(GFacMessageReciever.class + "." + document.getContextHeader().getWorkflowMonitoringContext().getExperimentId());
                 log.debug("invoking Invoke operation");
                 processInvokeOperation(axisRequestMsgCtx);
                 log.info(axisRequestMsgCtx.getEnvelope().getBody().getFirstElement().toString());
@@ -107,7 +109,7 @@ public class GFacMessageReciever implements MessageReceiver {
                 throw new AxisFault("Error Invoking the service", e);
             }
             break;
-        case GETWSDL:
+            case GETWSDL:
             try {
                 log.debug("invoking getWSDL operation");
                 processgetWSDLOperation(axisRequestMsgCtx);
@@ -172,7 +174,6 @@ public class GFacMessageReciever implements MessageReceiver {
         }
         //Set the WorkflowContext Header to the ThreadLocal of the Gfac Service, so that this can be accessed easilly
         WorkflowContextHeaderBuilder.setCurrentContextHeader(document.getContextHeader());
-
         Map<Parameter,ActualParameter> actualParameters = new LinkedHashMap<Parameter,ActualParameter>();
         ServiceDescription serviceDescription = getRegistry(context).getServiceDescription(serviceName);
         ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
@@ -192,8 +193,9 @@ public class GFacMessageReciever implements MessageReceiver {
         if(document.getContextHeader().getSecurityContext().getAmazonWebservices() != null){
 //            invocationContext.getExecutionContext().setSecurityContextHeader(header);
             //todo if there's amazoneWebServices context we need to set that value, this will refer in EC2Provider
-        }else{
-            invocationContext = gfacAPI.gridJobSubmit(jobContext,(GFacConfiguration)context.getProperty(GFacService.GFAC_CONFIGURATION));
+        }else {
+            gfacAPI = new GfacAPI();
+            invocationContext = gfacAPI.gridJobSubmit(jobContext, (GFacConfiguration) context.getProperty(GFacService.GFAC_CONFIGURATION));
         }
         try {
             /*
