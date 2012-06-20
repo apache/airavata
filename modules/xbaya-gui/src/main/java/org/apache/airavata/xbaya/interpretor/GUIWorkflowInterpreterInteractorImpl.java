@@ -21,24 +21,24 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
-import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
-import org.apache.airavata.xbaya.myproxy.MyProxyClient;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.graph.subworkflow.SubWorkflowNodeGUI;
+import org.apache.airavata.xbaya.ui.graph.system.DifferedInputHandler;
 import org.apache.airavata.xbaya.ui.utils.Cancelable;
 import org.apache.airavata.xbaya.ui.utils.MyProxyChecker;
-import org.apache.airavata.xbaya.util.XBayaUtil;
+import org.apache.airavata.xbaya.util.InterpreterUtil;
 
 public class GUIWorkflowInterpreterInteractorImpl implements
 		WorkflowInterpreterInteractor {
@@ -56,7 +56,7 @@ public class GUIWorkflowInterpreterInteractorImpl implements
 	}
 
 	@Override
-	public boolean notify(WorkflowExecutionMessage messageType, Object data) {
+	public boolean notify(WorkflowExecutionMessage messageType, WorkflowInterpreterConfiguration config, Object data) {
 		switch (messageType) {
 		case NODE_STATE_CHANGED:
 			xbayaGUI.getGraphCanvas().repaint();
@@ -75,6 +75,13 @@ public class GUIWorkflowInterpreterInteractorImpl implements
 			// }
 			// }
 			getWorkflow().setExecutionState(state);
+			if (state==WorkflowExecutionState.PAUSED){
+				if (config.getWorkflow().getExecutionState() == WorkflowExecutionState.RUNNING
+						|| config.getWorkflow().getExecutionState() == WorkflowExecutionState.STEP) {
+					config.getGUI().getToolbar().getPlayAction()
+							.actionPerformed(null);
+				}
+			}
 			break;
 		case EXECUTION_TASK_START:
 			TaskNotification task = (TaskNotification) data;
@@ -104,53 +111,61 @@ public class GUIWorkflowInterpreterInteractorImpl implements
 			break;
 		case OPEN_SUBWORKFLOW:
 			((SubWorkflowNodeGUI) NodeController.getGUI((Node) data))
-					.openWorkflowTab(this.engine.getGUI());
+					.openWorkflowTab(config.getGUI());
+			break;
 		case EXECUTION_CLEANUP:
 			this.engine.resetWorkflowInterpreter();
 			try {
-				this.engine.getMonitor().stop();
+				config.getMonitor().stop();
 			} catch (MonitorException e) {
 				e.printStackTrace();
 			} finally {
 				this.engine.getMonitor().reset();
 			}
+			break;
+		case HANDLE_DEPENDENT_NODES_DIFFERED_INPUTS:
+			ArrayList<Node> waitingNodes = InterpreterUtil.getWaitingNodesDynamically((WSGraph)data);
+			for (Node readyNode : waitingNodes) {
+				DifferedInputHandler.handleDifferredInputsofDependentNodes(
+						readyNode, config.getGUI());
+			}
+			break;
+		default:
+			return false;	
 		}
-		return false;
+		return true;
 	}
 
 	@Override
-	public Object retrieveData(WorkflowExecutionMessage messageType, Object data)
+	public Object retrieveData(WorkflowExecutionMessage messageType, WorkflowInterpreterConfiguration config, Object data)
 			throws Exception {
 		Object result = null;
 		switch (messageType) {
 		case INPUT_WORKFLOWINTERPRETER_FOR_WORKFLOW:
-			WorkflowExecutionData widata = (WorkflowExecutionData) data;
-            XBayaConfiguration conf = this.engine.getConfiguration();
-            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(widata.workflow,widata.topic,conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getJcrComponentRegistry().getRegistry(), conf, engine.getGUI(), new MyProxyChecker(this.engine), this.engine.getMonitor());
+            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(config.getWorkflow(),config.getTopic(),config.getMessageBoxURL(), config.getMessageBrokerURL(), config.getRegistry(), config.getConfiguration(), config.getGUI(), new MyProxyChecker(this.engine), this.engine.getMonitor());
             workflowInterpreterConfiguration.setActOnProvenance(false);
             workflowInterpreterConfiguration.setSubWorkflow(true);
 			result = new WorkflowInterpreter(workflowInterpreterConfiguration, 
 					new GUIWorkflowInterpreterInteractorImpl(engine,
-							widata.workflow));
+							config.getWorkflow()));
 			this.engine.registerWorkflowInterpreter((WorkflowInterpreter)result);
 			break;
-		case INPUT_GSS_CREDENTIAL:
-			MyProxyChecker myProxyChecker = new MyProxyChecker(this.engine);
-			myProxyChecker.loadIfNecessary();
-			MyProxyClient myProxyClient = this.engine.getMyProxyClient();
-			result = myProxyClient.getProxy();
-			break;
-		case INPUT_LEAD_CONTEXT_HEADER:
-			WSNodeData w = (WSNodeData) data;
-			result = XBayaUtil.buildLeadContextHeader(this.getWorkflow(),
-					w.currentInterpreter.getConfig().getConfiguration(),
-					new MonitorConfiguration(w.currentInterpreter
-							.getConfig().getMessageBrokerURL(),
-							w.currentInterpreter.getConfig().getTopic(), true,
-							w.currentInterpreter.getConfig()
-									.getMessageBoxURL()), w.wsNode.getID(),
-					null);
-			break;
+//		case INPUT_GSS_CREDENTIAL:
+//			MyProxyChecker myProxyChecker = new MyProxyChecker(this.engine);
+//			myProxyChecker.loadIfNecessary();
+//			MyProxyClient myProxyClient = this.engine.getMyProxyClient();
+//			result = myProxyClient.getProxy();
+//			break;
+//		case INPUT_LEAD_CONTEXT_HEADER:
+//			Node node = (Node) data;
+//			result = XBayaUtil.buildLeadContextHeader(this.getWorkflow(),
+//					config.getConfiguration(),
+//					new MonitorConfiguration(config.getMessageBrokerURL(),
+//							config.getTopic(), true,
+//							config
+//									.getMessageBoxURL()), node.getID(),
+//					null);
+//			break;
 		}
 		return result;
 	}

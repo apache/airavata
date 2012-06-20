@@ -21,9 +21,15 @@
 
 package org.apache.airavata.xbaya.interpretor;
 
+import java.util.ArrayList;
+
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
+import org.apache.airavata.xbaya.ui.graph.system.DifferedInputHandler;
+import org.apache.airavata.xbaya.util.InterpreterUtil;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 
 public class SSWorkflowInterpreterInteractorImpl implements
@@ -35,7 +41,7 @@ public class SSWorkflowInterpreterInteractorImpl implements
 	}
 
 	@Override
-	public boolean notify(WorkflowExecutionMessage messageType, Object data) {
+	public boolean notify(WorkflowExecutionMessage messageType, WorkflowInterpreterConfiguration config, Object data) {
 		switch (messageType) {
 		case NODE_STATE_CHANGED:
 			break;
@@ -43,44 +49,48 @@ public class SSWorkflowInterpreterInteractorImpl implements
 			WorkflowExecutionState state = (WorkflowExecutionState) data;
 			if (state == WorkflowExecutionState.PAUSED
 					|| state == WorkflowExecutionState.STOPPED) {
-				workflow.setExecutionState(WorkflowExecutionState.STOPPED);
+				config.getWorkflow().setExecutionState(WorkflowExecutionState.STOPPED);
 			}
 			break;
 		case EXECUTION_TASK_START:
 			break;
 		case EXECUTION_TASK_END:
 			break;
+		case OPEN_SUBWORKFLOW:
+			break;
+		case HANDLE_DEPENDENT_NODES_DIFFERED_INPUTS:
+				break;
+		default:
+			return false;	
 		}
-		return false;
+		return true;
 	}
 
 	@Override
-	public Object retrieveData(WorkflowExecutionMessage messageType, Object data)
+	public Object retrieveData(WorkflowExecutionMessage messageType, WorkflowInterpreterConfiguration config, Object data)
 			throws Exception {
 		Object result = null;
 		switch (messageType) {
 		case INPUT_WORKFLOWINTERPRETER_FOR_WORKFLOW:
 			WorkflowExecutionData widata = (WorkflowExecutionData) data;
-            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(widata.workflow,widata.topic,widata.currentInterpreter.getConfig().getMessageBoxURL(), widata.currentInterpreter.getConfig().getMessageBrokerURL(), widata.currentInterpreter.getConfig().getRegistry(), widata.currentInterpreter.getConfig().getConfiguration(), widata.currentInterpreter.getConfig().getGUI(), widata.currentInterpreter.getConfig().getMyProxyChecker(), widata.currentInterpreter.getConfig().getMonitor());
+            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(config.getWorkflow(),config.getTopic(),config.getMessageBoxURL(), config.getMessageBrokerURL(), config.getRegistry(), config.getConfiguration(), config.getGUI(), config.getMyProxyChecker(), config.getMonitor());
 			result = new WorkflowInterpreter(workflowInterpreterConfiguration
 					, 
-					new SSWorkflowInterpreterInteractorImpl(widata.workflow));
+					new SSWorkflowInterpreterInteractorImpl(config.getWorkflow()));
 			break;
 //		case INPUT_GSS_CREDENTIAL:
 //			WorkflowInterpreter w = (WorkflowInterpreter) data;
 //			result = SecurityUtil.getGSSCredential(w.getUsername(),
 //					w.getPassword(), w.getConfig().getConfiguration().getMyProxyServer());
 //			break;
-		case INPUT_LEAD_CONTEXT_HEADER:
-			WSNodeData d = (WSNodeData) data;
-			result = XBayaUtil.buildLeadContextHeader(d.currentInterpreter
-					.getWorkflow(), d.currentInterpreter.getConfig().getConfiguration(),
-					new MonitorConfiguration(d.currentInterpreter
-							.getConfig().getMessageBrokerURL(),
-							d.currentInterpreter.getConfig().getTopic(), true,
-							d.currentInterpreter.getConfig().getMessageBoxURL()), d.wsNode.getID(),
-					null);
-			break;
+//		case INPUT_LEAD_CONTEXT_HEADER:
+//			Node node = (Node) data;
+//			result = XBayaUtil.buildLeadContextHeader(config.getWorkflow(), config.getConfiguration(),
+//					new MonitorConfiguration(config.getMessageBrokerURL(),
+//							config.getTopic(), true,
+//							config.getMessageBoxURL()), node.getID(),
+//					null);
+//			break;
 		}
 		return result;
 	}
