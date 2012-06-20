@@ -56,13 +56,17 @@ public class TabLabelButton extends JPanel implements ActionListener{
         setLayout(layout);
         setOpaque(false);
         JLabel label = new JLabel() {
+        	String previousText=null;
 			private static final long serialVersionUID = 1L;
 
 			public String getText() {
                 int i = pane.indexOfTabComponent(TabLabelButton.this);
                 if (i != -1) {
-                	TabLabelButton.this.updateUI();
-                    return pane.getTitleAt(i);
+                	if (!pane.getTitleAt(i).equals(previousText)){
+                		previousText=pane.getTitleAt(i);
+                    	TabLabelButton.this.updateUI();
+                	}
+                    return previousText;
                 }
                 return null;
             }
