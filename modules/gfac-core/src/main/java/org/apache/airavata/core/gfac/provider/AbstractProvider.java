@@ -23,6 +23,7 @@ package org.apache.airavata.core.gfac.provider;
 
 import java.util.Map;
 
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.*;
 import org.apache.airavata.core.gfac.notification.GFacNotifier;
@@ -38,8 +39,8 @@ import org.slf4j.LoggerFactory;
  * - retrieveOutput <br/>
  */
 public abstract class AbstractProvider implements Provider {
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
-
+    protected final Logger log = LoggerFactory.getLogger(this.getClass() +
+            "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());
     public void initialize(InvocationContext invocationContext) throws ProviderException {
         /*
          * Make a directory on the host

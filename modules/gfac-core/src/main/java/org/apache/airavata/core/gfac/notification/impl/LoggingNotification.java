@@ -20,6 +20,7 @@
  */
 package org.apache.airavata.core.gfac.notification.impl;
 
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.notification.GFacNotifiable;
 import org.slf4j.Logger;
@@ -31,7 +32,8 @@ import org.slf4j.LoggerFactory;
  */
 public class LoggingNotification implements GFacNotifiable {
 
-    protected final Logger log = LoggerFactory.getLogger(LoggingNotification.class);
+    protected final Logger log = LoggerFactory.getLogger(LoggingNotification.class+
+            "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());
 
     public void startSchedule(InvocationContext context) {
         printOut(context, "Start scheduling");

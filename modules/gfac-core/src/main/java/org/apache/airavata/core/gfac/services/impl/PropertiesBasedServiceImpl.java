@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.airavata.common.registry.api.impl.JCRRegistry;
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
@@ -55,7 +56,8 @@ import org.slf4j.LoggerFactory;
  */
 public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
-    private static Logger log = LoggerFactory.getLogger(PropertiesBasedServiceImpl.class);
+    private static Logger log = LoggerFactory.getLogger(PropertiesBasedServiceImpl.class+
+            "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());
 
     /*
      * default properties file location
