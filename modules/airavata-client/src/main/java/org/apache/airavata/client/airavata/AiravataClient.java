@@ -135,6 +135,27 @@ public class AiravataClient {
 		initialize();        
 	}
 
+	public AiravataClient(URI registryUrl, String username, String password) throws MalformedURLException, RepositoryException, RegistryException {
+		this(createConfig(registryUrl, username, password));
+	}
+
+	private static HashMap<String, String> createConfig(URI registryUrl, String username, String password) throws RepositoryException, RegistryException {
+		HashMap<String, String> config = new HashMap<String,String>();
+		config.put(AiravataClient.JCR,registryUrl.toString());
+		config.put(AiravataClient.JCR_USERNAME,username);
+		config.put(AiravataClient.JCR_PASSWORD,password);
+		AiravataRegistry registryObject = getRegistryObject(registryUrl, username, password);
+		if (registryObject!=null){
+			List<URI> URLList = registryObject.getEventingServiceURLList();
+			config.put(AiravataClient.BROKER,URLList==null || URLList.size()==0? "http://localhost:8080/axis2/services/EventingService":URLList.get(0).toString());
+			URLList = registryObject.getMessageBoxServiceURLList();
+			config.put(AiravataClient.MSGBOX,URLList==null || URLList.size()==0? "http://localhost:8080/axis2/services/MsgBoxService":URLList.get(0).toString());
+			URLList = registryObject.getInterpreterServiceURLList();
+			config.put(AiravataClient.WORKFLOWSERVICEURL,URLList==null || URLList.size()==0? "http://localhost:8080/axis2/services/WorkflowInterpretor?wsdl":URLList.get(0).toString());
+			config.put(AiravataClient.WITHLISTENER,"true");
+		}
+		return config;
+	}
 	private void initialize() throws MalformedURLException {
 		updateClientConfiguration(configuration);
 		
@@ -422,21 +443,33 @@ public class AiravataClient {
 	public AiravataRegistry getRegistry() {
 		if (registry == null) {
 			try {
-				HashMap<String, String> map = new HashMap<String, String>();
-				URI uri = getClientConfiguration().getJcrURL().toURI();
-				map.put("org.apache.jackrabbit.repository.uri", uri.toString());
-				registry = new AiravataJCRRegistry(
-						uri,
-						"org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory",
-						getClientConfiguration().getJcrUsername(),
-						getClientConfiguration().getJcrPassword(), map);
-			} catch (RepositoryException e) {
-				e.printStackTrace();
+				URL jcrURL = getClientConfiguration().getJcrURL();
+				URI uri = jcrURL.toURI();
+				String jcrUsername = getClientConfiguration().getJcrUsername();
+				String jcrPassword = getClientConfiguration().getJcrPassword();
+				registry=getRegistryObject(uri, jcrUsername, jcrPassword);
 			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			} catch (RepositoryException e) {
 				e.printStackTrace();
 			}
 		}
 		return registry;
+	}
+
+	private static AiravataRegistry getRegistryObject(URI uri, String jcrUsername, String jcrPassword) throws RepositoryException {
+		try {
+			HashMap<String, String> map = new HashMap<String, String>();
+			map.put("org.apache.jackrabbit.repository.uri", uri.toString());
+			AiravataRegistry registry = new AiravataJCRRegistry(
+					uri,
+					"org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory",
+					jcrUsername,
+					jcrPassword, map);
+			return registry;
+		} catch (RepositoryException e) {
+			throw e;
+		}
 	}
 
 	public AiravataClientConfiguration getClientConfiguration() {
@@ -652,13 +685,6 @@ public class AiravataClient {
 
 	public static void main(String[] args) throws Exception {
 		HashMap<String, String> config = new HashMap<String,String>();
-		config.put(AiravataClient.BROKER,"http://localhost:8080/axis2/services/EventingService");
-		config.put(AiravataClient.JCR,"http://localhost:8080/jackrabbit-webapp-2.4.0/rmi");
-		config.put(AiravataClient.MSGBOX,"http://localhost:8080/axis2/services/MsgBoxService");
-		config.put(AiravataClient.WORKFLOWSERVICEURL,"http://localhost:8080/axis2/services/WorkflowInterpretor?wsdl");
-		config.put(AiravataClient.JCR_USERNAME,"admin");
-		config.put(AiravataClient.JCR_PASSWORD,"admin");
-		config.put(AiravataClient.WITHLISTENER,"true");
 		AiravataClient airavataClient = new AiravataClient(config);
 		String workflowName = "Workflow1";
 		List<WorkflowInput> workflowInputs = airavataClient.getWorkflowInputs(workflowName);
