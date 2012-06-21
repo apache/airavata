@@ -23,7 +23,17 @@ package org.apache.airavata.wsmg.broker;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.common.registry.api.impl.JCRRegistry;
+import org.apache.airavata.common.utils.ServiceUtils;
+import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.wsmg.broker.handler.PublishedMessageHandler;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionManager;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
@@ -53,13 +63,27 @@ import org.slf4j.LoggerFactory;
 public class BrokerServiceLifeCycle implements ServiceLifeCycle {
 
     private static final Logger log = LoggerFactory.getLogger(BrokerServiceLifeCycle.class);
+    public static final String REPOSITORY_PROPERTIES = "repository.properties";
+    public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 
+    public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
+    public static final String JCR_CLASS = "jcr.class";
+    public static final String JCR_USER = "jcr.user";
+    public static final String JCR_PASS = "jcr.pass";
+    public static final String ORG_APACHE_JACKRABBIT_REPOSITORY_URI = "org.apache.jackrabbit.repository.uri";
+	private static final String MESSAGE_BROKER_SERVICE_NAME = "EventingService";
+	private static final String SERVICE_URL = "message_broker_service_url";
+	private static final String JCR_REGISTRY = "registry";
+	private Thread thread;
+	
     private static final long DEFAULT_SOCKET_TIME_OUT = 20000l;
 
     private DeliveryProcessor proc;
     private ConsumerUrlManager urlManager;
 
-    public void shutDown(ConfigurationContext arg, AxisService service) {
+    private static Boolean initialized=false;
+    
+    public void shutDown(ConfigurationContext configurationcontext, AxisService service) {
         log.info("broker shutting down");
         if (proc != null) {
             proc.stop();
@@ -69,7 +93,29 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
             urlManager.stop();
             urlManager = null;
         }
-        log.info("broker shut down");
+        
+        synchronized (initialized) {
+			if (initialized) {
+				initialized = false;
+				AiravataRegistry registry = (AiravataRegistry) configurationcontext
+						.getProperty(JCR_REGISTRY);
+				URI gfacURL = (URI) configurationcontext
+						.getProperty(SERVICE_URL);
+				try {
+					registry.deleteEventingServiceURL(gfacURL);
+					thread.interrupt();
+					try {
+						thread.join();
+					} catch (InterruptedException e) {
+						log.info("Message box url update thread is interrupted");
+					}
+				} catch (RegistryException e) {
+					log.error("Error while shutting down!!!", e);
+				}
+				((JCRRegistry) registry).closeConnection();
+			}
+		}
+		log.info("broker shut down");
     }
 
     public void startUp(ConfigurationContext configContext, AxisService axisService) {
@@ -88,6 +134,52 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
         } else {
             log.info("init was already done by another webservice");
         }
+        
+        final ConfigurationContext context=configContext;
+        synchronized (initialized) {
+			if (!initialized) {
+				initialized = true;
+				new Thread() {
+					@Override
+					public void run() {
+						Properties properties = new Properties();
+						try {
+							URL url = this.getClass().getClassLoader()
+									.getResource(REPOSITORY_PROPERTIES);
+							properties.load(url.openStream());
+							Map<String, String> map = new HashMap<String, String>(
+									(Map) properties);
+							try {
+								Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
+							} catch (InterruptedException e1) {
+								e1.printStackTrace();
+							}
+							AiravataRegistry registry = new AiravataJCRRegistry(
+									new URI(
+											map.get(ORG_APACHE_JACKRABBIT_REPOSITORY_URI)),
+									map.get(JCR_CLASS), map.get(JCR_USER), map
+											.get(JCR_PASS), map);
+							String localAddress = ServiceUtils
+									.generateServiceURLFromConfigurationContext(
+											context,
+											MESSAGE_BROKER_SERVICE_NAME);
+							log.debug("MESSAGE BOX SERVICE_ADDRESS:"
+									+ localAddress);
+							context.setProperty(SERVICE_URL, new URI(
+									localAddress));
+							context.setProperty(JCR_REGISTRY, registry);
+							/*
+							 * Heart beat message to registry
+							 */
+							thread = new MsgBrokerURLRegisterThread(context);
+							thread.start();
+						} catch (Exception e) {
+							log.error(e.getMessage(), e);
+						}
+					}
+				}.start();
+			}
+		}
     }
 
     private WsmgConfigurationContext initConfigurations(ConfigurationContext configContext, AxisService axisService) {
@@ -216,5 +308,33 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
         proc = new DeliveryProcessor(senderUtils, method);
         proc.start();
         log.info(initedmethod + " sending method inited");
+    }
+    
+    class MsgBrokerURLRegisterThread extends Thread {
+        private ConfigurationContext context = null;
+
+        MsgBrokerURLRegisterThread(ConfigurationContext context) {
+            this.context = context;
+        }
+
+        public void run() {
+            try {
+                while (true) {
+                    try {
+						AiravataRegistry registry = (AiravataRegistry)context.getProperty(JCR_REGISTRY);
+						URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
+						registry.saveEventingServiceURL(localAddress);
+						log.info("Updated the Eventing service URL in to Repository");
+						Thread.sleep(GFAC_URL_UPDATE_INTERVAL);
+					} catch (RegistryException e) {
+						//in case of an registry exception best to retry sooner
+						log.error("Error saving Eventing service url",e);
+						Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
+					}
+                }
+            } catch (InterruptedException e) {
+                log.info("Eventing service url update thread is interrupted");
+			}
+        }
     }
 }

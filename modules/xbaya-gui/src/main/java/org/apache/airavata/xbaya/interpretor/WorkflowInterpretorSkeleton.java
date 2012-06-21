@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -69,9 +68,7 @@ import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisService;
-import org.apache.axis2.description.TransportInDescription;
 import org.apache.axis2.engine.ServiceLifeCycle;
-import org.apache.axis2.util.Utils;
 import org.apache.xmlbeans.XmlException;
 
 import xsul5.MLogger;

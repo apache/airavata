@@ -106,7 +106,6 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
     		@Override
     		public void run() {
     	        Properties properties = new Properties();
-    	        String port = null;
     	        try {
     	            URL url = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
     	            properties.load(url.openStream());
