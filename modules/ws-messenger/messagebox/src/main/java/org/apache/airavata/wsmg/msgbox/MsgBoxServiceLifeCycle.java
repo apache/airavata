@@ -22,7 +22,17 @@
 package org.apache.airavata.wsmg.msgbox;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.common.registry.api.impl.JCRRegistry;
+import org.apache.airavata.common.utils.ServiceUtils;
+import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.commons.util.Axis2Utils;
 import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
@@ -45,9 +55,37 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
     private static final Logger logger = LoggerFactory.getLogger(MsgBoxServiceLifeCycle.class);
     private static final String CONFIGURATION_FILE_NAME = "msgBox.properties";
     private static final String TRUE = Boolean.toString(true);
+    public static final String REPOSITORY_PROPERTIES = "repository.properties";
+    public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 
+    public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
+    public static final String JCR_CLASS = "jcr.class";
+    public static final String JCR_USER = "jcr.user";
+    public static final String JCR_PASS = "jcr.pass";
+    public static final String ORG_APACHE_JACKRABBIT_REPOSITORY_URI = "org.apache.jackrabbit.repository.uri";
+	private static final String MESSAGE_BOX_SERVICE_NAME = "MsgBoxService";
+	private static final String SERVICE_URL = "message_box_service_url";
+	private static final String JCR_REGISTRY = "registry";
+	private Thread thread;
+    
     public void shutDown(ConfigurationContext configurationcontext, AxisService axisservice) {
         logger.info("Message box shutting down");
+        
+        AiravataRegistry registry =  (AiravataRegistry)configurationcontext.getProperty(JCR_REGISTRY);
+        URI gfacURL = (URI) configurationcontext.getProperty(SERVICE_URL);
+        try {
+			registry.deleteMessageBoxServiceURL(gfacURL);
+			thread.interrupt();
+			try {
+			    thread.join();
+			} catch (InterruptedException e) {
+			    logger.info("Message box url update thread is interrupted");
+			}
+		} catch (RegistryException e) {
+			logger.error("Error while shutting down!!!", e);
+		}
+        ((JCRRegistry)registry).closeConnection();
+
         if (configurationcontext.getProperty(MsgBoxCommonConstants.MSGBOX_STORAGE) != null) {
             MsgBoxStorage msgBoxStorage = (MsgBoxStorage) configurationcontext
                     .getProperty(MsgBoxCommonConstants.MSGBOX_STORAGE);
@@ -63,6 +101,36 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
         ConfigurationManager confmanager = new ConfigurationManager("conf" + File.separator + CONFIGURATION_FILE_NAME);
         initDatabase(configurationcontext, confmanager);
         configurationcontext.setProperty(ConfigKeys.MSG_PRESV_INTERVAL,getIntervaltoExecuteDelete(confmanager));
+        final ConfigurationContext context=configurationcontext;
+        new Thread(){
+    		@Override
+    		public void run() {
+    	        Properties properties = new Properties();
+    	        String port = null;
+    	        try {
+    	            URL url = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
+    	            properties.load(url.openStream());
+    	            Map<String, String> map = new HashMap<String, String>((Map) properties);
+	            	try {
+						Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+					AiravataRegistry registry = new AiravataJCRRegistry(new URI(map.get(ORG_APACHE_JACKRABBIT_REPOSITORY_URI)),map.get(JCR_CLASS), map.get(JCR_USER), map.get(JCR_PASS), map);
+					String localAddress = ServiceUtils.generateServiceURLFromConfigurationContext(context, MESSAGE_BOX_SERVICE_NAME);
+					logger.debug("MESSAGE BOX SERVICE_ADDRESS:" + localAddress);
+                    context.setProperty(SERVICE_URL,new URI(localAddress));
+					context.setProperty(JCR_REGISTRY,registry);
+					/*
+					 * Heart beat message to registry
+					 */
+					thread = new MsgBoxURLRegisterThread(context);
+					thread.start();
+    	        } catch (Exception e) {
+    	            logger.error(e.getMessage(), e);
+    	        }
+    		}
+    	}.start();
     }
 
     public void initDatabase(ConfigurationContext configurationcontext, ConfigurationManager confmanager) {
@@ -105,6 +173,34 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
         interval = (interval + messagePreservationMinutes) * 60;
         interval = interval * 1000;
         return interval;
+    }
+    
+    class MsgBoxURLRegisterThread extends Thread {
+        private ConfigurationContext context = null;
+
+        MsgBoxURLRegisterThread(ConfigurationContext context) {
+            this.context = context;
+        }
+
+        public void run() {
+            try {
+                while (true) {
+                    try {
+						AiravataRegistry registry = (AiravataRegistry)context.getProperty(JCR_REGISTRY);
+						URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
+						registry.saveMessageBoxServiceURL(localAddress);
+						logger.info("Updated the Message box URL in to Repository");
+						Thread.sleep(GFAC_URL_UPDATE_INTERVAL);
+					} catch (RegistryException e) {
+						//in case of an registry exception best to retry sooner
+						logger.error("Error saving Message box url",e);
+						Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
+					}
+                }
+            } catch (InterruptedException e) {
+                logger.info("Message box url update thread is interrupted");
+			}
+        }
     }
 
 }

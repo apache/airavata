@@ -21,6 +21,28 @@
 
 package org.apache.airavata.registry.api.impl;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.regex.Pattern;
+
+import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.Value;
+import javax.xml.namespace.QName;
+
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.registry.api.impl.JCRRegistry;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
@@ -46,23 +68,18 @@ import org.apache.airavata.schemas.gfac.ServiceType.ServiceName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.*;
-import javax.xml.namespace.QName;
-import java.net.URI;
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.regex.Pattern;
-
 public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, DataRegistry {
 
 	private static final String OUTPUT_NODE_NAME = "OUTPUTS";
     private static final String SERVICE_NODE_NAME = "SERVICE_HOST";
     private static final String GFAC_INSTANCE_DATA = "GFAC_INSTANCE_DATA";
+    private static final String WORKFLOW_INTERPRETER_INSTANCE_DATA = "WORKFLOW_INTERPRETER_INSTANCE_DATA";
+    private static final String MESSAGE_BOX_INSTANCE_DATA = "MESSAGE_BOX_INSTANCE_DATA";
+    private static final String EVENTING_INSTANCE_DATA = "EVENTING_INSTANCE_DATA";
+    private static final String METADATA_NODE = "METADATA";
     private static final String DEPLOY_NODE_NAME = "APP_HOST";
     private static final String HOST_NODE_NAME = "GFAC_HOST";
     private static final String XML_PROPERTY_NAME = "XML";
-    private static final String WSDL_PROPERTY_NAME = "WSDL";
-    private static final String GFAC_URL_PROPERTY_NAME = "GFAC_URL_LIST";
     private static final String LINK_NAME = "LINK";
     private static final String PROPERTY_WORKFLOW_NAME = "workflowName";
     private static final String PROPERTY_WORKFLOW_IO_CONTENT = "content";
@@ -588,6 +605,10 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         }
     }
 
+    private Node getMetadataNode(Session session) throws RepositoryException{
+        return getOrAddNode(getRootNode(session), METADATA_NODE);
+    }
+    
     public boolean saveGFacDescriptor(String gfacURL) throws RegistryException{
         java.util.Date today = Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTime();
         Timestamp timestamp = new Timestamp(today.getTime());
@@ -596,7 +617,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             URI uri = new URI(gfacURL);
             String propertyName = uri.getHost() + "-" + uri.getPort();
             session = getSession();
-            Node gfacDataNode = getOrAddNode(getRootNode(session), GFAC_INSTANCE_DATA);
+            Node gfacDataNode = getOrAddNode(getMetadataNode(session), GFAC_INSTANCE_DATA);
             try {
                 Property prop = gfacDataNode.getProperty(propertyName);
                 prop.setValue(gfacURL + ";" + timestamp.getTime());
@@ -621,7 +642,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             URI uri = new URI(gfacURL);
             String propertyName = uri.getHost() + "-" + uri.getPort();
             session = getSession();
-            Node gfacDataNode = getOrAddNode(getRootNode(session), GFAC_INSTANCE_DATA);
+            Node gfacDataNode = getOrAddNode(getMetadataNode(session), GFAC_INSTANCE_DATA);
             Property prop = gfacDataNode.getProperty(propertyName);
             if (prop != null) {
                 prop.setValue((String) null);
@@ -644,7 +665,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         Timestamp timestamp = new Timestamp(today.getTime());
         try {
             session = getSession();
-            Node gfacNode = getOrAddNode(getRootNode(session), GFAC_INSTANCE_DATA);
+            Node gfacNode = getOrAddNode(getMetadataNode(session), GFAC_INSTANCE_DATA);
             PropertyIterator propertyIterator = gfacNode.getProperties();
             while (propertyIterator.hasNext()) {
                 Property property = propertyIterator.nextProperty();
@@ -1240,4 +1261,187 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 			ExecutionStatus status) throws RegistryException {
 		return saveWorkflowExecutionStatus(experimentId,new WorkflowExecutionStatus(status));
 	}
+
+
+	private void saveServiceURL(URI gfacURL, String nodeName)
+			throws Exception {
+		java.util.Date today = Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTime();
+        Timestamp timestamp = new Timestamp(today.getTime());
+        Session session = null;
+        try {
+            URI uri = gfacURL;
+            String propertyName = uri.getHost() + "-" + uri.getPort();
+            session = getSession();
+			Node gfacDataNode = getOrAddNode(getMetadataNode(session), nodeName);
+            try {
+                Property prop = gfacDataNode.getProperty(propertyName);
+                prop.setValue(gfacURL + ";" + timestamp.getTime());
+                session.save();
+            } catch (PathNotFoundException e) {
+                gfacDataNode.setProperty(propertyName, gfacURL + ";" + timestamp.getTime());
+                session.save();
+            }
+//	            triggerObservers(this);
+        } finally {
+            closeSession(session);
+        }
+	}
+
+	private void deleteServiceURL(URI gfacURL, String nodeName)
+			throws Exception {
+		Session session = null;
+        try {
+            URI uri = gfacURL;
+            String propertyName = uri.getHost() + "-" + uri.getPort();
+            session = getSession();
+            Node gfacDataNode = getOrAddNode(getMetadataNode(session), nodeName);
+            Property prop = gfacDataNode.getProperty(propertyName);
+            if (prop != null) {
+                prop.setValue((String) null);
+                session.save();
+//	                triggerObservers(this);
+            }
+        } finally {
+            closeSession(session);
+        }
+	}
+
+	private List<URI> getServiceURLList(String nodeName)
+			throws RepositoryException {
+		Session session = null;
+        List<URI> urlList = new ArrayList<URI>();
+        java.util.Date today = Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTime();
+        Timestamp timestamp = new Timestamp(today.getTime());
+        try {
+            session = getSession();
+            Node gfacNode = getOrAddNode(getMetadataNode(session), nodeName);
+            PropertyIterator propertyIterator = gfacNode.getProperties();
+            while (propertyIterator.hasNext()) {
+                Property property = propertyIterator.nextProperty();
+                if (!"nt:unstructured".equals(property.getString())) {
+                    String x = property.getString();
+                    Timestamp setTime = new Timestamp(new Long(property.getString().split(";")[1]));
+                    if (GFAC_URL_UPDATE_INTERVAL > (timestamp.getTime() - setTime.getTime())) {
+                        try {
+							urlList.add(new URI(property.getString().split(";")[0]));
+						} catch (URISyntaxException e) {
+							e.printStackTrace();
+						}
+                    }
+                }
+            }
+        }finally{
+        	closeSession(session);
+        }
+        return urlList;
+	}
+	
+	@Override
+	public boolean saveInterpreterServiceURL(URI gfacURL)
+			throws RegistryException {
+        String nodeName = WORKFLOW_INTERPRETER_INSTANCE_DATA;
+		try {
+			saveServiceURL(gfacURL, nodeName);
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RegistryException("Error while saving Interoreter Service URL to the registry!!!", e);
+		}
+        return true;
+    }
+	
+	@Override
+	public boolean deleteInterpreterServiceURL(URI gfacURL) throws RegistryException {
+        String nodeName = WORKFLOW_INTERPRETER_INSTANCE_DATA;
+		try {
+			deleteServiceURL(gfacURL, nodeName);
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RegistryException("Error while deleting Workflow Interpreter Service URL from registry!!!",e); 
+		}
+        return true;
+    }
+
+
+	@Override
+	public List<URI> getInterpreterServiceURLList() throws RegistryException {
+        String nodeName = WORKFLOW_INTERPRETER_INSTANCE_DATA;
+        try {
+			return getServiceURLList(nodeName);
+        } catch (RepositoryException e) {
+            throw new RegistryException("Error while retrieving Workflow Interpreter Service url list!!!", e);
+		}
+    }
+
+	@Override
+	public List<URI> getMessageBoxServiceURLList() throws RegistryException {
+		String nodeName = MESSAGE_BOX_INSTANCE_DATA;
+        try {
+			return getServiceURLList(nodeName);
+        } catch (RepositoryException e) {
+            throw new RegistryException("Error while retrieving Message box Service url list!!!", e);
+		}
+	}
+
+	@Override
+	public boolean saveMessageBoxServiceURL(URI gfacURL)
+			throws RegistryException {
+		String nodeName = MESSAGE_BOX_INSTANCE_DATA;
+		try {
+			saveServiceURL(gfacURL, nodeName);
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RegistryException("Error while saving Message box Service URL to the registry!!!", e);
+		}
+        return true;
+	}
+
+	@Override
+	public boolean deleteMessageBoxServiceURL(URI gfacURL)
+			throws RegistryException {
+		String nodeName = MESSAGE_BOX_INSTANCE_DATA;
+		try {
+			deleteServiceURL(gfacURL, nodeName);
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RegistryException("Error while deleting Message box Service URL from registry!!!",e); 
+		}
+        return true;
+	}
+
+	@Override
+	public List<URI> getEventingServiceURLList() throws RegistryException {
+		String nodeName = EVENTING_INSTANCE_DATA;
+        try {
+			return getServiceURLList(nodeName);
+        } catch (RepositoryException e) {
+            throw new RegistryException("Error while retrieving Eventing Service url list!!!", e);
+		}
+	}
+
+	@Override
+	public boolean saveEventingServiceURL(URI gfacURL) throws RegistryException {
+		String nodeName = EVENTING_INSTANCE_DATA;
+		try {
+			saveServiceURL(gfacURL, nodeName);
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RegistryException("Error while saving Eventing Service URL to the registry!!!", e);
+		}
+        return true;
+	}
+
+	@Override
+	public boolean deleteEventingServiceURL(URI gfacURL)
+			throws RegistryException {
+		String nodeName = EVENTING_INSTANCE_DATA;
+		try {
+			deleteServiceURL(gfacURL, nodeName);
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new RegistryException("Error while deleting Eventing Service URL from registry!!!",e); 
+		}
+        return true;
+	}
+
+
 }
