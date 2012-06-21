@@ -21,6 +21,8 @@
 
 package org.apache.airavata.registry.api;
 
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -197,6 +199,24 @@ public interface AiravataRegistry extends Registry{
      */
     public boolean deleteGFacDescriptor(String gfacURL) throws RegistryException;
 
+    public List<URI> getInterpreterServiceURLList() throws RegistryException;
+    
+    public boolean saveInterpreterServiceURL(URI gfacURL)throws RegistryException;
+
+    public boolean deleteInterpreterServiceURL(URI gfacURL) throws RegistryException;
+    
+    public List<URI> getMessageBoxServiceURLList() throws RegistryException;
+    
+    public boolean saveMessageBoxServiceURL(URI gfacURL)throws RegistryException;
+
+    public boolean deleteMessageBoxServiceURL(URI gfacURL) throws RegistryException;
+    
+    public List<URI> getEventingServiceURLList() throws RegistryException;
+    
+    public boolean saveEventingServiceURL(URI gfacURL)throws RegistryException;
+
+    public boolean deleteEventingServiceURL(URI gfacURL) throws RegistryException;
+    
     public List<String> getGFacDescriptorList() throws RegistryException;
 
     public boolean saveWorkflow(QName ResourceID, String workflowName, String resourceDesc, String workflowAsaString,

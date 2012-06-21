@@ -54,7 +54,12 @@
             <artifactId>xsul5-2007-02-27</artifactId>
             <version>1</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-kernel</artifactId>
+            <version>${axis2.version}</version>
+        </dependency>
+        
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>

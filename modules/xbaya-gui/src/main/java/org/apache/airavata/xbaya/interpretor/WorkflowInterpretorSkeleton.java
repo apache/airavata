@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -43,6 +44,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.registry.api.impl.JCRRegistry;
+import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.AiravataRegistry;
@@ -67,7 +69,9 @@ import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisService;
+import org.apache.axis2.description.TransportInDescription;
 import org.apache.axis2.engine.ServiceLifeCycle;
+import org.apache.axis2.util.Utils;
 import org.apache.xmlbeans.XmlException;
 
 import xsul5.MLogger;
@@ -107,7 +111,14 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static final String GFAC_EMBEDDED = "gfac.embedded";
     public static  ConfigurationContext configurationContext;
     public static final String OUTPUT_DATA_PATH = "outputDataPath";
+    public static final String SERVICE_NAME="WorkflowInterpretor";
 
+	protected static final String SERVICE_URL = "interpreter_service_url";
+
+	protected static final String JCR_REG = "jcr_registry";
+
+	protected WIServiceThread thread;
+    
     private AiravataRegistry getRegistry(){
         Properties properties = new Properties();
         try {
@@ -134,7 +145,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	
     public void startUp(final ConfigurationContext configctx, AxisService service) {
     	new Thread(){
-    		@Override
+			@Override
     		public void run() {
     			try {
 					Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
@@ -191,16 +202,29 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		            }else{
 		                gfacEmbeddedMode = false;
 		            }
-		
+                     
+                     //save the interpreter service url in context
+                    String localAddress = ServiceUtils.generateServiceURLFromConfigurationContext(configctx,SERVICE_NAME);
+ 					log.info("INTERPRETER_SERVICE_ADDRESS:" + localAddress);
+ 					configctx.setProperty(SERVICE_URL,new URI(localAddress));
+ 					configctx.setProperty(JCR_REG,jcrComponentRegistry.getRegistry());
+ 					/*
+					 * Heart beat message to registry
+					 */
+					thread = new WIServiceThread(configctx);
+					thread.start();
 		        } catch (IOException e) {
 		            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-		        }
+		        } catch (URISyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
                 WorkflowInterpretorSkeleton.configurationContext = configctx;
     		}
     	}.start();
 
     }
-
+    
     /**
      *
      * @param workflowAsString
@@ -362,7 +386,21 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		return defaultVal;
 	}
      public void shutDown(ConfigurationContext configctx, AxisService service) {
-            ((JCRRegistry)jcrComponentRegistry.getRegistry()).closeConnection();
+    	 AiravataRegistry registry =  jcrComponentRegistry.getRegistry();
+         URI gfacURL = (URI) configctx.getProperty(SERVICE_URL);
+         try {
+ 			registry.deleteInterpreterServiceURL(gfacURL);
+ 			thread.interrupt();
+ 			try {
+ 			    thread.join();
+ 			} catch (InterruptedException e) {
+ 			    log.info("GFacURL update thread is interrupted");
+ 			}
+ 		} catch (RegistryException e) {
+ 			log.severe("Error while shutting down!!!", e);
+ 		}
+         
+        ((JCRRegistry)jcrComponentRegistry.getRegistry()).closeConnection();
          if(runner != null){
              runner.shutDown();
          }
@@ -398,5 +436,34 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             hostDescriptions.add(hostDescription);
         }
         return hostDescriptions;
+    }
+    public static final int URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
+
+    class WIServiceThread extends Thread {
+        private ConfigurationContext context = null;
+
+        WIServiceThread(ConfigurationContext context) {
+            this.context = context;
+        }
+
+        public void run() {
+            try {
+                while (true) {
+                    try {
+						AiravataRegistry registry = (AiravataRegistry )context.getProperty(JCR_REG);
+						URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
+						registry.saveInterpreterServiceURL(localAddress);
+						log.info("Updated Workflow Interpreter service URL in to Repository");
+						Thread.sleep(URL_UPDATE_INTERVAL);
+					} catch (RegistryException e) {
+						//in case of an registry exception best to retry sooner
+						log.severe("Error saving GFac descriptor",e);
+						Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
+					}
+                }
+            } catch (InterruptedException e) {
+                log.severe("Workflow Interpreter Service URL update thread is interrupted");
+			}
+        }
     }
 }
