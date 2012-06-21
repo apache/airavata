@@ -22,9 +22,12 @@ package org.apache.airavata.common.workflow.execution.context;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.schemas.wec.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 public class WorkflowContextHeaderBuilder {
+    protected static final Logger log = LoggerFactory.getLogger(WorkflowContextHeaderBuilder.class);
 
     private WorkflowMonitoringContextDocument.WorkflowMonitoringContext workflowMonitoringContext = null;
 
@@ -73,7 +76,16 @@ public class WorkflowContextHeaderBuilder {
     }
 
     public static ContextHeaderDocument.ContextHeader getCurrentContextHeader(){
-        return currentContextHeader.get();
+        if(currentContextHeader.get() == null){
+            log.info("Null WorkflowContext Header, if you are directly using GFacAPI you will be fine !");
+            // This is a fix done to fix test failures
+            ContextHeaderDocument.ContextHeader contextHeader1 = ContextHeaderDocument.ContextHeader.Factory.newInstance();
+            WorkflowMonitoringContextDocument.WorkflowMonitoringContext workflowMonitoringContext1 = contextHeader1.addNewWorkflowMonitoringContext();
+            workflowMonitoringContext1.setExperimentId("");
+            return contextHeader1;
+        }else{
+            return currentContextHeader.get();
+        }
     }
     public void addWorkflowMonitoringContext(String brokerUrl, String experimentId, String workflowId, String msgBoxUrl) {
         this.workflowMonitoringContext = WorkflowMonitoringContextDocument.WorkflowMonitoringContext.Factory
