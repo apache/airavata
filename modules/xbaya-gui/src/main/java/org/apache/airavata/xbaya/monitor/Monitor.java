@@ -188,6 +188,7 @@ public class Monitor extends EventProducer {
 
     private void subscribe() throws MonitorException {
         this.wsmgClient = new WsmgClient(this);
+        //Users can set the timeout and interval for the subscription using wsmg setter methods, here we use the default values
         this.wsmgClient.subscribe();
 
         // Enable/disable some menu items and show the monitor panel.
