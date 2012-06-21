@@ -56,6 +56,9 @@ public class WsmgClient implements ConsumerNotificationHandler, NotificationHand
 
     private MessagePuller messagePuller;
 
+    private long timeout = 20000L;
+
+    private long interval = 1000L;
     /**
      * Constructs a WsmgClient.
      * 
@@ -85,7 +88,7 @@ public class WsmgClient implements ConsumerNotificationHandler, NotificationHand
             if (this.pullMode) {
                 EndpointReference messageBoxEPR = this.wseClient.createPullMsgBox(this.messageBoxURL.toString());
                 this.subscriptionID = this.wseClient.subscribe(messageBoxEPR.getAddress(), this.topic, null);
-                this.messagePuller = this.wseClient.startPullingEventsFromMsgBox(messageBoxEPR, this, 1000L, 20000L);
+                this.messagePuller = this.wseClient.startPullingEventsFromMsgBox(messageBoxEPR, this, interval, timeout);
             } else {
                 String[] endpoints = this.wseClient.startConsumerService(2222, this);
                 this.subscriptionID = this.wseClient.subscribe(endpoints[0], this.topic, null);
@@ -144,4 +147,19 @@ public class WsmgClient implements ConsumerNotificationHandler, NotificationHand
         }
     }
 
+    public long getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
+    public long getInterval() {
+        return interval;
+    }
+
+    public void setInterval(long interval) {
+        this.interval = interval;
+    }
 }
