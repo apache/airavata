@@ -575,56 +575,6 @@
                             <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
                         </configuration>
                     </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-site-plugin</artifactId>
-                        <version>3.1</version>
-                        <configuration>
-
-                            <reportPlugins>
-                                <plugin>
-                                    <groupId>org.apache.maven.plugins</groupId>
-                                    <artifactId>maven-project-info-reports-plugin</artifactId>
-                                    <version>2.4</version>
-                                    <configuration>
-                                        <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-                                        <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                                    </configuration>
-                                    <!-- simpler configuration without reportSets available for usual cases -->
-                                    <reports>
-                                        <report>dependencies</report>
-                                        <report>scm</report>
-                                    </reports>
-                                </plugin>
-                                <plugin>
-                                    <groupId>org.apache.maven.plugins</groupId>
-                                    <artifactId>maven-javadoc-plugin</artifactId>
-                                    <!--<version>2.8</version>-->
-                                    <version>2.5</version>
-                                    <configuration>
-                                        <charset>UTF-8</charset>
-                                        <docencoding>UTF-8</docencoding>
-                                        <docfilessubdirs>true</docfilessubdirs>
-                                        <links>
-                                            <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
-                                        </links>
-                                        <show>protected</show>
-                                        <source>1.5</source>
-                                        <!--&lt;!&ndash;<sourcepath>${basedir}/modules/registry-migrator/src/</sourcepath>-->
-                                    </configuration>
-                                    <reportSets>
-                                        <reportSet>
-                                            <reports>
-                                                <report>javadoc</report>
-                                            </reports>
-                                        </reportSet>
-                                    </reportSets>
-                                </plugin>
-                            </reportPlugins>
-                        </configuration>
-                    </plugin>
-
                 </plugins>
             </build>
             <activation>
