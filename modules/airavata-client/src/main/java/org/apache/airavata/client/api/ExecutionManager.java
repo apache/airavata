@@ -38,8 +38,8 @@ public interface ExecutionManager {
 	
 	public abstract String runWorkflow(Workflow workflow,List<WorkflowInput> inputs, String user, String metadata)throws AiravataAPIInvocationException;
 	
-	public Monitor getWorkflowExecutionMonitor(String topic)throws AiravataAPIInvocationException;
+	public Monitor getWorkflowIntanceMonitor(String topic)throws AiravataAPIInvocationException;
 
-	public Monitor getWorkflowExecutionMonitor(String topic, MonitorEventListener listener) throws AiravataAPIInvocationException;
+	public Monitor getWorkflowInstanceMonitor(String topic, MonitorEventListener listener) throws AiravataAPIInvocationException;
 
 }

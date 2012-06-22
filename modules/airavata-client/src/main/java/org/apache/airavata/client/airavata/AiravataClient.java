@@ -54,6 +54,12 @@ import org.apache.airavata.client.api.ExecutionManager;
 import org.apache.airavata.client.api.ProvenanceManager;
 import org.apache.airavata.client.api.UserManager;
 import org.apache.airavata.client.api.WorkflowManager;
+import org.apache.airavata.client.impl.AiravataManagerImpl;
+import org.apache.airavata.client.impl.ApplicationManagerImpl;
+import org.apache.airavata.client.impl.ExecutionManagerImpl;
+import org.apache.airavata.client.impl.ProvenanceManagerImpl;
+import org.apache.airavata.client.impl.UserManagerImpl;
+import org.apache.airavata.client.impl.WorkflowManagerImpl;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
@@ -102,10 +108,17 @@ public class AiravataClient implements AiravataAPI {
     private MonitorConfiguration monitorConfiguration;
 	private static String workflow = "";
     private static WorkflowContextHeaderBuilder builder;
-
+    private String currentUser;
+    
 	private AiravataRegistry registry;
 
     private Map<String, String> configuration = new HashMap<String, String>();
+	private AiravataManagerImpl airavataManagerImpl;
+	private ApplicationManagerImpl applicationManagerImpl;
+	private WorkflowManagerImpl workflowManagerImpl;
+	private ProvenanceManagerImpl provenanceManagerImpl;
+	private UserManagerImpl userManagerImpl;
+	private ExecutionManagerImpl executionManagerImpl;
 
 	// private NameValue[] configurations = new NameValue[7];
 
@@ -171,6 +184,10 @@ public class AiravataClient implements AiravataAPI {
 		builder = new WorkflowContextHeaderBuilder(configuration.get(BROKER),
         		configuration.get(GFAC),configuration.get(JCR),null,null,
         		configuration.get(MSGBOX));
+		
+		//TODO: At some point this should contain the current user the airavata client is 
+		//logged in to the Airavata system
+		currentUser=getClientConfiguration().getJcrUsername();
 	}
 
 	private void updateClientConfiguration(Map<String,String> configuration)
@@ -617,8 +634,22 @@ public class AiravataClient implements AiravataAPI {
 	 */
 	@Override
 	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata) throws Exception{
+		Workflow workflowObj = getWorkflow(workflowTemplateId);
+		return runWorkflow(workflowObj, inputs, user, metadata);
+	}
+
+	public String runWorkflow(Workflow workflow,
+			List<WorkflowInput> inputs)
+			throws GraphException, ComponentException, Exception {
+		return runWorkflow(workflow, inputs, null, null);
+	}
+	
+	public String runWorkflow(Workflow workflowObj,
+			List<WorkflowInput> inputs, String user, String metadata)
+			throws GraphException, ComponentException, Exception {
 		try {
-			List<WSComponentPort> ports = getWSComponentPortInputs(workflowTemplateId);
+			String workflowString=XMLUtil.xmlElementToString(workflowObj.toXML());
+			List<WSComponentPort> ports = getWSComponentPortInputs(workflowObj);
 			for (WorkflowInput input : inputs) {
 				WSComponentPort port = getWSComponentPort(input.getName(), ports);
 				if (port!=null){
@@ -636,8 +667,8 @@ public class AiravataClient implements AiravataAPI {
 				}
 				inputValues.add(nameValue);
 			}
-			workflow=getWorkflowAsString(workflowTemplateId).getString();
-			String topic=workflowTemplateId+"_"+UUID.randomUUID();
+			workflow=workflowString;
+			String topic=workflowObj.getName()+"_"+UUID.randomUUID();
 			return runWorkflow(topic, inputValues.toArray(new NameValue[]{}), user, metadata);
 		} catch (PathNotFoundException e) {
 			e.printStackTrace();
@@ -745,43 +776,55 @@ public class AiravataClient implements AiravataAPI {
 
 	@Override
 	public AiravataManager getAiravataManager() {
-		// TODO Auto-generated method stub
-		return null;
+		if (airavataManagerImpl==null) {
+			airavataManagerImpl = new AiravataManagerImpl(this);
+		}
+		return airavataManagerImpl;
 	}
 
 	@Override
 	public ApplicationManager getApplicationManager() {
-		// TODO Auto-generated method stub
-		return null;
+		if (applicationManagerImpl==null) {
+			applicationManagerImpl = new ApplicationManagerImpl(this);
+		}
+		return applicationManagerImpl;
 	}
 
 	@Override
 	public WorkflowManager getWorkflowManager() {
-		// TODO Auto-generated method stub
-		return null;
+		if (workflowManagerImpl==null) {
+			workflowManagerImpl = new WorkflowManagerImpl(this);
+		}
+		return workflowManagerImpl;
 	}
 
 	@Override
 	public ProvenanceManager getProvenanceManager() {
-		// TODO Auto-generated method stub
-		return null;
+		if (provenanceManagerImpl==null) {
+			provenanceManagerImpl = new ProvenanceManagerImpl(this);
+		}
+		return provenanceManagerImpl;
 	}
 
 	@Override
 	public UserManager getUserManager() {
-		// TODO Auto-generated method stub
-		return null;
+		if (userManagerImpl==null) {
+			userManagerImpl = new UserManagerImpl(this);
+		}
+		return userManagerImpl;
 	}
 
 	@Override
 	public ExecutionManager getExecutionManager() {
-		// TODO Auto-generated method stub
-		return null;
+		if (executionManagerImpl==null) {
+			executionManagerImpl = new ExecutionManagerImpl(this);
+		}
+		return executionManagerImpl;
 	}
 
 	@Override
 	public String getCurrentUser() {
-		return getUserManager().getAiravataUser();
+		return currentUser;
 	}
 
 }
