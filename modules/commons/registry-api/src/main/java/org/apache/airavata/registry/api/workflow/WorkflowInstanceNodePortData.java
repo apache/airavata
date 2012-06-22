@@ -24,6 +24,12 @@ package org.apache.airavata.registry.api.workflow;
 public class WorkflowInstanceNodePortData extends WorkflowServiceIOData {
 	private WorkflowInstanceNode workflowInstanceNode;
 	
+	public WorkflowInstanceNodePortData(WorkflowServiceIOData data) {
+		workflowInstanceNode=new WorkflowInstanceNode(new WorkflowInstance(data.getExperimentId(), data.getWorkflowId()),data.getNodeId());
+		workflowInstanceNode.getWorkflowInstance().setWorkflowName(data.getWorkflowName());
+		setValue(data.getValue());
+	}
+	
 	public WorkflowInstanceNodePortData(WorkflowInstanceNode workflowInstanceNode, String data) {
 		setWorkflowInstanceNode(workflowInstanceNode);
 		setValue(data);

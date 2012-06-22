@@ -146,5 +146,7 @@ public interface AiravataAPI {
 	public UserManager getUserManager();
 	
 	public ExecutionManager getExecutionManager();
+	
+	public String getCurrentUser();
 
 }

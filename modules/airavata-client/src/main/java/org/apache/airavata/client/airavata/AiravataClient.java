@@ -779,4 +779,9 @@ public class AiravataClient implements AiravataAPI {
 		return null;
 	}
 
+	@Override
+	public String getCurrentUser() {
+		return getUserManager().getAiravataUser();
+	}
+
 }

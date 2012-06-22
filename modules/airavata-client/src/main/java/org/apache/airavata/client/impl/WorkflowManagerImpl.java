@@ -157,7 +157,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	}
 
 	private String getCurrentUser() {
-		return getClient().getUserManager().getAiravataUser();
+		return getClient().getCurrentUser();
 	}
 
 	@Override
