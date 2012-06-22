@@ -44,7 +44,7 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.registry.api.WorkflowExecutionStatus.ExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.SubWorkflowComponent;
 import org.apache.airavata.workflow.model.component.amazon.InstanceComponent;

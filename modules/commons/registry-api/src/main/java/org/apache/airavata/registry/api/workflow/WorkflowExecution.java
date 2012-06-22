@@ -19,17 +19,15 @@
  *
  */
 
-package org.apache.airavata.registry.api;
+package org.apache.airavata.registry.api.workflow;
 
 import java.util.List;
 
-import org.apache.airavata.registry.api.workflow.WorkflowIOData;
-import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 
 public interface WorkflowExecution {
 	public String getExperimentId();
 	public String getTopic();
-	public WorkflowExecutionStatus getExecutionStatus();
+	public WorkflowInstanceStatus getExecutionStatus();
 	public String getUser();
 	public List<WorkflowServiceIOData> getServiceInput();
 	public List<WorkflowServiceIOData> getServiceOutput();
@@ -41,7 +39,7 @@ public interface WorkflowExecution {
 
 	public void setExperimentId(String experimentId);
 	public void setTopic(String topic);
-	public void setExecutionStatus(WorkflowExecutionStatus executionStatus);
+	public void setExecutionStatus(WorkflowInstanceStatus executionStatus);
 	public void setUser(String user);
 	public void setServiceInput(List<WorkflowServiceIOData> serviceInputs);
 	public void setServiceOutput(List<WorkflowServiceIOData> serviceOutputs);

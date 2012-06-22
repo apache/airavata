@@ -35,12 +35,14 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.WorkflowExecutionStatus.ExecutionStatus;
 import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 
 public interface AiravataRegistry extends Registry{
     /**
@@ -243,11 +245,11 @@ public interface AiravataRegistry extends Registry{
 
     public List<WorkflowServiceIOData> searchWorkflowExecutionServiceOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
 
-    public boolean saveWorkflowExecutionStatus(String experimentId,WorkflowExecutionStatus status)throws RegistryException;
+    public boolean saveWorkflowExecutionStatus(String experimentId,WorkflowInstanceStatus status)throws RegistryException;
     
     public boolean saveWorkflowExecutionStatus(String experimentId,ExecutionStatus status)throws RegistryException;
 
-    public WorkflowExecutionStatus getWorkflowExecutionStatus(String experimentId)throws RegistryException;
+    public WorkflowInstanceStatus getWorkflowExecutionStatus(String experimentId)throws RegistryException;
 
     public boolean saveWorkflowExecutionOutput(String experimentId,String outputNodeName,String output) throws RegistryException;
     

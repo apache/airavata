@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -54,6 +55,7 @@ import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.graph.ws.WSGraphFactory;
@@ -62,8 +64,8 @@ import org.apache.airavata.workflow.model.ode.ODEBPELTransformer;
 import org.apache.airavata.workflow.model.ode.ODEDeploymentDescriptor;
 import org.apache.airavata.workflow.model.ode.ODEWSDLTransformer;
 import org.apache.airavata.workflow.model.ode.WSDLCleaner;
-import org.apache.airavata.workflow.model.utils.WorkflowConstants;
 import org.apache.airavata.workflow.model.utils.ApplicationVersion;
+import org.apache.airavata.workflow.model.utils.WorkflowConstants;
 import org.apache.commons.codec.binary.Base64;
 import org.gpel.GpelConstants;
 import org.gpel.model.GpelProcess;
@@ -462,7 +464,31 @@ public class Workflow implements Cloneable {
         WSComponent component = WSComponentFactory.createComponent(this.workflowWSDL);
         return component.getInputPorts();
     }
+    
+	public List<WorkflowInput> getWorkflowInputs() throws Exception{
+		List<WSComponentPort> inputs = getInputs();
+		List<InputNode> inputNodes = GraphUtil.getInputNodes(getGraph());
+		List<WorkflowInput> results=new ArrayList<WorkflowInput>();
+		for (InputNode port : inputNodes) {
+			Object value=null;
+			WSComponentPort wsComponentPort = getWSComponentPort(port.getName(), inputs);
+			if (wsComponentPort!=null){
+				value=wsComponentPort.getValue();
+			}
+			results.add(new WorkflowInput(port.getName(), port.getParameterType().getLocalPart(), port.getDefaultValue(), value, !port.isVisibility()));
+		}
+		return results;
+	}
 
+	private WSComponentPort getWSComponentPort(String name,List<WSComponentPort> ports){
+		for (WSComponentPort port : ports) {
+			if (port.getName().equals(name)){
+				return port;
+			}
+		}
+		return null;
+	}
+	
     /**
      * Returns the outputs of the workflow.
      * 

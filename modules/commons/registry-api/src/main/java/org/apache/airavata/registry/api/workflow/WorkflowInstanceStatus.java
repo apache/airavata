@@ -19,11 +19,12 @@
  *
  */
 
-package org.apache.airavata.registry.api;
+package org.apache.airavata.registry.api.workflow;
 
+import java.util.Calendar;
 import java.util.Date;
 
-public class WorkflowExecutionStatus {
+public class WorkflowInstanceStatus {
 	public enum ExecutionStatus {
 		STARTED,
 		RUNNING,
@@ -35,6 +36,7 @@ public class WorkflowExecutionStatus {
 
 	private ExecutionStatus executionStatus;
 	private Date statusUpdateTime=null;
+	private WorkflowInstance workflowInstance;
 	
 	public ExecutionStatus getExecutionStatus() {
 		return executionStatus;
@@ -52,12 +54,22 @@ public class WorkflowExecutionStatus {
 		this.statusUpdateTime = statusUpdateTime;
 	}
 
-	public WorkflowExecutionStatus(ExecutionStatus executionStatus) {
-		this(executionStatus,null);
+	public WorkflowInstanceStatus(WorkflowInstance workflowInstance, ExecutionStatus executionStatus) {
+		this(workflowInstance,executionStatus,null);
 	}
 	
-	public WorkflowExecutionStatus(ExecutionStatus executionStatus, Date statusUpdateTime) {
+	public WorkflowInstanceStatus(WorkflowInstance workflowInstance,ExecutionStatus executionStatus, Date statusUpdateTime) {
+		statusUpdateTime=statusUpdateTime==null? Calendar.getInstance().getTime():statusUpdateTime;
+		setWorkflowInstance(workflowInstance);
 		setExecutionStatus(executionStatus);
 		setStatusUpdateTime(statusUpdateTime);
+	}
+
+	public WorkflowInstance getWorkflowInstance() {
+		return workflowInstance;
+	}
+
+	public void setWorkflowInstance(WorkflowInstance workflowInstance) {
+		this.workflowInstance = workflowInstance;
 	}
 }
