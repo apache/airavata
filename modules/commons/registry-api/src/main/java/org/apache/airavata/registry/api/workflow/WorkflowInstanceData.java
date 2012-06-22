@@ -51,11 +51,7 @@ public class WorkflowInstanceData {
 		return nodeDataList;
 	}
 	
-	public void addNodeData(WorkflowInstanceNodeData nodeData){
-		getNodeDataList().add(nodeData);
-	}
-	
-	public void addAllNodeData(WorkflowInstanceNodeData...nodeData){
+	public void addNodeData(WorkflowInstanceNodeData...nodeData){
 		getNodeDataList().addAll(Arrays.asList(nodeData));
 	}
 	

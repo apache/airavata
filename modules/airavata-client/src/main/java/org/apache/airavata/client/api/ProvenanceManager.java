@@ -22,10 +22,9 @@
 package org.apache.airavata.client.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.workflow.WorkflowExecution;
-import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceMetadata;
@@ -34,7 +33,6 @@ import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodePortData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceUser;
-import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 
 public interface ProvenanceManager {
 	
@@ -51,9 +49,13 @@ public interface ProvenanceManager {
 	
 	public List<WorkflowInstanceNodePortData> getWorkflowInstanceNodeInputData(String experimentId, String topicId, String nodeId) throws AiravataAPIInvocationException;
 	
+	public Map<WorkflowInstanceNode,List<WorkflowInstanceNodePortData>> getWorkflowInstanceNodeInputData(String workflowName, String nodeId) throws AiravataAPIInvocationException;
+	
 	public List<WorkflowInstanceNodePortData> getWorkflowInstanceNodeOutputData(WorkflowInstanceNode node) throws AiravataAPIInvocationException;
 	
 	public List<WorkflowInstanceNodePortData> getWorkflowInstanceNodeOutputData(String experimentId, String topicId, String nodeId) throws AiravataAPIInvocationException;
+	
+	public Map<WorkflowInstanceNode,List<WorkflowInstanceNodePortData>> getWorkflowInstanceNodeOutputData(String workflowName, String nodeId) throws AiravataAPIInvocationException;
 	
 	//Instance Status
 	public void setWorkflowInstanceStatus(String experimentId, String topicId, ExecutionStatus status) throws AiravataAPIInvocationException;
@@ -85,13 +87,16 @@ public interface ProvenanceManager {
 	
 
 	//General
+
+	public List<String> getExperiments(String owner) throws AiravataAPIInvocationException;
+
 	public List<String> getExperiments() throws AiravataAPIInvocationException;
 	
 	public List<WorkflowInstance> getWorkflowInstances() throws AiravataAPIInvocationException;
 
 	public List<WorkflowInstance> getWorkflowInstances(String user) throws AiravataAPIInvocationException;
 
-	public List<WorkflowInstance> getWorkflowInstances(String user, int pageSize, int pageNo) throws AiravataAPIInvocationException;
+	public List<WorkflowInstanceData> getWorkflowInstances(String user, int pageSize, int pageNo) throws AiravataAPIInvocationException;
 
 	public WorkflowInstanceData getWorkflowInstanceData(String experimentId, String topicId) throws AiravataAPIInvocationException;
 	
@@ -99,7 +104,7 @@ public interface ProvenanceManager {
 
 
 	
-	public String[] getWorkflowExecutionOutputNames(String exeperimentId) throws RegistryException;
+	public String[] getWorkflowExecutionOutputNames(String exeperimentId) throws AiravataAPIInvocationException;
 
     
 
