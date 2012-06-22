@@ -23,7 +23,7 @@ package org.apache.airavata.xbaya.provenance;
 import java.util.List;
 
 import org.apache.airavata.registry.api.AiravataRegistry;
-import org.apache.airavata.registry.api.WorkflowExecution;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 import org.apache.airavata.workflow.model.graph.Node;
 

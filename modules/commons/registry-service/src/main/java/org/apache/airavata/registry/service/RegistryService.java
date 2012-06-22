@@ -27,9 +27,9 @@ import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistry;
-import org.apache.airavata.registry.api.WorkflowExecution;
-import org.apache.airavata.registry.api.WorkflowExecutionStatus;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 import org.apache.axis2.context.ConfigurationContext;
@@ -101,11 +101,11 @@ public class RegistryService implements ServiceLifeCycle{
         return registry.searchWorkflowExecutionServiceOutput(experimentIdRegEx,workflowNameRegEx,nodeNameRegEx);
     }
 
-    public boolean saveWorkflowExecutionStatus(String experimentId,WorkflowExecutionStatus status)throws RegistryException{
+    public boolean saveWorkflowExecutionStatus(String experimentId,WorkflowInstanceStatus status)throws RegistryException{
         return registry.saveWorkflowExecutionStatus(experimentId,status);
     }
 
-    public WorkflowExecutionStatus getWorkflowExecutionStatus(String experimentId)throws RegistryException{
+    public WorkflowInstanceStatus getWorkflowExecutionStatus(String experimentId)throws RegistryException{
         return registry.getWorkflowExecutionStatus(experimentId);
     }
 

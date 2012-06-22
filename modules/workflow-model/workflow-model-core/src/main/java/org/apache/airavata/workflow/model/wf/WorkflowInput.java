@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.client.airavata;
+package org.apache.airavata.workflow.model.wf;
 
 public class WorkflowInput {
 	private String name;

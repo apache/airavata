@@ -53,13 +53,14 @@ import org.apache.airavata.commons.gfac.wsdl.WSDLConstants;
 import org.apache.airavata.commons.gfac.wsdl.WSDLGenerator;
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.DataRegistry;
-import org.apache.airavata.registry.api.WorkflowExecution;
-import org.apache.airavata.registry.api.WorkflowExecutionStatus;
-import org.apache.airavata.registry.api.WorkflowExecutionStatus.ExecutionStatus;
 import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 import org.apache.airavata.schemas.gfac.MethodType;
 import org.apache.airavata.schemas.gfac.PortTypeType;
@@ -76,7 +77,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
     private static final String WORKFLOW_INTERPRETER_INSTANCE_DATA = "WORKFLOW_INTERPRETER_INSTANCE_DATA";
     private static final String MESSAGE_BOX_INSTANCE_DATA = "MESSAGE_BOX_INSTANCE_DATA";
     private static final String EVENTING_INSTANCE_DATA = "EVENTING_INSTANCE_DATA";
-    private static final String METADATA_NODE = "METADATA";
+    private static final String AIRAVATA_CONFIG_NODE = "AIRAVATA_CONFIGURATION_DATA";
     private static final String DEPLOY_NODE_NAME = "APP_HOST";
     private static final String HOST_NODE_NAME = "GFAC_HOST";
     private static final String XML_PROPERTY_NAME = "XML";
@@ -606,7 +607,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
     }
 
     private Node getMetadataNode(Session session) throws RepositoryException{
-        return getOrAddNode(getRootNode(session), METADATA_NODE);
+        return getOrAddNode(getRootNode(session), AIRAVATA_CONFIG_NODE);
     }
     
     public boolean saveGFacDescriptor(String gfacURL) throws RegistryException{
@@ -902,7 +903,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         return workflowIODataList;
     }
 
-    public boolean saveWorkflowExecutionStatus(String experimentId,WorkflowExecutionStatus status)throws RegistryException{
+    public boolean saveWorkflowExecutionStatus(String experimentId,WorkflowInstanceStatus status)throws RegistryException{
         Session session = null;
         boolean isSaved = true;
         try {
@@ -925,9 +926,9 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         return isSaved;
     }
 
-    public WorkflowExecutionStatus getWorkflowExecutionStatus(String experimentId)throws RegistryException{
+    public WorkflowInstanceStatus getWorkflowExecutionStatus(String experimentId)throws RegistryException{
     	Session session = null;
-    	WorkflowExecutionStatus property = null;
+    	WorkflowInstanceStatus property = null;
         try {
             session = getSession();
             Node workflowDataNode = getWorkflowExperimentDataNode(experimentId, session);
@@ -948,7 +949,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 					date = cal.getTime();
 				}
 			}
-			property=new WorkflowExecutionStatus(status, date);
+			property=new WorkflowInstanceStatus(new WorkflowInstance(experimentId,experimentId),status, date);
             session.save();
         } catch (Exception e) {
             throw new RegistryException("Error while retrieving workflow execution status!!!", e);
@@ -1048,14 +1049,14 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         }
         return matchList;
     }
-    public Map<String, WorkflowExecutionStatus> getWorkflowExecutionStatusWithRegex(String regex) throws RegistryException {
+    public Map<String, WorkflowInstanceStatus> getWorkflowExecutionStatusWithRegex(String regex) throws RegistryException {
         Session session=null;
-        Map<String,WorkflowExecutionStatus> workflowStatusMap = new HashMap<String, WorkflowExecutionStatus>();
+        Map<String,WorkflowInstanceStatus> workflowStatusMap = new HashMap<String, WorkflowInstanceStatus>();
         try {
             session = getSession();
             List<String> matchingExperimentIds = getMatchingExperimentIds(regex, session);
             for(String experimentId:matchingExperimentIds){
-                WorkflowExecutionStatus workflowStatus = getWorkflowExecutionStatus(experimentId);
+                WorkflowInstanceStatus workflowStatus = getWorkflowExecutionStatus(experimentId);
                 workflowStatusMap.put(experimentId,workflowStatus);
             }
 		} catch (RepositoryException e) {
@@ -1259,9 +1260,8 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 
 	public boolean saveWorkflowExecutionStatus(String experimentId,
 			ExecutionStatus status) throws RegistryException {
-		return saveWorkflowExecutionStatus(experimentId,new WorkflowExecutionStatus(status));
+		return saveWorkflowExecutionStatus(experimentId,new WorkflowInstanceStatus(new WorkflowInstance(experimentId, experimentId), status));
 	}
-
 
 	private void saveServiceURL(URI gfacURL, String nodeName)
 			throws Exception {
