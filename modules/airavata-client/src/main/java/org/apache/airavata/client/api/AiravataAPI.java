@@ -39,42 +39,130 @@ import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.monitor.MonitorEventListener;
 
+/**
+ * This is the base interface for AiravataAPI which contains all the base methods for Airavata API
+ */
 public interface AiravataAPI {
 
+    /**
+     *
+     * @param workflowFile
+     * @throws URISyntaxException
+     * @throws IOException
+     */
 	public abstract void loadWorkflowFromaFile(String workflowFile)
 			throws URISyntaxException, IOException;
 
+    /**
+     *
+     * @param workflowAsaString
+     */
 	public abstract void loadWorkflowasaString(String workflowAsaString);
 
+    /**
+     *
+     * @param fileName
+     * @return
+     * @throws IOException
+     */
 	public abstract NameValue[] setInputs(String fileName) throws IOException;
 
+    /**
+     *
+     * @param inputList
+     */
 	public abstract void setInputs(Properties inputList);
 
+    /**
+     *
+     * @param topic
+     * @return
+     */
 	public abstract String runWorkflow(String topic);
 
+    /**
+     *
+     * @param topic
+     * @param user
+     * @return
+     */
 	public abstract String runWorkflow(String topic, String user);
 
+    /**
+     *
+     * @param topic
+     * @param user
+     * @param metadata
+     * @return
+     */
 	public abstract String runWorkflow(String topic, String user,
 			String metadata);
 
+    /**
+     *
+     * @param topic
+     * @return
+     */
 	public abstract Monitor getWorkflowExecutionMonitor(String topic);
 
+    /**
+     *
+     * @param topic
+     * @param listener
+     * @return
+     */
 	public abstract Monitor getWorkflowExecutionMonitor(String topic,
 			MonitorEventListener listener);
 
+    /**
+     *
+     * @param topic
+     * @param inputs
+     * @return
+     * @throws Exception
+     */
 	public abstract String runWorkflow(String topic, NameValue[] inputs)
 			throws Exception;
 
+    /**
+     *
+     * @param topic
+     * @param inputs
+     * @param user
+     * @return
+     * @throws Exception
+     */
 	public abstract String runWorkflow(String topic, NameValue[] inputs,
 			String user) throws Exception;
 
+    /**
+     *
+     * @param topic
+     * @param inputs
+     * @param user
+     * @param metadata
+     * @return
+     * @throws Exception
+     */
 	public abstract String runWorkflow(final String topic,
 			final NameValue[] inputs, final String user, final String metadata)
 			throws Exception;
 
+    /**
+     *
+     * @param user
+     * @return
+     * @throws RegistryException
+     */
 	public abstract List<WorkflowExecution> getWorkflowExecutionDataByUser(
 			String user) throws RegistryException;
 
+    /**
+     *
+     * @param topic
+     * @return
+     * @throws RegistryException
+     */
 	public abstract WorkflowExecution getWorkflowExecutionData(String topic)
 			throws RegistryException;
 
@@ -91,8 +179,16 @@ public interface AiravataAPI {
 	public abstract List<WorkflowExecution> getWorkflowExecutionData(
 			String user, int pageSize, int PageNo) throws RegistryException;
 
+    /**
+     *
+     * @return
+     */
 	public abstract AiravataRegistry getRegistry();
 
+    /**
+     *
+     * @return
+     */
 	public abstract AiravataClientConfiguration getClientConfiguration();
 
 	/**
@@ -131,20 +227,52 @@ public interface AiravataAPI {
 	public abstract List<WorkflowInput> getWorkflowInputs(
 			String workflowTemplateId) throws Exception;
 
+    /**
+     *
+     * @param workflowTemplateId
+     * @return
+     * @throws RegistryException
+     * @throws PathNotFoundException
+     * @throws RepositoryException
+     */
 	public abstract Property getWorkflowAsString(String workflowTemplateId)
 			throws RegistryException, PathNotFoundException,
 			RepositoryException;
-	
+
+    /**
+     *
+     * @return
+     */
 	public AiravataManager getAiravataManager();
-	
+
+    /**
+     *
+     * @return
+     */
 	public ApplicationManager getApplicationManager();
-	
+
+    /**
+     *
+     * @return
+     */
 	public WorkflowManager getWorkflowManager();
-	
+
+    /**
+     *
+     * @return
+     */
 	public ProvenanceManager getProvenanceManager();
-	
+
+    /**
+     *
+     * @return
+     */
 	public UserManager getUserManager();
-	
+
+    /**
+     *
+     * @return
+     */
 	public ExecutionManager getExecutionManager();
 	
 	public String getCurrentUser();
