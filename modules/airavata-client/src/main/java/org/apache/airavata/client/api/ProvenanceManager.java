@@ -34,78 +34,260 @@ import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceUser;
 
+/**
+ * This interface provide and API to manage all the provenance related methods, get Workflow inputs outputs
+ */
 public interface ProvenanceManager {
-	
-	//Instance Node data
+
+    /**
+     *
+     * @param data
+     * @throws AiravataAPIInvocationException
+     */
 	public void addWorkflowInstanceNodeInputData(WorkflowInstanceNodePortData data) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param experimentId
+     * @param topicId
+     * @param nodeId
+     * @param data
+     * @throws AiravataAPIInvocationException
+     */
 	public void addWorkflowInstanceNodeInputData(String experimentId, String topicId, String nodeId, String data) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param data
+     * @throws AiravataAPIInvocationException
+     */
 	public void addWorkflowInstanceNodeOutputData(WorkflowInstanceNodePortData data) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param experimentId
+     * @param topicId
+     * @param nodeId
+     * @param data
+     * @throws AiravataAPIInvocationException
+     */
 	public void addWorkflowInstanceNodeOutputData(String experimentId, String topicId, String nodeId, String data) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param node
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public List<WorkflowInstanceNodePortData> getWorkflowInstanceNodeInputData(WorkflowInstanceNode node) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param experimentId
+     * @param topicId
+     * @param nodeId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public List<WorkflowInstanceNodePortData> getWorkflowInstanceNodeInputData(String experimentId, String topicId, String nodeId) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param workflowName
+     * @param nodeId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public Map<WorkflowInstanceNode,List<WorkflowInstanceNodePortData>> getWorkflowInstanceNodeInputData(String workflowName, String nodeId) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param node
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public List<WorkflowInstanceNodePortData> getWorkflowInstanceNodeOutputData(WorkflowInstanceNode node) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param experimentId
+     * @param topicId
+     * @param nodeId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public List<WorkflowInstanceNodePortData> getWorkflowInstanceNodeOutputData(String experimentId, String topicId, String nodeId) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param workflowName
+     * @param nodeId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public Map<WorkflowInstanceNode,List<WorkflowInstanceNodePortData>> getWorkflowInstanceNodeOutputData(String workflowName, String nodeId) throws AiravataAPIInvocationException;
-	
-	//Instance Status
+
+    /**
+     *
+     * @param experimentId
+     * @param topicId
+     * @param status
+     * @throws AiravataAPIInvocationException
+     */
 	public void setWorkflowInstanceStatus(String experimentId, String topicId, ExecutionStatus status) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param status
+     * @throws AiravataAPIInvocationException
+     */
 	public void setWorkflowInstanceStatus(WorkflowInstanceStatus status) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param experimentId
+     * @param topicId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public WorkflowInstanceStatus getWorkflowInstanceStatus(String experimentId, String topicId) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param workflowInstance
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public WorkflowInstanceStatus getWorkflowInstanceStatus(WorkflowInstance workflowInstance) throws AiravataAPIInvocationException;
-	
-	//Instance User
+
+    /**
+     *
+     * @param experimentId
+     * @param topicId
+     * @param user
+     * @throws AiravataAPIInvocationException
+     */
 	public void setWorkflowInstanceUser(String experimentId, String topicId, String user) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param user
+     * @throws AiravataAPIInvocationException
+     */
 	public void setWorkflowInstanceUser(WorkflowInstanceUser user) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param experimentId
+     * @param topicId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public WorkflowInstanceUser getWorkflowInstanceUser(String experimentId, String topicId) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param workflowInstance
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public WorkflowInstanceUser getWorkflowInstanceUser(WorkflowInstance workflowInstance) throws AiravataAPIInvocationException;
-	
-	//Instance Metadata
+
+    /**
+     *
+     * @param experimentId
+     * @param topicId
+     * @param metadata
+     * @throws AiravataAPIInvocationException
+     */
 	public void setWorkflowInstanceMetadata(String experimentId, String topicId, String metadata) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param instanceMetadata
+     * @throws AiravataAPIInvocationException
+     */
 	public void setWorkflowInstanceMetadata(WorkflowInstanceMetadata instanceMetadata) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param experimentId
+     * @param topicId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public WorkflowInstanceMetadata getWorkflowInstanceMetadata(String experimentId, String topicId) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param workflowInstance
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public WorkflowInstanceMetadata getWorkflowInstanceMetadata(WorkflowInstance workflowInstance) throws AiravataAPIInvocationException;
-	
-	
 
-	//General
-
+    /**
+     *
+     * @param owner
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public List<String> getExperiments(String owner) throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public List<String> getExperiments() throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public List<WorkflowInstance> getWorkflowInstances() throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @param user
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public List<WorkflowInstance> getWorkflowInstances(String user) throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @param user
+     * @param pageSize
+     * @param pageNo
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public List<WorkflowInstanceData> getWorkflowInstances(String user, int pageSize, int pageNo) throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @param experimentId
+     * @param topicId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public WorkflowInstanceData getWorkflowInstanceData(String experimentId, String topicId) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param workflowInstance
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public WorkflowInstanceData getWorkflowInstanceData(WorkflowInstance workflowInstance) throws AiravataAPIInvocationException;
 
-
-	
+    /**
+     *
+     * @param exeperimentId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public String[] getWorkflowExecutionOutputNames(String exeperimentId) throws AiravataAPIInvocationException;
-
-    
-
 }

@@ -24,23 +24,111 @@ package org.apache.airavata.client.api;
 import java.net.URI;
 import java.util.List;
 
+/**
+ *  This interface contains set of methods to access the basic configurations of AiravataClient required to connect to
+ *  Airvata services running at the backend
+ */
 public interface AiravataManager {
+    /**
+     *
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public List<URI> getGFaCURLs() throws AiravataAPIInvocationException;
+
+    /**
+     *
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public URI getGFaCURL() throws AiravataAPIInvocationException;
+
+    /**
+     *
+     * @param defaultURL
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public URI getGFaCURL(URI defaultURL) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public List<URI> getWorkflowInterpreterServiceURLs() throws AiravataAPIInvocationException;
+
+    /**
+     *
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public URI getWorkflowInterpreterServiceURL() throws AiravataAPIInvocationException;
+
+    /**
+     *
+     * @param defaultURL
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public URI getWorkflowInterpreterServiceURL(URI defaultURL) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public List<URI> getMessageBoxServiceURLs() throws AiravataAPIInvocationException;
+
+    /**
+     *
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public URI getMessageBoxServiceURL() throws AiravataAPIInvocationException;
+
+    /**
+     *
+     * @param defaultURL
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public URI getMessageBoxServiceURL(URI defaultURL) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public List<URI> getEventingServiceURLs() throws AiravataAPIInvocationException;
+
+    /**
+     *
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public URI getEventingServiceURL() throws AiravataAPIInvocationException;
+
+    /**
+     *
+     * @param defaultURL
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public URI getEventingServiceURL(URI defaultURL) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public URI getRegistryURL() throws AiravataAPIInvocationException;
+
+    /**
+     *
+     * @param defaultURL
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public URI getRegistryURL(URI defaultURL) throws AiravataAPIInvocationException;
 }
