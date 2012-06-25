@@ -296,7 +296,7 @@ public class AiravataClient {
                     OMElement omElement = AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml()));
                     stub._getServiceClient().addHeader(omElement);
                     worflowoutput = stub.launchWorkflow(workflow, topic,null);
-                    runPostWorkflowExecutionTasks(worflowoutput, user, metadata);
+                    runPreWorkflowExecutionTasks(worflowoutput, user, metadata);
 
                 } catch (AxisFault e) {
 		} catch (RemoteException e) {
@@ -341,7 +341,7 @@ public class AiravataClient {
         return monitor;
     }
     
-	private void runPostWorkflowExecutionTasks(String topic, String user,
+	private void runPreWorkflowExecutionTasks(String topic, String user,
 			String metadata) throws RegistryException {
 		if (user != null) {
 			getRegistry().saveWorkflowExecutionUser(topic, user);
@@ -366,8 +366,8 @@ public class AiravataClient {
 			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
 					getClientConfiguration().getXbayaServiceURL().toString());
             stub._getServiceClient().addHeader(AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml())));
+			runPreWorkflowExecutionTasks(topic, user, metadata);
 			worflowoutput = stub.launchWorkflow(workflow, topic, inputs);
-			runPostWorkflowExecutionTasks(topic, user, metadata);
 //			log.info("Workflow output : " + worflowoutput);
 		} catch (RegistryException e) {
 //			log.fine(e.getMessage(), e);

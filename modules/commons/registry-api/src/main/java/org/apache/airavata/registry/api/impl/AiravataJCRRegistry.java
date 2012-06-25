@@ -1155,8 +1155,10 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 		try {
 			session = getSession();
 			List<String> matchingExperimentIds = getMatchingExperimentIds(".*", session);
+			Pattern compile = Pattern.compile(user==null? ".*":user);
 			for (String id : matchingExperimentIds) {
-				if (user==null || user.equals(getWorkflowExecutionUser(id))){
+				String instanceUser = getWorkflowExecutionUser(id);
+				if (user==null || (instanceUser!=null && compile.matcher(instanceUser).find())){
 					ids.add(id);
 				}
 			}
