@@ -78,6 +78,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
     public static final String WORKFLOW_STATUS_PROPERTY = "Status";
     public static final String WORKFLOW_STATUS_TIME_PROPERTY = "Status_Time";
     public static final String WORKFLOW_METADATA_PROPERTY = "Metadata";
+    public static final String WORKFLOW_INSTANCE_NAME_PROPERTY = "Worflow_instace_name";
     public static final String WORKFLOW_USER_PROPERTY = "User";
 
     private static Logger log = LoggerFactory.getLogger(AiravataJCRRegistry.class);
@@ -1132,6 +1133,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 		workflowExecution.setExecutionStatus(getWorkflowExecutionStatus(experimentId));
 		workflowExecution.setUser(getWorkflowExecutionUser(experimentId));
 		workflowExecution.setMetadata(getWorkflowExecutionMetadata(experimentId));
+		workflowExecution.setWorkflowInstanceName(getWorkflowExecutionName(experimentId));
 		workflowExecution.setOutput(getWorkflowExecutionOutput(experimentId));
 		workflowExecution.setServiceInput(searchWorkflowExecutionServiceInput(experimentId,".*",".*"));
 		workflowExecution.setServiceOutput(searchWorkflowExecutionServiceOutput(experimentId,".*",".*"));
@@ -1239,5 +1241,45 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	public boolean saveWorkflowExecutionStatus(String experimentId,
 			ExecutionStatus status) throws RegistryException {
 		return saveWorkflowExecutionStatus(experimentId,new WorkflowExecutionStatus(status));
+	}
+
+	@Override
+	public boolean saveWorkflowExecutionName(String experimentId,
+			String workflowIntanceName) throws RegistryException {
+		Session session = null;
+        boolean isSaved = true;
+        try {
+            session = getSession();
+            Node workflowDataNode = getWorkflowExperimentDataNode(experimentId, session);
+            workflowDataNode.setProperty(WORKFLOW_INSTANCE_NAME_PROPERTY,workflowIntanceName);
+            session.save();
+        } catch (Exception e) {
+            isSaved = false;
+            e.printStackTrace();
+        } finally {
+            closeSession(session);
+        }
+        return isSaved;
+	}
+
+	@Override
+	public String getWorkflowExecutionName(String experimentId)
+			throws RegistryException {
+		Session session = null;
+    	String property = null;
+        try {
+            session = getSession();
+            Node workflowDataNode = getWorkflowExperimentDataNode(experimentId, session);
+            if (workflowDataNode.hasProperty(WORKFLOW_INSTANCE_NAME_PROPERTY)) {
+				property = workflowDataNode.getProperty(
+						WORKFLOW_INSTANCE_NAME_PROPERTY).getString();
+			}
+			session.save();
+        } catch (Exception e) {
+            throw new RegistryException("Error while retrieving workflow metadata!!!", e);
+        } finally {
+            closeSession(session);
+        }
+        return property;
 	}
 }

@@ -225,6 +225,8 @@ public interface AiravataRegistry extends Registry{
 
     public boolean saveWorkflowExecutionStatus(String experimentId,WorkflowExecutionStatus status)throws RegistryException;
     
+    public boolean saveWorkflowExecutionName(String experimentId,String workflowIntanceName)throws RegistryException;
+    
     public boolean saveWorkflowExecutionStatus(String experimentId,ExecutionStatus status)throws RegistryException;
 
     public WorkflowExecutionStatus getWorkflowExecutionStatus(String experimentId)throws RegistryException;
@@ -242,6 +244,8 @@ public interface AiravataRegistry extends Registry{
     public boolean saveWorkflowExecutionUser(String experimentId, String user) throws RegistryException;
     
     public String getWorkflowExecutionUser(String experimentId) throws RegistryException;
+    
+    public String getWorkflowExecutionName(String experimentId) throws RegistryException;
     
     public WorkflowExecution getWorkflowExecution(String experimentId) throws RegistryException;
     

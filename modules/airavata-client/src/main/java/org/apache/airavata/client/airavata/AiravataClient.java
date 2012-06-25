@@ -285,10 +285,10 @@ public class AiravataClient {
 	}
 
 	public String runWorkflow(String topic, String user) {
-		return runWorkflow(topic, user, null);
+		return runWorkflow(topic, user, null, topic);
 	}
 
-	public String runWorkflow(String topic, String user, String metadata) {
+	public String runWorkflow(String topic, String user, String metadata, String workflowInstanceName) {
         String worflowoutput = null;
                 try {
                     WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
@@ -296,7 +296,7 @@ public class AiravataClient {
                     OMElement omElement = AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml()));
                     stub._getServiceClient().addHeader(omElement);
                     worflowoutput = stub.launchWorkflow(workflow, topic,null);
-                    runPreWorkflowExecutionTasks(worflowoutput, user, metadata);
+                    runPreWorkflowExecutionTasks(worflowoutput, user, metadata, workflowInstanceName);
 
                 } catch (AxisFault e) {
 		} catch (RemoteException e) {
@@ -342,13 +342,18 @@ public class AiravataClient {
     }
     
 	private void runPreWorkflowExecutionTasks(String topic, String user,
-			String metadata) throws RegistryException {
+			String metadata,String workflowInstanceName) throws RegistryException {
 		if (user != null) {
 			getRegistry().saveWorkflowExecutionUser(topic, user);
 		}
 		if (metadata != null) {
 			getRegistry().saveWorkflowExecutionMetadata(topic, metadata);
 		}
+		
+		if (workflowInstanceName!=null) {
+			getRegistry().saveWorkflowExecutionName(topic, workflowInstanceName);
+		}
+	
 	}
 
 	public String runWorkflow(String topic, NameValue[] inputs) throws Exception {
@@ -356,17 +361,17 @@ public class AiravataClient {
 	}
 
 	public String runWorkflow(String topic, NameValue[] inputs, String user) throws Exception {
-		return runWorkflow(topic, inputs, user, null);
+		return runWorkflow(topic, inputs, user, null,topic);
 	}
 
 	public String runWorkflow(String topic, NameValue[] inputs, String user,
-			String metadata) throws Exception{
+			String metadata,String workflowInstanceName) throws Exception{
 		String worflowoutput = null;
 		try {
 			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
 					getClientConfiguration().getXbayaServiceURL().toString());
             stub._getServiceClient().addHeader(AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml())));
-			runPreWorkflowExecutionTasks(topic, user, metadata);
+			runPreWorkflowExecutionTasks(topic, user, metadata,workflowInstanceName);
 			worflowoutput = stub.launchWorkflow(workflow, topic, inputs);
 //			log.info("Workflow output : " + worflowoutput);
 		} catch (RegistryException e) {
@@ -500,8 +505,8 @@ public class AiravataClient {
 	 * @param inputs
 	 * @return
 	 */
-	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs) throws Exception{
-		return runWorkflow(workflowTemplateId,inputs,getRegistry().getUsername(),null);
+	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs,String workflowInstanceName) throws Exception{
+		return runWorkflow(workflowTemplateId,inputs,getRegistry().getUsername(),null,workflowInstanceName);
 	}
 	
 	/**
@@ -513,7 +518,7 @@ public class AiravataClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata) throws Exception{
+	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName) throws Exception{
 		try {
 			List<WSComponentPort> ports = getWSComponentPortInputs(workflowTemplateId);
 			for (WorkflowInput input : inputs) {
@@ -535,7 +540,7 @@ public class AiravataClient {
 			}
 			workflow=getWorkflowAsString(workflowTemplateId).getString();
 			String topic=workflowTemplateId+"_"+UUID.randomUUID();
-			return runWorkflow(topic, inputValues.toArray(new NameValue[]{}), user, metadata);
+			return runWorkflow(topic, inputValues.toArray(new NameValue[]{}), user, metadata, workflowInstanceName);
 		} catch (PathNotFoundException e) {
 			e.printStackTrace();
 		} catch (RegistryException e) {
