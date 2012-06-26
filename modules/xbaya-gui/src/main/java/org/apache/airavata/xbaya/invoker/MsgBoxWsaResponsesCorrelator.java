@@ -90,7 +90,7 @@ public class MsgBoxWsaResponsesCorrelator extends WSIFAsyncWsaResponsesCorrelato
     public void run() {
         while(true) {
             try {
-                Iterator<OMElement> omElementIterator = msgBoxClient.takeMessagesFromMsgBox(msgBoxAddr, 30000L);
+                Iterator<OMElement> omElementIterator = msgBoxClient.takeMessagesFromMsgBox(msgBoxAddr, 1000L);
                 List<XmlElement> xmlArrayList = new ArrayList<XmlElement>();
                 while (omElementIterator.hasNext()){
                     OMElement next = omElementIterator.next();
