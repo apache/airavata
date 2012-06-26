@@ -155,7 +155,7 @@ public class GenericInvoker implements Invoker {
         this.gfacURL = gfacURL;
         this.notifier = notifier.createServiceNotificationSender(nodeID);
         this.failerSent = false;
-        this.contextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
+        this.contextHeader = WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID,WorkflowContextHeaderBuilder.getCurrentContextHeader());
         this.topic = notifier.getTopic();
     }
 
@@ -179,7 +179,7 @@ public class GenericInvoker implements Invoker {
         this.gfacURL = gfacURL;
         this.notifier = notifier.createServiceNotificationSender(nodeID);
         this.failerSent = false;
-        this.contextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
+        this.contextHeader = WorkflowContextHeaderBuilder.removeOtherSchedulingConfig(nodeID,WorkflowContextHeaderBuilder.getCurrentContextHeader());
         this.topic = notifier.getTopic();
     }
 

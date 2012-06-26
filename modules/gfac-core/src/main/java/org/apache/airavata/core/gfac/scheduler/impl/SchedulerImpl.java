@@ -43,6 +43,7 @@ import org.apache.airavata.core.gfac.provider.impl.LocalProvider;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.schemas.wec.ApplicationSchedulingContextDocument;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.schemas.wec.SecurityContextDocument;
 import org.apache.axiom.om.OMElement;
@@ -158,7 +159,15 @@ public class SchedulerImpl implements Scheduler {
     }
 
     private HostDescription scheduleToHost(AiravataRegistry regService, String serviceName) {
-
+        // Since xbaya removes the other scheduling configuration here we only have pick the 0th element of the array
+        String hostName = "";
+        ContextHeaderDocument.ContextHeader currentContextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
+        if (currentContextHeader != null && currentContextHeader.getWorkflowSchedulingContext() != null) {
+            ApplicationSchedulingContextDocument.ApplicationSchedulingContext[] applicationSchedulingContextArray = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray();
+            if (applicationSchedulingContextArray != null && applicationSchedulingContextArray.length > 0) {
+                hostName = applicationSchedulingContextArray[0].getHostName();
+            }
+        }
         log.info("Searching registry for some deployed application hosts");
         HostDescription result = null;
         Map<HostDescription, List<ApplicationDeploymentDescription>> deploymentDescription = null;
@@ -167,6 +176,12 @@ public class SchedulerImpl implements Scheduler {
 	        for (HostDescription hostDesc : deploymentDescription.keySet()) {
 	        	result = hostDesc;
 	            log.info("Found service on: " + result.getType().getHostAddress());
+                // if user specify the host in the workflowcontext header we pick that host instead of picking the last hostName
+                if(hostName != null){
+                    if(hostDesc.getType().getHostName().equals(hostName)){
+                        break;
+                    }
+                }
 			}
 		} catch (RegistryException e) {
 			e.printStackTrace();

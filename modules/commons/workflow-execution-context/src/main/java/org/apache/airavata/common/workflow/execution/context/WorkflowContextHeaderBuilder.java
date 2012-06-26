@@ -67,8 +67,6 @@ public class WorkflowContextHeaderBuilder {
         this.contextHeader
                 .setWorkflowSchedulingContext(WorkflowSchedulingContextDocument.WorkflowSchedulingContext.Factory
                         .newInstance());
-        threadLocal = new ThreadLocal();
-        threadLocal.set(contextHeader);
     }
 
     public static void setCurrentContextHeader(ContextHeaderDocument.ContextHeader contextHeader){
@@ -316,5 +314,27 @@ public class WorkflowContextHeaderBuilder {
         applicationSchedulingContext.setQueueName(qName);
         applicationSchedulingContext.setWsgramPreferred(wsGramPreffered);
         return this;
+    }
+
+    public static ContextHeaderDocument.ContextHeader removeOtherSchedulingConfig(String nodeID, ContextHeaderDocument.ContextHeader header) {
+        try {
+            ApplicationSchedulingContextDocument.ApplicationSchedulingContext[] applicationSchedulingContextArray =
+                    header.getWorkflowSchedulingContext().getApplicationSchedulingContextArray();
+            int index = 0;
+            if (applicationSchedulingContextArray != null) {
+                for (ApplicationSchedulingContextDocument.ApplicationSchedulingContext context : applicationSchedulingContextArray) {
+                    if (context.getServiceId().equals(nodeID)) {
+                        continue;
+                    } else {
+                        header.getWorkflowSchedulingContext().removeApplicationSchedulingContext(index);
+                    }
+                    index++;
+                }
+            }
+            header.getWorkflowSchedulingContext().setApplicationSchedulingContextArray(applicationSchedulingContextArray);
+        } catch (NullPointerException e) {
+            return header;
+        }
+        return header;
     }
 }

@@ -88,7 +88,7 @@ public class WsmgClient implements ConsumerNotificationHandler, NotificationHand
             if (this.pullMode) {
                 EndpointReference messageBoxEPR = this.wseClient.createPullMsgBox(this.messageBoxURL.toString());
                 this.subscriptionID = this.wseClient.subscribe(messageBoxEPR.getAddress(), this.topic, null);
-                this.messagePuller = this.wseClient.startPullingEventsFromMsgBox(messageBoxEPR, this, interval, timeout);
+                this.messagePuller = this.wseClient.startPullingEventsFromMsgBox(messageBoxEPR, this, getInterval(), getTimeout());
             } else {
                 String[] endpoints = this.wseClient.startConsumerService(2222, this);
                 this.subscriptionID = this.wseClient.subscribe(endpoints[0], this.topic, null);
