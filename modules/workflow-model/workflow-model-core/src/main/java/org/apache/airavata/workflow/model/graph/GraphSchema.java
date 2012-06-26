@@ -176,6 +176,17 @@ public class GraphSchema {
     public static final String NODE_TYPE_ENDBLOCK = "endBlock";
 
     /**
+     * DoWhile
+     */
+    public static final String NODE_TYPE_DOWHILE = "doWhile";
+
+    /**
+     * EndDoWhile
+     */
+    public static final String NODE_TYPE_ENDDOWHILE = "enddoWhile";
+
+
+    /**
      * receive
      */
     public static final String NODE_TYPE_RECEIVE = "receive";
