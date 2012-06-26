@@ -78,6 +78,7 @@ public class GFacMessageReciever implements MessageReceiver {
     public static final String MYPROXY_USER = "myproxy.user";
     public static final String MYPROXY_PASS = "myproxy.pass";
     public static final String MYPROXY_LIFE = "myproxy.life";
+    public static final String GFAC_URL = "GFacURL";
     private GFacConfiguration gfacContext;
     private GenericService service;
     private Axis2Registry registry;
@@ -236,11 +237,7 @@ public class GFacMessageReciever implements MessageReceiver {
 
     private void processgetWSDLOperation(MessageContext messageContext) throws Exception {
         MessageContext response = null;
-        EndpointReference gfacUrl = messageContext
-                .getConfigurationContext()
-                .getListenerManager()
-                .getEPRforService(WSConstants.GFAC_SERVICE_NAME, WSConstants.GFAC_INVOKE_METHOD,
-                        WSConstants.GFAC_TRANSPORT);
+        EndpointReference gfacUrl = new EndpointReference((String)messageContext.getConfigurationContext().getProperty(GFAC_URL));
         String serviceName = getOriginalServiceName(messageContext);
         String serviceEpr = gfacUrl.getAddress().split(WSConstants.GFAC_SERVICE_NAME)[0] + serviceName;
         ConfigurationContext context = messageContext.getConfigurationContext();

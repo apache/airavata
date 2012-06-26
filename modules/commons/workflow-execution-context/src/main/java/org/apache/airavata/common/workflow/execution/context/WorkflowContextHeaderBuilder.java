@@ -320,18 +320,19 @@ public class WorkflowContextHeaderBuilder {
         try {
             ApplicationSchedulingContextDocument.ApplicationSchedulingContext[] applicationSchedulingContextArray =
                     header.getWorkflowSchedulingContext().getApplicationSchedulingContextArray();
+
             int index = 0;
             if (applicationSchedulingContextArray != null) {
                 for (ApplicationSchedulingContextDocument.ApplicationSchedulingContext context : applicationSchedulingContextArray) {
                     if (context.getServiceId().equals(nodeID)) {
-                        continue;
+                        index++;
+                        header.getWorkflowSchedulingContext().setApplicationSchedulingContextArray(new ApplicationSchedulingContextDocument.ApplicationSchedulingContext[]{context});
+                        break;
                     } else {
                         header.getWorkflowSchedulingContext().removeApplicationSchedulingContext(index);
                     }
-                    index++;
                 }
             }
-            header.getWorkflowSchedulingContext().setApplicationSchedulingContextArray(applicationSchedulingContextArray);
         } catch (NullPointerException e) {
             return header;
         }
