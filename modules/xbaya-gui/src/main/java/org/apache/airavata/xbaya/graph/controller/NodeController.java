@@ -36,7 +36,9 @@ import org.apache.airavata.workflow.model.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.workflow.model.graph.system.BlockNode;
 import org.apache.airavata.workflow.model.graph.system.ConstantNode;
 import org.apache.airavata.workflow.model.graph.system.DifferedInputNode;
+import org.apache.airavata.workflow.model.graph.system.DoWhileNode;
 import org.apache.airavata.workflow.model.graph.system.EndBlockNode;
+import org.apache.airavata.workflow.model.graph.system.EndDoWhileNode;
 import org.apache.airavata.workflow.model.graph.system.EndForEachNode;
 import org.apache.airavata.workflow.model.graph.system.EndifNode;
 import org.apache.airavata.workflow.model.graph.system.ExitNode;
@@ -62,7 +64,9 @@ import org.apache.airavata.xbaya.ui.graph.subworkflow.SubWorkflowNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.system.BlockNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.system.ConstantNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.system.DifferedInputNodeGUI;
+import org.apache.airavata.xbaya.ui.graph.system.DoWhileNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.system.EndBlockNodeGUI;
+import org.apache.airavata.xbaya.ui.graph.system.EndDoWhileNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.system.EndForEachNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.system.EndifNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.system.ExitNodeGUI;
@@ -81,42 +85,42 @@ import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler;
 public class NodeController {
 	private static Map<GraphPiece,GraphPieceGUI> nodeMap=new HashMap<GraphPiece, GraphPieceGUI>();
 //	private static Map<Port,PortGUI> portMap=new HashMap<Port, PortGUI>();
-	
+
 	public static GraphPieceGUI getGUI(GraphPiece node){
 		if (!nodeMap.containsKey(node)){
 			nodeMap.put(node,createNodeGUI(node));
 		}
 		return nodeMap.get(node);
 	}
-	
+
 	public static GraphGUI getGUI(Graph node){
 		return (GraphGUI)getGUI((GraphPiece)node);
 	}
-	
+
 	public static NodeGUI getGUI(Node node){
 		return (NodeGUI)getGUI((GraphPiece)node);
 	}
-	
+
 	public static EdgeGUI getGUI(Edge port){
 		return (EdgeGUI)getGUI((GraphPiece)port);
 	}
-	
+
 	public static PortGUI getGUI(Port port){
 		return (PortGUI)getGUI((GraphPiece)port);
 	}
-	
+
 //	public static PortGUI getGUI(Port node){
 //		if (!portMap.containsKey(node)){
 //			portMap.put(node,createPortGUI(node));
 //		}
 //		return portMap.get(node);
 //	}
-//	
+//
 //	private static PortGUI createPortGUI(Port port){
 //		PortGUI portGUI=new PortGUI(port);
 //		return portGUI;
 //	}
-	
+
 	private static GraphPieceGUI createNodeGUI(GraphPiece node){
 		GraphPieceGUI nodeGUI=null;
 		if (node instanceof SubWorkflowNode){
@@ -141,7 +145,11 @@ public class NodeController {
 		    nodeGUI=new S3InputNodeGUI((S3InputNode)node);
 		} else if (node instanceof ForEachNode){
 		    nodeGUI=new ForEachNodeGUI((ForEachNode)node);
-		} else if (node instanceof MemoNode){
+		}else if (node instanceof DoWhileNode){
+		    nodeGUI=new DoWhileNodeGUI((DoWhileNode)node);
+		} else if (node instanceof EndDoWhileNode){
+		    nodeGUI=new EndDoWhileNodeGUI((EndDoWhileNode)node);
+		}  else if (node instanceof MemoNode){
 		    nodeGUI=new MemoNodeGUI((MemoNode)node);
 		} else if (node instanceof ReceiveNode){
 		    nodeGUI=new ReceiveNodeGUI((ReceiveNode)node);
@@ -172,11 +180,20 @@ public class NodeController {
 		} else if (node instanceof Graph){
 		    nodeGUI=new GraphGUI((Graph)node);
 		}
-		
+
 		return nodeGUI;
 	}
-	
+
 	public static boolean isFinished(Node node){
 		return ((NodeGUI)getGUI(node)).getBodyColor() == MonitorEventHandler.NodeState.FINISHED.color;
+	}
+	public static boolean isWaiting(Node node){
+		return ((NodeGUI)getGUI(node)).getBodyColor() == MonitorEventHandler.NodeState.DEFAULT.color;
+	}
+	public static boolean isRunning(Node node){
+		return ((NodeGUI)getGUI(node)).getBodyColor() == MonitorEventHandler.NodeState.EXECUTING.color;
+	}
+	public static boolean isFailed(Node node){
+		return ((NodeGUI)getGUI(node)).getBodyColor() == MonitorEventHandler.NodeState.FAILED.color;
 	}
 }

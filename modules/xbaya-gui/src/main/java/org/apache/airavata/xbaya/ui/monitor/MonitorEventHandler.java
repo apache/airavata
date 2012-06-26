@@ -80,7 +80,13 @@ public class MonitorEventHandler implements ChangeListener {
         /**
          * FAILED
          */
-        FAILED(Color.RED);
+        FAILED(Color.RED),
+
+        /**
+		 * DEFAULT COLOR
+		 */
+		DEFAULT(new Color(250, 220, 100));
+
 
         /**
          * color
@@ -106,7 +112,7 @@ public class MonitorEventHandler implements ChangeListener {
 
     /**
      * Constructs a MonitorEventHandler.
-     * 
+     *
      * @param engine
      * @param dataModel
      */
@@ -546,14 +552,14 @@ public class MonitorEventHandler implements ChangeListener {
     }
 
     private void resetNode(Node node) {
-        NodeController.getGUI(node).setBodyColor(NodeGUI.DEFAULT_BODY_COLOR);
+        NodeController.getGUI(node).setBodyColor(NodeState.DEFAULT.color);
         NodeController.getGUI(node).resetTokens();
     }
 
     /**
      * Make preceding nodes done. This helps the monitoring GUI when a user subscribes from the middle of the workflow
      * execution.
-     * 
+     *
      * @param node
      */
     private void finishPredecessorNodes(Node node) {
