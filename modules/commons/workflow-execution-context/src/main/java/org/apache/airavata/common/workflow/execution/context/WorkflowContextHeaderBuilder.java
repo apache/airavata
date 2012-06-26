@@ -316,19 +316,26 @@ public class WorkflowContextHeaderBuilder {
         return this;
     }
 
-    public static ContextHeaderDocument.ContextHeader removeOtherSchedulingConfig(String nodeID, ContextHeaderDocument.ContextHeader header) {
-        ApplicationSchedulingContextDocument.ApplicationSchedulingContext[] applicationSchedulingContextArray =
+     public static ContextHeaderDocument.ContextHeader removeOtherSchedulingConfig(String nodeID, ContextHeaderDocument.ContextHeader header) {
+         try{
+                ApplicationSchedulingContextDocument.ApplicationSchedulingContext[] applicationSchedulingContextArray =
                 header.getWorkflowSchedulingContext().getApplicationSchedulingContextArray();
+
         int index = 0;
-        for (ApplicationSchedulingContextDocument.ApplicationSchedulingContext context : applicationSchedulingContextArray) {
-            if (context.getServiceId().equals(nodeID)) {
-                continue;
-            } else {
-                header.getWorkflowSchedulingContext().removeApplicationSchedulingContext(index);
+        if (applicationSchedulingContextArray != null) {
+            for (ApplicationSchedulingContextDocument.ApplicationSchedulingContext context : applicationSchedulingContextArray) {
+                if (context.getServiceId().equals(nodeID)) {
+                    continue;
+                } else {
+                    header.getWorkflowSchedulingContext().removeApplicationSchedulingContext(index);
+                }
+                index++;
             }
-            index++;
         }
-        header.getWorkflowSchedulingContext().setApplicationSchedulingContextArray(applicationSchedulingContextArray);
+            header.getWorkflowSchedulingContext().setApplicationSchedulingContextArray(applicationSchedulingContextArray);
+             }catch (NullPointerException e){
+             return header;
+         }
         return header;
     }
 }
