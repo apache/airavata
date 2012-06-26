@@ -35,7 +35,9 @@ import org.apache.airavata.workflow.model.component.dynamic.DynamicComponent;
 import org.apache.airavata.workflow.model.component.system.BlockComponent;
 import org.apache.airavata.workflow.model.component.system.ConstantComponent;
 import org.apache.airavata.workflow.model.component.system.DifferedInputComponent;
+import org.apache.airavata.workflow.model.component.system.DoWhileComponent;
 import org.apache.airavata.workflow.model.component.system.EndBlockComponent;
+import org.apache.airavata.workflow.model.component.system.EndDoWhileComponent;
 import org.apache.airavata.workflow.model.component.system.EndForEachComponent;
 import org.apache.airavata.workflow.model.component.system.EndifComponent;
 import org.apache.airavata.workflow.model.component.system.ForEachComponent;
@@ -69,12 +71,13 @@ public class SystemComponentRegistry extends ComponentRegistry {
         this.componentMap.put(ReceiveComponent.NAME, new ReceiveComponent());
         this.componentMap.put(ForEachComponent.NAME, new ForEachComponent());
         this.componentMap.put(EndForEachComponent.NAME, new EndForEachComponent());
+        this.componentMap.put(DoWhileComponent.NAME, new DoWhileComponent());
+        this.componentMap.put(EndDoWhileComponent.NAME, new EndDoWhileComponent());
         this.componentMap.put(BlockComponent.NAME, new BlockComponent());
         this.componentMap.put(EndBlockComponent.NAME, new EndBlockComponent());
         this.componentMap.put(DynamicComponent.NAME, new DynamicComponent());
         this.componentMap.put(StreamSourceComponent.NAME, new StreamSourceComponent());
         this.componentMap.put(ExitComponent.NAME, new ExitComponent());
-
     }
 
     /**
@@ -87,7 +90,7 @@ public class SystemComponentRegistry extends ComponentRegistry {
 
     /**
      * Returns a ComponentTree.
-     * 
+     *
      * @return The ComponentTree
      */
     @Override
