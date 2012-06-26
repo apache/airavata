@@ -158,7 +158,8 @@ public class SchedulerImpl implements Scheduler {
     }
 
     private HostDescription scheduleToHost(AiravataRegistry regService, String serviceName) {
-
+        // Since xbaya removes the other scheduling configuration here we only have pick the 0th element of the array
+        String hostName = WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getHostName();
         log.info("Searching registry for some deployed application hosts");
         HostDescription result = null;
         Map<HostDescription, List<ApplicationDeploymentDescription>> deploymentDescription = null;
@@ -167,6 +168,12 @@ public class SchedulerImpl implements Scheduler {
 	        for (HostDescription hostDesc : deploymentDescription.keySet()) {
 	        	result = hostDesc;
 	            log.info("Found service on: " + result.getType().getHostAddress());
+                // if user specify the host in the workflowcontext header we pick that host instead of picking the last hostName
+                if(hostName != null){
+                    if(hostDesc.getType().getHostName().equals(hostName)){
+                        break;
+                    }
+                }
 			}
 		} catch (RegistryException e) {
 			e.printStackTrace();

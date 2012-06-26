@@ -232,7 +232,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
             logger.debug("\n\nCreated Messagebox at address :" + messageBoxAddress);
 
         subscriptionId = subToBrokerWithMsgBoxSink(msgBoxAddr, topic, xpath, wseClient, subscribePermananly);
-        messagePuller = msgboxHandler.startPullingEventsFromMsgBox(msgBoxAddr, this, 1500L, 30000l);
+        messagePuller = msgboxHandler.startPullingEventsFromMsgBox(msgBoxAddr, this, 1500L, 1000l);
         if (logger.isDebugEnabled())
             logger.debug("\n\nCreate Subscription for topic" + topic + " [Messagebox]\n\n");
 
@@ -255,7 +255,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
             logger.info("\n\nCreated Messagebox at address :" + msgBoxAddr.getAddress());
 
         subscriptionId = subToBrokerWithMsgBoxSink(msgBoxAddr, topic, xpath, wseClient, subscribePermanatly);
-        messagePuller = msgboxHandler.startPullingEventsFromMsgBox(msgBoxAddr, this, 500L, 30000l);
+        messagePuller = msgboxHandler.startPullingEventsFromMsgBox(msgBoxAddr, this, 500L, 1000l);
         if (logger.isDebugEnabled())
             logger.info("\n\nCreate Subscription for topic" + topic + " [Messagebox]\n\n");
         Subscription subscription = new Subscription(this, subscriptionId, topic, callback, this.brokerURL);

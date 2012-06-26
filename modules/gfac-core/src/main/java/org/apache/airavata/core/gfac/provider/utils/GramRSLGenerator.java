@@ -114,6 +114,22 @@ public class GramRSLGenerator {
             } catch (NullPointerException e) {
                 log.info("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
             }
+            try {
+                String queueName = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getQueueName();
+                if(queueName != null){
+                    jobAttr.setQueue(queueName);
+                }else{
+                    if (app.getQueue() != null) {
+                        if (app.getQueue().getQueueName() != null) {
+                            System.out.println("Testing");
+                            log.info("Setting job queue to " + app.getQueue().getQueueName());
+                            jobAttr.setQueue(app.getQueue().getQueueName());
+                        }
+                    }
+                }
+            } catch (NullPointerException e) {
+                log.info("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
+            }
         }
         if (app.getNodeCount() > 0) {
             jobAttr.set("hostCount", String.valueOf(app.getNodeCount()));
@@ -136,19 +152,10 @@ public class GramRSLGenerator {
                 jobAttr.setProject(app.getProjectAccount().getProjectAccountNumber());
             }
         }
-        if(app.getQueue() != null){
-        if (app.getQueue().getQueueName() != null) {
-            System.out.println("Testing");
-            log.info("Setting job queue to " + app.getQueue().getQueueName());
-            jobAttr.setQueue(app.getQueue().getQueueName());
-        }
-        }
-
         String jobType = JobType.SINGLE.toString();
         if (app.getJobType() != null) {
             jobType = app.getJobType().toString();
         }
-
         if (jobType.equalsIgnoreCase(JobType.SINGLE.toString())) {
             log.info("Setting job type to single");
             jobAttr.setJobType(GramAttributes.JOBTYPE_SINGLE);
