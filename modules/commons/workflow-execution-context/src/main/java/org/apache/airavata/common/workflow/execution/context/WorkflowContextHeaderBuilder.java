@@ -325,14 +325,14 @@ public class WorkflowContextHeaderBuilder {
         if (applicationSchedulingContextArray != null) {
             for (ApplicationSchedulingContextDocument.ApplicationSchedulingContext context : applicationSchedulingContextArray) {
                 if (context.getServiceId().equals(nodeID)) {
-                    continue;
+                    index++;
+                    header.getWorkflowSchedulingContext().setApplicationSchedulingContextArray(new ApplicationSchedulingContextDocument.ApplicationSchedulingContext[]{context});
+                    break;
                 } else {
                     header.getWorkflowSchedulingContext().removeApplicationSchedulingContext(index);
                 }
-                index++;
             }
         }
-            header.getWorkflowSchedulingContext().setApplicationSchedulingContextArray(applicationSchedulingContextArray);
              }catch (NullPointerException e){
              return header;
          }
