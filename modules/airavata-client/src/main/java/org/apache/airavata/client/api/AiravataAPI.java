@@ -286,5 +286,5 @@ public interface AiravataAPI {
      * @param templateID
      * @return
      */
-    public String[] getWorkflowServiceNodeIDs(String templateID);
+    public List<String> getWorkflowServiceNodeIDs(String templateID);
 }
