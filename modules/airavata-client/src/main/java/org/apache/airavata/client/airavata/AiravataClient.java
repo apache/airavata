@@ -842,6 +842,7 @@ public class AiravataClient implements AiravataAPI {
             } catch (ComponentException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
+	    return null;
         }
 
 }

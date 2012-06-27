@@ -47,11 +47,6 @@
             <artifactId>airavata-xbaya-gui</artifactId>
             <version>${project.version}</version>
         </dependency>
-	<dependency>
-		<groupId>org.apache.airavata</groupId>	
-        	<artifactId>airavata-workflow-model-parent</artifactId>
-        	<version>${project.version}</version>
-	</dependency>
     </dependencies>
 
 </project>
