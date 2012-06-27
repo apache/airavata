@@ -187,13 +187,14 @@ public class GFacMessageReciever implements MessageReceiver {
         }
         DefaultInvocationContext invocationContext = null;
         JobContext jobContext = new JobContext(actualParameters,topic,serviceName,brokerURL);
-        if(document.getContextHeader().getSecurityContext().getAmazonWebservices() != null){
-//            invocationContext.getExecutionContext().setSecurityContextHeader(header);
-            //todo if there's amazoneWebServices context we need to set that value, this will refer in EC2Provider
-        }else {
+        //TODO: send security context header from Xbaya and handle it
+//        if(document.getContextHeader().getSecurityContext().getAmazonWebservices() != null){
+////            invocationContext.getExecutionContext().setSecurityContextHeader(header);
+//            //todo if there's amazoneWebServices context we need to set that value, this will refer in EC2Provider
+//        }else {
             gfacAPI = new GfacAPI();
             invocationContext = gfacAPI.gridJobSubmit(jobContext, (GFacConfiguration) context.getProperty(GFacService.GFAC_CONFIGURATION));
-        }
+//        }
         try {
             /*
              * Add notifiable object
@@ -286,7 +287,7 @@ public class GFacMessageReciever implements MessageReceiver {
 
     /**
      * Get Abstract WSDL and build it as OMElement
-     * 
+     *
      * @param context
      * @param serviceName
      * @return
@@ -298,10 +299,10 @@ public class GFacMessageReciever implements MessageReceiver {
  			WSDL = getRegistry(context).getWSDL(serviceName);
 		} catch (RegistryException e) {
 			//TODO this scenario occur if the service is not present in the registry.
-			//someone should handle this 
+			//someone should handle this
 		} catch (Exception e) {
 			//TODO this scenario occur if something something something.
-			//someone should handle this 
+			//someone should handle this
 			e.printStackTrace();
 		}
         XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(WSDL));
@@ -312,10 +313,10 @@ public class GFacMessageReciever implements MessageReceiver {
 
     /**
      * Get Registry Object in the configuration context
-     * 
+     *
      * @param context
      * @return
-     * 
+     *
      */
     private Axis2Registry getRegistry(ConfigurationContext context) {
         if (this.registry == null) {
