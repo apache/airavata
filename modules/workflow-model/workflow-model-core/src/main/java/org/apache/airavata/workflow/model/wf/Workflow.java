@@ -940,4 +940,15 @@ public class Workflow implements Cloneable {
         this.setGpelProcess(script.getGpelProcess());
         this.setWorkflowWSDL(script.getWorkflowWSDL().getWsdlDefinitions());
     }
+
+    public List<String> getWorkflowServiceNodeIDs() {
+        List<NodeImpl> nodes = getGraph().getNodes();
+        ArrayList<String> nodeIDs = new ArrayList<String>();
+        for (Node node : nodes) {
+            if (node instanceof WSNode) {
+                nodeIDs.add(node.getID());
+            }
+        }
+        return nodeIDs;
+    }
 }
