@@ -28,12 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
@@ -912,5 +907,16 @@ public class Workflow implements Cloneable, XBayaExecutionModeListener {
 		editable=config.getXbayaExecutionMode()==XBayaExecutionMode.IDE;
 		getGraph().setEditable(editable);
 	}
+
+    public List<String> getWorkflowServiceNodeIDs(){
+        List<NodeImpl> nodes = getGraph().getNodes();
+        ArrayList<String> nodeIDs = new ArrayList<String>();
+        for(Node node:nodes){
+            if(node instanceof WSNode) {
+                nodeIDs.add(node.getID());
+            }
+        }
+        return nodeIDs;
+    }
 
 }

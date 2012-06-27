@@ -160,10 +160,6 @@ public class GFacMessageReciever implements MessageReceiver {
         String brokerURL = getEventBrokerURL(messageContext);
         String topic = getTopic(messageContext);
         OMElement outputElement = null;
-        SecurityContextDocument parse =
-                SecurityContextDocument.Factory.parse(getHeader(messageContext).getFirstChildWithName
-                        (new QName("http://schemas.airavata.apache.org/workflow-execution-context", "security-context")).toStringWithConsume());
-        SecurityContextDocument.SecurityContext.GridMyproxyRepository gridMyproxyRepository = parse.getSecurityContext().getGridMyproxyRepository();
         OMElement header = getHeader(messageContext);
         ContextHeaderDocument document = null;
         try {
@@ -191,13 +187,14 @@ public class GFacMessageReciever implements MessageReceiver {
         }
         DefaultInvocationContext invocationContext = null;
         JobContext jobContext = new JobContext(actualParameters,topic,serviceName,brokerURL);
-        if(document.getContextHeader().getSecurityContext().getAmazonWebservices() != null){
+        //todo send security context and handle amazon services scenario
+//        if(document.getContextHeader().getSecurityContext().getAmazonWebservices() != null){
 //            invocationContext.getExecutionContext().setSecurityContextHeader(header);
             //todo if there's amazoneWebServices context we need to set that value, this will refer in EC2Provider
-        }else {
+//        }else {
             gfacAPI = new GfacAPI();
             invocationContext = gfacAPI.gridJobSubmit(jobContext, (GFacConfiguration) context.getProperty(GFacService.GFAC_CONFIGURATION));
-        }
+//        }
         try {
             /*
              * Add notifiable object

@@ -139,7 +139,6 @@ public class AiravataClient {
 
 	private void initialize() throws MalformedURLException {
 		updateClientConfiguration(configuration);
-		
         // At this point we do not know the workflowExperimentId
 		builder = new WorkflowContextHeaderBuilder(configuration.get(BROKER),
         		configuration.get(GFAC),configuration.get(JCR),null,null,
@@ -654,4 +653,22 @@ public class AiravataClient {
     public static WorkflowContextHeaderBuilder getBuilder() {
         return builder;
     }
+
+    public List<String> getWorkflowServiceIDs(String templateID){
+        Property workflowAsString = null;
+        try {
+            workflowAsString = this.getWorkflowAsString(templateID);
+            Workflow workflow = new Workflow(workflowAsString.getString());
+            return workflow.getWorkflowServiceNodeIDs();
+        } catch (RegistryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (RepositoryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (GraphException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (ComponentException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
 }
