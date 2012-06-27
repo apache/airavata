@@ -29,17 +29,61 @@ import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.monitor.MonitorEventListener;
 
 public interface ExecutionManager {
-
+    /**
+     *
+     * @param workflowTemplateId
+     * @param inputs
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public abstract String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @param workflow
+     * @param inputs
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public abstract String runWorkflow(Workflow workflow,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param workflowTemplateId
+     * @param inputs
+     * @param user
+     * @param metadata
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public abstract String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata)throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param workflow
+     * @param inputs
+     * @param user
+     * @param metadata
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public abstract String runWorkflow(Workflow workflow,List<WorkflowInput> inputs, String user, String metadata)throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param topic
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public Monitor getWorkflowIntanceMonitor(String topic)throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @param topic
+     * @param listener
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public Monitor getWorkflowInstanceMonitor(String topic, MonitorEventListener listener) throws AiravataAPIInvocationException;
 
 }

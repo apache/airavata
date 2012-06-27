@@ -828,22 +828,22 @@ public class AiravataClient implements AiravataAPI {
 	}
 
 
-    public List<String> getWorkflowServiceNodeIDs(String templateID){
-            Property workflowAsString = null;
-            try {
-                workflowAsString = this.getWorkflowAsString(templateID);
-                Workflow workflow = new Workflow(workflowAsString.getString());
-                return workflow.getWorkflowServiceNodeIDs();
-            } catch (RegistryException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (RepositoryException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (GraphException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            } catch (ComponentException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-	    return null;
+    public List<String> getWorkflowServiceNodeIDs(String templateID) {
+        Property workflowAsString = null;
+        try {
+            workflowAsString = this.getWorkflowAsString(templateID);
+            Workflow workflow = new Workflow(workflowAsString.getString());
+            return workflow.getWorkflowServiceNodeIDs();
+        } catch (RegistryException e) {
+            e.printStackTrace();
+        } catch (RepositoryException e) {
+            e.printStackTrace();
+        } catch (GraphException e) {
+            e.printStackTrace();
+        } catch (ComponentException e) {
+            e.printStackTrace();
         }
+        return null;
+    }
 
 }

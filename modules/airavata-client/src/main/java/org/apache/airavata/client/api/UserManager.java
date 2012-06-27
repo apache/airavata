@@ -22,7 +22,10 @@
 package org.apache.airavata.client.api;
 
 public interface UserManager {
-
-		public String getAiravataUser();
+    /**
+     *
+     * @return
+     */
+    public String getAiravataUser();
 	
 }

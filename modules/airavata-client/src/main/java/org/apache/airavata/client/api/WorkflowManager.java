@@ -28,41 +28,154 @@ import org.apache.airavata.workflow.model.wf.Workflow;
 public interface WorkflowManager {
 
 	//privilledged API
+
+    /**
+     *
+     * @param workflowAsString
+     * @param owner
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public boolean saveWorkflow(String workflowAsString, String owner) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param workflow
+     * @param owner
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public boolean saveWorkflow(Workflow workflow, String owner) throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @param owner
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public List<Workflow> getWorkflows(String owner) throws AiravataAPIInvocationException;
-    
+
+    /**
+     *
+     * @param owner
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public List<String> getWorkflowTemplateIds(String owner) throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @param workflowName
+     * @param owner
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public Workflow getWorkflow(String workflowName, String owner) throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @param workflowName
+     * @param owner
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public String getWorkflowAsString(String workflowName, String owner) throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @param workflowName
+     * @param owner
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public boolean deleteWorkflow(String workflowName, String owner) throws AiravataAPIInvocationException;
     
     //user api
+
+    /**
+     *
+     * @param workflowAsString
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public boolean saveWorkflow(String workflowAsString) throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @param workflowAsString
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public boolean saveWorkflowAsPublic(String workflowAsString) throws AiravataAPIInvocationException;
-	
+
+    /**
+     *
+     * @param workflow
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public boolean saveWorkflow(Workflow workflow) throws AiravataAPIInvocationException;
-    
+
+    /**
+     *
+     * @param workflow
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public boolean saveWorkflowAsPublic(Workflow workflow) throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public List<Workflow> getWorkflows() throws AiravataAPIInvocationException;
-    
+
+    /**
+     *
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public List<String> getWorkflowTemplateIds() throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @param workflowName
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public Workflow getWorkflow(String workflowName) throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @param workflowName
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public String getWorkflowAsString(String workflowName) throws AiravataAPIInvocationException;
 
+    /**
+     *
+     * @param workflowName
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public boolean deleteWorkflow(String workflowName) throws AiravataAPIInvocationException;
-    
+
+    /**
+     *
+     * @param workflowAsString
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public Workflow getWorkflowFromString(String workflowAsString) throws AiravataAPIInvocationException;
-    
+
+    /**
+     *
+     * @param workflow
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public String getWorkflowAsString(Workflow workflow) throws AiravataAPIInvocationException;
 
 }
