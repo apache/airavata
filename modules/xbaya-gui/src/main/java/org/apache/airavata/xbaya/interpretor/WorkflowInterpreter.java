@@ -602,7 +602,10 @@ public class WorkflowInterpreter {
 			DoWhileHandler doWhileHandler = new DoWhileHandler((DoWhileNode) node, this.invokerMap, getWaitingNodesDynamically(),
 					getFinishedNodesDynamically(), this, threadExecutor);
 			threadExecutor.submit(doWhileHandler);
-		} else if (component instanceof InstanceComponent) {
+		}else if (component instanceof EndDoWhileComponent) {
+		// Component is handled in DoWhileHandler after eval condition
+		}
+		else if (component instanceof InstanceComponent) {
 			if (AmazonCredential.getInstance().getAwsAccessKeyId().isEmpty() || AmazonCredential.getInstance().getAwsSecretAccessKey().isEmpty()) {
 				throw new WorkFlowInterpreterException("Please set Amazon Credential before using EC2 Instance Component");
 			}
@@ -1466,8 +1469,12 @@ public class WorkflowInterpreter {
 		ArrayList<Node> finishedNodes = InterpreterUtil.getFinishedNodesDynamically(this.getGraph());
 		for (Node node : waiting) {
 			Component component = node.getComponent();
-			if (component instanceof WSComponent || component instanceof DynamicComponent || component instanceof SubWorkflowComponent
-					|| component instanceof ForEachComponent || component instanceof EndForEachComponent || component instanceof IfComponent
+			if (component instanceof WSComponent
+					|| component instanceof DynamicComponent
+					|| component instanceof SubWorkflowComponent
+					|| component instanceof ForEachComponent
+					|| component instanceof EndForEachComponent
+					|| component instanceof IfComponent
 					|| component instanceof InstanceComponent) {
 
 				/*
@@ -1535,9 +1542,12 @@ public class WorkflowInterpreter {
 					list.add(node);
 				}
 
-			} else if (InputComponent.NAME.equals(component.getName()) || DifferedInputComponent.NAME.equals(component.getName())
-					|| S3InputComponent.NAME.equals(component.getName()) || OutputComponent.NAME.equals(component.getName())
-					|| MemoComponent.NAME.equals(component.getName()) || component instanceof EndDoWhileComponent) {
+			} else if (InputComponent.NAME.equals(component.getName())
+					|| DifferedInputComponent.NAME.equals(component.getName())
+					|| S3InputComponent.NAME.equals(component.getName())
+					|| OutputComponent.NAME.equals(component.getName())
+					|| MemoComponent.NAME.equals(component.getName())
+					|| component instanceof EndDoWhileComponent) {
 				// no op
 			} else if (component instanceof DoWhileComponent) {
 				ControlPort control = node.getControlInPort();

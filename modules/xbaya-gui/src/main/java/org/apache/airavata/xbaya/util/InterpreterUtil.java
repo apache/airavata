@@ -37,6 +37,8 @@ import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.workflow.model.graph.system.ConstantNode;
 import org.apache.airavata.workflow.model.graph.system.DifferedInputNode;
+import org.apache.airavata.workflow.model.graph.system.DoWhileNode;
+import org.apache.airavata.workflow.model.graph.system.EndDoWhileNode;
 import org.apache.airavata.workflow.model.graph.system.EndForEachNode;
 import org.apache.airavata.workflow.model.graph.system.EndifNode;
 import org.apache.airavata.workflow.model.graph.system.ForEachNode;
@@ -53,6 +55,7 @@ import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler;
+import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.impl.XmlElementWithViewsImpl;
 
@@ -153,7 +156,7 @@ public class InterpreterUtil {
 			outputVal = ((ConstantNode) fromNode).getValue();
 		} else if (fromNode instanceof DifferedInputNode && ((DifferedInputNode) fromNode).isConfigured()) {
 			outputVal = ((DifferedInputNode) fromNode).getDefaultValue();
-		} else if (fromNode instanceof EndifNode) {
+		} else if (fromNode instanceof EndifNode || fromNode instanceof DoWhileNode  || fromNode instanceof EndDoWhileNode) {
 			Invoker fromInvoker = invokerMap.get(fromNode);
 			outputVal = fromInvoker.getOutput(inputPort.getFromPort().getID());
 		} else if (fromNode instanceof InstanceNode) {
@@ -316,7 +319,7 @@ public class InterpreterUtil {
 	}
 
 	public static ArrayList<Node> getWaitingNodesDynamically(WSGraph graph) {
-		return getNodesWithBodyColor(NodeGUI.DEFAULT_BODY_COLOR, graph);
+		return getNodesWithBodyColor(NodeState.DEFAULT.color, graph);
 	}
 
 	public static ArrayList<Node> getNodesWithBodyColor(Color color, WSGraph graph) {
@@ -339,7 +342,7 @@ public class InterpreterUtil {
 	}
 
 	public static int getWaitingNodeCountDynamically(WSGraph graph) {
-		return getNodeCountWithBodyColor(NodeGUI.DEFAULT_BODY_COLOR, graph);
+		return getNodeCountWithBodyColor(NodeState.DEFAULT.color, graph);
 	}
 
 	public static int getNodeCountWithBodyColor(Color color, WSGraph graph) {
