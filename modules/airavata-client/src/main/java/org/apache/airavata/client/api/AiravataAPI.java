@@ -274,7 +274,17 @@ public interface AiravataAPI {
      * @return
      */
 	public ExecutionManager getExecutionManager();
-	
+
+    /**
+     *
+     * @return
+     */
 	public String getCurrentUser();
 
+    /**
+     *
+     * @param templateID
+     * @return
+     */
+    public String[] getWorkflowServiceNodeIDs(String templateID);
 }

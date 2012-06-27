@@ -827,4 +827,21 @@ public class AiravataClient implements AiravataAPI {
 		return currentUser;
 	}
 
+    public List<String> getWorkflowServiceIDs(String templateID){
+            Property workflowAsString = null;
+            try {
+                workflowAsString = this.getWorkflowAsString(templateID);
+                Workflow workflow = new Workflow(workflowAsString.getString());
+                return workflow.getWorkflowServiceNodeIDs();
+            } catch (RegistryException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (RepositoryException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (GraphException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (ComponentException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+
 }
