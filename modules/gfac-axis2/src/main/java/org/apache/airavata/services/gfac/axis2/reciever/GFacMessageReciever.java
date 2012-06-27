@@ -160,10 +160,6 @@ public class GFacMessageReciever implements MessageReceiver {
         String brokerURL = getEventBrokerURL(messageContext);
         String topic = getTopic(messageContext);
         OMElement outputElement = null;
-        SecurityContextDocument parse =
-                SecurityContextDocument.Factory.parse(getHeader(messageContext).getFirstChildWithName
-                        (new QName("http://schemas.airavata.apache.org/workflow-execution-context", "security-context")).toStringWithConsume());
-        SecurityContextDocument.SecurityContext.GridMyproxyRepository gridMyproxyRepository = parse.getSecurityContext().getGridMyproxyRepository();
         OMElement header = getHeader(messageContext);
         ContextHeaderDocument document = null;
         try {
