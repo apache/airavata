@@ -33,6 +33,7 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -499,6 +500,16 @@ public class AiravataClient {
 		return workflowList;
 	}
 
+	/**
+	 * Execute the given workflow template with the given inputs and return the topic id 
+	 * @param workflowTemplateId
+	 * @param inputs
+	 * @return
+	 */
+	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs) throws Exception{
+		return runWorkflow(workflowTemplateId,inputs,getRegistry().getUsername(),null,workflowTemplateId+"_"+Calendar.getInstance().getTime().toString());
+	}
+	
 	/**
 	 * Execute the given workflow template with the given inputs and return the topic id 
 	 * @param workflowTemplateId
