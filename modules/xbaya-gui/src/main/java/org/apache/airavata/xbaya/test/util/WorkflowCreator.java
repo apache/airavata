@@ -28,6 +28,8 @@ import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.registry.LocalComponentRegistry;
 import org.apache.airavata.workflow.model.component.system.ConstantComponent;
+import org.apache.airavata.workflow.model.component.system.DoWhileComponent;
+import org.apache.airavata.workflow.model.component.system.EndDoWhileComponent;
 import org.apache.airavata.workflow.model.component.system.EndForEachComponent;
 import org.apache.airavata.workflow.model.component.system.EndifComponent;
 import org.apache.airavata.workflow.model.component.system.ForEachComponent;
@@ -39,6 +41,7 @@ import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.system.ConstantNode;
+import org.apache.airavata.workflow.model.graph.system.DoWhileNode;
 import org.apache.airavata.workflow.model.graph.system.IfNode;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.system.OutputNode;
@@ -77,6 +80,10 @@ public class WorkflowCreator {
 
     private ReceiveComponent receiveComponent;
 
+    private DoWhileComponent doWhileComponent;
+
+    private EndDoWhileComponent endDoWhileComponent;
+
     /**
      * Constructs a WorkflowCreator.
      */
@@ -90,6 +97,8 @@ public class WorkflowCreator {
         this.ifComponent = new IfComponent();
         this.endifComponent = new EndifComponent();
         this.receiveComponent = new ReceiveComponent();
+        this.doWhileComponent = new DoWhileComponent();
+        this.endDoWhileComponent = new EndDoWhileComponent();
     }
 
     /**
@@ -663,6 +672,67 @@ public class WorkflowCreator {
         amount.setDefaultValue("500");
         constYes.setValue("Yes");
         ifNode.setXPath("$0 > 1000");
+        output.setConfiguredName("accept");
+        output.setConfigured(true);
+
+        return workflow;
+    }
+    /**
+     * Create a dowhile workflow
+     * @return Workflow created.
+     * @throws GraphException
+     * @throws ComponentException
+     * @throws ComponentRegistryException
+     */
+    public Workflow createDoWhileWorkflow() throws GraphException, ComponentException, ComponentRegistryException {
+        Workflow workflow = new Workflow();
+
+        // Name, description
+        workflow.setName("Do While");
+        workflow.setDescription("Do While");
+
+        Graph graph = workflow.getGraph();
+
+        // amount
+        InputNode amount = (InputNode) workflow.addNode(this.inputComponent);
+        amount.setPosition(new Point(10, 10));
+
+        // if
+        DoWhileNode doWhileNode = (DoWhileNode) workflow.addNode(this.doWhileComponent);
+        doWhileNode.setPosition(new Point(200, 100));
+
+        // Approver nodes
+        Component approverComponent = this.componentRegistry.getComponent(Approver.WSDL_PATH);
+
+        Node approver = workflow.addNode(approverComponent);
+        approver.setPosition(new Point(350, 10));
+
+        // const
+        ConstantNode constYes = (ConstantNode) workflow.addNode(this.constantComponent);
+        constYes.setPosition(new Point(350, 200));
+
+        // endif
+        Node endDoWhile = workflow.addNode(this.endDoWhileComponent);
+        endDoWhile.setPosition(new Point(550, 100));
+
+        // Output
+        OutputNode output = (OutputNode) workflow.addNode(this.outputComponent);
+        output.setPosition(new Point(700, 100));
+
+        // Connect ports
+        graph.addEdge(amount.getOutputPort(0), approver.getInputPort(0));
+        graph.addEdge(amount.getOutputPort(0), doWhileNode.getInputPort(0));
+        graph.addEdge(doWhileNode.getControlOutPorts().get(0), approver.getControlInPort());
+        graph.addEdge(doWhileNode.getControlOutPorts().get(1), constYes.getControlInPort());
+        graph.addEdge(approver.getOutputPort(0), endDoWhile.getInputPort(0));
+        graph.addEdge(constYes.getOutputPort(0), endDoWhile.getInputPort(1));
+        graph.addEdge(endDoWhile.getOutputPort(0), output.getInputPort(0));
+
+        // Set the default values
+        // This needs to be after connection.
+        amount.setDefaultValue("0");
+        constYes.setValue("Yes");
+        doWhileNode.setXpath("$1 = 1");
         output.setConfiguredName("accept");
         output.setConfigured(true);
 
