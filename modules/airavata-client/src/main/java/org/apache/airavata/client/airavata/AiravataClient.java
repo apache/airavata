@@ -827,11 +827,8 @@ public class AiravataClient implements AiravataAPI {
 		return currentUser;
 	}
 
-    public String[] getWorkflowServiceNodeIDs(String templateID) {
-        return new String[0];  //To change body of implemented methods use File | Settings | File Templates.
-    }
 
-    public List<String> getWorkflowServiceIDs(String templateID){
+    public List<String> getWorkflowServiceNodeIDs(String templateID){
             Property workflowAsString = null;
             try {
                 workflowAsString = this.getWorkflowAsString(templateID);
