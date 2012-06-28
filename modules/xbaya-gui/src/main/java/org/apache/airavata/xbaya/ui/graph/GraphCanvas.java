@@ -173,11 +173,13 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 
 	private String generateNewWorkflowName() {
 		String baseName="Workflow";
-        List<GraphCanvas> graphCanvases = this.engine.getGUI().getGraphCanvases();
         List<String> existingNames=new ArrayList<String>();
-        for (GraphCanvas graphCanvas : graphCanvases) {
-        	existingNames.add(graphCanvas.getWorkflow().getName());
-		}
+        if (this.engine.getGUI() != null) {
+            List<GraphCanvas> graphCanvases = this.engine.getGUI().getGraphCanvases();
+            for (GraphCanvas graphCanvas : graphCanvases) {
+                existingNames.add(graphCanvas.getWorkflow().getName());
+            }
+        }
         int i=1;
         String newName=baseName+i;
         while(existingNames.contains(newName)){
