@@ -22,7 +22,6 @@
 package org.apache.airavata.xbaya.ui.dialogs.descriptors;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -93,6 +92,8 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 	private String originalHost; 
 	private String originalService;
     private ServiceDescription serviceDescription=null;
+	private JButton btnTmpDirBrowse;
+	private JButton btnExecBrowse;
 
     /**
      * Launch the application.
@@ -175,9 +176,9 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     
     private void iniGUI() {
         if (isNewDescritor()) {
-			setTitle("New Deployment Description");
+			setTitle("Application Description");
 		}else{
-			setTitle("Update Deployment Description: "+getOriginalDeploymentDescription().getType().getApplicationName().getStringValue());
+			setTitle("Update Application Description: "+getOriginalDeploymentDescription().getType().getApplicationName().getStringValue());
 		}
 		setBounds(100, 100, 600, 620);
         setModal(true);
@@ -248,8 +249,8 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             	}
 			});
             txtExecPath.setColumns(10);
-            JButton execBrowse=new JButton(MenuIcons.OPEN_ICON);
-            execBrowse.addActionListener(new ActionListener(){
+            btnExecBrowse=new JButton(MenuIcons.OPEN_ICON);
+            btnExecBrowse.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					JFileChooser c = new JFileChooser();
@@ -261,13 +262,14 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 				}
             });
             execPath.add(txtExecPath.getSwingComponent());
-            execPath.add(execBrowse);
-            JButton btnIOParameters = new JButton("Input/Output Parameters...");
+            execPath.add(btnExecBrowse);
+            JButton btnIOParameters = new JButton("IO Parameters...");
             btnIOParameters.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent event) {
 					try {
                         ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry(),getServiceDescription()==null,getServiceDescription(),false,getApplicationName());
+                        serviceDescriptionDialog.setLocationRelativeTo(getContentPane());
                         serviceDescriptionDialog.open();
                         if (serviceDescriptionDialog.isServiceCreated()) {
                         	setServiceDescription(serviceDescriptionDialog.getServiceDescription());
@@ -292,7 +294,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             });
             txtAppName.setColumns(10);
             XBayaLabel lblApplicationName = new XBayaLabel("Application name",txtAppName);
-            XBayaLabel lblExecutablePath = new XBayaLabel("Executable path",txtExecPath);
+            JLabel lblExecutablePath = new JLabel("Executable path");
         	JPanel tmpDirPath=new JPanel();
 
             txtTempDir = new XBayaTextField();
@@ -303,8 +305,8 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                 }
             });
             txtTempDir.setColumns(10);
-            JButton tmpDirBrowse=new JButton(MenuIcons.OPEN_DIR_ICON);
-            tmpDirBrowse.addActionListener(new ActionListener(){
+            btnTmpDirBrowse=new JButton(MenuIcons.OPEN_DIR_ICON);
+            btnTmpDirBrowse.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					JFileChooser c = new JFileChooser();
@@ -318,13 +320,13 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             });
             JTextField component = txtTempDir.getSwingComponent();
 			tmpDirPath.add(component);
-            tmpDirPath.add(tmpDirBrowse);
+            tmpDirPath.add(btnTmpDirBrowse);
 //            tmpDirPath.layout(1, 2, 0, 0);
             
             setupLayoutForBrowse(tmpDirPath, component);
 
 
-            XBayaLabel lblTemporaryDirectory = new XBayaLabel("Temporary directory",txtTempDir);
+            JLabel lblTemporaryDirectory = new JLabel("Temporary directory");
 
             JButton btnAdvance = new JButton("Advanced options...");
             btnAdvance.addActionListener(new ActionListener() {
@@ -344,13 +346,14 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             cmbHostName = new JComboBox();
             cmbHostName.addActionListener(this);
 
-            XBayaLabel lblHostName = new XBayaLabel("Bind the application to Host",cmbHostName);
-            lblHostName.getSwingComponent().setFont(new Font("Tahoma", Font.ITALIC, 11));
+            XBayaLabel lblHostName = new XBayaLabel("Application host",cmbHostName);
+//            lblHostName.getSwingComponent().setFont(new Font("Tahoma", Font.ITALIC, 11));
             XBayaLinkButton lnkNewHost = new XBayaLinkButton("New button");
             lnkNewHost.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     try {
                         HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine);
+                        hostDescriptionDialog.setLocationRelativeTo(getContentPane());
                         hostDescriptionDialog.open();
 
                         if (hostDescriptionDialog.isHostCreated()) {
@@ -431,7 +434,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             
             SwingUtil.layoutToGrid(infoPanel0.getSwingComponent(), 1, 2, SwingUtil.WEIGHT_NONE, 1);
 
-            SwingUtil.layoutToGrid(infoPanel1.getSwingComponent(), 2, 2, SwingUtil.WEIGHT_NONE, 1);
+            SwingUtil.layoutToGrid(infoPanel1.getSwingComponent(), 4, 1, SwingUtil.WEIGHT_NONE, 0);
 //            SwingUtil.layoutToGrid(infoPanel2.getSwingComponent(), 1, 1, SwingUtil.WEIGHT_NONE, 0);
             SwingUtil.layoutToGrid(infoPanel3.getSwingComponent(), 2, 2, SwingUtil.WEIGHT_NONE, 1);
 
@@ -440,8 +443,10 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             infoPanel.add(new JSeparator());
             infoPanel.add(infoPanel1);
             infoPanel.add(new JSeparator());
-//            infoPanel.add(infoPanel2);
-            infoPanel.add(infoPanel3);
+//          infoPanel.add(infoPanel2);
+			infoPanel.add(infoPanel3);
+			
+
             infoPanel.add(new JSeparator());
             infoPanel.add(infoPanel4);
             
@@ -463,6 +468,9 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         	loadData();
         }
         pack();
+        if (getSize().getWidth()<500){
+        	setSize(500, getSize().height);
+        }
     }
 
 	private void setupLayoutForBrowse(JPanel tmpDirPath, JTextField component) {
@@ -662,7 +670,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         }
 
         if (getServiceName() == null || getServiceName().trim().equals("")) {
-            throw new Exception("Click on Input/Output Parameters...  to define parameters for the application");
+            throw new Exception("Click on IO Parameters...  to define parameters for the application");
         }
 
         if (getHostName() == null || getHostName().trim().equals("")) {
@@ -697,14 +705,22 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 					getShellApplicationDescription().getType().changeType(
 							ApplicationDeploymentDescriptionType.type);
 				}
-				btnHostAdvanceOptions
-						.setVisible(hostDescription.getType() instanceof GlobusHostType);
+				btnHostAdvanceOptions.setVisible(hostDescription.getType() instanceof GlobusHostType);
+				String hostAddress = hostDescription.getType().getHostAddress();
+				boolean isLocal = isLocalAddress(hostAddress);
+				btnExecBrowse.setVisible(isLocal);
+				btnTmpDirBrowse.setVisible(isLocal);
+				
 			} catch (RegistryException e) {
 				//not there - ouch
 			}
 		}
 		updateDialogStatus();
     }
+
+	private boolean isLocalAddress(String hostAddress) {
+		return hostAddress.equalsIgnoreCase("localhost") || hostAddress.equalsIgnoreCase("127.0.0.1");
+	}
 
     private void updateServiceName() {
         if (getServiceDescription() == null) {

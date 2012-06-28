@@ -189,6 +189,7 @@ public class DescriptorEditorDialog extends JDialog {
 	    	case HOST:
 	    		HostDescription h = (HostDescription) getSelected();
 	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine,false,h);
+	    		hostDescriptionDialog.setLocationRelativeTo(this.engine.getGUI().getFrame());
 	    		hostDescriptionDialog.open();
 	    		if (hostDescriptionDialog.isHostCreated()) {
 					loadDescriptors();
@@ -206,6 +207,7 @@ public class DescriptorEditorDialog extends JDialog {
 	    		ApplicationDeploymentDescription a = (ApplicationDeploymentDescription) getSelected();
 	    		String[] s = dlist.get(a).split("\\$");
 	    		ApplicationDescriptionDialog aDescriptionDialog = new ApplicationDescriptionDialog(engine,false,a,s[1],s[0]);
+	    		aDescriptionDialog.setLocationRelativeTo(this.engine.getGUI().getFrame());
 	    		aDescriptionDialog.open();
 			if (aDescriptionDialog.isApplicationDescCreated()) {
 				loadDescriptors();
@@ -232,6 +234,7 @@ public class DescriptorEditorDialog extends JDialog {
 	    		break;
 	    	case APPLICATION:
 	    		ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(engine);
+	    		applicationDescriptionDialog.setLocationRelativeTo(this.engine.getGUI().getFrame());
 	    		applicationDescriptionDialog.open();
 	    		if (applicationDescriptionDialog.isApplicationDescCreated()){
 	    			loadDescriptors();
