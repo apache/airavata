@@ -23,6 +23,8 @@ package org.apache.airavata.xbaya.ui.dialogs.descriptors;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -42,7 +44,10 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.JTextField;
+import javax.swing.ProgressMonitor;
 import javax.swing.SwingConstants;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
@@ -55,6 +60,7 @@ import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.menues.MenuIcons;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLinkButton;
@@ -78,7 +84,6 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
     private String serviceName;
     private String hostName;
-    private JComboBox cmbServiceName;
     private JComboBox cmbHostName;
 
     private XBayaEngine engine;
@@ -87,6 +92,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 	private ApplicationDeploymentDescription originalDeploymentDescription;
 	private String originalHost; 
 	private String originalService;
+    private ServiceDescription serviceDescription=null;
 
     /**
      * Launch the application.
@@ -112,6 +118,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     	setOriginalDeploymentDescription(originalDeploymentDescription);
     	setOriginalHost(originalHost);
     	setOriginalService(originalService);
+        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
@@ -139,6 +146,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 							defaultName = baseName + (++i);
 						}
 					} catch (Exception e) {
+						e.printStackTrace();
 					}
 					txtAppName.setText(defaultName);
 					setApplicationName(txtAppName.getText());
@@ -146,8 +154,14 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             }
         });
         this.engine=engine;
-        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
         iniGUI();
+        if (originalService!=null){
+    		try {
+				setServiceDescription(getRegistry().getServiceDescription(originalService));
+			} catch (RegistryException e) {
+				e.printStackTrace();
+			}
+    	}
     }
 
     public void open() {
@@ -158,7 +172,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     protected ApplicationDescriptionDialog getDialog() {
         return this;
     }
-
+    
     private void iniGUI() {
         if (isNewDescritor()) {
 			setTitle("New Deployment Description");
@@ -218,7 +232,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         {
 //            JPanel panel = new JPanel();
 //            getContentPane().add(panel, BorderLayout.CENTER);
-        	GridPanel execPath=new GridPanel();
+        	JPanel execPath=new JPanel();
             txtExecPath = new XBayaTextField();
             txtExecPath.getTextField().addKeyListener(new KeyAdapter() {
                 @Override
@@ -234,7 +248,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             	}
 			});
             txtExecPath.setColumns(10);
-            JButton execBrowse=new JButton("Browse...");
+            JButton execBrowse=new JButton(MenuIcons.OPEN_ICON);
             execBrowse.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -246,9 +260,29 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 					}
 				}
             });
-            execPath.add(txtExecPath);
+            execPath.add(txtExecPath.getSwingComponent());
             execPath.add(execBrowse);
-            execPath.layout(1, 2, 0, 0);
+            JButton btnIOParameters = new JButton("Input/Output Parameters...");
+            btnIOParameters.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent event) {
+					try {
+                        ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry(),getServiceDescription()==null,getServiceDescription(),false,getApplicationName());
+                        serviceDescriptionDialog.open();
+                        if (serviceDescriptionDialog.isServiceCreated()) {
+                        	setServiceDescription(serviceDescriptionDialog.getServiceDescription());
+                        }
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                        JOptionPane.showMessageDialog(null, e1.getLocalizedMessage());
+                    }
+				}
+            });
+            execPath.add(new JLabel("   "));
+            execPath.add(btnIOParameters);
+            
+            setupLayoutForBrowse(execPath,txtExecPath.getSwingComponent());
+
             txtAppName = new XBayaTextField();
             txtAppName.getTextField().addKeyListener(new KeyAdapter() {
                 @Override
@@ -259,7 +293,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             txtAppName.setColumns(10);
             XBayaLabel lblApplicationName = new XBayaLabel("Application name",txtAppName);
             XBayaLabel lblExecutablePath = new XBayaLabel("Executable path",txtExecPath);
-        	GridPanel tmpDirPath=new GridPanel();
+        	JPanel tmpDirPath=new JPanel();
 
             txtTempDir = new XBayaTextField();
             txtTempDir.getTextField().addKeyListener(new KeyAdapter() {
@@ -269,7 +303,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                 }
             });
             txtTempDir.setColumns(10);
-            JButton tmpDirBrowse=new JButton("Browse...");
+            JButton tmpDirBrowse=new JButton(MenuIcons.OPEN_DIR_ICON);
             tmpDirBrowse.addActionListener(new ActionListener(){
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
@@ -282,9 +316,13 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 					}
 				}
             });
-            tmpDirPath.add(txtTempDir);
+            JTextField component = txtTempDir.getSwingComponent();
+			tmpDirPath.add(component);
             tmpDirPath.add(tmpDirBrowse);
-            tmpDirPath.layout(1, 2, 0, 0);
+//            tmpDirPath.layout(1, 2, 0, 0);
+            
+            setupLayoutForBrowse(tmpDirPath, component);
+
 
             XBayaLabel lblTemporaryDirectory = new XBayaLabel("Temporary directory",txtTempDir);
 
@@ -302,33 +340,12 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                 }
             });
 
-            XBayaLinkButton lnkNewService = new XBayaLinkButton("New button");
-            lnkNewService.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent arg0) {
-                    try {
-                        ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry());
-                        serviceDescriptionDialog.open();
-                        if (serviceDescriptionDialog.isServiceCreated()) {
-                            loadServiceDescriptions();
-                            cmbServiceName.setSelectedItem(serviceDescriptionDialog.getServiceName());
-                        }
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                        JOptionPane.showMessageDialog(null, e1.getLocalizedMessage());
-                    }
-                }
-            });
-            lnkNewService.setText("Create new service...");
-            lnkNewService.setHorizontalAlignment(SwingConstants.TRAILING);
-
-            cmbServiceName = new JComboBox();
-            cmbServiceName.addActionListener(this);
 //            cmbServiceName.setRenderer(new DefaultListCellRenderer());
             cmbHostName = new JComboBox();
             cmbHostName.addActionListener(this);
 
-            XBayaLabel lblHostName = new XBayaLabel("Host",cmbHostName);
-
+            XBayaLabel lblHostName = new XBayaLabel("Bind the application to Host",cmbHostName);
+            lblHostName.getSwingComponent().setFont(new Font("Tahoma", Font.ITALIC, 11));
             XBayaLinkButton lnkNewHost = new XBayaLinkButton("New button");
             lnkNewHost.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -337,8 +354,16 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                         hostDescriptionDialog.open();
 
                         if (hostDescriptionDialog.isHostCreated()) {
-                            loadHostDescriptions();
-                            cmbHostName.setSelectedItem(hostDescriptionDialog.getHostLocation());
+                        	ProgressMonitor progressMonitor = new ProgressMonitor(getContentPane(), "Host Descriptions", "Refreshing host list..", 0, 200);
+                        	int progress=1;
+                        	progressMonitor.setProgress(progress++);
+                        	while(cmbHostName.getSelectedIndex()==-1 || !cmbHostName.getSelectedItem().toString().equals(hostDescriptionDialog.getHostLocation())){
+	                            loadHostDescriptions();
+	                            cmbHostName.setSelectedItem(hostDescriptionDialog.getHostLocation());
+	                            progressMonitor.setProgress(progress++);
+	                            Thread.sleep(50);
+                        	}
+                        	progressMonitor.setProgress(200);
                         }
                     } catch (Exception e1) {
                         e1.printStackTrace();
@@ -349,10 +374,8 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             lnkNewHost.setText("Create new host...");
             lnkNewHost.setHorizontalAlignment(SwingConstants.TRAILING);
 
-            XBayaLabel lblService = new XBayaLabel("Service",cmbServiceName);
-
-            JLabel lblBindThisDeployment = new JLabel("Bind this deployment description to:");
-            lblBindThisDeployment.setFont(new Font("Tahoma", Font.BOLD, 11));
+//            JLabel lblBindThisDeployment = new JLabel("Bind this deployment description to:");
+//            lblBindThisDeployment.setFont(new Font("Tahoma", Font.BOLD, 11));
 
             btnHostAdvanceOptions=new JButton("Gram Configuration...");
             btnHostAdvanceOptions.addActionListener(new ActionListener() {
@@ -367,7 +390,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
                     }
 				}
 			});
-            
+            btnHostAdvanceOptions.setVisible(false);
             GridPanel hostPanel=new GridPanel();
             hostPanel.add(cmbHostName);
             hostPanel.add(btnHostAdvanceOptions);
@@ -383,21 +406,19 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             
             infoPanel1.add(lblExecutablePath);
             infoPanel1.add(execPath);
+//            infoPanel1.add(new JLabel());
+//            infoPanel1.add(btnIOParameters);
             infoPanel1.add(lblTemporaryDirectory);
             infoPanel1.add(tmpDirPath);
 //            infoPanel1.add(new JLabel());
 //            infoPanel1.add(btnAdvance);
             
-            GridPanel infoPanel2 = new GridPanel();
+//            GridPanel infoPanel2 = new GridPanel();
 //            infoPanel2.add(new JSeparator());
-            infoPanel2.add(lblBindThisDeployment);
+//            infoPanel2.add(lblBindThisDeployment);
             
             GridPanel infoPanel3 = new GridPanel();
 
-            infoPanel3.add(lblService);
-            infoPanel3.add(cmbServiceName);
-            infoPanel3.add(new JLabel());
-            infoPanel3.add(lnkNewService);
             infoPanel3.add(lblHostName);
             infoPanel3.add(hostPanel);
             infoPanel3.add(new JLabel());
@@ -411,20 +432,20 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             SwingUtil.layoutToGrid(infoPanel0.getSwingComponent(), 1, 2, SwingUtil.WEIGHT_NONE, 1);
 
             SwingUtil.layoutToGrid(infoPanel1.getSwingComponent(), 2, 2, SwingUtil.WEIGHT_NONE, 1);
-            SwingUtil.layoutToGrid(infoPanel2.getSwingComponent(), 1, 1, SwingUtil.WEIGHT_NONE, 0);
-            SwingUtil.layoutToGrid(infoPanel3.getSwingComponent(), 4, 2, SwingUtil.WEIGHT_NONE, 1);
+//            SwingUtil.layoutToGrid(infoPanel2.getSwingComponent(), 1, 1, SwingUtil.WEIGHT_NONE, 0);
+            SwingUtil.layoutToGrid(infoPanel3.getSwingComponent(), 2, 2, SwingUtil.WEIGHT_NONE, 1);
 
             GridPanel infoPanel = new GridPanel();
             infoPanel.add(infoPanel0);
             infoPanel.add(new JSeparator());
             infoPanel.add(infoPanel1);
             infoPanel.add(new JSeparator());
-            infoPanel.add(infoPanel2);
+//            infoPanel.add(infoPanel2);
             infoPanel.add(infoPanel3);
             infoPanel.add(new JSeparator());
             infoPanel.add(infoPanel4);
             
-            SwingUtil.layoutToGrid(infoPanel.getSwingComponent(), 8, 1, SwingUtil.WEIGHT_NONE, 0);
+            SwingUtil.layoutToGrid(infoPanel.getSwingComponent(), 7, 1, SwingUtil.WEIGHT_NONE, 0);
             SwingUtil.layoutToGrid(buttonPane.getSwingComponent(), 1, buttonPane.getContentPanel().getComponentCount(),SwingUtil.WEIGHT_NONE,0);
             getContentPane().add(infoPanel.getSwingComponent());
             getContentPane().add(buttonPane.getSwingComponent());
@@ -433,7 +454,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
             SwingUtil.layoutToGrid(getContentPane(), 2, 1, -1, 0);
-            loadServiceDescriptions();
+//            loadServiceDescriptions();
             loadHostDescriptions();
         }
         setResizable(true);
@@ -441,21 +462,33 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         if (!isNewDescritor()){
         	loadData();
         }
+        pack();
     }
 
-    private void loadServiceDescriptions() {
-        cmbServiceName.removeAllItems();
-        setServiceName(null);
-        try {
-            List<ServiceDescription> serviceDescriptions = getRegistry().searchServiceDescription("");
-            for (ServiceDescription serviceDescription : serviceDescriptions) {
-                cmbServiceName.addItem(serviceDescription.getType().getName());
-            }
-        } catch (Exception e) {
-            setError(e.getLocalizedMessage());
-        }
-        updateServiceName();
-    }
+	private void setupLayoutForBrowse(JPanel tmpDirPath, JTextField component) {
+		GridBagLayout layout;
+		GridBagConstraints constraints;
+		layout = new GridBagLayout();
+		constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.BOTH;
+		constraints.weightx = 1;
+		layout.setConstraints(component, constraints);
+		tmpDirPath.setLayout(layout);
+	}
+
+//    private void loadServiceDescriptions() {
+//        cmbServiceName.removeAllItems();
+//        setServiceName(null);
+//        try {
+//            List<ServiceDescription> serviceDescriptions = getRegistry().searchServiceDescription("");
+//            for (ServiceDescription serviceDescription : serviceDescriptions) {
+//                cmbServiceName.addItem(serviceDescription.getType().getName());
+//            }
+//        } catch (Exception e) {
+//            setError(e.getLocalizedMessage());
+//        }
+//        updateServiceName();
+//    }
 
     private void loadData(){
     	txtAppName.setText(getOriginalDeploymentDescription().getType().getApplicationName().getStringValue());
@@ -467,8 +500,8 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
     	cmbHostName.setSelectedItem(getOriginalHost());
     	setHostName(cmbHostName.getSelectedItem().toString());
-    	cmbServiceName.setSelectedItem(getOriginalService());
-    	setServiceName(cmbServiceName.getSelectedItem().toString());
+//    	cmbServiceName.setSelectedItem(getOriginalService());
+    	setServiceName(null);
     	txtAppName.setEditable(isNewDescritor());
     }
     
@@ -629,7 +662,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         }
 
         if (getServiceName() == null || getServiceName().trim().equals("")) {
-            throw new Exception("Please select/create service to bind to this deployment description");
+            throw new Exception("Click on Input/Output Parameters...  to define parameters for the application");
         }
 
         if (getHostName() == null || getHostName().trim().equals("")) {
@@ -674,8 +707,10 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     }
 
     private void updateServiceName() {
-        if (cmbServiceName.getSelectedItem() != null) {
-            setServiceName(cmbServiceName.getSelectedItem().toString());
+        if (getServiceDescription() == null) {
+        	setServiceName(null);
+        }else{
+            setServiceName(getServiceDescription().getType().getName());
         }
     }
 
@@ -687,9 +722,9 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == cmbServiceName) {
-            updateServiceName();
-        }
+//        if (e.getSource() == cmbServiceName) {
+//            updateServiceName();
+//        }
         if (e.getSource() == cmbHostName) {
             updateHostName();
         }
@@ -743,6 +778,15 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
 	public void setOriginalHost(String originalHost) {
 		this.originalHost = originalHost;
+	}
+
+	public ServiceDescription getServiceDescription() {
+		return serviceDescription;
+	}
+
+	private void setServiceDescription(ServiceDescription serviceDescription) {
+		this.serviceDescription = serviceDescription;
+		updateServiceName();
 	}
 
 }

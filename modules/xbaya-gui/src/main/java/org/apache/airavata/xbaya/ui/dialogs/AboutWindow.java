@@ -95,7 +95,7 @@ public class AboutWindow {
         				"</style>";
         buttonPanel.setBorder(BorderFactory.createEtchedBorder());
         String imgLogoTag="";//"<img src=\""+SwingUtil.getImageURL("airavata-2.png").toString()+"\" class=\".centeredImage\" /><br>";
-        String imgHeadingTag="<div style=\"width:100%;margin-right:10px;margin-left:10px;margin-top:5px;\" ><img src=\""+SwingUtil.getImageURL("airavata-name.png").toString()+"\" class=\".centeredImage\" /></div><br>";
+        String imgHeadingTag="<div style=\"width:100%;margin-right:10px;margin-left:10px;margin-top:5px;\" ><img src=\""+SwingUtil.getImageURL("airavata-title-text.png").toString()+"\" class=\".centeredImage\" /></div><br>";
         String projectNameText = "";//"<h1>" + XBayaConstants.PROJECT_NAME + "</h1>";
 		String message = "<html>"+ styles +"<body align=\"center\">" + "<div style=\"background-color:white;width:100%;margin-bottom:0px;\">"+projectNameText + imgHeadingTag+ imgLogoTag +"</div><br><h2>" +XBayaConstants.APPLICATION_NAME + "</h2>" + "Version: "
 				+ XBayaVersion.VERSION + "<br>" + "<a href='" + XBayaConstants.WEB_URL.toString() + "'>" + XBayaConstants.WEB_URL.toString() + "</a>"

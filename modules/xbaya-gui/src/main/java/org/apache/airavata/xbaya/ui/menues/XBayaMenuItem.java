@@ -188,12 +188,14 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
         xbayaMenuItem.setMnemonic(KeyEvent.VK_X);
         JMenu newMenu = new JMenu("New");
 	        newMenu.add(newWorkflowTabItem);
-	        
 	        newMenu.addSeparator();
 	        
-	        newMenu.add(this.registerHostDesc);
-	        newMenu.add(this.registerServiceDesc);
 	        newMenu.add(this.registerApplicationDesc);
+	        newMenu.addSeparator();
+	        JMenu regAddSubMenuItem = new JMenu("Registry additions");
+	        newMenu.add(regAddSubMenuItem);
+	        regAddSubMenuItem.add(this.registerHostDesc);
+	        regAddSubMenuItem.add(this.registerServiceDesc);
 	        
         xbayaMenuItem.add(newMenu);
         xbayaMenuItem.add(this.openWorkflowItem);

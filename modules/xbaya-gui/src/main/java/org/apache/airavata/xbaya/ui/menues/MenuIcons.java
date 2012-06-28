@@ -27,6 +27,7 @@ import org.apache.airavata.common.utils.SwingUtil;
 
 public class MenuIcons {
 	public static final ImageIcon OPEN_ICON = SwingUtil.createImageIcon("menu/open1.png");
+	public static final ImageIcon OPEN_DIR_ICON = SwingUtil.createImageIcon("menu/open_dir.png");
     public static final ImageIcon SAVE_ICON = SwingUtil.createImageIcon("menu/save1.png");
     public static final ImageIcon NEW_ICON = SwingUtil.createImageIcon("menu/new2.png");
     

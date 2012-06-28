@@ -31,6 +31,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -44,10 +46,13 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -66,6 +71,7 @@ import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.ParameterType;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
+import org.apache.airavata.xbaya.ui.dialogs.descriptors.DescriptorListDialog.DescriptorType;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
@@ -89,7 +95,10 @@ public class ServiceDescriptionDialog extends JDialog {
     private boolean newDescription;
     private boolean ignoreTableChanges=false;
 	private JCheckBox chkForceFileStagingToWorkDir;
-
+	private boolean serviceDescriptionMode;
+	private String suggestedNamePrefix;
+	private String titlePrefix;
+	
     /**
      * Launch the application.
      */
@@ -107,19 +116,37 @@ public class ServiceDescriptionDialog extends JDialog {
     	this(registry,true,null);
     }
     
+    public ServiceDescriptionDialog(AiravataRegistry registry, boolean newDescription, ServiceDescription serviceDescription) {
+    	this(registry, newDescription, serviceDescription, true, null);
+    }
+    
     /**
      * Create the dialog.
      */
-    public ServiceDescriptionDialog(AiravataRegistry registry, boolean newDescription, ServiceDescription serviceDescription) {
+    public ServiceDescriptionDialog(AiravataRegistry registry, boolean newDescription, ServiceDescription serviceDescription, boolean serviceDescriptionMode, String suggestedNamePrefix) {
     	setNewDescription(newDescription);
     	this.setOrginalServiceDescription(serviceDescription);
+    	setServiceDescriptionMode(serviceDescriptionMode);
+    	setSuggestedNamePrefix(suggestedNamePrefix);
+    	if (isNewDescription()) {
+			setTitlePrefix(isServiceDescriptionMode()? "New Service Description":"Input/Output parameters for "+getSuggestedNamePrefix());
+		}else{
+			setTitlePrefix(isServiceDescriptionMode()? "Update Service Description: "+getOrginalServiceDescription().getType().getName():"Update Input/Output parameters for "+getSuggestedNamePrefix());
+		}
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
                 if (isNewDescription()) {
-					String baseName = "Service";
-					int i = 1;
-					String defaultName = baseName + i;
+					String baseName = isServiceDescriptionMode()? "Service":getSuggestedNamePrefix()+"_Service";
+					int i;
+					String defaultName;
+					if (isServiceDescriptionMode()) {
+						i = 1;
+						defaultName = baseName+i;
+					}else{
+						i = 0;
+						defaultName = baseName;
+					}
 					try {
 						while (getRegistry().getServiceDescription(defaultName) != null) {
 							defaultName = baseName + (++i);
@@ -146,11 +173,12 @@ public class ServiceDescriptionDialog extends JDialog {
     }
 
     private void initGUI() {
-        if (isNewDescription()) {
-			setTitle("New Service Description");
-		}else{
-			setTitle("Update Service Description: "+getOrginalServiceDescription().getType().getName());
-		}
+    	setTitle(getTitlePrefix());
+//        if (isNewDescription()) {
+//			setTitle("New Service Description");
+//		}else{
+//			setTitle("Update Service Description: "+getOrginalServiceDescription().getType().getName());
+//		}
 		setBounds(100, 100, 463, 459);
         setModal(true);
         setLocationRelativeTo(null);
@@ -167,9 +195,11 @@ public class ServiceDescriptionDialog extends JDialog {
             }
         });
         txtServiceName.setColumns(10);
-        lblServiceName = new XBayaLabel("Service name",txtServiceName);
-
-        JLabel lblInputParameters = new JLabel("Service Parameters");
+        lblServiceName = new XBayaLabel(isServiceDescriptionMode()? "Service name":"Bind parameters to service",txtServiceName);
+        if (!isServiceDescriptionMode()){
+        	lblServiceName.getSwingComponent().setFont(new Font("Tahoma", Font.ITALIC, 11));
+        }
+        JLabel lblInputParameters = new JLabel(isServiceDescriptionMode()? "Service Parameters":"Input/Output Parameters");
         lblInputParameters.setFont(new Font("Tahoma", Font.BOLD, 11));
 
         JScrollPane scrollPane = new JScrollPane();
@@ -238,7 +268,43 @@ public class ServiceDescriptionDialog extends JDialog {
             }
 
         });
-        chkForceFileStagingToWorkDir=new JCheckBox("Save URI content in work directory");
+        JLabel lblTableParameterNote=null;
+        if (!isServiceDescriptionMode()) {
+			final JPopupMenu popup = new JPopupMenu();
+			JMenuItem menuItem = new JMenuItem(
+					"Bind to parameters in existing service...");
+			menuItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					bindExistingServiceDescriptionAsParameters();
+				}
+
+			});
+			popup.add(menuItem);
+			tblParameters.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					showPopup(e);
+				}
+
+				public void mousePressed(MouseEvent e) {
+					showPopup(e);
+				}
+
+				public void mouseReleased(MouseEvent e) {
+					showPopup(e);
+				}
+
+				private void showPopup(MouseEvent e) {
+					if (e.isPopupTrigger()) {
+						popup.show(tblParameters, e.getX(), e.getY());
+					}
+				}
+			});
+			lblTableParameterNote = new JLabel("*Note: Right click on the table to bind an existing service");
+			lblTableParameterNote.setFont(new Font("Tahoma", Font.ITALIC, 11));
+		}
+		chkForceFileStagingToWorkDir=new JCheckBox("Save URI content in work directory");
         chkForceFileStagingToWorkDir.addActionListener(new ActionListener(){
 
 			@Override
@@ -313,19 +379,51 @@ public class ServiceDescriptionDialog extends JDialog {
         contentPanel.add(lblServiceName);
         contentPanel.add(txtServiceName);
         GridPanel parameterPanel=new GridPanel();
-        parameterPanel.add(lblInputParameters);
+        if (isServiceDescriptionMode()) {
+			parameterPanel.add(lblInputParameters);
+		}
+		if (lblTableParameterNote!=null) {
+			parameterPanel.add(lblTableParameterNote);
+		}
         parameterPanel.add(scrollPane);
-        parameterPanel.add(btnDeleteParameter);
+			//        if (isServiceDescriptionMode()){
+    	parameterPanel.add(btnDeleteParameter);
+//        }else{
+//            GridPanel parameterOptionPanel=new GridPanel();
+//        	JButton btnLoadExistingServiceData = new JButton("Bind to parameters in existing service description...");
+//        	btnLoadExistingServiceData.addActionListener(new ActionListener(){
+//				@Override
+//				public void actionPerformed(ActionEvent arg0) {
+//					bindExistingServiceDescriptionAsParameters();
+//				}
+//        	});
+//        	parameterOptionPanel.add(btnLoadExistingServiceData);
+//        	parameterOptionPanel.add(btnDeleteParameter);
+//        	parameterPanel.add(parameterOptionPanel);
+//        }
         
         SwingUtil.layoutToGrid(contentPanel.getSwingComponent(), 1, 2, SwingUtil.WEIGHT_NONE, 1);
-        SwingUtil.layoutToGrid(parameterPanel.getSwingComponent(), 3, 1, 1, 0);
+//        if (lblTableParameterNote==null){
+        	SwingUtil.layoutToGrid(parameterPanel.getSwingComponent(), 3, 1, 1, 0);
+//        }else{
+//        	SwingUtil.layoutToGrid(parameterPanel.getSwingComponent(), 4, 1, 2, 0);
+//        }
         GridPanel infoPanel = new GridPanel();
-        infoPanel.add(contentPanel);
-        infoPanel.add(parameterPanel);
+        if (isServiceDescriptionMode()) {
+			infoPanel.add(contentPanel);
+		}
+		infoPanel.add(parameterPanel);
         infoPanel.add(chkForceFileStagingToWorkDir);
+        if (!isServiceDescriptionMode()) {
+			infoPanel.add(contentPanel);
+		}
         infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
-        infoPanel.layout(3, 1, 1, 0);
-        getContentPane().add(infoPanel.getSwingComponent());
+        if (isServiceDescriptionMode()) {
+			infoPanel.layout(3, 1, 1, 0);
+		}else{
+			infoPanel.layout(3, 1, 0, 0);
+		}
+		getContentPane().add(infoPanel.getSwingComponent());
         getContentPane().add(buttonPane.getSwingComponent());
         buttonPane.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         SwingUtil.layoutToGrid(getContentPane(), 2, 1, 0, 0);
@@ -341,7 +439,7 @@ public class ServiceDescriptionDialog extends JDialog {
 		txtServiceName.setText(descType.getName());
 		setServiceName(txtServiceName.getText());
 
-		txtServiceName.setEditable(isNewDescription());
+		txtServiceName.setEditable(!isServiceDescriptionMode() || isNewDescription());
     	ignoreTableChanges=true;
     	while(defaultTableModel.getRowCount()>0){
     		defaultTableModel.removeRow(0);
@@ -578,6 +676,40 @@ public class ServiceDescriptionDialog extends JDialog {
 
 	public void setOrginalServiceDescription(ServiceDescription orginalServiceDescription) {
 		this.orginalServiceDescription = orginalServiceDescription;
+	}
+
+	public boolean isServiceDescriptionMode() {
+		return serviceDescriptionMode;
+	}
+
+	public void setServiceDescriptionMode(boolean serviceDescriptionMode) {
+		this.serviceDescriptionMode = serviceDescriptionMode;
+	}
+
+	public String getSuggestedNamePrefix() {
+		return suggestedNamePrefix;
+	}
+
+	public void setSuggestedNamePrefix(String suggestedNamePrefix) {
+		this.suggestedNamePrefix = suggestedNamePrefix;
+	}
+
+	public String getTitlePrefix() {
+		return titlePrefix;
+	}
+
+	public void setTitlePrefix(String titlePrefix) {
+		this.titlePrefix = titlePrefix;
+	}
+
+	private void bindExistingServiceDescriptionAsParameters() {
+		DescriptorListDialog descriptorListDialog = new DescriptorListDialog(getRegistry(),DescriptorType.SERVICE);
+		descriptorListDialog.open();
+		if (descriptorListDialog.isServiceSelected()){
+			setOrginalServiceDescription((ServiceDescription) descriptorListDialog.getSelected());
+			setNewDescription(false);
+			loadData();
+		}
 	}
 
 	private class StringArrayComboBoxEditor extends DefaultCellEditor {
