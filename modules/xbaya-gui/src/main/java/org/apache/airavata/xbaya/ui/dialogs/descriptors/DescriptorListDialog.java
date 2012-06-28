@@ -22,15 +22,14 @@
 package org.apache.airavata.xbaya.ui.dialogs.descriptors;
 
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
@@ -49,16 +48,16 @@ import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistry;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.registrybrowser.nodes.JCRBrowserIcons;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 
-public class DescriptorEditorDialog extends JDialog {
+public class DescriptorListDialog extends JDialog {
 
 	private static final long serialVersionUID = 478151437279682576L;
 
-	private XBayaEngine engine;
+	private XBayaGUI xbayaGUI;
 
     private XBayaDialog dialog;
 
@@ -68,10 +67,10 @@ public class DescriptorEditorDialog extends JDialog {
 
 	private Map<ApplicationDeploymentDescription,String> dlist;
 
-	private JButton editButton;
-
-	private AbstractButton removeButton;
+	private JButton okButton;
 	
+	private boolean serviceSelected=false;
+
 	public enum DescriptorType{
 		HOST,
 		SERVICE,
@@ -83,9 +82,8 @@ public class DescriptorEditorDialog extends JDialog {
     /**
      * @param engine XBaya workflow engine
      */
-    public DescriptorEditorDialog(XBayaEngine engine,DescriptorType descriptorType) {
-        this.engine = engine;
-        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
+    public DescriptorListDialog(AiravataRegistry registry, DescriptorType descriptorType) {
+        setRegistry(registry);
         this.descriptorType=descriptorType;
         initGUI();
         
@@ -94,12 +92,29 @@ public class DescriptorEditorDialog extends JDialog {
     /**
      * Displays the dialog.
      */
-    public void show() {
-        this.dialog.show();
+    public void open() {
+    	pack();
+    	setModal(true);
+        // Adjust the size if it's bigger than the screen.
+        Dimension size = getSize();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        final int inset = 100;
+        int width = size.width;
+        if (width > screenSize.width) {
+            width = screenSize.width - inset;
+        }
+        int height = size.height;
+        if (height > screenSize.height) {
+            height = screenSize.height - inset;
+        }
+        setSize(width, height);
+
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
-    public void hide() {
-        this.dialog.hide();
+    public void close() {
+        setVisible(false);
     }
 
     /**
@@ -109,60 +124,38 @@ public class DescriptorEditorDialog extends JDialog {
     	descriptorList= new JList(new DefaultListModel());
     	descriptorList.setCellRenderer(new DescriptorListCellRenderer(descriptorType));
     	JScrollPane pane = new JScrollPane(descriptorList);
-    	
-    	descriptorList.addMouseListener(new MouseAdapter(){
-    		@Override
-    		public void mouseClicked(MouseEvent e) {
-    			if (e.getClickCount()==2){
-    				editDescriptor();
-    			}
-    		}
-    	});
+
     	GridPanel infoPanel=new GridPanel();
         infoPanel.add(pane);
         infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         SwingUtil.layoutToGrid(infoPanel.getSwingComponent(), 1, 1, 0, 0);
 
-        JButton newButton = new JButton("New...");
-        newButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	newDescriptor();
-            }
-        });
         descriptorList.addListSelectionListener(new ListSelectionListener(){
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				boolean isSelected=descriptorList.getSelectedIndex()!=-1;
-				editButton.setEnabled(isSelected);
-				removeButton.setEnabled(isSelected);
+				okButton.setEnabled(isSelected);
 			}
         	
         });
-        editButton = new JButton("Edit...");
-        editButton.addActionListener(new ActionListener() {
+        okButton = new JButton("OK");
+        okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	editDescriptor();
+            	serviceSelected=true;
+            	close();
             }
 
         });
-        removeButton = new JButton("Remove");
-        removeButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-            	deleteDescriptor();
-            }
-        });
-        JButton closeButton = new JButton("Close");
+        JButton closeButton = new JButton("Cancel");
         closeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                hide();
+                close();
             }
         });
         
 
         GridPanel buttonPanel = new GridPanel();
-        buttonPanel.add(newButton);
-        buttonPanel.add(editButton);
-        buttonPanel.add(removeButton);
+        buttonPanel.add(okButton);
         buttonPanel.add(closeButton);
         buttonPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         String title=null; 
@@ -177,133 +170,23 @@ public class DescriptorEditorDialog extends JDialog {
         		title="Application Descriptions";
         		break;
         }
-		this.dialog = new XBayaDialog(this.engine.getGUI(), title, infoPanel, buttonPanel);
-        this.dialog.setDefaultButton(editButton);
-        editButton.setEnabled(false);
-        removeButton.setEnabled(false);
+        getContentPane().add(infoPanel.getSwingComponent());
+        getContentPane().add(buttonPanel.getSwingComponent());
+        SwingUtil.layoutToGrid(getContentPane(), 2, 1, 0, 0);
+        getRootPane().setDefaultButton(okButton);
+        okButton.setEnabled(false);
         loadDescriptors();
     }
     
-    private void editDescriptor() {
-    	switch (descriptorType){
-	    	case HOST:
-	    		HostDescription h = (HostDescription) getSelected();
-	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine,false,h);
-	    		hostDescriptionDialog.open();
-	    		if (hostDescriptionDialog.isHostCreated()) {
-					loadDescriptors();
-				}
-	    		break;
-	    	case SERVICE:
-	    		ServiceDescription d = (ServiceDescription) getSelected();
-	    		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry(),false,d);
-	    		serviceDescriptionDialog.open();
-	    		if (serviceDescriptionDialog.isServiceCreated()) {
-					loadDescriptors();
-				}
-	    		break;
-	    	case APPLICATION:
-	    		ApplicationDeploymentDescription a = (ApplicationDeploymentDescription) getSelected();
-	    		String[] s = dlist.get(a).split("\\$");
-	    		ApplicationDescriptionDialog aDescriptionDialog = new ApplicationDescriptionDialog(engine,false,a,s[1],s[0]);
-	    		aDescriptionDialog.open();
-			if (aDescriptionDialog.isApplicationDescCreated()) {
-				loadDescriptors();
-			}
-			break;
-    	}
-	}
-
-    private void newDescriptor() {
-    	switch (descriptorType){
-	    	case HOST:
-	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine);
-	    		hostDescriptionDialog.open();
-	    		if (hostDescriptionDialog.isHostCreated()){
-	    			loadDescriptors();
-	    		}
-	    		break;
-	    	case SERVICE:
-	    		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry());
-	    		serviceDescriptionDialog.open();
-	    		if (serviceDescriptionDialog.isServiceCreated()){
-	    			loadDescriptors();
-	    		}
-	    		break;
-	    	case APPLICATION:
-	    		ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(engine);
-	    		applicationDescriptionDialog.open();
-	    		if (applicationDescriptionDialog.isApplicationDescCreated()){
-	    			loadDescriptors();
-	    		}
-	    		break;
-    	}
-		
-	}
-    
-	private Object getSelected() {
+	public Object getSelected() {
 		return descriptorList.getModel().getElementAt(descriptorList.getSelectedIndex());
 	}
+
 	protected boolean askQuestion(String title, String question) {
         return JOptionPane.showConfirmDialog(null, question, title, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
-    private boolean deleteDescriptor(){
-    	String title=null;
-    	String question=null;
-    	switch (descriptorType){
-	    	case HOST:
-	    		HostDescription h = (HostDescription) getSelected();
-	    		title = "Host description";
-	    		question = "Are you sure that you want to remove the service description \""
-	                    + h.getType().getHostName() + "\"?";
-	    		break;
-	    	case SERVICE:
-	        	ServiceDescription d = (ServiceDescription) getSelected();
-	    		title = "Service description";
-	    		question = "Are you sure that you want to remove the service description \""
-	                    + d.getType().getName() + "\"?";
-	    		break;
-	    	case APPLICATION:
-	    		ApplicationDeploymentDescription a = (ApplicationDeploymentDescription) getSelected();
-	    		title = "Service description";
-	    		question = "Are you sure that you want to remove the service description \""
-	                    + a.getType().getApplicationName().getStringValue() + "\"?";
-	    		break;
-    	}
-    	
-        
-		if (askQuestion(title, question)) {
-            try {
-            	switch (descriptorType){
-	    	    	case HOST:
-	    	    		HostDescription h = (HostDescription) getSelected();
-	    	        	getRegistry().deleteHostDescription(h.getType().getHostName());
-	    	    		break;
-	    	    	case SERVICE:
-	    	        	ServiceDescription d = (ServiceDescription) getSelected();
-	    	        	getRegistry().deleteServiceDescription(d.getType().getName());
-	    	    		break;
-	    	    	case APPLICATION:
-	    	    		ApplicationDeploymentDescription a = (ApplicationDeploymentDescription) getSelected();
-	    	    		String[] s = dlist.get(a).split("\\$");
-	    	        	getRegistry().deleteDeploymentDescription(s[0], s[1], a.getType().getApplicationName().getStringValue());
-	    	    		break;
-            	}
-				loadDescriptors();
-			} catch (RegistryException e) {
-				this.engine.getGUI().getErrorWindow().error(e);
-			}
-        }
-        return true;
-    }
     
     private void loadDescriptors() {
-    	try {
-    		//allow the registry cache to update
-			Thread.sleep(500);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
     	((DefaultListModel)descriptorList.getModel()).removeAllElements();
     	try {
     		List<?> descriptors=null;
@@ -323,7 +206,7 @@ public class DescriptorEditorDialog extends JDialog {
 				((DefaultListModel)descriptorList.getModel()).addElement(d);
 			}
 		} catch (RegistryException e) {
-			engine.getGUI().getErrorWindow().error(e);
+			xbayaGUI.getErrorWindow().error(e);
 		}
 	}
     
@@ -364,4 +247,12 @@ public class DescriptorEditorDialog extends JDialog {
     public void setRegistry(AiravataRegistry registry) {
         this.registry = registry;
     }
+
+	public boolean isServiceSelected() {
+		return serviceSelected;
+	}
+
+	public void setServiceSelected(boolean serviceSelected) {
+		this.serviceSelected = serviceSelected;
+	}
 }

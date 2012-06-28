@@ -468,10 +468,19 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             String applicationName) throws RegistryException {
         Session session = null;
         List<ApplicationDeploymentDescription> result = new ArrayList<ApplicationDeploymentDescription>();
+        if (serviceName==null || hostName==null){
+        	return result;
+        }
         try {
             session = getSession();
             Node deploymentNode = getDeploymentNode(session);
+            if (!deploymentNode.hasNode(serviceName)){
+            	return result;
+            }
             Node serviceNode = deploymentNode.getNode(serviceName);
+            if (!serviceNode.hasNode(hostName)){
+            	return result;
+            }
             Node hostNode = serviceNode.getNode(hostName);
             List<Node> childNodes = getChildNodes(hostNode);
             for (Node app:childNodes) {
@@ -523,10 +532,19 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             throws RegistryException {
         Session session = null;
         List<ApplicationDeploymentDescription> result = new ArrayList<ApplicationDeploymentDescription>();
+        if (serviceName==null || hostName==null){
+        	return result;
+        }
         try {
             session = getSession();
             Node deploymentNode = getDeploymentNode(session);
+            if (!deploymentNode.hasNode(serviceName)){
+            	return result;
+            }
             Node serviceNode = deploymentNode.getNode(serviceName);
+            if (!serviceNode.hasNode(hostName)){
+            	return result;
+            }
             Node hostNode = serviceNode.getNode(hostName);
             List<Node> childNodes = getChildNodes(hostNode);
             for (Node app:childNodes) {
