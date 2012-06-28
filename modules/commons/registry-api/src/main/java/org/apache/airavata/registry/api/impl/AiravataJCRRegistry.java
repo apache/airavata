@@ -99,7 +99,6 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
     public static final String WORKFLOW_USER_PROPERTY = "User";
     public static final String NOTIFICATION_STORE = "User";
 
-
     private static Logger log = LoggerFactory.getLogger(AiravataJCRRegistry.class);
 
     public AiravataJCRRegistry(URI repositoryURI, String className,

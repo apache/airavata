@@ -57,8 +57,6 @@ import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.corba.se.spi.legacy.connection.GetEndPointInfoAgainException;
-
 public class XBayaMenuItem implements XBayaExecutionModeListener {
 
     private static final Logger logger = LoggerFactory.getLogger(XBayaMenuItem.class);
@@ -186,18 +184,21 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
         
         xbayaMenuItem = new JMenu("XBaya");
         xbayaMenuItem.setMnemonic(KeyEvent.VK_X);
-        JMenu newMenu = new JMenu("New");
-	        newMenu.add(newWorkflowTabItem);
-	        newMenu.addSeparator();
-	        
-	        newMenu.add(this.registerApplicationDesc);
-	        newMenu.addSeparator();
-	        JMenu regAddSubMenuItem = new JMenu("Registry additions");
-	        newMenu.add(regAddSubMenuItem);
-	        regAddSubMenuItem.add(this.registerHostDesc);
-	        regAddSubMenuItem.add(this.registerServiceDesc);
-	        
-        xbayaMenuItem.add(newMenu);
+//        JMenu newMenu = new JMenu("New");
+//	        newMenu.add(newWorkflowTabItem);
+//	        newMenu.addSeparator();
+//	        
+//	        newMenu.add(this.registerApplicationDesc);
+//	        newMenu.addSeparator();
+//	        JMenu regAddSubMenuItem = new JMenu("Registry additions");
+//	        newMenu.add(regAddSubMenuItem);
+//	        regAddSubMenuItem.add(this.registerHostDesc);
+//	        regAddSubMenuItem.add(this.registerServiceDesc);
+//	        
+//        xbayaMenuItem.add(newMenu);
+        xbayaMenuItem.add(newWorkflowTabItem);
+        xbayaMenuItem.add(registerHostDesc);
+        xbayaMenuItem.add(registerApplicationDesc);
         xbayaMenuItem.add(this.openWorkflowItem);
         
         xbayaMenuItem.addSeparator();
@@ -322,7 +323,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
     }
 
     private void createRegisterApplicationDesc() {
-        this.registerApplicationDesc = new JMenuItem("Application Description...");
+        this.registerApplicationDesc = new JMenuItem("Add application...");
 
         this.registerApplicationDesc.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = 1L;
@@ -332,6 +333,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
                     try {
                         ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(
                                 engine);
+        	    		applicationDescriptionDialog.setLocationRelativeTo(engine.getGUI().getFrame());
                         applicationDescriptionDialog.open();
                     } catch (Exception e1) {
                         engine.getGUI().getErrorWindow().error(e1);
@@ -343,7 +345,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
     }
 
     private void createRegisterHostDesc() {
-        this.registerHostDesc = new JMenuItem("Host Description...");
+        this.registerHostDesc = new JMenuItem("Add Host...");
 
         this.registerHostDesc.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = 1L;
@@ -363,7 +365,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
 
     }
     private JMenuItem createClearWorkflowItem() {
-        JMenuItem menuItem = new JMenuItem("Clear Workflow");
+        JMenuItem menuItem = new JMenuItem("Clear workflow");
         menuItem.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = 1L;
 			public void actionPerformed(ActionEvent e) {
@@ -375,7 +377,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
 
     private JMenuItem createNewWorkflowTabMenuItem() {
         
-		JMenuItem menuItem = new JMenuItem("Workflow", MenuIcons.NEW_ICON);
+		JMenuItem menuItem = new JMenuItem("New workflow", MenuIcons.NEW_ICON);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         AbstractAction action = new AbstractAction() {
 			private static final long serialVersionUID = 1L;
