@@ -347,6 +347,12 @@ for key in "${!props[@]}"; do
 			#do the copying
 			from=`echo $value | awk -F'=>' '{ print $1 }'`
 			to=`echo $value | awk -F'=>' '{ print $2 }'`
+			`echo "$to" | grep -qE "/$"`
+			if [ $? -eq 0 ];
+			then
+				# Ends with /, create the directory just incase if its not created
+				mkdir -p $to
+			fi
 			if [[ $from == http* ]];
 			then
 				temp_dir=`create_temp_dir`
