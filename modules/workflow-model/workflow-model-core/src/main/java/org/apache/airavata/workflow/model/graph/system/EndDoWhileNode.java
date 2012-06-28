@@ -231,7 +231,7 @@ public class EndDoWhileNode extends SystemNode {
     @Override
     protected XmlElement toXML() {
         XmlElement nodeElement = super.toXML();
-        nodeElement.setAttributeValue(GraphSchema.NS, GraphSchema.NODE_TYPE_ATTRIBUTE, GraphSchema.NODE_TYPE_MERGE);
+        nodeElement.setAttributeValue(GraphSchema.NS, GraphSchema.NODE_TYPE_ATTRIBUTE, GraphSchema.NODE_TYPE_ENDDOWHILE);
         return nodeElement;
     }
 

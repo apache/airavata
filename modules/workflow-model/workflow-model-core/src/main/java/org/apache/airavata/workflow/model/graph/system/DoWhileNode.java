@@ -23,22 +23,13 @@ package org.apache.airavata.workflow.model.graph.system;
 
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
-import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.workflow.model.component.ComponentDataPort;
 import org.apache.airavata.workflow.model.component.system.DoWhileComponent;
-import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
-import org.apache.airavata.workflow.model.graph.DataEdge;
 import org.apache.airavata.workflow.model.graph.DataPort;
-import org.apache.airavata.workflow.model.graph.EPRPort;
-import org.apache.airavata.workflow.model.graph.Edge;
 import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.apache.airavata.workflow.model.graph.Node;
-import org.apache.airavata.workflow.model.graph.Port;
-import org.apache.airavata.workflow.model.graph.Port.Kind;
 import org.xmlpull.infoset.XmlElement;
 
 public class DoWhileNode extends SystemNode {
@@ -145,7 +136,6 @@ public class DoWhileNode extends SystemNode {
 		super.parseConfiguration(configElement);
 		XmlElement element = configElement.element(null, XPATH_TAG_NAME);
 		if (element != null) {
-			// TODO
 			this.xpath = element.requiredText();
 		}
 	}
