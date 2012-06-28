@@ -169,27 +169,28 @@ public class MonitorEventHandler implements ChangeListener {
 
     private void handleEvent(MonitorEvent event, boolean forward) {
         EventType type = event.getType();
+        //todo currrently we do not set the workflowID properly its just node ID
         URI workflowID = event.getWorkflowID();
 
         List<GraphCanvas> graphCanvases = this.xbayaGUI.getGraphCanvases();
         boolean found = false;
         for (GraphCanvas graphCanvas : graphCanvases) {
             Workflow workflow = graphCanvas.getWorkflow();
-            URI instanceID = workflow.getGPELInstanceID();
-            if (instanceID == null) {
+//            URI instanceID = workflow.getGPELInstanceID();
+//            if (instanceID == null) {
                 // If the workflow doesn't have an instance ID, it's a template.
                 // We handle it so that users can use a workflow template to
                 // monitor a workflow too.
                 // This is also needed in the case of jython workflow.
                 handleEvent(event, forward, workflow.getGraph());
-            } else if (instanceID.equals(workflowID)) {
-                // This is the regular case.
-                found = true;
-                handleEvent(event, forward, workflow.getGraph());
-            } else if (null != workflowID
-                    && -1 != WSDLUtil.findWorkflowName(workflowID).indexOf(WSDLUtil.findWorkflowName(instanceID))) {
-                handleEvent(event, WSDLUtil.findWorkflowName(workflowID), workflow.getGraph());
-            }
+//            } else if (instanceID.equals(workflowID)) {
+//                This is the regular case.
+//                found = true;
+//                handleEvent(event, forward, workflow.getGraph());
+//            } else if (null != workflowID
+//                    && -1 != WSDLUtil.findWorkflowName(workflowID).indexOf(WSDLUtil.findWorkflowName(instanceID))) {
+//                handleEvent(event, WSDLUtil.findWorkflowName(workflowID), workflow.getGraph());
+//            }
         }
 
         // Load a sub-workflow.
@@ -354,7 +355,7 @@ public class MonitorEventHandler implements ChangeListener {
         EventType type = event.getType();
         String nodeID = event.getNodeID();
         Node node = graph.getNode(nodeID);
-
+        System.out.println(type);;
         // logger.info("type: " + type);
         if (type == MonitorUtil.EventType.WORKFLOW_INVOKED) {
             workflowStarted(graph, forward);

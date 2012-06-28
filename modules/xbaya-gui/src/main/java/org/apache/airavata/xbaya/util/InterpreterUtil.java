@@ -349,7 +349,7 @@ public class InterpreterUtil {
 		int sum = 0;
 		List<NodeImpl> nodes = graph.getNodes();
 		for (Node node : nodes) {
-			if (NodeController.getGUI(node).getBodyColor() == color) {
+			if (color.equals(NodeController.getGUI(node).getBodyColor())) {
 				++sum;
 			}
 		}
