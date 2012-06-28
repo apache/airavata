@@ -30,6 +30,7 @@ import org.apache.airavata.common.workflow.execution.context.WorkflowContextHead
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
+import org.apache.airavata.core.gfac.exception.ProviderException;
 import org.apache.airavata.core.gfac.exception.ToolsException;
 import org.apache.airavata.core.gfac.utils.GFacConstants;
 import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
@@ -111,77 +112,82 @@ public class GramRSLGenerator {
 			}
 		}
         // Using the workflowContext Header values if user provided them in the request and overwrite the default values in DD
-        ContextHeaderDocument.ContextHeader currentContextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
-        if (currentContextHeader != null &&
-                currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray() != null &&
-                currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray().length > 0) {
-            try {
-                int cpuCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getCpuCount();
-                app.setCpuCount(cpuCount);
-            } catch (NullPointerException e) {
-                log.info("No Value sent in WorkflowContextHeader for CPU Count, value in the Deployment Descriptor will be used");
-            }
-            try {
-                int nodeCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getNodeCount();
-                app.setNodeCount(nodeCount);
-            } catch (NullPointerException e) {
-                log.info("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
-            }
-            try {
-                String queueName = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getQueueName();
-                if(queueName != null){
-                    jobAttr.setQueue(queueName);
-                }else{
-                    if (app.getQueue() != null) {
-                        if (app.getQueue().getQueueName() != null) {
-                            System.out.println("Testing");
-                            log.info("Setting job queue to " + app.getQueue().getQueueName());
-                            jobAttr.setQueue(app.getQueue().getQueueName());
-                        }
-                    }
-                }
-            } catch (NullPointerException e) {
-                log.info("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
-            }
-        }
-        if (app.getNodeCount() > 0) {
-            jobAttr.set("hostCount", String.valueOf(app.getNodeCount()));
-        }
-        if (app.getCpuCount() > 0) {
-            log.info("Setting number of procs to " + app.getCpuCount());
-            jobAttr.setNumProcs(app.getCpuCount());
-        }
-        if (app.getMinMemory() > 0) {
-            log.info("Setting minimum memory to " + app.getMinMemory());
-            jobAttr.setMinMemory(app.getMinMemory());
-        }
-        if (app.getMaxMemory() > 0) {
-            log.info("Setting maximum memory to " + app.getMaxMemory());
-            jobAttr.setMaxMemory(app.getMaxMemory());
-        }
-        if (app.getProjectAccount() != null) {
-            if (app.getProjectAccount().getProjectAccountNumber() != null) {
-                log.info("Setting project to " + app.getProjectAccount().getProjectAccountNumber());
-                jobAttr.setProject(app.getProjectAccount().getProjectAccountNumber());
-            }
-        }
-        String jobType = JobType.SINGLE.toString();
-        if (app.getJobType() != null) {
-            jobType = app.getJobType().toString();
-        }
-        if (jobType.equalsIgnoreCase(JobType.SINGLE.toString())) {
-            log.info("Setting job type to single");
-            jobAttr.setJobType(GramAttributes.JOBTYPE_SINGLE);
-        } else if (jobType.equalsIgnoreCase(JobType.MPI.toString())) {
-            log.info("Setting job type to mpi");
-            jobAttr.setJobType(GramAttributes.JOBTYPE_MPI);
-        } else if (jobType.equalsIgnoreCase(JobType.MULTIPLE.toString())) {
-            log.info("Setting job type to multiple");
-            jobAttr.setJobType(GramAttributes.JOBTYPE_MULTIPLE);
-        } else if (jobType.equalsIgnoreCase(JobType.CONDOR.toString())) {
-            jobAttr.setJobType(GramAttributes.JOBTYPE_CONDOR);
-        }
-
-        return jobAttr;
+ContextHeaderDocument.ContextHeader currentContextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
+if(currentContextHeader.getWorkflowSchedulingContext()!= null){
+if (currentContextHeader != null &&
+        currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray() != null &&
+        currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray().length > 0) {
+    try {
+        int cpuCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getCpuCount();
+        app.setCpuCount(cpuCount);
+    } catch (NullPointerException e) {
+        log.info("No Value sent in WorkflowContextHeader for CPU Count, value in the Deployment Descriptor will be used");
+        context.getExecutionContext().getNotifier().executionFail(context,e,"No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
     }
+    try {
+        int nodeCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getNodeCount();
+        app.setNodeCount(nodeCount);
+    } catch (NullPointerException e) {
+        log.info("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
+         context.getExecutionContext().getNotifier().executionFail(context,e,"No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
+    }
+    try {
+        String queueName = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getQueueName();
+        if(queueName != null){
+            jobAttr.setQueue(queueName);
+        }else{
+            if (app.getQueue() != null) {
+                if (app.getQueue().getQueueName() != null) {
+                    System.out.println("Testing");
+                    log.info("Setting job queue to " + app.getQueue().getQueueName());
+                    jobAttr.setQueue(app.getQueue().getQueueName());
+                }
+            }
+        }
+    } catch (NullPointerException e) {
+        log.info("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
+        context.getExecutionContext().getNotifier().executionFail(context,e,"No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
+    }
+}
+}
+if (app.getNodeCount() > 0) {
+    jobAttr.set("hostCount", String.valueOf(app.getNodeCount()));
+}
+if (app.getCpuCount() > 0) {
+    log.info("Setting number of procs to " + app.getCpuCount());
+    jobAttr.setNumProcs(app.getCpuCount());
+}
+if (app.getMinMemory() > 0) {
+    log.info("Setting minimum memory to " + app.getMinMemory());
+    jobAttr.setMinMemory(app.getMinMemory());
+}
+if (app.getMaxMemory() > 0) {
+    log.info("Setting maximum memory to " + app.getMaxMemory());
+    jobAttr.setMaxMemory(app.getMaxMemory());
+}
+if (app.getProjectAccount() != null) {
+    if (app.getProjectAccount().getProjectAccountNumber() != null) {
+        log.info("Setting project to " + app.getProjectAccount().getProjectAccountNumber());
+        jobAttr.setProject(app.getProjectAccount().getProjectAccountNumber());
+    }
+}
+String jobType = JobType.SINGLE.toString();
+if (app.getJobType() != null) {
+    jobType = app.getJobType().toString();
+}
+if (jobType.equalsIgnoreCase(JobType.SINGLE.toString())) {
+    log.info("Setting job type to single");
+    jobAttr.setJobType(GramAttributes.JOBTYPE_SINGLE);
+} else if (jobType.equalsIgnoreCase(JobType.MPI.toString())) {
+    log.info("Setting job type to mpi");
+    jobAttr.setJobType(GramAttributes.JOBTYPE_MPI);
+} else if (jobType.equalsIgnoreCase(JobType.MULTIPLE.toString())) {
+    log.info("Setting job type to multiple");
+    jobAttr.setJobType(GramAttributes.JOBTYPE_MULTIPLE);
+} else if (jobType.equalsIgnoreCase(JobType.CONDOR.toString())) {
+    jobAttr.setJobType(GramAttributes.JOBTYPE_CONDOR);
+}
+
+return jobAttr;
+}
 }
