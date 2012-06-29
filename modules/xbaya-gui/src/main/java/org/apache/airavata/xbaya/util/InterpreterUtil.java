@@ -326,7 +326,7 @@ public class InterpreterUtil {
 		ArrayList<Node> list = new ArrayList<Node>();
 		List<NodeImpl> nodes = graph.getNodes();
 		for (Node node : nodes) {
-			if (NodeController.getGUI(node).getBodyColor() == color) {
+			if (color.equals(NodeController.getGUI(node).getBodyColor())) {
 				list.add(node);
 			}
 		}
