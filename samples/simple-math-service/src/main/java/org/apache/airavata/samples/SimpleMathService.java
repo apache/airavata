@@ -76,6 +76,6 @@ public class SimpleMathService {
     }
 
     public String greet(String echo) {
-        return "Hello World" + echo;
+        return "Hello World " + echo + " !";
     }
 }
