@@ -326,9 +326,9 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             setupLayoutForBrowse(tmpDirPath, component);
 
 
-            JLabel lblTemporaryDirectory = new JLabel("Temporary directory");
+            JLabel lblTemporaryDirectory = new JLabel("Scratch working directory");
 
-            JButton btnAdvance = new JButton("Advanced options...");
+            JButton btnAdvance = new JButton("Advanced application configurations...");
             btnAdvance.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     try {

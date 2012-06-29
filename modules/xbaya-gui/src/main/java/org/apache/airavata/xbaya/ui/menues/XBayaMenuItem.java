@@ -323,7 +323,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
     }
 
     private void createRegisterApplicationDesc() {
-        this.registerApplicationDesc = new JMenuItem("Add application...");
+        this.registerApplicationDesc = new JMenuItem("Register Application...");
 
         this.registerApplicationDesc.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = 1L;
@@ -365,7 +365,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
 
     }
     private JMenuItem createClearWorkflowItem() {
-        JMenuItem menuItem = new JMenuItem("Clear workflow");
+        JMenuItem menuItem = new JMenuItem("Clear Workflow");
         menuItem.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = 1L;
 			public void actionPerformed(ActionEvent e) {
@@ -377,7 +377,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
 
     private JMenuItem createNewWorkflowTabMenuItem() {
         
-		JMenuItem menuItem = new JMenuItem("New workflow", MenuIcons.NEW_ICON);
+		JMenuItem menuItem = new JMenuItem("New Workflow", MenuIcons.NEW_ICON);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         AbstractAction action = new AbstractAction() {
 			private static final long serialVersionUID = 1L;
@@ -404,7 +404,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
     }
 
     private JMenuItem createCloseAllWorkflowTabItem() {
-        JMenuItem menuItem = new JMenuItem("Close all");
+        JMenuItem menuItem = new JMenuItem("Close All");
         menuItem.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
@@ -431,7 +431,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
     }
     
     private void createOpenWorkflowMenuItem() {
-		this.openWorkflowItem = new JMenuItem("Open...", MenuIcons.OPEN_ICON);
+		this.openWorkflowItem = new JMenuItem("Open Workflow...", MenuIcons.OPEN_ICON);
         this.openWorkflowItem.setMnemonic(KeyEvent.VK_O);
         openWorkflowItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
         AbstractAction action = new AbstractAction() {

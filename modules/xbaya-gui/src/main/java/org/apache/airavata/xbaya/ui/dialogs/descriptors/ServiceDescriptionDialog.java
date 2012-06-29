@@ -136,7 +136,7 @@ public class ServiceDescriptionDialog extends JDialog {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
-                if (isNewDescription()) {
+                if (isNewDescription() && !isServiceDescriptionMode()) {
 					String baseName = isServiceDescriptionMode()? "Service":getSuggestedNamePrefix()+"_Service";
 					int i;
 					String defaultName;
@@ -304,7 +304,7 @@ public class ServiceDescriptionDialog extends JDialog {
 			lblTableParameterNote = new JLabel("*Note: Right click on the table to bind an existing service");
 			lblTableParameterNote.setFont(new Font("Tahoma", Font.ITALIC, 11));
 		}
-		chkForceFileStagingToWorkDir=new JCheckBox("Save URI content in work directory");
+		chkForceFileStagingToWorkDir=new JCheckBox("Advanced: Force input file staging to working directory");
         chkForceFileStagingToWorkDir.addActionListener(new ActionListener(){
 
 			@Override

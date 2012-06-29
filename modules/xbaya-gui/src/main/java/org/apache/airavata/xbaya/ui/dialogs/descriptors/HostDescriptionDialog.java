@@ -184,9 +184,9 @@ public class HostDescriptionDialog extends JDialog {
     	setModal(true);
         setLocationRelativeTo(null);
         if (isNewHost()) {
-			setTitle("New Host Description");
+			setTitle("Register Host");
 		}else{
-			setTitle("Update Host Description: "+getOriginalHostDescription().getType().getHostName());
+			setTitle("Update Host: "+getOriginalHostDescription().getType().getHostName());
 		}
 		this.hostIdTextField = new XBayaTextField();
         this.hostAddressTextField = new XBayaTextField();
@@ -285,7 +285,7 @@ public class HostDescriptionDialog extends JDialog {
 		GridPanel globusPanel = new GridPanel();
         this.GridFTPTextField = new XBayaTextField();
         this.globusGateKeeperTextField = new XBayaTextField();
-        globusGateKeeperLabel = new XBayaLabel("Globus Gate Keeper Endpoint", this.globusGateKeeperTextField);        
+        globusGateKeeperLabel = new XBayaLabel("GRAM Endpoint", this.globusGateKeeperTextField);        
         gridFTPLabel = new XBayaLabel("Grid FTP Endpoint", this.GridFTPTextField);
         globusPanel.add(globusGateKeeperLabel);
         globusPanel.add(globusGateKeeperTextField);
@@ -423,12 +423,12 @@ public class HostDescriptionDialog extends JDialog {
 			infoPanel2.getContentPanel().removeAll();
 			if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_LOCAL)){
 				getHostDescription().getType().changeType(HostDescriptionType.type);
-				infoPanel2.add(createPanelWithMessage("No configurations for remote protocol '"+REMOTE_PROTOCOL_STR_LOCAL+"'"));
+				infoPanel2.add(createPanelWithMessage("No configurations needed."));
 			}else if (selectedProtocol.equals(REMOTE_PROTOCOL_STR_GLOBUS)){
 				getHostDescription().getType().changeType(GlobusHostType.type);
 				infoPanel2.add(createGlobusRemoteProtocolPanel());
 			}else{
-				infoPanel2.add(createPanelWithMessage("Remote protocol '"+selectedProtocol+"' is not supported yet."));
+				infoPanel2.add(createPanelWithMessage("Not supported."));
 			}
 			infoPanel2.getContentPanel().setBorder(BorderFactory.createEtchedBorder());
 			infoPanel2.getContentPanel().updateUI();
