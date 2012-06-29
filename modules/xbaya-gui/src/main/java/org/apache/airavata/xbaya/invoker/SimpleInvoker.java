@@ -26,6 +26,8 @@ import java.util.Iterator;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.jackrabbit.core.cache.ConcurrentCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.wsdl.WsdlDefinitions;
@@ -39,6 +41,8 @@ import xsul.xwsif_runtime.WSIFClient;
 import xsul.xwsif_runtime.WSIFRuntime;
 
 public class SimpleInvoker implements Invoker {
+
+    private static final Logger log = LoggerFactory.getLogger(GenericInvoker.class);
 
     protected WSIFClient client;
 
@@ -60,7 +64,7 @@ public class SimpleInvoker implements Invoker {
 
     /**
      * Constructs a SimpleInvoker.
-     * 
+     *
      * @param definitions
      */
     public SimpleInvoker(WsdlDefinitions definitions) {
@@ -195,6 +199,15 @@ public class SimpleInvoker implements Invoker {
                     // Value is a simple type. Return the string.
                     String value = (String) child;
                     return value;
+                }
+                if (child instanceof XmlElement) {
+                	log.info("output: " + XMLUtil.xmlElementToString((XmlElement) child));
+                	Object child1 = ((XmlElement) child).children().next();
+                	if (child1 instanceof String) {
+                        // Value is a simple type. Return the string.
+                        String value = (String) child1;
+                        return value;
+                    }
                 }
             }
             // Value is a complex type. Return the whole XmlElement so that we
