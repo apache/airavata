@@ -99,17 +99,10 @@ public class DoWhileHandler implements Callable<Boolean> {
 		int i = 0;
 		for (DataPort port : inputPorts) {
 			Object inputVal1 = InterpreterUtil.findInputFromPort(port, invokerMap);
-			String outputVal = "";
 			if (null == inputVal1) {
 				throw new WorkFlowInterpreterException("Unable to find inputs for the node:" + doWhileNode.getID());
 			}
-			if (inputVal1 instanceof XmlElement) {
-
-				if (((XmlElement) inputVal1).children().iterator().hasNext()) {
-					outputVal = ((XmlElement) inputVal1).children().iterator().next().toString();
-				}
-			}
-			booleanExpression = booleanExpression.replaceAll("\\$" + i, "'" + outputVal + "'");
+		    booleanExpression = booleanExpression.replaceAll("\\$" + i, "'" + inputVal1 + "'");
 			i++;
 		}
 		Boolean result = new Boolean(false);
