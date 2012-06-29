@@ -36,7 +36,8 @@ public interface WorkflowExecution {
 	public WorkflowServiceIOData getServiceOutput(String nodeId);
 	public WorkflowIOData getOutput(String nodeId);
 	public String getMetadata();
-
+	public String getWorkflowInstanceName();
+	
 	public void setExperimentId(String experimentId);
 	public void setTopic(String topic);
 	public void setExecutionStatus(WorkflowInstanceStatus executionStatus);
@@ -48,4 +49,5 @@ public interface WorkflowExecution {
 	public void addServiceOutput(WorkflowServiceIOData serviceOutput);
 	public void addOutput(WorkflowIOData output);
 	public void setMetadata(String metadata);
+	public void setWorkflowInstanceName(String workflowInstanceName);
 }

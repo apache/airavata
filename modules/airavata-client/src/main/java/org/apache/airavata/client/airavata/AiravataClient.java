@@ -33,6 +33,7 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -354,14 +355,14 @@ public class AiravataClient implements AiravataAPI {
 	 */
 	@Override
 	public String runWorkflow(String topic, String user) {
-		return runWorkflow(topic, user, null);
+		return runWorkflow(topic, user, null, topic);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.apache.airavata.client.airavata.AiravataAPI#runWorkflow(java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public String runWorkflow(String topic, String user, String metadata) {
+	public String runWorkflow(String topic, String user, String metadata, String workflowInstanceName) {
         String worflowoutput = null;
                 try {
                     WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
@@ -369,7 +370,7 @@ public class AiravataClient implements AiravataAPI {
                     OMElement omElement = AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml()));
                     stub._getServiceClient().addHeader(omElement);
                     worflowoutput = stub.launchWorkflow(workflow, topic,null);
-                    runPostWorkflowExecutionTasks(worflowoutput, user, metadata);
+                    runPreWorkflowExecutionTasks(worflowoutput, user, metadata, workflowInstanceName);
 
                 } catch (AxisFault e) {
 		} catch (RemoteException e) {
@@ -422,13 +423,16 @@ public class AiravataClient implements AiravataAPI {
         return monitor;
     }
     
-	private void runPostWorkflowExecutionTasks(String topic, String user,
-			String metadata) throws RegistryException {
+    private void runPreWorkflowExecutionTasks(String topic, String user,
+    		String metadata,String workflowInstanceName) throws RegistryException {
 		if (user != null) {
 			getRegistry().saveWorkflowExecutionUser(topic, user);
 		}
 		if (metadata != null) {
 			getRegistry().saveWorkflowExecutionMetadata(topic, metadata);
+		}
+		if (workflowInstanceName!=null) {
+			getRegistry().saveWorkflowExecutionName(topic, workflowInstanceName);
 		}
 	}
 
@@ -445,7 +449,7 @@ public class AiravataClient implements AiravataAPI {
 	 */
 	@Override
 	public String runWorkflow(String topic, NameValue[] inputs, String user) throws Exception {
-		return runWorkflow(topic, inputs, user, null);
+		return runWorkflow(topic, inputs, user, null,topic);
 	}
 
 	/* (non-Javadoc)
@@ -453,7 +457,7 @@ public class AiravataClient implements AiravataAPI {
 	 */
 	@Override
 	public String runWorkflow(final String topic, final NameValue[] inputs, final String user,
-			final String metadata) throws Exception{
+			final String metadata, final String workflowInstanceName) throws Exception{
 		new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -463,8 +467,8 @@ public class AiravataClient implements AiravataAPI {
 					stub._getServiceClient().addHeader(
 							AXIOMUtil.stringToOM(XMLUtil
 									.xmlElementToString(builder.getXml())));
+					runPreWorkflowExecutionTasks(topic, user, metadata,workflowInstanceName);
 					stub.launchWorkflow(workflow, topic, inputs);
-					runPostWorkflowExecutionTasks(topic, user, metadata);
 					//			log.info("Workflow output : " + worflowoutput);
 				} catch (RegistryException e) {
 					//			log.fine(e.getMessage(), e);
@@ -620,32 +624,36 @@ public class AiravataClient implements AiravataAPI {
 		}
 		return workflowList;
 	}
-
+	
+	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs) throws Exception{
+		return runWorkflow(workflowTemplateId,inputs,getRegistry().getUsername(),null,workflowTemplateId+"_"+Calendar.getInstance().getTime().toString());
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.apache.airavata.client.airavata.AiravataAPI#runWorkflow(java.lang.String, java.util.List)
 	 */
 	@Override
-	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs) throws Exception{
-		return runWorkflow(workflowTemplateId,inputs,getRegistry().getUsername(),null);
+	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs,String workflowInstanceName) throws Exception{
+		return runWorkflow(workflowTemplateId,inputs,getRegistry().getUsername(),null,workflowInstanceName);
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.apache.airavata.client.airavata.AiravataAPI#runWorkflow(java.lang.String, java.util.List, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata) throws Exception{
+	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName) throws Exception{
 		Workflow workflowObj = getWorkflow(workflowTemplateId);
-		return runWorkflow(workflowObj, inputs, user, metadata);
+		return runWorkflow(workflowObj, inputs, user, metadata,workflowInstanceName);
 	}
 
 	public String runWorkflow(Workflow workflow,
-			List<WorkflowInput> inputs)
+			List<WorkflowInput> inputs, String workflowInstanceName)
 			throws GraphException, ComponentException, Exception {
-		return runWorkflow(workflow, inputs, null, null);
+		return runWorkflow(workflow, inputs, null, null, workflowInstanceName);
 	}
 	
 	public String runWorkflow(Workflow workflowObj,
-			List<WorkflowInput> inputs, String user, String metadata)
+			List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)
 			throws GraphException, ComponentException, Exception {
 		try {
 			String workflowString=XMLUtil.xmlElementToString(workflowObj.toXML());
@@ -669,7 +677,7 @@ public class AiravataClient implements AiravataAPI {
 			}
 			workflow=workflowString;
 			String topic=workflowObj.getName()+"_"+UUID.randomUUID();
-			return runWorkflow(topic, inputValues.toArray(new NameValue[]{}), user, metadata);
+			return runWorkflow(topic, inputValues.toArray(new NameValue[]{}), user, metadata, workflowInstanceName);
 		} catch (PathNotFoundException e) {
 			e.printStackTrace();
 		} catch (RegistryException e) {

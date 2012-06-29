@@ -53,10 +53,11 @@ public interface ExecutionManager {
      * @param inputs
      * @param user
      * @param metadata
+     * @param workflowInstanceName
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public abstract String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata)throws AiravataAPIInvocationException;
+	public abstract String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)throws AiravataAPIInvocationException;
 
     /**
      *

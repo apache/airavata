@@ -96,7 +96,7 @@ public interface AiravataAPI {
      * @return
      */
 	public abstract String runWorkflow(String topic, String user,
-			String metadata);
+			String metadata, String workflowInstanceName);
 
     /**
      *
@@ -145,7 +145,7 @@ public interface AiravataAPI {
      * @throws Exception
      */
 	public abstract String runWorkflow(final String topic,
-			final NameValue[] inputs, final String user, final String metadata)
+			final NameValue[] inputs, final String user, final String metadata, String workflowInstanceName)
 			throws Exception;
 
     /**
@@ -203,8 +203,16 @@ public interface AiravataAPI {
 	 * @param inputs
 	 * @return
 	 */
+	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs) throws Exception;
+	
+	/**
+	 * Execute the given workflow template with the given inputs and return the topic id and workflow instance
+	 * @param workflowTemplateId
+	 * @param inputs
+	 * @return
+	 */
 	public abstract String runWorkflow(String workflowTemplateId,
-			List<WorkflowInput> inputs) throws Exception;
+			List<WorkflowInput> inputs, String workflowInstanceName) throws Exception;
 
 	/**
 	 * Execute the given workflow template with the given inputs, user, metadata and return the topic id
@@ -216,7 +224,7 @@ public interface AiravataAPI {
 	 * @throws Exception
 	 */
 	public abstract String runWorkflow(String workflowTemplateId,
-			List<WorkflowInput> inputs, String user, String metadata)
+			List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)
 			throws Exception;
 
 	/**

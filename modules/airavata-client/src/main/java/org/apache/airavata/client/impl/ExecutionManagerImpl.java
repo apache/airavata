@@ -21,6 +21,7 @@
 
 package org.apache.airavata.client.impl;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.airavata.client.airavata.AiravataClient;
@@ -41,7 +42,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	@Override
 	public String runWorkflow(String workflowTemplateId,
 			List<WorkflowInput> inputs) throws AiravataAPIInvocationException {
-		return runWorkflow(workflowTemplateId, inputs ,getClient().getCurrentUser(),null);
+		return runWorkflow(workflowTemplateId, inputs ,getClient().getCurrentUser(),null, workflowTemplateId+"_"+Calendar.getInstance().getTime().toString());
 	}
 
 	@Override
@@ -52,10 +53,10 @@ public class ExecutionManagerImpl implements ExecutionManager {
 
 	@Override
 	public String runWorkflow(String workflowTemplateId,
-			List<WorkflowInput> inputs, String user, String metadata)
+			List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().runWorkflow(workflowTemplateId, inputs, user, metadata);
+			return getClient().runWorkflow(workflowTemplateId, inputs, user, metadata, workflowInstanceName);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -66,7 +67,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	public String runWorkflow(Workflow workflow, List<WorkflowInput> inputs,
 			String user, String metadata) throws AiravataAPIInvocationException {
 		try {
-			return getClient().runWorkflow(workflow, inputs, user, metadata);
+			return getClient().runWorkflow(workflow, inputs, user, metadata,workflow.getName()+"_"+Calendar.getInstance().getTime().toString());
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
