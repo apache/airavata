@@ -37,6 +37,7 @@ public class WorkflowExecutionImpl implements WorkflowExecution{
 	private List<WorkflowIOData> output;
 	private String experimentId;
 	private String metadata;
+	private String workflowInstanceName;
 	
 	public String getMetadata() {
 		return metadata;
@@ -124,5 +125,15 @@ public class WorkflowExecutionImpl implements WorkflowExecution{
 			}
 		}
 		return null;
+	}
+	@Override
+	public String getWorkflowInstanceName() {
+		return workflowInstanceName;
+	}
+	
+	@Override
+	public void setWorkflowInstanceName(String workflowInstanceName) {
+		this.workflowInstanceName=workflowInstanceName;
+		
 	}
 }

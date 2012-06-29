@@ -22,7 +22,6 @@
 package org.apache.airavata.registry.api;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -39,10 +38,10 @@ import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveE
 import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
 import org.apache.airavata.registry.api.workflow.WorkflowExecution;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
-import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 
 public interface AiravataRegistry extends Registry{
     /**
@@ -244,7 +243,9 @@ public interface AiravataRegistry extends Registry{
     public List<WorkflowServiceIOData> searchWorkflowExecutionServiceInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
 
     public List<WorkflowServiceIOData> searchWorkflowExecutionServiceOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
-
+    
+    public boolean saveWorkflowExecutionName(String experimentId,String workflowIntanceName)throws RegistryException;
+    
     public boolean saveWorkflowExecutionStatus(String experimentId,WorkflowInstanceStatus status)throws RegistryException;
     
     public boolean saveWorkflowExecutionStatus(String experimentId,ExecutionStatus status)throws RegistryException;
@@ -264,6 +265,8 @@ public interface AiravataRegistry extends Registry{
     public boolean saveWorkflowExecutionUser(String experimentId, String user) throws RegistryException;
     
     public String getWorkflowExecutionUser(String experimentId) throws RegistryException;
+    
+    public String getWorkflowExecutionName(String experimentId) throws RegistryException;
     
     public WorkflowExecution getWorkflowExecution(String experimentId) throws RegistryException;
     
