@@ -1,4 +1,4 @@
-Installing  Apache Airavata 0.2-INCUBATING
+Installing  Apache Airavata 0.4-INCUBATING
 ------------------------------------------------
 
 Prerequisites
@@ -11,7 +11,7 @@ Build Apache Airavata from Source
 * Unzip/untar the source file or check out from svn.
 * cd to project folder and type
 * mvn clean install -Dmaven.test.skip=true
-* The compressed binary distribution is created at <PROJECT DIR>/distribution/target
+* The compressed binary distribution is created at <PROJECT DIR>/modules/distribution/target
 
 Running Tests
 -------------

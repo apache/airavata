@@ -25,7 +25,7 @@ does indicate that the project has yet to be fully endorsed by the ASF.
 
 Release Notes
 =============
-0.3-INCUBATNG is the second release of Airavata (skipped 0.1-INCUBATNG). This release focuses on improving test cases
+0.4-INCUBATNG is the third release of Airavata (skipped 0.1-INCUBATNG). This release focuses on improving test cases
 and stability of code, documentation. For detailed tasks list, please see RELEASE_NOTES.
 
 Building from source
