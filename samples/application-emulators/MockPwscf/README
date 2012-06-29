@@ -36,6 +36,13 @@ Building instructions
 
 Compilations process tested on Ranger: mpicc pwscf.c -o pwscf.w
 
+NOTE:
+Remove the Apache license headers from following files before setting them up in the Super computer.
+  samples/application-emulators/MockPwscf/pseudo_1
+  samples/application-emulators/MockPwscf/Pwscf_Input
+  samples/application-emulators/MockPwscf/Pwscf_Output
+  samples/application-emulators/MockPwscf/pseudo_2
+
 EXECUTION
 ---------
 
