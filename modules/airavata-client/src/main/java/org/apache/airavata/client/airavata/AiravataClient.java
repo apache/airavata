@@ -697,7 +697,18 @@ public class AiravataClient implements AiravataAPI {
 	public List<WorkflowInput> getWorkflowInputs(String workflowTemplateId) throws Exception{
 		try {
 			Workflow workflowTemplate = getWorkflow(workflowTemplateId);
-			return workflowTemplate.getWorkflowInputs();
+            List<WSComponentPort> inputs = getWSComponentPortInputs(workflowTemplate);
+	        List<InputNode> inputNodes = getInputNodes(workflowTemplate);
+			List<WorkflowInput> results=new ArrayList<WorkflowInput>();
+			for (InputNode port : inputNodes) {
+				Object value=null;
+				WSComponentPort wsComponentPort = getWSComponentPort(port.getName(), inputs);
+				if (wsComponentPort!=null){
+					value=wsComponentPort.getValue();
+				}
+				results.add(new WorkflowInput(port.getName(), port.getParameterType().getLocalPart(), port.getDefaultValue(), value, !port.isVisibility()));
+			}
+			return results;
 		} catch (RegistryException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
