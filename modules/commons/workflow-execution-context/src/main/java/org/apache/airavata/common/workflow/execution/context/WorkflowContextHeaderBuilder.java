@@ -22,6 +22,7 @@ package org.apache.airavata.common.workflow.execution.context;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.schemas.wec.*;
+import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
@@ -317,6 +318,7 @@ public class WorkflowContextHeaderBuilder {
     }
 
     public static ContextHeaderDocument.ContextHeader removeOtherSchedulingConfig(String nodeID, ContextHeaderDocument.ContextHeader header) {
+        String s = XMLUtil.xmlElementToString(new WorkflowContextHeaderBuilder(header).getXml());
         try {
             ApplicationSchedulingContextDocument.ApplicationSchedulingContext[] applicationSchedulingContextArray =
                     header.getWorkflowSchedulingContext().getApplicationSchedulingContextArray();
@@ -336,6 +338,14 @@ public class WorkflowContextHeaderBuilder {
         } catch (NullPointerException e) {
             return header;
         }
+        ContextHeaderDocument parse = null;
+        try {
+            parse = ContextHeaderDocument.Factory.parse(s);
+        } catch (XmlException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        //Set Old Context Header in to currentContextHeader
+        WorkflowContextHeaderBuilder.setCurrentContextHeader(parse.getContextHeader());
         return header;
     }
 }
