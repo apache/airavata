@@ -503,9 +503,16 @@ public class GramProvider extends AbstractProvider {
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        for (int i = numberofLines - count; i < numberofLines; i++) {
-            buffer.append(strLine.get(i));
-            buffer.append("\n");
+        if (numberofLines > count) {
+             for (int i = numberofLines - count; i < numberofLines; i++) {
+                buffer.append(strLine.get(i));
+                buffer.append("\n");
+            }
+        }else{
+             for (int i = 0; i < numberofLines; i++) {
+                buffer.append(strLine.get(i));
+                buffer.append("\n");
+            }
         }
         try {
             in.close();
