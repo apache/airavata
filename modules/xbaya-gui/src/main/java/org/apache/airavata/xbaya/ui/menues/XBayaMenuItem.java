@@ -47,7 +47,6 @@ import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.apache.airavata.xbaya.ui.dialogs.component.URLRegistryWindow;
 import org.apache.airavata.xbaya.ui.dialogs.descriptors.ApplicationDescriptionDialog;
-import org.apache.airavata.xbaya.ui.dialogs.descriptors.DeploymentDescriptionDialog;
 import org.apache.airavata.xbaya.ui.dialogs.descriptors.HostDescriptionDialog;
 import org.apache.airavata.xbaya.ui.experiment.RegistryLoaderWindow;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
