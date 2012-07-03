@@ -45,7 +45,7 @@ import org.apache.airavata.xbaya.monitor.MonitorEventListener;
 public interface AiravataAPI {
 
     /**
-     *
+     * Set the workflow object in to Client from the given file path
      * @param workflowFile
      * @throws URISyntaxException
      * @throws IOException
@@ -54,34 +54,34 @@ public interface AiravataAPI {
 			throws URISyntaxException, IOException;
 
     /**
-     *
+     * Set the workflow object in to Client from the given workflow String (Workflow.xwf context as a string)
      * @param workflowAsaString
      */
 	public abstract void loadWorkflowasaString(String workflowAsaString);
 
     /**
-     *
-     * @param fileName
+     * This file has to be a properties file with properly setup the inputName values
+     * @param fileName Path of the properties file
      * @return
      * @throws IOException
      */
 	public abstract NameValue[] setInputs(String fileName) throws IOException;
 
     /**
-     *
+     * Provide input list as a Properties object with properly setup input Name values
      * @param inputList
      */
 	public abstract void setInputs(Properties inputList);
 
     /**
-     *
+     * run the workflow with given topic ID and user will be null
      * @param topic
      * @return
      */
 	public abstract String runWorkflow(String topic);
 
     /**
-     *
+     * run the workflow with given topic ID and user
      * @param topic
      * @param user
      * @return
@@ -89,7 +89,7 @@ public interface AiravataAPI {
 	public abstract String runWorkflow(String topic, String user);
 
     /**
-     *
+     * run the workflow with given topic,user, metadata and workflowInstanceName
      * @param topic
      * @param user
      * @param metadata
@@ -99,14 +99,15 @@ public interface AiravataAPI {
 			String metadata, String workflowInstanceName);
 
     /**
-     *
+     * Returns the Monitor object for given experiment
      * @param topic
-     * @return
+     * @return Monitor handler, so that user can use this object to extract notification
+     *         for this particular experiment
      */
 	public abstract Monitor getWorkflowExecutionMonitor(String topic);
 
     /**
-     *
+     * Returns a Monitor object with given listener
      * @param topic
      * @param listener
      * @return
@@ -115,7 +116,7 @@ public interface AiravataAPI {
 			MonitorEventListener listener);
 
     /**
-     *
+     * launch the workflow with given topic and given input Values
      * @param topic
      * @param inputs
      * @return
@@ -125,7 +126,7 @@ public interface AiravataAPI {
 			throws Exception;
 
     /**
-     *
+     * launch the workflow with given topic,input values and user
      * @param topic
      * @param inputs
      * @param user
@@ -136,7 +137,8 @@ public interface AiravataAPI {
 			String user) throws Exception;
 
     /**
-     *
+     * This could be considered as mostly recommended workflow launch method which required all the parameters.
+     * This accept topic,input values in NameValue array,username,metadata, and workflowInstanceName
      * @param topic
      * @param inputs
      * @param user
@@ -149,7 +151,7 @@ public interface AiravataAPI {
 			throws Exception;
 
     /**
-     *
+     * Extract WorkflowExecution data based on the given user
      * @param user
      * @return
      * @throws RegistryException
@@ -158,7 +160,7 @@ public interface AiravataAPI {
 			String user) throws RegistryException;
 
     /**
-     *
+     * Extract WorkflowExecution data based on the given topic, we do exact match for the topic
      * @param topic
      * @return
      * @throws RegistryException
@@ -167,7 +169,7 @@ public interface AiravataAPI {
 			throws RegistryException;
 
 	/**
-	 * 
+	 * Extract WorkflowExecution data based on the given user, but return the data in given size
 	 * @param user
 	 * @param pageSize
 	 *            - number of executions to return (page size)
@@ -180,13 +182,13 @@ public interface AiravataAPI {
 			String user, int pageSize, int PageNo) throws RegistryException;
 
     /**
-     *
+     * Gives the registry handler to do registry related operations
      * @return
      */
 	public abstract AiravataRegistry getRegistry();
 
     /**
-     *
+     * Returns configuration object of AiravataClient API
      * @return
      */
 	public abstract AiravataClientConfiguration getClientConfiguration();
@@ -236,7 +238,7 @@ public interface AiravataAPI {
 			String workflowTemplateId) throws Exception;
 
     /**
-     *
+     * Returns the workflow file as a string
      * @param workflowTemplateId
      * @return
      * @throws RegistryException
@@ -248,49 +250,50 @@ public interface AiravataAPI {
 			RepositoryException;
 
     /**
-     *
+     * Returns the AiravataManager
      * @return
      */
 	public AiravataManager getAiravataManager();
 
     /**
-     *
+     * Returns the ApplicationManager
      * @return
      */
 	public ApplicationManager getApplicationManager();
 
     /**
-     *
+     * Returns the WorkflowManager
      * @return
      */
 	public WorkflowManager getWorkflowManager();
 
     /**
-     *
+     * Returns the ProvenanceManager
      * @return
      */
 	public ProvenanceManager getProvenanceManager();
 
     /**
-     *
+     * Returns the UserManager
      * @return
      */
 	public UserManager getUserManager();
 
     /**
-     *
+     * Returns the ExecutionManager
      * @return
      */
 	public ExecutionManager getExecutionManager();
 
     /**
-     *
+     * Returns the Current User
      * @return
      */
 	public String getCurrentUser();
 
     /**
-     *
+     * Gives the service Node IDs for the given template ID, this will be useful when you want to know the service ID to
+     * Configure each node with different WorkflowContextHeaders
      * @param templateID
      * @return
      */
