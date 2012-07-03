@@ -228,9 +228,9 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         leftPanel.add(txtInputDir);
         leftPanel.add(lblOutputDirectory);
         leftPanel.add(txtOutputDir);
-        leftPanel.add(lblProgramData);
-        leftPanel.add(txtWorkingDir);
         leftPanel.add(lblWorkingDir);
+        leftPanel.add(txtWorkingDir);
+        leftPanel.add(lblProgramData);
         
         leftPanel.add(new JLabel());
         leftPanel.add(lblStdin);
@@ -240,7 +240,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         leftPanel.add(lblStderr);
         leftPanel.add(txtSTDERR);
         
-        SwingUtil.layoutToGrid(leftPanel.getSwingComponent(), 9, 2, SwingUtil.WEIGHT_NONE, 1);
+        SwingUtil.layoutToGrid(leftPanel.getSwingComponent(), 8, 2, SwingUtil.WEIGHT_NONE, 1);
         
         GridPanel rightPanel = new GridPanel();
         rightPanel.add(lblEnvironmentalVariables);
