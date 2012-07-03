@@ -160,7 +160,7 @@ public class SchedulerImpl implements Scheduler {
 
     private HostDescription scheduleToHost(AiravataRegistry regService, String serviceName) {
         // Since xbaya removes the other scheduling configuration here we only have pick the 0th element of the array
-        String hostName = "";
+        String hostName = null;
         ContextHeaderDocument.ContextHeader currentContextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
         if (currentContextHeader != null && currentContextHeader.getWorkflowSchedulingContext() != null) {
             ApplicationSchedulingContextDocument.ApplicationSchedulingContext[] applicationSchedulingContextArray = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray();
@@ -174,20 +174,27 @@ public class SchedulerImpl implements Scheduler {
 		try {
 			deploymentDescription = regService.searchDeploymentDescription(serviceName);
 	        for (HostDescription hostDesc : deploymentDescription.keySet()) {
-	        	result = hostDesc;
-	            log.info("Found service on: " + result.getType().getHostAddress());
-                // if user specify the host in the workflowcontext header we pick that host instead of picking the last hostName
-                if(hostName != null){
-                    if(hostDesc.getType().getHostName().equals(hostName)){
-                        break;
-                    }
-                }
-			}
-		} catch (RegistryException e) {
-			e.printStackTrace();
-		}
+                result = hostDesc;
+                log.info("Found service on: " + result.getType().getHostAddress());
+            }
+        } catch (RegistryException e) {
+            e.printStackTrace();
+        }
+        // if user specify the host in the workflowcontext header we pick that host instead of picking the last hostName
+        if(hostName != null){
+            HostDescription hostDescription = null;
+            try {
+                hostDescription = regService.getHostDescription(hostName);
+            } catch (RegistryException e) {
+                e.printStackTrace();
+                log.warn("Wrong host Name provided in WorkflowContext Header");
+            }
+            if(hostDescription != null){
+                result = hostDescription;
+            }
+        }
         if (result==null){
-        	log.warn("Applcation  " + serviceName + " not found in registry");
+        	log.warn("Application  " + serviceName + " not found in registry");
         }
         return result;
 //        List<HostDescription> hosts = regService.getServiceLocation(serviceName);
