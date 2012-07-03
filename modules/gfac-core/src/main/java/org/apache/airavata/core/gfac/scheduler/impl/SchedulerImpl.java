@@ -91,7 +91,8 @@ public class SchedulerImpl implements Scheduler {
          */
         ApplicationDeploymentDescription app = null;
         try {
-            app = registryService.getDeploymentDescription(context.getServiceName(), host.getType().getHostName());
+            app = registryService.getDeploymentDescription(context.getServiceName(),
+                    getRegisteredHost(registryService,context.getServiceName()).getType().getHostName());
         } catch (RegistryException e2) {
             e2.printStackTrace();
         }
@@ -171,15 +172,7 @@ public class SchedulerImpl implements Scheduler {
         log.info("Searching registry for some deployed application hosts");
         HostDescription result = null;
         Map<HostDescription, List<ApplicationDeploymentDescription>> deploymentDescription = null;
-		try {
-			deploymentDescription = regService.searchDeploymentDescription(serviceName);
-	        for (HostDescription hostDesc : deploymentDescription.keySet()) {
-                result = hostDesc;
-                log.info("Found service on: " + result.getType().getHostAddress());
-            }
-        } catch (RegistryException e) {
-            e.printStackTrace();
-        }
+        result = getRegisteredHost(regService, serviceName);
         // if user specify the host in the workflowcontext header we pick that host instead of picking the last hostName
         if(hostName != null){
             HostDescription hostDescription = null;
@@ -210,5 +203,20 @@ public class SchedulerImpl implements Scheduler {
 //            log.warn("Applcation  " + serviceName + " not found in registry");
 //            return null;
 //        }
+    }
+
+    private HostDescription getRegisteredHost(AiravataRegistry regService, String serviceName) {
+        Map<HostDescription, List<ApplicationDeploymentDescription>> deploymentDescription;
+        HostDescription result = null;
+        try {
+            deploymentDescription = regService.searchDeploymentDescription(serviceName);
+            for (HostDescription hostDesc : deploymentDescription.keySet()) {
+                result = hostDesc;
+                log.info("Found service on: " + result.getType().getHostAddress());
+            }
+        } catch (RegistryException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }
