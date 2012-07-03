@@ -43,7 +43,6 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
@@ -80,7 +79,7 @@ public class HostDescriptionDialog extends JDialog {
     
     private HostDescription originalHostDescription;
     
-    private XBayaEngine engine;
+//    private XBayaEngine engine;
 
 	private JComboBox cmbResourceProtocol;
 
@@ -93,16 +92,15 @@ public class HostDescriptionDialog extends JDialog {
 	private static final String REMOTE_PROTOCOL_STR_HADOOP="Hadoop";
 	
     
-    public HostDescriptionDialog(XBayaEngine engine) {
-    	this(engine,true,null);
+    public HostDescriptionDialog(AiravataRegistry registry) {
+    	this(registry,true,null);
     }
     
     /**
      * @param engine XBaya workflow engine
      */
-    public HostDescriptionDialog(XBayaEngine engine, boolean newHost, HostDescription originalHostDescription) {
+    public HostDescriptionDialog(AiravataRegistry registry, boolean newHost, HostDescription originalHostDescription) {
         setNewHost(newHost);
-        setEngine(engine);
         setOriginalHostDescription(originalHostDescription);
         addWindowListener(new WindowAdapter() {
             @Override
@@ -122,7 +120,7 @@ public class HostDescriptionDialog extends JDialog {
 //				}
             }
         });
-        setRegistry(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
+        setRegistry(registry);
         initGUI();
     }
 
@@ -283,15 +281,16 @@ public class HostDescriptionDialog extends JDialog {
 
 	private GridPanel createGlobusRemoteProtocolPanel() {
 		GridPanel globusPanel = new GridPanel();
-        this.GridFTPTextField = new XBayaTextField();
-        this.globusGateKeeperTextField = new XBayaTextField();
-        globusGateKeeperLabel = new XBayaLabel("GRAM Endpoint", this.globusGateKeeperTextField);        
-        gridFTPLabel = new XBayaLabel("Grid FTP Endpoint", this.GridFTPTextField);
+        if (GridFTPTextField==null) {
+			this.GridFTPTextField = new XBayaTextField();
+			this.globusGateKeeperTextField = new XBayaTextField();
+			globusGateKeeperLabel = new XBayaLabel("GRAM Endpoint", this.globusGateKeeperTextField);        
+	        gridFTPLabel = new XBayaLabel("Grid FTP Endpoint", this.GridFTPTextField);
+		}
         globusPanel.add(globusGateKeeperLabel);
         globusPanel.add(globusGateKeeperTextField);
         globusPanel.add(gridFTPLabel);
         globusPanel.add(GridFTPTextField);
-//        globusPanel.getContentPanel().setBorder(BorderFactory.createEtchedBorder());
         SwingUtil.layoutToGrid(globusPanel.getSwingComponent(), 2, 2, SwingUtil.WEIGHT_NONE, 1);
         return globusPanel;
 	}
@@ -405,7 +404,7 @@ public class HostDescriptionDialog extends JDialog {
 			getRegistry().saveHostDescription(desc);
 			setHostCreated(true);
 		} catch (RegistryException e) {
-			getEngine().getGUI().getErrorWindow().error(e);
+			setError(e.getLocalizedMessage());
 		}
     }
 
@@ -452,11 +451,11 @@ public class HostDescriptionDialog extends JDialog {
 		this.originalHostDescription = originalHostDescription;
 	}
 
-	public XBayaEngine getEngine() {
-		return engine;
-	}
-
-	public void setEngine(XBayaEngine engine) {
-		this.engine = engine;
-	}
+//	public XBayaEngine getEngine() {
+//		return engine;
+//	}
+//
+//	public void setEngine(XBayaEngine engine) {
+//		this.engine = engine;
+//	}
 }
