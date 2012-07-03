@@ -41,21 +41,15 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
-import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.ParameterType;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
-import org.apache.xmlbeans.XmlCursor;
 
 public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private static final long serialVersionUID = 3920479739097405014L;
@@ -71,6 +65,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private JButton btnDeleteVariable;
     private JButton okButton;
     private AiravataRegistry registry;
+	private XBayaTextField txtWorkingDir;
 
     /**
      * Launch the application.
@@ -152,9 +147,11 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         lblLocations.setFont(new Font("Tahoma", Font.BOLD, 11));
 
         txtOutputDir = new XBayaTextField();
-
         XBayaLabel lblOutputDirectory = new XBayaLabel("Output directory",txtOutputDir);
 
+        txtWorkingDir = new XBayaTextField();
+        XBayaLabel lblWorkingDir = new XBayaLabel("Working directory",txtWorkingDir);
+        
         JLabel lblProgramData = new JLabel("Program data");
         lblProgramData.setFont(new Font("Tahoma", Font.BOLD, 11));
 
@@ -232,6 +229,9 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         leftPanel.add(lblOutputDirectory);
         leftPanel.add(txtOutputDir);
         leftPanel.add(lblProgramData);
+        leftPanel.add(txtWorkingDir);
+        leftPanel.add(lblWorkingDir);
+        
         leftPanel.add(new JLabel());
         leftPanel.add(lblStdin);
         leftPanel.add(txtSTDIN);
@@ -240,7 +240,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         leftPanel.add(lblStderr);
         leftPanel.add(txtSTDERR);
         
-        SwingUtil.layoutToGrid(leftPanel.getSwingComponent(), 7, 2, SwingUtil.WEIGHT_NONE, 1);
+        SwingUtil.layoutToGrid(leftPanel.getSwingComponent(), 9, 2, SwingUtil.WEIGHT_NONE, 1);
         
         GridPanel rightPanel = new GridPanel();
         rightPanel.add(lblEnvironmentalVariables);

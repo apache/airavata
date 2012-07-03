@@ -47,8 +47,8 @@ import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.apache.airavata.xbaya.ui.dialogs.component.URLRegistryWindow;
 import org.apache.airavata.xbaya.ui.dialogs.descriptors.ApplicationDescriptionDialog;
+import org.apache.airavata.xbaya.ui.dialogs.descriptors.DeploymentDescriptionDialog;
 import org.apache.airavata.xbaya.ui.dialogs.descriptors.HostDescriptionDialog;
-import org.apache.airavata.xbaya.ui.dialogs.descriptors.ServiceDescriptionDialog;
 import org.apache.airavata.xbaya.ui.experiment.RegistryLoaderWindow;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
 import org.apache.airavata.xbaya.ui.widgets.ToolbarButton;
@@ -197,10 +197,11 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
 //	        
 //        xbayaMenuItem.add(newMenu);
         xbayaMenuItem.add(newWorkflowTabItem);
+//        xbayaMenuItem.add(this.registerServiceDesc);
         xbayaMenuItem.add(registerHostDesc);
         xbayaMenuItem.add(registerApplicationDesc);
         xbayaMenuItem.add(this.openWorkflowItem);
-        
+
         xbayaMenuItem.addSeparator();
         
         xbayaMenuItem.add(clearWorkflowItem);
@@ -309,10 +310,12 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
             public void actionPerformed(ActionEvent e) {
                 if (XBayaUtil.acquireJCRRegistry(engine)) {
                     try {
-                        ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(
-                                engine.getConfiguration().getJcrComponentRegistry()
-                                        .getRegistry());
-                        serviceDescriptionDialog.open();
+//                    	DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
+//                    	serviceDescriptionDialog.open();
+//                        ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(
+//                                engine.getConfiguration().getJcrComponentRegistry()
+//                                        .getRegistry());
+//                        serviceDescriptionDialog.open();
                     } catch (Exception e1) {
                         engine.getGUI().getErrorWindow().error(e1);
                     }
@@ -354,7 +357,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
                 if (XBayaUtil.acquireJCRRegistry(engine)) {
                     try {
                         HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(
-                                engine);
+                        		engine.getConfiguration().getJcrComponentRegistry().getRegistry());
                         hostDescriptionDialog.open();
                     } catch (Exception e1) {
                         engine.getGUI().getErrorWindow().error(e1);

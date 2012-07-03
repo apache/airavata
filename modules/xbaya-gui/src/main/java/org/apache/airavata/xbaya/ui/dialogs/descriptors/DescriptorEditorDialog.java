@@ -188,7 +188,7 @@ public class DescriptorEditorDialog extends JDialog {
     	switch (descriptorType){
 	    	case HOST:
 	    		HostDescription h = (HostDescription) getSelected();
-	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine,false,h);
+	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry(),false,h);
 	    		hostDescriptionDialog.setLocationRelativeTo(this.engine.getGUI().getFrame());
 	    		hostDescriptionDialog.open();
 	    		if (hostDescriptionDialog.isHostCreated()) {
@@ -219,7 +219,7 @@ public class DescriptorEditorDialog extends JDialog {
     private void newDescriptor() {
     	switch (descriptorType){
 	    	case HOST:
-	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine);
+	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
 	    		hostDescriptionDialog.open();
 	    		if (hostDescriptionDialog.isHostCreated()){
 	    			loadDescriptors();
