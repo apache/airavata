@@ -99,7 +99,7 @@ public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
 
     private void deleteServiceDescription(JTree tree) throws Exception {
         if (askQuestion("Applications",
-                "Are you sure that you want to remove all applications in this registry?")) {
+                "Are you sure that you want to remove all applications defined in this registry?")) {
             AiravataRegistry registry = getRegistry();
             List<ServiceDescription> descriptions = getServiceDescriptions().getDescriptions();
             for (ServiceDescription descriptionWrap : descriptions) {

@@ -104,7 +104,7 @@ public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
 	}
 
     private boolean deleteServiceDescription(JTree tree) throws RegistryException {
-        if (askQuestion("Application", "Are you sure that you want to remove the application service \""
+        if (askQuestion("Application", "Are you sure that you want to remove the applications associated with \""
                 + getServiceDescription().getType().getName() + "\"?")) {
             getRegistry().deleteServiceDescription(getServiceDescription().getType().getName());
             ((AbstractAiravataTreeNode) getParent()).refresh();

@@ -171,7 +171,7 @@ public class DescriptorEditorDialog extends JDialog {
         		title="Host Descriptions";
         		break;
         	case SERVICE:
-        		title="Service Descriptions";
+        		title="Applications";
         		break;
         	case APPLICATION:
         		title="Application Descriptions";
@@ -267,7 +267,7 @@ public class DescriptorEditorDialog extends JDialog {
 	    	case SERVICE:
 	        	ServiceDescription d = (ServiceDescription) getSelected();
 	    		title = "Service description";
-	    		question = "Are you sure that you want to remove the service description \""
+	    		question = "Are you sure that you want to remove the applications associated with \""
 	                    + d.getType().getName() + "\"?";
 	    		break;
 	    	case APPLICATION:
