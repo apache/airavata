@@ -58,7 +58,7 @@ public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return "Services";
+        return "Application Services";
     }
 
     @Override

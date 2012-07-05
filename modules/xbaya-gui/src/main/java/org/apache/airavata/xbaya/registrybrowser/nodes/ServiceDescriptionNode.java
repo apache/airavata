@@ -37,7 +37,7 @@ import org.apache.airavata.xbaya.model.registrybrowser.ServiceParameters;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.DeleteAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.EditAction;
-import org.apache.airavata.xbaya.ui.dialogs.descriptors.ServiceDescriptionDialog;
+import org.apache.airavata.xbaya.ui.dialogs.descriptors.DeploymentDescriptionDialog;
 
 public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
 	private ServiceDescription serviceDescription;
@@ -92,8 +92,10 @@ public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
     }
 
 	private boolean editServiceDescription(JTree tree) {
-		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry(),false,getServiceDescription());
-		serviceDescriptionDialog.open();
+		DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(getRegistry(),false,getServiceDescription());
+    	serviceDescriptionDialog.open();
+//		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry(),false,getServiceDescription());
+//		serviceDescriptionDialog.open();
 		if (serviceDescriptionDialog.isServiceCreated()) {
 		    refresh();
 		    reloadTreeNode(tree, this);
@@ -102,7 +104,7 @@ public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
 	}
 
     private boolean deleteServiceDescription(JTree tree) throws RegistryException {
-        if (askQuestion("Service description", "Are you sure that you want to remove the service description \""
+        if (askQuestion("Application", "Are you sure that you want to remove the application service \""
                 + getServiceDescription().getType().getName() + "\"?")) {
             getRegistry().deleteServiceDescription(getServiceDescription().getType().getName());
             ((AbstractAiravataTreeNode) getParent()).refresh();
