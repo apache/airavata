@@ -150,7 +150,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
         XBayaLabel lblOutputDirectory = new XBayaLabel("Output directory",txtOutputDir);
 
         txtWorkingDir = new XBayaTextField();
-        XBayaLabel lblWorkingDir = new XBayaLabel("Working directory",txtWorkingDir);
+        XBayaLabel lblWorkingDir = new XBayaLabel("Static Working directory",txtWorkingDir);
         
         JLabel lblProgramData = new JLabel("Program data");
         lblProgramData.setFont(new Font("Tahoma", Font.BOLD, 11));

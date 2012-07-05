@@ -21,24 +21,58 @@
 
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
+
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.model.registrybrowser.*;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
+import org.apache.airavata.xbaya.model.registrybrowser.AiravataConfigurations;
+import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptionWrap;
+import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptions;
+import org.apache.airavata.xbaya.model.registrybrowser.EventingServiceURL;
+import org.apache.airavata.xbaya.model.registrybrowser.EventingServiceURLs;
+import org.apache.airavata.xbaya.model.registrybrowser.GFacURL;
+import org.apache.airavata.xbaya.model.registrybrowser.GFacURLs;
+import org.apache.airavata.xbaya.model.registrybrowser.HostDescriptions;
+import org.apache.airavata.xbaya.model.registrybrowser.InputParameters;
+import org.apache.airavata.xbaya.model.registrybrowser.InterpreterServiceURL;
+import org.apache.airavata.xbaya.model.registrybrowser.InterpreterServiceURLs;
+import org.apache.airavata.xbaya.model.registrybrowser.MessageBoxURL;
+import org.apache.airavata.xbaya.model.registrybrowser.MessageBoxURLs;
+import org.apache.airavata.xbaya.model.registrybrowser.OutputParameters;
+import org.apache.airavata.xbaya.model.registrybrowser.ServiceDescriptions;
+import org.apache.airavata.xbaya.model.registrybrowser.ServiceParameter;
+import org.apache.airavata.xbaya.model.registrybrowser.ServiceParameters;
+import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflow;
+import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowExperiment;
+import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowExperiments;
+import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowService;
+import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowTemplate;
+import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowTemplates;
 
 public class AiravataTreeNodeFactory {
 	public static TreeNode getTreeNode(Object o,TreeNode parent){
 		if (o instanceof XBayaEngine){
             return new RegistryNode((XBayaEngine)o,parent);
-        }/*else if (o instanceof Registry){
-			return new RegistryNode((Registry)o,parent);
-		}*/else if (o instanceof GFacURLs){
+        }else if (o instanceof AiravataConfigurations){
+			return new AiravataConfigurationsNode((AiravataConfigurations)o,parent);
+		}else if (o instanceof GFacURLs){
 			return new GFacURLsNode((GFacURLs)o,parent);
 		}else if (o instanceof GFacURL){
 			return new GFacURLNode((GFacURL)o,parent);
+		}else if (o instanceof InterpreterServiceURLs){
+			return new InterpreterServiceURLsNode((InterpreterServiceURLs)o,parent);
+		}else if (o instanceof InterpreterServiceURL){
+			return new InterpreterServiceURLNode((InterpreterServiceURL)o,parent);
+		}else if (o instanceof MessageBoxURLs){
+			return new MessageBoxURLsNode((MessageBoxURLs)o,parent);
+		}else if (o instanceof MessageBoxURL){
+			return new MessageBoxURLNode((MessageBoxURL)o,parent);
+		}else if (o instanceof EventingServiceURLs){
+			return new EventingServiceURLsNode((EventingServiceURLs)o,parent);
+		}else if (o instanceof EventingServiceURL){
+			return new EventingServiceURLNode((EventingServiceURL)o,parent);
 		}else if (o instanceof HostDescriptions){
 			return new HostDescriptionsNode((HostDescriptions)o,parent);
 		}else if (o instanceof HostDescription){
