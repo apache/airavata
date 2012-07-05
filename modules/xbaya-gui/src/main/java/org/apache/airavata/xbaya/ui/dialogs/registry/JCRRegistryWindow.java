@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -110,10 +111,22 @@ public class JCRRegistryWindow {
         XBayaConfiguration configuration = this.engine.getConfiguration();
 
         try {
-            this.engine.getMonitor().getConfiguration().
-                    setBrokerURL(registry.getRegistry().getEventingServiceURLList().get(0));
-            this.engine.getMonitor().getConfiguration().
-                    setMessageBoxURL(registry.getRegistry().getMessageBoxServiceURLList().get(0));
+            List<URI> eventingServiceURLList = registry.getRegistry().getEventingServiceURLList();
+			if (eventingServiceURLList.size()>0) {
+				this.engine
+						.getMonitor()
+						.getConfiguration()
+						.setBrokerURL(
+								eventingServiceURLList.get(0));
+			}
+			List<URI> messageBoxServiceURLList = registry.getRegistry().getMessageBoxServiceURLList();
+			if (messageBoxServiceURLList.size()>0) {
+				this.engine
+						.getMonitor()
+						.getConfiguration()
+						.setMessageBoxURL(
+								messageBoxServiceURLList.get(0));
+			}
         } catch (RegistryException e) {
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.URL_WRONG, e);
             return;
