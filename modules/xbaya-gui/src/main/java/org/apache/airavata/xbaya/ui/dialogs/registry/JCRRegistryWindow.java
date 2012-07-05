@@ -33,6 +33,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -107,6 +108,17 @@ public class JCRRegistryWindow {
             return;
         }
         XBayaConfiguration configuration = this.engine.getConfiguration();
+
+        try {
+            this.engine.getMonitor().getConfiguration().
+                    setBrokerURL(registry.getRegistry().getEventingServiceURLList().get(0));
+            this.engine.getMonitor().getConfiguration().
+                    setMessageBoxURL(registry.getRegistry().getMessageBoxServiceURLList().get(0));
+        } catch (RegistryException e) {
+            this.engine.getGUI().getErrorWindow().error(ErrorMessages.URL_WRONG, e);
+            return;
+        }
+
         configuration.setJcrComponentRegistry(registry);
         configuration.setRegigstryUserName(username);
         configuration.setRegistryPassphrase(password);
