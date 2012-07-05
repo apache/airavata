@@ -56,6 +56,8 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     private JButton okButton;
     private AiravataRegistry registry;
     private ApplicationDeploymentDescription descriptor;
+	private XBayaLabel lblCpuCount;
+	private XBayaLabel lblProcessorPerNode;
 
     /**
      * Create the dialog.
@@ -121,17 +123,27 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         txtCpuCount = new XBayaTextField();
         txtProcessorsPerNode = new XBayaTextField();
 
-        cmbJobType = new XBayaComboBox(new DefaultComboBoxModel(getJobTypesAsStrings()));
+        DefaultComboBoxModel cmbModelJobType = new DefaultComboBoxModel(getJobTypesAsStrings());
+		cmbJobType = new XBayaComboBox(cmbModelJobType);
         cmbJobType.setEditable(false);
-
-
+        cmbJobType.getSwingComponent().addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				boolean disabled=cmbJobType.getText().equalsIgnoreCase(JobTypeType.SERIAL.toString()) || cmbJobType.getText().equalsIgnoreCase(JobTypeType.SINGLE.toString());
+				txtCpuCount.setEnabled(!disabled);
+				txtProcessorsPerNode.setEnabled(!disabled);
+				lblCpuCount.getSwingComponent().setEnabled(!disabled);
+				lblProcessorPerNode.getSwingComponent().setEnabled(!disabled);
+			}
+        });
+        
 		XBayaLabel lbljobType = new XBayaLabel("Job Type",cmbJobType);
 		XBayaLabel lblProjectAccountNumber = new XBayaLabel("Project Account Number",txtProjectAccountNumber);
 		XBayaLabel lblProjectAccountDescription = new XBayaLabel("Project Account Description",txtProjectAccountDescription);
         XBayaLabel lblQueueType = new XBayaLabel("Queue Type",txtQueueType);
 		XBayaLabel lblMaxWallTime = new XBayaLabel("Max Wall Time",txtMaxWallTime);
-		XBayaLabel lblCpuCount = new XBayaLabel("CPU Count",txtCpuCount);
-		XBayaLabel lblProcessorPerNode = new XBayaLabel("Processor Per Node", txtProcessorsPerNode);
+		lblCpuCount = new XBayaLabel("CPU Count",txtCpuCount);
+		lblProcessorPerNode = new XBayaLabel("Processor Per Node", txtProcessorsPerNode);
 		XBayaLabel lblMinMemory = new XBayaLabel("Min Memory",txtMinMemory);
 		XBayaLabel lblMaxMemory = new XBayaLabel("Max Memory",txtMaxMemory);
 

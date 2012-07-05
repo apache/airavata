@@ -92,7 +92,7 @@ public class ViewMenuItem {
 	}
 
 	private JMenuItem createShpwJCRRegistryView() {
-		JMenuItem menuItem = new JMenuItem("JCR Registry");
+		JMenuItem menuItem = new JMenuItem("Airavata Registry");
 		menuItem.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				engine.getGUI().viewJCRBrowserPanel();
