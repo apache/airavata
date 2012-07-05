@@ -29,6 +29,7 @@ public class JCRBrowserIcons {
 	public static final Icon APPLICATION_ICON=SwingUtil.createImageIcon("application.png");
 	public static final Icon APPLICATIONS_ICON=SwingUtil.createImageIcon("applications.png");
 	public static final Icon REGISTRY_ICON=SwingUtil.createImageIcon("jcr-repo.png");
+	public static final Icon AIRAVATA_CONFIG_ICON=SwingUtil.createImageIcon("airavata-config.png");
 	public static final Icon GFAC_URLS_ICON=SwingUtil.createImageIcon("gfac_urls.png");
 	public static final Icon GFAC_URL_ICON=SwingUtil.createImageIcon("gfac_url.png");
 	public static final Icon HOST_ICON=SwingUtil.createImageIcon("host.png");

@@ -61,7 +61,7 @@ public class AiravataConfigurationsNode extends AbstractAiravataTreeNode {
 
     @Override
     public Icon getIcon(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return JCRBrowserIcons.GFAC_URLS_ICON;
+        return JCRBrowserIcons.AIRAVATA_CONFIG_ICON;
     }
 
     @Override
