@@ -46,7 +46,7 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	private AiravataClient client;
 	
 	public ProvenanceManagerImpl(AiravataClient client) {
-		setClient(getClient());
+		setClient(client);
 	}
 	
 	@Override
