@@ -306,6 +306,7 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
     private void saveApplicationDescriptionAdvancedOptions() {
     	getShellApplicationDescriptionType().setInputDataDirectory(txtInputDir.getText());
     	getShellApplicationDescriptionType().setOutputDataDirectory(txtOutputDir.getText());
+    	getShellApplicationDescriptionType().setStaticWorkingDirectory(txtWorkingDir.getText());
     	getShellApplicationDescriptionType().setStandardInput(txtSTDIN.getText());
     	getShellApplicationDescriptionType().setStandardOutput(txtSTDOUT.getText());
     	getShellApplicationDescriptionType().setStandardError(txtSTDERR.getText());
@@ -322,12 +323,12 @@ public class ApplicationDescriptionAdvancedOptionDialog extends JDialog {
                 envType.setValue(paramValue);
             }
         }
-    	int a=10;
     }
 
     private void loadApplicationDescriptionAdvancedOptions() {
         txtInputDir.setText(getShellApplicationDescriptionType().getInputDataDirectory());
         txtOutputDir.setText(getShellApplicationDescriptionType().getOutputDataDirectory());
+        txtWorkingDir.setText(getShellApplicationDescriptionType().getStaticWorkingDirectory());
         txtSTDIN.setText(getShellApplicationDescriptionType().getStandardInput());
         txtSTDOUT.setText(getShellApplicationDescriptionType().getStandardOutput());
         txtSTDERR.setText(getShellApplicationDescriptionType().getStandardError());

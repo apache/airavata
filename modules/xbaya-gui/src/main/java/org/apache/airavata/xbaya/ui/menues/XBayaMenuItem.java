@@ -47,6 +47,7 @@ import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.apache.airavata.xbaya.ui.dialogs.component.URLRegistryWindow;
 import org.apache.airavata.xbaya.ui.dialogs.descriptors.ApplicationDescriptionDialog;
+import org.apache.airavata.xbaya.ui.dialogs.descriptors.DeploymentDescriptionDialog;
 import org.apache.airavata.xbaya.ui.dialogs.descriptors.HostDescriptionDialog;
 import org.apache.airavata.xbaya.ui.experiment.RegistryLoaderWindow;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
@@ -196,9 +197,9 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
 //	        
 //        xbayaMenuItem.add(newMenu);
         xbayaMenuItem.add(newWorkflowTabItem);
-//        xbayaMenuItem.add(this.registerServiceDesc);
         xbayaMenuItem.add(registerHostDesc);
-        xbayaMenuItem.add(registerApplicationDesc);
+        xbayaMenuItem.add(this.registerServiceDesc);
+//        xbayaMenuItem.add(registerApplicationDesc);
         xbayaMenuItem.add(this.openWorkflowItem);
 
         xbayaMenuItem.addSeparator();
@@ -301,7 +302,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
     }
     
     private void createRegisterServiceDesc() {
-        this.registerServiceDesc = new JMenuItem("Service Description...");
+        this.registerServiceDesc = new JMenuItem("Register Application...");
 
         this.registerServiceDesc.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = 1L;
@@ -309,8 +310,8 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
             public void actionPerformed(ActionEvent e) {
                 if (XBayaUtil.acquireJCRRegistry(engine)) {
                     try {
-//                    	DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
-//                    	serviceDescriptionDialog.open();
+                    	DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
+                    	serviceDescriptionDialog.open();
 //                        ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(
 //                                engine.getConfiguration().getJcrComponentRegistry()
 //                                        .getRegistry());
