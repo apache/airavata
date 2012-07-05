@@ -380,7 +380,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 //            JLabel lblBindThisDeployment = new JLabel("Bind this deployment description to:");
 //            lblBindThisDeployment.setFont(new Font("Tahoma", Font.BOLD, 11));
 
-            btnHostAdvanceOptions=new JButton("Gram Configuration...");
+            btnHostAdvanceOptions=new JButton("HPC Configuration...");
             btnHostAdvanceOptions.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {

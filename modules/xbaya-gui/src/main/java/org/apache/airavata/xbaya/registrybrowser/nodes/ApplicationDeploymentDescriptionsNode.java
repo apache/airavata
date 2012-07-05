@@ -77,7 +77,7 @@ public class ApplicationDeploymentDescriptionsNode extends AbstractAiravataTreeN
 
     @Override
     public List<String> getSupportedActions() {
-        return Arrays.asList(AddAction.ID, RefreshAction.ID, DeleteAction.ID);
+        return Arrays.asList(RefreshAction.ID, DeleteAction.ID);
     }
 
     public boolean triggerAction(JTree tree, String action) throws Exception {

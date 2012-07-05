@@ -306,9 +306,14 @@ public class DeploymentDescriptionDialog extends JDialog {
     private GridPanel createHostDeploymentTable() {
     	tblHosts = new JTable();
     	tblHosts.setTableHeader(null);
-//        tblHosts.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
         tblHosts.setFillsViewportHeight(true);
-        tblModelHosts = new DefaultTableModel(new Object[][] {}, new String[] { "Host"});
+        tblModelHosts = new DefaultTableModel(new Object[][] {}, new String[] { "Host"}){
+			private static final long serialVersionUID = -5973463590447809117L;
+			@Override
+            public boolean isCellEditable(int row, int column) {
+               return false;
+            }
+        };
         tblHosts.setModel(tblModelHosts);
        
         ListSelectionModel selectionModel = tblHosts.getSelectionModel();
@@ -611,7 +616,7 @@ public class DeploymentDescriptionDialog extends JDialog {
 
     private void validateDialog() throws Exception {
         if (getServiceName() == null || getServiceName().trim().equals("")) {
-            throw new Exception("Name of the service cannot be empty!!!");
+            throw new Exception("Name of the application cannot be empty!!!");
         }
 
         ServiceDescription serviceDescription2 = null;

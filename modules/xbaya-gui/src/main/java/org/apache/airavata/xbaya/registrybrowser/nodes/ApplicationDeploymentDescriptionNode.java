@@ -70,7 +70,7 @@ public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNo
 
     @Override
     public List<String> getSupportedActions() {
-        return Arrays.asList(EditAction.ID, DeleteAction.ID);
+        return Arrays.asList(DeleteAction.ID);
     }
 
     @Override

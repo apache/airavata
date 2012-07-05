@@ -30,6 +30,7 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.model.registrybrowser.AiravataConfigurations;
 import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptions;
 import org.apache.airavata.xbaya.model.registrybrowser.GFacURLs;
 import org.apache.airavata.xbaya.model.registrybrowser.HostDescriptions;
@@ -51,8 +52,8 @@ public class RegistryNode extends AbstractAiravataTreeNode {
 
     protected List<TreeNode> getChildren() {
         List<Object> children = new ArrayList<Object>();
-        GFacURLs gFacURLs = new GFacURLs(getRegistry());
-        children.add(gFacURLs);
+        AiravataConfigurations airavataConfigurations = new AiravataConfigurations(getRegistry());
+        children.add(airavataConfigurations);
         HostDescriptions hostDescriptions = new HostDescriptions(getRegistry());
         children.add(hostDescriptions);
         ServiceDescriptions serviceDescriptions = new ServiceDescriptions(getRegistry());
