@@ -129,7 +129,7 @@ public class EditMenuItem {
     }
 
     private JMenuItem createEditHostDescription() {
-        JMenuItem menuItem = new JMenuItem("Host Descriptions...");
+        JMenuItem menuItem = new JMenuItem("Hosts...");
         menuItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
             	if (XBayaUtil.acquireJCRRegistry(engine)) {
