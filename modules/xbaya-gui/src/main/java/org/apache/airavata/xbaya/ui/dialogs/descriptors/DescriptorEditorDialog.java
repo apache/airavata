@@ -197,8 +197,10 @@ public class DescriptorEditorDialog extends JDialog {
 	    		break;
 	    	case SERVICE:
 	    		ServiceDescription d = (ServiceDescription) getSelected();
-	    		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry(),false,d);
-	    		serviceDescriptionDialog.open();
+	    		DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(getRegistry(),false,d);
+	        	serviceDescriptionDialog.open();
+//	    		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry(),false,d);
+//	    		serviceDescriptionDialog.open();
 	    		if (serviceDescriptionDialog.isServiceCreated()) {
 					loadDescriptors();
 				}
@@ -226,8 +228,10 @@ public class DescriptorEditorDialog extends JDialog {
 	    		}
 	    		break;
 	    	case SERVICE:
-	    		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry());
-	    		serviceDescriptionDialog.open();
+	    		DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(getRegistry());
+	        	serviceDescriptionDialog.open();
+//	    		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry());
+//	    		serviceDescriptionDialog.open();
 	    		if (serviceDescriptionDialog.isServiceCreated()){
 	    			loadDescriptors();
 	    		}

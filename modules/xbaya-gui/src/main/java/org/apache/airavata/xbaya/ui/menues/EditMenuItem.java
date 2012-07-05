@@ -93,7 +93,7 @@ public class EditMenuItem {
         
         editMenu.add(editHostDescription);
         editMenu.add(editServiceDescription);
-        editMenu.add(editApplicationDescription);
+//        editMenu.add(editApplicationDescription);
     }
 
     private JMenuItem createWorkflowDescriptionItem() {
@@ -142,7 +142,7 @@ public class EditMenuItem {
     }
     
     private JMenuItem createEditServiceDescription() {
-        JMenuItem menuItem = new JMenuItem("Service Descriptions...");
+        JMenuItem menuItem = new JMenuItem("Applications...");
         menuItem.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
             	if (XBayaUtil.acquireJCRRegistry(engine)) {

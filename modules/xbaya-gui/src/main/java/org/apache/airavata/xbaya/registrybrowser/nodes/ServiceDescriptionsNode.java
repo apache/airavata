@@ -36,7 +36,7 @@ import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.AddAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.DeleteAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.RefreshAction;
-import org.apache.airavata.xbaya.ui.dialogs.descriptors.ServiceDescriptionDialog;
+import org.apache.airavata.xbaya.ui.dialogs.descriptors.DeploymentDescriptionDialog;
 
 public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
     private ServiceDescriptions serviceDescriptions;
@@ -58,7 +58,7 @@ public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return "Application Services";
+        return "Applications";
     }
 
     @Override
@@ -84,8 +84,10 @@ public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
             deleteServiceDescription(tree);
             return true;
         } else if (action.equals(AddAction.ID)) {
-            ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry());
-            serviceDescriptionDialog.open();
+        	DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(getRegistry());
+        	serviceDescriptionDialog.open();
+//            ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry());
+//            serviceDescriptionDialog.open();
             if (serviceDescriptionDialog.isServiceCreated()) {
                 refresh();
                 reloadTreeNode(tree, this);
@@ -96,8 +98,8 @@ public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
     }
 
     private void deleteServiceDescription(JTree tree) throws Exception {
-        if (askQuestion("Service descriptions",
-                "Are you sure that you want to remove all service descriptions in this registry?")) {
+        if (askQuestion("Applications",
+                "Are you sure that you want to remove all applications in this registry?")) {
             AiravataRegistry registry = getRegistry();
             List<ServiceDescription> descriptions = getServiceDescriptions().getDescriptions();
             for (ServiceDescription descriptionWrap : descriptions) {
