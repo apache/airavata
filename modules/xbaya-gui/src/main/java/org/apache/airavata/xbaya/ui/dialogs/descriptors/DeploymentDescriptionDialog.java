@@ -136,21 +136,21 @@ public class DeploymentDescriptionDialog extends JDialog {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent arg0) {
-                if (isNewDescription()) {
-					String baseName = "Application";
-					int i;
-					String defaultName;
-					i = 1;
-					defaultName = baseName+i;
-					try {
-						while (getRegistry().getServiceDescription(defaultName) != null) {
-							defaultName = baseName + (++i);
-						}
-					} catch (Exception e) {
-					}
-					txtApplicationServiceName.setText(defaultName);
-					setServiceName(txtApplicationServiceName.getText());
-				}
+//                if (isNewDescription()) {
+//					String baseName = "Application";
+//					int i;
+//					String defaultName;
+//					i = 1;
+//					defaultName = baseName+i;
+//					try {
+//						while (getRegistry().getServiceDescription(defaultName) != null) {
+//							defaultName = baseName + (++i);
+//						}
+//					} catch (Exception e) {
+//					}
+//					txtApplicationServiceName.setText(defaultName);
+//					setServiceName(txtApplicationServiceName.getText());
+//				}
             }
         });
         setRegistry(registry);
@@ -235,7 +235,7 @@ public class DeploymentDescriptionDialog extends JDialog {
                 panel.add(resetButton);
             }
             {
-                okButton = new JButton("Save");
+                okButton = new JButton("Register");
                 if (!isNewDescription()){
                 	okButton.setText("Update");
                 }
@@ -327,7 +327,7 @@ public class DeploymentDescriptionDialog extends JDialog {
 							appType.addNewApplicationName();
 				    	}
 						HostDescriptionType hostType = deployDesc.getHostDescription().getType();
-						appType.getApplicationName().setStringValue(getServiceName()+"_"+hostType.getHostName()+"_app");
+						appType.getApplicationName().setStringValue(hostType.getHostName()+"_application");
 						getDeployments().put(hostType.getHostName(), deployDesc);
 						updateDeploymentTable();
 					}
@@ -668,6 +668,7 @@ public class DeploymentDescriptionDialog extends JDialog {
 				getRegistry().saveDeploymentDescription(getServiceName(), hostName, getDeployments().get(hostName).getApplicationDescription());
 			}
 	        setServiceCreated(true);
+	        JOptionPane.showMessageDialog(this,"Application '"+getServiceName()+"' is registered");
 		} catch (RegistryException e) {
 			setError(e.getMessage());
 			throw e;

@@ -31,9 +31,9 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptions;
 import org.apache.airavata.xbaya.model.registrybrowser.InputParameters;
 import org.apache.airavata.xbaya.model.registrybrowser.OutputParameters;
-import org.apache.airavata.xbaya.model.registrybrowser.ServiceParameters;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.DeleteAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.EditAction;
@@ -49,13 +49,14 @@ public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
 
 	@Override
 	protected List<TreeNode> getChildren() {
-		List<ServiceParameters> parameterTypeList=new ArrayList<ServiceParameters>();
+		List<Object> parameterTypeList=new ArrayList<Object>();
 		if (getServiceDescription().getType().getInputParametersArray().length>0){
 			parameterTypeList.add(new InputParameters(getServiceDescription().getType().getInputParametersArray()));
 		}
 		if (getServiceDescription().getType().getOutputParametersArray().length>0){
 			parameterTypeList.add(new OutputParameters(getServiceDescription().getType().getOutputParametersArray()));
 		}
+		parameterTypeList.add(new ApplicationDeploymentDescriptions(getRegistry(),getServiceDescription().getType().getName()));
 		return getTreeNodeList(parameterTypeList.toArray(), this);
 	}
 

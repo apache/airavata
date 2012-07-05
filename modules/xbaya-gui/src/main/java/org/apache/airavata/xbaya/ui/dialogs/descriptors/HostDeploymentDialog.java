@@ -109,9 +109,9 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
     
     private void iniGUI() {
         if (isNewDescriptor()) {
-			setTitle("New Host Deployment Description");
+			setTitle("New Application Deployment");
 		}else{
-			setTitle("Update Host Deployment Description: "+getOriginalDeploymentDescription().getType().getApplicationName().getStringValue());
+			setTitle("Update Application Deployment: "+getOriginalDeploymentDescription().getType().getApplicationName().getStringValue());
 		}
 		setBounds(100, 100, 600, 620);
         setModal(true);
@@ -131,7 +131,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
                 buttonPane.add(resetButton);
             }
             {
-                okButton = new JButton("Save");
+                okButton = new JButton("Add");
                 if (!isNewDescriptor()){
                 	okButton.setText("Update");
                 }
@@ -271,7 +271,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
             lnkNewHost.setText("Create new host...");
             lnkNewHost.setHorizontalAlignment(SwingConstants.TRAILING);
 
-            btnHostAdvanceOptions=new JButton("Gram Configuration...");
+            btnHostAdvanceOptions=new JButton("HPC Configuration...");
             btnHostAdvanceOptions.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
