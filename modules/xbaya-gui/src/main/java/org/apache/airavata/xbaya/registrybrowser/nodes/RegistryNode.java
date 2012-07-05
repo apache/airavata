@@ -57,9 +57,9 @@ public class RegistryNode extends AbstractAiravataTreeNode {
         children.add(hostDescriptions);
         ServiceDescriptions serviceDescriptions = new ServiceDescriptions(getRegistry());
         children.add(serviceDescriptions);
-        ApplicationDeploymentDescriptions applicationDeploymentDescriptions = new ApplicationDeploymentDescriptions(
-                getRegistry());
-        children.add(applicationDeploymentDescriptions);
+//        ApplicationDeploymentDescriptions applicationDeploymentDescriptions = new ApplicationDeploymentDescriptions(
+//                getRegistry());
+//        children.add(applicationDeploymentDescriptions);
         XBayaWorkflowTemplates xBayaWorkflows = new XBayaWorkflowTemplates(getRegistry());
         children.add(xBayaWorkflows);
         XBayaWorkflowExperiments xBayaWorkflowExperiments = new XBayaWorkflowExperiments(getRegistry());
