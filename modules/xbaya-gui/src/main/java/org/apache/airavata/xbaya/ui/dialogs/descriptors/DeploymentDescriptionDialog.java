@@ -669,6 +669,14 @@ public class DeploymentDescriptionDialog extends JDialog {
 
         try {
 			getRegistry().saveServiceDescription(getServiceDescription());
+			if (!isNewDescription()){
+				Map<HostDescription, List<ApplicationDeploymentDescription>> descs = getRegistry().searchDeploymentDescription(getServiceName());
+				for (HostDescription hostDesc : descs.keySet()) {
+					for (ApplicationDeploymentDescription app : descs.get(hostDesc)) {
+						getRegistry().deleteDeploymentDescription(getServiceName(), hostDesc.getType().getHostName(), app.getType().getApplicationName().getStringValue());	
+					}
+				}
+			}
 			for (String hostName : getDeployments().keySet()) {
 				getRegistry().saveDeploymentDescription(getServiceName(), hostName, getDeployments().get(hostName).getApplicationDescription());
 			}
