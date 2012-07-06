@@ -21,6 +21,8 @@
 
 package org.apache.airavata.client.api;
 
+import org.apache.airavata.common.utils.Version;
+
 
 /**
  * This is the base interface for AiravataAPI which contains all the base methods for Airavata API
@@ -28,7 +30,7 @@ package org.apache.airavata.client.api;
 public interface AiravataAPI {
 
     /**
-     * Returns the AiravataManager
+     * Returns the AiravataManager - manage Airavata related configurations
      * @return
      */
 	public AiravataManager getAiravataManager();
@@ -68,5 +70,11 @@ public interface AiravataAPI {
      * @return
      */
 	public String getCurrentUser();
+	
+	/**
+	 * Get Airavata API version
+	 * @return
+	 */
+	public Version getVersion();
 
 }

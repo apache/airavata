@@ -529,7 +529,7 @@ public class Workflow implements Cloneable {
         XmlElement workflowElement = XMLUtil.BUILDER.newFragment(NS_XWF, WORKFLOW_TAG);
 
         // Version
-        workflowElement.setAttributeValue(NS_XWF, VERSION_ATTRIBUTE, ApplicationVersion.VERSION);
+        workflowElement.setAttributeValue(NS_XWF, VERSION_ATTRIBUTE, ApplicationVersion.VERSION.getVersion());
 
         // Date
         // TODO add modification time
