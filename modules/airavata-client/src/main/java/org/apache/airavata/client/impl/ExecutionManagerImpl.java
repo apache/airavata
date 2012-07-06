@@ -24,8 +24,8 @@ package org.apache.airavata.client.impl;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.airavata.client.airavata.AiravataClient;
-import org.apache.airavata.client.airavata.AiravataClientConfiguration;
+import org.apache.airavata.client.AiravataClient;
+import org.apache.airavata.client.AiravataClientConfiguration;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.ExecutionManager;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;

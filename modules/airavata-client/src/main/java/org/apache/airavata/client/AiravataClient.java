@@ -18,7 +18,7 @@
  * under the License.
  *
  */
-package org.apache.airavata.client.airavata;
+package org.apache.airavata.client;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -126,13 +126,13 @@ public class AiravataClient implements AiravataAPI {
 
 	private static final Version API_VERSION=new Version("Airavata",0,1,null,"INCUBATING",null);
 	
-	public AiravataClient(Map<String,String> configuration)
+	protected AiravataClient(Map<String,String> configuration)
 			throws MalformedURLException {
 		this.configuration = configuration;
 		initialize();
 	}
 
-	public AiravataClient(String fileName) throws RegistryException,
+	protected AiravataClient(String fileName) throws RegistryException,
 			MalformedURLException, IOException {
 		URL url = this. getClass().getClassLoader().getResource(fileName);
 		if (url == null) {
@@ -160,7 +160,7 @@ public class AiravataClient implements AiravataAPI {
 		initialize();        
 	}
 
-	public AiravataClient(URI registryUrl, String username, String password) throws MalformedURLException, RepositoryException, RegistryException {
+	protected AiravataClient(URI registryUrl, String username, String password) throws MalformedURLException, RepositoryException, RegistryException {
 		this(createConfig(registryUrl, username, password));
 	}
 
@@ -191,7 +191,7 @@ public class AiravataClient implements AiravataAPI {
 		
 		//TODO: At some point this should contain the current user the airavata client is 
 		//logged in to the Airavata system
-		currentUser=getClientConfiguration().getJcrUsername();
+		setCurrentUser(getClientConfiguration().getJcrUsername());
 	}
 
 	private void updateClientConfiguration(Map<String,String> configuration)
@@ -803,6 +803,10 @@ public class AiravataClient implements AiravataAPI {
 	@Override
 	public Version getVersion() {
 		return API_VERSION;
+	}
+
+	public void setCurrentUser(String currentUser) {
+		this.currentUser = currentUser;
 	}
 
 }

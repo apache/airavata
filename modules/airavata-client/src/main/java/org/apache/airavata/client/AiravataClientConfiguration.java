@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.client.airavata;
+package org.apache.airavata.client;
 
 import java.net.URL;
 
