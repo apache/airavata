@@ -60,7 +60,7 @@ public class WorkflowInstanceData {
 	}
 	
 	public String getTopicId(){
-		return workflowInstance.getTopicId();
+		return workflowInstance.getWorkflowInstanceId();
 	}
 	
 	public String getWorkflowName(){

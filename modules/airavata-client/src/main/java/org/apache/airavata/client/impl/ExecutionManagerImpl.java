@@ -42,19 +42,19 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	}
 	
 	@Override
-	public String runWorkflow(String workflowTemplateId,
+	public String runExperiment(String workflowTemplateId,
 			List<WorkflowInput> inputs) throws AiravataAPIInvocationException {
-		return runWorkflow(workflowTemplateId, inputs ,getClient().getCurrentUser(),null, workflowTemplateId+"_"+Calendar.getInstance().getTime().toString());
+		return runExperiment(workflowTemplateId, inputs ,getClient().getCurrentUser(),null, workflowTemplateId+"_"+Calendar.getInstance().getTime().toString());
 	}
 
 	@Override
-	public String runWorkflow(Workflow workflow, List<WorkflowInput> inputs)
+	public String runExperiment(Workflow workflow, List<WorkflowInput> inputs)
 			throws AiravataAPIInvocationException {
-		return runWorkflow(workflow,inputs, getClient().getCurrentUser(),null);
+		return runExperiment(workflow,inputs, getClient().getCurrentUser(),null);
 	}
 
 	@Override
-	public String runWorkflow(String workflowTemplateId,
+	public String runExperiment(String workflowTemplateId,
 			List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)
 			throws AiravataAPIInvocationException {
 		try {
@@ -66,7 +66,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	}
 
 	@Override
-	public String runWorkflow(Workflow workflow, List<WorkflowInput> inputs,
+	public String runExperiment(Workflow workflow, List<WorkflowInput> inputs,
 			String user, String metadata) throws AiravataAPIInvocationException {
 		try {
 			return getClient().runWorkflow(workflow, inputs, user, metadata,workflow.getName()+"_"+Calendar.getInstance().getTime().toString());
@@ -76,16 +76,16 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	}
 
 	@Override
-	public Monitor getWorkflowIntanceMonitor(String topic)
+	public Monitor getExperimentMonitor(String experimentId)
 			throws AiravataAPIInvocationException {
-		return getClient().getWorkflowExecutionMonitor(topic);
+		return getClient().getWorkflowExecutionMonitor(experimentId);
 	}
 
 	@Override
-	public Monitor getWorkflowInstanceMonitor(String topic,
+	public Monitor getExperimentMonitor(String experimentId,
 			MonitorEventListener listener)
 			throws AiravataAPIInvocationException {
-		return getClient().getWorkflowExecutionMonitor(topic,listener);
+		return getClient().getWorkflowExecutionMonitor(experimentId,listener);
 	}
 	
 	public AiravataClient getClient() {
@@ -96,7 +96,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	}
 
 	@Override
-	public String runWorkflow(String workflowTemplateId,
+	public String runExperiment(String workflowTemplateId,
 			List<WorkflowInput> inputs, String user, String metadata,
 			String workflowInstanceName, WorkflowContextHeaderBuilder builder)
 			throws AiravataAPIInvocationException {

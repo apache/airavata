@@ -23,20 +23,20 @@ package org.apache.airavata.registry.api.workflow;
 
 public class WorkflowInstance {
 	private String experimentId;
-	private String topicId;
+	private String workflowInstanceId;
 	private String workflowName;
 	
 	public WorkflowInstance(String experimentId,String topicId) {
 		setExperimentId(experimentId);
-		setTopicId(topicId);
+		setWorkflowInstanceId(topicId);
 	}
 
-	public String getTopicId() {
-		return topicId;
+	public String getWorkflowInstanceId() {
+		return workflowInstanceId;
 	}
 
-	public void setTopicId(String topicId) {
-		this.topicId = topicId;
+	public void setWorkflowInstanceId(String workflowInstanceId) {
+		this.workflowInstanceId = workflowInstanceId;
 	}
 
 	public String getExperimentId() {

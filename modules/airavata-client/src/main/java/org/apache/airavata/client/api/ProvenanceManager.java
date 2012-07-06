@@ -24,7 +24,6 @@ package org.apache.airavata.client.api;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceMetadata;
@@ -49,12 +48,12 @@ public interface ProvenanceManager {
     /**
      *
      * @param experimentId
-     * @param topicId
+     * @param workflowInstanceId
      * @param nodeId
      * @param data
      * @throws AiravataAPIInvocationException
      */
-	public void addWorkflowInstanceNodeInputData(String experimentId, String topicId, String nodeId, String data) throws AiravataAPIInvocationException;
+	public void addWorkflowInstanceNodeInputData(String experimentId, String workflowInstanceId, String nodeId, String data) throws AiravataAPIInvocationException;
 
     /**
      *
@@ -66,12 +65,12 @@ public interface ProvenanceManager {
     /**
      *
      * @param experimentId
-     * @param topicId
+     * @param workflowInstanceId
      * @param nodeId
      * @param data
      * @throws AiravataAPIInvocationException
      */
-	public void addWorkflowInstanceNodeOutputData(String experimentId, String topicId, String nodeId, String data) throws AiravataAPIInvocationException;
+	public void addWorkflowInstanceNodeOutputData(String experimentId, String workflowInstanceId, String nodeId, String data) throws AiravataAPIInvocationException;
 
     /**
      *
@@ -84,12 +83,12 @@ public interface ProvenanceManager {
     /**
      *
      * @param experimentId
-     * @param topicId
+     * @param workflowInstanceId
      * @param nodeId
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public List<WorkflowInstanceNodePortData> getWorkflowInstanceNodeInputData(String experimentId, String topicId, String nodeId) throws AiravataAPIInvocationException;
+	public List<WorkflowInstanceNodePortData> getWorkflowInstanceNodeInputData(String experimentId, String workflowInstanceId, String nodeId) throws AiravataAPIInvocationException;
 
     /**
      *
@@ -111,12 +110,12 @@ public interface ProvenanceManager {
     /**
      *
      * @param experimentId
-     * @param topicId
+     * @param workflowInstanceId
      * @param nodeId
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public List<WorkflowInstanceNodePortData> getWorkflowInstanceNodeOutputData(String experimentId, String topicId, String nodeId) throws AiravataAPIInvocationException;
+	public List<WorkflowInstanceNodePortData> getWorkflowInstanceNodeOutputData(String experimentId, String workflowInstanceId, String nodeId) throws AiravataAPIInvocationException;
 
     /**
      *
@@ -130,11 +129,11 @@ public interface ProvenanceManager {
     /**
      *
      * @param experimentId
-     * @param topicId
+     * @param workflowInstanceId
      * @param status
      * @throws AiravataAPIInvocationException
      */
-	public void setWorkflowInstanceStatus(String experimentId, String topicId, ExecutionStatus status) throws AiravataAPIInvocationException;
+	public void setWorkflowInstanceStatus(String experimentId, String workflowInstanceId, ExecutionStatus status) throws AiravataAPIInvocationException;
 
     /**
      *
@@ -146,11 +145,11 @@ public interface ProvenanceManager {
     /**
      *
      * @param experimentId
-     * @param topicId
+     * @param workflowInstanceId
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public WorkflowInstanceStatus getWorkflowInstanceStatus(String experimentId, String topicId) throws AiravataAPIInvocationException;
+	public WorkflowInstanceStatus getWorkflowInstanceStatus(String experimentId, String workflowInstanceId) throws AiravataAPIInvocationException;
 
     /**
      *
@@ -163,11 +162,11 @@ public interface ProvenanceManager {
     /**
      *
      * @param experimentId
-     * @param topicId
+     * @param workflowInstanceId
      * @param user
      * @throws AiravataAPIInvocationException
      */
-	public void setWorkflowInstanceUser(String experimentId, String topicId, String user) throws AiravataAPIInvocationException;
+	public void setWorkflowInstanceUser(String experimentId, String workflowInstanceId, String user) throws AiravataAPIInvocationException;
 
     /**
      *
@@ -179,11 +178,11 @@ public interface ProvenanceManager {
     /**
      *
      * @param experimentId
-     * @param topicId
+     * @param workflowInstanceId
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public WorkflowInstanceUser getWorkflowInstanceUser(String experimentId, String topicId) throws AiravataAPIInvocationException;
+	public WorkflowInstanceUser getWorkflowInstanceUser(String experimentId, String workflowInstanceId) throws AiravataAPIInvocationException;
 
     /**
      *
@@ -196,11 +195,11 @@ public interface ProvenanceManager {
     /**
      *
      * @param experimentId
-     * @param topicId
+     * @param workflowInstanceId
      * @param metadata
      * @throws AiravataAPIInvocationException
      */
-	public void setWorkflowInstanceMetadata(String experimentId, String topicId, String metadata) throws AiravataAPIInvocationException;
+	public void setWorkflowInstanceMetadata(String experimentId, String workflowInstanceId, String metadata) throws AiravataAPIInvocationException;
 
     /**
      *
@@ -212,11 +211,11 @@ public interface ProvenanceManager {
     /**
      *
      * @param experimentId
-     * @param topicId
+     * @param workflowInstanceId
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public WorkflowInstanceMetadata getWorkflowInstanceMetadata(String experimentId, String topicId) throws AiravataAPIInvocationException;
+	public WorkflowInstanceMetadata getWorkflowInstanceMetadata(String experimentId, String workflowInstanceId) throws AiravataAPIInvocationException;
 
     /**
      *
@@ -269,11 +268,11 @@ public interface ProvenanceManager {
     /**
      *
      * @param experimentId
-     * @param topicId
+     * @param workflowInstanceId
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public WorkflowInstanceData getWorkflowInstanceData(String experimentId, String topicId) throws AiravataAPIInvocationException;
+	public WorkflowInstanceData getWorkflowInstanceData(String experimentId, String workflowInstanceId) throws AiravataAPIInvocationException;
 
     /**
      *
