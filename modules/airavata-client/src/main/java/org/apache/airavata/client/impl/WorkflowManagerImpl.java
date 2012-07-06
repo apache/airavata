@@ -211,4 +211,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
 		return XMLUtil.xmlElementToString(workflow.toXML());
 	}
 
+	@Override
+	public List<String> getWorkflowServiceNodeIDs(String templateID) throws AiravataAPIInvocationException{
+        return getWorkflow(templateID).getWorkflowServiceNodeIDs();
+	}
+
 }
