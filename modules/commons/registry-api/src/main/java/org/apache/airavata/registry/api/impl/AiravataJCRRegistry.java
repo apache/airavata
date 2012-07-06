@@ -154,7 +154,12 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             Node node = serviceNode.getNode(serviceId);
             if (node != null) {
                 node.remove();
-                session.save();
+                Node deploymentNode = getDeploymentNode(session);
+                if (deploymentNode!=null && deploymentNode.hasNode(serviceId)) {
+					serviceNode = deploymentNode.getNode(serviceId);
+					serviceNode.remove();
+				}
+				session.save();
 //                triggerObservers(this);
             }
         } catch (Exception e) {
