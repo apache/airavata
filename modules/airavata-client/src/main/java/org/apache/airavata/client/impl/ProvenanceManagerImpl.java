@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.airavata.client.airavata.AiravataClient;
+import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.ProvenanceManager;
 import org.apache.airavata.common.registry.api.exception.RegistryException;

@@ -21,7 +21,7 @@
 
 package org.apache.airavata.client.impl;
 
-import org.apache.airavata.client.airavata.AiravataClient;
+import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.UserManager;
 
 public class UserManagerImpl implements UserManager {

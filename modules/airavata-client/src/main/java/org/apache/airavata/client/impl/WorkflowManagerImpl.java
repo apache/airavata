@@ -31,7 +31,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.ValueFormatException;
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.client.airavata.AiravataClient;
+import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.WorkflowManager;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
