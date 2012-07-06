@@ -62,9 +62,9 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 
 	@Override
 	public void addWorkflowInstanceNodeInputData(String experimentId,
-			String topicId, String nodeId, String data)
+			String workflowInstanceId, String nodeId, String data)
 			throws AiravataAPIInvocationException {
-		addWorkflowInstanceNodeInputData(new WorkflowInstanceNodePortData(new WorkflowInstanceNode(new WorkflowInstance(experimentId, topicId), nodeId), data));
+		addWorkflowInstanceNodeInputData(new WorkflowInstanceNodePortData(new WorkflowInstanceNode(new WorkflowInstance(experimentId, workflowInstanceId), nodeId), data));
 	}
 
 	@Override
@@ -80,9 +80,9 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 
 	@Override
 	public void addWorkflowInstanceNodeOutputData(String experimentId,
-			String topicId, String nodeId, String data)
+			String workflowInstanceId, String nodeId, String data)
 			throws AiravataAPIInvocationException {
-		addWorkflowInstanceNodeOutputData(new WorkflowInstanceNodePortData(new WorkflowInstanceNode(new WorkflowInstance(experimentId, topicId), nodeId), data));
+		addWorkflowInstanceNodeOutputData(new WorkflowInstanceNodePortData(new WorkflowInstanceNode(new WorkflowInstance(experimentId, workflowInstanceId), nodeId), data));
 		
 	}
 
@@ -108,14 +108,14 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 
 	@Override
 	public List<WorkflowInstanceNodePortData> getWorkflowInstanceNodeInputData(
-			String experimentId, String topicId, String nodeId)
+			String experimentId, String workflowInstanceId, String nodeId)
 			throws AiravataAPIInvocationException {
-		return getWorkflowInstanceNodeInputData(new WorkflowInstanceNode(new WorkflowInstance(experimentId, topicId), nodeId));
+		return getWorkflowInstanceNodeInputData(new WorkflowInstanceNode(new WorkflowInstance(experimentId, workflowInstanceId), nodeId));
 	}
 	
 	private List<WorkflowInstanceNodePortData> getWorkflowInstanceNodePortDataListForWorkflowInstanceNode(Map<WorkflowInstanceNode,List<WorkflowInstanceNodePortData>> portData, WorkflowInstanceNode instanceNode, boolean createIfNotPresent){
 		for (WorkflowInstanceNode node : portData.keySet()) {
-			if (node.getWorkflowInstance().getExperimentId().equals(instanceNode.getWorkflowInstance().getExperimentId()) && node.getWorkflowInstance().getTopicId().equals(instanceNode.getWorkflowInstance().getTopicId()) &&
+			if (node.getWorkflowInstance().getExperimentId().equals(instanceNode.getWorkflowInstance().getExperimentId()) && node.getWorkflowInstance().getWorkflowInstanceId().equals(instanceNode.getWorkflowInstance().getWorkflowInstanceId()) &&
 					node.getNodeId().equals(instanceNode.getNodeId())){
 				return portData.get(node);
 			}
@@ -161,9 +161,9 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 
 	@Override
 	public List<WorkflowInstanceNodePortData> getWorkflowInstanceNodeOutputData(
-			String experimentId, String topicId, String nodeId)
+			String experimentId, String workflowInstanceId, String nodeId)
 			throws AiravataAPIInvocationException {
-		return getWorkflowInstanceNodeOutputData(new WorkflowInstanceNode(new WorkflowInstance(experimentId, topicId), nodeId));
+		return getWorkflowInstanceNodeOutputData(new WorkflowInstanceNode(new WorkflowInstance(experimentId, workflowInstanceId), nodeId));
 
 	}
 
@@ -178,9 +178,9 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	}
 	
 	@Override
-	public void setWorkflowInstanceStatus(String experimentId, String topicId,
+	public void setWorkflowInstanceStatus(String experimentId, String workflowInstanceId,
 			ExecutionStatus status) throws AiravataAPIInvocationException {
-		setWorkflowInstanceStatus(new WorkflowInstanceStatus(new WorkflowInstance(experimentId, topicId),status));
+		setWorkflowInstanceStatus(new WorkflowInstanceStatus(new WorkflowInstance(experimentId, workflowInstanceId),status));
 	}
 
 	@Override
@@ -196,7 +196,7 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 
 	@Override
 	public WorkflowInstanceStatus getWorkflowInstanceStatus(
-			String experimentId, String topicId)
+			String experimentId, String workflowInstanceId)
 			throws AiravataAPIInvocationException {
 		try {
 			return getClient().getRegistry().getWorkflowExecutionStatus(experimentId);
@@ -209,11 +209,11 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public WorkflowInstanceStatus getWorkflowInstanceStatus(
 			WorkflowInstance workflowInstance)
 			throws AiravataAPIInvocationException {
-		return getWorkflowInstanceStatus(workflowInstance.getExperimentId(), workflowInstance.getTopicId());
+		return getWorkflowInstanceStatus(workflowInstance.getExperimentId(), workflowInstance.getWorkflowInstanceId());
 	}
 
 	@Override
-	public void setWorkflowInstanceUser(String experimentId, String topicId,
+	public void setWorkflowInstanceUser(String experimentId, String workflowInstanceId,
 			String user) throws AiravataAPIInvocationException {
 		try {
 			getClient().getRegistry().saveWorkflowExecutionUser(experimentId, user);
@@ -225,13 +225,13 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	@Override
 	public void setWorkflowInstanceUser(WorkflowInstanceUser user)
 			throws AiravataAPIInvocationException {
-		setWorkflowInstanceUser(user.getWorkflowInstance().getExperimentId(), user.getWorkflowInstance().getTopicId(), user.getUser());
+		setWorkflowInstanceUser(user.getWorkflowInstance().getExperimentId(), user.getWorkflowInstance().getWorkflowInstanceId(), user.getUser());
 	}
 
 	@Override
 	public WorkflowInstanceUser getWorkflowInstanceUser(String experimentId,
-			String topicId) throws AiravataAPIInvocationException {
-		return getWorkflowInstanceUser(new WorkflowInstance(experimentId, topicId));
+			String workflowInstanceId) throws AiravataAPIInvocationException {
+		return getWorkflowInstanceUser(new WorkflowInstance(experimentId, workflowInstanceId));
 	}
 
 	@Override
@@ -247,7 +247,7 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 
 	@Override
 	public void setWorkflowInstanceMetadata(String experimentId,
-			String topicId, String metadata)
+			String workflowInstanceId, String metadata)
 			throws AiravataAPIInvocationException {
 		try {
 			getClient().getRegistry().saveWorkflowExecutionMetadata(experimentId, metadata);
@@ -261,14 +261,14 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	public void setWorkflowInstanceMetadata(
 			WorkflowInstanceMetadata instanceMetadata)
 			throws AiravataAPIInvocationException {
-		setWorkflowInstanceMetadata(instanceMetadata.getWorkflowInstance().getExperimentId(), instanceMetadata.getWorkflowInstance().getTopicId(), instanceMetadata.getMetadata());
+		setWorkflowInstanceMetadata(instanceMetadata.getWorkflowInstance().getExperimentId(), instanceMetadata.getWorkflowInstance().getWorkflowInstanceId(), instanceMetadata.getMetadata());
 	}
 
 	@Override
 	public WorkflowInstanceMetadata getWorkflowInstanceMetadata(
-			String experimentId, String topicId)
+			String experimentId, String workflowInstanceId)
 			throws AiravataAPIInvocationException {
-		return getWorkflowInstanceMetadata(new WorkflowInstance(experimentId, topicId));
+		return getWorkflowInstanceMetadata(new WorkflowInstance(experimentId, workflowInstanceId));
 	}
 
 	@Override
@@ -351,7 +351,7 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 
 	@Override
 	public WorkflowInstanceData getWorkflowInstanceData(String experimentId,
-			String topicId) throws AiravataAPIInvocationException {
+			String workflowInstanceId) throws AiravataAPIInvocationException {
 		try {
 			return createWorkflowInstanceData(getClient().getRegistry().getWorkflowExecution(experimentId));
 		} catch (RegistryException e) {
@@ -362,7 +362,7 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	@Override
 	public WorkflowInstanceData getWorkflowInstanceData(WorkflowInstance workflowInstance)
 			throws AiravataAPIInvocationException {
-		return getWorkflowInstanceData(workflowInstance.getExperimentId(), workflowInstance.getTopicId());
+		return getWorkflowInstanceData(workflowInstance.getExperimentId(), workflowInstance.getWorkflowInstanceId());
 	}
 
 	@Override

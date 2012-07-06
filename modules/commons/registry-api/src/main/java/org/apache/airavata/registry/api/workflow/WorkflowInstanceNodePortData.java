@@ -55,6 +55,6 @@ public class WorkflowInstanceNodePortData extends WorkflowServiceIOData {
 	
 	@Override
 	public String getWorkflowId() {
-		return getWorkflowInstanceNode().getWorkflowInstance().getTopicId();
+		return getWorkflowInstanceNode().getWorkflowInstance().getWorkflowInstanceId();
 	}
 }

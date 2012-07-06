@@ -37,7 +37,7 @@ public interface ExecutionManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public abstract String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
+	public abstract String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
 
     /**
      *
@@ -46,7 +46,7 @@ public interface ExecutionManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public abstract String runWorkflow(Workflow workflow,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
+	public abstract String runExperiment(Workflow workflow,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
 
     /**
      *
@@ -58,7 +58,7 @@ public interface ExecutionManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public abstract String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)throws AiravataAPIInvocationException;
+	public abstract String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)throws AiravataAPIInvocationException;
 
 	/**
 	 * 
@@ -71,7 +71,7 @@ public interface ExecutionManager {
 	 * @return
 	 * @throws AiravataAPIInvocationException
 	 */
-	public abstract String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)throws AiravataAPIInvocationException;
+	public abstract String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)throws AiravataAPIInvocationException;
 	
     /**
      *
@@ -82,24 +82,24 @@ public interface ExecutionManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public abstract String runWorkflow(Workflow workflow,List<WorkflowInput> inputs, String user, String metadata)throws AiravataAPIInvocationException;
+	public abstract String runExperiment(Workflow workflow,List<WorkflowInput> inputs, String user, String metadata)throws AiravataAPIInvocationException;
 
     /**
      *
-     * @param topic
+     * @param experimentId
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public Monitor getWorkflowIntanceMonitor(String topic)throws AiravataAPIInvocationException;
+	public Monitor getExperimentMonitor(String experimentId)throws AiravataAPIInvocationException;
 
     /**
      *
-     * @param topic
+     * @param experimentId
      * @param listener
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public Monitor getWorkflowInstanceMonitor(String topic, MonitorEventListener listener) throws AiravataAPIInvocationException;
+	public Monitor getExperimentMonitor(String experimentId, MonitorEventListener listener) throws AiravataAPIInvocationException;
 	
 	/**
 	 * Creates a WorkflowContextHeaderBuilder object that can be used to customize the scheduling of a workflow execution.
