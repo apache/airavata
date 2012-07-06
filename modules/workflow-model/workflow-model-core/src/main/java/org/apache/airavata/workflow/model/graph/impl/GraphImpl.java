@@ -437,7 +437,7 @@ public abstract class GraphImpl implements Graph {
 
         XmlElement graphElement = XMLUtil.BUILDER.newFragment(GraphSchema.NS, GraphSchema.GRAPH_TAG);
 
-        graphElement.setAttributeValue(GraphSchema.NS, GraphSchema.XBAYA_VERSION_ATTRIBUTE, ApplicationVersion.VERSION);
+        graphElement.setAttributeValue(GraphSchema.NS, GraphSchema.XBAYA_VERSION_ATTRIBUTE, ApplicationVersion.VERSION.getVersion());
 
         XmlElement idElement = graphElement.addElement(GraphSchema.NS, GraphSchema.GRAPH_ID_TAG);
         idElement.addChild(getID());

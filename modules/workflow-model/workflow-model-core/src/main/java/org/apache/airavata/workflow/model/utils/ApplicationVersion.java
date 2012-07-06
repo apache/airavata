@@ -21,12 +21,14 @@
 
 package org.apache.airavata.workflow.model.utils;
 
+import org.apache.airavata.common.utils.Version;
+
 public class ApplicationVersion {
 
     /**
      * Version number
      */
-    public final static String VERSION = "0.3-INCUBATING";
+    public final static Version VERSION = new Version("Airavata",0,4,null,"INCUBATING",null);//"0.3-INCUBATING";
 
     /**
      * Prints the version

@@ -62,6 +62,7 @@ import org.apache.airavata.client.impl.ProvenanceManagerImpl;
 import org.apache.airavata.client.impl.UserManagerImpl;
 import org.apache.airavata.client.impl.WorkflowManagerImpl;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.registry.api.AiravataRegistry;
@@ -123,6 +124,8 @@ public class AiravataClient implements AiravataAPI {
 
 	// private NameValue[] configurations = new NameValue[7];
 
+	private static final Version API_VERSION=new Version("Airavata",0,1,null,"INCUBATING",null);
+	
 	public AiravataClient(Map<String,String> configuration)
 			throws MalformedURLException {
 		this.configuration = configuration;
@@ -796,5 +799,10 @@ public class AiravataClient implements AiravataAPI {
         }
         return null;
     }
+    
+	@Override
+	public Version getVersion() {
+		return API_VERSION;
+	}
 
 }
