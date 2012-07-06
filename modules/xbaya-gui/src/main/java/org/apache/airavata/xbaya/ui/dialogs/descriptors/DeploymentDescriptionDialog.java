@@ -673,7 +673,7 @@ public class DeploymentDescriptionDialog extends JDialog {
 				getRegistry().saveDeploymentDescription(getServiceName(), hostName, getDeployments().get(hostName).getApplicationDescription());
 			}
 	        setServiceCreated(true);
-	        JOptionPane.showMessageDialog(this,"Application '"+getServiceName()+"' is registered");
+	        JOptionPane.showMessageDialog(this,"Application '"+getServiceName()+"' is registered Successfully !");
 		} catch (RegistryException e) {
 			setError(e.getMessage());
 			throw e;
