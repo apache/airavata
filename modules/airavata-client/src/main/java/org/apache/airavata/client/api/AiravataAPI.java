@@ -250,6 +250,14 @@ public interface AiravataAPI {
 			RepositoryException;
 
     /**
+     * Gives the service Node IDs for the given template ID, this will be useful when you want to know the service ID to
+     * Configure each node with different WorkflowContextHeaders
+     * @param templateID
+     * @return
+     */
+    public List<String> getWorkflowServiceNodeIDs(String templateID);
+
+    /**
      * Returns the AiravataManager
      * @return
      */
@@ -291,11 +299,4 @@ public interface AiravataAPI {
      */
 	public String getCurrentUser();
 
-    /**
-     * Gives the service Node IDs for the given template ID, this will be useful when you want to know the service ID to
-     * Configure each node with different WorkflowContextHeaders
-     * @param templateID
-     * @return
-     */
-    public List<String> getWorkflowServiceNodeIDs(String templateID);
 }
