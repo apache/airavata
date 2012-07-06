@@ -88,7 +88,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     }
 
     private void initGUI() {
-        setTitle("Host Description Advance Options");
+        setTitle("HPC Configuration Options");
         setModal(true);
         setBounds(100, 100, 500, 500);
         setLocationRelativeTo(null);

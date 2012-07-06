@@ -89,7 +89,7 @@ public class RegistryMenuItem implements XBayaExecutionModeListener {
     }
     
     private JMenuItem createJCRRegistryItem() {
-        JMenuItem item = new JMenuItem("Setup JCR Registry...",MenuIcons.JCR_ICON);
+        JMenuItem item = new JMenuItem("Setup Airavata Registry...",MenuIcons.JCR_ICON);
         item.setMnemonic(KeyEvent.VK_J);
         AbstractAction action = new AbstractAction() {
 

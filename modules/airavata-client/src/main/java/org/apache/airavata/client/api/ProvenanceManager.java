@@ -92,12 +92,12 @@ public interface ProvenanceManager {
 
     /**
      *
-     * @param workflowName
+     * @param workflowTemplateId
      * @param nodeId
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public Map<WorkflowInstanceNode,List<WorkflowInstanceNodePortData>> getWorkflowInstanceNodeInputData(String workflowName, String nodeId) throws AiravataAPIInvocationException;
+	public Map<WorkflowInstanceNode,List<WorkflowInstanceNodePortData>> getWorkflowInstanceNodeInputData(String workflowTemplateId, String nodeId) throws AiravataAPIInvocationException;
 
     /**
      *
@@ -284,9 +284,9 @@ public interface ProvenanceManager {
 
     /**
      *
-     * @param exeperimentId
+     * @param experimentId
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public String[] getWorkflowExecutionOutputNames(String exeperimentId) throws AiravataAPIInvocationException;
+	public String[] getWorkflowExecutionOutputNames(String experimentId) throws AiravataAPIInvocationException;
 }

@@ -225,10 +225,6 @@ public class AiravataClient implements AiravataAPI {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#loadWorkflowFromaFile(java.lang.String)
-	 */
-	@Override
 	public void loadWorkflowFromaFile(String workflowFile)
 			throws URISyntaxException, IOException {
 		File workflow = null;
@@ -255,10 +251,6 @@ public class AiravataClient implements AiravataAPI {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#loadWorkflowasaString(java.lang.String)
-	 */
-	@Override
 	public void loadWorkflowasaString(String workflowAsaString) {
 		this.workflow = workflowAsaString;
 	}
@@ -277,10 +269,6 @@ public class AiravataClient implements AiravataAPI {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#setInputs(java.lang.String)
-	 */
-	@Override
 	public NameValue[] setInputs(String fileName) throws IOException {
 		URL url = this.getClass().getClassLoader().getResource(fileName);
 		if (url == null) {
@@ -322,10 +310,6 @@ public class AiravataClient implements AiravataAPI {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#setInputs(java.util.Properties)
-	 */
-	@Override
 	public void setInputs(Properties inputList) {
 		try {
 			Workflow workflow = new Workflow(this.workflow);
@@ -342,26 +326,14 @@ public class AiravataClient implements AiravataAPI {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#runWorkflow(java.lang.String)
-	 */
-	@Override
 	public String runWorkflow(String topic) {
 		return runWorkflow(topic, (String) null);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#runWorkflow(java.lang.String, java.lang.String)
-	 */
-	@Override
 	public String runWorkflow(String topic, String user) {
 		return runWorkflow(topic, user, null, topic);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#runWorkflow(java.lang.String, java.lang.String, java.lang.String)
-	 */
-	@Override
 	public String runWorkflow(String topic, String user, String metadata, String workflowInstanceName) {
 		return runWorkflow(topic, user, metadata, workflowInstanceName, builder);
 	}
@@ -388,18 +360,10 @@ public class AiravataClient implements AiravataAPI {
         return worflowoutput;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#getWorkflowExecutionMonitor(java.lang.String)
-	 */
-	@Override
 	public Monitor getWorkflowExecutionMonitor(String topic) {
         return getWorkflowExecutionMonitor(topic, null);
     }
 
-    /* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#getWorkflowExecutionMonitor(java.lang.String, org.apache.airavata.xbaya.monitor.MonitorEventListener)
-	 */
-    @Override
 	public Monitor getWorkflowExecutionMonitor(String topic,
             MonitorEventListener listener) {
         final String fTopic = topic;
@@ -440,26 +404,14 @@ public class AiravataClient implements AiravataAPI {
 		getRegistry().saveWorkflowExecutionName(topic, workflowInstanceName);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#runWorkflow(java.lang.String, org.apache.airavata.xbaya.interpretor.NameValue[])
-	 */
-	@Override
-	public String runWorkflow(String topic, NameValue[] inputs) throws Exception {
+    public String runWorkflow(String topic, NameValue[] inputs) throws Exception {
 		return runWorkflow(topic, inputs, null);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#runWorkflow(java.lang.String, org.apache.airavata.xbaya.interpretor.NameValue[], java.lang.String)
-	 */
-	@Override
 	public String runWorkflow(String topic, NameValue[] inputs, String user) throws Exception {
 		return runWorkflow(topic, inputs, user, null,topic);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#runWorkflow(java.lang.String, org.apache.airavata.xbaya.interpretor.NameValue[], java.lang.String, java.lang.String)
-	 */
-	@Override
 	public String runWorkflow(final String topic, final NameValue[] inputs, final String user,
 			final String metadata, final String workflowInstanceName) throws Exception{
 		return runWorkflow(topic, inputs, user, metadata, workflowInstanceName, builder);
@@ -493,28 +445,16 @@ public class AiravataClient implements AiravataAPI {
 		return topic;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#getWorkflowExecutionDataByUser(java.lang.String)
-	 */
-	@Override
 	public List<WorkflowExecution> getWorkflowExecutionDataByUser(String user)
 			throws RegistryException {
 		return getRegistry().getWorkflowExecutionByUser(user);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#getWorkflowExecutionData(java.lang.String)
-	 */
-	@Override
 	public WorkflowExecution getWorkflowExecutionData(String topic)
 			throws RegistryException {
 		return getRegistry().getWorkflowExecution(topic);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#getWorkflowExecutionData(java.lang.String, int, int)
-	 */
-	@Override
 	public List<WorkflowExecution> getWorkflowExecutionData(String user,
 			int pageSize, int PageNo) throws RegistryException {
 		return getRegistry().getWorkflowExecutionByUser(user, pageSize, PageNo);
@@ -528,10 +468,6 @@ public class AiravataClient implements AiravataAPI {
 		AiravataClient.workflow = workflow;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#getRegistry()
-	 */
-	@Override
 	public AiravataRegistry getRegistry() {
 		if (registry == null) {
 			try {
@@ -564,10 +500,6 @@ public class AiravataClient implements AiravataAPI {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#getClientConfiguration()
-	 */
-	@Override
 	public AiravataClientConfiguration getClientConfiguration() {
 		if (clientConfiguration == null) {
 			clientConfiguration = new AiravataClientConfiguration();
@@ -614,10 +546,6 @@ public class AiravataClient implements AiravataAPI {
 		return urlString;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#getWorkflowTemplateIds()
-	 */
-	@Override
 	public List<String> getWorkflowTemplateIds() {
 		List<String> workflowList = new ArrayList<String>();
 		Map<QName, Node> workflows;
@@ -638,18 +566,10 @@ public class AiravataClient implements AiravataAPI {
 		return runWorkflow(workflowTemplateId,inputs,getRegistry().getUsername(),null,workflowTemplateId+"_"+Calendar.getInstance().getTime().toString());
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#runWorkflow(java.lang.String, java.util.List)
-	 */
-	@Override
 	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs,String workflowInstanceName) throws Exception{
 		return runWorkflow(workflowTemplateId,inputs,getRegistry().getUsername(),null,workflowInstanceName);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#runWorkflow(java.lang.String, java.util.List, java.lang.String, java.lang.String)
-	 */
-	@Override
 	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName) throws Exception{
 		Workflow workflowObj = getWorkflow(workflowTemplateId);
 		return runWorkflow(workflowObj, inputs, user, metadata,workflowInstanceName,builder);
@@ -710,10 +630,6 @@ public class AiravataClient implements AiravataAPI {
 		return null;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#getWorkflowInputs(java.lang.String)
-	 */
-	@Override
 	public List<WorkflowInput> getWorkflowInputs(String workflowTemplateId) throws Exception{
 		try {
 			Workflow workflowTemplate = getWorkflow(workflowTemplateId);
@@ -739,10 +655,6 @@ public class AiravataClient implements AiravataAPI {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.apache.airavata.client.airavata.AiravataAPI#getWorkflowAsString(java.lang.String)
-	 */
-	@Override
 	public Property getWorkflowAsString(String workflowTemplateId)
 			throws RegistryException, PathNotFoundException,
 			RepositoryException {
@@ -805,7 +717,7 @@ public class AiravataClient implements AiravataAPI {
 
 	public static void main(String[] args) throws Exception {
 		HashMap<String, String> config = new HashMap<String,String>();
-		AiravataAPI airavataClient = new AiravataClient(config);
+		AiravataClient airavataClient = new AiravataClient(config);
 		String workflowName = "Workflow1";
 		List<WorkflowInput> workflowInputs = airavataClient.getWorkflowInputs(workflowName);
 		workflowInputs.get(0).setValue("hi");
