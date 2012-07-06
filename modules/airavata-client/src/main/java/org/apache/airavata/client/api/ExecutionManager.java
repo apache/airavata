@@ -23,6 +23,7 @@ package org.apache.airavata.client.api;
 
 import java.util.List;
 
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.xbaya.monitor.Monitor;
@@ -59,6 +60,19 @@ public interface ExecutionManager {
      */
 	public abstract String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)throws AiravataAPIInvocationException;
 
+	/**
+	 * 
+	 * @param workflowTemplateId
+	 * @param inputs
+	 * @param user
+	 * @param metadata
+	 * @param workflowInstanceName
+	 * @param builder
+	 * @return
+	 * @throws AiravataAPIInvocationException
+	 */
+	public abstract String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)throws AiravataAPIInvocationException;
+	
     /**
      *
      * @param workflow
@@ -86,5 +100,14 @@ public interface ExecutionManager {
      * @throws AiravataAPIInvocationException
      */
 	public Monitor getWorkflowInstanceMonitor(String topic, MonitorEventListener listener) throws AiravataAPIInvocationException;
+	
+	/**
+	 * Creates a WorkflowContextHeaderBuilder object that can be used to customize the scheduling of a workflow execution.
+	 * Once configured this object run the workflow using 
+	 *   <code>runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)</code>  
+	 * @return
+	 * @throws AiravataAPIInvocationException
+	 */
+	public WorkflowContextHeaderBuilder createWorkflowContextHeader() throws AiravataAPIInvocationException;
 
 }
