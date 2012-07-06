@@ -363,25 +363,28 @@ public class AiravataClient implements AiravataAPI {
 	 */
 	@Override
 	public String runWorkflow(String topic, String user, String metadata, String workflowInstanceName) {
+		return runWorkflow(topic, user, metadata, workflowInstanceName, builder);
+	}
+	
+	public String runWorkflow(String topic, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder) {
         String worflowoutput = null;
-                try {
-                    WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
-                            getClientConfiguration().getXbayaServiceURL().toString());
-                    OMElement omElement = AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml()));
-                    stub._getServiceClient().addHeader(omElement);
-                    worflowoutput = stub.launchWorkflow(workflow, topic,null);
-                    runPreWorkflowExecutionTasks(worflowoutput, user, metadata, workflowInstanceName);
+        try {
+            WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
+                    getClientConfiguration().getXbayaServiceURL().toString());
+            OMElement omElement = AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml()));
+            stub._getServiceClient().addHeader(omElement);
+            worflowoutput = stub.launchWorkflow(workflow, topic,null);
+            runPreWorkflowExecutionTasks(worflowoutput, user, metadata, workflowInstanceName);
 
-                } catch (AxisFault e) {
+        } catch (AxisFault e) {
 		} catch (RemoteException e) {
 //			log.fine(e.getMessage(), e);
 		} catch (RegistryException e) {
 //			log.fine(e.getMessage(), e);
 		} catch (XMLStreamException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 //			log.info("Workflow output : " + worflowoutput);
-
         return worflowoutput;
 	}
 
@@ -431,9 +434,10 @@ public class AiravataClient implements AiravataAPI {
 		if (metadata != null) {
 			getRegistry().saveWorkflowExecutionMetadata(topic, metadata);
 		}
-		if (workflowInstanceName!=null) {
-			getRegistry().saveWorkflowExecutionName(topic, workflowInstanceName);
+		if (workflowInstanceName==null) {
+			workflowInstanceName=topic;
 		}
+		getRegistry().saveWorkflowExecutionName(topic, workflowInstanceName);
 	}
 
 	/* (non-Javadoc)
@@ -458,6 +462,11 @@ public class AiravataClient implements AiravataAPI {
 	@Override
 	public String runWorkflow(final String topic, final NameValue[] inputs, final String user,
 			final String metadata, final String workflowInstanceName) throws Exception{
+		return runWorkflow(topic, inputs, user, metadata, workflowInstanceName, builder);
+	}
+	
+	public String runWorkflow(final String topic, final NameValue[] inputs, final String user,
+			final String metadata, final String workflowInstanceName, final WorkflowContextHeaderBuilder builder) throws Exception{
 		new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -643,17 +652,28 @@ public class AiravataClient implements AiravataAPI {
 	@Override
 	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName) throws Exception{
 		Workflow workflowObj = getWorkflow(workflowTemplateId);
-		return runWorkflow(workflowObj, inputs, user, metadata,workflowInstanceName);
+		return runWorkflow(workflowObj, inputs, user, metadata,workflowInstanceName,builder);
 	}
 
+	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder) throws Exception{
+		Workflow workflowObj = getWorkflow(workflowTemplateId);
+		return runWorkflow(workflowObj, inputs, user, metadata,workflowInstanceName,builder);
+	}
+	
 	public String runWorkflow(Workflow workflow,
 			List<WorkflowInput> inputs, String workflowInstanceName)
 			throws GraphException, ComponentException, Exception {
-		return runWorkflow(workflow, inputs, null, null, workflowInstanceName);
+		return runWorkflow(workflow, inputs, null, null, workflowInstanceName,builder);
+	}
+
+	public String runWorkflow(Workflow workflowObj,
+			List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)
+			throws GraphException, ComponentException, Exception {
+		return runWorkflow(workflowObj, inputs, user, metadata, workflowInstanceName,builder);
 	}
 	
 	public String runWorkflow(Workflow workflowObj,
-			List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)
+			List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)
 			throws GraphException, ComponentException, Exception {
 		try {
 			String workflowString=XMLUtil.xmlElementToString(workflowObj.toXML());
@@ -677,7 +697,7 @@ public class AiravataClient implements AiravataAPI {
 			}
 			workflow=workflowString;
 			String topic=workflowObj.getName()+"_"+UUID.randomUUID();
-			return runWorkflow(topic, inputValues.toArray(new NameValue[]{}), user, metadata, workflowInstanceName);
+			return runWorkflow(topic, inputValues.toArray(new NameValue[]{}), user, metadata, workflowInstanceName,builder);
 		} catch (PathNotFoundException e) {
 			e.printStackTrace();
 		} catch (RegistryException e) {

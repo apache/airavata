@@ -25,8 +25,10 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.airavata.client.airavata.AiravataClient;
+import org.apache.airavata.client.airavata.AiravataClientConfiguration;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.ExecutionManager;
+import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.xbaya.monitor.Monitor;
@@ -91,6 +93,31 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	}
 	public void setClient(AiravataClient client) {
 		this.client = client;
+	}
+
+	@Override
+	public String runWorkflow(String workflowTemplateId,
+			List<WorkflowInput> inputs, String user, String metadata,
+			String workflowInstanceName, WorkflowContextHeaderBuilder builder)
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().runWorkflow(workflowTemplateId, inputs, user, metadata, workflowInstanceName,builder);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public WorkflowContextHeaderBuilder createWorkflowContextHeader()
+			throws AiravataAPIInvocationException {
+		AiravataClientConfiguration config = getClient().getClientConfiguration();
+		try {
+			return new WorkflowContextHeaderBuilder(config.getMessagebrokerURL().toString(),
+					config.getGfacURL().toString(),config.getJcrURL().toString(),null,null,
+					config.getMessageboxURL().toString());
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
 	}
 
 }
