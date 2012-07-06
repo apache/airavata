@@ -51,8 +51,6 @@ public class JCRRegistryWindow {
 
     private XBayaEngine engine;
 
-    private ComponentRegistryLoader loader;
-
     private XBayaDialog dialog;
 
     private XBayaTextField urlTextField;
@@ -70,7 +68,7 @@ public class JCRRegistryWindow {
      */
     public JCRRegistryWindow(XBayaEngine engine) {
         this.engine = engine;
-        this.loader = ComponentRegistryLoader.getLoader(this.engine, RegistryConstants.REGISTRY_TYPE_JCR);
+        ComponentRegistryLoader.getLoader(this.engine, RegistryConstants.REGISTRY_TYPE_JCR);
         initGUI();
     }
 
@@ -126,6 +124,19 @@ public class JCRRegistryWindow {
 						.getConfiguration()
 						.setMessageBoxURL(
 								messageBoxServiceURLList.get(0));
+			}
+			List<URI> interpreterServiceURLList = registry.getRegistry().getInterpreterServiceURLList();
+			if (interpreterServiceURLList.size()>0) {
+				this.engine.getConfiguration()
+						.setWorkflowInterpreterURL(interpreterServiceURLList.get(0));
+			}
+			List<String> gfacURLList = registry.getRegistry().getGFacDescriptorList();
+			if (gfacURLList.size()>0) {
+				try {
+					this.engine.getConfiguration().setGFacURL(new URI(gfacURLList.get(0)));
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
 			}
         } catch (RegistryException e) {
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.URL_WRONG, e);
@@ -217,7 +228,7 @@ public class JCRRegistryWindow {
         buttonPanel.add(cancelButton);
         buttonPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "JCR Registry", infoPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Airavata Registry", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 }

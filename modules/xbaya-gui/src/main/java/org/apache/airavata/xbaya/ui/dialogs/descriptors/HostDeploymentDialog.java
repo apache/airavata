@@ -30,7 +30,6 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -415,16 +414,16 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
     }
 
 	private void updateTempDirWithExecPath(String executablePath) {
-		if (!executablePath.trim().equals("") && (!txtExecPath.getSwingComponent().isFocusOwner()) && 
-				(getApplicationDescriptionType().getScratchWorkingDirectory()==null || getApplicationDescriptionType().getScratchWorkingDirectory().trim().equalsIgnoreCase(""))){
-    		String temp_location = "workflow_runs";
-			String tempDir = new File(new File(executablePath).getParentFile(),temp_location).toString();
-			txtTempDir.setText(tempDir);
-    		txtTempDir.getSwingComponent().setSelectionStart(tempDir.length()-temp_location.length());
-    		txtTempDir.getSwingComponent().setSelectionEnd(tempDir.length());
-    		setTempDir(txtTempDir.getText());
-    		txtTempDir.getSwingComponent().requestFocus();
-    	}
+//		if (!executablePath.trim().equals("") && (!txtExecPath.getSwingComponent().isFocusOwner()) && 
+//				(getApplicationDescriptionType().getScratchWorkingDirectory()==null || getApplicationDescriptionType().getScratchWorkingDirectory().trim().equalsIgnoreCase(""))){
+//    		String temp_location = "workflow_runs";
+//			String tempDir = new File(new File(executablePath).getParentFile(),temp_location).toString();
+//			txtTempDir.setText(tempDir);
+//    		txtTempDir.getSwingComponent().setSelectionStart(tempDir.length()-temp_location.length());
+//    		txtTempDir.getSwingComponent().setSelectionEnd(tempDir.length());
+//    		setTempDir(txtTempDir.getText());
+//    		txtTempDir.getSwingComponent().requestFocus();
+//    	}
 	}
 
     public String getTempDir() {
@@ -586,6 +585,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
 	public void setExistingHostList(List<String> existingHostList) {
 		this.existingHostList = existingHostList;
 	}
+	
 	public static class HostDeployment{
 		private HostDescription hostDescription;
 		private ApplicationDeploymentDescription applicationDescription;
