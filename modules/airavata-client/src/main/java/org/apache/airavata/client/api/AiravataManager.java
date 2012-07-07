@@ -29,105 +29,106 @@ import java.util.List;
  *  Airvata services running at the backend
  */
 public interface AiravataManager {
+	
     /**
-     *
-     * @return
+     * Return a list of GFaC service urls registered in the system
+     * @return 0 or more urls
      * @throws AiravataAPIInvocationException
      */
 	public List<URI> getGFaCURLs() throws AiravataAPIInvocationException;
 
     /**
-     *
-     * @return
+     * Return a the first GFaC service url registered in the system
+     * @return url or null if a url is not registered
      * @throws AiravataAPIInvocationException
      */
 	public URI getGFaCURL() throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Return a the first GFaC service url registered in the system orelse return the <code>defaultURL</code>
      * @param defaultURL
-     * @return
+     * @return url
      * @throws AiravataAPIInvocationException
      */
 	public URI getGFaCURL(URI defaultURL) throws AiravataAPIInvocationException;
 
     /**
-     *
-     * @return
+     * Return a list of Workflow Interpreter service urls registered in the system
+     * @return 0 or more urls
      * @throws AiravataAPIInvocationException
      */
 	public List<URI> getWorkflowInterpreterServiceURLs() throws AiravataAPIInvocationException;
 
     /**
-     *
-     * @return
+     * Return a the first Workflow interpreter service url registered in the system
+     * @return url or null if a url is not registered
      * @throws AiravataAPIInvocationException
      */
 	public URI getWorkflowInterpreterServiceURL() throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Return a the first GFaC service url registered in the system orelse return the <code>defaultURL</code>
      * @param defaultURL
-     * @return
+     * @return url
      * @throws AiravataAPIInvocationException
      */
 	public URI getWorkflowInterpreterServiceURL(URI defaultURL) throws AiravataAPIInvocationException;
 
     /**
-     *
-     * @return
+     * Return a list of Workflow Interpreter service urls registered in the system
+     * @return 0 or more urls
      * @throws AiravataAPIInvocationException
      */
 	public List<URI> getMessageBoxServiceURLs() throws AiravataAPIInvocationException;
 
     /**
-     *
-     * @return
+     * Return a the first Workflow interpreter service url registered in the system
+     * @return url or null if a url is not registered
      * @throws AiravataAPIInvocationException
      */
 	public URI getMessageBoxServiceURL() throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Return a the first GFaC service url registered in the system orelse return the <code>defaultURL</code>
      * @param defaultURL
-     * @return
+     * @return url
      * @throws AiravataAPIInvocationException
      */
 	public URI getMessageBoxServiceURL(URI defaultURL) throws AiravataAPIInvocationException;
 
     /**
-     *
-     * @return
+     * Return a list of Workflow Interpreter service urls registered in the system
+     * @return 0 or more urls
      * @throws AiravataAPIInvocationException
      */
 	public List<URI> getEventingServiceURLs() throws AiravataAPIInvocationException;
 
     /**
-     *
-     * @return
+     * Return a the first Workflow interpreter service url registered in the system
+     * @return url or null if a url is not registered
      * @throws AiravataAPIInvocationException
      */
 	public URI getEventingServiceURL() throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Return a the first GFaC service url registered in the system orelse return the <code>defaultURL</code>
      * @param defaultURL
-     * @return
+     * @return url
      * @throws AiravataAPIInvocationException
      */
 	public URI getEventingServiceURL(URI defaultURL) throws AiravataAPIInvocationException;
 
     /**
-     *
-     * @return
+     * Return the Airavata registry url 
+     * @return url or null if url is not defined
      * @throws AiravataAPIInvocationException
      */
 	public URI getRegistryURL() throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Return the Airavata registry url or return default url
      * @param defaultURL
-     * @return
+     * @return url
      * @throws AiravataAPIInvocationException
      */
 	public URI getRegistryURL(URI defaultURL) throws AiravataAPIInvocationException;
