@@ -459,7 +459,11 @@ public class Workflow implements Cloneable {
      */
     public List<WSComponentPort> getInputs() throws ComponentException {
         if (this.workflowWSDL == null) {
-            throw new IllegalStateException();
+            try {
+                this.createScript();
+            } catch (GraphException e) {
+                throw new IllegalStateException(e.getMessage());
+            }
         }
         WSComponent component = WSComponentFactory.createComponent(this.workflowWSDL);
         return component.getInputPorts();
