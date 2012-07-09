@@ -31,7 +31,7 @@ import org.apache.airavata.xbaya.monitor.MonitorEventListener;
 
 public interface ExecutionManager {
     /**
-     *
+     * Run an experiment containing single workflow 
      * @param workflowTemplateId
      * @param inputs
      * @return
@@ -40,7 +40,7 @@ public interface ExecutionManager {
 	public abstract String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Run an experiment containing single workflow
      * @param workflow
      * @param inputs
      * @return
@@ -49,7 +49,7 @@ public interface ExecutionManager {
 	public abstract String runExperiment(Workflow workflow,List<WorkflowInput> inputs) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Run an experiment containing single workflow
      * @param workflowTemplateId
      * @param inputs
      * @param user
@@ -61,7 +61,7 @@ public interface ExecutionManager {
 	public abstract String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)throws AiravataAPIInvocationException;
 
 	/**
-	 * 
+	 * Run an experiment containing single workflow
 	 * @param workflowTemplateId
 	 * @param inputs
 	 * @param user
@@ -74,7 +74,7 @@ public interface ExecutionManager {
 	public abstract String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)throws AiravataAPIInvocationException;
 	
     /**
-     *
+     * Run an experiment containing single workflow
      * @param workflow
      * @param inputs
      * @param user
@@ -85,7 +85,7 @@ public interface ExecutionManager {
 	public abstract String runExperiment(Workflow workflow,List<WorkflowInput> inputs, String user, String metadata)throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Get a monitor for a running experiment
      * @param experimentId
      * @return
      * @throws AiravataAPIInvocationException
@@ -93,7 +93,7 @@ public interface ExecutionManager {
 	public Monitor getExperimentMonitor(String experimentId)throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Get a monitor for a running experiment
      * @param experimentId
      * @param listener
      * @return

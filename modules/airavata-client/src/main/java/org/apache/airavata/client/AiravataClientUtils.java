@@ -21,8 +21,10 @@
 
 package org.apache.airavata.client;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.util.Map;
 
 import javax.jcr.RepositoryException;
 
@@ -37,6 +39,16 @@ public class AiravataClientUtils {
 	public static AiravataAPI getAPI(URI registryURL, String username, String password, String alternateUsername) throws MalformedURLException, RepositoryException, RegistryException{
 		AiravataClient apiObj = new AiravataClient(registryURL, username, password);
 		apiObj.setCurrentUser(alternateUsername);
+		return apiObj;
+	}
+	
+	public static AiravataAPI getAPI(Map<String,String> configuration) throws MalformedURLException{
+		AiravataClient apiObj = new AiravataClient(configuration);
+		return apiObj;
+	}
+	
+	public static AiravataAPI getAPI(String filename) throws MalformedURLException, RegistryException, IOException{
+		AiravataClient apiObj = new AiravataClient(filename);
 		return apiObj;
 	}
 }
