@@ -6,4 +6,4 @@ for %%jar in (lib\*.jar) do (
 	set CLASSPATH=!CLASSPATH!%%jar;
 )
 ::-----------------------------------------------------------
-java -classpath !CLASSPATH! cct.JMolEditor
+::java -classpath !CLASSPATH! cct.JMolEditor
