@@ -49,7 +49,7 @@ public class XBayaWorkflowTemplatesNode extends AbstractAiravataTreeNode {
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return "Workflow templates";
+        return "Workflow Templates";
     }
 
     @Override

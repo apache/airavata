@@ -126,7 +126,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
     public DefaultExecutionContext createDefaultExecutionContext() throws AiravataAPIInvocationException {
         DefaultExecutionContext ec = new DefaultExecutionContext();
         ec.addNotifiable(new LoggingNotification());
-        ec.setRegistryService(client.getRegistry());
+        ec.setRegistryService(getClient().getRegistry());
         return  ec;
     }
 
