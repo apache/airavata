@@ -23,7 +23,7 @@ package org.apache.airavata.client.api;
 
 public interface UserManager {
     /**
-     *
+     * Get the current user
      * @return
      */
     public String getAiravataUser();
