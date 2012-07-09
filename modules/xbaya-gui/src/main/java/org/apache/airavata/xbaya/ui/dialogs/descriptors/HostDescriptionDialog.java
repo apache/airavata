@@ -139,12 +139,12 @@ public class HostDescriptionDialog extends JDialog {
     private void ok() {
         hostId = this.hostIdTextField.getText();
         String hostAddress = this.hostAddressTextField.getText();
-        String globusGateKeeperEPR = this.globusGateKeeperTextField.getText();
-        String gridFTP = this.GridFTPTextField.getText();
 
         setHostId(hostId);
         setHostLocation(hostAddress);
         if(isGlobusHostType()) {
+        	String globusGateKeeperEPR = this.globusGateKeeperTextField.getText();
+            String gridFTP = this.GridFTPTextField.getText();
         	setGlobusGateKeeperEPR(globusGateKeeperEPR);
         	setGridFTPEPR(gridFTP);
         }

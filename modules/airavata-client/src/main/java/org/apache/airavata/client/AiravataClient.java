@@ -124,7 +124,7 @@ public class AiravataClient implements AiravataAPI {
 
 	// private NameValue[] configurations = new NameValue[7];
 
-	private static final Version API_VERSION=new Version("Airavata",0,1,null,"INCUBATING",null);
+	private static final Version API_VERSION=new Version("Airavata",0,4,null,"INCUBATING",null);
 	
 	protected AiravataClient(Map<String,String> configuration)
 			throws MalformedURLException {
