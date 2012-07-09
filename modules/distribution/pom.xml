@@ -368,6 +368,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-xbaya-jnlp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-xbaya-gui</artifactId>
             <version>${project.version}</version>
         </dependency>
