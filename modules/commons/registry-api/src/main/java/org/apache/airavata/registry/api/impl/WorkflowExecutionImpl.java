@@ -25,12 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.airavata.registry.api.WorkflowExecution;
-import org.apache.airavata.registry.api.WorkflowExecutionStatus;
+import org.apache.airavata.registry.api.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 
 public class WorkflowExecutionImpl implements WorkflowExecution{
-	private WorkflowExecutionStatus executionStatus;
+	private WorkflowInstanceStatus executionStatus;
 	private String user;
 	private List<WorkflowServiceIOData> serviceInput;
 	private List<WorkflowServiceIOData> serviceOutput;
@@ -57,10 +57,10 @@ public class WorkflowExecutionImpl implements WorkflowExecution{
 	public void setTopic(String topic) {
 		this.experimentId = topic;
 	}
-	public WorkflowExecutionStatus getExecutionStatus() {
+	public WorkflowInstanceStatus getExecutionStatus() {
 		return executionStatus;
 	}
-	public void setExecutionStatus(WorkflowExecutionStatus executionStatus) {
+	public void setExecutionStatus(WorkflowInstanceStatus executionStatus) {
 		this.executionStatus = executionStatus;
 	}
 	public String getUser() {

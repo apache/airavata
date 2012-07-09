@@ -23,7 +23,7 @@ package org.apache.airavata.registry.api;
 
 import java.util.Date;
 
-public class WorkflowExecutionStatus {
+public class WorkflowInstanceStatus {
 	public enum ExecutionStatus {
 		STARTED,
 		RUNNING,
@@ -52,11 +52,11 @@ public class WorkflowExecutionStatus {
 		this.statusUpdateTime = statusUpdateTime;
 	}
 
-	public WorkflowExecutionStatus(ExecutionStatus executionStatus) {
+	public WorkflowInstanceStatus(ExecutionStatus executionStatus) {
 		this(executionStatus,null);
 	}
 	
-	public WorkflowExecutionStatus(ExecutionStatus executionStatus, Date statusUpdateTime) {
+	public WorkflowInstanceStatus(ExecutionStatus executionStatus, Date statusUpdateTime) {
 		setExecutionStatus(executionStatus);
 		setStatusUpdateTime(statusUpdateTime);
 	}

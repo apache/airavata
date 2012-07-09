@@ -43,7 +43,7 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.registry.api.WorkflowExecutionStatus.ExecutionStatus;
+import org.apache.airavata.registry.api.WorkflowInstanceStatus.ExecutionStatus;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.XBayaException;
