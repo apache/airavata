@@ -28,11 +28,13 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowExperiment;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 
 public class XBayaWorkflowExperimentNode extends AbstractAiravataTreeNode {
 	private XBayaWorkflowExperiment experiment;
+	private String workflowExecutionName;
 	
     public XBayaWorkflowExperimentNode(XBayaWorkflowExperiment experiment, TreeNode parent) {
         super(parent);
@@ -46,7 +48,17 @@ public class XBayaWorkflowExperimentNode extends AbstractAiravataTreeNode {
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return getExperiment().getExperimentId();
+    	if (workflowExecutionName==null) {
+			try {
+				workflowExecutionName = getRegistry().getWorkflowExecutionName(getExperiment().getExperimentId());
+			} catch (RegistryException e) {
+				e.printStackTrace();
+			}
+			if (workflowExecutionName==null){
+				workflowExecutionName="["+getExperiment().getExperimentId()+"]";
+			}
+		}
+		return workflowExecutionName;
     }
 
     @Override
