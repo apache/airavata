@@ -16,7 +16,7 @@
 
 	<!-- Edit the following properties. -->
 	<properties>
-		<airavata.version>0.3-incubating</airavata.version>
+		<airavata.version>0.4-incubating</airavata.version>
 		<used.axis2.release>${axis2.version}</used.axis2.release>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -207,102 +207,20 @@
 			<version>0.2.9</version>
 		</dependency>
 		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>fragments</artifactId>
-			<version>0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>cct-globus</artifactId>
-			<version>0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>jbzip2</artifactId>
-			<version>0.9.1</version>
-		</dependency>
-		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>jhall</artifactId>
-			<version>2.1</version>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>j3dcore</artifactId>
-			<version>1.5.1</version>
-		</dependency>
-		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>vecmath</artifactId>
-			<version>1.5.1</version>
-		</dependency>
-		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>j3dutils</artifactId>
-			<version>1.5.1</version>
-		</dependency>
-		<!--<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>cgenff-help</artifactId>
-			<version>0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>jamberoo-help</artifactId>
-			<version>0.1</version>
-		</dependency>-->
-		<dependency>
 			<groupId>org.swinglabs.swingx</groupId>
 			<artifactId>swingx-all</artifactId>
 			<version>1.6.3</version>
 		</dependency>
 		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>progressdialog</artifactId>
-			<version>0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>jgraph</artifactId>
-			<version>0.1</version>
-		</dependency>
-		<dependency>
 			<groupId>net.sf.jgrapht</groupId>
 			<artifactId>jgrapht</artifactId>
 			<version>0.8.3</version>
-		</dependency>
-		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>wizard</artifactId>
-			<version>0.1</version>
-		</dependency>
-
-		<!-- grdichem libs -->
-		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>gridchem</artifactId>
-			<version>2.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>gms-service-bean</artifactId>
-			<version>2.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>gms-client</artifactId>
-			<version>2.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>paramberoo</groupId>
-			<artifactId>rsslib4j</artifactId>
-			<version>0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>
@@ -536,78 +454,78 @@
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-messenger-client</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-messenger-commons</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-registry-api</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-registry-service</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-workflow-execution-context</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-workflow-tracking</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-gfac-core</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-gfac-schema-utils</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-common-utils</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-message-box</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-message-broker</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-xbaya-gui</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-gfac-axis2-interface</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-common-registry-api</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-client-api</artifactId>
-			<version>${airavata.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
