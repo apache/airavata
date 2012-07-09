@@ -32,22 +32,22 @@ public interface ApplicationManager {
 	//Service descriptors
 
     /**
-     *
-     * @param serviceId
+     * Retrieve registered service description of the given service name 
+     * @param serviceName
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public ServiceDescription getServiceDescription(String serviceId) throws AiravataAPIInvocationException;
+	public ServiceDescription getServiceDescription(String serviceName) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Retrieve all registered service descriptions
      * @return
      * @throws AiravataAPIInvocationException
      */
     public List<ServiceDescription> getAllServiceDescriptions() throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Save service description on registry
      * @param service
      * @return
      * @throws AiravataAPIInvocationException
@@ -55,14 +55,14 @@ public interface ApplicationManager {
     public String saveServiceDescription(ServiceDescription service)throws AiravataAPIInvocationException;
 
     /**
-     *
-     * @param serviceId
+     * Delete service description from the registry
+     * @param serviceName
      * @throws AiravataAPIInvocationException
      */
-    public void deleteServiceDescription(String serviceId) throws AiravataAPIInvocationException;
+    public void deleteServiceDescription(String serviceName) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Retrieve a list of registered service descriptions of the given regex service name
      * @param nameRegEx
      * @return
      * @throws AiravataAPIInvocationException
@@ -72,16 +72,16 @@ public interface ApplicationManager {
     //Application descriptors
 
     /**
-     *
-     * @param serviceId
-     * @param hostId
+     * Retrieve registered application description of the given service name & hostName
+     * @param serviceName
+     * @param hostName
      * @return
      * @throws AiravataAPIInvocationException
      */
-    public ApplicationDeploymentDescription getDeploymentDescription(String serviceId, String hostId)throws AiravataAPIInvocationException;
+    public ApplicationDeploymentDescription getDeploymentDescription(String serviceName, String hostName)throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Save deployment description on registry for a given service for a host
      * @param serviceId
      * @param hostId
      * @param app
@@ -91,7 +91,7 @@ public interface ApplicationManager {
     public String saveDeploymentDescription(String serviceId, String hostId, ApplicationDeploymentDescription app)throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Retrieve list of registered deployment descriptions of the given regex service name & regex host name
      * @param serviceName
      * @param hostName
      * @return
@@ -100,14 +100,14 @@ public interface ApplicationManager {
     public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName)throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Retrieve all registered deployment descriptions
      * @return
      * @throws AiravataAPIInvocationException
      */
     public Map<ApplicationDeploymentDescription, String> getAllDeploymentDescriptions() throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Retrieve list of registered deployment descriptions of the given regex service name, regex host name & regex application name 
      * @param serviceName
      * @param hostName
      * @param applicationName
@@ -117,7 +117,7 @@ public interface ApplicationManager {
     public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName,String applicationName) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Retrieve registered map of deployment descriptions for their host description of the given service name
      * @param serviceName
      * @return
      * @throws AiravataAPIInvocationException
@@ -125,7 +125,7 @@ public interface ApplicationManager {
     public Map<HostDescription, List<ApplicationDeploymentDescription>> searchDeploymentDescription(String serviceName)throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Delete deployment description from the registry which is exposed as the service name in the host name 
      * @param serviceName
      * @param hostName
      * @param applicationName
@@ -136,22 +136,22 @@ public interface ApplicationManager {
     //Host descriptors
 
     /**
-     *
-     * @param hostId
+     * Retrieve registered host description of the given host name
+     * @param hostName
      * @return
      * @throws AiravataAPIInvocationException
      */
-    public HostDescription getHostDescription(String hostId) throws AiravataAPIInvocationException;
+    public HostDescription getHostDescription(String hostName) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Retrieve all registered host descriptions
      * @return
      * @throws AiravataAPIInvocationException
      */
     public List<HostDescription> getAllHostDescriptions() throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Save host description on registry
      * @param host
      * @return
      * @throws AiravataAPIInvocationException
@@ -159,7 +159,7 @@ public interface ApplicationManager {
     public String saveHostDescription(HostDescription host)throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Retrieve a list of registered hsot descriptions of the given regex host name
      * @param regExName
      * @return
      * @throws AiravataAPIInvocationException
@@ -167,14 +167,14 @@ public interface ApplicationManager {
     public List<HostDescription> searchHostDescription(String regExName) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Delete host description from the registry
      * @param hostId
      * @throws AiravataAPIInvocationException
      */
     public void deleteHostDescription(String hostId) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Map services to possible hosts 
      * @param serviceName
      * @param hostName
      * @return
