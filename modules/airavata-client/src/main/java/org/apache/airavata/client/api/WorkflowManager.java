@@ -30,7 +30,7 @@ public interface WorkflowManager {
 	//privilledged API
 
     /**
-     *
+     * Save the workflow under the given user
      * @param workflowAsString
      * @param owner
      * @return
@@ -39,7 +39,7 @@ public interface WorkflowManager {
 	public boolean saveWorkflow(String workflowAsString, String owner) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Save the workflow under the given user
      * @param workflow
      * @param owner
      * @return
@@ -48,7 +48,7 @@ public interface WorkflowManager {
     public boolean saveWorkflow(Workflow workflow, String owner) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Retrieve workflows saved by the given user
      * @param owner
      * @return
      * @throws AiravataAPIInvocationException
@@ -56,7 +56,7 @@ public interface WorkflowManager {
     public List<Workflow> getWorkflows(String owner) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Retrieve workflow templace ids saved by the given user
      * @param owner
      * @return
      * @throws AiravataAPIInvocationException
@@ -64,7 +64,7 @@ public interface WorkflowManager {
     public List<String> getWorkflowTemplateIds(String owner) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Retrieve a given workflow saved by the given user
      * @param workflowName
      * @param owner
      * @return
@@ -73,7 +73,7 @@ public interface WorkflowManager {
     public Workflow getWorkflow(String workflowName, String owner) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Retrive the given workflow saved by the given user as a string
      * @param workflowName
      * @param owner
      * @return
@@ -82,7 +82,7 @@ public interface WorkflowManager {
     public String getWorkflowAsString(String workflowName, String owner) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Delete the workflow saved by the given user
      * @param workflowName
      * @param owner
      * @return
@@ -93,7 +93,7 @@ public interface WorkflowManager {
     //user api
 
     /**
-     *
+     * Save the workflow
      * @param workflowAsString
      * @return
      * @throws AiravataAPIInvocationException
@@ -101,7 +101,7 @@ public interface WorkflowManager {
 	public boolean saveWorkflow(String workflowAsString) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Save the workflow as public
      * @param workflowAsString
      * @return
      * @throws AiravataAPIInvocationException
@@ -109,7 +109,7 @@ public interface WorkflowManager {
 	public boolean saveWorkflowAsPublic(String workflowAsString) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Save the workflow
      * @param workflow
      * @return
      * @throws AiravataAPIInvocationException
@@ -117,7 +117,7 @@ public interface WorkflowManager {
     public boolean saveWorkflow(Workflow workflow) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Save the workflow as public
      * @param workflow
      * @return
      * @throws AiravataAPIInvocationException
@@ -125,21 +125,21 @@ public interface WorkflowManager {
     public boolean saveWorkflowAsPublic(Workflow workflow) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Get all workflows of the current user
      * @return
      * @throws AiravataAPIInvocationException
      */
     public List<Workflow> getWorkflows() throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Get template id's of all workflows of the current user
      * @return
      * @throws AiravataAPIInvocationException
      */
     public List<String> getWorkflowTemplateIds() throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Retrieve the given workflow 
      * @param workflowName
      * @return
      * @throws AiravataAPIInvocationException
@@ -147,7 +147,7 @@ public interface WorkflowManager {
     public Workflow getWorkflow(String workflowName) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Retrieve the given workflow as a string
      * @param workflowName
      * @return
      * @throws AiravataAPIInvocationException
@@ -155,7 +155,7 @@ public interface WorkflowManager {
     public String getWorkflowAsString(String workflowName) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Delete the given workflow 
      * @param workflowName
      * @return
      * @throws AiravataAPIInvocationException
@@ -163,7 +163,7 @@ public interface WorkflowManager {
     public boolean deleteWorkflow(String workflowName) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Create workflow object from workflow string 
      * @param workflowAsString
      * @return
      * @throws AiravataAPIInvocationException
@@ -171,7 +171,7 @@ public interface WorkflowManager {
     public Workflow getWorkflowFromString(String workflowAsString) throws AiravataAPIInvocationException;
 
     /**
-     *
+     * Convert workflow in to a string
      * @param workflow
      * @return
      * @throws AiravataAPIInvocationException
