@@ -131,7 +131,8 @@
 				<overWriteReleases>false</overWriteReleases> <overWriteSnapshots>true</overWriteSnapshots> 
 				<excludeTransitive>false</excludeTransitive> </configuration> </execution> 
 				</executions> </plugin -->
-			<plugin>
+
+			<!--<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>webstart-maven-plugin</artifactId>
 				<version>1.0-beta-3</version>
@@ -169,7 +170,7 @@
 					</sign>
 					<verifyjar>true</verifyjar>
 				</configuration>
-			</plugin>
+			</plugin>-->
 
 		</plugins>
 	</build>
