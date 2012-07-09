@@ -29,6 +29,8 @@ import org.apache.airavata.client.AiravataClientConfiguration;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.ExecutionManager;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
+import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
+import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.xbaya.monitor.Monitor;
@@ -119,5 +121,13 @@ public class ExecutionManagerImpl implements ExecutionManager {
 			throw new AiravataAPIInvocationException(e);
 		}
 	}
+
+    @Override
+    public DefaultExecutionContext createDefaultExecutionContext() throws AiravataAPIInvocationException {
+        DefaultExecutionContext ec = new DefaultExecutionContext();
+        ec.addNotifiable(new LoggingNotification());
+        ec.setRegistryService(client.getRegistry());
+        return  ec;
+    }
 
 }

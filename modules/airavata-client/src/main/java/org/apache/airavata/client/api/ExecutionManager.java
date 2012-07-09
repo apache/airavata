@@ -24,6 +24,7 @@ package org.apache.airavata.client.api;
 import java.util.List;
 
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
+import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.xbaya.monitor.Monitor;
@@ -109,5 +110,13 @@ public interface ExecutionManager {
 	 * @throws AiravataAPIInvocationException
 	 */
 	public WorkflowContextHeaderBuilder createWorkflowContextHeader() throws AiravataAPIInvocationException;
+
+
+    /**
+     * Creates a DefaultExecutionContext.
+     * @return DefaultExecutionContext
+     * @throws AiravataAPIInvocationException AiravataAPIInvocationException
+     */
+    public DefaultExecutionContext createDefaultExecutionContext() throws AiravataAPIInvocationException;
 
 }
