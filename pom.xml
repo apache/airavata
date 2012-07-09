@@ -589,6 +589,7 @@
                 <module>modules/commons</module>
                 <module>modules/registry-migrator</module>
                 <module>modules/airavata-client</module>
+                <module>modules/xbaya-jnlp</module>
                 <module>samples/simple-math-service</module>
                 <module>samples/complex-math-service</module>
                 <module>samples/levenshtein-distance-service</module>
