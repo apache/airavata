@@ -6,7 +6,7 @@
 	<homepage href="https://paramchem.org/"/>
 	<description>ParamChem Cross-Platform Molecular Editor and CGenFF Workflow Execution using Apache Airavata</description>
 	<!-- Images for icon/splash -->
-    <icon href="paramchem_logo.jpg"/>
+    <icon href="airavata-title-text.png"/>
 	<offline-allowed/>
 </information>
   
