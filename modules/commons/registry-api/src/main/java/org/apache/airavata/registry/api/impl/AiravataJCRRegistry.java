@@ -1016,7 +1016,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	private Node getWorkflowExperimentDataNode(String experimentId,
 			Session session) throws RepositoryException {
 		return getOrAddNode(getOrAddNode(getWorkflowDataNode(session),
-		                experimentId),experimentId);
+                experimentId),experimentId);
 	}
 
 	private Node getWorkflowDataNode(Session session)
@@ -1138,7 +1138,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             session = getSession();
             List<String> matchingExperimentIds = getMatchingExperimentIds(regex, session);
             for(String experimentId:matchingExperimentIds){
-            	WorkflowIOData workflowOutputData = getWorkflowExecutionOutput(experimentId,outputName);
+            	WorkflowIOData workflowOutputData = getWorkflowExecutionOutput(experimentId, outputName);
                 workflowStatusMap.put(experimentId,workflowOutputData);
             }
 		} catch (RepositoryException e) {
@@ -1598,11 +1598,14 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         Properties properties = new Properties();
 		URL url = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
         if (url!=null) {
-			try {
-				properties.load(url.openStream());
-				String provRegAccessorClass = properties.getProperty("class.provenance.registry.accessor");
-				Class<AiravataProvenanceRegistry> provenanceRegistryClass = (Class<AiravataProvenanceRegistry>) getClass().getClassLoader().loadClass(provRegAccessorClass);
-				provenanceRegistry=(AiravataProvenanceRegistry)provenanceRegistryClass.getConstructor(String.class).newInstance(getUsername());
+            try {
+                properties.load(url.openStream());
+                String provenanceClass = "class.provenance.registry.accessor";
+                String provRegAccessorClass = properties.getProperty(provenanceClass, null);
+                if (provRegAccessorClass != null) {
+                    Class<AiravataProvenanceRegistry> provenanceRegistryClass = (Class<AiravataProvenanceRegistry>) getClass().getClassLoader().loadClass(provRegAccessorClass);
+                    provenanceRegistry = provenanceRegistryClass.getConstructor(String.class).newInstance(getUsername());
+                }
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			} catch (IllegalArgumentException e) {
