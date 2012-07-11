@@ -29,6 +29,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
+import javax.jcr.RepositoryException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +65,10 @@ public class JCRRegistryDeleteTest {
 
                HostDescription hostR = jcrRegistry.getHostDescription(hostId);
                Assert.assertNull(hostR);
-
+               jcrRegistry.closeConnection();
+               jcrRegistry.getSession().logout();
+               System.out.println((new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit1")).getAbsolutePath());
+               IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit1"));
 
            } catch (Exception e) {
                e.printStackTrace();
@@ -74,13 +78,14 @@ public class JCRRegistryDeleteTest {
 
     @Test
     public void testServiceDescriptionDelete() {
+        AiravataJCRRegistry jcrRegistry = null;
         try {
             /*
             * Create database
             */
             Map<String,String> config = new HashMap<String,String>();
             config.put("org.apache.jackrabbit.repository.home","target" + File.separator + "jackrabbit2");
-            AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
+             jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl",
                     "admin", "admin", config);
 
             ServiceDescription serv = new ServiceDescription();
@@ -109,8 +114,18 @@ public class JCRRegistryDeleteTest {
 
             jcrRegistry.deleteServiceDescription(serv.getType().getName());
             jcrRegistry.getServiceDescription(serv.getType().getName());
+            jcrRegistry.closeConnection();
+            jcrRegistry.getSession().logout();
         } catch (Exception e) {
             junit.framework.Assert.assertTrue(true);
+            try {
+                jcrRegistry.getSession().logout();
+            } catch (RepositoryException e1) {
+                e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            System.out.println((new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit2")).getAbsolutePath());
+            System.out.println("************");
+            IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit2"));
             return;
         }
         Assert.assertTrue(false);

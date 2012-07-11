@@ -77,6 +77,9 @@ public class JCRRegistryRestartTest {
 	           }else{
 	        	   Assert.assertTrue(true);
 	           }
+               jcrRegistry.closeConnection();
+               jcrRegistry.getSession().logout();
+               IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit3"));
            } catch (Exception e) {
                e.printStackTrace();
                fail(e.getMessage());
