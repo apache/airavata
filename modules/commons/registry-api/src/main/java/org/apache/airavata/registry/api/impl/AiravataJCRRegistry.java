@@ -703,9 +703,9 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
                 if (!"nt:unstructured".equals(property.getString())) {
                     String x = property.getString();
                     Timestamp setTime = new Timestamp(new Long(property.getString().split(";")[1]));
-                    if (GFAC_URL_UPDATE_INTERVAL > (timestamp.getTime() - setTime.getTime())) {
+//                    if (GFAC_URL_UPDATE_INTERVAL > (timestamp.getTime() - setTime.getTime())) {
                         urlList.add(property.getString().split(";")[0]);
-                    }
+//                    }
                 }
             }
         } catch (RepositoryException e) {
@@ -1465,13 +1465,13 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
                 if (!"nt:unstructured".equals(property.getString())) {
                     String x = property.getString();
                     Timestamp setTime = new Timestamp(new Long(property.getString().split(";")[1]));
-                    if (GFAC_URL_UPDATE_INTERVAL > (timestamp.getTime() - setTime.getTime())) {
+//                    if (GFAC_URL_UPDATE_INTERVAL > (timestamp.getTime() - setTime.getTime())) {
                         try {
 							urlList.add(new URI(property.getString().split(";")[0]));
 						} catch (URISyntaxException e) {
 							e.printStackTrace();
 						}
-                    }
+//                    }
                 }
             }
         }finally{
