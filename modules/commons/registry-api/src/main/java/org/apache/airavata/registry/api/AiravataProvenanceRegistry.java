@@ -24,8 +24,10 @@ package org.apache.airavata.registry.api;
 import java.util.List;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.WorkflowInstanceStatus.ExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 
 public abstract class AiravataProvenanceRegistry implements DataRegistry{
