@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -183,6 +184,8 @@ public class PropertiesBasedServiceImplTest {
 			Assert.assertNotNull(ct.getOutput());
 			Assert.assertNotNull(ct.getOutput().getValue("echo_output"));
 			Assert.assertEquals("hello", ((StringParameterType)((ActualParameter)ct.getOutput().getValue("echo_output")).getType()).getValue());
+            jcrRegistry.getSession().logout();
+            IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target"));
 
 		} catch (Exception e) {
 			e.printStackTrace();

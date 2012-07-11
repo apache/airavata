@@ -22,6 +22,7 @@
 package org.apache.airavata.xbaya.interpreter;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -31,6 +32,7 @@ import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.StringParameterType;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 import javax.xml.bind.SchemaOutputResolver;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -179,5 +182,15 @@ public class RegistryServiceTest {
         } catch (Exception e) {
             assertTrue(true);
         }
+    }
+
+    @After
+    public void cleanup()throws  RegistryException{
+        try {
+            jcrRegistry.getSession().logout();
+        } catch (RepositoryException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target"));
     }
 }

@@ -123,8 +123,6 @@ public class JCRRegistryDeleteTest {
             } catch (RepositoryException e1) {
                 e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-            System.out.println((new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit2")).getAbsolutePath());
-            System.out.println("************");
             IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit2"));
             return;
         }

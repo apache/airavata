@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.core.gfac.services.impl;
 
+import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -42,6 +43,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -170,6 +172,9 @@ public class SchedulerTest {
             }else {
                 junit.framework.Assert.assertTrue(false);
             }
+            jcrRegistry.getSession().logout();
+            IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target"));
+
         } catch (Exception e) {
 			e.printStackTrace();
 			fail("ERROR");
