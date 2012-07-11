@@ -94,6 +94,9 @@ public class JCRRegistryTest {
             
 //            if(!(hg.getType() instanceof GlobusHostType))
 //                fail("Save and Load Host Type Fail with Different Type when loading");
+            jcrRegistry.closeConnection();
+            System.out.println((new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit4")).getAbsolutePath());
+            IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit4"));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -151,8 +154,10 @@ public class JCRRegistryTest {
             if(service.getType().getOutputParametersArray()== null || service.getType().getOutputParametersArray().length != 1){
                 fail("Input Parameters is missing");
             }
-            
-            
+
+
+            jcrRegistry.closeConnection();
+            IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit4"));
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -231,7 +236,8 @@ public class JCRRegistryTest {
                 fail("Setting and Loading value fail");
             }                        
             
-            
+            jcrRegistry.closeConnection();
+            IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit5"));
         } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());

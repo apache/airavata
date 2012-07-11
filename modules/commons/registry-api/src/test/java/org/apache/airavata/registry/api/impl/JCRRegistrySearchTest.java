@@ -139,6 +139,9 @@ public class JCRRegistrySearchTest {
             }else{
                 Assert.assertEquals("SimpleEchoSearch",simpleEcho.get(0).getType().getName());
             }
+            jcrRegistry.closeConnection();
+            jcrRegistry.getSession().logout();
+            IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit10"));
         } catch (RepositoryException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (RegistryException e) {
@@ -240,6 +243,9 @@ public class JCRRegistrySearchTest {
             }else{
                 Assert.assertEquals(3,applicationDeploymentDescriptionStringMap.size());
             }
+            jcrRegistry.closeConnection();
+            jcrRegistry.getSession().logout();
+            IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit11"));
         } catch (RepositoryException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (RegistryException e) {
@@ -343,6 +349,9 @@ public class JCRRegistrySearchTest {
             }else{
                 Assert.assertEquals(1,applicationDeploymentDescriptions.size());
             }
+            jcrRegistry.closeConnection();
+            jcrRegistry.getSession().logout();
+            IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit12"));
         } catch (RepositoryException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (RegistryException e) {
@@ -445,6 +454,9 @@ public class JCRRegistrySearchTest {
             }else{
                 Assert.assertEquals(2,simpleEchoSearch.size());
             }
+            jcrRegistry.closeConnection();
+            jcrRegistry.getSession().logout();
+            IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit13"));
         } catch (RepositoryException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (RegistryException e) {
@@ -547,6 +559,9 @@ public class JCRRegistrySearchTest {
             }else{
                 Assert.assertEquals(1,applicationDeploymentDescriptions.size());
             }
+            jcrRegistry.closeConnection();
+            jcrRegistry.getSession().logout();
+            IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit14"));
         } catch (RepositoryException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (RegistryException e) {
