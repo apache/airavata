@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceMetadata;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceName;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodePortData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
@@ -207,7 +208,7 @@ public interface ProvenanceManager {
      * @throws AiravataAPIInvocationException
      */
 	public void setWorkflowInstanceMetadata(WorkflowInstanceMetadata instanceMetadata) throws AiravataAPIInvocationException;
-
+	
     /**
      * Retrieve the metadata of the Workflow instance
      * @param experimentId
@@ -224,6 +225,39 @@ public interface ProvenanceManager {
      * @throws AiravataAPIInvocationException
      */
 	public WorkflowInstanceMetadata getWorkflowInstanceMetadata(WorkflowInstance workflowInstance) throws AiravataAPIInvocationException;
+
+	   /**
+     * Update the instance name of the Workflow
+     * @param experimentId
+     * @param workflowInstanceId
+     * @param instanceName
+     * @throws AiravataAPIInvocationException
+     */
+	public void setWorkflowInstanceName(String experimentId, String workflowInstanceId, String instanceName) throws AiravataAPIInvocationException;
+
+    /**
+     * Update the instance name of the Workflow
+     * @param instanceName
+     * @throws AiravataAPIInvocationException
+     */
+	public void setWorkflowInstanceName(WorkflowInstanceName instanceName) throws AiravataAPIInvocationException;
+
+    /**
+     * Retrieve the metadata of the Workflow instance
+     * @param experimentId
+     * @param workflowInstanceId
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+	public WorkflowInstanceName getWorkflowInstanceName(String experimentId, String workflowInstanceId) throws AiravataAPIInvocationException;
+
+    /**
+     * Retrieve the metadata of the Workflow instance
+     * @param workflowInstance
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+	public WorkflowInstanceName getWorkflowInstanceName(WorkflowInstance workflowInstance) throws AiravataAPIInvocationException;
 
     /**
      * Retrieve the id's of all the experiments run by the given owner  
