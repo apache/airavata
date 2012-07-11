@@ -34,6 +34,7 @@ import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceMetadata;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceName;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodePortData;
@@ -332,7 +333,7 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 	private WorkflowInstanceData createWorkflowInstanceData(
 			WorkflowExecution execution) {
 		WorkflowInstance workflowInstance = new WorkflowInstance(execution.getExperimentId(),execution.getTopic());
-		WorkflowInstanceData workflowInstanceData = new WorkflowInstanceData(workflowInstance, new WorkflowInstanceUser(workflowInstance,execution.getUser()), new WorkflowInstanceStatus(workflowInstance,execution.getExecutionStatus().getExecutionStatus(),execution.getExecutionStatus().getStatusUpdateTime()), new WorkflowInstanceMetadata(workflowInstance,execution.getMetadata()), null);
+		WorkflowInstanceData workflowInstanceData = new WorkflowInstanceData(workflowInstance, new WorkflowInstanceName(workflowInstance, execution.getWorkflowInstanceName()),new WorkflowInstanceUser(workflowInstance,execution.getUser()), new WorkflowInstanceStatus(workflowInstance,execution.getExecutionStatus().getExecutionStatus(),execution.getExecutionStatus().getStatusUpdateTime()), new WorkflowInstanceMetadata(workflowInstance,execution.getMetadata()), null);
 		Map<WorkflowInstanceNode, List<WorkflowInstanceNodePortData>> groupNodePortInputData = groupNodePortData(execution.getServiceInput());
 		Map<WorkflowInstanceNode, List<WorkflowInstanceNodePortData>> groupNodePortOutputData = groupNodePortData(execution.getServiceOutput());
 		for (WorkflowInstanceNode instanceNode : groupNodePortInputData.keySet()) {
@@ -377,6 +378,40 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 
 	public void setClient(AiravataClient client) {
 		this.client = client;
+	}
+
+	@Override
+	public void setWorkflowInstanceName(String experimentId,
+			String workflowInstanceId, String instanceName)
+			throws AiravataAPIInvocationException {
+		try {
+			getClient().getRegistry().saveWorkflowExecutionName(experimentId, instanceName);
+		} catch (RegistryException e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public void setWorkflowInstanceName(WorkflowInstanceName instanceName)
+			throws AiravataAPIInvocationException {
+		setWorkflowInstanceName(instanceName.getWorkflowInstance().getExperimentId(),instanceName.getWorkflowInstance().getWorkflowInstanceId(),instanceName.getInstanceName());
+	}
+
+	@Override
+	public WorkflowInstanceName getWorkflowInstanceName(String experimentId,
+			String workflowInstanceId) throws AiravataAPIInvocationException {
+		return getWorkflowInstanceName(new WorkflowInstance(experimentId, workflowInstanceId));
+	}
+
+	@Override
+	public WorkflowInstanceName getWorkflowInstanceName(
+			WorkflowInstance workflowInstance)
+			throws AiravataAPIInvocationException {
+		try {
+			return new WorkflowInstanceName(workflowInstance, getClient().getRegistry().getWorkflowExecutionName(workflowInstance.getExperimentId()));
+		} catch (RegistryException e) {
+			throw new AiravataAPIInvocationException(e);
+		}
 	}
 
 	

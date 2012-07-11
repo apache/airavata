@@ -33,14 +33,16 @@ public class WorkflowInstanceData {
 	private WorkflowInstanceUser workflowInstanceUser;
 	private WorkflowInstanceStatus workflowInstanceStatus;
 	private WorkflowInstanceMetadata workflowInstanceMetadata;
+	private WorkflowInstanceName workflowInstanceName;
 	
 	private List<WorkflowInstanceNodeData> nodeDataList;
 	
-	public WorkflowInstanceData(WorkflowInstance workflowInstance,WorkflowInstanceUser workflowInstanceUser,WorkflowInstanceStatus workflowInstanceStatus,WorkflowInstanceMetadata workflowInstanceMetadata,List<WorkflowInstanceNodeData> nodeDataList) {
+	public WorkflowInstanceData(WorkflowInstance workflowInstance,WorkflowInstanceName workflowInstanceName,WorkflowInstanceUser workflowInstanceUser,WorkflowInstanceStatus workflowInstanceStatus,WorkflowInstanceMetadata workflowInstanceMetadata,List<WorkflowInstanceNodeData> nodeDataList) {
 		this.workflowInstance=workflowInstance;
 		this.workflowInstanceUser=workflowInstanceUser;
 		this.workflowInstanceStatus=workflowInstanceStatus;
 		this.workflowInstanceMetadata=workflowInstanceMetadata;
+		this.workflowInstanceName=workflowInstanceName;
 		this.nodeDataList=nodeDataList;
 	}
 
@@ -101,4 +103,9 @@ public class WorkflowInstanceData {
 		//TODO
 		return null;
 	}
+
+	public WorkflowInstanceName getWorkflowInstanceName() {
+		return workflowInstanceName;
+	}
+
 }
