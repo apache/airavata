@@ -31,6 +31,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -347,18 +349,7 @@ public class DeploymentDescriptionDialog extends JDialog {
         btnEditDeployment.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String hostName = tblModelHosts.getValueAt(tblHosts.getSelectedRow(),0).toString();
-				HostDeploymentDialog hostDeploymentDialog = new HostDeploymentDialog(getRegistry(),false,getDeployments().get(hostName).getApplicationDescription(),hostName,Arrays.asList(getDeployments().keySet().toArray(new String[]{})));
-				try {
-					HostDeployment deployDesc = hostDeploymentDialog.execute();
-					if (deployDesc!=null){
-						getDeployments().put(deployDesc.getHostDescription().getType().getHostName(), deployDesc);
-						updateDeploymentTable();
-					}
-				} catch (RegistryException e1) {
-					setError(e1.getLocalizedMessage());
-					e1.printStackTrace();
-				}
+				editSelectedDeployment();
 			}
 		});
         
@@ -383,6 +374,14 @@ public class DeploymentDescriptionDialog extends JDialog {
             	btnDeleteDeployment.setEnabled(tblHosts.getSelectedRows().length > 0);
             }
 
+        });
+        tblHosts.addMouseListener(new MouseAdapter(){
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		if (e.getClickCount()==2 && tblHosts.getSelectedRows().length>0){
+        			editSelectedDeployment();
+        		}
+        	}
         });
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(tblHosts);
@@ -772,6 +771,21 @@ public class DeploymentDescriptionDialog extends JDialog {
 			deployments=new HashMap<String, HostDeployment>();
 		}
 		return deployments;
+	}
+
+	private void editSelectedDeployment() {
+		String hostName = tblModelHosts.getValueAt(tblHosts.getSelectedRow(),0).toString();
+		HostDeploymentDialog hostDeploymentDialog = new HostDeploymentDialog(getRegistry(),false,getDeployments().get(hostName).getApplicationDescription(),hostName,Arrays.asList(getDeployments().keySet().toArray(new String[]{})));
+		try {
+			HostDeployment deployDesc = hostDeploymentDialog.execute();
+			if (deployDesc!=null){
+				getDeployments().put(deployDesc.getHostDescription().getType().getHostName(), deployDesc);
+				updateDeploymentTable();
+			}
+		} catch (RegistryException e1) {
+			setError(e1.getLocalizedMessage());
+			e1.printStackTrace();
+		}
 	}
 
 	private class StringArrayComboBoxEditor extends DefaultCellEditor {
