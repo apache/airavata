@@ -21,21 +21,7 @@
 
 package org.apache.airavata.commons.gfac.type;
 
-import org.apache.airavata.schemas.gfac.BooleanArrayType;
-import org.apache.airavata.schemas.gfac.BooleanParameterType;
-import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.DoubleArrayType;
-import org.apache.airavata.schemas.gfac.DoubleParameterType;
-import org.apache.airavata.schemas.gfac.FileArrayType;
-import org.apache.airavata.schemas.gfac.FileParameterType;
-import org.apache.airavata.schemas.gfac.FloatArrayType;
-import org.apache.airavata.schemas.gfac.FloatParameterType;
-import org.apache.airavata.schemas.gfac.IntegerArrayType;
-import org.apache.airavata.schemas.gfac.IntegerParameterType;
-import org.apache.airavata.schemas.gfac.StringArrayType;
-import org.apache.airavata.schemas.gfac.StringParameterType;
-import org.apache.airavata.schemas.gfac.URIArrayType;
-import org.apache.airavata.schemas.gfac.URIParameterType;
+import org.apache.airavata.schemas.gfac.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,7 +69,12 @@ public class MappingFactory {
             return FloatArrayType.class.getSimpleName();
         } else if (type.equals(DataType.URI_ARRAY)) {
             return URIArrayType.class.getSimpleName();
+        } else if (type.equals(DataType.STD_OUT)){
+            return StdOutParameterType.class.getSimpleName();
+        }  else if (type.equals(DataType.STD_ERR)){
+            return StdErrParameterType.class.getSimpleName();
         }
+
         return StringParameterType.class.getSimpleName();
     }
 
@@ -110,7 +101,11 @@ public class MappingFactory {
         } else if (param.hasType(DataType.URI)) {
             return String.valueOf(((URIParameterType) param.getType()).getValue());
         } else if (param.hasType(DataType.STRING_ARRAY)) {
-           return join(Arrays.asList(((StringArrayType) param.getType()).getValueArray()),",");
+            return join(Arrays.asList(((StringArrayType) param.getType()).getValueArray()), ",");
+        } else if (param.hasType(DataType.STD_OUT)) {
+            return String.valueOf(((StdOutParameterType) param.getType()).getValue());
+        } else if (param.hasType(DataType.STD_ERR)) {
+            return String.valueOf(((StdErrParameterType) param.getType()).getValue());
         } else if (param.hasType(DataType.INTEGER_ARRAY)) {
             //todo return proper string array from int,double,boolean arrays
             return String.valueOf(((IntegerArrayType) param.getType()).getValueArray());
@@ -119,11 +114,11 @@ public class MappingFactory {
         } else if (param.hasType(DataType.BOOLEAN_ARRAY)) {
             return String.valueOf(((BooleanArrayType) param.getType()).getValueArray());
         } else if (param.hasType(DataType.FILE_ARRAY)) {
-            return join(Arrays.asList(((FileArrayType) param.getType()).getValueArray()),",");
+            return join(Arrays.asList(((FileArrayType) param.getType()).getValueArray()), ",");
         } else if (param.hasType(DataType.FLOAT_ARRAY)) {
             return String.valueOf(((FloatArrayType) param.getType()).getValueArray());
         } else if (param.hasType(DataType.URI_ARRAY)) {
-           return join(Arrays.asList(((URIArrayType) param.getType()).getValueArray()),",");
+            return join(Arrays.asList(((URIArrayType) param.getType()).getValueArray()), ",");
         }
         return null;
     }
