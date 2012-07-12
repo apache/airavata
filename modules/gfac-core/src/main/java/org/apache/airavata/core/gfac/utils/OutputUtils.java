@@ -30,6 +30,8 @@ import java.util.regex.Pattern;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.StdOutParameterType;
 import org.apache.xmlbeans.XmlException;
 
 public class OutputUtils {
@@ -50,10 +52,15 @@ public class OutputUtils {
             }
 
             ActualParameter actual = outMessage.getValue(parameterName);
-            String parseStdout = parseStdout(stdout, parameterName);
-            if(parseStdout != null){
-			MappingFactory.fromString(actual, parseStdout);
-            result.put(parameterName, actual);
+            if (actual.hasType(DataType.STD_OUT)){
+            	((StdOutParameterType)actual.getType()).setValue(stdout);
+	            result.put(parameterName, actual);
+            }else{
+	            String parseStdout = parseStdout(stdout, parameterName);
+	            if(parseStdout != null){
+					MappingFactory.fromString(actual, parseStdout);
+		            result.put(parameterName, actual);
+	            }
             }
         }
         return result;
