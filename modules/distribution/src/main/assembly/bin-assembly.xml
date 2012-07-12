@@ -162,13 +162,13 @@
             </includes>
         </fileSet>
 
-        <fileSet>
+        <!--fileSet>
             <directory>../../samples/simple-math-service/target</directory>
             <outputDirectory>standalone-server/repository/services</outputDirectory>
             <includes>
                 <include>*.aar</include>
             </includes>
-        </fileSet>
+        </fileSet-->
         <fileSet>
             <directory>../../samples/complex-math-service/target</directory>
             <outputDirectory>standalone-server/repository/services</outputDirectory>
