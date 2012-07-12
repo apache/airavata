@@ -1437,8 +1437,8 @@ public class WorkflowInterpreter {
 		ArrayList<Node> list = new ArrayList<Node>();
 		List<NodeImpl> nodes = this.getGraph().getNodes();
 		for (Node node : nodes) {
-			if (node instanceof OutputNode && NodeController.getGUI(node).getBodyColor() == NodeGUI.DEFAULT_BODY_COLOR
-					&& NodeController.getGUI(node.getInputPort(0).getFromNode()).getBodyColor() == NodeState.FINISHED.color) {
+			if (node instanceof OutputNode && NodeController.getGUI(node).getBodyColor().equals(NodeGUI.DEFAULT_BODY_COLOR)
+					&& NodeController.getGUI(node.getInputPort(0).getFromNode()).getBodyColor().equals(NodeState.FINISHED.color)) {
 
 				list.add(node);
 			}
