@@ -144,7 +144,7 @@ public class GUIWorkflowInterpreterInteractorImpl implements
 		case INPUT_WORKFLOWINTERPRETER_FOR_WORKFLOW:
 			Workflow subWorkflow= (Workflow) data;
             WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(subWorkflow,config.getTopic(),config.getMessageBoxURL(), config.getMessageBrokerURL(), config.getRegistry(), config.getConfiguration(), config.getGUI(), new MyProxyChecker(this.engine), this.engine.getMonitor());
-            workflowInterpreterConfiguration.setActOnProvenance(false);
+            workflowInterpreterConfiguration.setActOnProvenance(config.isActOnProvenance());
             workflowInterpreterConfiguration.setSubWorkflow(true);
             if (config.isTestMode()){
         		workflowInterpreterConfiguration.setNotifier(new StandaloneNotificationSender(workflowInterpreterConfiguration.getTopic(),workflowInterpreterConfiguration.getWorkflow()));

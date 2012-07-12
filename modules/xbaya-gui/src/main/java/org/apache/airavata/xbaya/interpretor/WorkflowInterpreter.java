@@ -145,7 +145,10 @@ public class WorkflowInterpreter {
 		this.setConfig(config);
 		config.validateNotifier();
 		this.interactor = interactor;
-		config.setActOnProvenance(config.getConfiguration().isCollectProvenance());
+		if (config.isActOnProvenance()==null) {
+			config.setActOnProvenance(config.getConfiguration()
+					.isCollectProvenance());
+		}
 		config.setSubWorkflow(false);
 	}
 
