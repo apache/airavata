@@ -127,6 +127,10 @@ public class GfacAPI {
                 actualParameter.getType().changeType(FileArrayType.type);
             } else if ("URIArray".equals(parameter.getParameterType().getName())) {
                 actualParameter.getType().changeType(URIArrayType.type);
+            } else if ("StdOut".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(StdOutParameterType.type);
+            } else if ("StdErr".equals(parameter.getParameterType().getName())) {
+                actualParameter.getType().changeType(StdErrParameterType.type);
             }
             outputParam.add(parameter.getParameterName(), actualParameter);
         }
