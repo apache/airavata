@@ -29,6 +29,7 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowExperiment;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 
@@ -58,7 +59,16 @@ public class XBayaWorkflowExperimentNode extends AbstractAiravataTreeNode {
 				workflowExecutionName="["+getExperiment().getExperimentId()+"]";
 			}
 		}
-		return workflowExecutionName;
+    	String caption=workflowExecutionName;
+    	try {
+			WorkflowInstanceStatus workflowExecutionStatus = getRegistry().getWorkflowExecutionStatus(getExperiment().getExperimentId());
+			if (workflowExecutionStatus!=null){
+				caption+=" - <i>"+workflowExecutionStatus.getExecutionStatus().toString() +" as of "+workflowExecutionStatus.getStatusUpdateTime().toString()+"</i>";
+			}
+		} catch (RegistryException e) {
+			e.printStackTrace();
+		}
+		return wrapAsHtml(caption);
     }
 
     @Override
