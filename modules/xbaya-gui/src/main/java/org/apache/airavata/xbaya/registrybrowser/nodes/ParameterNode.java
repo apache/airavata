@@ -33,6 +33,8 @@ import javax.swing.tree.TreeNode;
 import org.apache.airavata.xbaya.model.registrybrowser.ServiceParameter;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.CopyAction;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.ViewAction;
+import org.apache.airavata.xbaya.ui.dialogs.TextWindow;
 
 public class ParameterNode extends AbstractAiravataTreeNode {
 	private ServiceParameter parameter;
@@ -63,21 +65,31 @@ public class ParameterNode extends AbstractAiravataTreeNode {
 		return JCRBrowserIcons.PARAMETER_ICON;
 	}
 
+	@Override
+	public String getDefaultAction() {
+		return ViewAction.ID;
+	}
+	
     @Override
     public List<String> getSupportedActions() {
-        return Arrays.asList(CopyAction.ID);
+        return Arrays.asList(ViewAction.ID,CopyAction.ID);
     }
 
     @Override
     public String getActionCaption(AbstractBrowserActionItem action) {
-    	if (action.getID().equals(CopyAction.ID)) {
-            return "Copy contents";
+    	if (action.getID().equals(ViewAction.ID)) {
+    		return "View";
+    	} else if (action.getID().equals(CopyAction.ID)) {
+            return "Copy to clipboard";
         }
     	return null;
     }
     
 	public boolean triggerAction(JTree tree,String action) throws Exception{
-		if (action.equals(CopyAction.ID)) {
+		if (action.equals(ViewAction.ID)) {
+			TextWindow textWindow = new TextWindow(getXBayaEngine(), getParameter().getName(), getParameter().getValue().toString(),"Parameter Content");
+			textWindow.show();
+		} else if (action.equals(CopyAction.ID)) {
         	Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(getParameter().getValue().toString()), null);
         }
 		return super.triggerAction(tree, action);

@@ -55,6 +55,7 @@ import org.apache.airavata.xbaya.ui.actions.registry.browser.DeleteAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.EditAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.ImportAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.RefreshAction;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.ViewAction;
 
 public class JCRBrowserPanel extends JPanel implements Observer {
     private List<AbstractBrowserActionItem> browserActions = new ArrayList<AbstractBrowserActionItem>();
@@ -139,6 +140,12 @@ public class JCRBrowserPanel extends JPanel implements Observer {
                         triggerNodeAction(CopyAction.ID);
                     }
                 });
+                ViewAction actionView = new ViewAction();
+                actionView.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        triggerNodeAction(ViewAction.ID);
+                    }
+                });
                 
                 tree.addMouseListener(new MouseAdapter(){
 					@Override
@@ -149,6 +156,7 @@ public class JCRBrowserPanel extends JPanel implements Observer {
 					}
                 });
                 browserActions.add(actionAdd);
+                browserActions.add(actionView);
                 browserActions.add(actionImport);
                 browserActions.add(actionEdit);
                 browserActions.add(actionRefresh);
