@@ -50,6 +50,7 @@ import org.apache.airavata.xbaya.registrybrowser.nodes.AiravataTreeNodeFactory;
 import org.apache.airavata.xbaya.registrybrowser.nodes.RegistryTreeCellRenderer;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.AddAction;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.CopyAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.DeleteAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.EditAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.ImportAction;
@@ -132,6 +133,13 @@ public class JCRBrowserPanel extends JPanel implements Observer {
                         triggerNodeAction(ImportAction.ID);
                     }
                 });
+                CopyAction actionCopy = new CopyAction();
+                actionCopy.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0) {
+                        triggerNodeAction(CopyAction.ID);
+                    }
+                });
+                
                 tree.addMouseListener(new MouseAdapter(){
 					@Override
 					public void mouseClicked(MouseEvent e) {
@@ -145,6 +153,7 @@ public class JCRBrowserPanel extends JPanel implements Observer {
                 browserActions.add(actionEdit);
                 browserActions.add(actionRefresh);
                 browserActions.add(actionDelete);
+                browserActions.add(actionCopy);
 
 //                popupMenu.add(actionAdd.getMenuItem());
 //                popupMenu.add(actionDelete.getMenuItem());
