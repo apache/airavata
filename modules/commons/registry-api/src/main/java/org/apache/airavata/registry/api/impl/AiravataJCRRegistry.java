@@ -27,15 +27,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import javax.jcr.Node;
@@ -711,6 +703,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         } catch (RepositoryException e) {
             throw new RegistryException("Error while retrieving GFac Descriptor list!!!", e);
         }
+        Collections.reverse(urlList);
         return urlList;
     }
 
@@ -1477,6 +1470,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         }finally{
         	closeSession(session);
         }
+        Collections.reverse(urlList);
         return urlList;
 	}
 	
