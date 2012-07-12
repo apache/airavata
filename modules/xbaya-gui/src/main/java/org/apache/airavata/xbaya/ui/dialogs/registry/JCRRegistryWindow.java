@@ -112,6 +112,10 @@ public class JCRRegistryWindow {
             List<URI> eventingServiceURLList = registry.getRegistry().getEventingServiceURLList();
 			if (eventingServiceURLList.size()>0) {
 				this.engine
+				.getConfiguration()
+				.setBrokerURL(
+						eventingServiceURLList.get(0));
+				this.engine
 						.getMonitor()
 						.getConfiguration()
 						.setBrokerURL(
@@ -119,6 +123,10 @@ public class JCRRegistryWindow {
 			}
 			List<URI> messageBoxServiceURLList = registry.getRegistry().getMessageBoxServiceURLList();
 			if (messageBoxServiceURLList.size()>0) {
+				this.engine
+				.getConfiguration()
+				.setMessageBoxURL(
+						messageBoxServiceURLList.get(0));
 				this.engine
 						.getMonitor()
 						.getConfiguration()

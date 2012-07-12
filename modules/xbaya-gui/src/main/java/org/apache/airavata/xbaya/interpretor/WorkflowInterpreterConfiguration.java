@@ -49,7 +49,7 @@ public class WorkflowInterpreterConfiguration {
 	private WorkflowNotifiable notifier;
 	private String topic;
     private boolean gfacEmbeddedMode = false;
-	private boolean actOnProvenance = false;
+	private Boolean actOnProvenance = null;
 	private boolean subWorkflow;
 	private boolean testMode=false;
 	
@@ -168,11 +168,11 @@ public class WorkflowInterpreterConfiguration {
 		this.gfacEmbeddedMode = gfacEmbeddedMode;
 	}
 
-	public boolean isActOnProvenance() {
+	public Boolean isActOnProvenance() {
 		return actOnProvenance;
 	}
 
-	public void setActOnProvenance(boolean actOnProvenance) {
+	public void setActOnProvenance(Boolean actOnProvenance) {
 		this.actOnProvenance = actOnProvenance;
 	}
 
