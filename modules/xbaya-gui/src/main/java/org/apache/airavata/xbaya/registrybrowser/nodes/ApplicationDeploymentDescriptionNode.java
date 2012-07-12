@@ -73,10 +73,10 @@ public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNo
         return Arrays.asList(DeleteAction.ID);
     }
 
-    @Override
-    public String getDefaultAction() {
-    	return EditAction.ID;
-    }
+//    @Override
+//    public String getDefaultAction() {
+//    	return EditAction.ID;
+//    }
     public boolean triggerAction(JTree tree, String action) throws Exception {
         if (action.equals(DeleteAction.ID)) {
         	return deleteApplicationDescription(tree);

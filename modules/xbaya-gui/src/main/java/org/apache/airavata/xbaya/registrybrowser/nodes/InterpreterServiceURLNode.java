@@ -21,14 +21,18 @@
 
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Icon;
+import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.xbaya.model.registrybrowser.InterpreterServiceURL;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.CopyAction;
 
 public class InterpreterServiceURLNode extends AbstractAiravataTreeNode {
     private InterpreterServiceURL interpreterServiceURL;
@@ -55,13 +59,24 @@ public class InterpreterServiceURLNode extends AbstractAiravataTreeNode {
 
     @Override
     public List<String> getSupportedActions() {
-        return Arrays.asList();
+        return Arrays.asList(CopyAction.ID);
     }
 
     @Override
-    public String getActionCaption(AbstractBrowserActionItem action) {
-        return null;
+    public boolean triggerAction(JTree tree, String action) throws Exception {
+        if (action.equals(CopyAction.ID)) {
+        	Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(getInterpreterServiceURL().getInterpreterServiceURL().toString()), null);
+        }
+        return super.triggerAction(tree, action);
     }
+    
+    @Override
+    public String getActionCaption(AbstractBrowserActionItem action) {
+    	if (action.getID().equals(CopyAction.ID)) {
+            return "Copy to clipboard";
+        }
+    	return null;
+	}
 
     @Override
     public Icon getActionIcon(AbstractBrowserActionItem action) {

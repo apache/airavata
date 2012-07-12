@@ -21,6 +21,8 @@
 
 package org.apache.airavata.xbaya.registrybrowser.nodes;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +32,7 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.xbaya.model.registrybrowser.ServiceParameter;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
+import org.apache.airavata.xbaya.ui.actions.registry.browser.CopyAction;
 
 public class ParameterNode extends AbstractAiravataTreeNode {
 	private ServiceParameter parameter;
@@ -60,18 +63,24 @@ public class ParameterNode extends AbstractAiravataTreeNode {
 		return JCRBrowserIcons.PARAMETER_ICON;
 	}
 
-	@Override
-	public List<String> getSupportedActions() {
-		return Arrays.asList();
-	}
+    @Override
+    public List<String> getSupportedActions() {
+        return Arrays.asList(CopyAction.ID);
+    }
 
+    @Override
+    public String getActionCaption(AbstractBrowserActionItem action) {
+    	if (action.getID().equals(CopyAction.ID)) {
+            return "Copy contents";
+        }
+    	return null;
+    }
+    
 	public boolean triggerAction(JTree tree,String action) throws Exception{
+		if (action.equals(CopyAction.ID)) {
+        	Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(getParameter().getValue().toString()), null);
+        }
 		return super.triggerAction(tree, action);
-	}
-
-	@Override
-	public String getActionCaption(AbstractBrowserActionItem action) {
-		return action.getDefaultCaption();
 	}
 
 	@Override
