@@ -59,7 +59,7 @@ public class ApplicationDeploymentDescriptionsNode extends AbstractAiravataTreeN
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return "Applications";
+        return "Deployments";
     }
 
     @Override

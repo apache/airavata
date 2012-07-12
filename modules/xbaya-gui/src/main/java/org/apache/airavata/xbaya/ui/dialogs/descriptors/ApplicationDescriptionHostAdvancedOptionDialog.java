@@ -138,9 +138,9 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         });
         
 		XBayaLabel lbljobType = new XBayaLabel("Job Type",cmbJobType);
-		XBayaLabel lblProjectAccountNumber = new XBayaLabel("Project Account Number",txtProjectAccountNumber);
+		XBayaLabel lblProjectAccountNumber = new XBayaLabel("Project Account Number *",txtProjectAccountNumber);
 		XBayaLabel lblProjectAccountDescription = new XBayaLabel("Project Account Description",txtProjectAccountDescription);
-        XBayaLabel lblQueueType = new XBayaLabel("Queue Type",txtQueueType);
+        XBayaLabel lblQueueType = new XBayaLabel("Queue Type *",txtQueueType);
 		XBayaLabel lblMaxWallTime = new XBayaLabel("Max Wall Time",txtMaxWallTime);
 		lblCpuCount = new XBayaLabel("CPU Count",txtCpuCount);
 		lblProcessorPerNode = new XBayaLabel("Processor Per Node", txtProcessorsPerNode);
@@ -188,7 +188,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 			jobTypes.add(JobTypeType.OPEN_MP);
 			jobTypes.add(JobTypeType.MPI);
 			jobTypes.add(JobTypeType.SERIAL);
-            jobTypes.add(JobTypeType.SINGLE);
+//            jobTypes.add(JobTypeType.SINGLE);
 		}
 		return jobTypes;
 	}
@@ -281,18 +281,25 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		return getGramApplicationDescriptionType().getProjectAccount();
 	}
     
-
+	private String getPropValue(int num){
+		if (num==0){
+			return "";
+		}else{
+			return String.valueOf(num);
+		}
+	}
+	
     private void loadApplicationDescriptionAdvancedOptions() {
     	GramApplicationDeploymentType gadType = getGramApplicationDescriptionType();
 		if (gadType.getJobType()!=null) {
 			cmbJobType.setSelectedItem(gadType
 					.getJobType().toString());
 		}
-    	txtMaxWallTime.setText(String.valueOf(gadType.getMaxWallTime()));
-        txtCpuCount.setText(String.valueOf(gadType.getCpuCount()));
-        txtProcessorsPerNode.setText(String.valueOf(gadType.getProcessorsPerNode()));
-        txtMinMemory.setText(String.valueOf(gadType.getMinMemory()));
-        txtMaxMemory.setText(String.valueOf(gadType.getMaxMemory()));
+    	txtMaxWallTime.setText(getPropValue(gadType.getMaxWallTime()));
+        txtCpuCount.setText(getPropValue(gadType.getCpuCount()));
+        txtProcessorsPerNode.setText(getPropValue(gadType.getProcessorsPerNode()));
+        txtMinMemory.setText(getPropValue(gadType.getMinMemory()));
+        txtMaxMemory.setText(getPropValue(gadType.getMaxMemory()));
 		ProjectAccountType projectAccount = getProjectAccountType();
 
 		txtProjectAccountNumber.setText(projectAccount.getProjectAccountNumber()==null? "":projectAccount.getProjectAccountNumber());

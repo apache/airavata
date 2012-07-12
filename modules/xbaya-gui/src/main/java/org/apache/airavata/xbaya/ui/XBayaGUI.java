@@ -439,15 +439,19 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 			GraphCanvas graphCanvas = graphCanvases.get(index);
 			if (graphCanvas.isWorkflowChanged()){
 				int result = JOptionPane.showConfirmDialog(frame, "'"+graphCanvas.getWorkflow().getName()+"' has been modified. Save changes?", "Save Workflow", JOptionPane.YES_NO_CANCEL_OPTION);
-				if (result==JOptionPane.YES_OPTION){
-					graphFiler.saveWorkflow(graphCanvas);
-					if (graphCanvas.isWorkflowChanged()){
-						//if cancelled while trying to save
+				try {
+					if (result==JOptionPane.YES_OPTION){
+						graphFiler.saveWorkflow(graphCanvas);
+						if (graphCanvas.isWorkflowChanged()){
+							//if cancelled while trying to save
+							return;
+						}
+					}else if (result!=JOptionPane.NO_OPTION){
+						//if cancel clicked
 						return;
 					}
-				}else if (result!=JOptionPane.NO_OPTION){
-					//if cancel clicked
-					return;
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 			graphCanvases.remove(index);
