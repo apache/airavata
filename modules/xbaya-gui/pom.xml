@@ -37,7 +37,7 @@
                 <xpp3.version>1.1.3_7</xpp3.version>
 
                 <!-- JNLP Properties -->
-                <jnlpURLPrefix>http://localhost/demo</jnlpURLPrefix>
+                <jnlpURLPrefix>http://demo.airavata.org/airavata</jnlpURLPrefix>
                 <jnlpFileName>xbaya.jnlp</jnlpFileName>
             </properties>
         </profile>
