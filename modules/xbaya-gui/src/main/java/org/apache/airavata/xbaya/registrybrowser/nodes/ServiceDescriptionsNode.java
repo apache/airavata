@@ -113,9 +113,9 @@ public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
     @Override
     public String getActionCaption(AbstractBrowserActionItem action) {
         if (action.getID().equals(DeleteAction.ID)) {
-            return "Remove all services";
+            return "Remove all Applicatons";
         } else if (action.getID().equals(AddAction.ID)) {
-            return "New service...";
+            return "Register Application...";
         }
         return action.getDefaultCaption();
     }
