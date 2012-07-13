@@ -25,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -90,6 +91,8 @@ public class WorkflowInterpreterLaunchWindow {
 
     private XBayaTextField gfacTextField;
 
+	private XBayaTextField instanceNameTextField;
+
     protected final static XmlInfosetBuilder builder = XmlConstants.BUILDER;
 
     /**
@@ -146,7 +149,7 @@ public class WorkflowInterpreterLaunchWindow {
             this.parameterTextFields.add(paramField);
         }
         this.parameterPanel.layout(inputNodes.size(), 3, GridPanel.WEIGHT_NONE, 2);
-
+        this.instanceNameTextField.setText(workflow.getName()+"_"+Calendar.getInstance().getTime().toString());
         this.topicTextField.setText(UUID.randomUUID().toString());
 
         XBayaConfiguration config = this.engine.getConfiguration();
@@ -181,6 +184,9 @@ public class WorkflowInterpreterLaunchWindow {
     private void initGUI() {
         this.parameterPanel = new GridPanel(true);
 
+        this.instanceNameTextField = new XBayaTextField();
+        XBayaLabel instanceNameLabel = new XBayaLabel("Experiment name", this.instanceNameTextField);
+        
         this.topicTextField = new XBayaTextField();
         XBayaLabel topicLabel = new XBayaLabel("Notification topic", this.topicTextField);
         this.workflowInterpreterTextField = new XBayaTextField();
@@ -192,6 +198,8 @@ public class WorkflowInterpreterLaunchWindow {
         XBayaLabel gfacLabel = new XBayaLabel("GFac URL", this.gfacTextField);
 
         GridPanel infoPanel = new GridPanel();
+        infoPanel.add(instanceNameLabel);
+        infoPanel.add(this.instanceNameTextField);
         infoPanel.add(topicLabel);
         infoPanel.add(this.topicTextField);
         infoPanel.add(workflowInterpreterLabel);
@@ -201,14 +209,14 @@ public class WorkflowInterpreterLaunchWindow {
         infoPanel.add(gfacLabel);
         infoPanel.add(this.gfacTextField);
 
-        infoPanel.layout(4, 2, GridPanel.WEIGHT_NONE, 1);
+        infoPanel.layout(5, 2, GridPanel.WEIGHT_NONE, 1);
 
         GridPanel mainPanel = new GridPanel();
         mainPanel.add(this.parameterPanel);
         mainPanel.add(infoPanel);
         mainPanel.layout(2, 1, 0, 0);
 
-        JButton okButton = new JButton("OK");
+        JButton okButton = new JButton("Run");
         okButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 execute();
@@ -234,6 +242,11 @@ public class WorkflowInterpreterLaunchWindow {
         final List<String> arguments = new ArrayList<String>();
 
         String topic = this.topicTextField.getText();
+        String instanceName = this.instanceNameTextField.getText();
+        if (instanceName.equals("")){
+        	instanceName=workflow.getName();
+        }
+        final String instanceNameFinal=instanceName;
         if (topic.length() == 0) {
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.TOPIC_EMPTY_ERROR);
             return;
@@ -349,6 +362,7 @@ public class WorkflowInterpreterLaunchWindow {
                             ,null,configuration.getMessageBoxURL().toASCIIString());
                     stub._getServiceClient().addHeader(AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml())));
                     stub.launchWorkflow(workflow.toXMLText(), topicString,inputNameVals);
+                    engine.getConfiguration().getJcrComponentRegistry().getRegistry().saveWorkflowExecutionName(topicString, instanceNameFinal);
                 } catch (Exception e) {
                     WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e);
                 }

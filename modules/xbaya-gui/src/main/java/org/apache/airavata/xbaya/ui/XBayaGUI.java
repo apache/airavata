@@ -653,7 +653,7 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 			jcrBrowserPanel = new JCRBrowserPanel(engine);
 			this.componentTabbedPane.add(jcrBrowserPanel);
 			int index=this.componentTabbedPane.getTabCount()-1;
-			this.componentTabbedPane.setTitleAt(1, "JCR Registry Browser");
+			this.componentTabbedPane.setTitleAt(1, "Airavata Registry");
 			TabLabelButton tabLabelButton = new TabLabelButton(componentTabbedPane, "Close JCR Browser");
 			tabLabelButton.setCloseButtonListener(new ActionListener(){
 				@Override
