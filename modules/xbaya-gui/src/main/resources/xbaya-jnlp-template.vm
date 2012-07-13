@@ -43,7 +43,7 @@
 	
 	<!-- Registry -->
 	<argument>-RegistryURL</argument>
-	<argument>$registryEPR</argument>
+	<argument>http://gf9.ucs.indiana.edu:8090/jackrabbit-webapp-2.4.0/rmi</argument>
 
 	<!-- GFac -->
 	#*<argument>-gfacURL</argument>
