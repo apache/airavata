@@ -21,13 +21,8 @@
 
 package org.apache.airavata.core.gfac.provider.impl;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -55,12 +50,12 @@ public class LocalProvider extends AbstractProvider {
     private ProcessBuilder builder;
     private List<String> cmdList;
 
-    private void makeFileSystemDir(String dir) throws ProviderException {
+    private void makeFileSystemDir(String dir, InvocationContext invocationContext) throws ProviderException {
         File f = new File(dir);
         if (f.isDirectory() && f.exists()) {
             return;
         } else if (!new File(dir).mkdir()) {
-            throw new ProviderException("Cannot make directory");
+            throw new ProviderException("Cannot make directory "+dir, invocationContext);
         }
     }
 
@@ -70,10 +65,10 @@ public class LocalProvider extends AbstractProvider {
         log.info("working diectroy = " + app.getStaticWorkingDirectory());
         log.info("temp directory = " + app.getScratchWorkingDirectory());
 
-        makeFileSystemDir(app.getStaticWorkingDirectory());
-        makeFileSystemDir(app.getScratchWorkingDirectory());
-        makeFileSystemDir(app.getInputDataDirectory());
-        makeFileSystemDir(app.getOutputDataDirectory());
+        makeFileSystemDir(app.getStaticWorkingDirectory(),invocationContext);
+        makeFileSystemDir(app.getScratchWorkingDirectory(),invocationContext);
+        makeFileSystemDir(app.getInputDataDirectory(),invocationContext);
+        makeFileSystemDir(app.getOutputDataDirectory(),invocationContext);
     }
 
     public void setupEnvironment(InvocationContext context) throws ProviderException {
@@ -171,9 +166,9 @@ public class LocalProvider extends AbstractProvider {
             log.info(buf.toString());
 
         } catch (IOException io) {
-            throw new ProviderException(io.getMessage(), io);
+            throw new ProviderException(io.getMessage(), io,context);
         } catch (InterruptedException e) {
-            throw new ProviderException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e, context);
         }
     }
 
@@ -187,9 +182,9 @@ public class LocalProvider extends AbstractProvider {
             // set to context
             return OutputUtils.fillOutputFromStdout(context.<ActualParameter>getOutput(), stdOutStr);
         } catch (XmlException e) {
-            throw new ProviderException("Cannot read output:" + e.getMessage(), e);
+            throw new ProviderException("Cannot read output:" + e.getMessage(), e, context);
         } catch (IOException io) {
-            throw new ProviderException(io.getMessage(), io);
+            throw new ProviderException(io.getMessage(), io, context);
         }
     }
 
