@@ -21,6 +21,7 @@
 
 package org.apache.airavata.core.gfac.exception;
 
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.provider.Provider;
 
 /**
@@ -34,8 +35,8 @@ public class JobSubmissionFault extends ProviderException {
 
     private String reason;
 
-    public JobSubmissionFault(Provider provider, Throwable cause, String submitHost, String contact, String rsl) {
-        super(cause.getMessage(), cause);
+    public JobSubmissionFault(Provider provider, Throwable cause, String submitHost, String contact, String rsl, InvocationContext invocationContext) {
+        super(cause.getMessage(), cause,invocationContext);
     }
 
     public void setReason(String reason) {

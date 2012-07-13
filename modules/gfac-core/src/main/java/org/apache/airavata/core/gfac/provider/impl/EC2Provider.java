@@ -100,13 +100,13 @@ public class EC2Provider extends SSHProvider{
          * Validation
          */
         if (access_key == null || access_key.isEmpty())
-            throw new ProviderException("Access Key is empty");
+            throw new ProviderException("EC2 Access Key is empty", invocationContext);
         if (secret_key == null || secret_key.isEmpty())
-            throw new ProviderException("Secret Key is empty");
+            throw new ProviderException("EC2 Secret Key is empty", invocationContext);
         if ((ami_id == null && ins_id == null) || (ami_id != null && ami_id.isEmpty()) || (ins_id != null && ins_id.isEmpty()))
-            throw new ProviderException("AMI or Instance ID is empty");
+            throw new ProviderException("EC2 AMI or Instance ID is empty", invocationContext);
         if (this.username == null || this.username.isEmpty())
-            throw new ProviderException("Username is empty");
+            throw new ProviderException("EC2 Username is empty", invocationContext);
 
         /*
          * Need to start EC2 instance before running it
@@ -167,7 +167,7 @@ public class EC2Provider extends SSHProvider{
             }
 
         } catch (Exception e) {
-            throw new ProviderException("Invalied Request",e);
+            throw new ProviderException("Invalied Request",e,invocationContext);
         }
 
         SSHSecurityContextImpl sshContext = ((SSHSecurityContextImpl) invocationContext.getSecurityContext(SSH_SECURITY_CONTEXT));

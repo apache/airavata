@@ -21,6 +21,7 @@
 
 package org.apache.airavata.core.gfac.exception;
 
+import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.provider.Provider;
 
 /**
@@ -29,11 +30,25 @@ import org.apache.airavata.core.gfac.provider.Provider;
  */
 public class ProviderException extends GfacException {
 
-    public ProviderException(String message) {
+	private static final long serialVersionUID = 7994167766799131223L;
+
+	public ProviderException(String message, InvocationContext invocationContext, String...additionalExceptiondata) {
         super(message);
+        sendFaultNotification(message, invocationContext, new Exception(message),additionalExceptiondata);
     }
 
-    public ProviderException(String message, Throwable cause) {
+    public ProviderException(String message, Throwable cause, InvocationContext invocationContext, String...additionalExceptiondata) {
         super(message, cause);
+        Exception e = new Exception(cause);
+        sendFaultNotification(message, invocationContext, e, additionalExceptiondata);
     }
+
+	private void sendFaultNotification(String message,
+			InvocationContext invocationContext, Exception e,
+			String... additionalExceptiondata) {
+		if (additionalExceptiondata==null || additionalExceptiondata.length==0){
+        	additionalExceptiondata=new String[]{message,e.getLocalizedMessage()};
+        }
+		invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,additionalExceptiondata);
+	}
 }

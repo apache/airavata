@@ -129,11 +129,11 @@ public class SSHProvider extends AbstractProvider {
             Command cmd = session.exec(commandString.toString());
             cmd.join(COMMAND_EXECUTION_TIMEOUT, TimeUnit.SECONDS);
         } catch (ConnectionException e) {
-            throw new ProviderException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e, context);
         } catch (TransportException e) {
-            throw new ProviderException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e, context);
         } catch (IOException e) {
-            throw new ProviderException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e, context);
         } finally {
             closeSession(session);
         }
@@ -222,11 +222,11 @@ public class SSHProvider extends AbstractProvider {
             }
 
         } catch (ConnectionException e) {
-            throw new  ProviderException(e.getMessage(), e);
+            throw new  ProviderException(e.getMessage(), e, context);
         } catch (TransportException e) {
-            throw new ProviderException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e, context);
         } catch (IOException e) {
-            throw new ProviderException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e, context);
         } finally {
             closeSession(session);
         }
@@ -251,13 +251,13 @@ public class SSHProvider extends AbstractProvider {
             return OutputUtils.fillOutputFromStdout(context.<ActualParameter> getOutput(), stdOutStr);
 
         } catch (XmlException e) {
-            throw new ProviderException("Cannot read output:" + e.getMessage(), e);
+            throw new ProviderException("Cannot read output:" + e.getMessage(), e, context);
         } catch (ConnectionException e) {
-            throw new ProviderException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e, context);
         } catch (TransportException e) {
-            throw new ProviderException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e, context);
         } catch (IOException e) {
-            throw new ProviderException(e.getMessage(), e);
+            throw new ProviderException(e.getMessage(), e, context);
         }
     }
 
