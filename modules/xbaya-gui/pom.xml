@@ -60,6 +60,22 @@
 
 			</properties>
 		</profile>
+
+        <profile>
+            <id>collective</id>
+            <activation>
+                <file>
+                    <exists>betacollective</exists>
+                </file>
+            </activation>
+            <properties>
+                <!-- Inherited from the parent in this collective build. -->
+                <ssl.trustedCertsFile>${trustedCertsLocation}</ssl.trustedCertsFile>
+                <build.scope>provided</build.scope>
+                <build.jsf>compile</build.jsf>
+            </properties>
+        </profile>
+
 	</profiles>
 	<repositories>
 		<repository>
@@ -99,7 +115,7 @@
 	</repositories>
 
 	<build>
-		<resources>
+		<!--<resources>
 			<resource>
 				<directory>src/main/resources</directory>
 			</resource>
@@ -109,16 +125,69 @@
 					<exclude>**/*.java</exclude>
 				</excludes>
 			</resource>
-		</resources>
+		</resources>-->
 		<plugins>
-			<plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>restore-persistence</id>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <tasks>
+                                <!--<copy file="${project.build.outputDirectory}/services.xml" tofile="${project.build.outputDirectory}/META-INF/services.xml" />-->
+                                <copy file="src/main/resources/services.xml" tofile="${project.build.outputDirectory}/META-INF/services.xml" />
+                                <copy file="src/main/resources/WorkflowInterpretor.wsdl" tofile="${project.build.outputDirectory}/META-INF/service.wsdl" />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Suite.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*Test.java</exclude>
+                        <exclude>**/*Tests.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/jnlp/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <excludeTransitive>false</excludeTransitive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+			<!--<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
 				</configuration>
-			</plugin>
+			</plugin>-->
 			<!--plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-dependency-plugin</artifactId> 
 				<executions> <execution> <id>copy-dependencies</id> <phase>process-resources</phase> 
 				<goals> <goal>copy-dependencies</goal> </goals> <configuration> <outputDirectory>target/jnlp/lib</outputDirectory> 
@@ -395,8 +464,13 @@
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-registry-service</artifactId>
 			<version>${airavata.version}</version>
-		</dependency>
+        </dependency>
 
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-workflow-model-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-workflow-execution-context</artifactId>
@@ -447,11 +521,11 @@
 			<artifactId>airavata-common-registry-api</artifactId>
 			<version>${airavata.version}</version>
 		</dependency>
-		<dependency>
+<!--		<dependency>
 			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-client-api</artifactId>
 			<version>${airavata.version}</version>
-		</dependency>
+		</dependency>-->
 
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
