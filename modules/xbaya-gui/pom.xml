@@ -9,25 +9,6 @@
     <name>Airavata XBaya</name>
     <url>http://incubator.apache.org/airavata/</url>
 
-    <!-- Edit the following properties. -->
-    <properties>
-        <airavata.version>0.4-incubating-SNAPSHOT</airavata.version>
-        <used.axis2.release>${axis2.version}</used.axis2.release>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <axis2.version>1.5.1</axis2.version>
-        <derby.version>10.7.1.1</derby.version>
-        <jackrabbit.version>2.2.7</jackrabbit.version>
-        <logback.version>0.9.20</logback.version>
-        <org.slf4j.version>1.6.1</org.slf4j.version>
-        <log4j.version>1.2.16</log4j.version>
-        <axiom.version>1.2.8</axiom.version>
-        <surefire.version>2.12</surefire.version>
-        <jcr.version>2.0</jcr.version>
-        <xmlbeans.version>2.5.0</xmlbeans.version>
-        <xpp3.version>1.1.3_7</xpp3.version>
-    </properties>
-
     <profiles>
         <profile>
             <id>standalone</id>
@@ -125,7 +106,6 @@
                         <phase>prepare-package</phase>
                         <configuration>
                             <tasks>
-                                <!--<copy file="${project.build.outputDirectory}/services.xml" tofile="${project.build.outputDirectory}/META-INF/services.xml" />-->
                                 <copy file="src/main/resources/services.xml" tofile="${project.build.outputDirectory}/META-INF/services.xml" />
                                 <copy file="src/main/resources/WorkflowInterpretor.wsdl" tofile="${project.build.outputDirectory}/META-INF/service.wsdl" />
                             </tasks>
@@ -423,22 +403,22 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-messenger-client</artifactId>
-            <version>${airavata.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-messenger-commons</artifactId>
-            <version>${airavata.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-registry-api</artifactId>
-            <version>${airavata.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-registry-service</artifactId>
-            <version>${airavata.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -448,52 +428,52 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflow-execution-context</artifactId>
-            <version>${airavata.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflow-tracking</artifactId>
-            <version>${airavata.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-core</artifactId>
-            <version>${airavata.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-schema-utils</artifactId>
-            <version>${airavata.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-common-utils</artifactId>
-            <version>${airavata.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-message-box</artifactId>
-            <version>${airavata.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-message-broker</artifactId>
-            <version>${airavata.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-xbaya-gui</artifactId>
-            <version>${airavata.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-axis2-interface</artifactId>
-            <version>${airavata.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-common-registry-api</artifactId>
-            <version>${airavata.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
