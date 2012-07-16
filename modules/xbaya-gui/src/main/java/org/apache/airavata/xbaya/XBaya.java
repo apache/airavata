@@ -288,6 +288,7 @@ public class XBaya {
             String message = "Unknown error while parsing the arguments";
             this.config.addError(new WorkflowException(message, e));
         }
+        
     }
 
     private URI parseURL(String urlString) throws URISyntaxException {

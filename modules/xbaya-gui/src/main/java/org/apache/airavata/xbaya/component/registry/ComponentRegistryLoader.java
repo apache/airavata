@@ -96,9 +96,11 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
             }
         };
         this.loadThread.start();
-
-        // This has to be the last because it blocks when the dialog is modal.
-        this.loadingDialog.show();
+        
+        if (!getComponentTreeNodesMap().containsKey(registry.getName())) {
+			// This has to be the last because it blocks when the dialog is modal.
+			this.loadingDialog.show();
+		}
     }
 
     /**

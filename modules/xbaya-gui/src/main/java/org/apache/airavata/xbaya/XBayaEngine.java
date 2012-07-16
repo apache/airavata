@@ -21,8 +21,12 @@
 
 package org.apache.airavata.xbaya;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.registry.AmazonComponentRegistry;
 import org.apache.airavata.workflow.model.component.registry.LocalComponentRegistry;
@@ -91,6 +95,7 @@ public class XBayaEngine {
 
 
         // Set up the GUI.
+        updateXBayaConfigurationServiceURLs();
         XBayaEngine.this.gui = new XBayaGUI(XBayaEngine.this);
 
         // Arguments errors.
@@ -274,6 +279,53 @@ public class XBayaEngine {
 			throw new WorkflowRuntimeException("Critical Error!!! Workflow interpretter already running. Cleanup first");
 		}
 		this.workflowInterpreter = workflowInterpreter;
+	}
+
+	
+	public void updateXBayaConfigurationServiceURLs() {
+		try {
+			if (this.getConfiguration().getJcrComponentRegistry()!=null && this.getConfiguration().getJcrComponentRegistry().getRegistry()!=null){
+	        	AiravataRegistry registry=this.getConfiguration().getJcrComponentRegistry().getRegistry();
+	        	List<URI> eventingServiceURLList = registry.getEventingServiceURLList();
+				if (eventingServiceURLList.size()>0) {
+					this.getConfiguration()
+					.setBrokerURL(
+							eventingServiceURLList.get(0));
+					this.getMonitor()
+							.getConfiguration()
+							.setBrokerURL(
+									eventingServiceURLList.get(0));
+				}
+				List<URI> messageBoxServiceURLList = registry.getMessageBoxServiceURLList();
+				if (messageBoxServiceURLList.size()>0) {
+					this.getConfiguration()
+					.setMessageBoxURL(
+							messageBoxServiceURLList.get(0));
+					this.getMonitor()
+							.getConfiguration()
+							.setMessageBoxURL(
+									messageBoxServiceURLList.get(0));
+				}
+				List<URI> interpreterServiceURLList = registry.getInterpreterServiceURLList();
+				if (interpreterServiceURLList.size()>0) {
+					this.getConfiguration()
+							.setWorkflowInterpreterURL(interpreterServiceURLList.get(0));
+				}
+				List<String> gfacURLList = registry.getGFacDescriptorList();
+				if (gfacURLList.size()>0) {
+					try {
+						this.getConfiguration().setGFacURL(new URI(gfacURLList.get(0)));
+					} catch (URISyntaxException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+        } catch (RegistryException e) {
+            this.getGUI().getErrorWindow().error(ErrorMessages.URL_WRONG, e);
+            return;
+        } catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
  }
