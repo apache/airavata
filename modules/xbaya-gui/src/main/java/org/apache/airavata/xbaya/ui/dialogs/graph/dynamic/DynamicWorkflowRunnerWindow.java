@@ -25,7 +25,6 @@ import java.awt.event.ActionEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -37,6 +36,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
@@ -188,7 +188,7 @@ public class DynamicWorkflowRunnerWindow {
         }
         this.parameterPanel.layout(inputNodes.size(), 3, GridPanel.WEIGHT_NONE, 2);
 
-        this.instanceNameTextField.setText(workflow.getName()+"_"+Calendar.getInstance().getTime().toString());
+//        this.instanceNameTextField.setText(workflow.getName()+"_"+Calendar.getInstance().getTime().toString());
 
         this.topicTextField.setText(UUID.randomUUID().toString());
 
@@ -307,9 +307,16 @@ public class DynamicWorkflowRunnerWindow {
     private void execute() {
         final List<String> arguments = new ArrayList<String>();
         String instanceName = this.instanceNameTextField.getText();
-        if (instanceName.equals("")){
-        	instanceName=workflow.getName();
+        if (instanceName.trim().equals("")){
+        	JOptionPane.showMessageDialog(engine.getGUI().getFrame(),
+        		    "Experiment name cannot be empty",
+        		    "Experiment Name",
+        		    JOptionPane.ERROR_MESSAGE);
+        	return;
         }
+//        if (instanceName.equals("")){
+//        	instanceName=workflow.getName();
+//        }
         final String instanceNameFinal=instanceName;
         String topic = this.topicTextField.getText();
         if (topic.length() == 0) {

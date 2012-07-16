@@ -25,7 +25,6 @@ import java.awt.event.ActionEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +32,7 @@ import java.util.UUID;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
@@ -149,7 +149,7 @@ public class WorkflowInterpreterLaunchWindow {
             this.parameterTextFields.add(paramField);
         }
         this.parameterPanel.layout(inputNodes.size(), 3, GridPanel.WEIGHT_NONE, 2);
-        this.instanceNameTextField.setText(workflow.getName()+"_"+Calendar.getInstance().getTime().toString());
+//        this.instanceNameTextField.setText(workflow.getName()+"_"+Calendar.getInstance().getTime().toString());
         this.topicTextField.setText(UUID.randomUUID().toString());
 
         XBayaConfiguration config = this.engine.getConfiguration();
@@ -243,9 +243,16 @@ public class WorkflowInterpreterLaunchWindow {
 
         String topic = this.topicTextField.getText();
         String instanceName = this.instanceNameTextField.getText();
-        if (instanceName.equals("")){
-        	instanceName=workflow.getName();
+        if (instanceName.trim().equals("")){
+        	JOptionPane.showMessageDialog(engine.getGUI().getFrame(),
+        		    "Experiment name cannot be empty",
+        		    "Experiment Name",
+        		    JOptionPane.ERROR_MESSAGE);
+        	return;
         }
+//        if (instanceName.equals("")){
+//        	instanceName=workflow.getName();
+//        }
         final String instanceNameFinal=instanceName;
         if (topic.length() == 0) {
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.TOPIC_EMPTY_ERROR);
