@@ -26,7 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -34,7 +33,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -108,48 +106,7 @@ public class JCRRegistryWindow {
         }
         XBayaConfiguration configuration = this.engine.getConfiguration();
 
-        try {
-            List<URI> eventingServiceURLList = registry.getRegistry().getEventingServiceURLList();
-			if (eventingServiceURLList.size()>0) {
-				this.engine
-				.getConfiguration()
-				.setBrokerURL(
-						eventingServiceURLList.get(0));
-				this.engine
-						.getMonitor()
-						.getConfiguration()
-						.setBrokerURL(
-								eventingServiceURLList.get(0));
-			}
-			List<URI> messageBoxServiceURLList = registry.getRegistry().getMessageBoxServiceURLList();
-			if (messageBoxServiceURLList.size()>0) {
-				this.engine
-				.getConfiguration()
-				.setMessageBoxURL(
-						messageBoxServiceURLList.get(0));
-				this.engine
-						.getMonitor()
-						.getConfiguration()
-						.setMessageBoxURL(
-								messageBoxServiceURLList.get(0));
-			}
-			List<URI> interpreterServiceURLList = registry.getRegistry().getInterpreterServiceURLList();
-			if (interpreterServiceURLList.size()>0) {
-				this.engine.getConfiguration()
-						.setWorkflowInterpreterURL(interpreterServiceURLList.get(0));
-			}
-			List<String> gfacURLList = registry.getRegistry().getGFacDescriptorList();
-			if (gfacURLList.size()>0) {
-				try {
-					this.engine.getConfiguration().setGFacURL(new URI(gfacURLList.get(0)));
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
-				}
-			}
-        } catch (RegistryException e) {
-            this.engine.getGUI().getErrorWindow().error(ErrorMessages.URL_WRONG, e);
-            return;
-        }
+        engine.updateXBayaConfigurationServiceURLs();
 
         configuration.setJcrComponentRegistry(registry);
         configuration.setRegigstryUserName(username);
