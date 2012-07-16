@@ -46,7 +46,11 @@ public class XBayaWorkflowNode extends AbstractAiravataTreeNode {
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return getXbayaWorkflow().getWorkflowName()+" : "+getXbayaWorkflow().getWorkflowId();
+    	String caption=getXbayaWorkflow().getWorkflowId();
+    	if (getXbayaWorkflow().getWorkflowName()!=null){
+    		caption=getXbayaWorkflow().getWorkflowName()+" : "+caption;
+    	}
+        return caption;
     }
 
     @Override
