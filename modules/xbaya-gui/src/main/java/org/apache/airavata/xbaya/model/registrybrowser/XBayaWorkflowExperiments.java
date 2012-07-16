@@ -47,6 +47,7 @@ public class XBayaWorkflowExperiments {
 	public List<XBayaWorkflowExperiment> getAllExperiments(){
 		Map<String, XBayaWorkflowExperiment> experiments=new HashMap<String,XBayaWorkflowExperiment>();
     	try {
+    		initializeExperimentMap(experiments);
 			List<WorkflowServiceIOData> workflowInput = getRegistry().searchWorkflowExecutionServiceInput(null, null, null);
 			List<WorkflowServiceIOData> workflowOutput = getRegistry().searchWorkflowExecutionServiceOutput(null, null, null);
 			createChildren(experiments, workflowInput, true);
@@ -56,6 +57,20 @@ public class XBayaWorkflowExperiments {
 		}
     	return Arrays.asList(experiments.values().toArray(new XBayaWorkflowExperiment[]{}));
 	}
+	
+	public void initializeExperimentMap(Map<String, XBayaWorkflowExperiment> experiments){
+		try {
+			List<String> workflowExecutionIdByUser = getRegistry().getWorkflowExecutionIdByUser(".*");
+			for (String expId : workflowExecutionIdByUser) {
+				XBayaWorkflowExperiment xBayaWorkflowExperiment = new XBayaWorkflowExperiment(expId, null);
+				xBayaWorkflowExperiment.add(new XBayaWorkflow(expId,getRegistry().getWorkflowExecutionTemplateName(expId),null));
+				experiments.put(expId,xBayaWorkflowExperiment);
+			}
+		} catch (RegistryException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private void createChildren(
 			Map<String, XBayaWorkflowExperiment> experiments,
 			List<WorkflowServiceIOData> workflowIO, boolean inputData) {

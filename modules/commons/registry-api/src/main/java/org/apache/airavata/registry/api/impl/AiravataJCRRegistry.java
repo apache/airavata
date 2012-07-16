@@ -892,6 +892,28 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         return searchWorkflowIO(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx, OUTPUT);
     }
 
+    @Override
+    public String getWorkflowExecutionTemplateName(String experimentId) throws RegistryException{
+	    Session session;
+	    try {
+			session = getSession();
+			Node experimentsNode = getWorkflowDataNode(session);
+			if (experimentsNode.hasNode(experimentId)){
+				Node expNode = experimentsNode.getNode(experimentId);
+				List<Node> workflowNodes = getChildNodes(expNode);
+				for(Node workflowNode: workflowNodes){
+					if (workflowNode.hasProperty(PROPERTY_WORKFLOW_NAME)){
+						return workflowNode.getProperty(PROPERTY_WORKFLOW_NAME).getString();
+					}
+				}
+				
+			}
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		}
+	    return null;
+	}
+
     private List<WorkflowServiceIOData> searchWorkflowIO(String experimentIdRegEx, String workflowNameRegEx,
             String nodeNameRegEx, String type) throws RegistryException{
         List<WorkflowServiceIOData> workflowIODataList = new ArrayList<WorkflowServiceIOData>();

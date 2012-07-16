@@ -62,8 +62,11 @@ public class XBayaWorkflowExperimentNode extends AbstractAiravataTreeNode {
     	String caption=workflowExecutionName;
     	try {
 			WorkflowInstanceStatus workflowExecutionStatus = getRegistry().getWorkflowExecutionStatus(getExperiment().getExperimentId());
-			if (workflowExecutionStatus!=null){
-				caption+=" - <i>"+workflowExecutionStatus.getExecutionStatus().toString() +" as of "+workflowExecutionStatus.getStatusUpdateTime().toString()+"</i>";
+			if (workflowExecutionStatus!=null && workflowExecutionStatus.getExecutionStatus()!=null){
+				caption += " - <i>" + workflowExecutionStatus.getExecutionStatus().toString()+"</i>";
+				if (workflowExecutionStatus.getStatusUpdateTime()!=null) {
+						caption += "<i> as of " + workflowExecutionStatus.getStatusUpdateTime().toString() + "</i>";
+				}
 			}
 		} catch (RegistryException e) {
 			e.printStackTrace();
