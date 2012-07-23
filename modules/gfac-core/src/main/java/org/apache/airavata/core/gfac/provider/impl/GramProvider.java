@@ -49,6 +49,8 @@ import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.StdErrParameterType;
+import org.apache.airavata.schemas.gfac.StdOutParameterType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.airavata.schemas.wec.WorkflowOutputDataHandlingDocument;
@@ -301,7 +303,7 @@ public class GramProvider extends AbstractProvider {
 						}
                     	else{
                     	// This is to handle exception during the output parsing.
-                        stringMap = OutputUtils.fillOutputFromStdout(invocationContext.<ActualParameter>getOutput(), stdout);
+                        stringMap = OutputUtils.fillOutputFromStdout(invocationContext.<ActualParameter>getOutput(), stdout,stderr);
                         String paramValue = output.getStringValue(paramName);
                         if(paramValue == null || paramValue.isEmpty()){
                             int errCode = listener.getError();
@@ -345,7 +347,7 @@ public class GramProvider extends AbstractProvider {
                     throw new ProviderException("URI is malformatted:" + e.getMessage(), e, invocationContext,readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                 }catch (NullPointerException e) {
 //                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
-                    throw new ProviderException("Outupt is not produced in stdout:" + e.getMessage(), e, invocationContext, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
+                    throw new ProviderException("Output is not produced in stdout:" + e.getMessage(), e, invocationContext, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                 }
             }
 
