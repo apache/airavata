@@ -248,7 +248,7 @@ public class SSHProvider extends AbstractProvider {
             String stdOutStr = GfacUtils.readFileToString(localStdOutFile.getAbsolutePath());
             String stdErrStr = GfacUtils.readFileToString(localStdErrFile.getAbsolutePath());
 
-            return OutputUtils.fillOutputFromStdout(context.<ActualParameter> getOutput(), stdOutStr);
+            return OutputUtils.fillOutputFromStdout(context.<ActualParameter> getOutput(), stdOutStr,stdErrStr);
 
         } catch (XmlException e) {
             throw new ProviderException("Cannot read output:" + e.getMessage(), e, context);

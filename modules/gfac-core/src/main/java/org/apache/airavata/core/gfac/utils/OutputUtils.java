@@ -31,6 +31,7 @@ import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.StdErrParameterType;
 import org.apache.airavata.schemas.gfac.StdOutParameterType;
 import org.apache.xmlbeans.XmlException;
 
@@ -39,7 +40,7 @@ public class OutputUtils {
     private OutputUtils() {
     }
 
-    public static Map<String, ActualParameter> fillOutputFromStdout(MessageContext<ActualParameter> outMessage, String stdout) throws XmlException{
+    public static Map<String, ActualParameter> fillOutputFromStdout(MessageContext<ActualParameter> outMessage, String stdout, String stderr) throws XmlException{
 
         Map<String, ActualParameter> result = new HashMap<String, ActualParameter>();
 
@@ -52,10 +53,15 @@ public class OutputUtils {
             }
 
             ActualParameter actual = outMessage.getValue(parameterName);
-            if (actual.hasType(DataType.STD_OUT)){
+
+            if ("StdOut".equals(actual.getType().getType().toString())){
             	((StdOutParameterType)actual.getType()).setValue(stdout);
 	            result.put(parameterName, actual);
-            }else{
+            }else if ("StdErr".equals(actual.getType().getType().toString())){
+				((StdErrParameterType)actual.getType()).setValue(stderr);
+				result.put(parameterName, actual);
+			}
+            else{
 	            String parseStdout = parseStdout(stdout, parameterName);
 	            if(parseStdout != null){
 					MappingFactory.fromString(actual, parseStdout);

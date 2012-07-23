@@ -178,9 +178,10 @@ public class LocalProvider extends AbstractProvider {
 
         try {
             String stdOutStr = GfacUtils.readFileToString(app.getStandardOutput());
+            String stdErrStr = GfacUtils.readFileToString(app.getStandardError());
 
             // set to context
-            return OutputUtils.fillOutputFromStdout(context.<ActualParameter>getOutput(), stdOutStr);
+            return OutputUtils.fillOutputFromStdout(context.<ActualParameter>getOutput(), stdOutStr, stdErrStr);
         } catch (XmlException e) {
             throw new ProviderException("Cannot read output:" + e.getMessage(), e, context);
         } catch (IOException io) {
