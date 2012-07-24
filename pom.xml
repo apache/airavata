@@ -66,7 +66,7 @@
         <jcr.version>2.0</jcr.version>
         <xmlbeans.version>2.5.0</xmlbeans.version>
         <xpp3.version>1.1.3_7</xpp3.version>
-        <skipTests>false</skipTests>
+        <skipTests>true</skipTests>
     </properties>
 
     <developers>
