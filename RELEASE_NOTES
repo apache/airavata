@@ -2,6 +2,92 @@ Apache Airavata Change Log
 
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
+Apache Airavata Version 0.4-INCUBATING Released on 2012-07-28
+=============================================================
+** New Feature
+    * [AIRAVATA-236] - Develop Gdirftp and and file transfer utils to GFac
+    * [AIRAVATA-237] - Support http url sameway gridftp url is supported in the GFac URI type
+    * [AIRAVATA-287] - Add while construct 
+    * [AIRAVATA-298] - Allow workflow intepreter to start executing even when all the "Input Node" valuese are not set
+    * [AIRAVATA-309] - XRegistry entries transfer (from OGCE XRegistry to Airavata XRegistry)
+    * [AIRAVATA-358] - Integrate GFac with XBaya to run in embedded mode
+    * [AIRAVATA-365] - Creating temporary location based on the given executable location
+    * [AIRAVATA-366] - Adding default set of host descriptions during startup
+    * [AIRAVATA-377] - Allowing users disable some of the input Nodes in a workflow during Invocation
+    * [AIRAVATA-392] - Allowing users to specify the workflow name during XBaya startup and open the given workflow
+    * [AIRAVATA-417] - Create a getter on AiravataClient to read the location to save the output file
+    * [AIRAVATA-517] - Add XBaya JNLP generation to the Airavata Build
+
+** Task
+    * [AIRAVATA-414] - Refactor XBaya
+    
+** Sub-task
+    * [AIRAVATA-321] - Create documentation for XRegistry to Airavata Registry migration tool
+    * [AIRAVATA-326] - Gram and GridFTP ERP's are not populated in XRegistry entries transfer
+    * [AIRAVATA-327] - Application temporary directory was not populated
+    * [AIRAVATA-328] - Service Inputs and outputs are not coming
+    * [AIRAVATA-329] - Verify different name spaces
+    * [AIRAVATA-336] - After migration of xregistry resources, Application Services are not listed in Component List
+    * [AIRAVATA-337] - Compare the OGCE Schema and Airavata Schema then add missing parts to airavata Schema
+    * [AIRAVATA-491] - Do-While GUI component
+    * [AIRAVATA-492] - Changing the workflow model for do-while
+    * [AIRAVATA-493] - Add Do-while handler for Workflow Interpreter
+
+** Improvement
+    * [AIRAVATA-284] - Making the timeout value configurable in ws-messenger client package
+    * [AIRAVATA-313] - Add validation in to airavata before submitting jobs to Grid
+    * [AIRAVATA-334] - Xbaya Application description GUI
+    * [AIRAVATA-381] - Copying gridftp and urls in to Grid during input Staging
+    * [AIRAVATA-390] - Allowing users to configure the XBaya GUI placement in the screen
+    * [AIRAVATA-401] - Allowing users to give empty String and URL inputs for a workflow
+    * [AIRAVATA-403] - Workflow Execution Context should be used for all workflow executions
+    * [AIRAVATA-405] - Adding monitoring capability to AiravataClient
+    * [AIRAVATA-412] - GFac outputdata directory name should be customizable from application description
+    * [AIRAVATA-464] - Extension for Application Deployment Description to specify Hadoop provider specific parameters 
+    * [AIRAVATA-483] - Create java docs with the build using maven
+    * [AIRAVATA-484] - Airavata API improvements
+    * [AIRAVATA-486] - Add a document describing Airavata Users to the website
+    * [AIRAVATA-520] - Service outputs as stdout and stderr
+    
+** Bug Fixes
+    * [AIRAVATA-296] - Threads get create continuously in WorkflowInterpreter during accessing registry
+    * [AIRAVATA-362] - Error while saving Gram Configuration
+    * [AIRAVATA-368] - Host description update doesn't work properly
+    * [AIRAVATA-369] - Huge Error message box comes when try to show an huge error
+    * [AIRAVATA-380] - GFac doesn't keep the order properly for application invocation
+    * [AIRAVATA-382] - Workflow loading when there's a URIParameterType is there in the workflow
+    * [AIRAVATA-384] - Wrong workflow is saving so during loading of the workflow it shows a weird input nodes without Edges
+    * [AIRAVATA-385] - Registry related commandline arguments are not picked up by the XBaya GUI
+    * [AIRAVATA-386] - Cannot configure input nodes by clicking on inputNodes
+    * [AIRAVATA-393] - Error while processing input from another node at Gfac-service
+    * [AIRAVATA-395] - gfac fails with ArrayInput types
+    * [AIRAVATA-411] - Service Description editing fails
+    * [AIRAVATA-416] - Notifications are not delivering sometimes when a workflow run in Interpreter Service mode
+    * [AIRAVATA-418] - Handling application exit codes and if its non zero through and error up to XBaya GUI
+    * [AIRAVATA-421] - Propagate GFac failures in to XBaya GUI properly and make the failure nodes red
+    * [AIRAVATA-425] - jackrabbit.log_IS_UNDEFINED
+    * [AIRAVATA-431] - Error when importing a workflow from file system
+    * [AIRAVATA-432] - GFAC is not creating outputData directory for GRAM Jobs
+    * [AIRAVATA-435] - outputData directory variable is set as inputData in Gram RSL
+    * [AIRAVATA-436] - GFAC does not support reading output data directly from outputData and set values into output array
+    * [AIRAVATA-438] - Sometimes Gfac notifications are not receiving to XBaya so the failures scenarios are not visible to the user
+    * [AIRAVATA-456] - Input type URIArray is not handled properly
+    * [AIRAVATA-466] - WorkflowInterpreter notification is broken
+    * [AIRAVATA-487] - Changing the host dynamically based on the request content
+    * [AIRAVATA-494] - Not able to Run a local service in GFAC from Xbaya
+    * [AIRAVATA-502] - -workflow option doesn't work on trunk
+    * [AIRAVATA-503] - Workflow nodes are not becoming red when it failes but it receives the proper notification
+    * [AIRAVATA-504] - NPE while starting Airavata Server
+    * [AIRAVATA-505] - Saved workflow with EndWhile is loading the component wrong
+    * [AIRAVATA-507] - NPE when deploying Airavata on Tomcat
+    * [AIRAVATA-508] - Cannot add multipe hosts for a single service
+    * [AIRAVATA-509] - Gram Hosts are not showing properly in XBAya gui
+    * [AIRAVATA-510] - When connecting through XBaya to an Airavata which is deployed on tomcat, MessageBox and MessageBroker URLs are not propagated properly
+
+** Test
+    * [AIRAVATA-472] - Add more test cases to cover ForEach construct functionality
+
+
 Apache Airavata Version 0.3-INCUBATING Released on 2012-05-14
 =============================================================
 
