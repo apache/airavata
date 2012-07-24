@@ -24,6 +24,7 @@
 <information>
 	<title>XBaya</title>
 	<vendor>Apache Airavata</vendor>
+	<icon href="airavata-logo.png"/>
 	<offline-allowed/>
 </information>
 <security>
