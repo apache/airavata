@@ -26,6 +26,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.geom.GeneralPath;
 import java.util.List;
 
 import org.apache.airavata.workflow.model.graph.Port;
@@ -33,12 +34,15 @@ import org.apache.airavata.workflow.model.graph.amazon.TerminateInstanceNode;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
 import org.apache.airavata.xbaya.ui.graph.PortGUI;
+import org.apache.airavata.xbaya.ui.utils.DrawUtils;
 
 public class TerminateInstanceNodeGUI extends NodeGUI {
 
     private TerminateInstanceNode node;
 
     private Polygon polygon;
+
+    private GeneralPath generalPath;
 
     /**
      * Constructs a InstanceNodeGUI.
@@ -49,6 +53,7 @@ public class TerminateInstanceNodeGUI extends NodeGUI {
         super(node);
         this.node = node;
         this.polygon = new Polygon();
+        generalPath = new GeneralPath();
     }
 
     /**
@@ -90,30 +95,27 @@ public class TerminateInstanceNodeGUI extends NodeGUI {
         } else {
             g.setColor(this.bodyColor);
         }
-        g.fillPolygon(this.polygon);
+        drawBody(g, generalPath, g.getColor());
 
         // Draws the head.
-        g.setColor(this.headColor);
-        Polygon head = new Polygon();
+        Polygon head = createHeader(position);
+        drawHeader(g, DrawUtils.getRoundedShape(head), node.getName(), headColor);
+
+        // Edge
+        drawEdge(g, generalPath, EDGE_COLOR);
+
+        // Paint all ports
+        drawPorts(g, node);
+    }
+
+	private Polygon createHeader(Point position) {
+		Polygon head = new Polygon();
         head.addPoint(position.x, position.y);
         head.addPoint(position.x, position.y + this.headHeight);
         head.addPoint(position.x + this.dimension.width, position.y + this.headHeight);
         head.addPoint(position.x + this.dimension.width, position.y + this.headHeight / 2);
-        g.fill(head);
-
-        g.setColor(TEXT_COLOR);
-        String name = this.node.getName();
-        g.drawString(name, position.x + TEXT_GAP_X, position.y + this.headHeight - TEXT_GAP_Y);
-
-        // Edge
-        g.setColor(EDGE_COLOR);
-        g.drawPolygon(this.polygon);
-
-        // Paint all ports
-        for (Port port : this.node.getAllPorts()) {
-            NodeController.getGUI(port).paint(g);
-        }
-    }
+		return head;
+	}
 
     /**
      * Sets up the position of ports
@@ -153,5 +155,6 @@ public class TerminateInstanceNodeGUI extends NodeGUI {
         this.polygon.addPoint(position.x + this.dimension.width, position.y + this.dimension.height + this.headHeight
                 / 2);
         this.polygon.addPoint(position.x + this.dimension.width, position.y + this.headHeight / 2);
+        DrawUtils.setupRoundedGeneralPath(polygon, generalPath);
     }
 }

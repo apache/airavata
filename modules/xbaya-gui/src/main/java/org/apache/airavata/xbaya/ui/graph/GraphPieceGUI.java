@@ -32,4 +32,5 @@ public interface GraphPieceGUI {
      * @param engine
      */
     public void mouseClicked(MouseEvent event, XBayaEngine engine);
+
 }

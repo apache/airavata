@@ -35,6 +35,7 @@ import org.apache.airavata.workflow.model.graph.system.MemoNode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.graph.system.MemoConfigurationDialog;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
+import org.apache.airavata.xbaya.ui.utils.DrawUtils;
 
 public class MemoNodeGUI extends NodeGUI {
 
@@ -87,7 +88,8 @@ public class MemoNodeGUI extends NodeGUI {
         Point position = this.node.getPosition();
         this.textArea.setText(this.node.getMemo());
         Dimension preferredSize = this.textArea.getPreferredSize();
-        this.textArea.setBounds(position.x, position.y, preferredSize.width, preferredSize.height);
+        Rectangle bounds = new Rectangle(position.x, position.y, preferredSize.width, preferredSize.height);
+        this.textArea.setBounds(bounds);
         Graphics graphics = g.create(position.x, position.y, preferredSize.width, preferredSize.height);
         this.textArea.paint(graphics);
     }

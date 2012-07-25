@@ -34,6 +34,7 @@ import java.util.List;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.Port.Kind;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.utils.DrawUtils;
 
 public class PortGUI implements GraphPieceGUI {
 
@@ -162,8 +163,9 @@ public class PortGUI implements GraphPieceGUI {
                     CONTROL_PORT_SIZE, CONTROL_PORT_SIZE);
             break;
         }
-        g.setColor(color);
-        g.fill(shape);
+//        g.setColor(color);
+//        g.fill(shape);
+        DrawUtils.gradientFillShape(g, color.brighter().brighter().brighter().brighter(), color.darker(), shape);
     }
 
     /**
@@ -176,6 +178,7 @@ public class PortGUI implements GraphPieceGUI {
         triangle.addPoint(point.x - DATA_PORT_SIZE / 2, point.y - DATA_PORT_SIZE / 2);
         triangle.addPoint(point.x + DATA_PORT_SIZE / 2, point.y);
         triangle.addPoint(point.x - DATA_PORT_SIZE / 2, point.y + DATA_PORT_SIZE / 2);
+//        shape = DrawUtils.getRoundedShape(triangle);
         shape = triangle;
         return shape;
     }
@@ -192,7 +195,13 @@ public class PortGUI implements GraphPieceGUI {
      */
     public Point getPosition() {
         Point nodePosition = this.port.getNode().getPosition();
-        return new Point(nodePosition.x + this.offset.x, nodePosition.y + this.offset.y);
+        int offsetX=this.offset.x;
+//        if ((PortGUI.DATA_PORT_SIZE / 2) + 1 < this.offset.x){
+//        	offsetX=this.offset.x+(PortGUI.DATA_PORT_SIZE / 2);
+//        }else{
+//        	offsetX=0;
+//        }
+        return new Point(nodePosition.x + offsetX, nodePosition.y + this.offset.y);
     }
 
     /**

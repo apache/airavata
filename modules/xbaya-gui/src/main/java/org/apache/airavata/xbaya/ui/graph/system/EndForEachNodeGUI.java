@@ -21,17 +21,20 @@
 
 package org.apache.airavata.xbaya.ui.graph.system;
 
+import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.geom.GeneralPath;
 
+import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.system.EndForEachNode;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.graph.system.EndForEachConfigurationDialog;
+import org.apache.airavata.xbaya.ui.utils.DrawUtils;
 
 public class EndForEachNodeGUI extends ConfigurableNodeGUI {
 
@@ -40,6 +43,7 @@ public class EndForEachNodeGUI extends ConfigurableNodeGUI {
     private Polygon polygon;
 
     private EndForEachConfigurationDialog configurationWindow;
+    private GeneralPath generalPath;
 
     /**
      * Shows a configuration window when a user click the configuration area.
@@ -61,6 +65,7 @@ public class EndForEachNodeGUI extends ConfigurableNodeGUI {
         super(node);
         this.node = node;
         this.polygon = new Polygon(); // To avoid null check.
+        generalPath = new GeneralPath();
     }
 
     /**
@@ -86,43 +91,34 @@ public class EndForEachNodeGUI extends ConfigurableNodeGUI {
         return this.polygon.contains(point);
     }
 
-    @Override
-    protected void paint(Graphics2D g) {
-        Point position = getPosition();
+	protected Color getCompnentHeaderColor() {
+		return headColor;
+	}
 
-        // Draws the body.
-        if (this.dragged) {
-            g.setColor(DRAGGED_BODY_COLOR);
-        } else {
-            g.setColor(this.bodyColor);
-        }
-        g.fillPolygon(this.polygon);
+	protected String getComponentHeaderText() {
+		return node.getName();
+	}
 
-        // Draws the head.
-        g.setColor(this.headColor);
-        Polygon head = new Polygon();
+	protected GeneralPath getComponentHeaderShape() {
+		return DrawUtils.getRoundedShape(createHeader(getPosition()));
+	}
+
+	protected GeneralPath getComponentShape() {
+		return generalPath;
+	}
+
+	protected Node getNode() {
+		return this.node;
+	}
+
+	private Polygon createHeader(Point position) {
+		Polygon head = new Polygon();
         head.addPoint(position.x, position.y);
         head.addPoint(position.x, position.y + this.headHeight);
         head.addPoint(position.x + this.dimension.width, position.y + this.headHeight);
         head.addPoint(position.x + this.dimension.width, position.y + this.headHeight / 2);
-        g.fill(head);
-
-        // Text
-        g.setColor(TEXT_COLOR);
-        String name = this.node.getName();
-        g.drawString(name, position.x + TEXT_GAP_X, position.y + this.headHeight - TEXT_GAP_Y);
-
-        // Edge
-        g.setColor(EDGE_COLOR);
-        g.drawPolygon(this.polygon);
-
-        // Paint all ports
-        for (Port port : this.node.getAllPorts()) {
-            NodeController.getGUI(port).paint(g);
-        }
-
-        paintConfiguration(g);
-    }
+		return head;
+	}
 
     private void calculatePositions() {
         this.polygon = new Polygon();
@@ -131,6 +127,7 @@ public class EndForEachNodeGUI extends ConfigurableNodeGUI {
         this.polygon.addPoint(position.x, position.y + this.dimension.height + this.headHeight / 2);
         this.polygon.addPoint(position.x + this.dimension.width, position.y + this.dimension.height);
         this.polygon.addPoint(position.x + this.dimension.width, position.y + this.headHeight / 2);
+        DrawUtils.setupRoundedGeneralPath(polygon, getComponentShape());
     }
 
     /**

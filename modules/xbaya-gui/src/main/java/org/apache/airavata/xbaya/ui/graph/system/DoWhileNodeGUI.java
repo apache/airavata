@@ -21,22 +21,23 @@
 
 package org.apache.airavata.xbaya.ui.graph.system;
 
+import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.geom.GeneralPath;
 import java.util.List;
 
+import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.impl.PortImpl;
 import org.apache.airavata.workflow.model.graph.system.DoWhileNode;
-import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.graph.system.DoWhileConfigrationDialog;
-import org.apache.airavata.xbaya.ui.dialogs.graph.system.ForEachConfigurationDialog;
 import org.apache.airavata.xbaya.ui.graph.PortGUI;
+import org.apache.airavata.xbaya.ui.utils.DrawUtils;
 
 public class DoWhileNodeGUI extends ConfigurableNodeGUI {
 
@@ -47,6 +48,8 @@ public class DoWhileNodeGUI extends ConfigurableNodeGUI {
 	private DoWhileConfigrationDialog configurationWindow;
 
 	private Polygon polygon;
+	
+    private GeneralPath generalPath;
 
 	/**
 	 * Constructs a DoWhileNodeGUI.
@@ -58,6 +61,7 @@ public class DoWhileNodeGUI extends ConfigurableNodeGUI {
 		this.node = node;
 		setConfigurationText(CONFIG_AREA_STRING);
 		this.polygon = new Polygon();
+        generalPath = new GeneralPath();
 	}
 
 	/**
@@ -100,47 +104,34 @@ public class DoWhileNodeGUI extends ConfigurableNodeGUI {
 		return this.polygon.contains(point);
 	}
 
-	/**
-	 * @see edu.indiana.extreme.xbaya.graph.system.gui.ConfigurableNodeGUI#paint(java.awt.Graphics2D)
-	 */
-	@Override
-	protected void paint(Graphics2D g) {
-		Point position = getPosition();
+	protected GeneralPath getComponentHeaderShape() {
+		return DrawUtils.getRoundedShape(createHeader(getPosition()));
+	}
 
-		// Draws the body.
-		if (this.dragged) {
-			g.setColor(DRAGGED_BODY_COLOR);
-		} else {
-			g.setColor(this.bodyColor);
-		}
-		g.fillPolygon(this.polygon);
+	protected String getComponentHeaderText() {
+		return node.getName();
+	}
 
-		// Draws the head.
-		g.setColor(this.headColor);
+	protected Color getComponentHeaderColor() {
+		return headColor;
+	}
+
+	protected GeneralPath getComponentShape() {
+		return generalPath;
+	}
+
+	protected Node getNode() {
+		return this.node;
+	}
+
+	private Polygon createHeader(Point position) {
 		Polygon head = new Polygon();
 		head.addPoint(position.x, position.y + this.headHeight / 2);
 		head.addPoint(position.x, position.y + this.headHeight);
 		head.addPoint(position.x + this.dimension.width, position.y + this.headHeight);
 		head.addPoint(position.x + this.dimension.width, position.y + this.headHeight / 2);
 		head.addPoint(position.x + this.dimension.width / 2, position.y);
-		g.fill(head);
-
-		g.setColor(TEXT_COLOR);
-		g.setColor(TEXT_COLOR);
-		String name = this.node.getName();
-		g.drawString(name, position.x + this.dimension.width / 3 + TEXT_GAP_X, position.y + this.headHeight
-				- TEXT_GAP_Y);
-
-		// Edge
-		g.setColor(EDGE_COLOR);
-		g.drawPolygon(this.polygon);
-
-		// Paint all ports
-		for (Port port : this.node.getAllPorts()) {
-			NodeController.getGUI(port).paint(g);
-		}
-
-		paintConfiguration(g);
+		return head;
 	}
 
 	/**
@@ -182,7 +173,6 @@ public class DoWhileNodeGUI extends ConfigurableNodeGUI {
 		Port controlOutPort2 = controlOutPorts.get(1);
 		offset = new Point(this.getBounds().width, getBounds().height - this.headHeight / 2);
 		NodeController.getGUI(controlOutPort2).setOffset(offset);
-
 	}
 
 	private void calculatePositions() {
@@ -196,5 +186,6 @@ public class DoWhileNodeGUI extends ConfigurableNodeGUI {
 		this.polygon.addPoint(position.x + this.dimension.width, position.y + this.dimension.height);
 		this.polygon.addPoint(position.x + this.dimension.width, position.y + this.headHeight / 2);
 		this.polygon.addPoint(position.x + this.dimension.width / 2, position.y);
+		DrawUtils.setupRoundedGeneralPath(polygon, getComponentShape());
 	}
 }

@@ -21,18 +21,20 @@
 
 package org.apache.airavata.xbaya.ui.graph.system;
 
+import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.geom.GeneralPath;
 
-import org.apache.airavata.workflow.model.graph.Port;
+import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.impl.PortImpl;
 import org.apache.airavata.workflow.model.graph.system.ForEachNode;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.graph.system.ForEachConfigurationDialog;
+import org.apache.airavata.xbaya.ui.utils.DrawUtils;
 
 public class ForEachNodeGUI extends ConfigurableNodeGUI {
 
@@ -44,6 +46,8 @@ public class ForEachNodeGUI extends ConfigurableNodeGUI {
 
     private Polygon polygon;
 
+    private GeneralPath generalPath;
+
     /**
      * @param node
      */
@@ -52,6 +56,7 @@ public class ForEachNodeGUI extends ConfigurableNodeGUI {
         this.node = node;
         setConfigurationText(CONFIG_AREA_STRING);
         this.polygon = new Polygon(); // To avoid null check.
+        generalPath = new GeneralPath();
     }
 
     /**
@@ -93,47 +98,34 @@ public class ForEachNodeGUI extends ConfigurableNodeGUI {
         return this.polygon.contains(point);
     }
 
-    /**
-     * @see org.apache.airavata.xbaya.ui.graph.system.ConfigurableNodeGUI#paint(java.awt.Graphics2D)
-     */
-    @Override
-    protected void paint(Graphics2D g) {
-        Point position = getPosition();
+	protected Color getComponentHeaderColor() {
+		return headColor;
+	}
 
-        // Draws the body.
-        if (this.dragged) {
-            g.setColor(DRAGGED_BODY_COLOR);
-        } else {
-            g.setColor(this.bodyColor);
-        }
-        g.fillPolygon(this.polygon);
+	protected String getComponentHeaderText() {
+		return node.getName();
+	}
 
-        // Draws the head.
-        g.setColor(this.headColor);
-        Polygon head = new Polygon();
+	protected GeneralPath getComponentHeaderShape() {
+		return DrawUtils.getRoundedShape(createHeader(getPosition()));
+	}
+
+	protected GeneralPath getComponentShape() {
+		return generalPath;
+	}
+
+	protected Node getNode() {
+		return this.node;
+	}
+
+	private Polygon createHeader(Point position) {
+		Polygon head = new Polygon();
         head.addPoint(position.x, position.y + this.headHeight / 2);
         head.addPoint(position.x, position.y + this.headHeight);
         head.addPoint(position.x + this.dimension.width, position.y + this.headHeight);
         head.addPoint(position.x + this.dimension.width, position.y);
-        g.fill(head);
-
-        g.setColor(TEXT_COLOR);
-        g.setColor(TEXT_COLOR);
-        String name = this.node.getName();
-        g.drawString(name, position.x + this.dimension.width / 3 + TEXT_GAP_X, position.y + this.headHeight
-                - TEXT_GAP_Y);
-
-        // Edge
-        g.setColor(EDGE_COLOR);
-        g.drawPolygon(this.polygon);
-
-        // Paint all ports
-        for (Port port : this.node.getAllPorts()) {
-            NodeController.getGUI(port).paint(g);
-        }
-
-        paintConfiguration(g);
-    }
+		return head;
+	}
 
     private void calculatePositions() {
         // XXX Avoid instantiating a new polygon each time.
@@ -144,6 +136,7 @@ public class ForEachNodeGUI extends ConfigurableNodeGUI {
         this.polygon.addPoint(position.x + this.dimension.width, position.y + this.dimension.height + this.headHeight
                 - this.headHeight / 2);
         this.polygon.addPoint(position.x + this.dimension.width, position.y);
+        DrawUtils.setupRoundedGeneralPath(polygon, getComponentShape());
     }
 
     /**
