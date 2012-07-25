@@ -21,13 +21,16 @@
 
 package org.apache.airavata.xbaya.ui.graph.amazon;
 
+import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.RoundRectangle2D;
 import java.util.List;
 
+import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
@@ -35,12 +38,15 @@ import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.graph.amazon.InstanceConfigurationDialog;
 import org.apache.airavata.xbaya.ui.graph.PortGUI;
 import org.apache.airavata.xbaya.ui.graph.system.ConfigurableNodeGUI;
+import org.apache.airavata.xbaya.ui.utils.DrawUtils;
 
 public class InstanceNodeGUI extends ConfigurableNodeGUI {
 
     private InstanceNode node;
 
     private Polygon polygon;
+    
+    private GeneralPath generalPath;
 
     private InstanceConfigurationDialog configDialog;
 
@@ -53,6 +59,7 @@ public class InstanceNodeGUI extends ConfigurableNodeGUI {
         super(node);
         this.node = node;
         this.polygon = new Polygon();
+        generalPath = new GeneralPath();
     }
 
     /**
@@ -81,7 +88,7 @@ public class InstanceNodeGUI extends ConfigurableNodeGUI {
      */
     @Override
     protected Rectangle getBounds() {
-        return this.polygon.getBounds();
+        return this.getComponentShape().getBounds();
     }
 
     /**
@@ -92,40 +99,26 @@ public class InstanceNodeGUI extends ConfigurableNodeGUI {
         return this.polygon.contains(point);
     }
 
-    /**
-     * @see org.apache.airavata.xbaya.ui.graph.system.ConfigurableNodeGUI#paint(java.awt.Graphics2D)
-     */
-    @Override
-    protected void paint(Graphics2D g) {
-        Point position = getPosition();
+	protected Color getComponentHeaderColor() {
+		return this.headColor;
+	}
 
-        // Draws the body.
-        if (this.dragged) {
-            g.setColor(DRAGGED_BODY_COLOR);
-        } else {
-            g.setColor(this.bodyColor);
-        }
-        g.fillPolygon(this.polygon);
+	protected String getComponentHeaderText() {
+		return this.node.getName();
+	}
 
-        // Draws the head.
-        g.setColor(this.headColor);
-        g.fillRect(position.x, position.y, this.dimension.width, this.headHeight);
+	protected GeneralPath getComponentShape() {
+		return generalPath;
+	}
 
-        g.setColor(TEXT_COLOR);
-        String name = this.node.getName();
-        g.drawString(name, position.x + TEXT_GAP_X, position.y + this.headHeight - TEXT_GAP_Y);
+	protected RoundRectangle2D getComponentHeaderShape() {
+		RoundRectangle2D componentHeaderBoundaryRect = new RoundRectangle2D.Double(getPosition().x, getPosition().y, this.dimension.width, this.headHeight, DrawUtils.ARC_SIZE,DrawUtils.ARC_SIZE);
+		return componentHeaderBoundaryRect;
+	}
 
-        // Edge
-        g.setColor(EDGE_COLOR);
-        g.drawPolygon(this.polygon);
-
-        // Paint all ports
-        for (Port port : this.node.getAllPorts()) {
-            NodeController.getGUI(port).paint(g);
-        }
-
-        paintConfiguration(g);
-    }
+	protected Node getNode() {
+		return this.node;
+	}
 
     /**
      * Sets up the position of ports
@@ -157,7 +150,7 @@ public class InstanceNodeGUI extends ConfigurableNodeGUI {
         Point offset = new Point(getBounds().width / 2, getBounds().height);
         NodeController.getGUI(controlOutPort1).setOffset(offset);
     }
-
+    
     private void calculatePositions() {
         // Avoid instantiating a new polygon each time.
         this.polygon.reset();
@@ -168,5 +161,6 @@ public class InstanceNodeGUI extends ConfigurableNodeGUI {
                 + this.headHeight);
         this.polygon.addPoint(position.x + this.dimension.width, position.y + this.dimension.height);
         this.polygon.addPoint(position.x + this.dimension.width, position.y);
+        DrawUtils.setupRoundedGeneralPath(polygon, getComponentShape());
     }
 }

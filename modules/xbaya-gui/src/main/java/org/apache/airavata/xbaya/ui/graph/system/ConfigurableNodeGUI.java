@@ -26,107 +26,115 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
+import org.apache.airavata.xbaya.ui.utils.DrawUtils;
 
 public abstract class ConfigurableNodeGUI extends NodeGUI {
 
-    protected static final Color CONFIG_AREA_COLOR = new Color(220, 220, 220);
+	protected static final Color CONFIG_AREA_COLOR = new Color(220, 220, 220);
 
-    protected static final String DEFAULT_CONFIG_AREA_TEXT = "Config";
+	protected static final String DEFAULT_CONFIG_AREA_TEXT = "Config";
 
-    protected static final int CONFIG_AREA_GAP_X = 20;
+	protected static final int CONFIG_AREA_GAP_X = 20;
 
-    protected String configurationText;
+	protected String configurationText;
 
-    protected Rectangle configurationArea;
+	protected RoundRectangle2D configurationArea;
 
-    /**
-     * @param node
-     */
-    public ConfigurableNodeGUI(NodeImpl node) {
-        super(node);
-        this.configurationText = DEFAULT_CONFIG_AREA_TEXT;
-        this.configurationArea = new Rectangle();
+	/**
+	 * @param node
+	 */
+	public ConfigurableNodeGUI(NodeImpl node) {
+		super(node);
+		this.configurationText = DEFAULT_CONFIG_AREA_TEXT;
+//		this.configurationArea = new RoundRectangle2D();
 
-    }
+	}
 
-    /**
-     * Sets the text shown on the configuration area.
-     * 
-     * @param text
-     *            The text to set
-     */
-    public void setConfigurationText(String text) {
-        this.configurationText = text;
-    }
+	/**
+	 * Sets the text shown on the configuration area.
+	 * 
+	 * @param text
+	 *            The text to set
+	 */
+	public void setConfigurationText(String text) {
+		this.configurationText = text;
+	}
 
-    /**
-     * @see org.apache.airavata.xbaya.ui.graph.GraphPieceGUI#mouseClicked(java.awt.event.MouseEvent,
-     *      org.apache.airavata.xbaya.XBayaEngine)
-     */
-    @Override
-    public void mouseClicked(MouseEvent event, XBayaEngine engine) {
-        if (isInConfig(event.getPoint())) {
-            showConfigurationDialog(engine.getGUI());
-        }
-    }
+	/**
+	 * @see org.apache.airavata.xbaya.ui.graph.GraphPieceGUI#mouseClicked(java.awt.event.MouseEvent,
+	 *      org.apache.airavata.xbaya.XBayaEngine)
+	 */
+	@Override
+	public void mouseClicked(MouseEvent event, XBayaEngine engine) {
+		if (isInConfig(event.getPoint())) {
+			showConfigurationDialog(engine.getGUI());
+		}
+	}
 
-    /**
-     * @param engine
-     */
-    protected abstract void showConfigurationDialog(XBayaGUI xbayaGUI);
+	/**
+	 * @param engine
+	 */
+	protected abstract void showConfigurationDialog(XBayaGUI xbayaGUI);
 
-    /**
-     * Checks if a user's click is to select the configuration
-     * 
-     * @param point
-     * @return true if the user's click is to select the node, false otherwise
-     */
-    @Override
-    protected boolean isInConfig(Point point) {
-        return this.configurationArea.contains(point);
-    }
+	/**
+	 * Checks if a user's click is to select the configuration
+	 * 
+	 * @param point
+	 * @return true if the user's click is to select the node, false otherwise
+	 */
+	@Override
+	protected boolean isInConfig(Point point) {
+		return this.configurationArea.contains(point);
+	}
 
-    @Override
-    protected void calculatePositions(Graphics g) {
-        super.calculatePositions(g);
+	@Override
+	protected void calculatePositions(Graphics g) {
+		super.calculatePositions(g);
 
-        Point position = this.node.getPosition();
-        FontMetrics fm = g.getFontMetrics();
+		Point position = this.node.getPosition();
+		FontMetrics fm = g.getFontMetrics();
+		
+		int h = fm.getHeight() + TEXT_GAP_Y * 2+1;
+		int w = this.dimension.width - CONFIG_AREA_GAP_X * 2;
+		int x = position.x + CONFIG_AREA_GAP_X;
+		int y = position.y
+				+ this.headHeight
+				+ (this.dimension.height - this.headHeight - h)
+				/ 2;
+		this.configurationArea=new RoundRectangle2D.Float(x,y,w,h,DrawUtils.ARC_SIZE, DrawUtils.ARC_SIZE);
+	}
 
-        this.configurationArea.height = fm.getHeight() + TEXT_GAP_Y * 2;
-        this.configurationArea.width = this.dimension.width - CONFIG_AREA_GAP_X * 2;
-        this.configurationArea.x = position.x + CONFIG_AREA_GAP_X;
-        this.configurationArea.y = position.y + this.headHeight
-                + (this.dimension.height - this.headHeight - this.configurationArea.height) / 2;
+	/**
+	 * Paints the config area
+	 * 
+	 * @param g
+	 */
+	@Override
+	protected final void paint(Graphics2D g) {
+		super.paint(g);
+		drawComponentConfiguration(g);
+	}
 
-    }
-
-    /**
-     * Paints the config area
-     * 
-     * @param g
-     */
-    @Override
-    protected void paint(Graphics2D g) {
-        super.paint(g);
-        paintConfiguration(g);
-    }
-
-    /**
-     * @param g
-     */
-    protected void paintConfiguration(Graphics2D g) {
-        g.setColor(CONFIG_AREA_COLOR);
-        g.fill(this.configurationArea);
-        g.setColor(TEXT_COLOR);
-        g.drawString(this.configurationText, this.configurationArea.x + TEXT_GAP_X, this.configurationArea.y
-                + this.configurationArea.height - TEXT_GAP_Y);
-    }
+	/**
+	 * @param g
+	 */
+	protected void drawComponentConfiguration(Graphics2D g) {
+		String s = this.configurationText;
+		g.setColor(CONFIG_AREA_COLOR);
+		g.fill(this.configurationArea);
+		g.setColor(TEXT_COLOR);
+		Rectangle2D bounds = g.getFontMetrics().getStringBounds(s, g);
+		
+		g.drawString(s, 
+				(int)(this.configurationArea.getX() + (this.configurationArea.getWidth()-bounds.getWidth())/2), 
+				(int)(this.configurationArea.getY() + (this.configurationArea.getHeight()+bounds.getHeight()/2)/2));
+	}
 }

@@ -26,6 +26,7 @@ import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.Ellipse2D;
 
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.system.ExitNode;
@@ -63,28 +64,30 @@ public class ExitNodeGUI extends NodeGUI {
         } else {
             g.setColor(this.bodyColor);
         }
-
-        g.setPaint(gp);
-        g.fillOval(position.x + 2, position.y, this.dimension.height, this.dimension.height);
-        g.setColor(Color.black);
-        g.setStroke(new BasicStroke(1.2f));
-        g.drawOval(position.x + 2, position.y, this.dimension.height, this.dimension.height);
+        Ellipse2D.Double bodyShape = new Ellipse2D.Double(position.x + 2, position.y, this.dimension.height, this.dimension.height);
+        drawHeader(g, bodyShape, node.getName(), c_DARKER, false);
+//        g.setPaint(gp);
+//        g.fillOval(position.x + 2, position.y, this.dimension.height, this.dimension.height);
+//        g.setColor(Color.black);
+////        g.setStroke(new BasicStroke(1.2f));
+//        g.drawOval(position.x + 2, position.y, this.dimension.height, this.dimension.height);
         // Text
-        g.setColor(TEXT_COLOR);
+//        g.setColor(TEXT_COLOR);
 
         // XXX it's debatable if we should show the ID or the name.
-        String name = this.node.getName(); // + this.node.getID();
-        g.drawString(name, position.x + TEXT_GAP_X, position.y + this.headHeight - TEXT_GAP_Y + 2);
+//        String name = this.node.getName(); // + this.node.getID();
+//        g.drawString(name, position.x + TEXT_GAP_X, position.y + this.headHeight - TEXT_GAP_Y + 2);
 
         // Edge
-        g.setColor(EDGE_COLOR);
-        // Comment of dont want circle in rectangle
-        g.drawRect(position.x, position.y, this.dimension.height + 2, this.dimension.height);
+        drawEdge(g, bodyShape.getBounds2D(),EDGE_COLOR.brighter());
+        drawEdge(g, bodyShape, EDGE_COLOR);
+        
+//        g.setColor(EDGE_COLOR);
+//        // Comment of dont want circle in rectangle
+//        g.drawRect(position.x, position.y, this.dimension.height + 2, this.dimension.height);
 
         // Paint all ports
-        for (Port port : this.node.getAllPorts()) {
-            NodeController.getGUI(port).paint(g);
-        }
+        drawPorts(g, node);
 
         // Paint extras
         for (Paintable paintable : this.paintables) {
