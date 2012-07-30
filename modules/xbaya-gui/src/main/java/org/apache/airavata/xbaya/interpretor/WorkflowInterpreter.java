@@ -523,7 +523,7 @@ public class WorkflowInterpreter {
 		List<NodeImpl> nodes = this.getGraph().getNodes();
 		for (Node node : nodes) {
 			if (node instanceof OutputNode) {
-				if (NodeController.getGUI(node.getInputPort(0).getFromNode()).getBodyColor() == NodeState.FINISHED.color) {
+				if (NodeController.getGUI(node.getInputPort(0).getFromNode()).getBodyColor().equals(NodeState.FINISHED.color)) {
 					outoutNodes.add(node);
 				} else {
 					// The workflow is incomplete so return without sending
