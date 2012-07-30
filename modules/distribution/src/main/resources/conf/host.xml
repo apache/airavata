@@ -60,4 +60,11 @@
         <gridftp.endpoint>gsiftp://grid-ember.ncsa.teragrid.org:2811/</gridftp.endpoint>
     </server>
 
+    <server>
+        <name>kraken</name>
+        <host>gsissh.kraken.nics.xsede.org</host>
+        <gram.endpoint>grid.nics.xsede.org:2119/jobmanager-pbs</gram.endpoint>
+        <gridftp.endpoint>gsiftp://gridftp.kraken.nics.xsede.org:2811/</gridftp.endpoint>
+    </server>
+
 </servers>
