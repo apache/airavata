@@ -34,6 +34,7 @@ import org.apache.airavata.workflow.model.graph.Edge;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.ui.utils.DrawUtils;
 
 public class EdgeGUI implements GraphPieceGUI {
 
@@ -98,7 +99,7 @@ public class EdgeGUI implements GraphPieceGUI {
      * @param g
      */
     protected void paint(Graphics2D g) {
-
+    	DrawUtils.initializeGraphics2D(g);
         Point point1 = getFromPosition();
         Point point2 = getToPosition();
 
