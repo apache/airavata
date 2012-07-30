@@ -85,7 +85,7 @@ public class MonitorEventHandler implements ChangeListener {
         /**
 		 * DEFAULT COLOR
 		 */
-		DEFAULT(new Color(250, 220, 100));
+		DEFAULT(NodeGUI.DEFAULT_BODY_COLOR);
 
 
         /**
