@@ -83,7 +83,7 @@ public abstract class NodeGUI implements GraphPieceGUI {
     /**
      * The default body color.
      */
-    public static final Color DEFAULT_BODY_COLOR = new Color(229, 229, 248);
+    public static final Color DEFAULT_BODY_COLOR = new Color(250, 220, 100);
 
     protected static final Color DRAGGED_BODY_COLOR = Color.lightGray;
 
