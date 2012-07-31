@@ -258,6 +258,8 @@ public class SSHProvider extends AbstractProvider {
             throw new ProviderException(e.getMessage(), e, context);
         } catch (IOException e) {
             throw new ProviderException(e.getMessage(), e, context);
+        } catch (Exception e){
+        	throw new ProviderException("Error in retrieving results",e,context);
         }
     }
 

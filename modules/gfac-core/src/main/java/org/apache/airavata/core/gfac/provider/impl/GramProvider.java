@@ -21,7 +21,12 @@
 
 package org.apache.airavata.core.gfac.provider.impl;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -49,8 +54,6 @@ import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.StdErrParameterType;
-import org.apache.airavata.schemas.gfac.StdOutParameterType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.airavata.schemas.wec.WorkflowOutputDataHandlingDocument;
@@ -336,17 +339,13 @@ public class GramProvider extends AbstractProvider {
                     }
                     return stringMap;
                 }catch (XmlException e) {
-//                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                     throw new ProviderException(e.getMessage(), e,invocationContext,readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                 }
                 catch (ToolsException e) {
-//                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                     throw new ProviderException(e.getMessage(), e,invocationContext,readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                 } catch (URISyntaxException e) {
-//                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                     throw new ProviderException("URI is malformatted:" + e.getMessage(), e, invocationContext,readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                 }catch (NullPointerException e) {
-//                    invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,e.getMessage());
                     throw new ProviderException("Output is not produced in stdout:" + e.getMessage(), e, invocationContext, readLastLinesofStdOut(localStdErrFile.getPath(), 20));
                 }
             }

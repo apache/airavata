@@ -40,7 +40,7 @@ public class OutputUtils {
     private OutputUtils() {
     }
 
-    public static Map<String, ActualParameter> fillOutputFromStdout(MessageContext<ActualParameter> outMessage, String stdout, String stderr) throws XmlException{
+    public static Map<String, ActualParameter> fillOutputFromStdout(MessageContext<ActualParameter> outMessage, String stdout, String stderr) throws Exception{
 
         Map<String, ActualParameter> result = new HashMap<String, ActualParameter>();
 
@@ -72,7 +72,7 @@ public class OutputUtils {
         return result;
     }
 
-    private static String parseStdout(String stdout, String outParam)throws NullPointerException {
+    private static String parseStdout(String stdout, String outParam)throws Exception {
         String regex = Pattern.quote(outParam) + "\\s*=\\s*([^\\[\\s'\"][^\\s]*|\"[^\"]*\"|'[^']*'|\\[[^\\[]*\\])";
         String match = null;
         Pattern pattern = Pattern.compile(regex);
@@ -84,7 +84,7 @@ public class OutputUtils {
             match = match.trim();
             return match;
         } else {
-            throw new NullPointerException();
+            throw new Exception("Data for the output parameter '"+outParam+"' was not found");
         }
     }
 }

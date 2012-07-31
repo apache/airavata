@@ -186,6 +186,8 @@ public class LocalProvider extends AbstractProvider {
             throw new ProviderException("Cannot read output:" + e.getMessage(), e, context);
         } catch (IOException io) {
             throw new ProviderException(io.getMessage(), io, context);
+        } catch (Exception e){
+        	throw new ProviderException("Error in retrieving results",e,context);
         }
     }
 
