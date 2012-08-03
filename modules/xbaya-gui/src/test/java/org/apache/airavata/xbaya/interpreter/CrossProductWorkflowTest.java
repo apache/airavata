@@ -56,7 +56,7 @@ public class CrossProductWorkflowTest {
     @Test
     public void testScheduleDynamically() throws IOException, URISyntaxException, WorkflowException {
         logger.info("Running CrossProductWorkflowTest...");
-        URL systemResource = this.getClass().getClassLoader().getSystemResource("ForeachCrossProductLevenshteinDistance.xwf");
+        URL systemResource = this.getClass().getClassLoader().getSystemResource("LevenshteinDistance.xwf");
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
         XBayaConfiguration conf = WorkflowTestUtils.getConfiguration();
         AiravataRegistry registry = conf.getJcrComponentRegistry()==null? null:conf.getJcrComponentRegistry().getRegistry();
