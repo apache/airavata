@@ -45,15 +45,6 @@
                 <registryEPR>
                     http://localhost:8090/jackrabbit-webapp-2.4.0/rmi
                 </registryEPR>
-                <gfacEPR>
-                    http://localhost:8080/axis2/services/GFacService
-                </gfacEPR>
-                <messagebrokerEPR>
-                    http://localhost:8080/axis2/services/EventingService
-                </messagebrokerEPR>
-                <messageboxEPR>
-                    http://localhost:8080/axis2/services/MsgBoxService
-                </messageboxEPR>
 
             </properties>
         </profile>
