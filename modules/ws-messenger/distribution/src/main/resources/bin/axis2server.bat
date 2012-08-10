@@ -99,7 +99,7 @@ goto end
 rem set the classes by looping through the libs
 setlocal EnableDelayedExpansion
 set AXIS2_CLASS_PATH=%AXIS2_HOME%;%AXIS2_HOME%\conf;%JAVA_HOME%\lib\tools.jar;
-FOR %%c in ("%AXIS2_HOME%\lib\*.jar") DO set AXIS2_CLASS_PATH=!AXIS2_CLASS_PATH!;%%c
+FOR %%C in ("%AXIS2_HOME%\lib\*.jar") DO set AXIS2_CLASS_PATH=!AXIS2_CLASS_PATH!;".\lib\%%~nC%%~xC"
 
 echo Using JAVA_HOME    %JAVA_HOME%
 echo Using AXIS2_HOME   %AXIS2_HOME%
