@@ -1321,7 +1321,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
     	if (getProvenanceRegistry()!=null){
     		return getProvenanceRegistry().getWorkflowExecutionByUser(user, pageSize, pageNo);
     	}
-		return getWorkflowExecutionByUser(user,pageSize*pageNo,pageSize*(pageNo+1));
+		return getWorkflowExecution(user,pageSize*pageNo,pageSize*(pageNo+1));
 	}
 
 	public String getWorkflowExecutionMetadata(String experimentId)
