@@ -241,7 +241,7 @@ public class XRegistryMigrationManager {
 
             try {
                 String serviceName = serviceBean.getServiceName();
-                ServiceDescription serviceDescription = jcrRegistry.getServiceDesc(serviceName);
+                ServiceDescription serviceDescription = jcrRegistry.getServiceDescription(serviceName);
                 if(serviceDescription == null) {
                     service = MigrationUtil.createServiceDescription(serviceBean);
                     jcrRegistry.saveServiceDescription(service);
