@@ -177,7 +177,9 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
             Node node = serviceNode.getNode(serviceId);
             Property prop = node.getProperty(XML_PROPERTY_NAME);
             result = ServiceDescription.fromXML(prop.getString());
-            } catch (Exception e) {
+        } catch (PathNotFoundException e) {
+            return null;
+        } catch (Exception e) {
             throw new ServiceDescriptionRetrieveException(e);
         } finally {
             closeSession(session);
@@ -227,25 +229,6 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         } finally {
             closeSession(session);
         }
-    }
-
-    public ServiceDescription getServiceDesc(String serviceId) throws ServiceDescriptionRetrieveException {
-        Session session = null;
-        ServiceDescription result = null;
-        try {
-            session = getSession();
-            Node serviceNode = getServiceNode(session);
-            Node node = serviceNode.getNode(serviceId);
-            Property prop = node.getProperty(XML_PROPERTY_NAME);
-            result = ServiceDescription.fromXML(prop.getString());
-        } catch (PathNotFoundException e) {
-            return null;
-        } catch (Exception e) {
-            throw new ServiceDescriptionRetrieveException(e);
-        } finally {
-            closeSession(session);
-        }
-        return result;
     }
 
     public HostDescription getHostDescription(String hostId) throws RegistryException {
