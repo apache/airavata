@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 public class JCRRegistryDeleteTest {
@@ -113,7 +114,7 @@ public class JCRRegistryDeleteTest {
             jcrRegistry.saveServiceDescription(serv);
 
             jcrRegistry.deleteServiceDescription(serv.getType().getName());
-            jcrRegistry.getServiceDescription(serv.getType().getName());
+            assertNull(jcrRegistry.getServiceDescription(serv.getType().getName()));
             jcrRegistry.closeConnection();
             jcrRegistry.getSession().logout();
         } catch (Exception e) {
@@ -126,7 +127,6 @@ public class JCRRegistryDeleteTest {
             IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target" + File.separator + "jackrabbit2"));
             return;
         }
-        Assert.assertTrue(false);
     }
 
 
