@@ -37,7 +37,7 @@ public class SimpleMathService {
      * @return x minus y
      */
     public int subtract(int x, int y) {
-        return x + y;
+        return x - y;
     }
 
     /**
