@@ -22,12 +22,14 @@
 package org.apache.airavata.xbaya.ui.graph;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -69,6 +71,8 @@ public class PortGUI implements GraphPieceGUI {
     private List<String> tokens = new LinkedList<String>();
 
     private Port port;
+    
+    private String portText=null;
 
     /**
      * The position of this port relative to the node this port belongs to.
@@ -163,9 +167,16 @@ public class PortGUI implements GraphPieceGUI {
                     CONTROL_PORT_SIZE, CONTROL_PORT_SIZE);
             break;
         }
-//        g.setColor(color);
-//        g.fill(shape);
         DrawUtils.gradientFillShape(g, color.brighter().brighter().brighter().brighter(), color.darker(), shape);
+        if (getPortText()!=null){
+        	g.setColor(Color.WHITE);
+            Font oldFont = g.getFont();
+    		g.setFont(new Font(oldFont.getFontName(),Font.BOLD,7));
+            Rectangle2D bounds = g.getFontMetrics().getStringBounds(getPortText(), g);
+            g.drawString(getPortText(), (int)(shape.getBounds().getX() + (shape.getBounds().getWidth()-bounds.getWidth())*2/4), 
+    		(int)(shape.getBounds().getY() + (shape.getBounds().getHeight()+bounds.getHeight())*4/8));
+            g.setFont(oldFont);
+        }
     }
 
     /**
@@ -252,4 +263,12 @@ public class PortGUI implements GraphPieceGUI {
         this.tokens.clear();
 
     }
+
+	public String getPortText() {
+		return portText;
+	}
+
+	public void setPortText(String portText) {
+		this.portText = portText;
+	}
 }

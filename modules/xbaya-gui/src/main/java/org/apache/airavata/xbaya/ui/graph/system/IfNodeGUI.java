@@ -153,12 +153,16 @@ public class IfNodeGUI extends ConfigurableNodeGUI {
         List<? extends Port> controlOutPorts = this.node.getControlOutPorts();
         Port controlOutPort1 = controlOutPorts.get(0);
         Point offset = new Point(getBounds().width, +this.headHeight / 2);
-        NodeController.getGUI(controlOutPort1).setOffset(offset);
+        PortGUI truePortGUI = NodeController.getGUI(controlOutPort1);
+        truePortGUI.setOffset(offset);
+        truePortGUI.setPortText("T");
 
         Port controlOutPort2 = controlOutPorts.get(1);
         offset = new Point(this.getBounds().width, getBounds().height - this.headHeight / 2);
-        NodeController.getGUI(controlOutPort2).setOffset(offset);
-
+        PortGUI falsePortGUI = NodeController.getGUI(controlOutPort2);
+		falsePortGUI.setOffset(offset);
+		falsePortGUI.setPortText("F");
+		
         // No outputs
     }
 
