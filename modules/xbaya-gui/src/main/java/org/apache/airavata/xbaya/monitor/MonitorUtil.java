@@ -90,6 +90,11 @@ public class MonitorUtil {
     public static final String BODY = "body";
 
     /**
+     * experimentID
+     * In Notification Message
+     */
+    public static final String WORKFLOW_EXPERIMENT_ID = "experimentID";
+    /**
      * workflowID
      * 
      * workflow instance ID.
@@ -361,6 +366,25 @@ public class MonitorUtil {
         String nodeID = null;
         if (idElement != null) {
             nodeID = idElement.attributeValue(WOR_NS, WORKFLOW_NODE_ID_ATTRIBUTE);
+        }
+        if (nodeID == null) {
+            nodeID = "";
+        }
+        return nodeID;
+    }
+
+    /**
+     * @param event
+     * @return The node ID if the message contains it; "", otherwise
+     */
+    public static String getExperiementID(XmlElement event) {
+        if (event == null) {
+            throw new IllegalArgumentException("null");
+        }
+        XmlElement idElement = getIDElement(event);
+        String nodeID = null;
+        if (idElement != null) {
+            nodeID = idElement.attributeValue(WOR_NS, WORKFLOW_EXPERIMENT_ID);
         }
         if (nodeID == null) {
             nodeID = "";
