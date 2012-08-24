@@ -21,14 +21,12 @@
 
 package org.apache.airavata.registry.api;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.workflow.WorkflowExecution;
-import org.apache.airavata.registry.api.workflow.WorkflowIOData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 
 public abstract class AiravataProvenanceRegistry implements DataRegistry{
 	private String user;
@@ -71,15 +69,6 @@ public abstract class AiravataProvenanceRegistry implements DataRegistry{
      * @throws RegistryException
      */
 	public abstract boolean saveWorkflowExecutionName(String experimentId,String workflowIntanceName)throws RegistryException;
-    
-    /**
-     * Save a status for this workflow execution
-     * @param experimentId
-     * @param status - contains the status and the time of the status was defined
-     * @return
-     * @throws RegistryException
-     */
-	public abstract boolean saveWorkflowExecutionStatus(String experimentId,WorkflowInstanceStatus status)throws RegistryException;
     
     /**
      * Save a status for this workflow execution with the current time at the moment
@@ -233,7 +222,63 @@ public abstract class AiravataProvenanceRegistry implements DataRegistry{
      * @throws RegistryException
      */
     public abstract List<WorkflowExecution> getWorkflowExecutionByUser(String user, int pageSize, int pageNo) throws RegistryException;
-    
+
+    /**
+     * This store set of metadata for each Workflow Run, Not the workflowNode Specific data, just full workflow Run specific data
+     * @param runTimeData
+     * @return
+     */
+    public abstract boolean saveWorkflowData(WorkflowRunTimeData runTimeData)throws RegistryException;
+
+    /**
+     * This will update the workflowStatus for given experimentID,workflowInstanceID combination.
+     * @param workflowInstanceID
+     * @param workflowStatus
+     * @return
+     */
+    public abstract boolean saveWorkflowStatus(String workflowInstanceID,WorkflowInstanceStatus workflowStatus)throws RegistryException;
+
+    /**
+     * This will update the last update time of the workflow.
+     * @param workflowInstanceID
+     * @param lastUpdateTime
+     * @return
+     */
+    public abstract boolean saveWorkflowLastUpdateTime(String workflowInstanceID,Timestamp lastUpdateTime)throws RegistryException;
+
+    /**
+     * This will change the status of a given WorkflowNode for a given workflowInstanceID(given workflow Run).
+     * @param workflowInstanceID
+     * @param status
+     * @return
+     */
+    public abstract boolean saveWorkflowNodeStatus(String workflowInstanceID,String workflowNodeID,ExecutionStatus status)throws RegistryException;
+
+    /**
+     * This will change the lastUpdate time for a given Workflow Node for a given workflow Run.
+     * @param workflowInstanceID
+     * @param workflowNodeID
+     * @param lastUpdateTime
+     * @return
+     */
+    public abstract boolean saveWorkflowNodeLastUpdateTime(String workflowInstanceID,String workflowNodeID,Timestamp lastUpdateTime)throws RegistryException;
+
+    /**
+     * This will store the gram specific data in to repository, this can be called before submitting the workflow in to Grid
+     * @param workflowNodeGramData
+     * @return
+     */
+    public abstract boolean saveWorkflowNodeGramData(WorkflowNodeGramData workflowNodeGramData)throws RegistryException;
+
+    /**
+     * This will update the local job ID for a submitted job to grid.
+     * @param workflowInstanceID
+     * @param workflowNodeID
+     * @param localJobID
+     * @return
+     */
+    public abstract boolean saveWorkflowNodeGramLocalJobID(String workflowInstanceID,String workflowNodeID,String localJobID)throws RegistryException;
+
 	public String getUser() {
 		return user;
 	}

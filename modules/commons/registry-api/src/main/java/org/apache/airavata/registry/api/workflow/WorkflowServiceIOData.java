@@ -25,6 +25,10 @@ public class WorkflowServiceIOData extends WorkflowIOData {
 	private String experimentId;
     private String workflowName;
     private String workflowId;
+    private WorkflowNodeType nodeType;
+    /** when you construct this object it set to STARTED state **/
+    private WorkflowInstanceStatus nodeStatus = new
+            WorkflowInstanceStatus(new WorkflowInstance(experimentId,workflowId,workflowName), WorkflowInstanceStatus.ExecutionStatus.STARTED);
     
     public WorkflowServiceIOData() {
 	}
@@ -42,7 +46,14 @@ public class WorkflowServiceIOData extends WorkflowIOData {
 		this(data, experimentId, experimentId, nodeId, workflowName);
 	}
 
-	public String getExperimentId() {
+    public WorkflowServiceIOData(String experimentId, String workflowName, String workflowId, WorkflowNodeType nodeType) {
+        this.experimentId = experimentId;
+        this.workflowName = workflowName;
+        this.workflowId = workflowId;
+        this.nodeType = nodeType;
+    }
+
+    public String getExperimentId() {
 		return experimentId;
 	}
 
