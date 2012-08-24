@@ -1,0 +1,43 @@
+<!--*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+* -->
+<?xml version="1.0"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
+	<persistence-unit name="airavata_provenance">
+		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+		<class>org.apache.airavata.provenance.model.Experiment_Data</class>
+		<class>org.apache.airavata.provenance.model.Workflow_Data</class>
+		<class>org.apache.airavata.provenance.model.Node_Data</class>
+		<class>org.apache.airavata.provenance.model.Gram_Data</class>
+		<properties>
+			<property name="openjpa.ConnectionURL"
+				value="jdbc:mysql://localhost:3306/workflow_provenance" />
+			<property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver" />
+			<property name="openjpa.ConnectionUserName" value="test" />
+			<property name="openjpa.ConnectionPassword" value="test" />
+			<property name="openjpa.DynamicEnhancementAgent" value="true" />
+			<property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
+			<property name="openjpa.Log" value="SQL=TRACE" />
+			<property name="openjpa.ConnectionFactoryProperties"
+				value="PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000" />
+		</properties>
+	</persistence-unit>
+</persistence>
