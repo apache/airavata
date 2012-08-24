@@ -21,13 +21,34 @@
 package org.apache.airavata.registry.api.workflow;
 
 public class WorkflowNodeType {
-    public enum WorkflowNode{
-		SERVICENODE,
-		CONTROLNODE,
-	    INPUTNODE,
-		OUTPUTNODE,
-		UNKNOWN,
-	}
+    public enum WorkflowNode {
+        SERVICENODE {
+            public String toString() {
+                return "SERVICE_NODE";
+            }
+        },
+        CONTROLNODE {
+            public String toString() {
+                return "CONTROL_NODE";
+            }
+        },
+        INPUTNODE {
+            public String toString() {
+                return "INPUT_NODE";
+            }
+        },
+        OUTPUTNODE {
+            public String toString() {
+                return "OUTPUT_NODE";
+            }
+        },
+        UNKNOWN {
+            public String toString() {
+                return "UNKNOWN_NODE";
+            }
+        },
+    }
+
     private WorkflowNode nodeType;
 
     public WorkflowNode getNodeType() {
