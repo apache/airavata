@@ -95,4 +95,12 @@ public class WorkflowServiceIOData extends WorkflowIOData {
     public WorkflowNodeType getNodeType() {
         return nodeType;
     }
+
+    public WorkflowInstanceStatus getNodeStatus() {
+        return nodeStatus;
+    }
+
+    public void setNodeStatus(WorkflowInstanceStatus nodeStatus) {
+        this.nodeStatus = nodeStatus;
+    }
 }
