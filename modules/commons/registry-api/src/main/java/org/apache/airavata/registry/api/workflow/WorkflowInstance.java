@@ -31,7 +31,13 @@ public class WorkflowInstance {
 		setWorkflowInstanceId(topicId);
 	}
 
-	public String getWorkflowInstanceId() {
+    public WorkflowInstance(String experimentId, String workflowInstanceId, String workflowName) {
+        this.experimentId = experimentId;
+        this.workflowInstanceId = workflowInstanceId;
+        this.workflowName = workflowName;
+    }
+
+    public String getWorkflowInstanceId() {
 		return workflowInstanceId;
 	}
 

@@ -22,6 +22,7 @@
 package org.apache.airavata.registry.api;
 
 import java.net.URI;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -37,11 +38,8 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
-import org.apache.airavata.registry.api.workflow.WorkflowExecution;
-import org.apache.airavata.registry.api.workflow.WorkflowIOData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 
 public interface AiravataRegistry extends Registry{
     /**
@@ -281,4 +279,16 @@ public interface AiravataRegistry extends Registry{
     public String getWorkflowExecutionMetadata(String experimentId) throws RegistryException;
     
     public boolean saveWorkflowExecutionMetadata(String experimentId, String metadata) throws RegistryException;
+
+    public boolean saveWorkflowData(WorkflowRunTimeData workflowData)throws RegistryException;
+
+    public  boolean saveWorkflowLastUpdateTime(String experimentId,Timestamp timestamp)throws RegistryException;
+
+    public boolean saveWorkflowNodeStatus(String workflowInstanceID,String workflowNodeID,ExecutionStatus status)throws RegistryException;
+
+    public boolean saveWorkflowNodeLastUpdateTime(String workflowInstanceID,String workflowNodeID,Timestamp lastUpdateTime)throws RegistryException;
+
+    public boolean saveWorkflowNodeGramData(WorkflowNodeGramData workflowNodeGramData)throws RegistryException;
+
+    public boolean saveWorkflowNodeGramLocalJobID(String workflowInstanceID,String workflowNodeID,String localJobID)throws RegistryException;
 }

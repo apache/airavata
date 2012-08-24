@@ -53,12 +53,8 @@ import org.apache.airavata.registry.api.DataRegistry;
 import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.HostDescriptionRetrieveException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
-import org.apache.airavata.registry.api.workflow.WorkflowExecution;
-import org.apache.airavata.registry.api.workflow.WorkflowIOData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstance;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 import org.apache.airavata.schemas.gfac.MethodType;
 import org.apache.airavata.schemas.gfac.PortTypeType;
 import org.apache.airavata.schemas.gfac.ServiceType;
@@ -951,7 +947,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 
     public boolean saveWorkflowExecutionStatus(String experimentId,WorkflowInstanceStatus status)throws RegistryException{
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().saveWorkflowExecutionStatus(experimentId, status);
+    		return getProvenanceRegistry().saveWorkflowExecutionStatus(experimentId, status.getExecutionStatus());
     	}
         Session session = null;
         boolean isSaved = true;
@@ -1359,6 +1355,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
     	}
 		return saveWorkflowExecutionStatus(experimentId,new WorkflowInstanceStatus(new WorkflowInstance(experimentId, experimentId), status));
 	}
+
 	@Override
 	public boolean saveWorkflowExecutionName(String experimentId,
 			String workflowIntanceName) throws RegistryException {
@@ -1625,4 +1622,51 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 		}
         
 	}
+    @Override
+    public boolean saveWorkflowData(WorkflowRunTimeData workflowData)throws RegistryException{
+        if (getProvenanceRegistry()!=null){
+    		return getProvenanceRegistry().saveWorkflowData(workflowData);
+    	}
+        return false;
+    }
+
+    @Override
+    public  boolean saveWorkflowLastUpdateTime(String experimentId,Timestamp timestamp)throws RegistryException{
+        if (getProvenanceRegistry()!=null){
+    		return getProvenanceRegistry().saveWorkflowLastUpdateTime(experimentId, timestamp);
+    	}
+        return false;
+    }
+
+    @Override
+    public boolean saveWorkflowNodeStatus(String workflowInstanceID,String workflowNodeID,ExecutionStatus status)throws RegistryException{
+       if (getProvenanceRegistry()!=null){
+    		return getProvenanceRegistry().saveWorkflowNodeStatus(workflowInstanceID,workflowNodeID, status);
+    	}
+        return false;
+    }
+
+    @Override
+    public boolean saveWorkflowNodeLastUpdateTime(String workflowInstanceID,String workflowNodeID,Timestamp lastUpdateTime)throws RegistryException{
+        if (getProvenanceRegistry()!=null){
+    		return getProvenanceRegistry().saveWorkflowNodeLastUpdateTime(workflowInstanceID,workflowNodeID, lastUpdateTime);
+    	}
+        return false;
+    }
+
+    @Override
+    public boolean saveWorkflowNodeGramData(WorkflowNodeGramData workflowNodeGramData)throws RegistryException{
+        if (getProvenanceRegistry()!=null){
+    		return getProvenanceRegistry().saveWorkflowNodeGramData(workflowNodeGramData);
+    	}
+        return false;
+    }
+
+    @Override
+    public boolean saveWorkflowNodeGramLocalJobID(String workflowInstanceID, String workflowNodeID, String localJobID) throws RegistryException {
+        if (getProvenanceRegistry() != null) {
+            return getProvenanceRegistry().saveWorkflowNodeGramLocalJobID(workflowInstanceID, workflowNodeID, localJobID);
+        }
+        return false;
+    }
 }
