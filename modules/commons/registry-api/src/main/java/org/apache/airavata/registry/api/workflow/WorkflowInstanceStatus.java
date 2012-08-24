@@ -25,51 +25,75 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class WorkflowInstanceStatus {
-	public enum ExecutionStatus {
-		STARTED,
-		RUNNING,
-	    FAILED,
-		PAUSED,
-		FINISHED,
-		UNKNOWN
-	}
+    public enum ExecutionStatus {
+        STARTED {
+            public String toString() {
+                return "STARTED";
+            }
+        },
+        RUNNING {
+            public String toString() {
+                return "RUNNING";
+            }
+        },
+        FAILED {
+            public String toString() {
+                return "FAILED";
+            }
+        },
+        PAUSED {
+            public String toString() {
+                return "PAUSED";
+            }
+        },
+        FINISHED {
+            public String toString() {
+                return "FINISHED";
+            }
+        },
+        UNKNOWN {
+            public String toString() {
+                return "UNKNOWN";
+            }
+        }
+    }
 
-	private ExecutionStatus executionStatus;
-	private Date statusUpdateTime=null;
-	private WorkflowInstance workflowInstance;
-	
-	public ExecutionStatus getExecutionStatus() {
-		return executionStatus;
-	}
+    private ExecutionStatus executionStatus;
+    private Date statusUpdateTime = null;
+    private WorkflowInstance workflowInstance;
 
-	public void setExecutionStatus(ExecutionStatus executionStatus) {
-		this.executionStatus = executionStatus;
-	}
+    public ExecutionStatus getExecutionStatus() {
+        return executionStatus;
+    }
 
-	public Date getStatusUpdateTime() {
-		return statusUpdateTime;
-	}
+    public void setExecutionStatus(ExecutionStatus executionStatus) {
+        this.executionStatus = executionStatus;
+    }
 
-	public void setStatusUpdateTime(Date statusUpdateTime) {
-		this.statusUpdateTime = statusUpdateTime;
-	}
+    public Date getStatusUpdateTime() {
+        return statusUpdateTime;
+    }
 
-	public WorkflowInstanceStatus(WorkflowInstance workflowInstance, ExecutionStatus executionStatus) {
-		this(workflowInstance,executionStatus,null);
-	}
-	
-	public WorkflowInstanceStatus(WorkflowInstance workflowInstance,ExecutionStatus executionStatus, Date statusUpdateTime) {
-		statusUpdateTime=statusUpdateTime==null? Calendar.getInstance().getTime():statusUpdateTime;
-		setWorkflowInstance(workflowInstance);
-		setExecutionStatus(executionStatus);
-		setStatusUpdateTime(statusUpdateTime);
-	}
+    public void setStatusUpdateTime(Date statusUpdateTime) {
+        this.statusUpdateTime = statusUpdateTime;
+    }
 
-	public WorkflowInstance getWorkflowInstance() {
-		return workflowInstance;
-	}
+    public WorkflowInstanceStatus(WorkflowInstance workflowInstance, ExecutionStatus executionStatus) {
+        this(workflowInstance, executionStatus, null);
+    }
 
-	public void setWorkflowInstance(WorkflowInstance workflowInstance) {
-		this.workflowInstance = workflowInstance;
-	}
+    public WorkflowInstanceStatus(WorkflowInstance workflowInstance, ExecutionStatus executionStatus, Date statusUpdateTime) {
+        statusUpdateTime = statusUpdateTime == null ? Calendar.getInstance().getTime() : statusUpdateTime;
+        setWorkflowInstance(workflowInstance);
+        setExecutionStatus(executionStatus);
+        setStatusUpdateTime(statusUpdateTime);
+    }
+
+    public WorkflowInstance getWorkflowInstance() {
+        return workflowInstance;
+    }
+
+    public void setWorkflowInstance(WorkflowInstance workflowInstance) {
+        this.workflowInstance = workflowInstance;
+    }
 }
