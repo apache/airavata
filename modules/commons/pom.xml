@@ -35,6 +35,7 @@
                 <module>common-registry-api</module>
                 <module>registry-api</module>
                 <module>workflow-execution-context</module>
+		<module>provenance-registry</module>
             </modules>
         </profile>
     </profiles>
