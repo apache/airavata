@@ -34,7 +34,8 @@ import java.util.Map;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.airavata.common.utils.WSDLUtil;
+import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.workflow.model.graph.ControlPort;
 import org.apache.airavata.workflow.model.graph.EPRPort;
 import org.apache.airavata.workflow.model.graph.Edge;
@@ -49,10 +50,13 @@ import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.monitor.MonitorEvent;
 import org.apache.airavata.xbaya.monitor.MonitorEventData;
 import org.apache.airavata.xbaya.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.monitor.MonitorUtil.EventType;
+import org.apache.airavata.xbaya.provenance.WorkflowNodeStatusUpdater;
+import org.apache.airavata.xbaya.provenance.WorkflowStatusUpdater;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
@@ -110,6 +114,9 @@ public class MonitorEventHandler implements ChangeListener {
 
     private Map<Node, LinkedList<ResourcePaintable>> resourcePaintableMap;
 
+    private WorkflowStatusUpdater workflowStatusUpdater;
+
+    private WorkflowNodeStatusUpdater workflowNodeStatusUpdater;
     /**
      * Constructs a MonitorEventHandler.
      *
@@ -121,6 +128,10 @@ public class MonitorEventHandler implements ChangeListener {
         this.incorrectWorkflowIDs = Collections.synchronizedSet(new HashSet<URI>());
         this.triedWorkflowIDs = Collections.synchronizedSet(new HashSet<URI>());
         this.resourcePaintableMap = new HashMap<Node, LinkedList<ResourcePaintable>>();
+        this.workflowNodeStatusUpdater = new WorkflowNodeStatusUpdater(WorkflowInterpreter.getWorkflowInterpreterConfiguration().
+                getConfiguration().getJcrComponentRegistry().getRegistry());
+        this.workflowStatusUpdater = new WorkflowStatusUpdater(WorkflowInterpreter.getWorkflowInterpreterConfiguration().
+                getConfiguration().getJcrComponentRegistry().getRegistry());
     }
 
     /**
@@ -255,72 +266,6 @@ public class MonitorEventHandler implements ChangeListener {
     }
 
     /**
-     * @param event
-     * @param findWorkflowName
-     * @param graph
-     */
-    private void handleEvent(MonitorEvent event, String instanceName, WSGraph graph) {
-        // TODO Auto-generated method stub
-        if (-1 == instanceName.indexOf("Control_")) {
-            EventType type = event.getType();
-            String nodeID = event.getNodeID();
-            Node node = graph.getNode(nodeID);
-            if (type == MonitorUtil.EventType.WORKFLOW_INVOKED) {
-                // workflowStarted(graph, forward);
-                LinkedList<InputNode> inputNodes = getInputNodes(graph);
-                for (InputNode inputNode : inputNodes) {
-                    NodeController.getGUI(inputNode).setToken(instanceName, NodeState.FINISHED);
-                }
-            } else if (type == MonitorUtil.EventType.WORKFLOW_INITIALIZED) {
-                // workflowStarted(graph, forward);
-                LinkedList<InputNode> inputNodes = getInputNodes(graph);
-                for (InputNode inputNode : inputNodes) {
-                    NodeController.getGUI(inputNode).setToken(instanceName, NodeState.FINISHED);
-                }
-            } else if (type == MonitorUtil.EventType.WORKFLOW_TERMINATED) {
-                LinkedList<OutputNode> outputNodes = getOutputNodes(graph);
-                for (OutputNode outputNode : outputNodes) {
-                	NodeController.getGUI(outputNode).setToken(instanceName, NodeState.EXECUTING);
-                }
-            } else if (type == EventType.INVOKING_SERVICE
-            // TODO this should be removed when GPEL sends all notification
-            // correctly.
-                    || type == EventType.SERVICE_INVOKED) {
-                if (node == null) {
-                    logger.warn("There is no node that has ID, " + nodeID);
-                } else {
-                    NodeController.getGUI(node).setToken(instanceName, NodeState.EXECUTING);
-                }
-            } else if (type == MonitorUtil.EventType.RECEIVED_RESULT
-            // TODO this should be removed when GPEL sends all notification
-            // correctly.
-                    || type == EventType.SENDING_RESULT) {
-                if (node == null) {
-                    logger.warn("There is no node that has ID, " + nodeID);
-                } else {
-                    NodeController.getGUI(node).setToken(instanceName, NodeState.FINISHED);
-                }
-            } else if (type == EventType.INVOKING_SERVICE_FAILED || type == EventType.RECEIVED_FAULT
-            // TODO
-                    || type == EventType.SENDING_FAULT || type == EventType.SENDING_RESPONSE_FAILED) {
-                if (node == null) {
-                    logger.warn("There is no node that has ID, " + nodeID);
-                } else {
-                    NodeController.getGUI(node).setToken(instanceName, NodeState.FAILED);
-                }
-            } else if (type == MonitorUtil.EventType.RESOURCE_MAPPING) {
-                if (node == null) {
-                    logger.warn("There is no node that has ID, " + nodeID);
-                } else {
-                    // nodeResourceMapped(node, event.getEvent(), forward);
-                }
-            } else {
-                // Ignore the rest.
-            }
-        }
-    }
-
-    /**
      * @param graph
      * @return
      */
@@ -359,8 +304,10 @@ public class MonitorEventHandler implements ChangeListener {
         // logger.info("type: " + type);
         if (type == MonitorUtil.EventType.WORKFLOW_INVOKED) {
             workflowStarted(graph, forward);
+            workflowStatusUpdater.workflowStarted(event.getExperimentID());
         } else if (type == MonitorUtil.EventType.WORKFLOW_TERMINATED) {
             workflowFinished(graph, forward);
+            workflowStatusUpdater.workflowFinished(event.getExperimentID());
         } else if (type == EventType.INVOKING_SERVICE
         // TODO this should be removed when GPEL sends all notification
         // correctly.
@@ -369,6 +316,7 @@ public class MonitorEventHandler implements ChangeListener {
                 logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeStarted(node, forward);
+                workflowNodeStatusUpdater.workflowStarted(event.getExperimentID(), event.getNodeID());
             }
         } else if (type == MonitorUtil.EventType.RECEIVED_RESULT
         // TODO this should be removed when GPEL sends all notification
@@ -378,7 +326,9 @@ public class MonitorEventHandler implements ChangeListener {
                 logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeFinished(node, forward);
+                workflowNodeStatusUpdater.workflowFinished(event.getExperimentID(), event.getNodeID());
             }
+
         } else if (type == EventType.INVOKING_SERVICE_FAILED || type == EventType.RECEIVED_FAULT
         // TODO
                 || type == EventType.SENDING_FAULT || type == EventType.SENDING_RESPONSE_FAILED) {
@@ -386,12 +336,14 @@ public class MonitorEventHandler implements ChangeListener {
                 logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeFailed(node, forward);
+                workflowNodeStatusUpdater.workflowFailed(event.getExperimentID(), event.getNodeID());
             }
         } else if (type == MonitorUtil.EventType.RESOURCE_MAPPING) {
             if (node == null) {
                 logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeResourceMapped(node, event.getEvent(), forward);
+                workflowNodeStatusUpdater.workflowRunning(event.getExperimentID(), event.getNodeID());
             }
         } else {
             // Ignore the rest.

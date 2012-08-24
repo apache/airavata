@@ -141,7 +141,7 @@ public class RegistryServiceTest {
     @Test
     public void getFromRegistry() throws RegistryException {
         /* Checking the registry for the saved descriptors */
-        exception.expect(ServiceDescriptionRetrieveException.class);
+//        exception.expect(ServiceDescriptionRetrieveException.class);
         assertNotNull(jcrRegistry.getHostDescription("localhost"));
         assertNull(jcrRegistry.getHostDescription("remotehost"));
 

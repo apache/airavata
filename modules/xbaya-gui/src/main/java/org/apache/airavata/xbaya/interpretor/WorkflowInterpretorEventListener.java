@@ -49,6 +49,8 @@ import org.apache.airavata.xbaya.monitor.MonitorEvent;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.monitor.MonitorUtil.EventType;
+import org.apache.airavata.xbaya.provenance.WorkflowNodeStatusUpdater;
+import org.apache.airavata.xbaya.provenance.WorkflowStatusUpdater;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.axiom.soap.SOAPEnvelope;
@@ -67,6 +69,8 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
     private URI messageBoxURL;
     private String subscriptionID;
     private MessagePuller messagePuller;
+    private WorkflowStatusUpdater workflowStatusUpdater;
+    private WorkflowNodeStatusUpdater workflowNodeStatusUpdater;
 
     private static Logger logger = LoggerFactory.getLogger(WorkflowInterpretorEventListener.class);
 
@@ -78,6 +82,10 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
         this.messageBoxURL = configuration.getMessageBoxURL();
         this.wseClient = new WseMsgBrokerClient();
         this.wseClient.init(this.brokerURL.toString());
+        this.workflowNodeStatusUpdater = new WorkflowNodeStatusUpdater(WorkflowInterpreter.getWorkflowInterpreterConfiguration().
+                getConfiguration().getJcrComponentRegistry().getRegistry());
+        this.workflowStatusUpdater = new WorkflowStatusUpdater(WorkflowInterpreter.getWorkflowInterpreterConfiguration().
+                getConfiguration().getJcrComponentRegistry().getRegistry());
     }
 
     public void start() throws MonitorException {
@@ -160,13 +168,19 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
 
         if (type == MonitorUtil.EventType.WORKFLOW_INVOKED) {
             workflowStarted(graph, forward);
+            //todo ideally experimentID and workflowInstanceID has to be different
+            workflowStatusUpdater.saveWorkflowData(event.getExperimentID(), event.getExperimentID(),
+                    WorkflowInterpreter.getWorkflowInterpreterConfiguration().getWorkflow().getName());
+            workflowStatusUpdater.workflowStarted(event.getExperimentID());
         } else if (type == MonitorUtil.EventType.WORKFLOW_TERMINATED) {
             workflowFinished(graph, forward);
+            workflowStatusUpdater.workflowFinished(event.getExperimentID());
         } else if (type == EventType.INVOKING_SERVICE || type == EventType.SERVICE_INVOKED) {
             if (node == null) {
                 logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeStarted(node, forward);
+                workflowNodeStatusUpdater.workflowStarted(event.getExperimentID(), event.getNodeID());
             }
         } else if (type == MonitorUtil.EventType.RECEIVED_RESULT
         // TODO this should be removed when GPEL sends all notification
@@ -176,6 +190,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
                 logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeFinished(node, forward);
+                workflowNodeStatusUpdater.workflowFinished(event.getExperimentID(), event.getNodeID());
             }
         } else if (type == EventType.INVOKING_SERVICE_FAILED || type == EventType.RECEIVED_FAULT
         // TODO
@@ -184,12 +199,14 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
                 logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeFailed(node, forward);
+                workflowNodeStatusUpdater.workflowFailed(event.getExperimentID(), event.getNodeID());
             }
         } else if (type == MonitorUtil.EventType.RESOURCE_MAPPING) {
             if (node == null) {
                 logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 // nodeResourceMapped(node, event.getEvent(), forward);
+                workflowNodeStatusUpdater.workflowRunning(event.getExperimentID(), event.getNodeID());
             }
         } else {
             // Ignore the rest.

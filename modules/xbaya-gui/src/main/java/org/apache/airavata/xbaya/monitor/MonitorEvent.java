@@ -48,6 +48,8 @@ public class MonitorEvent {
 
     private String nodeID;
 
+    private String experimentID;
+
     /**
      * Constructs a MonitorEvent.
      * 
@@ -134,8 +136,9 @@ public class MonitorEvent {
         this.type = MonitorUtil.getType(this.event);
         this.workflowID = MonitorUtil.getWorkflowID(this.event);
         this.nodeID = MonitorUtil.getNodeID(this.event);
-
+        this.experimentID = MonitorUtil.getExperiementID(this.event);
         timestamp = MonitorUtil.getTimestamp(this.event);
+
         if (timestamp != null) {
             SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss.S MM/dd/yy ");
             this.timeText = format.format(timestamp);
@@ -165,4 +168,7 @@ public class MonitorEvent {
 		this.timestamp = timestamp;
 	}
 
+    public String getExperimentID() {
+        return experimentID;
+    }
 }
