@@ -30,7 +30,6 @@ import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.services.impl.PropertiesBasedServiceImpl;
-import org.apache.airavata.migrator.registry.MigrationUtil;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.schemas.gfac.*;
 import org.junit.Assert;
@@ -78,7 +77,7 @@ public class GramProviderMPIRangerTest {
         app.setExecutableLocation("/share/home/01437/ogce/airavata-test/mpi-hellow-world");
         app.setScratchWorkingDirectory(properties.getProperty("scratch.working.directory"));
         app.setCpuCount(16);
-        app.setJobType(MigrationUtil.getJobTypeEnum("MPI"));
+        app.setJobType(JobTypeType.MPI);
         //app.setMinMemory();
         ProjectAccountType projectAccountType = ((GramApplicationDeploymentType) appDesc.getType()).addNewProjectAccount();
         projectAccountType.setProjectAccountNumber(properties.getProperty("allocation.charge.number"));
