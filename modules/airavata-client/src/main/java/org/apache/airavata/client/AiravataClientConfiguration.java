@@ -25,7 +25,6 @@ import java.net.URL;
 
 public class AiravataClientConfiguration {
 	private URL gfacURL;
-	private URL xregistryURL;
 	private String myproxyHost="myproxy.teragrid.org";
 	private URL messageboxURL;
 	private URL messagebrokerURL;
@@ -42,12 +41,6 @@ public class AiravataClientConfiguration {
 	}
 	public void setGfacURL(URL gfacURL) {
 		this.gfacURL = gfacURL;
-	}
-	public URL getXregistryURL() {
-		return xregistryURL;
-	}
-	public void setXregistryURL(URL xregistryURL) {
-		this.xregistryURL = xregistryURL;
 	}
 	public String getMyproxyHost() {
 		return myproxyHost;

@@ -169,18 +169,8 @@ public class XBayaEngine {
         // Initialize security at the beginning.
         initSecurity();
 
-        // load myProxy before loading components from registries.
-        // loadMyProxy();
-
         initRegistry();
 
-        // TODO May be we need to load a default workflow from Xregistry.
-        // initGPEL();
-
-        // This has to be after gpel initialization.
-//        loadDefaultGraph();
-
-        // This has to be after loading a graph.
         initMonitor();
 
     }
@@ -193,21 +183,6 @@ public class XBayaEngine {
             getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         }
     }
-
-    // private void loadyProxy() {
-    // if (this.configuration.isLoadMyProxy()) {
-    // if (this.configuration.getMyProxyUsername() == null) {
-    // this.getGUI().getErrorWindow().error("Trying to load the proxy, but the myproxy usernameis not set.");
-    // } else if (this.configuration.getXRegistryURL() == null) {
-    // this.getGUI().getErrorWindow().error(
-    // "Trying to load the XRegistry default services, but Xregistry url is not set");
-    // } else {
-    // MyProxyDialog dialog = new MyProxyDialog(this);
-    // dialog.show(true); // blocking
-    // }
-    //
-    // }
-    // }
 
     /**
      * Initializes registris.

@@ -69,8 +69,6 @@ public class XBayaConfiguration extends Observable implements Observer {
 
     private URI gfacURL = XBayaConstants.DEFAULT_GFAC_URL;
 
-    // private URI xRegistryURL = XBayaConstants.DEFAULT_XREGISTRY_URL;
-
     private URI registryURL = XBayaConstants.REGISTRY_URL;
 
     private String regigstryUserName = XBayaConstants.REGISTRY_USERNAME;
@@ -340,25 +338,6 @@ public class XBayaConfiguration extends Observable implements Observer {
     public void setGFacURL(URI gfacURL) {
         this.gfacURL = gfacURL;
     }
-
-    /**
-     * Returns the xRegistryURL.
-     * 
-     * @return The xRegistryURL
-     */
-    // public URI getXRegistryURL() {
-    // return this.xRegistryURL;
-    // }
-
-    /**
-     * Sets registryURL.
-     * 
-     * @param registryURL
-     *            The xRegistryURL to set.
-     */
-    // public void setXRegistryURL(URI registryURL) {
-    // this.xRegistryURL = registryURL;
-    // }
 
     /**
      * @return The DSC URL

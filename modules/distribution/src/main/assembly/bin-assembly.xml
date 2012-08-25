@@ -248,8 +248,6 @@
                 <include>globus:transfer-api-client</include>
                 <include>org.apache.airavata:airavata-registry-api</include>
                 <include>org.apache.airavata:airavata-registry-migrator:jar</include>
-                <include>xregistry:xregistry-client:jar</include>
-                <include>xregistry:xregistry_generated:jar</include>
                 <include>org.apache.airavata:airavata-common-registry-api</include>
                 <include>org.apache.airavata:airavata-workflow-execution-context</include>
                 <include>org.apache.airavata:airavata-workflow-tracking</include>

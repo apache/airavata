@@ -57,10 +57,8 @@ public class RegistryAccesser {
 
     private GSSCredential gssCredential;
 
-    private URI xregistryURL;
-
     /**
-     * Constructs a XRegistryAccesser.
+     * Constructs a RegistryAccesser.
      * 
      * @param engine
      */
@@ -131,29 +129,8 @@ public class RegistryAccesser {
 
                 workflowId = StringUtil.convertToJavaIdentifier(workflowId);
 
-                // FIXME::Commenting the workflow UUID. It is debatable if the
-                // workflow template id should be unique or not.
-                // workflowId = workflowId + UUID.randomUUID();
-
                 QName workflowQName = new QName(XBayaConstants.OGCE_WORKFLOW_NS, workflowId);
 
-                // first find whether this resource is already in xregistry
-                // TODO: Add the check back
-                // DocData[] resource =
-                // client.findOGCEResource(workflowQName.toString(), "Workflow",
-                // null);
-                // if (resource != null && !"".equals(resource)) {
-                // // if already there then remove
-                //
-                // int result =
-                // JOptionPane.showConfirmDialog(this.engine.getGUI().getGraphCanvas().getSwingComponent(),
-                // "Workflow Already Exist in Xregistry. Do you want to overwrite",
-                // "Workflow already exist", JOptionPane.YES_NO_OPTION);
-                // if(result != JOptionPane.YES_OPTION){
-                // return;
-                // }
-                // client.removeResource(workflowQName);
-                // }
                 String workflowAsString = XMLUtil.xmlElementToString(workflow.toXML());
                 String owner = this.engine.getConfiguration().getRegistryUserName();
 

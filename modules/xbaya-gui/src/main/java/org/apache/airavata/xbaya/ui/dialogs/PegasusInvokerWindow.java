@@ -58,7 +58,6 @@ public class PegasusInvokerWindow {
 
     private GridPanel parameterPanel;
     private XBayaTextField topicTextField;
-    // private XBayaTextField xRegistryTextField;
     private XBayaTextField gfacTextField;
     private XBayaTextField inputFilepathField;
     private JButton invokeButton;
@@ -80,9 +79,6 @@ public class PegasusInvokerWindow {
         this.topicTextField = new XBayaTextField();
         XBayaLabel topicLabel = new XBayaLabel("Notification Topic", this.topicTextField);
 
-        // this.xRegistryTextField = new XBayaTextField();
-        // XBayaLabel xRegistryLabel = new XBayaLabel("XRegistry URL", this.xRegistryTextField);
-
         this.gfacTextField = new XBayaTextField();
         XBayaLabel gfacLabel = new XBayaLabel("GFac URL", this.gfacTextField);
 
@@ -93,8 +89,6 @@ public class PegasusInvokerWindow {
         GridPanel infoPanel = new GridPanel();
         infoPanel.add(topicLabel);
         infoPanel.add(this.topicTextField);
-        // infoPanel.add(xRegistryLabel);
-        // infoPanel.add(this.xRegistryTextField);
         infoPanel.add(gfacLabel);
         infoPanel.add(this.gfacTextField);
         infoPanel.add(filePathLabel);
@@ -142,7 +136,6 @@ public class PegasusInvokerWindow {
             request.setWorkflowID(workflowID);
             request.setTopic(this.topicTextField.getText());
             request.setGFacLocation(this.gfacTextField.getText());
-            // request.setXRegistryLocation(this.xRegistryTextField.getText());
             request.setInputStrings(new String[] { "lol", "lol2" });
             SubmitRefResponse response = stub.submitById(request);
         } catch (AxisFault e) {

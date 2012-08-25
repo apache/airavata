@@ -34,8 +34,6 @@ public class WSIFTestCase extends XBayaTestCase {
 
     private ComponentTreeNode resouceCatalogComponentTree;
 
-    private ComponentTreeNode xRegistryComponentTree;
-
     /**
      * @param args
      */
@@ -50,7 +48,6 @@ public class WSIFTestCase extends XBayaTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         this.resouceCatalogComponentTree = null;
-        this.xRegistryComponentTree = null;
     }
 
 }

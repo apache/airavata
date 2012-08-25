@@ -119,7 +119,6 @@ public class TestWorkflowInterpreter {
         configuration.setMyProxyLifetime(XBayaConstants.DEFAULT_MYPROXY_LIFTTIME);
         configuration.setMyProxyPort(XBayaConstants.DEFAULT_MYPROXY_PORT);
         configuration.setMyProxyServer(XBayaConstants.DEFAULT_MYPROXY_SERVER);
-        // configuration.setXRegistryURL(XBayaConstants.DEFAULT_XREGISTRY_URL);
         return configuration;
     }
 
