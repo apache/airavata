@@ -432,7 +432,6 @@
             <modules>
                 <module>modules/commons</module>
                 <module>modules/ws-messenger</module>
-                <module>modules/registry-migrator</module>
                 <module>modules/workflow-model</module>
                 <module>modules/xbaya-gui</module>
             </modules>
@@ -462,7 +461,6 @@
             <modules>
                 <module>modules/commons</module>
                 <module>modules/ws-messenger</module>
-                <module>modules/registry-migrator</module>
                 <module>modules/workflow-model</module>
                 <module>modules/xbaya-gui</module>
                 <module>modules/airavata-client</module>
@@ -587,7 +585,6 @@
                 <module>modules/workflow-model</module>
                 <module>modules/xbaya-gui</module>
                 <module>modules/commons</module>
-                <module>modules/registry-migrator</module>
                 <module>modules/airavata-client</module>
                 <module>samples/simple-math-service</module>
                 <module>samples/complex-math-service</module>
