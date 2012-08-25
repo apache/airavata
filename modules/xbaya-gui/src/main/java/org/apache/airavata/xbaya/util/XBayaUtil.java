@@ -114,7 +114,6 @@ public class XBayaUtil {
         leadContext.setNodeId(nodeId);
 
         leadContext.setTimeStep("1");
-        // leadContext.setXRegistryUrl(new URI(configuration.getXRegistryURL().toString() + "?wsdl"));
 
         if (resourceMapping != null) {
             leadContext.setResourceMapping(resourceMapping);

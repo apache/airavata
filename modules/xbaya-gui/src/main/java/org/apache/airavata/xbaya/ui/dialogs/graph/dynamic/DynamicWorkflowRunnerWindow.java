@@ -94,8 +94,6 @@ public class DynamicWorkflowRunnerWindow {
 
     // private XBayaComboBox resourceSelectionComboBox;
 
-    // private XBayaTextField xRegistryTextField;
-
     private JComboBox gfacUrlListField;
 
     private JCheckBox interactChkBox;
@@ -192,15 +190,6 @@ public class DynamicWorkflowRunnerWindow {
 
         this.topicTextField.setText(UUID.randomUUID().toString());
 
-        // XBayaConfiguration config = this.engine.getConfiguration();
-        // this.gfacTextField.setText(config.getGFacURL().toString());
-        // URI registryURL = config.getXRegistryURL();
-        // if (null != registryURL) {
-        // this.xRegistryTextField.setText(registryURL.toString());
-        // } else {
-        // this.xRegistryTextField.setText(XBayaConstants.DEFAULT_XREGISTRY_URL);
-        // }
-
         this.dialog.show();
     }
 
@@ -213,18 +202,6 @@ public class DynamicWorkflowRunnerWindow {
         this.parameterPanel.resetPanel();
         this.parameterTextFields.clear();
     }
-
-    // FIXME: Change this to use JCR registry
-    // private Object[] initHostNameList() {
-    // XRegistryAccesser xRegAccesser = new XRegistryAccesser(this.engine);
-    // HostDescData[] hostDataList = xRegAccesser.searchHostByName("");
-    // List<String> nameList = new ArrayList<String>();
-    // nameList.add("");
-    // for (HostDescData hostData : hostDataList) {
-    // nameList.add(hostData.getName().toString());
-    // }
-    // return nameList.toArray();
-    // }
 
     /**
      * ReInit Host Name ComboBox
@@ -246,8 +223,6 @@ public class DynamicWorkflowRunnerWindow {
 
         this.topicTextField = new XBayaTextField();
         XBayaLabel topicLabel = new XBayaLabel("Notification topic", this.topicTextField);
-        // this.xRegistryTextField = new XBayaTextField();
-        // XBayaLabel xRegistryLabel = new XBayaLabel("XRegistry URL", this.xRegistryTextField);
         this.gfacUrlListField = new JComboBox();
         XBayaLabel gfacURLLabel = new XBayaLabel("GFac URL", this.gfacUrlListField);
         this.interactChkBox = new JCheckBox();
@@ -264,10 +239,6 @@ public class DynamicWorkflowRunnerWindow {
         infoPanel.add(this.instanceNameTextField);
         infoPanel.add(topicLabel);
         infoPanel.add(this.topicTextField);
-        // infoPanel.add(xRegistryLabel);
-        // infoPanel.add(this.xRegistryTextField);
-        // infoPanel.add(gfacLabel);
-        // infoPanel.add(this.gfacTextField);
         infoPanel.add(gfacURLLabel);
         infoPanel.add(this.gfacUrlListField);
         infoPanel.add(interactLabel);
@@ -362,15 +333,6 @@ public class DynamicWorkflowRunnerWindow {
             inputNode.setDefaultValue(value);
         }
 
-        // final String xregistryUrl = this.xRegistryTextField.getText();
-        // if (null != xregistryUrl && !"".equals(xregistryUrl)) {
-        // try {
-        // this.engine.getConfiguration().setXRegistryURL(new URI(xregistryUrl));
-        // } catch (URISyntaxException e) {
-        // this.engine.getGUI().getErrorWindow().error(e);
-        // }
-        // }
-
         final String gFacUrl = (String) this.gfacUrlListField.getSelectedItem();
         if (null != gFacUrl && !"".equals(gFacUrl)) {
             try {
@@ -385,27 +347,7 @@ public class DynamicWorkflowRunnerWindow {
          * Load host description from xregistry and add to interpreter
          */
         LeadResourceMapping mapping = null;
-        // String host = this.resourceSelectionComboBox.getText();
-        // if (host != null && !host.isEmpty()) {
-        // XRegistryAccesser xregistryAccesser = new XRegistryAccesser(this.engine);
-        //
-        // HostDescriptionRegistrationWindow hostWindow = HostDescriptionRegistrationWindow.getInstance();
-        //
-        // if (!hostWindow.isEngineSet()) {
-        // hostWindow.setXBayaEngine(this.engine);
-        // }
-        //
-        // HostBean hostBean = xregistryAccesser.getHostBean(host);
-        //
-        // mapping = new LeadResourceMapping(host);
-        // try {
-        // mapping.setGatekeeperEPR(new URI(hostBean.getGateKeeperendPointReference()));
-        // } catch (Exception e) {
-        // this.engine.getGUI().getErrorWindow().error(e);
-        // }
-        //
-        // }
-
+        
         final LeadResourceMapping resourceMapping = mapping;
         final String topicString = topic;
         new Thread() {

@@ -66,8 +66,6 @@ public abstract class WorkflowClient extends EventProducer {
 
     protected URI engineURL;
 
-    String xregistryURL;
-
     // ===========================================================================
     // Concrete Methods
     // ===========================================================================
@@ -249,8 +247,6 @@ public abstract class WorkflowClient extends EventProducer {
     public abstract WsdlDefinitions start(final GcInstance instance) throws WorkflowEngineException;
 
     public abstract void connect() throws WorkflowEngineException;
-
-    public abstract void setXRegistryUrl(URI xRegistryURL);
 
     public abstract void setXBayaEngine(XBayaEngine xBayaEngine);
 
