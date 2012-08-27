@@ -3,7 +3,7 @@ create table Experiment_Data
 	experiment_ID varchar(255),
 	name varchar(255),
 	PRIMARY KEY (experiment_ID)
-)
+);
 
 create table Workflow_Data
 (
@@ -15,7 +15,7 @@ create table Workflow_Data
        last_update_time TIMESTAMP DEFAULT now() on update now(),
        PRIMARY KEY(workflow_instanceID),
        FOREIGN KEY (experiment_ID) REFERENCES Experiment_Data(experiment_ID) ON DELETE CASCADE
-)
+);
 
 create table Node_Data
 (
@@ -29,7 +29,7 @@ create table Node_Data
        last_update_time TIMESTAMP DEFAULT now() on update now(),
        PRIMARY KEY(workflow_instanceID, node_id),
        FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID) ON DELETE CASCADE
-)
+);
 
 create table Gram_Data
 (
@@ -39,4 +39,4 @@ create table Gram_Data
        invoked_host varchar(255),
        PRIMARY KEY(workflow_instanceID, node_id),
        FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID) ON DELETE CASCADE
-)
+);

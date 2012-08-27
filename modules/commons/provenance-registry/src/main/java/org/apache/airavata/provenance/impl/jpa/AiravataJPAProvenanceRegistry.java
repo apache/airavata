@@ -174,7 +174,26 @@ public class AiravataJPAProvenanceRegistry extends AiravataProvenanceRegistry{
 	public boolean saveWorkflowExecutionMetadata(String arg0, String arg1)
 			throws RegistryException {
 		// TODO Auto-generated method stub
-		return false;
+		EntityManager em = factory.createEntityManager();
+		em.getTransaction().begin();
+		Query q = em.createQuery("SELECT p FROM Experiment_Data p WHERE p.experiment_ID = :exp_ID");
+		q.setParameter("exp_ID", arg0.getExperimentID());
+		Experiment_Data eData = (Experiment_Data) q.getSingleResult();
+		
+		Workflow_Data wData = new Workflow_Data();
+		wData.setExperiment_Data(eData);
+		wData.setExperiment_Data(eData);
+		wData.setTemplate_name(arg0.getTemplateID());
+		wData.setWorkflow_instanceID(arg0.getWorkflowInstanceID());
+		wData.setStatus(arg0.getWorkflowStatus().toString());
+		wData.setStart_time(arg0.getStartTime());
+		
+		em.persist(wData);
+		
+		em.getTransaction().commit();
+		em.close();
+		
+		return true;
 	}
 
 	@Override
@@ -201,7 +220,26 @@ public class AiravataJPAProvenanceRegistry extends AiravataProvenanceRegistry{
 	public boolean saveWorkflowExecutionOutput(String arg0, WorkflowIOData arg1)
 			throws RegistryException {
 		// TODO Auto-generated method stub
-		return false;
+		EntityManager em = factory.createEntityManager();
+		em.getTransaction().begin();
+		
+		Query q = em.createQuery("select w from Workflow_Data w.workflow_instanceID = :workflow_ID");
+		q.setParameter("workflow_ID", arg0.getWorkflowInstanceId());
+		Workflow_Data wData = (Workflow_Data) q.getSingleResult();
+		
+		Node_Data nData = new Node_Data();
+		nData.setWorkflow_Data(wData);
+		nData.setNode_id(arg0.getNodeId());
+		nData.setInputs(arg0.getValue());
+		nData.setNode_type((arg0.getNodeType().toString()));
+		nData.setStatus(arg0.getNodeStatus().toString());
+		
+		em.persist(nData);
+	
+		em.getTransaction().commit();
+		em.close();
+		
+		return true;
 	}
 
 	@Override
@@ -241,7 +279,20 @@ public class AiravataJPAProvenanceRegistry extends AiravataProvenanceRegistry{
 	public boolean saveWorkflowExecutionServiceOutput(WorkflowServiceIOData arg0)
 			throws RegistryException {
 		// TODO Auto-generated method stub
-		return false;
+		
+		EntityManager em = factory.createEntityManager();
+		em.getTransaction().begin();
+		
+		Query q = em.createQuery("select w from Workflow_Data w.workflow_instanceID = :workflow_ID");
+		q.setParameter("workflow_ID", arg0);
+		Workflow_Data wData = (Workflow_Data) q.getSingleResult();
+		
+		wData.setStatus(arg1.toString());
+		
+		em.getTransaction().commit();
+		em.close();
+		
+		return true;
 	}
 
 	@Override
@@ -282,7 +333,24 @@ public class AiravataJPAProvenanceRegistry extends AiravataProvenanceRegistry{
 	public boolean saveWorkflowNodeGramData(WorkflowNodeGramData arg0)
 			throws RegistryException {
 		// TODO Auto-generated method stub
-		return false;
+		
+		EntityManager em = factory.createEntityManager();
+		em.getTransaction().begin();
+		
+		Query q = em.createQuery("select w from Workflow_Data w.workflow_instanceID = :workflow_ID");
+		q.setParameter("workflow_ID", arg0);
+		Workflow_Data wData = (Workflow_Data) q.getSingleResult();
+		
+		q = em.createQuery("SELECT p FROM Node_Data p WHERE p.workflow_Data = :workflow_data AND p.node_id = :node_ID");
+		q.setParameter("workflow_data", wData);
+		q.setParameter("node_ID", arg1);
+		Node_Data nData = (Node_Data) q.getSingleResult();
+		nData.setStatus(arg2.toString());
+		
+		em.getTransaction().commit();
+		em.close();
+		
+		return true;
 	}
 
 	@Override
