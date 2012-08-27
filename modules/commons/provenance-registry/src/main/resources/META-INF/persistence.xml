@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!--*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -18,7 +19,6 @@
  * under the License.
  *
 * -->
-<?xml version="1.0"?>
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
 	<persistence-unit name="airavata_provenance">
@@ -31,8 +31,8 @@
 			<property name="openjpa.ConnectionURL"
 				value="jdbc:mysql://localhost:3306/workflow_provenance" />
 			<property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver" />
-			<property name="openjpa.ConnectionUserName" value="test" />
-			<property name="openjpa.ConnectionPassword" value="test" />
+			<property name="openjpa.ConnectionUserName" value="airavata" />
+			<property name="openjpa.ConnectionPassword" value="airavata" />
 			<property name="openjpa.DynamicEnhancementAgent" value="true" />
 			<property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
 			<property name="openjpa.Log" value="SQL=TRACE" />
