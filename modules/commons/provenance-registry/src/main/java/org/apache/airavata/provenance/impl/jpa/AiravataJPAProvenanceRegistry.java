@@ -53,14 +53,12 @@ public class AiravataJPAProvenanceRegistry extends AiravataProvenanceRegistry{
 		this.factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
 	}
 
-	@Override
 	public List<ActualParameter> loadOutput(String arg0)
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public String saveOutput(String arg0, List<ActualParameter> arg1)
 			throws RegistryException {
 		// TODO Auto-generated method stub
@@ -218,7 +216,7 @@ public class AiravataJPAProvenanceRegistry extends AiravataProvenanceRegistry{
 		EntityManager em = factory.createEntityManager();
 		em.getTransaction().begin();
 		
-		Query q = em.createQuery("select w from Workflow_Data w.workflow_instanceID = :workflow_ID");
+		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
 		q.setParameter("workflow_ID", arg0.getWorkflowInstanceId());
 		Workflow_Data wData = (Workflow_Data) q.getSingleResult();
 		
@@ -245,7 +243,7 @@ public class AiravataJPAProvenanceRegistry extends AiravataProvenanceRegistry{
 		EntityManager em = factory.createEntityManager();
 		em.getTransaction().begin();
 		
-		Query q = em.createQuery("select w from Workflow_Data w.workflow_instanceID = :workflow_ID");
+		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
 		q.setParameter("workflow_ID", arg0);
 		Workflow_Data wData = (Workflow_Data) q.getSingleResult();
 		
@@ -265,7 +263,7 @@ public class AiravataJPAProvenanceRegistry extends AiravataProvenanceRegistry{
 		EntityManager em = factory.createEntityManager();
 		em.getTransaction().begin();
 		
-		Query q = em.createQuery("select w from Workflow_Data w.workflow_instanceID = :workflow_ID");
+		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
 		q.setParameter("workflow_ID", arg0);
 		Workflow_Data wData = (Workflow_Data) q.getSingleResult();
 		
@@ -299,7 +297,7 @@ public class AiravataJPAProvenanceRegistry extends AiravataProvenanceRegistry{
 		EntityManager em = factory.createEntityManager();
 		em.getTransaction().begin();
 		
-		Query q = em.createQuery("select w from Workflow_Data w.workflow_instanceID = :workflow_ID");
+		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
 		q.setParameter("workflow_ID", arg0);
 		Workflow_Data wData = (Workflow_Data) q.getSingleResult();
 		
@@ -334,7 +332,7 @@ public class AiravataJPAProvenanceRegistry extends AiravataProvenanceRegistry{
 		EntityManager em = factory.createEntityManager();
 		em.getTransaction().begin();
 		
-		Query q = em.createQuery("select w from Workflow_Data w.workflow_instanceID = :workflow_ID");
+		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
 		q.setParameter("workflow_ID", arg0);
 		Workflow_Data wData = (Workflow_Data) q.getSingleResult();
 		
