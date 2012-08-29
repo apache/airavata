@@ -94,6 +94,7 @@ public class WorkflowStatusUpdater {
         WorkflowRunTimeData workflowRunTimeData = new WorkflowRunTimeData(experimentID, workflowInstanceID, workflowTemplateID, currentTime,
                 WorkflowInstanceStatus.ExecutionStatus.STARTED, currentTime);
         try {
+            registry.saveWorkflowExecutionName(experimentID, workflowInstanceID);
             registry.saveWorkflowData(workflowRunTimeData);
         } catch (RegistryException e) {
             logger.error("Error saving Workflow Data !!");

@@ -138,7 +138,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 	private URL getXBayaPropertiesURL() {
 		return this.getClass().getClassLoader().getResource("xbaya.properties");
 	}
-	
+
     public void startUp(final ConfigurationContext configctx, AxisService service) {
     	new Thread(){
 			@Override
@@ -299,10 +299,11 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,topic,conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null, null, null);
         workflowInterpreterConfiguration.setGfacEmbeddedMode(gfacEmbeddedMode);
         workflowInterpreterConfiguration.setActOnProvenance(provenance);
-        listener = new WorkflowInterpretorEventListener(workflow, conf);
+        // WorkflowInterpreter object should create prior creation of Listener, because listener needs the threadlocal variable
         interpreter = new WorkflowInterpreter(workflowInterpreterConfiguration, new SSWorkflowInterpreterInteractorImpl());
+        listener = new WorkflowInterpretorEventListener(workflow, conf);
         try {
-            System.err.println("start listener set");
+             System.err.println("start listener set");
             listener.start();
         } catch (MonitorException e1) {
             e1.printStackTrace();
@@ -341,7 +342,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         try {
             interpreter.scheduleDynamically();
             System.err.println("Called the interpreter");
-        } catch (WorkflowException e) {
+        } catch (Exception e) {
             throw new WorkflowRuntimeException(e);
         } finally {
             /*

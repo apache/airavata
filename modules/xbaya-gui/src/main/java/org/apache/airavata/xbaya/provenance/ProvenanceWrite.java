@@ -177,7 +177,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 				try {
 					this.registry.saveWorkflowExecutionServiceInput(new WorkflowServiceIOData(
 							xsul5.XmlConstants.BUILDER.serializeToString(inputs),
-							experimentId, node.getID(), this.workflowName));
+							experimentId,experimentId, node.getID(), this.workflowName));
 				} catch (RegistryException e) {
 					throw new WorkflowException(e);
 				}
@@ -207,7 +207,7 @@ public final class ProvenanceWrite implements PredicatedExecutable {
 				}
 			}
             try {
-				this.registry.saveWorkflowExecutionServiceOutput(new WorkflowServiceIOData(xsul5.XmlConstants.BUILDER.serializeToString(outputs), experimentId, node.getID(),this.workflowName));
+				this.registry.saveWorkflowExecutionServiceOutput(new WorkflowServiceIOData(xsul5.XmlConstants.BUILDER.serializeToString(outputs), experimentId,experimentId, node.getID(),this.workflowName));
             } catch (RegistryException e) {
 				throw new WorkflowException(e);
 			}

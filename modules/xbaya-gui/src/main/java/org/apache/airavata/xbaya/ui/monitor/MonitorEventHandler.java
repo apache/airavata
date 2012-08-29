@@ -22,7 +22,9 @@
 package org.apache.airavata.xbaya.ui.monitor;
 
 import java.awt.Color;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.jcr.RepositoryException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -60,6 +63,7 @@ import org.apache.airavata.xbaya.provenance.WorkflowStatusUpdater;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
+import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
@@ -114,24 +118,33 @@ public class MonitorEventHandler implements ChangeListener {
 
     private Map<Node, LinkedList<ResourcePaintable>> resourcePaintableMap;
 
-    private WorkflowStatusUpdater workflowStatusUpdater;
+//    private WorkflowStatusUpdater workflowStatusUpdater;
 
-    private WorkflowNodeStatusUpdater workflowNodeStatusUpdater;
+//    private WorkflowNodeStatusUpdater workflowNodeStatusUpdater;
+
     /**
-     * Constructs a MonitorEventHandler.
-     *
-     * @param engine
-     * @param dataModel
+     * Model MonitorEventHandler
+     * @param xbayaGUI
      */
     public MonitorEventHandler(XBayaGUI xbayaGUI) {
         this.xbayaGUI=xbayaGUI;
         this.incorrectWorkflowIDs = Collections.synchronizedSet(new HashSet<URI>());
         this.triedWorkflowIDs = Collections.synchronizedSet(new HashSet<URI>());
         this.resourcePaintableMap = new HashMap<Node, LinkedList<ResourcePaintable>>();
-        this.workflowNodeStatusUpdater = new WorkflowNodeStatusUpdater(WorkflowInterpreter.getWorkflowInterpreterConfiguration().
-                getConfiguration().getJcrComponentRegistry().getRegistry());
-        this.workflowStatusUpdater = new WorkflowStatusUpdater(WorkflowInterpreter.getWorkflowInterpreterConfiguration().
-                getConfiguration().getJcrComponentRegistry().getRegistry());
+//        try {
+//            if (this.getClass().getClassLoader().getResource("xbaya.properties") != null) {
+//                this.workflowNodeStatusUpdater =
+//                        new WorkflowNodeStatusUpdater(XBayaUtil.getRegistry(this.getClass().getClassLoader().getResource("xbaya.properties")));
+//                this.workflowStatusUpdater =
+//                        new WorkflowStatusUpdater(XBayaUtil.getRegistry(this.getClass().getClassLoader().getResource("xbaya.properties")));
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        } catch (RepositoryException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        } catch (URISyntaxException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
     }
 
     /**
@@ -304,10 +317,10 @@ public class MonitorEventHandler implements ChangeListener {
         // logger.info("type: " + type);
         if (type == MonitorUtil.EventType.WORKFLOW_INVOKED) {
             workflowStarted(graph, forward);
-            workflowStatusUpdater.workflowStarted(event.getExperimentID());
+//            workflowStatusUpdater.workflowStarted(event.getExperimentID());
         } else if (type == MonitorUtil.EventType.WORKFLOW_TERMINATED) {
             workflowFinished(graph, forward);
-            workflowStatusUpdater.workflowFinished(event.getExperimentID());
+//            workflowStatusUpdater.workflowFinished(event.getExperimentID());
         } else if (type == EventType.INVOKING_SERVICE
         // TODO this should be removed when GPEL sends all notification
         // correctly.
@@ -316,7 +329,7 @@ public class MonitorEventHandler implements ChangeListener {
                 logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeStarted(node, forward);
-                workflowNodeStatusUpdater.workflowStarted(event.getExperimentID(), event.getNodeID());
+//                workflowNodeStatusUpdater.workflowStarted(event.getExperimentID(), event.getNodeID());
             }
         } else if (type == MonitorUtil.EventType.RECEIVED_RESULT
         // TODO this should be removed when GPEL sends all notification
@@ -326,7 +339,7 @@ public class MonitorEventHandler implements ChangeListener {
                 logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeFinished(node, forward);
-                workflowNodeStatusUpdater.workflowFinished(event.getExperimentID(), event.getNodeID());
+//                workflowNodeStatusUpdater.workflowFinished(event.getExperimentID(), event.getNodeID());
             }
 
         } else if (type == EventType.INVOKING_SERVICE_FAILED || type == EventType.RECEIVED_FAULT
@@ -336,14 +349,14 @@ public class MonitorEventHandler implements ChangeListener {
                 logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeFailed(node, forward);
-                workflowNodeStatusUpdater.workflowFailed(event.getExperimentID(), event.getNodeID());
+//                workflowNodeStatusUpdater.workflowFailed(event.getExperimentID(), event.getNodeID());
             }
         } else if (type == MonitorUtil.EventType.RESOURCE_MAPPING) {
             if (node == null) {
                 logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeResourceMapped(node, event.getEvent(), forward);
-                workflowNodeStatusUpdater.workflowRunning(event.getExperimentID(), event.getNodeID());
+//                workflowNodeStatusUpdater.workflowRunning(event.getExperimentID(), event.getNodeID());
             }
         } else {
             // Ignore the rest.
