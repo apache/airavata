@@ -36,21 +36,23 @@ public class WorkflowServiceIOData extends WorkflowIOData {
     public WorkflowServiceIOData() {
 	}
     
-	public WorkflowServiceIOData(String data, String experimentId, String workflowId,
+	public WorkflowServiceIOData(String data, String experimentId,String workflowInstanceID, String workflowId,
             String nodeId,String workflowName) {
 		super(nodeId,data);
 		setExperimentId(experimentId);
+        setWorkflowInstanceId(workflowInstanceID);
 		setWorkflowId(workflowId);
 		setWorkflowName(workflowName);
 	}
 
-	public WorkflowServiceIOData(String data, String experimentId,
+	public WorkflowServiceIOData(String data, String experimentId,String workflowInstanceID,
             String nodeId,String workflowName) {
-		this(data, experimentId, experimentId, nodeId, workflowName);
+		this(data, experimentId, experimentId,workflowInstanceID, nodeId, workflowName);
 	}
 
-    public WorkflowServiceIOData(String experimentId, String workflowName, String workflowId, WorkflowNodeType nodeType) {
+    public WorkflowServiceIOData(String experimentId,String workflowInstanceID, String workflowName, String workflowId, WorkflowNodeType nodeType) {
         this.experimentId = experimentId;
+        this.workflowInstanceId = workflowInstanceID;
         this.workflowName = workflowName;
         this.workflowId = workflowId;
         this.nodeType = nodeType;
