@@ -21,8 +21,10 @@
 
 package org.apache.airavata.xbaya.ui.graph;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -324,8 +326,11 @@ public abstract class NodeGUI implements GraphPieceGUI {
 		AffineTransform affineTransform = new AffineTransform();
 		affineTransform.translate(5,5);
 		Shape shadow = affineTransform.createTransformedShape(shape);
+		Composite oldComposite = g.getComposite();
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.65F));
 		g.setColor(Color.GRAY);
 		g.fill(shadow);
+		g.setComposite(oldComposite);
 		DrawUtils.gradientFillShape(g, getEndColor(paintBodyColor), paintBodyColor, shape);
 	}
 
