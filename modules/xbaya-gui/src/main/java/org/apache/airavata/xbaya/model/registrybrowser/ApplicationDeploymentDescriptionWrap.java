@@ -54,7 +54,11 @@ public class ApplicationDeploymentDescriptionWrap {
     }
 
     public ServiceDescription getServiceDescription() throws RegistryException{
-        return getRegistry().getServiceDescription(getService());
+        ServiceDescription desc = getRegistry().getServiceDescription(getService());
+        if(desc!=null){
+        	return desc;
+        }
+        throw new RegistryException(new Exception("Service Description not found in registry."));
     }
 
     public void setService(String service) {

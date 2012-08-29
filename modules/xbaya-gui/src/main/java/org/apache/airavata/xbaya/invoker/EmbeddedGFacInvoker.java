@@ -233,6 +233,9 @@ public class EmbeddedGFacInvoker implements Invoker{
             this.inputNames.add(name);
             this.inputValues.add(value);
             ServiceDescription serviceDescription = registry.getServiceDescription(this.serviceName);
+            if(serviceDescription==null){
+            	throw new RegistryException(new Exception("Service Description not found in registry."));
+            }
             ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
             for (Parameter parameter : serviceDescriptionType.getInputParametersArray()) {
                 //todo this implementation doesn't work when there are n number of nodes connecting .. need to fix

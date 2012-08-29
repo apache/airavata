@@ -173,6 +173,9 @@ public class GFacMessageReciever implements MessageReceiver {
         WorkflowContextHeaderBuilder.setCurrentContextHeader(document.getContextHeader());
         Map<Parameter,ActualParameter> actualParameters = new LinkedHashMap<Parameter,ActualParameter>();
         ServiceDescription serviceDescription = getRegistry(context).getServiceDescription(serviceName);
+        if(serviceDescription==null){
+        	throw new RegistryException(new Exception("Service Description not found in registry."));
+        }
         ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
         for (Parameter parameter : serviceDescriptionType.getInputParametersArray()) {
             OMElement element = input.getFirstChildWithName(new QName(null,parameter.getParameterName().replaceAll(WSDLConstants.HYPHEN, WSDLConstants.HYPHEN_REPLACEMENT)));

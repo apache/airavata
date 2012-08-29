@@ -43,7 +43,11 @@ public class ApplicationManagerImpl implements ApplicationManager {
 	public ServiceDescription getServiceDescription(String serviceId)
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistry().getServiceDescription(serviceId);
+			ServiceDescription desc = getClient().getRegistry().getServiceDescription(serviceId);
+			if(desc!=null){
+	        	return desc;
+	        }
+			throw new AiravataAPIInvocationException(new Exception("Service Description not found in registry."));
 		} catch (RegistryException e) {
 			throw new AiravataAPIInvocationException(e);
 		}
