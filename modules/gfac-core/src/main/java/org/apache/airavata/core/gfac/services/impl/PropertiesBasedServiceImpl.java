@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.registry.api.impl.JCRRegistry;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
@@ -119,7 +120,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     /**
      * Constructor with passing file
      *
-     * @param prop
+     * @param fileName
      */
     public PropertiesBasedServiceImpl(String fileName) {
         this.fileName = fileName;
@@ -237,8 +238,8 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                 try {
                     // TODO pass the url of the registry as the first parameter
                     this.registryService = new AiravataJCRRegistry(null, jcrClass, userName, password, map);
-                } catch (javax.jcr.RepositoryException e) {
-                    e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+                } catch (RegistryException e) {
+                    e.printStackTrace();  // To change body of catch statement use File | Settings | File Templates.
                 }
 
                 log.info("Default registry service is created");
@@ -349,7 +350,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
      * @param propertyName
      * @param required
      * @return
-     * @throws GfacException
+     * @throws ServiceException
      */
     private String loadFromProperty(String propertyName, boolean required) throws ServiceException {
         String propValue = this.config.getString(propertyName);
@@ -363,7 +364,11 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     /**
 	 *
-	 */
+     * @param propertyName
+     * @param type
+     * @return
+     * @throws org.apache.airavata.core.gfac.exception.ServiceException
+     */
     @SuppressWarnings("unchecked")
     private <T> T[] loadClassFromProperties(String propertyName, Class<? extends ExitableChain> type)
             throws ServiceException {

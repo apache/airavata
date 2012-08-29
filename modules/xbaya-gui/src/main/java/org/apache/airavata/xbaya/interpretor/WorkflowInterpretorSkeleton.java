@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -126,7 +125,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             jcrURL = (String) properties.get(JCR_URL);
             jcrComponentRegistry = new JCRComponentRegistry(new URI(jcrURL),jcrUserName,jcrPassword);
             return jcrComponentRegistry.getRegistry();
-        } catch (RepositoryException e) {
+        } catch (RegistryException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (URISyntaxException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -178,13 +177,11 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                                     registry.saveHostDescription(host);
                                 }
                             }
-		                } catch (RepositoryException e) {
+		                } catch (RegistryException e) {
 		                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		                } catch (URISyntaxException e) {
 		                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-		                } catch (RegistryException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        }
+		                }
                     }else{
 		                provenance = false;
 		            }

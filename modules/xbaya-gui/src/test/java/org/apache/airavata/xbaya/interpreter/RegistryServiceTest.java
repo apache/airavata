@@ -76,7 +76,7 @@ public class RegistryServiceTest {
             config.put("org.apache.jackrabbit.repository.home","target");
             jcrRegistry = new AiravataJCRRegistry(null, "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin", "admin",
                     config);
-        } catch (RepositoryException e) {
+        } catch (RegistryException e) {
             fail("Failed creating the JCR Registry");
         }
 

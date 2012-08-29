@@ -28,6 +28,7 @@ import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.AiravataClientConfiguration;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.ExecutionManager;
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
@@ -126,7 +127,11 @@ public class ExecutionManagerImpl implements ExecutionManager {
     public DefaultExecutionContext createDefaultExecutionContext() throws AiravataAPIInvocationException {
         DefaultExecutionContext ec = new DefaultExecutionContext();
 //        ec.addNotifiable(new LoggingNotification());
-        ec.setRegistryService(getClient().getRegistry());
+        try {
+            ec.setRegistryService(getClient().getRegistry());
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
         return  ec;
     }
 

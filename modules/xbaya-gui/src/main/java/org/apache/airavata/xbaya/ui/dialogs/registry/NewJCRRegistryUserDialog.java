@@ -32,6 +32,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.registry.api.user.AuthorizableExistsException;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -122,6 +123,9 @@ public class NewJCRRegistryUserDialog {
             } catch (RepositoryException e) {
                 e.printStackTrace();
                 engine.getGUI().getErrorWindow().error(e.getMessage());
+            } catch (RegistryException e) {
+                e.printStackTrace();
+                engine.getGUI().getErrorWindow().error(e.getMessage());
             }
         } else {
             engine.getGUI().getErrorWindow().error(status);
@@ -167,7 +171,6 @@ public class NewJCRRegistryUserDialog {
         infoPanel.layout(4, 2, GridPanel.WEIGHT_NONE, 1);
 
         urlTextField.getSwingComponent().addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent event) {
                 updateURL();
                 updateStatus();
@@ -176,7 +179,6 @@ public class NewJCRRegistryUserDialog {
         });
 
         usernameTextField.getSwingComponent().addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent event) {
                 updateUsername();
                 updateStatus();
@@ -185,7 +187,6 @@ public class NewJCRRegistryUserDialog {
         });
 
         passwordTextField.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent event) {
                 updatePassword();
                 updateStatus();
@@ -193,7 +194,6 @@ public class NewJCRRegistryUserDialog {
         });
 
         confirmPasswordTextField.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent event) {
                 updatePassword();
                 updateStatus();
