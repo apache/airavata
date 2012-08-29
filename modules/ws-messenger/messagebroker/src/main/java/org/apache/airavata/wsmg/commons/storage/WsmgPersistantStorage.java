@@ -325,6 +325,21 @@ public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
             } else {
                 throw new RuntimeException("MAX_ID Table is not init, redeploy the service !!!");
             }
+            
+            /**
+             * Before executing the SQL_INSERT_STATEMENT query, we need to unlock 
+             * MaxIDTable and MinIDTable since we are going to insert data to another 
+             * table, disQ. If we do not unlock tables, insert query fails in MySQL. But 
+             * in Derby, this will execute without any issues even without unlocking 
+             * tables. Since it fails with MySQL, we need to unlock the tables 
+             * before executing the insert query.
+             */
+            try{
+            	 unLockTables(connection);
+            }catch (SQLException sql) {
+                logger.error("Cannot Unlock Table", sql);
+            }
+           
 
             /*
              * After update MAX_ID put data into queue table
