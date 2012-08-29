@@ -73,7 +73,7 @@ public class MessageBoxDB {
     public static final String SQL_DELETE_MSGBOX_STATEMENT = "DELETE FROM " + MSGBOX_TABLENAME + " WHERE msgboxid = ?";
 
     public static final String SQL_DELETE_ANCIENT_STATEMENT = "DELETE FROM " + MSGBOX_TABLENAME
-            + " WHERE {fn TIMESTAMPDIFF(SQL_TSI_FRAC_SECOND, time, CURRENT_TIMESTAMP) } > ?";
+            + " WHERE {fn TIMESTAMPDIFF(SQL_TSI_SECOND, time, CURRENT_TIMESTAMP) }*1000000 > ?";
 
     private JdbcStorage db;
 
