@@ -44,15 +44,14 @@ public class JCRComponentRegistry extends ComponentRegistry {
 
     private AiravataJCRRegistry registry;
 
-    public JCRComponentRegistry(URI url, String username, String password) throws RepositoryException {
+    public JCRComponentRegistry(URI url, String username, String password) throws RegistryException {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("org.apache.jackrabbit.repository.uri", url.toString());
-        try {
-            this.registry = new AiravataJCRRegistry(url, "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", username,
-                    password, map);
-        } catch (RepositoryException e) {
-            throw e;
-        }
+
+        this.registry = new AiravataJCRRegistry(url,
+                "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory",
+                username, password, map);
+
     }
 
     static {

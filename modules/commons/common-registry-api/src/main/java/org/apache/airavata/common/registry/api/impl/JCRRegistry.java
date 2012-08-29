@@ -46,6 +46,7 @@ import javax.jcr.observation.EventIterator;
 import javax.jcr.observation.EventListener;
 
 import org.apache.airavata.common.registry.api.Registry;
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.registry.api.user.UserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,7 @@ public class JCRRegistry extends Observable implements Registry{
     
     
     public JCRRegistry(URI repositoryURI, String className, String user, String pass, Map<String, String> map)
-            throws RepositoryException {
+            throws RegistryException {
         try {
             /*
              * Load the configuration from properties file at this level and create the object
@@ -97,12 +98,14 @@ public class JCRRegistry extends Observable implements Registry{
             definiteSessionTimeout();
             setupRegistryModifyHandler();
         } catch (ClassNotFoundException e) {
-            log.error("Error class path settting", e);
+            log.error("Error class path setting", e);
+            throw new RegistryException("Error class path setting", e);
         } catch (RepositoryException e) {
             log.error("Error connecting Remote Registry instance", e);
-            throw e;
+            throw new RegistryException("Error connecting Remote Registry instance", e);
         } catch (Exception e) {
             log.error("Error init", e);
+            throw new RegistryException("Error init", e);
         }
     }
 

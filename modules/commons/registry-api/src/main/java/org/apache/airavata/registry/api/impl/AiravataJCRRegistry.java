@@ -98,7 +98,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 
     public AiravataJCRRegistry(URI repositoryURI, String className,
 			String user, String pass, Map<String, String> map)
-			throws RepositoryException {
+            throws RegistryException {
 		super(repositoryURI, className, user, pass, map);
         setupProvenanceRegistry();
 	}

@@ -471,36 +471,33 @@ public class AiravataClient implements AiravataAPI {
 		AiravataClient.workflow = workflow;
 	}
 
-	public AiravataRegistry getRegistry() {
+	public AiravataRegistry getRegistry() throws RegistryException {
 		if (registry == null) {
 			try {
 				URL jcrURL = getClientConfiguration().getJcrURL();
 				URI uri = jcrURL.toURI();
 				String jcrUsername = getClientConfiguration().getJcrUsername();
 				String jcrPassword = getClientConfiguration().getJcrPassword();
-				registry=getRegistryObject(uri, jcrUsername, jcrPassword);
+				registry = getRegistryObject(uri, jcrUsername, jcrPassword);
 			} catch (URISyntaxException e) {
-				e.printStackTrace();
-			} catch (RepositoryException e) {
-				e.printStackTrace();
+				throw new RegistryException("Error in uri..", e);
 			}
-		}
+        }
 		return registry;
 	}
 
-	private static AiravataRegistry getRegistryObject(URI uri, String jcrUsername, String jcrPassword) throws RepositoryException {
-		try {
-			HashMap<String, String> map = new HashMap<String, String>();
-			map.put("org.apache.jackrabbit.repository.uri", uri.toString());
-			AiravataRegistry registry = new AiravataJCRRegistry(
-					uri,
-					"org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory",
-					jcrUsername,
-					jcrPassword, map);
-			return registry;
-		} catch (RepositoryException e) {
-			throw e;
-		}
+	private static AiravataRegistry getRegistryObject(URI uri,
+                                                      String jcrUsername,
+                                                      String jcrPassword)
+            throws RegistryException {
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("org.apache.jackrabbit.repository.uri", uri.toString());
+        AiravataRegistry registry = new AiravataJCRRegistry(
+                uri,
+                "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory",
+                jcrUsername,
+                jcrPassword, map);
+        return registry;
 	}
 
 	public AiravataClientConfiguration getClientConfiguration() {
@@ -728,7 +725,6 @@ public class AiravataClient implements AiravataAPI {
 		System.out.println(topicId);
 	}
 
-	@Override
 	public AiravataManager getAiravataManager() {
 		if (airavataManagerImpl==null) {
 			airavataManagerImpl = new AiravataManagerImpl(this);
@@ -736,7 +732,6 @@ public class AiravataClient implements AiravataAPI {
 		return airavataManagerImpl;
 	}
 
-	@Override
 	public ApplicationManager getApplicationManager() {
 		if (applicationManagerImpl==null) {
 			applicationManagerImpl = new ApplicationManagerImpl(this);
@@ -744,7 +739,6 @@ public class AiravataClient implements AiravataAPI {
 		return applicationManagerImpl;
 	}
 
-	@Override
 	public WorkflowManager getWorkflowManager() {
 		if (workflowManagerImpl==null) {
 			workflowManagerImpl = new WorkflowManagerImpl(this);
@@ -752,7 +746,6 @@ public class AiravataClient implements AiravataAPI {
 		return workflowManagerImpl;
 	}
 
-	@Override
 	public ProvenanceManager getProvenanceManager() {
 		if (provenanceManagerImpl==null) {
 			provenanceManagerImpl = new ProvenanceManagerImpl(this);
@@ -760,7 +753,6 @@ public class AiravataClient implements AiravataAPI {
 		return provenanceManagerImpl;
 	}
 
-	@Override
 	public UserManager getUserManager() {
 		if (userManagerImpl==null) {
 			userManagerImpl = new UserManagerImpl(this);
@@ -768,7 +760,6 @@ public class AiravataClient implements AiravataAPI {
 		return userManagerImpl;
 	}
 
-	@Override
 	public ExecutionManager getExecutionManager() {
 		if (executionManagerImpl==null) {
 			executionManagerImpl = new ExecutionManagerImpl(this);
@@ -776,7 +767,6 @@ public class AiravataClient implements AiravataAPI {
 		return executionManagerImpl;
 	}
 
-	@Override
 	public String getCurrentUser() {
 		return currentUser;
 	}
@@ -800,7 +790,6 @@ public class AiravataClient implements AiravataAPI {
         return null;
     }
     
-	@Override
 	public Version getVersion() {
 		return API_VERSION;
 	}
