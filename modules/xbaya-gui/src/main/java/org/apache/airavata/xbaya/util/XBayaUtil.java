@@ -23,20 +23,14 @@ package org.apache.airavata.xbaya.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.net.*;
+import java.util.*;
 
+import javax.jcr.RepositoryException;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataPort;
@@ -73,6 +67,9 @@ import xsul5.XmlConstants;
 public class XBayaUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(XBayaUtil.class);
+    public static final String JCR_USER = "jcr.username";
+    public static final String JCR_PASS = "jcr.password";
+    public static final String JCR_URL = "jcr.url";
 
     public static LeadContextHeader buildLeadContextHeader(final XBayaEngine engine,
             MonitorConfiguration monitorConfiguration, String nodeId, LeadResourceMapping resourceMapping)
@@ -337,5 +334,13 @@ public class XBayaUtil {
 		}
 		return parameters;
 	}
+
+    public static AiravataRegistry getRegistry(URL url) throws IOException, RepositoryException, URISyntaxException {
+        Properties properties = new Properties();
+        properties.load(url.openStream());
+        JCRComponentRegistry jcrComponentRegistry = new JCRComponentRegistry(new URI((String) properties.get(JCR_URL)),
+                (String) properties.get(JCR_USER),(String) properties.get(JCR_PASS));
+        return jcrComponentRegistry.getRegistry();
+    }
 
 }

@@ -23,6 +23,7 @@ package org.apache.airavata.xbaya.provenance;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +36,10 @@ public class WorkflowNodeStatusUpdater {
         this.registry = registry;
     }
 
-    public boolean workflowStarted(String workflowInstanceID,String nodeID){
+    public boolean workflowStarted(String workflowInstanceID,String nodeID,String inputs,String workflowID){
         try {
+            WorkflowServiceIOData workflowServiceIOData = new WorkflowServiceIOData(inputs, workflowInstanceID,workflowInstanceID, workflowID, nodeID, null);
+            registry.saveWorkflowExecutionServiceInput(workflowServiceIOData);                                                                                             registry.saveWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.STARTED);
             registry.saveWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.STARTED);
         } catch (RegistryException e) {
             logger.error("Error updating Wokflow Node status !!");
@@ -55,8 +58,10 @@ public class WorkflowNodeStatusUpdater {
         return true;
     }
 
-    public boolean workflowFinished(String workflowInstanceID,String nodeID){
+    public boolean workflowFinished(String workflowInstanceID,String nodeID,String inputs,String workflowID){
         try {
+            WorkflowServiceIOData workflowServiceIOData = new WorkflowServiceIOData(inputs, workflowInstanceID,workflowInstanceID, workflowID, nodeID, null);
+            registry.saveWorkflowExecutionServiceOutput(workflowServiceIOData);
             registry.saveWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.FINISHED);
         } catch (RegistryException e) {
             logger.error("Error updating Wokflow Node status !!");

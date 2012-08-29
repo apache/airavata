@@ -179,14 +179,14 @@ public class WorkflowInterpreter {
 			}
 
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.RUNNING);
-			if (this.config.isActOnProvenance()) {
-				try {
-					this.getConfig().getConfiguration().getJcrComponentRegistry().getRegistry()
-							.saveWorkflowExecutionStatus(this.config.getTopic(), ExecutionStatus.STARTED);
-				} catch (RegistryException e) {
-					throw new WorkflowException(e);
-				}
-			}
+//			if (this.config.isActOnProvenance()) {
+//				try {
+//					this.getConfig().getConfiguration().getJcrComponentRegistry().getRegistry()
+//							.saveWorkflowExecutionStatus(this.config.getTopic(), ExecutionStatus.STARTED);
+//				} catch (Exception e) {
+//					throw new WorkflowException(e);
+//				}
+//			}
 			ArrayList<Node> inputNodes = this.getInputNodesDynamically();
 			Object[] values = new Object[inputNodes.size()];
 			String[] keywords = new String[inputNodes.size()];
