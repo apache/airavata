@@ -23,6 +23,7 @@ package org.apache.airavata.xbaya.provenance;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,10 @@ public class WorkflowNodeStatusUpdater {
     public boolean workflowStarted(String workflowInstanceID,String nodeID,String inputs,String workflowID){
         try {
             WorkflowServiceIOData workflowServiceIOData = new WorkflowServiceIOData(inputs, workflowInstanceID,workflowInstanceID, workflowID, nodeID, null);
+            //todo we currently save only service nodes
+            WorkflowNodeType workflowNodeType = new WorkflowNodeType();
+            workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
+            workflowServiceIOData.setNodeType(workflowNodeType);
             registry.saveWorkflowExecutionServiceInput(workflowServiceIOData);                                                                                             registry.saveWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.STARTED);
             registry.saveWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.STARTED);
         } catch (RegistryException e) {
@@ -61,6 +66,8 @@ public class WorkflowNodeStatusUpdater {
     public boolean workflowFinished(String workflowInstanceID,String nodeID,String inputs,String workflowID){
         try {
             WorkflowServiceIOData workflowServiceIOData = new WorkflowServiceIOData(inputs, workflowInstanceID,workflowInstanceID, workflowID, nodeID, null);
+             WorkflowNodeType workflowNodeType = new WorkflowNodeType();
+            workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
             registry.saveWorkflowExecutionServiceOutput(workflowServiceIOData);
             registry.saveWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.FINISHED);
         } catch (RegistryException e) {

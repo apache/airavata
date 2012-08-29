@@ -388,7 +388,7 @@ public class WorkflowInterpreter {
 				NodeController.getGUI(node).setBodyColor(NodeState.FINISHED.color);
 				return true;
 			} else {
-				writeProvenanceLater(node);
+//				writeProvenanceLater(node);
 			}
 		} catch (Exception e) {
 			throw new WorkflowRuntimeException(e);
