@@ -367,6 +367,9 @@ public class MonitorUtil {
         if (idElement != null) {
             nodeID = idElement.attributeValue(WOR_NS, WORKFLOW_NODE_ID_ATTRIBUTE);
         }
+        if(nodeID == null){
+           nodeID = event.element(NOTIFICATION_SOURCE_TAG).attributeValue(WOR_NS, WORKFLOW_NODE_ID_ATTRIBUTE);
+        }
         if (nodeID == null) {
             nodeID = "";
         }
@@ -381,10 +384,12 @@ public class MonitorUtil {
         if (event == null) {
             throw new IllegalArgumentException("null");
         }
-        XmlElement idElement = getIDElement(event);
+        XmlElement idElement = event.element(WOR_NS,NOTIFICATION_SOURCE_TAG);
         String nodeID = null;
         if (idElement != null) {
             nodeID = idElement.attributeValue(WOR_NS, WORKFLOW_EXPERIMENT_ID);
+        }if(nodeID == null){
+           nodeID = event.element(NOTIFICATION_SOURCE_TAG).attributeValue(WOR_NS, WORKFLOW_EXPERIMENT_ID);
         }
         if (nodeID == null) {
             nodeID = "";
@@ -603,8 +608,8 @@ public class MonitorUtil {
         case COMPUTATION_DURATION:
         case RESOURCE_MAPPING:
         case PUBLISH_URL:
-            return event.element(NOTIFICATION_SOURCE_TAG);
         case INVOKING_SERVICE:
+                return event.element(RECEIVER_TAG);
         case INVOKING_SERVICE_SUCCEEDED: // TODO make sure
         case INVOKING_SERVICE_FAILED: // TODO make sure
             return event.element(RECEIVER_TAG);
