@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.core.gfac;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -81,6 +82,9 @@ public class GfacAPI {
     * Add workflow context
     */
         ServiceDescription serviceDescription = gfacConfig.getRegistry().getServiceDescription(jobContext.getServiceName());
+        if(serviceDescription==null){
+        	throw new RegistryException(new Exception("Service Description not found in registry."));
+        }
         ServiceDescriptionType serviceDescriptionType = serviceDescription.getType();
         ParameterContextImpl inputParam = new ParameterContextImpl();
         WorkflowContextImpl workflowContext = new WorkflowContextImpl();

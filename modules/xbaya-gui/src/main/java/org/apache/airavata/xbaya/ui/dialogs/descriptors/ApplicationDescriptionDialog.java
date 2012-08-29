@@ -158,7 +158,11 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         iniGUI();
         if (originalService!=null){
     		try {
-				setServiceDescription(getRegistry().getServiceDescription(originalService));
+    			ServiceDescription disc = getRegistry().getServiceDescription(originalService);
+    			if(disc!=null){
+    				setServiceDescription(disc);
+    			}
+    			throw new RegistryException(new Exception("Service Description not found in registry."));
 			} catch (RegistryException e) {
 				e.printStackTrace();
 			}
