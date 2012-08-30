@@ -381,6 +381,12 @@
             <artifactId>airavata-common-registry-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+	<dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-provenance-registry</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15</artifactId>

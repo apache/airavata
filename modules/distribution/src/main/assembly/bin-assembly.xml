@@ -162,6 +162,20 @@
                 <include>host.xml</include>
             </includes>
         </fileSet>
+	 <fileSet>
+            <directory>../distribution/src/main/resources/conf</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
+                <include>persistence.xml</include>
+            </includes>
+        </fileSet>
+	 <fileSet>
+            <directory>../distribution/src/main/resources/conf</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
+                <include>provenance.sql</include>
+            </includes>
+        </fileSet>
 
         <!--fileSet>
             <directory>../../samples/simple-math-service/target</directory>
@@ -257,6 +271,7 @@
                 <include>org.apache.airavata:airavata-gfac-schema-utils</include>
                 <include>org.apache.airavata:airavata-common-utils</include>
                 <include>org.apache.airavata:airavata-workflow-model-core:jar</include>
+                <include>org.apache.airavata:airavata-provenance-registry:jar</include>
                 <include>edu.berkeley:yfilter</include>
                 <include>javax.servlet:servlet-api</include>
                 <include>org.bouncycastle:bcprov-jdk15</include>
