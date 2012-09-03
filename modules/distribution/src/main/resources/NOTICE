@@ -168,3 +168,19 @@ Portions of this software was originally based on the following:
      - voluntary contributions made by Ovidiu Predescu (ovidiu@cup.hp.com) on behalf of the 
        Apache Software Foundation and was originally developed at Hewlett Packard Company. 
 ================================================================================================
+Apache  OpenJPA Notice: 
+
+OpenJPA includes software developed by the SERP project
+Copyright (c) 2002-2006, A. Abram White. All rights reserved.
+
+OpenJPA includes the persistence and orm schemas from the JPA specifications.
+Copyright 2005-2009 Sun Microsystems, Inc. All rights reserved.
+OpenJPA elects to include this software in this distribution under the
+CDDL license.  You can obtain a copy of the License at:
+    https://glassfish.dev.java.net/public/CDDL+GPL.html
+The source code is available at:
+    https://glassfish.dev.java.net/source/browse/glassfish/
+
+OpenJPA includes software written by Miroslav Nachev
+OpenJPA uses test code written by Charles Tillman.
+================================================================================================
