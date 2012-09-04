@@ -106,12 +106,12 @@ public class JCRRegistryWindow {
         }
         XBayaConfiguration configuration = this.engine.getConfiguration();
 
-        engine.updateXBayaConfigurationServiceURLs();
 
         configuration.setJcrComponentRegistry(registry);
         configuration.setRegigstryUserName(username);
         configuration.setRegistryPassphrase(password);
         configuration.setRegistryURL(url);
+        engine.updateXBayaConfigurationServiceURLs();
         hide();
 
 //        this.loader.load(registry);
