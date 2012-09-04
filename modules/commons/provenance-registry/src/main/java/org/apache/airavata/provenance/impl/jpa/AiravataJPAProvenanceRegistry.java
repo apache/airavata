@@ -21,6 +21,7 @@
 package org.apache.airavata.provenance.impl.jpa;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -34,13 +35,8 @@ import org.apache.airavata.provenance.model.Experiment_Data;
 import org.apache.airavata.provenance.model.Node_Data;
 import org.apache.airavata.provenance.model.Workflow_Data;
 import org.apache.airavata.registry.api.AiravataProvenanceRegistry;
-import org.apache.airavata.registry.api.workflow.WorkflowExecution;
-import org.apache.airavata.registry.api.workflow.WorkflowIOData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
-import org.apache.airavata.registry.api.workflow.WorkflowRunTimeData;
-import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 
 public class AiravataJPAProvenanceRegistry extends AiravataProvenanceRegistry{
 	
@@ -117,7 +113,7 @@ public class AiravataJPAProvenanceRegistry extends AiravataProvenanceRegistry{
 	@Override
 	public WorkflowIOData getWorkflowExecutionOutput(String arg0, String arg1)
 			throws RegistryException {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
@@ -129,16 +125,23 @@ public class AiravataJPAProvenanceRegistry extends AiravataProvenanceRegistry{
 	}
 
 	@Override
-	public WorkflowInstanceStatus getWorkflowExecutionStatus(String arg0)
+	public WorkflowInstanceStatus getWorkflowExecutionStatus(String instanceID)
 			throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
+		EntityManager em = factory.createEntityManager();
+		em.getTransaction().begin();
+        Query q = em.createQuery("SELECT p FROM Workflow_Data p WHERE p.workflow_InstanceID = :workflow_InstanceID");
+        q.setParameter("workflow_InstanceID", instanceID);
+        Workflow_Data singleResult = (Workflow_Data) q.getSingleResult();
+        WorkflowInstanceStatus workflowInstanceStatus = new
+                WorkflowInstanceStatus(new WorkflowInstance(singleResult.getExperiment_Data().getExperiment_ID(),singleResult.getTemplate_name())
+                ,ExecutionStatus.valueOf(singleResult.getStatus()),new Date(singleResult.getLast_update_time().getTime()));
+        return workflowInstanceStatus;
 	}
 
 	@Override
 	public String getWorkflowExecutionUser(String arg0)
 			throws RegistryException {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
