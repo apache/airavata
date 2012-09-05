@@ -38,12 +38,14 @@ public interface DescriptorRegistry extends AiravataSubRegistry {
 	public void updateHostDescriptor(HostDescription descriptor);
 	public HostDescription getHostDescriptor(String hostName);
 	public void removeHostDescriptor(String hostName);
+	public ResourceMetadata getHostDescriptorMetadata(String hostName);
 
 	//---------Service Descriptor data------------
 	public void addServiceDescriptor(ServiceDescription descriptor);
 	public void updateServiceDescriptor(ServiceDescription descriptor);
 	public ServiceDescription getServiceDescriptor(String serviceName);
 	public void removeServiceDescriptor(String serviceName);
+	public ResourceMetadata getServiceDescriptorMetadata(String serviceName);
 	
 	//---------Service Descriptor data------------
 	public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor);
@@ -53,6 +55,7 @@ public interface DescriptorRegistry extends AiravataSubRegistry {
 	public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname);
 	public Map<String,ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName);
 	public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName);
+	public ResourceMetadata getApplicationDescriptorMetadata(String serviceName, String hostName, String applicationName);
 
 
 }

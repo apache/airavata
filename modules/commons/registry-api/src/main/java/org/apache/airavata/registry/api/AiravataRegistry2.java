@@ -22,11 +22,11 @@
 package org.apache.airavata.registry.api;
 
 
-public abstract class AiravataRegistry2 implements DescriptorRegistry, ProjectsRegistry, PublishedWorkflowRegistry, UserWorkflowRegistry{
+public abstract class AiravataRegistry2 implements DescriptorRegistry, ProjectsRegistry, PublishedWorkflowRegistry, UserWorkflowRegistry, ConfigurationRegistry{
 	private Gateway gateway;
 	private AiravataUser user;
 	
-	public void preInitialize(Gateway gateway, AiravataUser user) {
+	protected void preInitialize(Gateway gateway, AiravataUser user) {
 		setGateway(gateway);
 		setUser(user);
 	}
