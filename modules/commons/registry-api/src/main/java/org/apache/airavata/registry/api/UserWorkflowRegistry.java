@@ -21,7 +21,6 @@
 
 package org.apache.airavata.registry.api;
 
-import java.util.Date;
 
 public interface UserWorkflowRegistry extends AiravataSubRegistry {
 	
@@ -29,7 +28,7 @@ public interface UserWorkflowRegistry extends AiravataSubRegistry {
 	public void updateWorkflow(String workflowName, String workflowGraphXml);
 	
 	public String getWorkflowGraphXML(String workflowName);
-	public Date getWorkflowLastUpdatedTime(String workflowName);	
+	public ResourceMetadata getWorkflowMetadata(String workflowName);	
 	
 	public void removeWorkflow(String workflowName);
 }

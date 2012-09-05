@@ -21,15 +21,14 @@
 
 package org.apache.airavata.registry.api;
 
-import java.util.Date;
 
 public interface PublishedWorkflowRegistry extends AiravataSubRegistry {
 	
-	public void publishWorkflow(String workflowName, String workflowGraphXml);
+	public void publishWorkflow(String workflowName, String publishWorkflowName);
+	public void publishWorkflow(String workflowName);
 	
 	public String getPublishedWorkflowGraphXML(String workflowName);
-	public String getPublishedWorkflowUser(String workflowName);
-	public Date getWorkflowPublishedTime(String workflowName);	
+	public ResourceMetadata getPublishedWorkflowMetadata(String workflowName);
 	
-	public void removeWorkflow(String workflowName);
+	public void removePublishedWorkflow(String workflowName);
 }

@@ -47,7 +47,7 @@ public interface DescriptorRegistry extends AiravataSubRegistry {
 	public void removeServiceDescriptor(String serviceName);
 	public ResourceMetadata getServiceDescriptorMetadata(String serviceName);
 	
-	//---------Service Descriptor data------------
+	//---------Application Descriptor data------------
 	public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor);
 	public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor);
 	public void udpateApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor);
