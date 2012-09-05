@@ -19,34 +19,16 @@
  *
  */
 
-package org.apache.airavata.registry.api;
+package org.apache.airavata.registry.api.exception;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 
-public abstract class AiravataRegistry2 implements DescriptorRegistry, ProjectsRegistry, PublishedWorkflowRegistry, UserWorkflowRegistry{
-	private Gateway gateway;
-	private AiravataUser user;
+public class RegistryAccessorNotFoundException extends RegistryException {
+
+	private static final long serialVersionUID = -2679914107485739140L;
 	
-	public void preInitialize(Gateway gateway, AiravataUser user) {
-		setGateway(gateway);
-		setUser(user);
-	}
-	
-	protected abstract void initialize();
-	
-	public Gateway getGateway() {
-		return gateway;
+	public RegistryAccessorNotFoundException(String className, Exception e){
+		super("Registry accessor class '"+className+"'  was not found in classpath!!!", e);
 	}
 
-	public void setGateway(Gateway gateway) {
-		this.gateway = gateway;
-	}
-
-	public AiravataUser getUser() {
-		return user;
-	}
-
-	public void setUser(AiravataUser user) {
-		this.user = user;
-	}
-	
 }
