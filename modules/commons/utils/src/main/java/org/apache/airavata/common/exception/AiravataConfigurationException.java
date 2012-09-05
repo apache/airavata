@@ -19,34 +19,19 @@
  *
  */
 
-package org.apache.airavata.registry.api;
+package org.apache.airavata.common.exception;
 
+public class AiravataConfigurationException extends AiravataException {
+	private static final long serialVersionUID = -9124231436834631249L;
 
-public abstract class AiravataRegistry2 implements DescriptorRegistry, ProjectsRegistry, PublishedWorkflowRegistry, UserWorkflowRegistry{
-	private Gateway gateway;
-	private AiravataUser user;
-	
-	public void preInitialize(Gateway gateway, AiravataUser user) {
-		setGateway(gateway);
-		setUser(user);
+	public AiravataConfigurationException() {
 	}
 	
-	protected abstract void initialize();
-	
-	public Gateway getGateway() {
-		return gateway;
-	}
-
-	public void setGateway(Gateway gateway) {
-		this.gateway = gateway;
-	}
-
-	public AiravataUser getUser() {
-		return user;
-	}
-
-	public void setUser(AiravataUser user) {
-		this.user = user;
+	public AiravataConfigurationException(String message){
+		this(message, null);
 	}
 	
+	public AiravataConfigurationException(String message, Throwable e){
+		super(message,e);
+	}
 }

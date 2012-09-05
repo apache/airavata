@@ -19,34 +19,16 @@
  *
  */
 
-package org.apache.airavata.registry.api;
+package org.apache.airavata.registry.api.exception;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 
-public abstract class AiravataRegistry2 implements DescriptorRegistry, ProjectsRegistry, PublishedWorkflowRegistry, UserWorkflowRegistry{
-	private Gateway gateway;
-	private AiravataUser user;
+public class RegistryAccessorInvalidException extends RegistryException {
+
+	private static final long serialVersionUID = -2679914107485739140L;
 	
-	public void preInitialize(Gateway gateway, AiravataUser user) {
-		setGateway(gateway);
-		setUser(user);
-	}
-	
-	protected abstract void initialize();
-	
-	public Gateway getGateway() {
-		return gateway;
+	public RegistryAccessorInvalidException(String className){
+		super("Registry accessor '"+className+"' is not valid!!!");
 	}
 
-	public void setGateway(Gateway gateway) {
-		this.gateway = gateway;
-	}
-
-	public AiravataUser getUser() {
-		return user;
-	}
-
-	public void setUser(AiravataUser user) {
-		this.user = user;
-	}
-	
 }

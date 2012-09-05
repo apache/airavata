@@ -19,34 +19,24 @@
  *
  */
 
-package org.apache.airavata.registry.api;
+package org.apache.airavata.registry.api.exception;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 
-public abstract class AiravataRegistry2 implements DescriptorRegistry, ProjectsRegistry, PublishedWorkflowRegistry, UserWorkflowRegistry{
-	private Gateway gateway;
-	private AiravataUser user;
-	
-	public void preInitialize(Gateway gateway, AiravataUser user) {
-		setGateway(gateway);
-		setUser(user);
+public class RegistryAccessorUndefinedException extends RegistryException {
+
+	private static final long serialVersionUID = -2679914107485739140L;
+
+	public RegistryAccessorUndefinedException() {
+		this("A registry accessor was not defined in the repository.properties");
 	}
 	
-	protected abstract void initialize();
-	
-	public Gateway getGateway() {
-		return gateway;
-	}
-
-	public void setGateway(Gateway gateway) {
-		this.gateway = gateway;
-	}
-
-	public AiravataUser getUser() {
-		return user;
-	}
-
-	public void setUser(AiravataUser user) {
-		this.user = user;
+	public RegistryAccessorUndefinedException(String message) {
+		this(message,null);
 	}
 	
+	public RegistryAccessorUndefinedException(String message, Exception e){
+		super(message, e);
+	}
+
 }
