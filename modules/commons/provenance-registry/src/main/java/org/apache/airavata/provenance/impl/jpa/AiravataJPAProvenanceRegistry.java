@@ -106,15 +106,20 @@ public class AiravataJPAProvenanceRegistry extends AiravataProvenanceRegistry{
 	@Override
 	public List<WorkflowIOData> getWorkflowExecutionOutput(String arg0)
 			throws RegistryException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public WorkflowIOData getWorkflowExecutionOutput(String arg0, String arg1)
+	public WorkflowIOData getWorkflowExecutionOutput(String instanceID, String nodeID)
 			throws RegistryException {
-
-		return null;
+        EntityManager em = factory.createEntityManager();
+		em.getTransaction().begin();
+        Query q = em.createQuery("SELECT p FROM Node_Data p WHERE p.workflow_InstanceID = :workflow_InstanceID AND p.node_id = :node_id");
+        q.setParameter("workflow_InstanceID", instanceID);
+        q.setParameter("node_id", nodeID);
+        Node_Data singleResult = (Node_Data) q.getSingleResult();
+        WorkflowServiceIOData workflowIOData = new WorkflowServiceIOData(singleResult.getOutputs(),instanceID,instanceID,null,nodeID,null);
+        return workflowIOData;
 	}
 
 	@Override
