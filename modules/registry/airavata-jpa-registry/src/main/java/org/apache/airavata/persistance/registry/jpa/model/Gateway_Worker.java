@@ -30,30 +30,26 @@ import javax.persistence.ManyToOne;
 @IdClass(Gateway_Worker_PK.class)
 public class Gateway_Worker {
     @Id
-    private int gateway_ID;
+    private String gateway_name;
 
     @Id
-    private int user_ID;
+    private String user_name;
 
     @ManyToOne
-    @JoinColumn(name = "gateway_ID")
+    @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
 
     @ManyToOne
-    @JoinColumn(name = "user_ID")
+    @JoinColumn(name = "user_name")
     private Users user;
 
-    public int getUser_ID() {
-        return user_ID;
+    public String getUser_name() {
+        return user_name;
     }
 
-    public void setUser_ID(int user_ID) {
-        this.user_ID = user_ID;
-    }
-
-    public int getGateway_ID() {
-        return gateway_ID;
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
     }
 
     public void setGateway(Gateway gateway) {
@@ -68,18 +64,22 @@ public class Gateway_Worker {
         return user;
     }
 
-    public void setGateway_ID(int gateway_ID) {
-        this.gateway_ID = gateway_ID;
-    }
-
     public void setUser(Users user) {
         this.user = user;
+    }
+
+    public String getGateway_name() {
+        return gateway_name;
+    }
+
+    public void setGateway_name(String gateway_name) {
+        this.gateway_name = gateway_name;
     }
 }
 
 class Gateway_Worker_PK {
-    private int gateway_ID;
-    private int user_ID;
+    private String gateway_name;
+    private String user_name;
 
     public Gateway_Worker_PK() {
         ;
@@ -95,19 +95,19 @@ class Gateway_Worker_PK {
 		return 1;
 	}
 
-    public int getGateway_ID() {
-        return gateway_ID;
+    public String getUser_name() {
+        return user_name;
     }
 
-    public int getUser_ID() {
-        return user_ID;
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
     }
 
-    public void setGateway_ID(int gateway_ID) {
-        this.gateway_ID = gateway_ID;
+    public String getGateway_name() {
+        return gateway_name;
     }
 
-    public void setUser_ID(int user_ID) {
-        this.user_ID = user_ID;
+    public void setGateway_name(String gateway_name) {
+        this.gateway_name = gateway_name;
     }
 }

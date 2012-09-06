@@ -33,7 +33,7 @@ public class PublishWorkflowResource extends AbstractResource {
     private String version;
     private Date publishedDate;
     private String content;
-    private int gatewayID;
+    private String gatewayName;
 
     public PublishWorkflowResource() {
     }
@@ -70,12 +70,12 @@ public class PublishWorkflowResource extends AbstractResource {
         this.content = content;
     }
 
-    public int getGatewayID() {
-        return gatewayID;
+    public String getGatewayName() {
+        return gatewayName;
     }
 
-    public void setGatewayID(int gatewayID) {
-        this.gatewayID = gatewayID;
+    public void setGatewayName(String gatewayName) {
+        this.gatewayName = gatewayName;
     }
 
     public Resource create(ResourceType type) {
@@ -102,8 +102,8 @@ public class PublishWorkflowResource extends AbstractResource {
         publishedWorkflow.setVersion(version);
         publishedWorkflow.setWorkflow_content(content);
         Gateway gateway = new Gateway();
-        gateway.setGateway_ID(gatewayID);
-        publishedWorkflow.setGateway_ID(gatewayID);
+        gateway.setGateway_name(gatewayName);
+        publishedWorkflow.setGateway_name(gatewayName);
         em.persist(gateway);
         end();
     }

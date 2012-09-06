@@ -29,11 +29,11 @@ public class Project {
     private String project_name;
 
     @ManyToOne
-    @JoinColumn(name = "gateway_ID")
+    @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
     @ManyToOne
-    @JoinColumn(name = "user_ID")
+    @JoinColumn(name = "user_name")
     private Users users;
 
     public int getProject_ID() {

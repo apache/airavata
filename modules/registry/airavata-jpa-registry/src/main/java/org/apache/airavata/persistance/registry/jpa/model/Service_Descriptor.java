@@ -29,11 +29,11 @@ public class Service_Descriptor {
     private String service_descriptor_xml;
 
     @ManyToOne
-    @JoinColumn(name = "gateway_ID")
+    @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
     @ManyToOne
-    @JoinColumn(name = "user_ID")
+    @JoinColumn(name = "user_name")
     private Users user;
 
     public String getService_descriptor_ID() {

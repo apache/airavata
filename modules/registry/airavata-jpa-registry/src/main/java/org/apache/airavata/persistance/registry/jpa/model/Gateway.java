@@ -26,16 +26,7 @@ import javax.persistence.Id;
 @Entity
 public class Gateway {
     @Id
-    private int gateway_ID;
     private String gateway_name;
-
-    public int getGateway_ID() {
-        return gateway_ID;
-    }
-
-    public void setGateway_ID(int gateway_ID) {
-        this.gateway_ID = gateway_ID;
-    }
 
     public String getGateway_name() {
         return gateway_name;
