@@ -167,4 +167,8 @@ public class ServiceDescriptorResource extends AbstractResource {
         }
         return false;
     }
+
+    public void setServiceDescName(String serviceDescName) {
+        this.serviceDescName = serviceDescName;
+    }
 }
