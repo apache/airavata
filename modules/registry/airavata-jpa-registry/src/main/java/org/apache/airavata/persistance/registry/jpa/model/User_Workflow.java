@@ -39,7 +39,7 @@ public class User_Workflow {
     private int project_ID;
 
     @Id
-    private int user_ID;
+    private String user_name;
 
 //    @Id
 //    @ManyToOne
@@ -91,16 +91,17 @@ public class User_Workflow {
         return project_ID;
     }
 
-    public int getUser_ID() {
-        return user_ID;
-    }
 
     public void setProject_ID(int project_ID) {
         this.project_ID = project_ID;
     }
 
-    public void setUser_ID(int user_ID) {
-        this.user_ID = user_ID;
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
     }
 
     public void setLast_update_date(Date last_update_date) {
@@ -115,7 +116,7 @@ public class User_Workflow {
 class User_Workflow_PK {
     private String user_workflow_name;
     private int project_ID;
-    private int user_ID;
+    private String user_name;
 
     public User_Workflow_PK() {
         ;
@@ -139,8 +140,12 @@ class User_Workflow_PK {
         return project_ID;
     }
 
-    public int getUser_ID() {
-        return user_ID;
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
     }
 
     public void setUser_workflow_name(String user_workflow_name) {
@@ -151,7 +156,5 @@ class User_Workflow_PK {
         this.project_ID = project_ID;
     }
 
-    public void setUser_ID(int user_ID) {
-        this.user_ID = user_ID;
-    }
+
 }

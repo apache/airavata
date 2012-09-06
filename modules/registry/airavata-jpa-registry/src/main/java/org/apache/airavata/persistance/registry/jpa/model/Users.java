@@ -31,21 +31,12 @@ import javax.persistence.OneToMany;
 public class Users {
 
     @Id
-    private int user_ID;
-    private String password;
     private String user_name;
+    private String password;
 
-    public int getUser_ID() {
-        return user_ID;
-    }
 
     public String getUser_name() {
         return user_name;
-    }
-
-
-    public void setUser_ID(int user_ID) {
-        this.user_ID = user_ID;
     }
 
     public void setUser_name(String user_name) {

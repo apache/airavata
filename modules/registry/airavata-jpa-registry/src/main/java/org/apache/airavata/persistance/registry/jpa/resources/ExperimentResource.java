@@ -31,7 +31,7 @@ import java.util.List;
 
 public class ExperimentResource extends AbstractResource {
     private int projectID;
-    private int userID;
+    private String userName;
     private String expID;
     private Date submittedDate;
 
@@ -46,10 +46,6 @@ public class ExperimentResource extends AbstractResource {
         return projectID;
     }
 
-    public int getUserID() {
-        return userID;
-    }
-
     public String getExpID() {
         return expID;
     }
@@ -62,8 +58,12 @@ public class ExperimentResource extends AbstractResource {
         this.projectID = projectID;
     }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public void setSubmittedDate(Date submittedDate) {
@@ -94,7 +94,7 @@ public class ExperimentResource extends AbstractResource {
         project.setProject_ID(projectID);
         experiment.setProject(project);
         Users user = new Users();
-        user.setUser_ID(userID);
+        user.setUser_name(userName);
         experiment.setUser(user);
         experiment.setSubmitted_date(submittedDate);
         em.persist(experiment);

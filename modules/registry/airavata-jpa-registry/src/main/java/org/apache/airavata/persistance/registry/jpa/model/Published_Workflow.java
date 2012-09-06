@@ -39,7 +39,7 @@ public class Published_Workflow {
     private String workflow_content;
 
     @Id
-    private int gateway_ID;
+    private String gateway_name;
 
 //    @Id
 //    @ManyToOne
@@ -82,12 +82,12 @@ public class Published_Workflow {
         this.workflow_content = workflow_content;
     }
 
-    public int getGateway_ID() {
-        return gateway_ID;
+    public String getGateway_name() {
+        return gateway_name;
     }
 
-    public void setGateway_ID(int gateway_ID) {
-        this.gateway_ID = gateway_ID;
+    public void setGateway_name(String gateway_name) {
+        this.gateway_name = gateway_name;
     }
 
     //    public void setGateway(Gateway gateway) {
@@ -96,7 +96,7 @@ public class Published_Workflow {
 }
 
 class Published_Workflow_PK {
-    private int gateway_ID;
+    private String gateway_name;
     private String publish_workflow_name;
 
     public Published_Workflow_PK() {
@@ -113,22 +113,20 @@ class Published_Workflow_PK {
 		return 1;
 	}
 
-
-    public int getGateway_ID() {
-        return gateway_ID;
-    }
-
     public String getPublish_workflow_name() {
         return publish_workflow_name;
-    }
-
-    public void setGateway_ID(int gateway_ID) {
-        this.gateway_ID = gateway_ID;
     }
 
     public void setPublish_workflow_name(String publish_workflow_name) {
         this.publish_workflow_name = publish_workflow_name;
     }
 
+    public String getGateway_name() {
+        return gateway_name;
+    }
+
+    public void setGateway_name(String gateway_name) {
+        this.gateway_name = gateway_name;
+    }
 }
 

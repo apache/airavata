@@ -35,7 +35,7 @@ public class Experiment {
     private Date submitted_date;
 
     @ManyToOne
-    @JoinColumn(name = "user_ID")
+    @JoinColumn(name = "user_name")
     private Users user;
 
     @ManyToOne

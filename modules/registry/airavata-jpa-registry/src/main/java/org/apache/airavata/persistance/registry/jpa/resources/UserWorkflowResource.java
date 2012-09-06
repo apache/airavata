@@ -31,7 +31,7 @@ import java.util.List;
 
 public class UserWorkflowResource extends AbstractResource {
     private int projectID;
-    private int userID;
+    private String userName;
     private String name;
     private Date lastUpdateDate;
     private String content;
@@ -39,9 +39,9 @@ public class UserWorkflowResource extends AbstractResource {
     public UserWorkflowResource() {
     }
 
-    public UserWorkflowResource(int projectID, int userID, String name) {
+    public UserWorkflowResource(int projectID, String userName, String name) {
         this.projectID = projectID;
-        this.userID = userID;
+        this.userName = userName;
         this.name = name;
     }
 
@@ -49,8 +49,8 @@ public class UserWorkflowResource extends AbstractResource {
         return projectID;
     }
 
-    public int getUserID() {
-        return userID;
+    public String getUserName() {
+        return userName;
     }
 
     public String getName() {
@@ -77,8 +77,8 @@ public class UserWorkflowResource extends AbstractResource {
         this.projectID = projectID;
     }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public void setName(String name) {
@@ -111,8 +111,8 @@ public class UserWorkflowResource extends AbstractResource {
         project.setProject_ID(projectID);
         userWorkflow.setProject_ID(projectID);
         Users user = new Users();
-        user.setUser_ID(userID);
-        userWorkflow.setUser_ID(userID);
+        user.setUser_name(userName);
+        userWorkflow.setUser_name(userName);
         em.persist(userWorkflow);
         end();
     }

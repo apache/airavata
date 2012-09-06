@@ -31,8 +31,8 @@ import java.util.List;
 
 public class ApplicationDescriptorResource extends AbstractResource {
     private String name;
-    private int gatewayID;
-    private int userID;
+    private String gatewayName;
+    private String userName;
     private String content;
     private String hostDescName;
     private String serviceDescName;
@@ -42,23 +42,26 @@ public class ApplicationDescriptorResource extends AbstractResource {
     }
 
     public ApplicationDescriptorResource() {
-
     }
 
-    public int getUserID() {
-        return userID;
+    public String getGatewayName() {
+        return gatewayName;
     }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public void setGatewayName(String gatewayName) {
+        this.gatewayName = gatewayName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getName() {
         return name;
-    }
-
-    public int getGatewayID() {
-        return gatewayID;
     }
 
     public String getContent() {
@@ -71,10 +74,6 @@ public class ApplicationDescriptorResource extends AbstractResource {
 
     public String getServiceDescName() {
         return serviceDescName;
-    }
-
-    public void setGatewayID(int gatewayID) {
-        this.gatewayID = gatewayID;
     }
 
     public void setContent(String content) {
@@ -110,7 +109,7 @@ public class ApplicationDescriptorResource extends AbstractResource {
         Application_Descriptor applicationDescriptor = new Application_Descriptor();
         applicationDescriptor.setApplication_descriptor_ID(name);
         Gateway gateway = new Gateway();
-        gateway.setGateway_ID(gatewayID);
+        gateway.setGateway_name(gatewayName);
         applicationDescriptor.setGateway(gateway);
         Host_Descriptor hostDescriptor = new Host_Descriptor();
         hostDescriptor.setHost_descriptor_ID(hostDescName);
