@@ -23,41 +23,89 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.persistance.registry.jpa.model.Configuration;
+import org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor;
 import org.apache.airavata.registry.api.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public class AiravataJPARegistry extends AiravataRegistry2{
+    private static final String PERSISTENCE_UNIT_NAME = "airavata_registry";
+	private EntityManagerFactory factory;
+
     @Override
     protected void initialize() {
 
     }
 
     public Object getConfiguration(String key) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        EntityManager em = factory.createEntityManager();
+		em.getTransaction().begin();
+        Query q = em.createQuery("SELECT p FROM Configuration p WHERE p.config_key = :config_key");
+        q.setParameter("config_key", key);
+        return q.getSingleResult();
     }
-
+    // Not sure about this.. need some description
     public List<Object> getConfigurationList(String key) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void setConfiguration(String key, String value, Date expire) {
+        EntityManager em = factory.createEntityManager();
+		em.getTransaction().begin();
+        Configuration configuraton = new Configuration();
+        configuraton.setConfig_key(key);
+        configuraton.setConfig_val(value);
+        configuraton.setExpire_date((java.sql.Date) expire);
+        em.persist(configuraton);
+        em.getTransaction().commit();
+		em.close();
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void addConfiguration(String key, String value, Date expire) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        EntityManager em = factory.createEntityManager();
+		em.getTransaction().begin();
+        Configuration configuraton = new Configuration();
+        configuraton.setConfig_key(key);
+        configuraton.setConfig_val(value);
+        configuraton.setExpire_date((java.sql.Date) expire);
+        em.persist(configuraton);
+        em.getTransaction().commit();
+		em.close();
     }
 
     public void removeAllConfiguration(String key) {
+        EntityManager em = factory.createEntityManager();
+        em.getTransaction().begin();
+        Query q = em.createQuery("SELECT p FROM Configuration p WHERE p.config_key = :config_key");
+        q.setParameter("config_key", key);
+        List<Configuration> resultList = q.getResultList();
+        for (Configuration config : resultList) {
+            em.remove(config);
+        }
+        em.getTransaction();
+        em.close();
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void removeConfiguration(String key, String value) {
         //To change body of implemented methods use File | Settings | File Templates.
+        EntityManager em = factory.createEntityManager();
+        em.getTransaction().begin();
+        Query q = em.createQuery("SELECT p FROM Configuration p WHERE p.config_key = :config_key AND p.config_value = :config_value");
+        q.setParameter("config_key", key);
+        q.setParameter("config_value", value);
+        Configuration config = (Configuration)q.getSingleResult();
+        em.remove(config);
+        em.getTransaction();
+        em.close();
     }
 
     public List<URI> getGFacURIs() {
@@ -132,7 +180,19 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+
+    // DescriptorRegistry Implementation
     public void addHostDescriptor(HostDescription descriptor) {
+        //todo how to fill other data
+        EntityManager em = factory.createEntityManager();
+		em.getTransaction().begin();
+        Host_Descriptor host_descriptor = new Host_Descriptor();
+//        host_descriptor.set;
+//        host_descriptor.setExpire_date((java.sql.Date) expire);
+        host_descriptor.setHost_descriptor_xml(descriptor.toXML());
+        em.persist(host_descriptor);
+        em.getTransaction().commit();
+		em.close();
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
