@@ -108,6 +108,10 @@ public class PublishWorkflowResource extends AbstractResource {
         end();
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public boolean isExists(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }

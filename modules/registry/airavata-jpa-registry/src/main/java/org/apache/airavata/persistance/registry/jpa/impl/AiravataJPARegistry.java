@@ -394,23 +394,57 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public List<AiravataExperiment> getExperiments(Date from, Date to) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        List<AiravataExperiment> experiments = getExperiments();
+        List<AiravataExperiment> newExperiments = new ArrayList<AiravataExperiment>();
+        for(AiravataExperiment exp:experiments){
+            Date submittedDate = exp.getSubmittedDate();
+            if(submittedDate.after(from) && submittedDate.before(to)) {
+                newExperiments.add(exp);
+            }
+        }
+        return newExperiments;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public List<AiravataExperiment> getExperiments(String projectName, Date from, Date to) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        List<AiravataExperiment> experiments = getExperiments(projectName);
+        List<AiravataExperiment> newExperiments = new ArrayList<AiravataExperiment>();
+        for (AiravataExperiment exp : experiments) {
+            Date submittedDate = exp.getSubmittedDate();
+            if (submittedDate.after(from) && submittedDate.before(to)) {
+                newExperiments.add(exp);
+            }
+        }
+        return newExperiments;
     }
 
     public void publishWorkflow(String workflowName, String publishWorkflowName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        UserResource userResource = new UserResource();
+        userResource.setUserName(getUser().getUserName());
+        UserWorkflowResource resource = (UserWorkflowResource)userResource.get(ResourceType.USER_WORKFLOW, workflowName);
+        GatewayResource gatewayResource = new GatewayResource();
+        PublishWorkflowResource resource1 = (PublishWorkflowResource)gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
+        resource1.setContent(resource.getContent());
+        resource1.setPublishedDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+        resource1.setName(publishWorkflowName);
+        //todo have to set version
     }
 
     public void publishWorkflow(String workflowName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        UserResource userResource = new UserResource();
+        userResource.setUserName(getUser().getUserName());
+        UserWorkflowResource resource = (UserWorkflowResource)userResource.get(ResourceType.USER_WORKFLOW, workflowName);
+        GatewayResource gatewayResource = new GatewayResource();
+        PublishWorkflowResource resource1 = (PublishWorkflowResource)gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
+        resource1.setContent(resource.getContent());
+        resource1.setPublishedDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+        //todo is this right ????
+        resource1.setName(workflowName);
     }
 
     public String getPublishedWorkflowGraphXML(String workflowName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        GatewayResource gatewayResource = new GatewayResource();
+        PublishWorkflowResource resource1 = (PublishWorkflowResource) gatewayResource.get(ResourceType.PUBLISHED_WORKFLOW, workflowName);
+        return resource1.getContent();
     }
 
     public ResourceMetadata getPublishedWorkflowMetadata(String workflowName) {
@@ -418,7 +452,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void removePublishedWorkflow(String workflowName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        GatewayResource gatewayResource = new GatewayResource();
+        gatewayResource.remove(ResourceType.PUBLISHED_WORKFLOW, workflowName);
     }
 
     public void addWorkflow(String workflowName, String workflowGraphXml) {
