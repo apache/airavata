@@ -106,4 +106,8 @@ public class ExperimentResource extends AbstractResource {
     public boolean isExists(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
+
+    public void setExpID(String expID) {
+        this.expID = expID;
+    }
 }
