@@ -23,19 +23,28 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.persistance.registry.jpa.Resource;
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.Configuration;
 import org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor;
+import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.HostDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorResource;
 import org.apache.airavata.registry.api.*;
+import org.apache.xmlbeans.XmlException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import java.net.URI;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AiravataJPARegistry extends AiravataRegistry2{
+    private final static Logger logger = LoggerFactory.getLogger(AiravataJPARegistry.class);
+
     private static final String PERSISTENCE_UNIT_NAME = "airavata_registry";
 	private EntityManagerFactory factory;
 
@@ -184,28 +193,33 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     // DescriptorRegistry Implementation
     public void addHostDescriptor(HostDescription descriptor) {
         //todo how to fill other data
-        EntityManager em = factory.createEntityManager();
-		em.getTransaction().begin();
-        Host_Descriptor host_descriptor = new Host_Descriptor();
-//        host_descriptor.set;
-//        host_descriptor.setExpire_date((java.sql.Date) expire);
-        host_descriptor.setHost_descriptor_xml(descriptor.toXML());
-        em.persist(host_descriptor);
-        em.getTransaction().commit();
-		em.close();
-        //To change body of implemented methods use File | Settings | File Templates.
+        GatewayResource gatewayResource = new GatewayResource();
+        HostDescriptorResource resource = (HostDescriptorResource)gatewayResource.create(ResourceType.HOST_DESCRIPTOR);
+        resource.setContent(descriptor.toXML());
+        //todo fix the IDs to Names
+//        resource.setGatewayID(getGateway().getGatewayName());
+//        resource.setUserID(getUser().getUserName());
+        resource.save();
     }
 
     public void updateHostDescriptor(HostDescription descriptor) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        addHostDescriptor(descriptor);
     }
 
     public HostDescription getHostDescriptor(String hostName) {
+        GatewayResource gatewayResource = new GatewayResource();
+        Resource resource = gatewayResource.get(ResourceType.HOST_DESCRIPTOR, hostName);
+        try {
+            return HostDescription.fromXML(((HostDescriptorResource)resource).getContent());
+        } catch (XmlException e) {
+            logger.error("Error parsing Host Descriptor");
+        }
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void removeHostDescriptor(String hostName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+       GatewayResource gatewayResource = new GatewayResource();
+       gatewayResource.remove(ResourceType.HOST_DESCRIPTOR, hostName);
     }
 
     public ResourceMetadata getHostDescriptorMetadata(String hostName) {
@@ -213,19 +227,34 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void addServiceDescriptor(ServiceDescription descriptor) {
-        //To change body of implemented methods use File | Settings | File Templates.
+         //todo how to fill other data
+        GatewayResource gatewayResource = new GatewayResource();
+        ServiceDescriptorResource resource = (ServiceDescriptorResource)gatewayResource.create(ResourceType.SERVICE_DESCRIPTOR);
+        resource.setContent(descriptor.toXML());
+        //todo fix the IDs to Names
+//        resource.setGatewayID(getGateway().getGatewayName());
+//        resource.setUserID(getUser().getUserName());
+        resource.save();
     }
 
     public void updateServiceDescriptor(ServiceDescription descriptor) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        addServiceDescriptor(descriptor);
     }
 
     public ServiceDescription getServiceDescriptor(String serviceName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        GatewayResource gatewayResource = new GatewayResource();
+        Resource resource = gatewayResource.get(ResourceType.SERVICE_DESCRIPTOR, serviceName);
+        try {
+            return ServiceDescription.fromXML(((ServiceDescriptorResource) resource).getContent());
+        } catch (XmlException e) {
+            logger.error("Error parsing Host Descriptor");
+        }
+        return null;
     }
 
     public void removeServiceDescriptor(String serviceName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+       GatewayResource gatewayResource = new GatewayResource();
+       gatewayResource.remove(ResourceType.SERVICE_DESCRIPTOR, serviceName);
     }
 
     public ResourceMetadata getServiceDescriptorMetadata(String serviceName) {
@@ -233,36 +262,68 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        addApplicationDescriptor(serviceDescription.getType().getName(),hostDescriptor.getType().getHostName(),descriptor);
     }
 
     public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) {
+        GatewayResource gatewayResource = new GatewayResource();
+        ApplicationDescriptorResource resource = (ApplicationDescriptorResource)gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
+        resource.setContent(descriptor.toXML());
+        resource.setHostDescName(hostName);
+        resource.setServiceDescName(serviceName);
+        //todo fix the IDs to Names
+//        resource.setGatewayID(getGateway().getGatewayName());
+//        resource.setUserID(getUser().getUserName());
+        resource.save();
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void udpateApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        addApplicationDescriptor(serviceDescription,hostDescriptor,descriptor);
     }
 
     public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        addApplicationDescriptor(serviceName,hostName,descriptor);
     }
 
     public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname) {
+        //todo finish implementation
+        GatewayResource gatewayResource = new GatewayResource();
+        ApplicationDescriptorResource resource = (ApplicationDescriptorResource)gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
+        resource.setHostDescName(hostname);
+        resource.setServiceDescName(serviceName);
+//        resource.get()
+//        gatewayResource.
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        GatewayResource gatewayResource = new GatewayResource();
+        ServiceDescriptorResource resource = (ServiceDescriptorResource)gatewayResource.get(ResourceType.SERVICE_DESCRIPTOR,serviceName);
+        resource.setServiceDescName(serviceName);
+        List<Resource> resources = resource.get(ResourceType.APPLICATION_DESCRIPTOR);
+        HashMap<String, ApplicationDeploymentDescription> stringApplicationDescriptorResourceHashMap =
+                new HashMap<String, ApplicationDeploymentDescription>();
+        for(Resource applicationDescriptorResource:resources){
+            try {
+                stringApplicationDescriptorResourceHashMap.put(resource.getServiceDescName(),
+                        ApplicationDeploymentDescription.fromXML(((ApplicationDescriptorResource)applicationDescriptorResource).getContent()));
+            } catch (XmlException e) {
+                logger.error("Error parsing Application Descriptor");
+            }
+        }
+        return stringApplicationDescriptorResourceHashMap;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
     public ResourceMetadata getApplicationDescriptorMetadata(String serviceName, String hostName, String applicationName) {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+
 
     public void addWorkspaceProject(WorkspaceProject project) {
         //To change body of implemented methods use File | Settings | File Templates.
