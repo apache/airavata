@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.persistance.registry.jpa.impl;
 
+import com.sun.jndi.dns.ResourceRecord;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -27,10 +28,7 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.Configuration;
 import org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor;
-import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
-import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.apache.airavata.persistance.registry.jpa.resources.HostDescriptorResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.registry.api.*;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
@@ -40,7 +38,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import java.net.URI;
+import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 public class AiravataJPARegistry extends AiravataRegistry2{
     private final static Logger logger = LoggerFactory.getLogger(AiravataJPARegistry.class);
@@ -307,7 +307,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         for(Resource applicationDescriptorResource:resources){
             try {
                 stringApplicationDescriptorResourceHashMap.put(resource.getServiceDescName(),
-                        ApplicationDeploymentDescription.fromXML(((ApplicationDescriptorResource)applicationDescriptorResource).getContent()));
+                        ApplicationDeploymentDescription.fromXML(((ApplicationDescriptorResource) applicationDescriptorResource).getContent()));
             } catch (XmlException e) {
                 logger.error("Error parsing Application Descriptor");
             }
@@ -326,35 +326,71 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 
     public void addWorkspaceProject(WorkspaceProject project) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        GatewayResource gatewayResource = new GatewayResource();
+        ProjectResource resource = (ProjectResource)gatewayResource.create(ResourceType.PROJECT);
+        resource.setName(project.getProjectName());
+        //todo fix the IDs to Names
+//        resource.setUserID(getUser().getUserName());
+        resource.save();
     }
 
     public void updateWorkspaceProject(WorkspaceProject project) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        addWorkspaceProject(project);
     }
 
     public void deleteWorkspaceProject(String projectName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        GatewayResource gatewayResource = new GatewayResource();
+        gatewayResource.remove(ResourceType.PROJECT,projectName);
     }
 
     public WorkspaceProject getWorkspaceProject(String projectName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        GatewayResource gatewayResource = new GatewayResource();
+        ProjectResource resource = (ProjectResource)gatewayResource.get(ResourceType.PROJECT, projectName);
+        WorkspaceProject workspaceProject = new WorkspaceProject(projectName, this);
+        return workspaceProject;
     }
 
     public void createExperiment(String projectName, AiravataExperiment experiment) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        GatewayResource gatewayResource = new GatewayResource();
+        ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
+        resource.setExpID(experiment.getExperimentId());
+        resource.setSubmittedDate(new java.sql.Date(experiment.getSubmittedDate().getTime()));
+        resource.save();
     }
 
     public void removeExperiment(String experimentId) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        GatewayResource gatewayResource = new GatewayResource();
+        gatewayResource.remove(ResourceType.EXPERIMENT, experimentId);
     }
 
     public List<AiravataExperiment> getExperiments() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        UserResource userResource = new UserResource();
+        userResource.setUserName(getUser().getUserName());
+        List<Resource> resources = userResource.get(ResourceType.EXPERIMENT);
+        List<AiravataExperiment> result = new ArrayList<AiravataExperiment>();
+        for(Resource resource:resources) {
+            AiravataExperiment airavataExperiment = new AiravataExperiment();
+            airavataExperiment.setExperimentId(((ExperimentResource) resource).getExpID());
+            airavataExperiment.setUser(getUser());
+            airavataExperiment.setSubmittedDate(new java.sql.Date(((ExperimentResource) resource).getSubmittedDate().getTime()));
+            result.add(airavataExperiment);
+        }
+        return result;
     }
 
     public List<AiravataExperiment> getExperiments(String projectName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        ProjectResource projectResource = new ProjectResource();
+        projectResource.setName(projectName);
+        List<Resource> resources = projectResource.get(ResourceType.EXPERIMENT);
+        List<AiravataExperiment> result = new ArrayList<AiravataExperiment>();
+        for(Resource resource:resources) {
+            AiravataExperiment airavataExperiment = new AiravataExperiment();
+            airavataExperiment.setExperimentId(((ExperimentResource) resource).getExpID());
+            airavataExperiment.setUser(getUser());
+            airavataExperiment.setSubmittedDate(new java.sql.Date(((ExperimentResource) resource).getSubmittedDate().getTime()));
+            result.add(airavataExperiment);
+        }
+        return result;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public List<AiravataExperiment> getExperiments(Date from, Date to) {
