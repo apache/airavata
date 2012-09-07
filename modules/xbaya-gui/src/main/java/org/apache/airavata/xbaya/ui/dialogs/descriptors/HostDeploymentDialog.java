@@ -49,7 +49,7 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
@@ -68,7 +68,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
     private XBayaTextField txtExecPath;
     private XBayaTextField txtTempDir;
 
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
     private ApplicationDeploymentDescription shellApplicationDescription;
     private JLabel lblError;
     private boolean applcationDescCreated = false;
@@ -88,7 +88,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
     /**
      * Create the dialog.
      */
-    public HostDeploymentDialog(AiravataRegistry registry, boolean newDescriptor, ApplicationDeploymentDescription originalDeploymentDescription, String originalHost, List<String> existingHostList) {
+    public HostDeploymentDialog(AiravataRegistry2 registry, boolean newDescriptor, ApplicationDeploymentDescription originalDeploymentDescription, String originalHost, List<String> existingHostList) {
     	setNewDescriptor(newDescriptor);
     	setOriginalDeploymentDescription(originalDeploymentDescription);
     	setOriginalHost(originalHost);
@@ -176,7 +176,6 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
             txtExecPath.setColumns(10);
             btnExecBrowse=new JButton(MenuIcons.OPEN_ICON);
             btnExecBrowse.addActionListener(new ActionListener(){
-				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					JFileChooser c = new JFileChooser();
 					int rVal = c.showOpenDialog(null);
@@ -204,7 +203,6 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
             txtTempDir.setColumns(10);
             btnTmpDirBrowse=new JButton(MenuIcons.OPEN_DIR_ICON);
             btnTmpDirBrowse.addActionListener(new ActionListener(){
-				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					JFileChooser c = new JFileChooser();
 					c.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -272,7 +270,6 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
 
             btnHostAdvanceOptions=new JButton("HPC Configuration...");
             btnHostAdvanceOptions.addActionListener(new ActionListener() {
-				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					try {
 						ApplicationDescriptionHostAdvancedOptionDialog hostAdvancedOptionsDialog = new ApplicationDescriptionHostAdvancedOptionDialog(getRegistry(),getShellApplicationDescription());
@@ -372,7 +369,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
         cmbHostName.removeAllItems();
         setHostName(null);
         try {
-            List<HostDescription> hostDescriptions = getRegistry().searchHostDescription(".*");
+            List<HostDescription> hostDescriptions = getRegistry().getHostDescriptors();
             for (HostDescription hostDescription : hostDescriptions) {
                 if (!isNewDescriptor() || !getExistingHostList().contains(hostDescription.getType().getHostName())) {
 					cmbHostName.addItem(hostDescription.getType().getHostName());
@@ -491,28 +488,23 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
-        if (hostName!=null) {
-			HostDescription hostDescription;
-			try {
-				hostDescription = registry.getHostDescription(hostName);
-				if (hostDescription.getType() instanceof GlobusHostType) {
-					getShellApplicationDescription().getType().changeType(
-							GramApplicationDeploymentType.type);
-				} else {
-					getShellApplicationDescription().getType().changeType(
-							ApplicationDeploymentDescriptionType.type);
-				}
-				btnHostAdvanceOptions.setVisible(hostDescription.getType() instanceof GlobusHostType);
-				String hostAddress = hostDescription.getType().getHostAddress();
-				boolean isLocal = isLocalAddress(hostAddress);
-				btnExecBrowse.setVisible(isLocal);
-				btnTmpDirBrowse.setVisible(isLocal);
-				
-			} catch (RegistryException e) {
-				//not there - ouch
-			}
-		}
-		updateDialogStatus();
+        if (hostName != null) {
+            HostDescription hostDescription;
+            hostDescription = registry.getHostDescriptor(hostName);
+            if (hostDescription.getType() instanceof GlobusHostType) {
+                getShellApplicationDescription().getType().changeType(
+                        GramApplicationDeploymentType.type);
+            } else {
+                getShellApplicationDescription().getType().changeType(
+                        ApplicationDeploymentDescriptionType.type);
+            }
+            btnHostAdvanceOptions.setVisible(hostDescription.getType() instanceof GlobusHostType);
+            String hostAddress = hostDescription.getType().getHostAddress();
+            boolean isLocal = isLocalAddress(hostAddress);
+            btnExecBrowse.setVisible(isLocal);
+            btnTmpDirBrowse.setVisible(isLocal);
+        }
+        updateDialogStatus();
     }
 
 	private boolean isLocalAddress(String hostAddress) {
@@ -525,7 +517,6 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
         }
     }
 
-    @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == cmbHostName) {
             updateHostName();
@@ -538,11 +529,11 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
         }
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 
@@ -574,7 +565,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
 	public HostDeployment execute() throws RegistryException{
 		open();
 		if (isApplicationDescCreated()){
-			return new HostDeployment(getRegistry().getHostDescription(getHostName()),getShellApplicationDescription());
+			return new HostDeployment(getRegistry().getHostDescriptor(getHostName()),getShellApplicationDescription());
 		}
 		return null;
 	}

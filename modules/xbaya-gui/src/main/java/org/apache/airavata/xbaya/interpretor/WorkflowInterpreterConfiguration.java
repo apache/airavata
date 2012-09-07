@@ -23,7 +23,7 @@ package org.apache.airavata.xbaya.interpretor;
 
 import java.net.URI;
 
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
@@ -38,7 +38,7 @@ public class WorkflowInterpreterConfiguration {
 //	
 	private URI messageBoxURL;
 	private URI messageBrokerURL;
-	private AiravataRegistry registry;
+	private AiravataRegistry2 registry;
 	private XBayaConfiguration configuration;
 	private XBayaGUI gui;
 	private MyProxyChecker myProxyChecker;
@@ -53,11 +53,11 @@ public class WorkflowInterpreterConfiguration {
 	private boolean subWorkflow;
 	private boolean testMode=false;
 	
-	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry registry,XBayaConfiguration configuration,XBayaGUI gui,MyProxyChecker myProxyChecker,Monitor monitor) {
+	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry2 registry,XBayaConfiguration configuration,XBayaGUI gui,MyProxyChecker myProxyChecker,Monitor monitor) {
 		this(workflow, topic, messageBoxURL,messageBrokerURL,registry,configuration,gui,myProxyChecker,monitor, true);
 	}
 	
-	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry registry,XBayaConfiguration configuration,XBayaGUI gui,MyProxyChecker myProxyChecker,Monitor monitor, boolean offline) {
+	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry2 registry,XBayaConfiguration configuration,XBayaGUI gui,MyProxyChecker myProxyChecker,Monitor monitor, boolean offline) {
 		this.messageBoxURL = messageBoxURL;
 		this.messageBrokerURL = messageBrokerURL;
 		this.registry = registry;
@@ -82,10 +82,10 @@ public class WorkflowInterpreterConfiguration {
 	public void setMessageBrokerURL(URI messageBrokerURL) {
 		this.messageBrokerURL = messageBrokerURL;
 	}
-	public AiravataRegistry getRegistry() {
+	public AiravataRegistry2 getRegistry() {
 		return registry;
 	}
-	public void setRegistry(AiravataRegistry registry) {
+	public void setRegistry(AiravataRegistry2 registry) {
 		this.registry = registry;
 	}
 	public XBayaConfiguration getConfiguration() {

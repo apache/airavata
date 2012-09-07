@@ -32,7 +32,7 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.workflow.model.graph.GraphException;
@@ -66,7 +66,7 @@ public class RegistryAccesser {
         this.engine = engine;
     }
 
-    private AiravataRegistry connectToRegistry() {
+    private AiravataRegistry2 connectToRegistry() {
         JCRComponentRegistry jcrComponentRegistry = this.engine.getConfiguration().getJcrComponentRegistry();
         return jcrComponentRegistry.getRegistry();
     }
@@ -76,9 +76,9 @@ public class RegistryAccesser {
      * @return
      * @throws RepositoryException
      */
-    public Map<QName, Node> getOGCEWorkflowTemplateList() throws RegistryException {
-        AiravataRegistry registry = connectToRegistry();
-        return registry.getWorkflows(this.engine.getConfiguration().getRegistryUserName());
+    public Map<String, String> getOGCEWorkflowTemplateList() throws RegistryException {
+        AiravataRegistry2 registry = connectToRegistry();
+        return registry.getWorkflows();
     }
 
     /**

@@ -48,7 +48,7 @@ import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.registrybrowser.nodes.JCRBrowserIcons;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
@@ -62,7 +62,7 @@ public class DescriptorEditorDialog extends JDialog {
 
     private XBayaDialog dialog;
 
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
 
 	private JList descriptorList;
 
@@ -130,7 +130,6 @@ public class DescriptorEditorDialog extends JDialog {
             }
         });
         descriptorList.addListSelectionListener(new ListSelectionListener(){
-			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				boolean isSelected=descriptorList.getSelectedIndex()!=-1;
 				editButton.setEnabled(isSelected);
@@ -280,26 +279,22 @@ public class DescriptorEditorDialog extends JDialog {
     	
         
 		if (askQuestion(title, question)) {
-            try {
             	switch (descriptorType){
 	    	    	case HOST:
 	    	    		HostDescription h = (HostDescription) getSelected();
-	    	        	getRegistry().deleteHostDescription(h.getType().getHostName());
+	    	        	getRegistry().removeHostDescriptor(h.getType().getHostName());
 	    	    		break;
 	    	    	case SERVICE:
 	    	        	ServiceDescription d = (ServiceDescription) getSelected();
-	    	        	getRegistry().deleteServiceDescription(d.getType().getName());
+	    	        	getRegistry().removeServiceDescriptor(d.getType().getName());
 	    	    		break;
 	    	    	case APPLICATION:
 	    	    		ApplicationDeploymentDescription a = (ApplicationDeploymentDescription) getSelected();
 	    	    		String[] s = dlist.get(a).split("\\$");
-	    	        	getRegistry().deleteDeploymentDescription(s[0], s[1], a.getType().getApplicationName().getStringValue());
+	    	        	getRegistry().removeApplicationDescriptor(s[0], s[1], a.getType().getApplicationName().getStringValue());
 	    	    		break;
             	}
 				loadDescriptors();
-			} catch (RegistryException e) {
-				this.engine.getGUI().getErrorWindow().error(e);
-			}
         }
         return true;
     }
@@ -312,26 +307,26 @@ public class DescriptorEditorDialog extends JDialog {
 			e1.printStackTrace();
 		}
     	((DefaultListModel)descriptorList.getModel()).removeAllElements();
-    	try {
     		List<?> descriptors=null;
 			switch (descriptorType){
 	    	case HOST:
-	    		descriptors = getRegistry().searchHostDescription(".*");
+	    		descriptors = getRegistry().getHostDescriptors();
 	    		break;
 	    	case SERVICE:
-	    		descriptors = getRegistry().searchServiceDescription(".*");
+	    		descriptors = getRegistry().getServiceDescriptors();
 	    		break;
 	    	case APPLICATION:
-	    		dlist=getRegistry().searchDeploymentDescription();
+	    		Map<String,ApplicationDeploymentDescription> temp =getRegistry().getApplicationDescriptors(null);
+                for(String value:temp.keySet()) {
+                    dlist.put(temp.get(value), value);
+
+                }
 	    		descriptors =Arrays.asList(dlist.keySet().toArray(new ApplicationDeploymentDescription[]{})); 
 	    		break;
     		}
     		for (Object d : descriptors) {
 				((DefaultListModel)descriptorList.getModel()).addElement(d);
 			}
-		} catch (RegistryException e) {
-			engine.getGUI().getErrorWindow().error(e);
-		}
 	}
     
     private static class DescriptorListCellRenderer extends DefaultListCellRenderer{
@@ -364,11 +359,11 @@ public class DescriptorEditorDialog extends JDialog {
 		}
     	
     }
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 }

@@ -68,7 +68,7 @@ import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
@@ -96,7 +96,7 @@ public class DeploymentDescriptionDialog extends JDialog {
     private JButton okButton;
     private JButton btnDeleteParameter;
     private DefaultTableModel defaultTableModel;
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
     private boolean newDescription;
     private boolean ignoreTableChanges=false;
 	private JCheckBox chkForceFileStagingToWorkDir;
@@ -119,14 +119,14 @@ public class DeploymentDescriptionDialog extends JDialog {
         }
     }
 
-    public DeploymentDescriptionDialog(AiravataRegistry registry) {
+    public DeploymentDescriptionDialog(AiravataRegistry2 registry) {
     	this(registry,true,null);
     }
     
     /**
      * Create the dialog.
      */
-    public DeploymentDescriptionDialog(AiravataRegistry registry, boolean newDescription, ServiceDescription serviceDescription) {
+    public DeploymentDescriptionDialog(AiravataRegistry2 registry, boolean newDescription, ServiceDescription serviceDescription) {
     	setNewDescription(newDescription);
     	this.setOrginalServiceDescription(serviceDescription);
     	setSuggestedNamePrefix(suggestedNamePrefix);
@@ -198,7 +198,6 @@ public class DeploymentDescriptionDialog extends JDialog {
 		chkForceFileStagingToWorkDir=new JCheckBox("Advanced: Force input file staging to working directory");
         chkForceFileStagingToWorkDir.addActionListener(new ActionListener(){
 
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				setForceFileStagingToWorkDir(chkForceFileStagingToWorkDir.isSelected());
 			}
@@ -229,7 +228,6 @@ public class DeploymentDescriptionDialog extends JDialog {
             {
             	JButton resetButton = new JButton("Reset");
                 resetButton.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent e) {
                     	loadData();
                     }
@@ -243,7 +241,6 @@ public class DeploymentDescriptionDialog extends JDialog {
                 }
                 okButton.setEnabled(false);
                 okButton.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent e) {
                         try {
 							saveServiceDescription();
@@ -260,7 +257,6 @@ public class DeploymentDescriptionDialog extends JDialog {
             {
                 JButton cancelButton = new JButton("Cancel");
                 cancelButton.addActionListener(new ActionListener() {
-                    @Override
                     public void actionPerformed(ActionEvent e) {
                         setServiceCreated(false);
                         close();
@@ -323,7 +319,6 @@ public class DeploymentDescriptionDialog extends JDialog {
 
         JButton btnNewDeployment = new JButton("New deployment");
         btnNewDeployment.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				HostDeploymentDialog hostDeploymentDialog = new HostDeploymentDialog(getRegistry(),true,null,null,Arrays.asList(getDeployments().keySet().toArray(new String[]{})));
 				try {
@@ -347,7 +342,6 @@ public class DeploymentDescriptionDialog extends JDialog {
         
         final JButton btnEditDeployment = new JButton("Edit deployment");
         btnEditDeployment.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				editSelectedDeployment();
 			}
@@ -355,7 +349,6 @@ public class DeploymentDescriptionDialog extends JDialog {
         
         final JButton btnDeleteDeployment = new JButton("Delete deployment");
         btnDeleteDeployment.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				String hostName = tblModelHosts.getValueAt(tblHosts.getSelectedRow(),0).toString();
 				int result = JOptionPane.showConfirmDialog(null, "Are you sure you want to remove the host deployment '"+hostName+"'?", "Remove Host Deployment",
@@ -368,7 +361,6 @@ public class DeploymentDescriptionDialog extends JDialog {
 		});
         
         selectionModel.addListSelectionListener(new ListSelectionListener() {
-            @Override
             public void valueChanged(ListSelectionEvent e) {
             	btnEditDeployment.setEnabled(tblHosts.getSelectedRows().length > 0);
             	btnDeleteDeployment.setEnabled(tblHosts.getSelectedRows().length > 0);
@@ -423,7 +415,6 @@ public class DeploymentDescriptionDialog extends JDialog {
         tblParameters.setModel(defaultTableModel);
         defaultTableModel.addTableModelListener(new TableModelListener() {
 
-            @Override
             public void tableChanged(TableModelEvent arg0) {
                 if (!ignoreTableChanges) {
 					int selectedRow = tblParameters.getSelectedRow();
@@ -463,7 +454,6 @@ public class DeploymentDescriptionDialog extends JDialog {
         selectionModel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         selectionModel.addListSelectionListener(new ListSelectionListener() {
-            @Override
             public void valueChanged(ListSelectionEvent e) {
                 btnDeleteParameter.setEnabled(tblParameters.getSelectedRows().length > 0);
             }
@@ -472,7 +462,6 @@ public class DeploymentDescriptionDialog extends JDialog {
         
         btnDeleteParameter = new JButton("Delete parameter");
         btnDeleteParameter.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent arg0) {
                 deleteSelectedRows();
             }
@@ -489,16 +478,13 @@ public class DeploymentDescriptionDialog extends JDialog {
 		txtApplicationServiceName.setEditable(isNewDescription());
     	ignoreTableChanges=true;
     	updateIODataTable(descType);
-    	try {
-    		getDeployments().clear();
-			Map<HostDescription, List<ApplicationDeploymentDescription>> descs = getRegistry().searchDeploymentDescription(descType.getName());
-			for (HostDescription hostDesc : descs.keySet()) {
-				getDeployments().put(hostDesc.getType().getHostName(),new HostDeployment(hostDesc, descs.get(hostDesc).get(0)));
-			}
-		} catch (RegistryException e) {
-			e.printStackTrace();
-		}
-    	updateDeploymentTable();
+        getDeployments().clear();
+        Map<HostDescription, List<ApplicationDeploymentDescription>> descs = getRegistry().getApplicationDescriptorswithHosts(descType.getName());
+        for (HostDescription hostDesc : descs.keySet()) {
+            getDeployments().put(hostDesc.getType().getHostName(), new HostDeployment(hostDesc, descs.get(hostDesc).get(0)));
+        }
+
+        updateDeploymentTable();
     	Boolean selected = false;
     	if (descType.getPortType()!=null && descType.getPortType().getMethod()!=null) {
 			XmlCursor cursor = descType.getPortType().getMethod().newCursor();
@@ -617,17 +603,8 @@ public class DeploymentDescriptionDialog extends JDialog {
         if (getServiceName() == null || getServiceName().trim().equals("")) {
             throw new Exception("Name of the application cannot be empty!!!");
         }
-
         ServiceDescription serviceDescription2 = null;
-        try {
-            serviceDescription2 = getRegistry().getServiceDescription(getServiceName());
-        } catch (RegistryException e) {
-            if (e.getCause() instanceof PathNotFoundException) {
-                // non-existant name. just want we want
-            } else {
-                throw e;
-            }
-        }
+        serviceDescription2 = getRegistry().getServiceDescriptor(getServiceName());
         if (isNewDescription() && serviceDescription2 != null) {
             throw new Exception("Service descriptor with the given name already exists!!!");
         }
@@ -665,26 +642,20 @@ public class DeploymentDescriptionDialog extends JDialog {
         }
         getServiceDescriptionType().setInputParametersArray(inputParameters.toArray(new InputParameterType[] {}));
         getServiceDescriptionType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[] {}));
-
-        try {
-			getRegistry().saveServiceDescription(getServiceDescription());
-			if (!isNewDescription()){
-				Map<HostDescription, List<ApplicationDeploymentDescription>> descs = getRegistry().searchDeploymentDescription(getServiceName());
-				for (HostDescription hostDesc : descs.keySet()) {
-					for (ApplicationDeploymentDescription app : descs.get(hostDesc)) {
-						getRegistry().deleteDeploymentDescription(getServiceName(), hostDesc.getType().getHostName(), app.getType().getApplicationName().getStringValue());	
-					}
-				}
-			}
-			for (String hostName : getDeployments().keySet()) {
-				getRegistry().saveDeploymentDescription(getServiceName(), hostName, getDeployments().get(hostName).getApplicationDescription());
-			}
-	        setServiceCreated(true);
-	        JOptionPane.showMessageDialog(this,"Application '"+getServiceName()+"' is registered Successfully !");
-		} catch (RegistryException e) {
-			setError(e.getMessage());
-			throw e;
-		}
+        getRegistry().addServiceDescriptor(getServiceDescription());
+        if (!isNewDescription()) {
+            Map<HostDescription, List<ApplicationDeploymentDescription>> descs = getRegistry().getApplicationDescriptorswithHosts(getServiceName());
+            for (HostDescription hostDesc : descs.keySet()) {
+                for (ApplicationDeploymentDescription app : descs.get(hostDesc)) {
+                    getRegistry().removeApplicationDescriptor(getServiceName(), hostDesc.getType().getHostName(), app.getType().getApplicationName().getStringValue());
+                }
+            }
+        }
+        for (String hostName : getDeployments().keySet()) {
+            getRegistry().addApplicationDescriptor(getServiceName(), hostName, getDeployments().get(hostName).getApplicationDescription());
+        }
+        setServiceCreated(true);
+        JOptionPane.showMessageDialog(this, "Application '" + getServiceName() + "' is registered Successfully !");
     }
 
     public void close() {
@@ -726,11 +697,11 @@ public class DeploymentDescriptionDialog extends JDialog {
 		}
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 
