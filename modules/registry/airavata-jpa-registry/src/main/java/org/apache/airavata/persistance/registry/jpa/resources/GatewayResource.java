@@ -93,12 +93,14 @@ public class GatewayResource extends AbstractResource {
             q.setParameter("proj_name", name);
             q.setParameter("gate_name", gatewayName);
             q.executeUpdate();
-        } else if (type == ResourceType.USER) {
-            Query q = em.createQuery("Delete p FROM Users p WHERE p.user_name = :usr_name and p.gateway_name = :gate_name");
-            q.setParameter("usr_name", name);
-            q.setParameter("gate_name", gatewayName);
-            q.executeUpdate();
-        } else if (type == ResourceType.PUBLISHED_WORKFLOW) {
+        }
+//        else if (type == ResourceType.USER) {
+//            Query q = em.createQuery("Delete p FROM Users p WHERE p.user_name = :usr_name and p.gateway_name = :gate_name");
+//            q.setParameter("usr_name", name);
+//            q.setParameter("gate_name", gatewayName);
+//            q.executeUpdate();
+//        }
+        else if (type == ResourceType.PUBLISHED_WORKFLOW) {
             Query q = em.createQuery("Delete p FROM Published_Workflow p WHERE p.publish_workflow_name = :pub_workflow_id and p.gateway_name = :gate_name");
             q.setParameter("pub_workflow_id", name);
             q.setParameter("gate_name", gatewayName);
@@ -113,6 +115,11 @@ public class GatewayResource extends AbstractResource {
         } else if (type == ResourceType.SERVICE_DESCRIPTOR) {
             Query q = em.createQuery("Delete p FROM Service_Descriptor p WHERE p.service_descriptor_ID = :service_desc_id and p.gateway_name = :gate_name");
             q.setParameter("service_desc_id", name);
+            q.setParameter("gate_name", gatewayName);
+            q.executeUpdate();
+        }else if(type == ResourceType.EXPERIMENT){
+            Query q = em.createQuery("Delete p FROM Experiment p WHERE p.experiment_ID = :exp_id and p.gateway_name = :gate_name");
+            q.setParameter("exp_id", name);
             q.setParameter("gate_name", gatewayName);
             q.executeUpdate();
         }
@@ -134,17 +141,18 @@ public class GatewayResource extends AbstractResource {
 
     public Resource get(ResourceType type, Object name) {
         begin();
-        if (type == ResourceType.PROJECT) {
-            Query q = em.createQuery("SELECT p FROM Project p WHERE p.project_name = :proj_name and p.gateway_name =:gate_name");
-            q.setParameter("proj_name", name);
-            q.setParameter("gate_name", gatewayName);
-            Project eproject = (Project) q.getSingleResult();
-            ProjectResource projectResource = new ProjectResource(eproject.getProject_ID());
-            projectResource.setName(eproject.getProject_name());
-            end();
-            return projectResource;
-        } else if (type == ResourceType.USER) {
-            Query q = em.createQuery("SELECT p FROM Users p WHERE p.user_name = :username and p.gateway_name =:gate_name");
+//        if (type == ResourceType.PROJECT) {
+//            Query q = em.createQuery("SELECT p FROM Project p WHERE p.project_name = :proj_name and p.gateway_name =:gate_name");
+//            q.setParameter("proj_name", name);
+//            q.setParameter("gate_name", gatewayName);
+//            Project eproject = (Project) q.getSingleResult();
+//            ProjectResource projectResource = new ProjectResource(eproject.getProject_ID());
+//            projectResource.setName(eproject.getProject_name());
+//            end();
+//            return projectResource;
+//        } else
+            if (type == ResourceType.USER) {
+            Query q = em.createQuery("SELECT p FROM Gateway_Worker p WHERE p.user_name = :username and p.gateway_name =:gate_name");
             q.setParameter("username", name);
             q.setParameter("gate_name", gatewayName);
             Users eUser = (Users) q.getSingleResult();
@@ -207,8 +215,9 @@ public class GatewayResource extends AbstractResource {
             experimentResource.setGatewayName(gatewayName);
             experimentResource.setSubmittedDate(experiment.getSubmitted_date());
             return experimentResource;
+        } else {
+                return null;
         }
-
     }
 
     public List<Resource> getMe(Object[] keys) {
@@ -231,7 +240,8 @@ public class GatewayResource extends AbstractResource {
                     resourceList.add(projectResource);
                 }
             }
-        } else if (type == ResourceType.USER) {
+        }
+        else if (type == ResourceType.USER) {
             Query q = em.createQuery("SELECT p FROM Users p WHERE p.gateway_name =:gate_name");
             q.setParameter("gate_name", gatewayName);
             List results = q.getResultList();
@@ -244,7 +254,8 @@ public class GatewayResource extends AbstractResource {
                     resourceList.add(userResource);
                 }
             }
-        } else if (type == ResourceType.PUBLISHED_WORKFLOW) {
+        }
+        else if (type == ResourceType.PUBLISHED_WORKFLOW) {
             Query q = em.createQuery("SELECT p FROM Published_Workflow p WHERE p.gateway_name =:gate_name");
             q.setParameter("gate_name", gatewayName);
             List results = q.getResultList();
@@ -330,16 +341,22 @@ public class GatewayResource extends AbstractResource {
         end();
     }
 
+    public void save(boolean isAppendable) {
+         throw new UnsupportedOperationException();
+    }
+
     public boolean isExists(ResourceType type, Object name) {
         begin();
-        if (type == ResourceType.PROJECT) {
-            Query q = em.createQuery("SELECT p FROM Project p WHERE p.gateway_name =:gate_name and p.project_name =:proj_name");
-            q.setParameter("gate_name", gatewayName);
-            q.setParameter("proj_name", name);
-            Project project = (Project) q.getSingleResult();
-            return project != null;
-        } else if (type == ResourceType.USER) {
-            Query q = em.createQuery("SELECT p FROM Users p WHERE p.gateway_name =:gate_name and p.user_name =:usr_name");
+//        if (type == ResourceType.PROJECT) {
+//            Query q = em.createQuery("SELECT p FROM Project p WHERE p.gateway_name =:gate_name and p.project_name =:proj_name");
+//            q.setParameter("gate_name", gatewayName);
+//            q.setParameter("proj_name", name);
+//            Project project = (Project) q.getSingleResult();
+//            return project != null;
+//        } else
+
+        if (type == ResourceType.USER) {
+            Query q = em.createQuery("SELECT p FROM Gateway_Worker p WHERE p.gateway_name =:gate_name and p.user_name =:usr_name");
             q.setParameter("gate_name", gatewayName);
             q.setParameter("usr_name", name);
             Users users = (Users) q.getSingleResult();
@@ -368,6 +385,12 @@ public class GatewayResource extends AbstractResource {
             q.setParameter("app_desc_name", name);
             Application_Descriptor applicationDescriptor = (Application_Descriptor) q.getSingleResult();
             return applicationDescriptor != null;
+        } else if (type == ResourceType.EXPERIMENT) {
+            Query q = em.createQuery("SELECT p FROM Experiment p WHERE p.gateway_name =:gate_name and p.experiment_ID =:ex_ID");
+            q.setParameter("gate_name", gatewayName);
+            q.setParameter("ex_ID", name);
+            Experiment experiment = (Experiment) q.getSingleResult();
+            return experiment != null;
         }
         end();
         return false;
