@@ -128,14 +128,10 @@ public class ResourceUtils {
         em.getTransaction().begin();
         Query q = em.createQuery("SELECT p FROM Configuration p WHERE p.config_key = :confKey");
         q.setParameter("confKey", configKey);
-        List resultList = q.getResultList();
+        List<?> resultList = q.getResultList();
         if (resultList.size() != 0) {
             for (Object result : resultList) {
-                Configuration configuration = (Configuration) result;
-                ConfigurationResource configurationResource = new ConfigurationResource();
-                configurationResource.setConfigKey(configuration.getConfig_key());
-                configurationResource.setConfigVal(configuration.getConfig_val());
-                configurationResource.setExpireDate(configuration.getExpire_date());
+                ConfigurationResource configurationResource = createConfigurationResourceObject(result);
                 list.add(configurationResource);
             }
         }
@@ -143,6 +139,32 @@ public class ResourceUtils {
         em.close();
         return list;
     }
+
+    public static ConfigurationResource getConfiguration(String configKey){
+    	List<ConfigurationResource> configurations = getConfigurations(configKey);
+    	return (configurations!=null && configurations.size()>0)? configurations.get(0):null;
+    }
+    
+    public static boolean isConfigurationExist(String configKey){
+    	List<ConfigurationResource> configurations = getConfigurations(configKey);
+    	return (configurations!=null && configurations.size()>0);
+    }
+    
+    public static ConfigurationResource createConfiguration(String configKey){
+    	ConfigurationResource config = new ConfigurationResource();
+    	config.setConfigKey(configKey);
+    	return config;
+    }
+    
+	private static ConfigurationResource createConfigurationResourceObject(
+			Object result) {
+		Configuration configuration = (Configuration) result;
+		ConfigurationResource configurationResource = new ConfigurationResource();
+		configurationResource.setConfigKey(configuration.getConfig_key());
+		configurationResource.setConfigVal(configuration.getConfig_val());
+		configurationResource.setExpireDate(configuration.getExpire_date());
+		return configurationResource;
+	}
 
     public static void removeConfiguration(String configkey, String configValue){
 

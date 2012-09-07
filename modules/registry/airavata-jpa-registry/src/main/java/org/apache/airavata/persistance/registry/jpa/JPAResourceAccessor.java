@@ -46,7 +46,4 @@ public class JPAResourceAccessor {
 		prj.setName(name);
 		return prj;
 	}
-	public ConfigurationResource getConfiguration(String key){
-		new ConfigurationResource(configID)
-	}
 }
