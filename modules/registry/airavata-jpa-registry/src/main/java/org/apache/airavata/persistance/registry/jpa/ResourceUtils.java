@@ -159,7 +159,7 @@ public class ResourceUtils {
 	private static ConfigurationResource createConfigurationResourceObject(
 			Object result) {
 		Configuration configuration = (Configuration) result;
-		ConfigurationResource configurationResource = new ConfigurationResource();
+		ConfigurationResource configurationResource = new ConfigurationResource(configuration.getConfig_ID());
 		configurationResource.setConfigKey(configuration.getConfig_key());
 		configurationResource.setConfigVal(configuration.getConfig_val());
 		configurationResource.setExpireDate(configuration.getExpire_date());
@@ -167,6 +167,10 @@ public class ResourceUtils {
 	}
 
     public static void removeConfiguration(String configkey, String configValue){
+
+    }
+    
+    public static void removeConfiguration(String configkey){
 
     }
 }
