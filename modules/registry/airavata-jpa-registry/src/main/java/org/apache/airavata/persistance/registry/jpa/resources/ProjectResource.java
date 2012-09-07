@@ -209,6 +209,10 @@ public class ProjectResource extends AbstractResource {
 
     }
 
+    public void save(boolean isAppendable) {
+
+    }
+
     public boolean isExists(ResourceType type, Object name) {
         begin();
         if (type == ResourceType.USER_WORKFLOW) {

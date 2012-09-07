@@ -171,6 +171,10 @@ public class ServiceDescriptorResource extends AbstractResource {
 
     }
 
+    public void save(boolean isAppendable) {
+
+    }
+
     public boolean isExists(ResourceType type, Object name) {
         if (type == ResourceType.APPLICATION_DESCRIPTOR) {
             begin();
