@@ -56,7 +56,11 @@ public class UserResource extends AbstractResource {
     }
 
     public Resource create(ResourceType type) {
-        if (type == ResourceType.USER_WORKFLOW) {
+        if(type == ResourceType.PROJECT){
+            ProjectResource projectResource = new ProjectResource();
+            projectResource.setUserName(userName);
+            return projectResource;
+        }else if (type == ResourceType.USER_WORKFLOW) {
             UserWorkflowResource userWorkflowResource = new UserWorkflowResource();
             userWorkflowResource.setUserName(userName);
 //            userWorkflowResource.setProjectID();
@@ -66,7 +70,23 @@ public class UserResource extends AbstractResource {
 //            experimentResource.setProjectID(id);
             experimentResource.setUserName(userName);
             return experimentResource;
-        } else {
+        }else if(type == ResourceType.PUBLISHED_WORKFLOW){
+            PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource();
+            publishWorkflowResource.setCreatedUser(userName);
+            return publishWorkflowResource;
+        }else if(type == ResourceType.HOST_DESCRIPTOR){
+            HostDescriptorResource hostDescriptorResource = new HostDescriptorResource();
+            hostDescriptorResource.setUserName(userName);
+            return hostDescriptorResource;
+        } else if (type == ResourceType.SERVICE_DESCRIPTOR){
+            ServiceDescriptorResource serviceDescriptorResource = new ServiceDescriptorResource();
+            serviceDescriptorResource.setUserName(userName);
+            return serviceDescriptorResource;
+        } else if(type == ResourceType.APPLICATION_DESCRIPTOR){
+            ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource();
+            applicationDescriptorResource.setUpdatedUser(userName);
+            return applicationDescriptorResource;
+        }else {
             return null;
         }
     }
@@ -74,9 +94,10 @@ public class UserResource extends AbstractResource {
     public void remove(ResourceType type, Object name) {
         begin();
         if (type == ResourceType.USER_WORKFLOW) {
-            Query q = em.createQuery("Delete p FROM User_Workflow p WHERE p.user_name = :usr_name and p.user_workflow_name = :usrwf_name");
-            q.setParameter("user_name", userName);
+            Query q = em.createQuery("Delete p FROM User_Workflow p WHERE p.owner = :owner and p.user_workflow_name = :usrwf_name and p.gateway_name =: gate_name");
+            q.setParameter("owner", userName);
             q.setParameter("usrwf_name", name);
+            q.setParameter("gate_name", gatewayName);
             q.executeUpdate();
         } else if (type == ResourceType.EXPERIMENT) {
             Query q = em.createQuery("Delete p FROM Experiment p WHERE p.user_name = :usr_name and p.experiment_ID = :ex_name");
@@ -95,9 +116,10 @@ public class UserResource extends AbstractResource {
     public Resource get(ResourceType type, Object name) {
         begin();
         if (type == ResourceType.USER_WORKFLOW) {
-            Query q = em.createQuery("SELECT p FROM User_Workflow p WHERE p.user_name = :usr_name and p.user_workflow_name = :usrwf_name");
+            Query q = em.createQuery("SELECT p FROM User_Workflow p WHERE p.owner = :usr_name and p.user_workflow_name = :usrwf_name and p.gateway_name =:gate_name");
             q.setParameter("user_name", userName);
             q.setParameter("usrwf_name", name);
+            q.setParameter("gate_name", gatewayName);
             User_Workflow userWorkflow = (User_Workflow) q.getSingleResult();
             UserWorkflowResource userWorkflowResource = new UserWorkflowResource(userWorkflow.getGateway().getGateway_name(), userName, userWorkflow.getTemplate_name());
             userWorkflowResource.setContent(userWorkflow.getWorkflow_graph());
@@ -171,6 +193,10 @@ public class UserResource extends AbstractResource {
 
         em.persist(user);
         end();
+    }
+
+    public void save(boolean isAppendable) {
+
     }
 
     public boolean isExists(ResourceType type, Object name) {

@@ -164,6 +164,10 @@ public class ApplicationDescriptorResource extends AbstractResource {
 
     }
 
+    public void save(boolean isAppendable) {
+
+    }
+
     public boolean isExists(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }

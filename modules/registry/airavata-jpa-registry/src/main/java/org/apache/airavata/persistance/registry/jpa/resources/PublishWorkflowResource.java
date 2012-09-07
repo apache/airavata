@@ -36,12 +36,30 @@ public class PublishWorkflowResource extends AbstractResource {
     private Date publishedDate;
     private String content;
     private String gatewayName;
+    private String createdUser;
+    private String path;
 
     public PublishWorkflowResource() {
     }
 
     public PublishWorkflowResource(String name) {
         this.name = name;
+    }
+
+    public String getCreatedUser() {
+        return createdUser;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setCreatedUser(String createdUser) {
+        this.createdUser = createdUser;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getName() {
@@ -129,6 +147,10 @@ public class PublishWorkflowResource extends AbstractResource {
         publishedWorkflow.setGateway(gateway);
         em.persist(gateway);
         end();
+    }
+
+    public void save(boolean isAppendable) {
+
     }
 
     public boolean isExists(ResourceType type, Object name) {
