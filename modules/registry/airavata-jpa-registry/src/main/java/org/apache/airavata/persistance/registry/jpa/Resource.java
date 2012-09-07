@@ -42,6 +42,8 @@ public interface Resource {
     List<Resource> get(ResourceType type);
 
     void save();
+    
+    void save(boolean overwrite);
 
     boolean isExists(ResourceType type, Object name);
 
