@@ -457,15 +457,23 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void addWorkflow(String workflowName, String workflowGraphXml) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        ProjectResource projectResource = new ProjectResource();
+        UserWorkflowResource resource = (UserWorkflowResource)projectResource.create(ResourceType.USER_WORKFLOW);
+        resource.setName(workflowName);
+        resource.setContent(workflowGraphXml);
+        resource.setLastUpdateDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+        resource.save();
     }
 
     public void updateWorkflow(String workflowName, String workflowGraphXml) {
-        //To change body of implemented methods use File | Settings | File Templates.
+         addWorkflow(workflowName,workflowGraphXml);
     }
 
     public String getWorkflowGraphXML(String workflowName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        GatewayResource gatewayResource = new GatewayResource();
+        UserResource resource = (UserResource)gatewayResource.get(ResourceType.USER_WORKFLOW, getUser().getUserName());
+        UserWorkflowResource resource1 = (UserWorkflowResource) resource.get(ResourceType.USER_WORKFLOW, workflowName);
+        return resource1.getContent();
     }
 
     public ResourceMetadata getWorkflowMetadata(String workflowName) {
@@ -473,7 +481,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void removeWorkflow(String workflowName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        GatewayResource gatewayResource = new GatewayResource();
+        UserResource resource = (UserResource)gatewayResource.get(ResourceType.USER_WORKFLOW, getUser().getUserName());
+        resource.remove(ResourceType.USER_WORKFLOW, workflowName);
     }
 
     public void setAiravataRegistry(AiravataRegistry2 registry) {

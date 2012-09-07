@@ -54,7 +54,7 @@ create table Published_Workflow
 
 create table User_Workflow
 (
-       project_ID int(11),
+       gateway_name varchar(255),
        user_name varchar(255),
        user_workflow_name varchar(255),
        last_update_date DATE,
