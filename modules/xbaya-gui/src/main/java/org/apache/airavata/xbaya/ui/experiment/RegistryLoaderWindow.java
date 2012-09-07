@@ -93,8 +93,8 @@ public class RegistryLoaderWindow {
                 try {
                     RegistryAccesser registryAccesser = new RegistryAccesser(RegistryLoaderWindow.this.engine);
 
-                    final Map<QName, Node> resultList = registryAccesser.getOGCEWorkflowTemplateList();
-                    final Set<QName> keys = resultList.keySet();
+                    final Map<String, String> resultList = registryAccesser.getOGCEWorkflowTemplateList();
+                    final Set<String> keys = resultList.keySet();
 
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -105,8 +105,8 @@ public class RegistryLoaderWindow {
                                  */
                             } else {
                                 Vector<RegistrySearchResult> results = new Vector<RegistrySearchResult>();
-                                Node val = null;
-                                for (QName key : keys) {
+                                String val = null;
+                                for (String key : keys) {
                                     val = resultList.get(key);
                                     results.add(new RegistrySearchResult(val));
                                 }

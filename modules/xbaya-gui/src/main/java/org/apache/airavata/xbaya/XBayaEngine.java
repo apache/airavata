@@ -26,7 +26,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.registry.AmazonComponentRegistry;
 import org.apache.airavata.workflow.model.component.registry.LocalComponentRegistry;
@@ -260,7 +260,7 @@ public class XBayaEngine {
 	public void updateXBayaConfigurationServiceURLs() {
 		try {
 			if (this.getConfiguration().getJcrComponentRegistry()!=null && this.getConfiguration().getJcrComponentRegistry().getRegistry()!=null){
-	        	AiravataRegistry registry=this.getConfiguration().getJcrComponentRegistry().getRegistry();
+	        	AiravataRegistry2 registry=this.getConfiguration().getJcrComponentRegistry().getRegistry();
 	        	List<URI> eventingServiceURLList = registry.getEventingServiceURLList();
 				if (eventingServiceURLList.size()>0) {
 					this.getConfiguration()

@@ -53,6 +53,8 @@ public class NewJCRRegistryUserDialog {
 
     private JPasswordField passwordTextField;
 
+    private String gatewayName = "default";
+
     private String username;
 
     private URL url;
@@ -110,19 +112,7 @@ public class NewJCRRegistryUserDialog {
         String status = updateStatus();
         if (status == null) {
             try {
-                JCRComponentRegistry registry = new JCRComponentRegistry(getUrl().toURI(), "anonymous", "");
-                registry.getUserManager().createUser(getUsername(), getPassword());
-                hide();
-                setUserCreated(true);
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-                engine.getGUI().getErrorWindow().error(e.getMessage());
-            } catch (AuthorizableExistsException e) {
-                e.printStackTrace();
-                engine.getGUI().getErrorWindow().error(e.getMessage());
-            } catch (RepositoryException e) {
-                e.printStackTrace();
-                engine.getGUI().getErrorWindow().error(e.getMessage());
+                JCRComponentRegistry registry = new JCRComponentRegistry(getUsername(),getPassword());
             } catch (RegistryException e) {
                 e.printStackTrace();
                 engine.getGUI().getErrorWindow().error(e.getMessage());
@@ -286,5 +276,13 @@ public class NewJCRRegistryUserDialog {
 
     public void setUserCreated(boolean userCreated) {
         this.userCreated = userCreated;
+    }
+
+    public String getGatewayName() {
+        return gatewayName;
+    }
+
+    public void setGatewayName(String gatewayName) {
+        this.gatewayName = gatewayName;
     }
 }

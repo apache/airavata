@@ -40,7 +40,7 @@ import javax.swing.SwingConstants;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
@@ -63,7 +63,7 @@ public class HostDescriptionDialog extends JDialog {
 
     private boolean hostCreated = false;
 
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
 
 	private XBayaLabel globusGateKeeperLabel;
 
@@ -92,14 +92,17 @@ public class HostDescriptionDialog extends JDialog {
 	private static final String REMOTE_PROTOCOL_STR_HADOOP="Hadoop";
 	
     
-    public HostDescriptionDialog(AiravataRegistry registry) {
+    public HostDescriptionDialog(AiravataRegistry2 registry) {
     	this(registry,true,null);
     }
-    
+
     /**
-     * @param engine XBaya workflow engine
+     *
+     * @param registry
+     * @param newHost
+     * @param originalHostDescription
      */
-    public HostDescriptionDialog(AiravataRegistry registry, boolean newHost, HostDescription originalHostDescription) {
+    public HostDescriptionDialog(AiravataRegistry2 registry, boolean newHost, HostDescription originalHostDescription) {
         setNewHost(newHost);
         setOriginalHostDescription(originalHostDescription);
         addWindowListener(new WindowAdapter() {
@@ -198,7 +201,6 @@ public class HostDescriptionDialog extends JDialog {
         pnlResourceProtocolSelection.add(cmbResourceProtocol);
         pnlResourceProtocolSelection.layout(1, 2, 0, 1);
         cmbResourceProtocol.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent arg0) {
                 updateRemoteProtocolTypeAndControls();
             }
@@ -346,12 +348,7 @@ public class HostDescriptionDialog extends JDialog {
 				throw new Exception("Id of the host cannot be empty!!!");
 			}
 			HostDescription hostDescription2 = null;
-			try {
-				hostDescription2 = getRegistry().getHostDescription(
-						hostName);
-			} catch (RegistryException e) {
-				throw e;
-			}
+		    hostDescription2 = getRegistry().getHostDescriptor(hostName);
 			if (hostDescription2 != null) {
 				throw new Exception(
 						"Host descriptor with the given id already exists!!!");
@@ -400,19 +397,15 @@ public class HostDescriptionDialog extends JDialog {
 
     public void saveHostDescription() {
         HostDescription desc = getHostDescription();
-		try {
-			getRegistry().saveHostDescription(desc);
-			setHostCreated(true);
-		} catch (RegistryException e) {
-			setError(e.getLocalizedMessage());
-		}
+        getRegistry().addHostDescriptor(desc);
+        setHostCreated(true);
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
     String previousProtocol=null;

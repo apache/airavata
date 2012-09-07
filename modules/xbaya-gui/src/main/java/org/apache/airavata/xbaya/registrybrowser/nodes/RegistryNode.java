@@ -29,6 +29,7 @@ import javax.swing.Icon;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.model.registrybrowser.AiravataConfigurations;
 import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptions;
@@ -41,7 +42,7 @@ import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.RefreshAction;
 
 public class RegistryNode extends AbstractAiravataTreeNode {
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
     private XBayaEngine engine;
 
     public RegistryNode(XBayaEngine engine, TreeNode parent) {
@@ -68,18 +69,17 @@ public class RegistryNode extends AbstractAiravataTreeNode {
         return getTreeNodeList(children.toArray(), this);
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 
     @Override
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
-        return getRegistry().getName() + " - " + getRegistry().getUsername() + "@"
-                + getRegistry().getRepositoryURI().toString();
+        return getRegistry().getGateway().getGatewayName() + " - " + getRegistry().getUser().getUserName();
     }
 
     @Override
