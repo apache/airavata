@@ -22,15 +22,17 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.model.Project;
+import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.User_Workflow;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
 
+import javax.persistence.Query;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserWorkflowResource extends AbstractResource {
-    private int projectID;
+    private String gatewayname;
     private String userName;
     private String name;
     private Date lastUpdateDate;
@@ -39,14 +41,14 @@ public class UserWorkflowResource extends AbstractResource {
     public UserWorkflowResource() {
     }
 
-    public UserWorkflowResource(int projectID, String userName, String name) {
-        this.projectID = projectID;
+    public UserWorkflowResource(String gatewayname, String userName, String name) {
+        this.gatewayname = gatewayname;
         this.userName = userName;
         this.name = name;
     }
 
-    public int getProjectID() {
-        return projectID;
+    public String getGatewayname() {
+        return gatewayname;
     }
 
     public String getUserName() {
@@ -73,8 +75,8 @@ public class UserWorkflowResource extends AbstractResource {
         return content;
     }
 
-    public void setProjectID(int projectID) {
-        this.projectID = projectID;
+    public void setGatewayname(String gatewayname) {
+        this.gatewayname = gatewayname;
     }
 
     public void setUserName(String userName) {
@@ -93,8 +95,35 @@ public class UserWorkflowResource extends AbstractResource {
         throw new UnsupportedOperationException();
     }
 
+    public void removeMe(Object[] keys) {
+
+    }
+
     public Resource get(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     *
+     * @param keys should be in the order of gateway_name,user_name and user_workflow_name
+     * @return
+     */
+    public List<Resource> getMe(Object[] keys) {
+        List<Resource> list = new ArrayList<Resource>();
+        begin();
+        Query q = em.createQuery("SELECT p FROM User_Workflow p WHERE p.gateway_name = :gate_name and p.user_name =:usr_name and p.user_workflow_name=:usr_wf_name");
+        q.setParameter("gate_name", keys[0]);
+        q.setParameter("usr_name", keys[1]);
+        q.setParameter("usr_wf_name",keys[2]);
+        User_Workflow userWorkflow = (User_Workflow)q.getSingleResult();
+        UserWorkflowResource userWorkflowResource = new UserWorkflowResource();
+        userWorkflowResource.setUserName(userWorkflow.getUser().getUser_name());
+        userWorkflowResource.setGatewayname(userWorkflow.getGateway().getGateway_name());
+        userWorkflowResource.setName(userWorkflow.getTemplate_name());
+        userWorkflowResource.setContent(userWorkflow.getWorkflow_graph());
+        end();
+        list.add(userWorkflowResource);
+        return list;
     }
 
     public List<Resource> get(ResourceType type) {
@@ -104,15 +133,15 @@ public class UserWorkflowResource extends AbstractResource {
     public void save() {
         begin();
         User_Workflow userWorkflow = new User_Workflow();
-        userWorkflow.setUser_workflow_name(name);
-        userWorkflow.setLast_update_date(lastUpdateDate);
-        userWorkflow.setWorkflow_content(content);
-        Project project = new Project();
-        project.setProject_ID(projectID);
-        userWorkflow.setProject_ID(projectID);
+        userWorkflow.setTemplate_name(name);
+        userWorkflow.setLast_updated_date(lastUpdateDate);
+        userWorkflow.setWorkflow_graph(content);
+        Gateway gateway = new Gateway();
+        gateway.setGateway_name(gatewayname);
+        userWorkflow.setGateway(gateway);
         Users user = new Users();
         user.setUser_name(userName);
-        userWorkflow.setUser_name(userName);
+        userWorkflow.setUser(user);
         em.persist(userWorkflow);
         end();
     }

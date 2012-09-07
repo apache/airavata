@@ -96,6 +96,10 @@ public class ServiceDescriptorResource extends AbstractResource {
 
     }
 
+    public void removeMe(Object[] keys) {
+
+    }
+
     public Resource get(ResourceType type, Object name) {
         if (type == ResourceType.APPLICATION_DESCRIPTOR) {
             begin();
@@ -104,15 +108,29 @@ public class ServiceDescriptorResource extends AbstractResource {
             q.setParameter("service_desc_name", serviceDescName);
             q.setParameter("gate_name", gatewayName);
             Application_Descriptor eappDesc = (Application_Descriptor) q.getSingleResult();
-            ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(eappDesc.getApplication_descriptor_ID());
-            applicationDescriptorResource.setGatewayName(eappDesc.getGateway().getGateway_name());
+            ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(eappDesc.getApplication_descriptor_ID(),
+                    eappDesc.getGateway().getGateway_name(), eappDesc.getHost_descriptor_ID(), eappDesc.getService_descriptor_ID());
             applicationDescriptorResource.setContent(eappDesc.getApplication_descriptor_xml());
-            applicationDescriptorResource.setHostDescName(eappDesc.getHost_descriptor().getHost_descriptor_ID());
-            applicationDescriptorResource.setServiceDescName(serviceDescName);
+            applicationDescriptorResource.setUpdatedUser(eappDesc.getUser().getUser_name());
             end();
             return applicationDescriptorResource;
         }
         return null;
+    }
+
+    public List<Resource> getMe(Object[] keys) {
+        List<Resource> list = new ArrayList<Resource>();
+        begin();
+        Query q = em.createQuery("SELECT p FROM Service_Descriptor p WHERE p.service_descriptor_ID = :service_desc_name");
+        q.setParameter("service_desc_name", keys[0]);
+        Service_Descriptor serviceDescriptor = (Service_Descriptor)q.getSingleResult();
+        ServiceDescriptorResource serviceDescriptorResource = new ServiceDescriptorResource(serviceDescriptor.getService_descriptor_ID());
+        serviceDescriptorResource.setGatewayName(serviceDescriptor.getGateway().getGateway_name());
+        serviceDescriptorResource.setUserName(serviceDescriptor.getUser().getUser_name());
+        serviceDescriptorResource.setContent(serviceDescriptor.getService_descriptor_xml());
+        end();
+        list.add(serviceDescriptorResource);
+        return list;
     }
 
     public List<Resource> get(ResourceType type) {
@@ -126,11 +144,12 @@ public class ServiceDescriptorResource extends AbstractResource {
             if (results.size() != 0) {
                 for (Object result : results) {
                     Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
-                    ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(applicationDescriptor.getApplication_descriptor_ID());
-                    applicationDescriptorResource.setGatewayName(gatewayName);
+                    ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(applicationDescriptor.getApplication_descriptor_ID(),
+                            applicationDescriptor.getGateway().getGateway_name(),
+                            applicationDescriptor.getHost_descriptor_ID(),
+                            applicationDescriptor.getService_descriptor_ID());
                     applicationDescriptorResource.setContent(applicationDescriptor.getApplication_descriptor_xml());
-                    applicationDescriptorResource.setHostDescName(applicationDescriptor.getHost_descriptor().getHost_descriptor_ID());
-                    applicationDescriptorResource.setServiceDescName(serviceDescName);
+                    applicationDescriptorResource.setUpdatedUser(applicationDescriptor.getUser().getUser_name());
                     resourceList.add(applicationDescriptorResource);
                 }
             }
@@ -166,9 +185,5 @@ public class ServiceDescriptorResource extends AbstractResource {
             }
         }
         return false;
-    }
-
-    public void setServiceDescName(String serviceDescName) {
-        this.serviceDescName = serviceDescName;
     }
 }

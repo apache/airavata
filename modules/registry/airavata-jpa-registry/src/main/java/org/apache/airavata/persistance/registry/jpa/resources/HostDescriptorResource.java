@@ -33,7 +33,7 @@ import java.util.List;
 public class HostDescriptorResource extends AbstractResource {
     private String hostDescName;
     private String gatewayName;
-    private int userID;
+    private String userName;
     private String content;
 
     public HostDescriptorResource(String hostDescName) {
@@ -43,12 +43,12 @@ public class HostDescriptorResource extends AbstractResource {
     public HostDescriptorResource() {
     }
 
-    public int getUserID() {
-        return userID;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getHostDescName() {
@@ -93,6 +93,10 @@ public class HostDescriptorResource extends AbstractResource {
         }
     }
 
+    public void removeMe(Object[] keys) {
+
+    }
+
     public Resource get(ResourceType type, Object name) {
         if (type == ResourceType.APPLICATION_DESCRIPTOR) {
             begin();
@@ -101,15 +105,36 @@ public class HostDescriptorResource extends AbstractResource {
             q.setParameter("host_desc_name", hostDescName);
             q.setParameter("gate_name", gatewayName);
             Application_Descriptor eappDesc = (Application_Descriptor) q.getSingleResult();
-            ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(eappDesc.getApplication_descriptor_ID());
-            applicationDescriptorResource.setGatewayName(eappDesc.getGateway().getGateway_name());
+            ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(eappDesc.getApplication_descriptor_ID(),
+                    eappDesc.getGateway().getGateway_name(),
+                    eappDesc.getHost_descriptor_ID(),
+                    eappDesc.getService_descriptor_ID());
             applicationDescriptorResource.setContent(eappDesc.getApplication_descriptor_xml());
-            applicationDescriptorResource.setHostDescName(eappDesc.getHost_descriptor().getHost_descriptor_ID());
-            applicationDescriptorResource.setServiceDescName(hostDescName);
+            applicationDescriptorResource.setUpdatedUser(eappDesc.getUser().getUser_name());
             end();
             return applicationDescriptorResource;
         }
         return null;
+    }
+
+    /**
+     * key should be host_descriptor_name
+     * @param keys
+     * @return
+     */
+    public List<Resource> getMe(Object[] keys) {
+        List<Resource> list = new ArrayList<Resource>();
+        begin();
+        Query q = em.createQuery("SELECT p FROM Host_Descriptor p WHERE p.host_descriptor_ID = :host_desc_name");
+        q.setParameter("host_desc_name", keys[0]);
+        Host_Descriptor hostDescriptor = (Host_Descriptor)q.getSingleResult();
+        HostDescriptorResource hostDescriptorResource = new HostDescriptorResource(hostDescriptor.getHost_descriptor_ID());
+        hostDescriptorResource.setGatewayName(hostDescriptor.getGateway().getGateway_name());
+        hostDescriptorResource.setUserName(hostDescriptor.getUser().getUser_name());
+        hostDescriptorResource.setContent(hostDescriptor.getHost_descriptor_xml());
+        end();
+        list.add(hostDescriptorResource);
+        return list;
     }
 
     public List<Resource> get(ResourceType type) {
@@ -123,11 +148,12 @@ public class HostDescriptorResource extends AbstractResource {
             if (results.size() != 0) {
                 for (Object result : results) {
                     Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
-                    ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(applicationDescriptor.getApplication_descriptor_ID());
-                    applicationDescriptorResource.setGatewayName(gatewayName);
+                    ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(applicationDescriptor.getApplication_descriptor_ID(),
+                            applicationDescriptor.getGateway().getGateway_name(),
+                            applicationDescriptor.getHost_descriptor_ID(),
+                            applicationDescriptor.getService_descriptor_ID());
                     applicationDescriptorResource.setContent(applicationDescriptor.getApplication_descriptor_xml());
-                    applicationDescriptorResource.setHostDescName(hostDescName);
-                    applicationDescriptorResource.setServiceDescName(applicationDescriptor.getService_descriptor().getService_descriptor_ID());
+                    applicationDescriptor.setUser(applicationDescriptor.getUser());
                     resourceList.add(applicationDescriptorResource);
                 }
             }

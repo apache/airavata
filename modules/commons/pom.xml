@@ -29,12 +29,12 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>workflow-tracking</module>
-                <module>gfac-schema</module>
+                <!--module>workflow-tracking</module>
+                <module>gfac-schema</module-->
                 <module>utils</module>
                 <module>common-registry-api</module>
                 <module>registry-api</module>
-                <module>workflow-execution-context</module>
+                <!--module>workflow-execution-context</module-->
 		<module>provenance-registry</module>
             </modules>
         </profile>

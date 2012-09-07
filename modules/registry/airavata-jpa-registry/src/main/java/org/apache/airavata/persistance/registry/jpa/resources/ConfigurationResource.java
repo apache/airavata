@@ -24,7 +24,9 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.Configuration;
 
+import javax.persistence.Query;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigurationResource extends AbstractResource {
@@ -32,6 +34,9 @@ public class ConfigurationResource extends AbstractResource {
     private String configKey;
     private String configVal;
     private Date expireDate;
+
+    public ConfigurationResource() {
+    }
 
     public ConfigurationResource(int configID) {
         this.configID = configID;
@@ -45,8 +50,46 @@ public class ConfigurationResource extends AbstractResource {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     *  keys should be config key and config content
+     * @param keys
+     */
+    public void removeMe(Object[] keys) {
+
+    }
+
     public Resource get(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * key should be the configuration name
+     * @param keys
+     * @return
+     */
+    public List<Resource> getMe(Object[] keys) {
+        List<Resource> list = new ArrayList<Resource>();
+        begin();
+        Query q = em.createQuery("SELECT p FROM Configuration p WHERE p.config_key = :confKey");
+        q.setParameter("confKey", keys[0]);
+        List resultList = q.getResultList();
+        if (resultList.size() != 0) {
+            for (Object result : resultList) {
+                Configuration configuration = (Configuration) result;
+                ConfigurationResource configurationResource = new ConfigurationResource();
+                configurationResource.setConfigKey(configuration.getConfig_key());
+                configurationResource.setConfigVal(configuration.getConfig_val());
+                configurationResource.setExpireDate(configuration.getExpire_date());
+                list.add(configurationResource);
+            }
+        }
+        end();
+        return list;
+
+    }
+
+    public List<ConfigurationResource> getValues(){
+        return null;
     }
 
     public List<Resource> get(ResourceType type) {

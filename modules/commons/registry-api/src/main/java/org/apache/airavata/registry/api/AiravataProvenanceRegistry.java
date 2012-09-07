@@ -28,12 +28,7 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 
-public abstract class AiravataProvenanceRegistry implements DataRegistry{
-	private String user;
-	
-	public AiravataProvenanceRegistry(String user) {
-		setUser(user);
-	}
+public interface AiravataProvenanceRegistry extends AiravataSubRegistry{
 
 	/*------------------------------------------- Experiment data ---------------------------------------------*/
     /**
@@ -278,12 +273,4 @@ public abstract class AiravataProvenanceRegistry implements DataRegistry{
      * @return
      */
     public abstract boolean saveWorkflowNodeGramLocalJobID(String workflowInstanceID,String workflowNodeID,String localJobID)throws RegistryException;
-
-	public String getUser() {
-		return user;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
-	}
 }

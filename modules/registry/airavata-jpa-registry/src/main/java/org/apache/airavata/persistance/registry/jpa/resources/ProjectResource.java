@@ -72,7 +72,7 @@ public class ProjectResource extends AbstractResource {
     public Resource create(ResourceType type) {
         if (type == ResourceType.USER_WORKFLOW) {
             UserWorkflowResource userWorkflowResource = new UserWorkflowResource();
-            userWorkflowResource.setProjectID(id);
+            userWorkflowResource.setGatewayname(gatewayName);
             userWorkflowResource.setUserName(userWorkflowResource.getUserName());
             return userWorkflowResource;
         } else if (type == ResourceType.EXPERIMENT) {
@@ -103,6 +103,10 @@ public class ProjectResource extends AbstractResource {
         end();
     }
 
+    public void removeMe(Object[] keys) {
+
+    }
+
     public Resource get(ResourceType type, Object name) {
         begin();
         if (type == ResourceType.USER_WORKFLOW) {
@@ -111,9 +115,9 @@ public class ProjectResource extends AbstractResource {
             q.setParameter("usr_name", userResource.getUserName());
             q.setParameter("usrwf_name", name);
             User_Workflow userWorkflow = (User_Workflow) q.getSingleResult();
-            UserWorkflowResource userWorkflowResource = new UserWorkflowResource(id, userResource.getUserName(), userWorkflow.getUser_workflow_name());
-            userWorkflowResource.setContent(userWorkflow.getWorkflow_content());
-            userWorkflowResource.setLastUpdateDate(userWorkflow.getLast_update_date());
+            UserWorkflowResource userWorkflowResource = new UserWorkflowResource(gatewayName, userResource.getUserName(), userWorkflow.getTemplate_name());
+            userWorkflowResource.setContent(userWorkflow.getWorkflow_graph());
+            userWorkflowResource.setLastUpdateDate(userWorkflow.getLast_updated_date());
             end();
             return userWorkflowResource;
         } else if (type == ResourceType.EXPERIMENT) {
@@ -132,6 +136,25 @@ public class ProjectResource extends AbstractResource {
         return null;
     }
 
+    public List<Resource> getMe(Object[] keys) {
+        List<Resource> list = new ArrayList<Resource>();
+        begin();
+        Query q = em.createQuery("SELECT p FROM Project p WHERE p.project_name = :proj_name");
+        q.setParameter("proj_name", keys[0]);
+        List resultList = q.getResultList();
+        if (resultList.size() != 0) {
+            for (Object result : resultList) {
+                Project project = (Project) result;
+                ProjectResource projectResource = new ProjectResource();
+                projectResource.setGatewayName(project.getGateway().getGateway_name());
+                projectResource.setUserName(project.getUsers().getUser_name());
+                list.add(projectResource);
+            }
+        }
+        end();
+        return list;
+    }
+
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
         begin();
@@ -142,9 +165,9 @@ public class ProjectResource extends AbstractResource {
             if (results.size() != 0) {
                 for (Object result : results) {
                     User_Workflow userWorkflow = (User_Workflow) result;
-                    UserWorkflowResource userWorkflowResource = new UserWorkflowResource(userWorkflow.getProject_ID(), userWorkflow.getUser_name(), userWorkflow.getUser_workflow_name());
-                    userWorkflowResource.setContent(userWorkflow.getWorkflow_content());
-                    userWorkflowResource.setLastUpdateDate(userWorkflow.getLast_update_date());
+                    UserWorkflowResource userWorkflowResource = new UserWorkflowResource(userWorkflow.getGateway().getGateway_name(), userWorkflow.getUser().getUser_name(), userWorkflow.getTemplate_name());
+                    userWorkflowResource.setContent(userWorkflow.getWorkflow_graph());
+                    userWorkflowResource.setLastUpdateDate(userWorkflow.getLast_updated_date());
                     resourceList.add(userWorkflowResource);
                 }
             }

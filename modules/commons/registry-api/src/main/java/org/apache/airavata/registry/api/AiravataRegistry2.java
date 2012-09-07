@@ -22,7 +22,7 @@
 package org.apache.airavata.registry.api;
 
 
-public abstract class AiravataRegistry2 implements DescriptorRegistry, ProjectsRegistry, PublishedWorkflowRegistry, UserWorkflowRegistry, ConfigurationRegistry{
+public abstract class AiravataRegistry2 implements DescriptorRegistry, ProjectsRegistry, PublishedWorkflowRegistry, UserWorkflowRegistry, ConfigurationRegistry, AiravataProvenanceRegistry{
 	private Gateway gateway;
 	private AiravataUser user;
 	

@@ -88,6 +88,10 @@ public class UserResource extends AbstractResource {
 
     }
 
+    public void removeMe(Object[] keys) {
+
+    }
+
     public Resource get(ResourceType type, Object name) {
         begin();
         if (type == ResourceType.USER_WORKFLOW) {
@@ -95,9 +99,9 @@ public class UserResource extends AbstractResource {
             q.setParameter("user_name", userName);
             q.setParameter("usrwf_name", name);
             User_Workflow userWorkflow = (User_Workflow) q.getSingleResult();
-            UserWorkflowResource userWorkflowResource = new UserWorkflowResource(userWorkflow.getProject_ID(), userName, userWorkflow.getUser_workflow_name());
-            userWorkflowResource.setContent(userWorkflow.getWorkflow_content());
-            userWorkflowResource.setLastUpdateDate(userWorkflow.getLast_update_date());
+            UserWorkflowResource userWorkflowResource = new UserWorkflowResource(userWorkflow.getGateway().getGateway_name(), userName, userWorkflow.getTemplate_name());
+            userWorkflowResource.setContent(userWorkflow.getWorkflow_graph());
+            userWorkflowResource.setLastUpdateDate(userWorkflow.getLast_updated_date());
             end();
             return userWorkflowResource;
         } else if (type == ResourceType.EXPERIMENT) {
@@ -119,6 +123,10 @@ public class UserResource extends AbstractResource {
         return null;
     }
 
+    public List<Resource> getMe(Object[] keys) {
+        throw new UnsupportedOperationException();
+    }
+
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
         begin();
@@ -129,9 +137,9 @@ public class UserResource extends AbstractResource {
             if (results.size() != 0) {
                 for (Object result : results) {
                     User_Workflow userWorkflow = (User_Workflow) result;
-                    UserWorkflowResource userWorkflowResource = new UserWorkflowResource(userWorkflow.getProject_ID(), userWorkflow.getUser_name(), userWorkflow.getUser_workflow_name());
-                    userWorkflowResource.setContent(userWorkflow.getWorkflow_content());
-                    userWorkflowResource.setLastUpdateDate(userWorkflow.getLast_update_date());
+                    UserWorkflowResource userWorkflowResource = new UserWorkflowResource(userWorkflow.getGateway().getGateway_name(), userWorkflow.getUser().getUser_name(), userWorkflow.getTemplate_name());
+                    userWorkflowResource.setContent(userWorkflow.getWorkflow_graph());
+                    userWorkflowResource.setLastUpdateDate(userWorkflow.getLast_updated_date());
                     resourceList.add(userWorkflowResource);
                 }
             }

@@ -34,17 +34,25 @@ public class Published_Workflow {
 
     @Id
     private String publish_workflow_name;
+
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "gateway_name")
+    private Gateway gateway;
+
     private String version;
     private Date published_date;
     private String workflow_content;
+    private String path;
 
-    @Id
-    private String gateway_name;
+    @ManyToOne
+    @JoinColumn(name = "user_name")
+    private Users user;
 
 //    @Id
-//    @ManyToOne
-//    @JoinColumn(name = "gateway_ID")
-//    private Gateway gateway;
+//    private String gateway_name;
+
+
 
     public String getPublish_workflow_name() {
         return publish_workflow_name;
@@ -62,9 +70,9 @@ public class Published_Workflow {
         return workflow_content;
     }
 
-//    public Gateway getGateway() {
-//        return gateway;
-//    }
+    public Gateway getGateway() {
+        return gateway;
+    }
 
     public void setPublish_workflow_name(String publish_workflow_name) {
         this.publish_workflow_name = publish_workflow_name;
@@ -82,17 +90,33 @@ public class Published_Workflow {
         this.workflow_content = workflow_content;
     }
 
-    public String getGateway_name() {
-        return gateway_name;
+    public String getPath() {
+        return path;
     }
 
-    public void setGateway_name(String gateway_name) {
-        this.gateway_name = gateway_name;
+    public void setPath(String path) {
+        this.path = path;
     }
 
-    //    public void setGateway(Gateway gateway) {
-//        this.gateway = gateway;
+    //    public String getGateway_name() {
+//        return gateway_name;
 //    }
+//
+//    public void setGateway_name(String gateway_name) {
+//        this.gateway_name = gateway_name;
+//    }
+
+    public Users getUser() {
+        return user;
+    }
+
+    public void setUser(Users user) {
+        this.user = user;
+    }
+
+    public void setGateway(Gateway gateway) {
+        this.gateway = gateway;
+    }
 }
 
 class Published_Workflow_PK {

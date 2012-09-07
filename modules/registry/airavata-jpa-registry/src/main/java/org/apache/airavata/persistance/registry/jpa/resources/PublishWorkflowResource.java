@@ -25,7 +25,9 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Published_Workflow;
 
+import javax.persistence.Query;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PublishWorkflowResource extends AbstractResource {
@@ -86,8 +88,29 @@ public class PublishWorkflowResource extends AbstractResource {
         throw new UnsupportedOperationException();
     }
 
+    public void removeMe(Object[] keys) {
+
+    }
+
     public Resource get(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
+    }
+
+    public List<Resource> getMe(Object[] keys) {
+        List<Resource> list = new ArrayList<Resource>();
+        begin();
+        Query q = em.createQuery("SELECT p FROM Published_Workflow p WHERE p.gateway_name = :gate_name and p.publish_workflow_name =:pub_wf_name");
+        q.setParameter("gate_name", keys[0]);
+        q.setParameter("pub_wf_name", keys[1]);
+        Published_Workflow publishedWorkflow = (Published_Workflow)q.getSingleResult();
+        PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource();
+        publishWorkflowResource.setGatewayName(publishedWorkflow.getGateway().getGateway_name());
+        publishWorkflowResource.setContent(publishedWorkflow.getWorkflow_content());
+        publishWorkflowResource.setPublishedDate(publishedWorkflow.getPublished_date());
+        publishWorkflowResource.setVersion(publishedWorkflow.getVersion());
+        end();
+        list.add(publishWorkflowResource);
+        return list;
     }
 
     public List<Resource> get(ResourceType type) {
@@ -103,13 +126,9 @@ public class PublishWorkflowResource extends AbstractResource {
         publishedWorkflow.setWorkflow_content(content);
         Gateway gateway = new Gateway();
         gateway.setGateway_name(gatewayName);
-        publishedWorkflow.setGateway_name(gatewayName);
+        publishedWorkflow.setGateway(gateway);
         em.persist(gateway);
         end();
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public boolean isExists(ResourceType type, Object name) {

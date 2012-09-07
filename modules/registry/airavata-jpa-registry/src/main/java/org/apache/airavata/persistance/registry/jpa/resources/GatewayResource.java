@@ -22,13 +22,7 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor;
-import org.apache.airavata.persistance.registry.jpa.model.Gateway;
-import org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor;
-import org.apache.airavata.persistance.registry.jpa.model.Project;
-import org.apache.airavata.persistance.registry.jpa.model.Published_Workflow;
-import org.apache.airavata.persistance.registry.jpa.model.Service_Descriptor;
-import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.apache.airavata.persistance.registry.jpa.model.*;
 
 import javax.persistence.Query;
 import java.util.ArrayList;
@@ -36,7 +30,7 @@ import java.util.List;
 
 public class GatewayResource extends AbstractResource {
     private String gatewayName;
-    private String name;
+    private String owner;
 
     public String getGatewayName() {
         return gatewayName;
@@ -44,6 +38,14 @@ public class GatewayResource extends AbstractResource {
 
     public void setGatewayName(String gatewayName) {
         this.gatewayName = gatewayName;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     public Resource create(ResourceType type) {
@@ -59,7 +61,11 @@ public class GatewayResource extends AbstractResource {
             PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource();
             publishWorkflowResource.setGatewayName(gatewayName);
             return publishWorkflowResource;
-        } else if (type == ResourceType.HOST_DESCRIPTOR) {
+        }else if(type == ResourceType.USER_WORKFLOW){
+            UserWorkflowResource userWorkflowResource = new UserWorkflowResource();
+            userWorkflowResource.setGatewayname(gatewayName);
+            return userWorkflowResource;
+        }else if (type == ResourceType.HOST_DESCRIPTOR) {
             HostDescriptorResource hostDescriptorResource = new HostDescriptorResource();
             hostDescriptorResource.setGatewayName(gatewayName);
             return hostDescriptorResource;
@@ -71,7 +77,11 @@ public class GatewayResource extends AbstractResource {
             ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource();
             applicationDescriptorResource.setGatewayName(gatewayName);
             return applicationDescriptorResource;
-        } else {
+        } else if(type == ResourceType.EXPERIMENT){
+            ExperimentResource experimentResource =new ExperimentResource();
+            experimentResource.setGatewayName(gatewayName);
+            return experimentResource;
+        }else {
             return null;
         }
     }
@@ -105,15 +115,21 @@ public class GatewayResource extends AbstractResource {
             q.setParameter("service_desc_id", name);
             q.setParameter("gate_name", gatewayName);
             q.executeUpdate();
-        } else if (type == ResourceType.APPLICATION_DESCRIPTOR) {
-            Query q = em.createQuery("Delete p FROM Application_Descriptor p WHERE p.application_descriptor_ID = :app_desc_id and p.gateway_name = :gate_name");
-            q.setParameter("app_desc_id", name);
-            q.setParameter("gate_name", gatewayName);
-            q.executeUpdate();
         }
+
+//        else if (type == ResourceType.APPLICATION_DESCRIPTOR) {
+//            Query q = em.createQuery("Delete p FROM Application_Descriptor p WHERE p.application_descriptor_ID = :app_desc_id and p.gateway_name = :gate_name");
+//            q.setParameter("app_desc_id", name);
+//            q.setParameter("gate_name", gatewayName);
+//            q.executeUpdate();
+//        }
+
         end();
 
 
+    }
+
+    public void removeMe(Object[] keys) {
     }
 
     public Resource get(ResourceType type, Object name) {
@@ -168,22 +184,35 @@ public class GatewayResource extends AbstractResource {
             hostDescriptorResource.setContent(eHostDesc.getHost_descriptor_ID());
             end();
             return hostDescriptorResource;
-        } else if (type == ResourceType.APPLICATION_DESCRIPTOR) {
-            Query q = em.createQuery("SELECT p FROM Application_Descriptor p WHERE p.application_descriptor_ID = :app_desc_id and p.gateway_name =:gate_name");
-            q.setParameter("app_desc_id", name);
+//        }
+//        else if (type == ResourceType.APPLICATION_DESCRIPTOR) {
+//            Query q = em.createQuery("SELECT p FROM Application_Descriptor p WHERE p.application_descriptor_ID = :app_desc_id and p.gateway_name =:gate_name");
+//            q.setParameter("app_desc_id", name);
+//            q.setParameter("gate_name", gatewayName);
+//            Application_Descriptor eappDesc = (Application_Descriptor) q.getSingleResult();
+//            ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(eappDesc.getApplication_descriptor_ID());
+//            applicationDescriptorResource.setGatewayName(eappDesc.getGateway().getGateway_name());
+//            applicationDescriptorResource.setContent(eappDesc.getApplication_descriptor_xml());
+//            applicationDescriptorResource.setHostDescName(eappDesc.getHost_descriptor_ID());
+//            applicationDescriptorResource.setServiceDescName(eappDesc.getService_descriptor_ID());
+//            end();
+//            return applicationDescriptorResource;
+        } else if(type == ResourceType.EXPERIMENT){
+            Query q = em.createQuery("SELECT p FROM Experiment p WHERE p.experiment_ID = :ex_ID and p.gateway_name =:gate_name");
+            q.setParameter("ex_ID", name);
             q.setParameter("gate_name", gatewayName);
-            Application_Descriptor eappDesc = (Application_Descriptor) q.getSingleResult();
-            ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(eappDesc.getApplication_descriptor_ID());
-            applicationDescriptorResource.setGatewayName(eappDesc.getGateway().getGateway_name());
-            applicationDescriptorResource.setContent(eappDesc.getApplication_descriptor_xml());
-            applicationDescriptorResource.setHostDescName(eappDesc.getHost_descriptor().getHost_descriptor_ID());
-            applicationDescriptorResource.setServiceDescName(eappDesc.getService_descriptor().getService_descriptor_ID());
-            end();
-            return applicationDescriptorResource;
-        } else {
-            return null;
+            Experiment experiment = (Experiment)q.getSingleResult();
+            ExperimentResource experimentResource = new ExperimentResource(experiment.getExperiment_ID());
+            experimentResource.setUserName(experiment.getUser().getUser_name());
+            experimentResource.setGatewayName(gatewayName);
+            experimentResource.setSubmittedDate(experiment.getSubmitted_date());
+            return experimentResource;
         }
 
+    }
+
+    public List<Resource> getMe(Object[] keys) {
+        throw new UnsupportedOperationException();
     }
 
     public List<Resource> get(ResourceType type) {
@@ -263,24 +292,39 @@ public class GatewayResource extends AbstractResource {
             if (results.size() != 0) {
                 for (Object result : results) {
                     Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
-                    ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(applicationDescriptor.getApplication_descriptor_ID());
-                    applicationDescriptorResource.setGatewayName(gatewayName);
+                    ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(applicationDescriptor.getApplication_descriptor_ID(),applicationDescriptor.getGateway().getGateway_name(),
+                            applicationDescriptor.getHost_descriptor_ID(), applicationDescriptor.getService_descriptor_ID());
                     applicationDescriptorResource.setContent(applicationDescriptor.getApplication_descriptor_xml());
-                    applicationDescriptorResource.setHostDescName(applicationDescriptor.getHost_descriptor().getHost_descriptor_ID());
-                    applicationDescriptorResource.setServiceDescName(applicationDescriptor.getService_descriptor().getService_descriptor_ID());
+                    applicationDescriptorResource.setUpdatedUser(applicationDescriptor.getUser().getUser_name());
                     resourceList.add(applicationDescriptorResource);
+                }
+            }
+        } else if (type == ResourceType.EXPERIMENT) {
+            Query q = em.createQuery("SELECT p FROM Experiment p WHERE p.gateway_name =:gate_name");
+            q.setParameter("gate_name", gatewayName);
+            List results = q.getResultList();
+            if (results.size() != 0) {
+                for (Object result : results) {
+                    Experiment experiment = (Experiment) result;
+                    ExperimentResource experimentResource = new ExperimentResource(experiment.getExperiment_ID());
+                    experimentResource.setGatewayName(gatewayName);
+                    experimentResource.setUserName(experiment.getUser().getUser_name());
+                    experimentResource.setSubmittedDate(experiment.getSubmitted_date());
+                    experimentResource.setProjectID(experiment.getProject().getProject_ID());
+                    resourceList.add(experimentResource);
                 }
             }
         }
         end();
         return resourceList;
+
     }
 
     public void save() {
         // save me..
         begin();
         Gateway gateway = new Gateway();
-        gateway.setGateway_name(name);
+        gateway.setGateway_name(gatewayName);
         em.persist(gateway);
         System.out.println(gateway);
         end();
@@ -329,12 +373,5 @@ public class GatewayResource extends AbstractResource {
         return false;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
 }

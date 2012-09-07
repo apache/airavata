@@ -22,23 +22,25 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor;
-import org.apache.airavata.persistance.registry.jpa.model.Gateway;
-import org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor;
-import org.apache.airavata.persistance.registry.jpa.model.Service_Descriptor;
+import org.apache.airavata.persistance.registry.jpa.model.*;
 
+import javax.persistence.Query;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ApplicationDescriptorResource extends AbstractResource {
     private String name;
     private String gatewayName;
-    private String userName;
+    private String updatedUser;
     private String content;
     private String hostDescName;
     private String serviceDescName;
 
-    public ApplicationDescriptorResource(String name) {
+    public ApplicationDescriptorResource(String name, String gatewayName, String hostDescName, String serviceDescName) {
         this.name = name;
+        this.gatewayName = gatewayName;
+        this.hostDescName = hostDescName;
+        this.serviceDescName = serviceDescName;
     }
 
     public ApplicationDescriptorResource() {
@@ -52,12 +54,12 @@ public class ApplicationDescriptorResource extends AbstractResource {
         this.gatewayName = gatewayName;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUpdatedUser() {
+        return updatedUser;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUpdatedUser(String updatedUser) {
+        this.updatedUser = updatedUser;
     }
 
     public String getName() {
@@ -96,8 +98,48 @@ public class ApplicationDescriptorResource extends AbstractResource {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * key should be gateway_name, application_descriptor_ID, host_descriptor_ID, service_descriptor_ID
+     * @param keys
+     */
+    public void removeMe(Object[] keys) {
+        begin();
+        Query q = em.createQuery("Delete p FROM Application_Descriptor p WHERE p.application_descriptor_ID = :app_desc_id and p.gateway_name=:gate_name and p.host_descriptor_ID =:host_id " +
+                "and p.service_descriptor_ID =: service_desc");
+        q.setParameter("gate_name", keys[0]);
+        q.setParameter("app_desc_id", keys[1]);
+        q.setParameter("host_id", keys[2]);
+        q.setParameter("service_desc", keys[3]);
+        q.executeUpdate();
+        end();
+    }
+
     public Resource get(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * keys should contain gateway_name, application_descriptor_ID, host_descriptor_ID, service_descriptor_ID
+     * @param keys
+     * @return
+     */
+    public List<Resource> getMe(Object[] keys) {
+        List<Resource> list = new ArrayList<Resource>();
+        begin();
+        Query q = em.createQuery("SELECT p FROM Application_Descriptor p WHERE p.application_descriptor_ID = :app_desc_name and p.gateway_name=:gate_name and p.host_descriptor_ID =:host_id " +
+                "and p.service_descriptor_ID =: service_desc");
+        q.setParameter("gate_name", keys[0]);
+        q.setParameter("app_desc_id", keys[1]);
+        q.setParameter("host_id", keys[2]);
+        q.setParameter("service_desc", keys[3]);
+        Application_Descriptor applicationDescriptor = (Application_Descriptor)q.getSingleResult();
+        ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(applicationDescriptor.getApplication_descriptor_ID(),
+                applicationDescriptor.getGateway().getGateway_name(), applicationDescriptor.getHost_descriptor_ID(), applicationDescriptor.getService_descriptor_ID());
+        applicationDescriptorResource.setUpdatedUser(applicationDescriptor.getUser().getUser_name());
+        applicationDescriptorResource.setContent(applicationDescriptor.getApplication_descriptor_xml());
+        end();
+        list.add(applicationDescriptorResource);
+        return list;
     }
 
     public List<Resource> get(ResourceType type) {
@@ -111,11 +153,12 @@ public class ApplicationDescriptorResource extends AbstractResource {
         Gateway gateway = new Gateway();
         gateway.setGateway_name(gatewayName);
         applicationDescriptor.setGateway(gateway);
-        Host_Descriptor hostDescriptor = new Host_Descriptor();
-        hostDescriptor.setHost_descriptor_ID(hostDescName);
-        Service_Descriptor serviceDescriptor = new Service_Descriptor();
-        serviceDescriptor.setService_descriptor_ID(serviceDescName);
+        Users user = new Users();
+        user.setUser_name(updatedUser);
+        applicationDescriptor.setUser(user);
         applicationDescriptor.setApplication_descriptor_xml(content);
+        applicationDescriptor.setService_descriptor_ID(serviceDescName);
+        applicationDescriptor.setHost_descriptor_ID(hostDescName);
         em.persist(applicationDescriptor);
         end();
 

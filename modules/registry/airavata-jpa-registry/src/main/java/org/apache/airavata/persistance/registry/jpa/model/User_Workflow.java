@@ -24,22 +24,26 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import java.sql.Date;
 
 @Entity
 @IdClass(User_Workflow_PK.class)
 public class User_Workflow {
     @Id
-    private String user_workflow_name;
+    @ManyToOne
+    @JoinColumn(name = "gateway_name")
+    private Gateway gateway;
 
     @Id
-    private int project_ID;
+    @ManyToOne
+    @JoinColumn(name = "user_name")
+    private Users user;
 
     @Id
-    private String user_name;
+    private String template_name;
+
+    private String path;
 
 //    @Id
 //    @ManyToOne
@@ -51,72 +55,72 @@ public class User_Workflow {
 //    @JoinColumn(name = "project_ID")
 //    private Project project;
 
-    private Date last_update_date;
-    private String workflow_content;
+    private Date last_updated_date;
+    private String workflow_graph;
 
-    public String getUser_workflow_name() {
-        return user_workflow_name;
+    public String getTemplate_name() {
+        return template_name;
     }
 
-//    public Users getUsers() {
-//        return users;
-//    }
-//
+    public Users getUser() {
+        return user;
+    }
+
 //    public Project getProject() {
 //        return project;
 //    }
 
-    public Date getLast_update_date() {
-        return last_update_date;
+    public void setTemplate_name(String template_name) {
+        this.template_name = template_name;
     }
 
-    public String getWorkflow_content() {
-        return workflow_content;
+    public void setUser(Users user) {
+        this.user = user;
     }
 
-    public void setUser_workflow_name(String user_workflow_name) {
-        this.user_workflow_name = user_workflow_name;
+    public Gateway getGateway() {
+        return gateway;
     }
 
-//    public void setUsers(Users users) {
-//        this.users = users;
-//    }
-//
+    public String getPath() {
+        return path;
+    }
+
+    public Date getLast_updated_date() {
+        return last_updated_date;
+    }
+
+    public String getWorkflow_graph() {
+        return workflow_graph;
+    }
+
+    public void setGateway(Gateway gateway) {
+        this.gateway = gateway;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setWorkflow_graph(String workflow_graph) {
+        this.workflow_graph = workflow_graph;
+    }
+
+    //
 //    public void setProject(Project project) {
 //        this.project = project;
 //    }
 
-
-    public int getProject_ID() {
-        return project_ID;
+    public void setLast_updated_date(Date last_updated_date) {
+        this.last_updated_date = last_updated_date;
     }
 
-
-    public void setProject_ID(int project_ID) {
-        this.project_ID = project_ID;
-    }
-
-    public String getUser_name() {
-        return user_name;
-    }
-
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
-    }
-
-    public void setLast_update_date(Date last_update_date) {
-        this.last_update_date = last_update_date;
-    }
-
-    public void setWorkflow_content(String workflow_content) {
-        this.workflow_content = workflow_content;
-    }
 }
 
 class User_Workflow_PK {
-    private String user_workflow_name;
-    private int project_ID;
-    private String user_name;
+    private String template_name;
+    private String gateway_name;
+    private String owner;
 
     public User_Workflow_PK() {
         ;
@@ -132,29 +136,27 @@ class User_Workflow_PK {
 		return 1;
 	}
 
-    public String getUser_workflow_name() {
-        return user_workflow_name;
+    public String getTemplate_name() {
+        return template_name;
     }
 
-    public int getProject_ID() {
-        return project_ID;
+    public String getGateway_name() {
+        return gateway_name;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public String getOwner() {
+        return owner;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
-    public void setUser_workflow_name(String user_workflow_name) {
-        this.user_workflow_name = user_workflow_name;
+    public void setTemplate_name(String template_name) {
+        this.template_name = template_name;
     }
 
-    public void setProject_ID(int project_ID) {
-        this.project_ID = project_ID;
+    public void setGateway_name(String gateway_name) {
+        this.gateway_name = gateway_name;
     }
-
-
 }
