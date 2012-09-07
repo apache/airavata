@@ -29,28 +29,30 @@ import javax.persistence.ManyToOne;
 @Entity
 @IdClass(Gateway_Worker_PK.class)
 public class Gateway_Worker {
-    @Id
-    private String gateway_name;
+//    @Id
+//    private String gateway_name;
+//
+//    @Id
+//    private String user_name;
 
     @Id
-    private String user_name;
-
     @ManyToOne
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "user_name")
     private Users user;
 
-    public String getUser_name() {
-        return user_name;
-    }
-
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
-    }
+//    public String getUser_name() {
+//        return user_name;
+//    }
+//
+//    public void setUser_name(String user_name) {
+//        this.user_name = user_name;
+//    }
 
     public void setGateway(Gateway gateway) {
         this.gateway = gateway;
@@ -68,13 +70,13 @@ public class Gateway_Worker {
         this.user = user;
     }
 
-    public String getGateway_name() {
-        return gateway_name;
-    }
-
-    public void setGateway_name(String gateway_name) {
-        this.gateway_name = gateway_name;
-    }
+//    public String getGateway_name() {
+//        return gateway_name;
+//    }
+//
+//    public void setGateway_name(String gateway_name) {
+//        this.gateway_name = gateway_name;
+//    }
 }
 
 class Gateway_Worker_PK {

@@ -20,9 +20,11 @@
 */
 package org.apache.airavata.persistance.registry.jpa;
 
+import org.apache.airavata.persistance.registry.jpa.model.Configuration;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway_Worker;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 
@@ -30,6 +32,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ResourceUtils {
     private static final String PERSISTENCE_UNIT_NAME = "airavata_data";
@@ -107,12 +111,40 @@ public class ResourceUtils {
             q.setParameter("gate_name", gatewayResource.getGatewayName());
             q.setParameter("usr_name", userResource.getUserName());
             q.executeUpdate();
+            em.getTransaction().commit();
             em.close();
             return true;
         }   catch (Exception e){
             e.printStackTrace();
             return false;
         }
+
+    }
+
+    public static List<ConfigurationResource> getConfigurations (String configKey){
+        List<ConfigurationResource> list = new ArrayList<ConfigurationResource>();
+        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+        em = factory.createEntityManager();
+        em.getTransaction().begin();
+        Query q = em.createQuery("SELECT p FROM Configuration p WHERE p.config_key = :confKey");
+        q.setParameter("confKey", configKey);
+        List resultList = q.getResultList();
+        if (resultList.size() != 0) {
+            for (Object result : resultList) {
+                Configuration configuration = (Configuration) result;
+                ConfigurationResource configurationResource = new ConfigurationResource();
+                configurationResource.setConfigKey(configuration.getConfig_key());
+                configurationResource.setConfigVal(configuration.getConfig_val());
+                configurationResource.setExpireDate(configuration.getExpire_date());
+                list.add(configurationResource);
+            }
+        }
+        em.getTransaction().commit();
+        em.close();
+        return list;
+    }
+
+    public static void removeConfiguration(String configkey, String configValue){
 
     }
 }

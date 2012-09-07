@@ -25,7 +25,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import java.sql.Date;
 
 @Entity
@@ -37,6 +36,10 @@ public class Experiment {
     @ManyToOne
     @JoinColumn(name = "user_name")
     private Users user;
+
+    @ManyToOne
+    @JoinColumn(name = "gateway_name")
+    private Gateway gateway;
 
     @ManyToOne
     @JoinColumn(name = "project_ID")
@@ -72,5 +75,13 @@ public class Experiment {
 
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    public Gateway getGateway() {
+        return gateway;
+    }
+
+    public void setGateway(Gateway gateway) {
+        this.gateway = gateway;
     }
 }

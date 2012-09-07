@@ -23,11 +23,13 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import javax.persistence.*;
 
 @Entity
+@IdClass(Host_Descriptor_PK.class)
 public class Host_Descriptor {
     @Id
     private String host_descriptor_ID;
     private String host_descriptor_xml;
 
+    @Id
     @ManyToOne
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
@@ -67,4 +69,40 @@ public class Host_Descriptor {
     public void setUser(Users user) {
         this.user = user;
     }
+}
+
+class Host_Descriptor_PK {
+    private String gateway_name;
+    private String host_descriptor_ID;
+
+    public Host_Descriptor_PK() {
+        ;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return 1;
+    }
+
+    public String getGateway_name() {
+        return gateway_name;
+    }
+
+    public String getHost_descriptor_ID() {
+        return host_descriptor_ID;
+    }
+
+    public void setGateway_name(String gateway_name) {
+        this.gateway_name = gateway_name;
+    }
+
+    public void setHost_descriptor_ID(String host_descriptor_ID) {
+        this.host_descriptor_ID = host_descriptor_ID;
+    }
+
 }

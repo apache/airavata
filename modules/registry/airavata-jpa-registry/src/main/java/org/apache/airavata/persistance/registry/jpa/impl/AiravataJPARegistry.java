@@ -20,39 +20,65 @@
 */
 package org.apache.airavata.persistance.registry.jpa.impl;
 
-import com.sun.jndi.dns.ResourceRecord;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.persistance.registry.jpa.Resource;
-import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.model.Configuration;
-import org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor;
-import org.apache.airavata.persistance.registry.jpa.resources.*;
-import org.apache.airavata.registry.api.*;
-import org.apache.xmlbeans.XmlException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.net.URI;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
-import java.net.URI;
-import java.sql.*;
-import java.util.*;
-import java.util.Date;
+
+import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.persistance.registry.jpa.JPAResourceAccessor;
+import org.apache.airavata.persistance.registry.jpa.Resource;
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.model.Configuration;
+import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
+import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.HostDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
+import org.apache.airavata.persistance.registry.jpa.resources.PublishWorkflowResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
+import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResource;
+import org.apache.airavata.registry.api.AiravataExperiment;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.ResourceMetadata;
+import org.apache.airavata.registry.api.WorkspaceProject;
+import org.apache.airavata.registry.api.workflow.WorkflowExecution;
+import org.apache.airavata.registry.api.workflow.WorkflowIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
+import org.apache.airavata.registry.api.workflow.WorkflowRunTimeData;
+import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
+import org.apache.xmlbeans.XmlException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AiravataJPARegistry extends AiravataRegistry2{
     private final static Logger logger = LoggerFactory.getLogger(AiravataJPARegistry.class);
-
+    private JPAResourceAccessor jpa;
     private static final String PERSISTENCE_UNIT_NAME = "airavata_registry";
 	private EntityManagerFactory factory;
 
     @Override
     protected void initialize() {
-
+    	jpa = new JPAResourceAccessor(this);
     }
 
+    /**---------------------------------Configuration Registry----------------------------------**/
+    
     public Object getConfiguration(String key) {
         EntityManager em = factory.createEntityManager();
 		em.getTransaction().begin();
@@ -193,7 +219,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     // DescriptorRegistry Implementation
     public void addHostDescriptor(HostDescription descriptor) {
         //todo how to fill other data
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         HostDescriptorResource resource = (HostDescriptorResource)gatewayResource.create(ResourceType.HOST_DESCRIPTOR);
         resource.setContent(descriptor.toXML());
         //todo fix the IDs to Names
@@ -207,7 +233,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public HostDescription getHostDescriptor(String hostName) {
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         Resource resource = gatewayResource.get(ResourceType.HOST_DESCRIPTOR, hostName);
         try {
             return HostDescription.fromXML(((HostDescriptorResource)resource).getContent());
@@ -218,7 +244,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void removeHostDescriptor(String hostName) {
-       GatewayResource gatewayResource = new GatewayResource();
+       GatewayResource gatewayResource = jpa.getGateway();
        gatewayResource.remove(ResourceType.HOST_DESCRIPTOR, hostName);
     }
 
@@ -228,7 +254,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     public void addServiceDescriptor(ServiceDescription descriptor) {
          //todo how to fill other data
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         ServiceDescriptorResource resource = (ServiceDescriptorResource)gatewayResource.create(ResourceType.SERVICE_DESCRIPTOR);
         resource.setContent(descriptor.toXML());
         //todo fix the IDs to Names
@@ -242,7 +268,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public ServiceDescription getServiceDescriptor(String serviceName) {
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         Resource resource = gatewayResource.get(ResourceType.SERVICE_DESCRIPTOR, serviceName);
         try {
             return ServiceDescription.fromXML(((ServiceDescriptorResource) resource).getContent());
@@ -253,7 +279,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void removeServiceDescriptor(String serviceName) {
-       GatewayResource gatewayResource = new GatewayResource();
+       GatewayResource gatewayResource = jpa.getGateway();
        gatewayResource.remove(ResourceType.SERVICE_DESCRIPTOR, serviceName);
     }
 
@@ -266,7 +292,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) {
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         ApplicationDescriptorResource resource = (ApplicationDescriptorResource)gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
         resource.setContent(descriptor.toXML());
         resource.setHostDescName(hostName);
@@ -288,7 +314,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname) {
         //todo finish implementation
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         ApplicationDescriptorResource resource = (ApplicationDescriptorResource)gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
         resource.setHostDescName(hostname);
         resource.setServiceDescName(serviceName);
@@ -298,7 +324,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName) {
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         ServiceDescriptorResource resource = (ServiceDescriptorResource)gatewayResource.get(ResourceType.SERVICE_DESCRIPTOR,serviceName);
         resource.setServiceDescName(serviceName);
         List<Resource> resources = resource.get(ResourceType.APPLICATION_DESCRIPTOR);
@@ -326,7 +352,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 
     public void addWorkspaceProject(WorkspaceProject project) {
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         ProjectResource resource = (ProjectResource)gatewayResource.create(ResourceType.PROJECT);
         resource.setName(project.getProjectName());
         //todo fix the IDs to Names
@@ -339,19 +365,19 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void deleteWorkspaceProject(String projectName) {
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         gatewayResource.remove(ResourceType.PROJECT,projectName);
     }
 
     public WorkspaceProject getWorkspaceProject(String projectName) {
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         ProjectResource resource = (ProjectResource)gatewayResource.get(ResourceType.PROJECT, projectName);
         WorkspaceProject workspaceProject = new WorkspaceProject(projectName, this);
         return workspaceProject;
     }
 
     public void createExperiment(String projectName, AiravataExperiment experiment) {
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
         resource.setExpID(experiment.getExperimentId());
         resource.setSubmittedDate(new java.sql.Date(experiment.getSubmittedDate().getTime()));
@@ -359,7 +385,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void removeExperiment(String experimentId) {
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         gatewayResource.remove(ResourceType.EXPERIMENT, experimentId);
     }
 
@@ -421,7 +447,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         UserResource userResource = new UserResource();
         userResource.setUserName(getUser().getUserName());
         UserWorkflowResource resource = (UserWorkflowResource)userResource.get(ResourceType.USER_WORKFLOW, workflowName);
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         PublishWorkflowResource resource1 = (PublishWorkflowResource)gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
         resource1.setContent(resource.getContent());
         resource1.setPublishedDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
@@ -433,7 +459,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         UserResource userResource = new UserResource();
         userResource.setUserName(getUser().getUserName());
         UserWorkflowResource resource = (UserWorkflowResource)userResource.get(ResourceType.USER_WORKFLOW, workflowName);
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         PublishWorkflowResource resource1 = (PublishWorkflowResource)gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
         resource1.setContent(resource.getContent());
         resource1.setPublishedDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
@@ -442,7 +468,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public String getPublishedWorkflowGraphXML(String workflowName) {
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         PublishWorkflowResource resource1 = (PublishWorkflowResource) gatewayResource.get(ResourceType.PUBLISHED_WORKFLOW, workflowName);
         return resource1.getContent();
     }
@@ -452,7 +478,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void removePublishedWorkflow(String workflowName) {
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         gatewayResource.remove(ResourceType.PUBLISHED_WORKFLOW, workflowName);
     }
 
@@ -470,7 +496,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public String getWorkflowGraphXML(String workflowName) {
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         UserResource resource = (UserResource)gatewayResource.get(ResourceType.USER_WORKFLOW, getUser().getUserName());
         UserWorkflowResource resource1 = (UserWorkflowResource) resource.get(ResourceType.USER_WORKFLOW, workflowName);
         return resource1.getContent();
@@ -481,7 +507,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void removeWorkflow(String workflowName) {
-        GatewayResource gatewayResource = new GatewayResource();
+        GatewayResource gatewayResource = jpa.getGateway();
         UserResource resource = (UserResource)gatewayResource.get(ResourceType.USER_WORKFLOW, getUser().getUserName());
         resource.remove(ResourceType.USER_WORKFLOW, workflowName);
     }
@@ -493,4 +519,204 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     public void setAiravataUser(AiravataUser user) {
         //To change body of implemented methods use File | Settings | File Templates.
     }
+
+	@Override
+	public boolean saveWorkflowExecutionUser(String experimentId, String user)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String getWorkflowExecutionUser(String experimentId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getWorkflowExecutionName(String experimentId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean saveWorkflowExecutionName(String experimentId,
+			String workflowIntanceName) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean saveWorkflowExecutionStatus(String experimentId,
+			ExecutionStatus status) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public WorkflowInstanceStatus getWorkflowExecutionStatus(String experimentId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getWorkflowExecutionMetadata(String experimentId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean saveWorkflowExecutionMetadata(String experimentId,
+			String metadata) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean saveWorkflowExecutionServiceInput(
+			WorkflowServiceIOData workflowInputData) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean saveWorkflowExecutionServiceOutput(
+			WorkflowServiceIOData workflowOutputData) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<WorkflowServiceIOData> searchWorkflowExecutionServiceInput(
+			String experimentIdRegEx, String workflowNameRegEx,
+			String nodeNameRegEx) throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<WorkflowServiceIOData> searchWorkflowExecutionServiceOutput(
+			String experimentIdRegEx, String workflowNameRegEx,
+			String nodeNameRegEx) throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean saveWorkflowExecutionOutput(String experimentId,
+			String outputNodeName, String output) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean saveWorkflowExecutionOutput(String experimentId,
+			WorkflowIOData data) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public WorkflowIOData getWorkflowExecutionOutput(String experimentId,
+			String outputNodeName) throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<WorkflowIOData> getWorkflowExecutionOutput(String experimentId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String[] getWorkflowExecutionOutputNames(String exeperimentId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public WorkflowExecution getWorkflowExecution(String experimentId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<String> getWorkflowExecutionIdByUser(String user)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<WorkflowExecution> getWorkflowExecutionByUser(String user)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<WorkflowExecution> getWorkflowExecutionByUser(String user,
+			int pageSize, int pageNo) throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean saveWorkflowData(WorkflowRunTimeData runTimeData)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean saveWorkflowStatus(String workflowInstanceID,
+			WorkflowInstanceStatus workflowStatus) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean saveWorkflowLastUpdateTime(String workflowInstanceID,
+			Timestamp lastUpdateTime) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean saveWorkflowNodeStatus(String workflowInstanceID,
+			String workflowNodeID, ExecutionStatus status)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean saveWorkflowNodeLastUpdateTime(String workflowInstanceID,
+			String workflowNodeID, Timestamp lastUpdateTime)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean saveWorkflowNodeGramData(
+			WorkflowNodeGramData workflowNodeGramData) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean saveWorkflowNodeGramLocalJobID(String workflowInstanceID,
+			String workflowNodeID, String localJobID) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

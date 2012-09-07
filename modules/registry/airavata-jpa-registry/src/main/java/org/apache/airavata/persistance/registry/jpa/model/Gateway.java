@@ -27,6 +27,7 @@ import javax.persistence.Id;
 public class Gateway {
     @Id
     private String gateway_name;
+    private String owner;
 
     public String getGateway_name() {
         return gateway_name;
@@ -34,5 +35,13 @@ public class Gateway {
 
     public void setGateway_name(String gateway_name) {
         this.gateway_name = gateway_name;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 }
