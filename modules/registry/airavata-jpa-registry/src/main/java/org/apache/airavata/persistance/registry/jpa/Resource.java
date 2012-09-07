@@ -43,8 +43,6 @@ public interface Resource {
 
     void save();
     
-    void save(boolean overwrite);
-
     boolean isExists(ResourceType type, Object name);
 
 }
