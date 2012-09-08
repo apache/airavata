@@ -30,15 +30,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.persistance.registry.jpa.JPAResourceAccessor;
-import org.apache.airavata.persistance.registry.jpa.Resource;
-import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
@@ -48,17 +44,25 @@ import org.apache.airavata.persistance.registry.jpa.resources.HostDescriptorReso
 import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.persistance.registry.jpa.resources.PublishWorkflowResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorResource;
-import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResource;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.registry.api.AiravataExperiment;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.registry.api.ResourceMetadata;
 import org.apache.airavata.registry.api.WorkspaceProject;
 import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
-import org.apache.airavata.registry.api.exception.descriptor.DescriptorAlreadyExistsException;
-import org.apache.airavata.registry.api.exception.descriptor.DescriptorDoesNotExistsException;
-import org.apache.airavata.registry.api.exception.descriptor.MalformedDescriptorException;
+import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
+import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
+import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowAlreadyExistsException;
+import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.worker.UserWorkflowAlreadyExistsException;
+import org.apache.airavata.registry.api.exception.worker.UserWorkflowDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectAlreadyExistsException;
+import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectDoesNotExistsException;
 import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
@@ -73,8 +77,6 @@ import org.slf4j.LoggerFactory;
 public class AiravataJPARegistry extends AiravataRegistry2{
     private final static Logger logger = LoggerFactory.getLogger(AiravataJPARegistry.class);
     private JPAResourceAccessor jpa;
-    private static final String PERSISTENCE_UNIT_NAME = "airavata_registry";
-	private EntityManagerFactory factory;
 
     @Override
     protected void initialize() {
@@ -443,76 +445,106 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     /**---------------------------------Project Registry----------------------------------**/
 
-    public void addWorkspaceProject(WorkspaceProject project) {
-        GatewayResource gatewayResource = jpa.getGateway();
-        ProjectResource resource = (ProjectResource)gatewayResource.create(ResourceType.PROJECT);
-        resource.setName(project.getProjectName());
-        //todo fix the IDs to Names
-//        resource.setUserID(getUser().getUserName());
-        resource.save();
-    }
-
-    public void updateWorkspaceProject(WorkspaceProject project) {
-        addWorkspaceProject(project);
-    }
-
-    public void deleteWorkspaceProject(String projectName) {
-        GatewayResource gatewayResource = jpa.getGateway();
-        gatewayResource.remove(ResourceType.PROJECT,projectName);
-    }
-
-    public WorkspaceProject getWorkspaceProject(String projectName) {
-        GatewayResource gatewayResource = jpa.getGateway();
-        ProjectResource resource = (ProjectResource)gatewayResource.get(ResourceType.PROJECT, projectName);
-        WorkspaceProject workspaceProject = new WorkspaceProject(projectName, this);
-        return workspaceProject;
-    }
-
-    public void createExperiment(String projectName, AiravataExperiment experiment) {
-        GatewayResource gatewayResource = jpa.getGateway();
-        ExperimentResource resource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
-        resource.setExpID(experiment.getExperimentId());
-        resource.setSubmittedDate(new java.sql.Date(experiment.getSubmittedDate().getTime()));
-        resource.save();
-    }
-
-    public void removeExperiment(String experimentId) {
-        GatewayResource gatewayResource = jpa.getGateway();
-        gatewayResource.remove(ResourceType.EXPERIMENT, experimentId);
-    }
-
-    public List<AiravataExperiment> getExperiments() {
-        UserResource userResource = new UserResource();
-        userResource.setUserName(getUser().getUserName());
-        List<Resource> resources = userResource.get(ResourceType.EXPERIMENT);
-        List<AiravataExperiment> result = new ArrayList<AiravataExperiment>();
-        for(Resource resource:resources) {
-            AiravataExperiment airavataExperiment = new AiravataExperiment();
-            airavataExperiment.setExperimentId(((ExperimentResource) resource).getExpID());
-            airavataExperiment.setUser(getUser());
-            airavataExperiment.setSubmittedDate(new java.sql.Date(((ExperimentResource) resource).getSubmittedDate().getTime()));
-            result.add(airavataExperiment);
+    public void addWorkspaceProject(WorkspaceProject project) throws WorkspaceProjectAlreadyExistsException {
+    	WorkerResource worker = jpa.getWorker();
+		if (worker.isProjectExists(project.getProjectName())){
+        	throw new WorkspaceProjectAlreadyExistsException(project.getProjectName());
         }
+		ProjectResource projectResource = worker.createProject(project.getProjectName());
+		projectResource.save();
+    }
+
+    public void updateWorkspaceProject(WorkspaceProject project) throws WorkspaceProjectDoesNotExistsException {
+    	WorkerResource worker = jpa.getWorker();
+		if (!worker.isProjectExists(project.getProjectName())){
+        	throw new WorkspaceProjectDoesNotExistsException(project.getProjectName());
+        }
+		ProjectResource projectResource = worker.getProject(project.getProjectName());
+		projectResource.save();
+    }
+
+    public void deleteWorkspaceProject(String projectName) throws WorkspaceProjectDoesNotExistsException {
+    	WorkerResource worker = jpa.getWorker();
+		if (!worker.isProjectExists(projectName)){
+        	throw new WorkspaceProjectDoesNotExistsException(projectName);
+        }
+		worker.removeProject(projectName);
+    }
+
+    public WorkspaceProject getWorkspaceProject(String projectName) throws WorkspaceProjectDoesNotExistsException {
+    	WorkerResource worker = jpa.getWorker();
+		if (!worker.isProjectExists(projectName)){
+        	throw new WorkspaceProjectDoesNotExistsException(projectName);
+        }
+		ProjectResource projectResource = worker.getProject(projectName);
+		return new WorkspaceProject(projectResource.getName(), this);
+    }
+    
+    public List<WorkspaceProject> getWorkspaceProjects() throws RegistryException{
+    	WorkerResource worker = jpa.getWorker();
+    	List<WorkspaceProject> projects=new ArrayList<WorkspaceProject>();
+    	List<ProjectResource> projectResouces = worker.getProjects();
+    	for (ProjectResource resource : projectResouces) {
+			projects.add(new WorkspaceProject(resource.getName(), this));
+		}
+    	return projects;
+    }
+
+    public void addExperiment(String projectName, AiravataExperiment experiment) throws WorkspaceProjectDoesNotExistsException, ExperimentDoesNotExistsException {
+    	WorkspaceProject workspaceProject = getWorkspaceProject(projectName);
+    	ProjectResource project = jpa.getWorker().getProject(workspaceProject.getProjectName());
+		String experimentId = experiment.getExperimentId();
+		if (project.isExperimentExists(experimentId)){
+        	throw new ExperimentDoesNotExistsException(experimentId);
+        }
+		ExperimentResource experimentResource = project.createExperiment(experimentId);
+		experimentResource.setSubmittedDate(new java.sql.Date(experiment.getSubmittedDate().getTime()));
+		experimentResource.save();
+    }
+
+    public void removeExperiment(String experimentId) throws ExperimentDoesNotExistsException {
+    	WorkerResource worker = jpa.getWorker();
+    	if (!worker.isExperimentExists(experimentId)){
+        	throw new ExperimentDoesNotExistsException(experimentId);
+    	}
+    	worker.removeExperiment(experimentId);
+    }
+
+    public List<AiravataExperiment> getExperiments() throws RegistryException{
+    	WorkerResource worker = jpa.getWorker();
+    	List<AiravataExperiment> result=new ArrayList<AiravataExperiment>();
+    	List<ExperimentResource> experiments = worker.getExperiments();
+    	for (ExperimentResource resource : experiments) {
+			AiravataExperiment e = createAiravataExperimentObj(resource);
+			result.add(e);
+		}
         return result;
     }
 
-    public List<AiravataExperiment> getExperiments(String projectName) {
-        ProjectResource projectResource = new ProjectResource();
-        projectResource.setName(projectName);
-        List<Resource> resources = projectResource.get(ResourceType.EXPERIMENT);
-        List<AiravataExperiment> result = new ArrayList<AiravataExperiment>();
-        for(Resource resource:resources) {
-            AiravataExperiment airavataExperiment = new AiravataExperiment();
-            airavataExperiment.setExperimentId(((ExperimentResource) resource).getExpID());
-            airavataExperiment.setUser(getUser());
-            airavataExperiment.setSubmittedDate(new java.sql.Date(((ExperimentResource) resource).getSubmittedDate().getTime()));
-            result.add(airavataExperiment);
-        }
-        return result;  //To change body of implemented methods use File | Settings | File Templates.
+	private AiravataExperiment createAiravataExperimentObj(
+			ExperimentResource resource) {
+		AiravataExperiment e = new AiravataExperiment();
+		e.setExperimentId(resource.getExpID());
+		e.setUser(new AiravataUser(resource.getWorker().getUser()));
+		e.setSubmittedDate(new Date(resource.getSubmittedDate().getTime()));
+		e.setGateway(new Gateway(resource.getGateway().getGatewayName()));
+		e.setProject(new WorkspaceProject(resource.getProject().getName(), this));
+		return e;
+	}
+
+    public List<AiravataExperiment> getExperiments(String projectName)throws RegistryException {
+    	ProjectResource project = jpa.getWorker().getProject(projectName);
+    	List<ExperimentResource> experiments = project.getExperiments();
+    	List<AiravataExperiment> result=new ArrayList<AiravataExperiment>();
+    	for (ExperimentResource resource : experiments) {
+			AiravataExperiment e = createAiravataExperimentObj(resource);
+			result.add(e);
+		}
+        return result;
     }
 
-    public List<AiravataExperiment> getExperiments(Date from, Date to) {
-        List<AiravataExperiment> experiments = getExperiments();
+    public List<AiravataExperiment> getExperiments(Date from, Date to)throws RegistryException {
+    	List<AiravataExperiment> experiments = getExperiments();
         List<AiravataExperiment> newExperiments = new ArrayList<AiravataExperiment>();
         for(AiravataExperiment exp:experiments){
             Date submittedDate = exp.getSubmittedDate();
@@ -520,10 +552,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
                 newExperiments.add(exp);
             }
         }
-        return newExperiments;  //To change body of implemented methods use File | Settings | File Templates.
+        return newExperiments;
     }
 
-    public List<AiravataExperiment> getExperiments(String projectName, Date from, Date to) {
+    public List<AiravataExperiment> getExperiments(String projectName, Date from, Date to)throws RegistryException {
         List<AiravataExperiment> experiments = getExperiments(projectName);
         List<AiravataExperiment> newExperiments = new ArrayList<AiravataExperiment>();
         for (AiravataExperiment exp : experiments) {
@@ -535,73 +567,109 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         return newExperiments;
     }
 
-    public void publishWorkflow(String workflowName, String publishWorkflowName) {
-        UserResource userResource = new UserResource();
-        userResource.setUserName(getUser().getUserName());
-        UserWorkflowResource resource = (UserWorkflowResource)userResource.get(ResourceType.USER_WORKFLOW, workflowName);
-        GatewayResource gatewayResource = jpa.getGateway();
-        PublishWorkflowResource resource1 = (PublishWorkflowResource)gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
-        resource1.setContent(resource.getContent());
-        resource1.setPublishedDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
-        resource1.setName(publishWorkflowName);
-        //todo have to set version
+    /**---------------------------------Published Workflow Registry----------------------------------
+     * @throws PublishedWorkflowAlreadyExistsException 
+     * @throws UserWorkflowDoesNotExistsException **/
+    
+    public void publishWorkflow(String workflowName, String publishWorkflowName) throws PublishedWorkflowAlreadyExistsException, UserWorkflowDoesNotExistsException {
+    	GatewayResource gateway = jpa.getGateway();
+    	String workflowGraphXML = getWorkflowGraphXML(workflowName);
+    	if (gateway.isPublishedWorkflowExists(publishWorkflowName)){
+    		throw new PublishedWorkflowAlreadyExistsException(publishWorkflowName);
+    	}
+    	PublishWorkflowResource publishedWorkflow = gateway.createPublishedWorkflow(publishWorkflowName);
+    	publishedWorkflow.setCreatedUser(getUser().getUserName());
+    	publishedWorkflow.setContent(workflowGraphXML);
+    	publishedWorkflow.setPublishedDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+    	publishedWorkflow.save();
     }
 
-    public void publishWorkflow(String workflowName) {
-        UserResource userResource = new UserResource();
-        userResource.setUserName(getUser().getUserName());
-        UserWorkflowResource resource = (UserWorkflowResource)userResource.get(ResourceType.USER_WORKFLOW, workflowName);
-        GatewayResource gatewayResource = jpa.getGateway();
-        PublishWorkflowResource resource1 = (PublishWorkflowResource)gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
-        resource1.setContent(resource.getContent());
-        resource1.setPublishedDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
-        //todo is this right ????
-        resource1.setName(workflowName);
+    public void publishWorkflow(String workflowName) throws PublishedWorkflowAlreadyExistsException, UserWorkflowDoesNotExistsException {
+    	publishWorkflow(workflowName, workflowName);
     }
 
-    public String getPublishedWorkflowGraphXML(String workflowName) {
-        GatewayResource gatewayResource = jpa.getGateway();
-        PublishWorkflowResource resource1 = (PublishWorkflowResource) gatewayResource.get(ResourceType.PUBLISHED_WORKFLOW, workflowName);
-        return resource1.getContent();
+    public String getPublishedWorkflowGraphXML(String workflowName) throws PublishedWorkflowDoesNotExistsException {
+        GatewayResource gateway = jpa.getGateway();
+        if (!gateway.isPublishedWorkflowExists(workflowName)){
+        	throw new PublishedWorkflowDoesNotExistsException(workflowName);
+        }
+        return gateway.getPublishedWorkflow(workflowName).getContent();
+    }
+    
+	public List<String> getPublishedWorkflowNames() throws RegistryException{
+		GatewayResource gateway = jpa.getGateway();
+		List<String> result=new ArrayList<String>();
+    	List<PublishWorkflowResource> publishedWorkflows = gateway.getPublishedWorkflows();
+    	for (PublishWorkflowResource resource : publishedWorkflows) {
+			result.add(resource.getName());
+		}
+    	return result;
+	}
+
+    public Map<String,String> getPublishedWorkflows() throws RegistryException{
+    	GatewayResource gateway = jpa.getGateway();
+    	Map<String,String> result=new HashMap<String, String>();
+    	List<PublishWorkflowResource> publishedWorkflows = gateway.getPublishedWorkflows();
+    	for (PublishWorkflowResource resource : publishedWorkflows) {
+			result.put(resource.getName(), resource.getContent());
+		}
+    	return result;
     }
 
-    public ResourceMetadata getPublishedWorkflowMetadata(String workflowName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public void removePublishedWorkflow(String workflowName) throws PublishedWorkflowDoesNotExistsException {
+        GatewayResource gateway = jpa.getGateway();
+        if (!gateway.isPublishedWorkflowExists(workflowName)){
+        	throw new PublishedWorkflowDoesNotExistsException(workflowName);
+        }
+        gateway.removePublishedWorkflow(workflowName);
+    }
+    
+    public ResourceMetadata getPublishedWorkflowMetadata(String workflowName) throws RegistryException {
+    	//TODO
+        throw new UnimplementedRegistryOperationException();
     }
 
-    public void removePublishedWorkflow(String workflowName) {
-        GatewayResource gatewayResource = jpa.getGateway();
-        gatewayResource.remove(ResourceType.PUBLISHED_WORKFLOW, workflowName);
+    /**---------------------------------Project Registry----------------------------------**/
+
+    public void addWorkflow(String workflowName, String workflowGraphXml) throws UserWorkflowAlreadyExistsException {
+    	WorkerResource worker = jpa.getWorker();
+		if (worker.isWorkflowTemplateExists(workflowName)){
+        	throw new UserWorkflowAlreadyExistsException(workflowName);
+        }
+		UserWorkflowResource workflowResource = worker.createWorkflowTemplate(workflowName);
+		workflowResource.setContent(workflowGraphXml);
+		workflowResource.save();
     }
 
-    public void addWorkflow(String workflowName, String workflowGraphXml) {
-        ProjectResource projectResource = new ProjectResource();
-        UserWorkflowResource resource = (UserWorkflowResource)projectResource.create(ResourceType.USER_WORKFLOW);
-        resource.setName(workflowName);
-        resource.setContent(workflowGraphXml);
-        resource.setLastUpdateDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
-        resource.save();
+    public void updateWorkflow(String workflowName, String workflowGraphXml) throws UserWorkflowDoesNotExistsException {
+    	WorkerResource worker = jpa.getWorker();
+		if (!worker.isWorkflowTemplateExists(workflowName)){
+        	throw new UserWorkflowDoesNotExistsException(workflowName);
+        }
+		UserWorkflowResource workflowResource = worker.createWorkflowTemplate(workflowName);
+		workflowResource.setContent(workflowGraphXml);
+		workflowResource.save();
     }
 
-    public void updateWorkflow(String workflowName, String workflowGraphXml) {
-         addWorkflow(workflowName,workflowGraphXml);
+    public String getWorkflowGraphXML(String workflowName) throws UserWorkflowDoesNotExistsException {
+    	WorkerResource worker = jpa.getWorker();
+		if (!worker.isWorkflowTemplateExists(workflowName)){
+        	throw new UserWorkflowDoesNotExistsException(workflowName);
+        }
+		return worker.getWorkflowTemplate(workflowName).getContent();
     }
 
-    public String getWorkflowGraphXML(String workflowName) {
-        GatewayResource gatewayResource = jpa.getGateway();
-        UserResource resource = (UserResource)gatewayResource.get(ResourceType.USER_WORKFLOW, getUser().getUserName());
-        UserWorkflowResource resource1 = (UserWorkflowResource) resource.get(ResourceType.USER_WORKFLOW, workflowName);
-        return resource1.getContent();
+    public ResourceMetadata getWorkflowMetadata(String workflowName) throws UnimplementedRegistryOperationException {
+    	//TODO
+        throw new UnimplementedRegistryOperationException();
     }
 
-    public ResourceMetadata getWorkflowMetadata(String workflowName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void removeWorkflow(String workflowName) {
-        GatewayResource gatewayResource = jpa.getGateway();
-        UserResource resource = (UserResource)gatewayResource.get(ResourceType.USER_WORKFLOW, getUser().getUserName());
-        resource.remove(ResourceType.USER_WORKFLOW, workflowName);
+    public void removeWorkflow(String workflowName) throws UserWorkflowDoesNotExistsException {
+    	WorkerResource worker = jpa.getWorker();
+		if (!worker.isWorkflowTemplateExists(workflowName)){
+        	throw new UserWorkflowDoesNotExistsException(workflowName);
+        }
+		worker.removeWorkflowTemplate(workflowName);
     }
 
     public void setAiravataRegistry(AiravataRegistry2 registry) {

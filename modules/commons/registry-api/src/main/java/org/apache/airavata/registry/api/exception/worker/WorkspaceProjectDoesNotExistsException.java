@@ -19,16 +19,16 @@
  *
  */
 
-package org.apache.airavata.registry.api.exception.descriptor;
+package org.apache.airavata.registry.api.exception.worker;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 
-public class DescriptorAlreadyExistsException extends RegistryException {
+public class WorkspaceProjectDoesNotExistsException extends RegistryException {
 
 	private static final long serialVersionUID = -8006347245307495767L;
 
-	public DescriptorAlreadyExistsException(String descriptorName) {
-		super("The Descriptor "+descriptorName+" already exists!!!");
+	public WorkspaceProjectDoesNotExistsException(String projectName) {
+		super("The workspace project "+projectName+" does not exists!!!");
 	}
 
 }

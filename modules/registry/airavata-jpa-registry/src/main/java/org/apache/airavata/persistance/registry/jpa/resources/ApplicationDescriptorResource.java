@@ -35,7 +35,11 @@ public class ApplicationDescriptorResource extends AbstractResource {
     private String content;
     private String hostDescName;
     private String serviceDescName;
-
+    
+    public ApplicationDescriptorResource(String name) {
+        this.setName(name);
+    }
+    
     public ApplicationDescriptorResource(String name, String gatewayName, String hostDescName, String serviceDescName) {
         this.setName(name);
         this.gatewayName = gatewayName;

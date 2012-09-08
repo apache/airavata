@@ -28,7 +28,7 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 
-public interface AiravataProvenanceRegistry extends AiravataSubRegistry{
+public interface ProvenanceRegistry extends AiravataSubRegistry{
 
 	/*------------------------------------------- Experiment data ---------------------------------------------*/
     /**

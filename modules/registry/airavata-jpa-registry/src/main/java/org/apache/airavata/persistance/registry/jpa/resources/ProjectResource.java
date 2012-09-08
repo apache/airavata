@@ -54,8 +54,9 @@ public class ProjectResource extends AbstractResource {
     public Resource create(ResourceType type) {
         if (type == ResourceType.EXPERIMENT) {
             ExperimentResource experimentResource = new ExperimentResource();
+            experimentResource.setGateway(getGateway());
             experimentResource.setProjectID(id);
-            experimentResource.setUserName(getWorker().getUser());
+            experimentResource.setWorker(getWorker());
             return experimentResource;
         } else {
             return null;
@@ -88,8 +89,9 @@ public class ProjectResource extends AbstractResource {
             Experiment experiment = (Experiment) q.getSingleResult();
             ExperimentResource experimentResource = new ExperimentResource(experiment.getExperiment_ID());
             experimentResource.setProjectID(experiment.getProject().getProject_ID());
-            experiment.setSubmitted_date(experiment.getSubmitted_date());
-            experiment.setUser(experiment.getUser());
+            experimentResource.setWorker(getWorker());
+            experimentResource.setGateway(getGateway());
+            experimentResource.setSubmittedDate(experiment.getSubmitted_date());
             end();
             return experimentResource;
         }
@@ -121,13 +123,14 @@ public class ProjectResource extends AbstractResource {
         if (type == ResourceType.EXPERIMENT) {
             Query q = em.createQuery("SELECT p FROM Experiment p WHERE p.project_ID =:proj_ID");
             q.setParameter("proj_ID", id);
-            List results = q.getResultList();
+            List<?> results = q.getResultList();
             if (results.size() != 0) {
                 for (Object result : results) {
                     Experiment experiment = (Experiment) result;
                     ExperimentResource experimentResource = new ExperimentResource(experiment.getExperiment_ID());
                     experimentResource.setProjectID(experiment.getProject().getProject_ID());
-                    experimentResource.setUserName(experiment.getUser().getUser_name());
+                    experimentResource.setGateway(new GatewayResource(experiment.getGateway().getGateway_name()));
+                    experimentResource.setWorker(new WorkerResource(experiment.getUser().getUser_name(), experimentResource.getGateway()));
                     experimentResource.setSubmittedDate(experiment.getSubmitted_date());
                     resourceList.add(experimentResource);
                 }
@@ -180,5 +183,31 @@ public class ProjectResource extends AbstractResource {
 		this.gateway = gateway;
 	}
 
+	public boolean isExperimentExists(String experimentId){
+		return isExists(ResourceType.EXPERIMENT, experimentId);
+	}
+	
+	public ExperimentResource createExperiment(String experimentId){
+		ExperimentResource experimentResource = (ExperimentResource)create(ResourceType.EXPERIMENT);
+		experimentResource.setExpID(experimentId);
+		return experimentResource;
+	}
+	
+	public ExperimentResource getExperiment(String experimentId){
+		return (ExperimentResource)get(ResourceType.EXPERIMENT,experimentId);
+	}
+	
+	public List<ExperimentResource> getExperiments(){
+		List<Resource> list = get(ResourceType.EXPERIMENT);
+		List<ExperimentResource> result=new ArrayList<ExperimentResource>();
+		for (Resource resource : list) {
+			result.add((ExperimentResource) resource);
+		}
+		return result;
+	}
+	
+	public void removeExperiment(String experimentId){
+		remove(ResourceType.EXPERIMENT, experimentId);
+	}
 
 }

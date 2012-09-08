@@ -20,33 +20,35 @@
 */
 package org.apache.airavata.persistance.registry.jpa.resources;
 
-import org.apache.airavata.persistance.registry.jpa.Resource;
-import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.model.Experiment;
-import org.apache.airavata.persistance.registry.jpa.model.Project;
-import org.apache.airavata.persistance.registry.jpa.model.Users;
-
-import javax.persistence.Query;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Query;
+
+import org.apache.airavata.persistance.registry.jpa.Resource;
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.model.Experiment;
+import org.apache.airavata.persistance.registry.jpa.model.Gateway;
+import org.apache.airavata.persistance.registry.jpa.model.Project;
+import org.apache.airavata.persistance.registry.jpa.model.Users;
+
 public class ExperimentResource extends AbstractResource {
-    private int projectID;
-    private String userName;
+    private WorkerResource worker;
     private String expID;
     private Date submittedDate;
-    private String gatewayName;
+    private GatewayResource gateway;
+    private ProjectResource project;
 
     public ExperimentResource() {
     }
 
     public ExperimentResource(String expID) {
-        this.expID = expID;
+        this.setExpID(expID);
     }
 
     public int getProjectID() {
-        return projectID;
+        return project.getId();
     }
 
     public String getExpID() {
@@ -57,28 +59,8 @@ public class ExperimentResource extends AbstractResource {
         return submittedDate;
     }
 
-    public void setProjectID(int projectID) {
-        this.projectID = projectID;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public void setSubmittedDate(Date submittedDate) {
         this.submittedDate = submittedDate;
-    }
-
-    public String getGatewayName() {
-        return gatewayName;
-    }
-
-    public void setGatewayName(String gatewayName) {
-        this.gatewayName = gatewayName;
     }
 
     public Resource create(ResourceType type) {
@@ -109,8 +91,13 @@ public class ExperimentResource extends AbstractResource {
         q.setParameter("exp_ID", keys[0]);
         Experiment experiment = (Experiment)q.getSingleResult();
         ExperimentResource experimentResource = new ExperimentResource(experiment.getExperiment_ID());
-        experimentResource.setUserName(experiment.getUser().getUser_name());
-        experimentResource.setProjectID(experiment.getProject().getProject_ID());
+        experimentResource.setGateway(getGateway());
+        experimentResource.setWorker(getWorker());
+        ProjectResource projectResource = new ProjectResource(experiment.getProject().getProject_ID());
+        projectResource.setGateway(getGateway());
+        projectResource.setWorker(getWorker());
+        projectResource.setName(experiment.getProject().getProject_name());
+        experimentResource.setProject(projectResource);
         experimentResource.setSubmittedDate(experiment.getSubmitted_date());
         end();
         list.add(experimentResource);
@@ -125,13 +112,16 @@ public class ExperimentResource extends AbstractResource {
     public void save() {
         begin();
         Experiment experiment = new Experiment();
-        experiment.setExperiment_ID(expID);
+        experiment.setExperiment_ID(getExpID());
         Project project = new Project();
-        project.setProject_ID(projectID);
+        project.setProject_ID(this.project.getId());
         experiment.setProject(project);
         Users user = new Users();
-        user.setUser_name(userName);
+        user.setUser_name(getWorker().getUser());
         experiment.setUser(user);
+        Gateway gateway = new Gateway();
+        gateway.setGateway_name(getGateway().getGatewayName());
+		experiment.setGateway(gateway);
         experiment.setSubmitted_date(submittedDate);
         em.persist(experiment);
         end();
@@ -139,11 +129,35 @@ public class ExperimentResource extends AbstractResource {
 
     }
 
-    public void save(boolean isAppendable) {
-
-    }
-
     public boolean isExists(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
+
+	public void setExpID(String expID) {
+		this.expID = expID;
+	}
+
+	public GatewayResource getGateway() {
+		return gateway;
+	}
+
+	public void setGateway(GatewayResource gateway) {
+		this.gateway = gateway;
+	}
+
+	public WorkerResource getWorker() {
+		return worker;
+	}
+
+	public void setWorker(WorkerResource worker) {
+		this.worker = worker;
+	}
+
+	public ProjectResource getProject() {
+		return project;
+	}
+
+	public void setProject(ProjectResource project) {
+		this.project = project;
+	}
 }

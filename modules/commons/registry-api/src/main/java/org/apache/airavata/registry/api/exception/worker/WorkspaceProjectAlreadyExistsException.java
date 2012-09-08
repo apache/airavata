@@ -19,16 +19,16 @@
  *
  */
 
-package org.apache.airavata.registry.api.exception.descriptor;
+package org.apache.airavata.registry.api.exception.worker;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 
-public class MalformedDescriptorException extends RegistryException {
+public class WorkspaceProjectAlreadyExistsException extends RegistryException {
 
 	private static final long serialVersionUID = -8006347245307495767L;
 
-	public MalformedDescriptorException(String descriptorName, Throwable e) {
-		super("Error in generating the descriptor for "+descriptorName+"!!!", e);
+	public WorkspaceProjectAlreadyExistsException(String projectName) {
+		super("The workspace project "+projectName+" already exists!!!");
 	}
 
 }
