@@ -21,6 +21,7 @@
 package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -46,6 +47,14 @@ public abstract class AbstractResource implements Resource {
         em.close();
 
     }
-
+    
+	@Override
+	public boolean isExists(ResourceType type, Object name) {
+		try {
+			return get(type, name)!=null;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
 }

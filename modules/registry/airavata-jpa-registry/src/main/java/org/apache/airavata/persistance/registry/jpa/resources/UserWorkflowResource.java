@@ -32,8 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserWorkflowResource extends AbstractResource {
-    private String gatewayname;
-    private String userName;
+    private GatewayResource gateway;
+    private WorkerResource worker;
     private String name;
     private Date lastUpdateDate;
     private String content;
@@ -41,18 +41,10 @@ public class UserWorkflowResource extends AbstractResource {
     public UserWorkflowResource() {
     }
 
-    public UserWorkflowResource(String gatewayname, String userName, String name) {
-        this.gatewayname = gatewayname;
-        this.userName = userName;
+    public UserWorkflowResource(GatewayResource gateway, WorkerResource worker, String name) {
+        this.setGateway(gateway);
+        this.setWorker(worker);
         this.name = name;
-    }
-
-    public String getGatewayname() {
-        return gatewayname;
-    }
-
-    public String getUserName() {
-        return userName;
     }
 
     public String getName() {
@@ -73,14 +65,6 @@ public class UserWorkflowResource extends AbstractResource {
 
     public String getContent() {
         return content;
-    }
-
-    public void setGatewayname(String gatewayname) {
-        this.gatewayname = gatewayname;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public void setName(String name) {
@@ -117,8 +101,8 @@ public class UserWorkflowResource extends AbstractResource {
         q.setParameter("usr_wf_name",keys[2]);
         User_Workflow userWorkflow = (User_Workflow)q.getSingleResult();
         UserWorkflowResource userWorkflowResource = new UserWorkflowResource();
-        userWorkflowResource.setUserName(userWorkflow.getUser().getUser_name());
-        userWorkflowResource.setGatewayname(userWorkflow.getGateway().getGateway_name());
+//        userWorkflowResource.setUserName(userWorkflow.getUser().getUser_name());
+//        userWorkflowResource.setGatewayname(userWorkflow.getGateway().getGateway_name());
         userWorkflowResource.setName(userWorkflow.getTemplate_name());
         userWorkflowResource.setContent(userWorkflow.getWorkflow_graph());
         end();
@@ -137,10 +121,10 @@ public class UserWorkflowResource extends AbstractResource {
         userWorkflow.setLast_updated_date(lastUpdateDate);
         userWorkflow.setWorkflow_graph(content);
         Gateway gateway = new Gateway();
-        gateway.setGateway_name(gatewayname);
+//        gateway.setGateway_name(gatewayname);
         userWorkflow.setGateway(gateway);
         Users user = new Users();
-        user.setUser_name(userName);
+//        user.setUser_name(userName);
         userWorkflow.setUser(user);
         em.persist(userWorkflow);
         end();
@@ -153,4 +137,20 @@ public class UserWorkflowResource extends AbstractResource {
     public boolean isExists(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
+
+	public GatewayResource getGateway() {
+		return gateway;
+	}
+
+	public void setGateway(GatewayResource gateway) {
+		this.gateway = gateway;
+	}
+
+	public WorkerResource getWorker() {
+		return worker;
+	}
+
+	public void setWorker(WorkerResource worker) {
+		this.worker = worker;
+	}
 }

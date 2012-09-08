@@ -20,25 +20,23 @@
 */
 package org.apache.airavata.persistance.registry.jpa.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Query;
+
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Project;
-import org.apache.airavata.persistance.registry.jpa.model.User_Workflow;
-
-import javax.persistence.Query;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ProjectResource extends AbstractResource {
 
     private String name;
     private int id = -1;
-    private String gatewayName;
-    private String userName;
-    private UserResource userResource;
-    private Gateway gateway;
+    private GatewayResource gateway;
+    private WorkerResource worker;
 
     public ProjectResource() {
     }
@@ -47,38 +45,17 @@ public class ProjectResource extends AbstractResource {
         this.id = id;
     }
 
-    public ProjectResource(UserResource userResource, String gateway, int id) {
-        this.userResource = userResource;
-        this.gatewayName = gateway;
+    public ProjectResource(WorkerResource worker, GatewayResource gateway, int id) {
+        this.setWorker(worker);
+        this.setGateway(gateway);
         this.id = id;
     }
 
-    public String getGatewayName() {
-        return gatewayName;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setGatewayName(String gatewayName) {
-        this.gatewayName = gatewayName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public Resource create(ResourceType type) {
-        if (type == ResourceType.USER_WORKFLOW) {
-            UserWorkflowResource userWorkflowResource = new UserWorkflowResource();
-            userWorkflowResource.setGatewayname(gatewayName);
-            userWorkflowResource.setUserName(userWorkflowResource.getUserName());
-            return userWorkflowResource;
-        } else if (type == ResourceType.EXPERIMENT) {
+        if (type == ResourceType.EXPERIMENT) {
             ExperimentResource experimentResource = new ExperimentResource();
             experimentResource.setProjectID(id);
-            experimentResource.setUserName(userResource.getUserName());
+            experimentResource.setUserName(getWorker().getUser());
             return experimentResource;
         } else {
             return null;
@@ -87,16 +64,10 @@ public class ProjectResource extends AbstractResource {
 
     public void remove(ResourceType type, Object name) {
         begin();
-        if (type == ResourceType.USER_WORKFLOW) {
-            Query q = em.createQuery("Delete p FROM User_Workflow p WHERE p.project_ID = :proj_id and p.user_name = :usr_name and p.user_workflow_name = :usrwf_name");
-            q.setParameter("proj_id", id);
-            q.setParameter("usr_name", userResource.getUserName());
-            q.setParameter("usrwf_name", name);
-            q.executeUpdate();
-        } else if (type == ResourceType.EXPERIMENT) {
+        if (type == ResourceType.EXPERIMENT) {
             Query q = em.createQuery("Delete p FROM Experiment p WHERE p.project_ID = :proj_id and p.user_name = :usr_name and p.experiment_ID = :ex_name");
             q.setParameter("proj_id", id);
-            q.setParameter("usr_name", userResource.getUserName());
+            q.setParameter("usr_name", getWorker().getUser());
             q.setParameter("ex_name", name);
             q.executeUpdate();
         }
@@ -109,21 +80,10 @@ public class ProjectResource extends AbstractResource {
 
     public Resource get(ResourceType type, Object name) {
         begin();
-        if (type == ResourceType.USER_WORKFLOW) {
-            Query q = em.createQuery("SELECT p FROM User_Workflow p WHERE p.project_ID = :proj_id and p.user_name = :usr_name and p.user_workflow_name = :usrwf_name");
-            q.setParameter("proj_id", id);
-            q.setParameter("usr_name", userResource.getUserName());
-            q.setParameter("usrwf_name", name);
-            User_Workflow userWorkflow = (User_Workflow) q.getSingleResult();
-            UserWorkflowResource userWorkflowResource = new UserWorkflowResource(gatewayName, userResource.getUserName(), userWorkflow.getTemplate_name());
-            userWorkflowResource.setContent(userWorkflow.getWorkflow_graph());
-            userWorkflowResource.setLastUpdateDate(userWorkflow.getLast_updated_date());
-            end();
-            return userWorkflowResource;
-        } else if (type == ResourceType.EXPERIMENT) {
+        if (type == ResourceType.EXPERIMENT) {
             Query q = em.createQuery("SELECT p FROM Experiment p WHERE p.project_ID = :proj_id and p.user_name = :usr_name and p.experiment_ID = :ex_name");
             q.setParameter("proj_id", id);
-            q.setParameter("usr_name", userResource.getUserName());
+            q.setParameter("usr_name", getWorker().getUser());
             q.setParameter("ex_name", name);
             Experiment experiment = (Experiment) q.getSingleResult();
             ExperimentResource experimentResource = new ExperimentResource(experiment.getExperiment_ID());
@@ -146,8 +106,8 @@ public class ProjectResource extends AbstractResource {
             for (Object result : resultList) {
                 Project project = (Project) result;
                 ProjectResource projectResource = new ProjectResource();
-                projectResource.setGatewayName(project.getGateway().getGateway_name());
-                projectResource.setUserName(project.getUsers().getUser_name());
+//                projectResource.setGateway(gateway);
+//                projectResource.setName(name)UserName(workerResource.getUser());
                 list.add(projectResource);
             }
         }
@@ -158,20 +118,7 @@ public class ProjectResource extends AbstractResource {
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
         begin();
-        if (type == ResourceType.USER_WORKFLOW) {
-            Query q = em.createQuery("SELECT p FROM User_Workflow p WHERE p.project_ID =:proj_ID");
-            q.setParameter("proj_ID", id);
-            List results = q.getResultList();
-            if (results.size() != 0) {
-                for (Object result : results) {
-                    User_Workflow userWorkflow = (User_Workflow) result;
-                    UserWorkflowResource userWorkflowResource = new UserWorkflowResource(userWorkflow.getGateway().getGateway_name(), userWorkflow.getUser().getUser_name(), userWorkflow.getTemplate_name());
-                    userWorkflowResource.setContent(userWorkflow.getWorkflow_graph());
-                    userWorkflowResource.setLastUpdateDate(userWorkflow.getLast_updated_date());
-                    resourceList.add(userWorkflowResource);
-                }
-            }
-        } else if (type == ResourceType.EXPERIMENT) {
+        if (type == ResourceType.EXPERIMENT) {
             Query q = em.createQuery("SELECT p FROM Experiment p WHERE p.project_ID =:proj_ID");
             q.setParameter("proj_ID", id);
             List results = q.getResultList();
@@ -194,52 +141,15 @@ public class ProjectResource extends AbstractResource {
         begin();
         Project project = new Project();
         project.setProject_name(name);
-        Gateway gateway = new Gateway();
-        gateway.setGateway_name(gatewayName);
-        project.setGateway(gateway);
-
+        Gateway gatewayO = new Gateway();
+        gatewayO.setGateway_name(gateway.getGatewayName());
+        project.setGateway(gatewayO);
         if (id != -1) {
             project.setProject_ID(id);
         }
-
-
-
         em.persist(project);
         end();
 
-    }
-
-    public void save(boolean isAppendable) {
-
-    }
-
-    public boolean isExists(ResourceType type, Object name) {
-        begin();
-        if (type == ResourceType.USER_WORKFLOW) {
-            Query q = em.createQuery("SELECT p FROM User_Workflow p WHERE p.gateway_name =:gate_name and p.user_name = :usr_name and p.project_ID =:projectID");
-            q.setParameter("gate_name", gatewayName);
-            q.setParameter("usr_name", userResource.getUserName());
-            q.setParameter("projectID", id);
-            User_Workflow userWorkflow = (User_Workflow) q.getSingleResult();
-            if (userWorkflow != null) {
-                return true;
-            } else {
-                return false;
-            }
-        } else if (type == ResourceType.EXPERIMENT) {
-            Query q = em.createQuery("SELECT p FROM Experiment p WHERE p.gateway_name =:gate_name and p.user_name = :usr_name and p.project_ID =:projectID");
-            q.setParameter("gate_name", gatewayName);
-            q.setParameter("usr_name", userResource.getUserName());
-            q.setParameter("projectID", id);
-            Experiment experiment = (Experiment) q.getSingleResult();
-            if (experiment != null) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        end();
-        return false;
     }
 
     public String getName() {
@@ -253,6 +163,22 @@ public class ProjectResource extends AbstractResource {
     public int getId() {
         return id;
     }
+
+	public WorkerResource getWorker() {
+		return worker;
+	}
+
+	public void setWorker(WorkerResource worker) {
+		this.worker = worker;
+	}
+
+	public GatewayResource getGateway() {
+		return gateway;
+	}
+
+	public void setGateway(GatewayResource gateway) {
+		this.gateway = gateway;
+	}
 
 
 }

@@ -37,7 +37,7 @@ public class HostDescriptorResource extends AbstractResource {
     private String content;
 
     public HostDescriptorResource(String hostDescName) {
-        this.hostDescName = hostDescName;
+        this.setHostDescName(hostDescName);
     }
 
     public HostDescriptorResource() {
@@ -75,7 +75,7 @@ public class HostDescriptorResource extends AbstractResource {
         if (type == ResourceType.APPLICATION_DESCRIPTOR) {
             ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource();
             applicationDescriptorResource.setGatewayName(gatewayName);
-            applicationDescriptorResource.setHostDescName(hostDescName);
+            applicationDescriptorResource.setHostDescName(getHostDescName());
             return applicationDescriptorResource;
         }
         return null;
@@ -86,7 +86,7 @@ public class HostDescriptorResource extends AbstractResource {
             begin();
             Query q = em.createQuery("Delete p FROM Application_Descriptor p WHERE p.application_descriptor_ID = :app_desc_id and p.host_descriptor_ID = :host_desc_name and p.gateway_name =:gate_name");
             q.setParameter("app_desc_id", name);
-            q.setParameter("host_desc_name", hostDescName);
+            q.setParameter("host_desc_name", getHostDescName());
             q.setParameter("gate_name", gatewayName);
             q.executeUpdate();
             end();
@@ -102,7 +102,7 @@ public class HostDescriptorResource extends AbstractResource {
             begin();
             Query q = em.createQuery("SELECT p FROM Application_Descriptor p WHERE p.application_descriptor_ID = :app_desc_id and p.host_descriptor_ID =:host_desc_name and p.gateway_name =:gate_name");
             q.setParameter("app_desc_id", name);
-            q.setParameter("host_desc_name", hostDescName);
+            q.setParameter("host_desc_name", getHostDescName());
             q.setParameter("gate_name", gatewayName);
             Application_Descriptor eappDesc = (Application_Descriptor) q.getSingleResult();
             ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(eappDesc.getApplication_descriptor_ID(),
@@ -143,7 +143,7 @@ public class HostDescriptorResource extends AbstractResource {
             begin();
             Query q = em.createQuery("SELECT p FROM Application_Descriptor p WHERE p.gateway_name =:gate_name and p.host_descriptor_ID =:host_desc_id");
             q.setParameter("gate_name", gatewayName);
-            q.setParameter("host_desc_id", hostDescName);
+            q.setParameter("host_desc_id", getHostDescName());
             List results = q.getResultList();
             if (results.size() != 0) {
                 for (Object result : results) {
@@ -165,7 +165,7 @@ public class HostDescriptorResource extends AbstractResource {
     public void save() {
         begin();
         Host_Descriptor hostDescriptor = new Host_Descriptor();
-        hostDescriptor.setHost_descriptor_ID(hostDescName);
+        hostDescriptor.setHost_descriptor_ID(getHostDescName());
         Gateway gateway = new Gateway();
         gateway.setGateway_name(gatewayName);
         hostDescriptor.setGateway(gateway);
@@ -183,7 +183,7 @@ public class HostDescriptorResource extends AbstractResource {
         if (type == ResourceType.APPLICATION_DESCRIPTOR) {
             begin();
             Query q = em.createQuery("SELECT p FROM Application_Descriptor p WHERE p.host_descriptor_ID =:host_desc_id and p.application_descriptor_ID =:app_dist_id");
-            q.setParameter("host_desc_id", hostDescName);
+            q.setParameter("host_desc_id", getHostDescName());
             q.setParameter("app_dist_id", name);
             Application_Descriptor applicationDescriptor = (Application_Descriptor) q.getSingleResult();
             if (applicationDescriptor != null) {
@@ -194,4 +194,8 @@ public class HostDescriptorResource extends AbstractResource {
         }
         return false;
     }
+
+	public void setHostDescName(String hostDescName) {
+		this.hostDescName = hostDescName;
+	}
 }
