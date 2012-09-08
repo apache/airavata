@@ -55,7 +55,7 @@ public class ProjectResource extends AbstractResource {
         if (type == ResourceType.EXPERIMENT) {
             ExperimentResource experimentResource = new ExperimentResource();
             experimentResource.setGateway(getGateway());
-            experimentResource.setProjectID(id);
+            experimentResource.setProject(this);
             experimentResource.setWorker(getWorker());
             return experimentResource;
         } else {
@@ -88,7 +88,7 @@ public class ProjectResource extends AbstractResource {
             q.setParameter("ex_name", name);
             Experiment experiment = (Experiment) q.getSingleResult();
             ExperimentResource experimentResource = new ExperimentResource(experiment.getExperiment_ID());
-            experimentResource.setProjectID(experiment.getProject().getProject_ID());
+            experimentResource.setProject(this);
             experimentResource.setWorker(getWorker());
             experimentResource.setGateway(getGateway());
             experimentResource.setSubmittedDate(experiment.getSubmitted_date());
@@ -103,7 +103,7 @@ public class ProjectResource extends AbstractResource {
         begin();
         Query q = em.createQuery("SELECT p FROM Project p WHERE p.project_name = :proj_name");
         q.setParameter("proj_name", keys[0]);
-        List resultList = q.getResultList();
+        List<?> resultList = q.getResultList();
         if (resultList.size() != 0) {
             for (Object result : resultList) {
                 Project project = (Project) result;
@@ -128,7 +128,7 @@ public class ProjectResource extends AbstractResource {
                 for (Object result : results) {
                     Experiment experiment = (Experiment) result;
                     ExperimentResource experimentResource = new ExperimentResource(experiment.getExperiment_ID());
-                    experimentResource.setProjectID(experiment.getProject().getProject_ID());
+                    experimentResource.setProject(this);
                     experimentResource.setGateway(new GatewayResource(experiment.getGateway().getGateway_name()));
                     experimentResource.setWorker(new WorkerResource(experiment.getUser().getUser_name(), experimentResource.getGateway()));
                     experimentResource.setSubmittedDate(experiment.getSubmitted_date());

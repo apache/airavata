@@ -687,9 +687,9 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
     }
 
     public String saveOutput(String workflowId, List<ActualParameter> parameters) throws RegistryException{
-    	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().saveOutput(workflowId, parameters);
-    	}
+//    	if (getProvenanceRegistry()!=null){
+//    		return getProvenanceRegistry().saveOutput(workflowId, parameters);
+//    	}
     	Session session = null;
         String result = null;
         try {
@@ -714,9 +714,9 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
     }
 
     public List<ActualParameter> loadOutput(String workflowId) throws RegistryException{
-    	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().loadOutput(workflowId);
-    	}
+//    	if (getProvenanceRegistry()!=null){
+//    		return getProvenanceRegistry().loadOutput(workflowId);
+//    	}
         Session session = null;
         ArrayList<ActualParameter> result = new ArrayList<ActualParameter>();
         try {
