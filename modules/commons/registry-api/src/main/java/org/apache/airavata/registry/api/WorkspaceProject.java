@@ -50,7 +50,7 @@ public class WorkspaceProject{
 	}
 	
 	public void createExperiment(AiravataExperiment experiment){
-		getProjectsRegistry().createExperiment(getProjectName(), experiment);
+		getProjectsRegistry().addExperiment(getProjectName(), experiment);
 	}
 	
 	public List<AiravataExperiment> getExperiments(){

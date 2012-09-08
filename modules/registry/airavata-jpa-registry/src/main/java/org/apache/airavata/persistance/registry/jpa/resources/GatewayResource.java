@@ -40,6 +40,13 @@ public class GatewayResource extends AbstractResource {
     private String gatewayName;
     private String owner;
 
+    public GatewayResource(String gatewayName) {
+    	setGatewayName(gatewayName);
+	}
+    
+    public GatewayResource() {
+	}
+    
     public String getGatewayName() {
         return gatewayName;
     }
@@ -59,19 +66,19 @@ public class GatewayResource extends AbstractResource {
     public Resource create(ResourceType type) {
         if (type == ResourceType.PROJECT) {
             ProjectResource projectResource = new ProjectResource();
-            projectResource.setGatewayName(gatewayName);
+            projectResource.setGateway(this);
             return projectResource;
         } else if (type == ResourceType.USER) {
             UserResource userResource = new UserResource();
-            userResource.setGatewayName(gatewayName);
+            userResource.setGatewayName(this.getGatewayName());
             return userResource;
         } else if (type == ResourceType.PUBLISHED_WORKFLOW) {
             PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource();
-            publishWorkflowResource.setGatewayName(gatewayName);
+            publishWorkflowResource.setGateway(this);
             return publishWorkflowResource;
         }else if(type == ResourceType.USER_WORKFLOW){
             UserWorkflowResource userWorkflowResource = new UserWorkflowResource();
-            userWorkflowResource.setGatewayname(gatewayName);
+            userWorkflowResource.setGateway(this);
             return userWorkflowResource;
         }else if (type == ResourceType.HOST_DESCRIPTOR) {
             HostDescriptorResource hostDescriptorResource = new HostDescriptorResource();
@@ -87,7 +94,7 @@ public class GatewayResource extends AbstractResource {
             return applicationDescriptorResource;
         } else if(type == ResourceType.EXPERIMENT){
             ExperimentResource experimentResource =new ExperimentResource();
-            experimentResource.setGatewayName(gatewayName);
+            experimentResource.setGateway(this);
             return experimentResource;
         }else {
             return null;
@@ -153,7 +160,7 @@ public class GatewayResource extends AbstractResource {
 //            end();
 //            return projectResource;
 //        } else
-            if (type == ResourceType.USER) {
+        if (type == ResourceType.USER) {
             Query q = em.createQuery("SELECT p FROM Gateway_Worker p WHERE p.user_name = :username and p.gateway_name =:gate_name");
             q.setParameter("username", name);
             q.setParameter("gate_name", gatewayName);
@@ -168,7 +175,8 @@ public class GatewayResource extends AbstractResource {
             q.setParameter("pub_workflow_name", name);
             q.setParameter("gate_name", gatewayName);
             Published_Workflow ePub_workflow = (Published_Workflow) q.getSingleResult();
-            PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource(ePub_workflow.getPublish_workflow_name());
+            PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource(this);
+            publishWorkflowResource.setName(ePub_workflow.getPublish_workflow_name());
             publishWorkflowResource.setContent(ePub_workflow.getWorkflow_content());
             publishWorkflowResource.setPublishedDate(ePub_workflow.getPublished_date());
             publishWorkflowResource.setVersion(ePub_workflow.getVersion());
@@ -194,27 +202,26 @@ public class GatewayResource extends AbstractResource {
             hostDescriptorResource.setContent(eHostDesc.getHost_descriptor_xml());
             end();
             return hostDescriptorResource;
-//        }
-//        else if (type == ResourceType.APPLICATION_DESCRIPTOR) {
-//            Query q = em.createQuery("SELECT p FROM Application_Descriptor p WHERE p.application_descriptor_ID = :app_desc_id and p.gateway_name =:gate_name");
-//            q.setParameter("app_desc_id", name);
-//            q.setParameter("gate_name", gatewayName);
-//            Application_Descriptor eappDesc = (Application_Descriptor) q.getSingleResult();
-//            ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(eappDesc.getApplication_descriptor_ID());
-//            applicationDescriptorResource.setGatewayName(eappDesc.getGateway().getGateway_name());
-//            applicationDescriptorResource.setContent(eappDesc.getApplication_descriptor_xml());
-//            applicationDescriptorResource.setHostDescName(eappDesc.getHost_descriptor_ID());
-//            applicationDescriptorResource.setServiceDescName(eappDesc.getService_descriptor_ID());
-//            end();
-//            return applicationDescriptorResource;
+        } else if (type == ResourceType.APPLICATION_DESCRIPTOR) {
+            Query q = em.createQuery("SELECT p FROM Application_Descriptor p WHERE p.application_descriptor_ID = :app_desc_id and p.gateway_name =:gate_name");
+            q.setParameter("app_desc_id", name);
+            q.setParameter("gate_name", gatewayName);
+            Application_Descriptor eappDesc = (Application_Descriptor) q.getSingleResult();
+            ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(eappDesc.getApplication_descriptor_ID());
+            applicationDescriptorResource.setGatewayName(eappDesc.getGateway().getGateway_name());
+            applicationDescriptorResource.setContent(eappDesc.getApplication_descriptor_xml());
+            applicationDescriptorResource.setHostDescName(eappDesc.getHost_descriptor_ID());
+            applicationDescriptorResource.setServiceDescName(eappDesc.getService_descriptor_ID());
+            end();
+            return applicationDescriptorResource;
         } else if(type == ResourceType.EXPERIMENT){
             Query q = em.createQuery("SELECT p FROM Experiment p WHERE p.experiment_ID = :ex_ID and p.gateway_name =:gate_name");
             q.setParameter("ex_ID", name);
             q.setParameter("gate_name", gatewayName);
             Experiment experiment = (Experiment)q.getSingleResult();
             ExperimentResource experimentResource = new ExperimentResource(experiment.getExperiment_ID());
-            experimentResource.setUserName(experiment.getUser().getUser_name());
-            experimentResource.setGatewayName(gatewayName);
+            experimentResource.setWorker(new WorkerResource(experiment.getUser().getUser_name(),this));
+            experimentResource.setGateway(this);
             experimentResource.setSubmittedDate(experiment.getSubmitted_date());
             return experimentResource;
         } else {
@@ -237,7 +244,7 @@ public class GatewayResource extends AbstractResource {
                 for (Object result : results) {
                     Project project = (Project) result;
                     ProjectResource projectResource = new ProjectResource(project.getProject_ID());
-                    projectResource.setGatewayName(gatewayName);
+                    projectResource.setGateway(this);
                     projectResource.setName(project.getProject_name());
                     resourceList.add(projectResource);
                 }
@@ -260,12 +267,12 @@ public class GatewayResource extends AbstractResource {
         else if (type == ResourceType.PUBLISHED_WORKFLOW) {
             Query q = em.createQuery("SELECT p FROM Published_Workflow p WHERE p.gateway_name =:gate_name");
             q.setParameter("gate_name", gatewayName);
-            List results = q.getResultList();
+            List<?> results = q.getResultList();
             if (results.size() != 0) {
                 for (Object result : results) {
                     Published_Workflow publishedWorkflow = (Published_Workflow) result;
-                    PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource(publishedWorkflow.getPublish_workflow_name());
-                    publishWorkflowResource.setGatewayName(gatewayName);
+                    PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource(this);
+                    publishWorkflowResource.setName(publishedWorkflow.getPublish_workflow_name());
                     publishWorkflowResource.setContent(publishedWorkflow.getWorkflow_content());
                     publishWorkflowResource.setPublishedDate(publishedWorkflow.getPublished_date());
                     publishWorkflowResource.setVersion(publishedWorkflow.getVersion());
@@ -320,10 +327,12 @@ public class GatewayResource extends AbstractResource {
                 for (Object result : results) {
                     Experiment experiment = (Experiment) result;
                     ExperimentResource experimentResource = new ExperimentResource(experiment.getExperiment_ID());
-                    experimentResource.setGatewayName(gatewayName);
-                    experimentResource.setUserName(experiment.getUser().getUser_name());
+                    experimentResource.setGateway(this);
+                    experimentResource.setWorker(new WorkerResource(experiment.getUser().getUser_name(),this));
                     experimentResource.setSubmittedDate(experiment.getSubmitted_date());
-                    experimentResource.setProjectID(experiment.getProject().getProject_ID());
+                    ProjectResource project = new ProjectResource(experimentResource.getWorker(),this,experiment.getProject().getProject_ID());
+                    project.setName(experiment.getProject().getProject_name());
+					experimentResource.setProject(project);
                     resourceList.add(experimentResource);
                 }
             }
@@ -505,6 +514,35 @@ public class GatewayResource extends AbstractResource {
         }
         end();
         return resourceList;
+    }
+    
+    public boolean isPublishedWorkflowExists(String workflowTemplateName){
+    	return isExists(ResourceType.PUBLISHED_WORKFLOW, workflowTemplateName);
+    }
+    
+    public PublishWorkflowResource createPublishedWorkflow(String workflowTemplateName){
+    	PublishWorkflowResource publishedWorkflowResource = (PublishWorkflowResource)create(ResourceType.PUBLISHED_WORKFLOW);
+    	publishedWorkflowResource.setName(workflowTemplateName);
+    	publishedWorkflowResource.setPath("/");
+    	publishedWorkflowResource.setVersion("1.0");
+    	return publishedWorkflowResource;
+    }
+    
+    public PublishWorkflowResource getPublishedWorkflow(String workflowTemplateName){
+    	return (PublishWorkflowResource)get(ResourceType.PUBLISHED_WORKFLOW,workflowTemplateName);
+    }
+    
+    public List<PublishWorkflowResource> getPublishedWorkflows(){
+    	List<PublishWorkflowResource> result=new ArrayList<PublishWorkflowResource>();
+    	List<Resource> list = get(ResourceType.PUBLISHED_WORKFLOW);
+    	for (Resource resource : list) {
+			result.add((PublishWorkflowResource) resource);
+		}
+    	return result;
+    }
+    
+    public void removePublishedWorkflow(String workflowTemplateName){
+    	remove(ResourceType.PUBLISHED_WORKFLOW, workflowTemplateName);
     }
 }
 

@@ -47,7 +47,7 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.commons.gfac.wsdl.WSDLConstants;
 import org.apache.airavata.commons.gfac.wsdl.WSDLGenerator;
-import org.apache.airavata.registry.api.AiravataProvenanceRegistry;
+import org.apache.airavata.registry.api.ProvenanceRegistry;
 import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.registry.api.DataRegistry;
 import org.apache.airavata.registry.api.exception.DeploymentDescriptionRetrieveException;
@@ -93,7 +93,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
     public static final String WORKFLOW_USER_PROPERTY = "User";
     public static final String NOTIFICATION_STORE = "User";
     
-    private AiravataProvenanceRegistry provenanceRegistry;
+    private ProvenanceRegistry provenanceRegistry;
     private static Logger log = LoggerFactory.getLogger(AiravataJCRRegistry.class);
 
     public AiravataJCRRegistry(URI repositoryURI, String className,
@@ -1583,7 +1583,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         return true;
 	}
 
-	private AiravataProvenanceRegistry getProvenanceRegistry() {
+	private ProvenanceRegistry getProvenanceRegistry() {
 		return provenanceRegistry;
 	}
 	
@@ -1599,7 +1599,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
                 String provenanceClass = "class.provenance.registry.accessor";
                 String provRegAccessorClass = properties.getProperty(provenanceClass, null);
                 if (provRegAccessorClass != null) {
-                    Class<AiravataProvenanceRegistry> provenanceRegistryClass = (Class<AiravataProvenanceRegistry>) getClass().getClassLoader().loadClass(provRegAccessorClass);
+                    Class<ProvenanceRegistry> provenanceRegistryClass = (Class<ProvenanceRegistry>) getClass().getClassLoader().loadClass(provRegAccessorClass);
                     provenanceRegistry = provenanceRegistryClass.getConstructor(String.class).newInstance(getUsername());
                 }
 			} catch (ClassNotFoundException e) {

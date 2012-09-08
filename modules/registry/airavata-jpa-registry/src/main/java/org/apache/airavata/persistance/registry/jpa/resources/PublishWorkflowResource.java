@@ -35,15 +35,15 @@ public class PublishWorkflowResource extends AbstractResource {
     private String version;
     private Date publishedDate;
     private String content;
-    private String gatewayName;
+    private GatewayResource gateway;
     private String createdUser;
     private String path;
 
     public PublishWorkflowResource() {
     }
 
-    public PublishWorkflowResource(String name) {
-        this.name = name;
+    public PublishWorkflowResource(GatewayResource gateway) {
+        this.gateway = gateway;
     }
 
     public String getCreatedUser() {
@@ -90,14 +90,6 @@ public class PublishWorkflowResource extends AbstractResource {
         this.content = content;
     }
 
-    public String getGatewayName() {
-        return gatewayName;
-    }
-
-    public void setGatewayName(String gatewayName) {
-        this.gatewayName = gatewayName;
-    }
-
     public Resource create(ResourceType type) {
         throw new UnsupportedOperationException();
     }
@@ -122,7 +114,7 @@ public class PublishWorkflowResource extends AbstractResource {
         q.setParameter("pub_wf_name", keys[1]);
         Published_Workflow publishedWorkflow = (Published_Workflow)q.getSingleResult();
         PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource();
-        publishWorkflowResource.setGatewayName(publishedWorkflow.getGateway().getGateway_name());
+        publishWorkflowResource.setGateway(new GatewayResource(publishedWorkflow.getGateway().getGateway_name()));
         publishWorkflowResource.setContent(publishedWorkflow.getWorkflow_content());
         publishWorkflowResource.setPublishedDate(publishedWorkflow.getPublished_date());
         publishWorkflowResource.setVersion(publishedWorkflow.getVersion());
@@ -138,12 +130,12 @@ public class PublishWorkflowResource extends AbstractResource {
     public void save() {
         begin();
         Published_Workflow publishedWorkflow = new Published_Workflow();
-        publishedWorkflow.setPublish_workflow_name(name);
+        publishedWorkflow.setPublish_workflow_name(getName());
         publishedWorkflow.setPublished_date(publishedDate);
         publishedWorkflow.setVersion(version);
         publishedWorkflow.setWorkflow_content(content);
         Gateway gateway = new Gateway();
-        gateway.setGateway_name(gatewayName);
+        gateway.setGateway_name(this.gateway.getGatewayName());
         publishedWorkflow.setGateway(gateway);
         em.persist(gateway);
         end();
@@ -156,4 +148,16 @@ public class PublishWorkflowResource extends AbstractResource {
     public boolean isExists(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
+
+	public GatewayResource getGateway() {
+		return gateway;
+	}
+
+	public void setGateway(GatewayResource gateway) {
+		this.gateway = gateway;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }

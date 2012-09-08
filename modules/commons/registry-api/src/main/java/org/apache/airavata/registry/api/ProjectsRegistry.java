@@ -24,19 +24,25 @@ package org.apache.airavata.registry.api;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectAlreadyExistsException;
+import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectDoesNotExistsException;
+
 public interface ProjectsRegistry extends AiravataSubRegistry {
 	
 	//------------Project management
-	public void addWorkspaceProject(WorkspaceProject project);
-	public void updateWorkspaceProject(WorkspaceProject project);
-	public void deleteWorkspaceProject(String projectName);
-	public WorkspaceProject getWorkspaceProject(String projectName);
+	public void addWorkspaceProject(WorkspaceProject project) throws WorkspaceProjectAlreadyExistsException, RegistryException;
+	public void updateWorkspaceProject(WorkspaceProject project) throws WorkspaceProjectDoesNotExistsException, RegistryException;
+	public void deleteWorkspaceProject(String projectName) throws WorkspaceProjectDoesNotExistsException, RegistryException;
+	public WorkspaceProject getWorkspaceProject(String projectName) throws WorkspaceProjectDoesNotExistsException, RegistryException;
+	public List<WorkspaceProject> getWorkspaceProjects() throws RegistryException;
 	
 	//------------Experiment management
-	public void createExperiment(String projectName, AiravataExperiment experiment);
-	public void removeExperiment(String experimentId);
-	public List<AiravataExperiment> getExperiments();
-	public List<AiravataExperiment> getExperiments(String projectName);
-	public List<AiravataExperiment> getExperiments(Date from, Date to);
-	public List<AiravataExperiment> getExperiments(String projectName, Date from, Date to);
+	public void addExperiment(String projectName, AiravataExperiment experiment) throws WorkspaceProjectDoesNotExistsException, ExperimentDoesNotExistsException;
+	public void removeExperiment(String experimentId) throws ExperimentDoesNotExistsException;
+	public List<AiravataExperiment> getExperiments() throws RegistryException;
+	public List<AiravataExperiment> getExperiments(String projectName)throws RegistryException;
+	public List<AiravataExperiment> getExperiments(Date from, Date to)throws RegistryException;
+	public List<AiravataExperiment> getExperiments(String projectName, Date from, Date to) throws RegistryException;
 }

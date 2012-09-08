@@ -21,14 +21,24 @@
 
 package org.apache.airavata.registry.api;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowAlreadyExistsException;
+import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.worker.UserWorkflowDoesNotExistsException;
+
 
 public interface PublishedWorkflowRegistry extends AiravataSubRegistry {
 	
-	public void publishWorkflow(String workflowName, String publishWorkflowName);
-	public void publishWorkflow(String workflowName);
+	public void publishWorkflow(String workflowName, String publishWorkflowName) throws PublishedWorkflowAlreadyExistsException, UserWorkflowDoesNotExistsException, RegistryException;
+	public void publishWorkflow(String workflowName) throws PublishedWorkflowAlreadyExistsException, UserWorkflowDoesNotExistsException, RegistryException;
 	
-	public String getPublishedWorkflowGraphXML(String workflowName);
-	public ResourceMetadata getPublishedWorkflowMetadata(String workflowName);
+	public String getPublishedWorkflowGraphXML(String workflowName) throws PublishedWorkflowDoesNotExistsException, RegistryException;
+	public List<String> getPublishedWorkflowNames() throws RegistryException;
+	public Map<String,String> getPublishedWorkflows() throws RegistryException;
+	public ResourceMetadata getPublishedWorkflowMetadata(String workflowName) throws RegistryException;
 	
-	public void removePublishedWorkflow(String workflowName);
+	public void removePublishedWorkflow(String workflowName)throws PublishedWorkflowDoesNotExistsException, RegistryException;
 }

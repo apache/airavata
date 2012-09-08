@@ -28,9 +28,9 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.exception.descriptor.DescriptorAlreadyExistsException;
-import org.apache.airavata.registry.api.exception.descriptor.DescriptorDoesNotExistsException;
-import org.apache.airavata.registry.api.exception.descriptor.MalformedDescriptorException;
+import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
+import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 
 public interface DescriptorRegistry extends AiravataSubRegistry {
 	

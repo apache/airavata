@@ -22,32 +22,31 @@
 package org.apache.airavata.persistance.registry.jpa;
 
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class JPAResourceAccessor {
 	private AiravataRegistry2 registry=null;
 	private GatewayResource gatewayResource;
 	private ResourceUtils resourceUtils = new ResourceUtils();
-	
+	private WorkerResource workerResource;
+
 	public JPAResourceAccessor(AiravataRegistry2 registry) {
 		this.registry=registry;
 		gatewayResource = new GatewayResource();
 		gatewayResource.setGatewayName(this.registry.getGateway().getGatewayName());
+		workerResource = new WorkerResource(registry.getUser().getUserName(), getGateway());
 	}
 	
 	public GatewayResource getGateway(){
 		return gatewayResource;
 	}
 	
-	public ProjectResource createProject(String name){
-		ProjectResource prj = (ProjectResource)getGateway().create(ResourceType.PROJECT);
-		prj.setUserName(registry.getUser().getUserName());
-		prj.setName(name);
-		return prj;
-	}
-	
 	public ResourceUtils root(){
 		return resourceUtils;
+	}
+	
+	public WorkerResource getWorker(){
+		return workerResource;
 	}
 }

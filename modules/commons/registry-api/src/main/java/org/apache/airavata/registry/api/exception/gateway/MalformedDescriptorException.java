@@ -19,16 +19,16 @@
  *
  */
 
-package org.apache.airavata.registry.api.exception.descriptor;
+package org.apache.airavata.registry.api.exception.gateway;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 
-public class DescriptorDoesNotExistsException extends RegistryException {
+public class MalformedDescriptorException extends RegistryException {
 
 	private static final long serialVersionUID = -8006347245307495767L;
 
-	public DescriptorDoesNotExistsException(String descriptorName) {
-		super("The Descriptor "+descriptorName+" does not exists!!!");
+	public MalformedDescriptorException(String descriptorName, Throwable e) {
+		super("Error in generating the descriptor for "+descriptorName+"!!!", e);
 	}
 
 }

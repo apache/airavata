@@ -27,6 +27,9 @@ public class AiravataExperiment {
 	private String experimentId;
 	private Date submittedDate;
 	private AiravataUser user;
+	private WorkspaceProject project;
+	private Gateway gateway;
+	
 	public String getExperimentId() {
 		return experimentId;
 	}
@@ -44,5 +47,17 @@ public class AiravataExperiment {
 	}
 	public void setUser(AiravataUser user) {
 		this.user = user;
+	}
+	public Gateway getGateway() {
+		return gateway;
+	}
+	public void setGateway(Gateway gateway) {
+		this.gateway = gateway;
+	}
+	public WorkspaceProject getProject() {
+		return project;
+	}
+	public void setProject(WorkspaceProject project) {
+		this.project = project;
 	}
 }
