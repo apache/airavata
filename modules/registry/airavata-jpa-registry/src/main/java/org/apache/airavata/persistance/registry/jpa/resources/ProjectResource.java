@@ -30,6 +30,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Project;
+import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 public class ProjectResource extends AbstractResource {
 
@@ -66,11 +67,17 @@ public class ProjectResource extends AbstractResource {
     public void remove(ResourceType type, Object name) {
         begin();
         if (type == ResourceType.EXPERIMENT) {
-            Query q = em.createQuery("Delete p FROM Experiment p WHERE p.project_ID = :proj_id and p.user_name = :usr_name and p.experiment_ID = :ex_name");
-            q.setParameter("proj_id", id);
-            q.setParameter("usr_name", getWorker().getUser());
-            q.setParameter("ex_name", name);
-            q.executeUpdate();
+        	QueryGenerator generator = new QueryGenerator("Experiment");
+        	generator.setParameter("project_ID", id);
+        	generator.setParameter("user_name", getWorker().getUser());
+        	generator.setParameter("experiment_ID", name);
+        	Query q = generator.deleteQuery(em);
+        	q.executeUpdate();
+//            Query q = em.createQuery("Delete p FROM Experiment p WHERE p.project_ID = :proj_id and p.user_name = :usr_name and p.experiment_ID = :ex_name");
+//            q.setParameter("proj_id", id);
+//            q.setParameter("usr_name", getWorker().getUser());
+//            q.setParameter("ex_name", name);
+//            q.executeUpdate();
         }
         end();
     }
@@ -82,10 +89,15 @@ public class ProjectResource extends AbstractResource {
     public Resource get(ResourceType type, Object name) {
         begin();
         if (type == ResourceType.EXPERIMENT) {
-            Query q = em.createQuery("SELECT p FROM Experiment p WHERE p.project_ID = :proj_id and p.user_name = :usr_name and p.experiment_ID = :ex_name");
-            q.setParameter("proj_id", id);
-            q.setParameter("usr_name", getWorker().getUser());
-            q.setParameter("ex_name", name);
+        	QueryGenerator generator = new QueryGenerator("Experiment");
+        	generator.setParameter("project_ID", id);
+        	generator.setParameter("user_name", getWorker().getUser());
+        	generator.setParameter("experiment_ID", name);
+        	Query q = generator.selectQuery(em);
+//            Query q = em.createQuery("SELECT p FROM Experiment p WHERE p.project_ID = :proj_id and p.user_name = :usr_name and p.experiment_ID = :ex_name");
+//            q.setParameter("proj_id", id);
+//            q.setParameter("usr_name", getWorker().getUser());
+//            q.setParameter("ex_name", name);
             Experiment experiment = (Experiment) q.getSingleResult();
             ExperimentResource experimentResource = new ExperimentResource(experiment.getExperiment_ID());
             experimentResource.setProject(this);
@@ -121,8 +133,9 @@ public class ProjectResource extends AbstractResource {
         List<Resource> resourceList = new ArrayList<Resource>();
         begin();
         if (type == ResourceType.EXPERIMENT) {
-            Query q = em.createQuery("SELECT p FROM Experiment p WHERE p.project_ID =:proj_ID");
-            q.setParameter("proj_ID", id);
+        	QueryGenerator generator = new QueryGenerator("Experiment");
+        	generator.setParameter("project_ID", id);
+        	Query q = generator.selectQuery(em);
             List<?> results = q.getResultList();
             if (results.size() != 0) {
                 for (Object result : results) {
