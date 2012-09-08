@@ -37,7 +37,7 @@ public class ApplicationDescriptorResource extends AbstractResource {
     private String serviceDescName;
 
     public ApplicationDescriptorResource(String name, String gatewayName, String hostDescName, String serviceDescName) {
-        this.name = name;
+        this.setName(name);
         this.gatewayName = gatewayName;
         this.hostDescName = hostDescName;
         this.serviceDescName = serviceDescName;
@@ -149,7 +149,7 @@ public class ApplicationDescriptorResource extends AbstractResource {
     public void save() {
         begin();
         Application_Descriptor applicationDescriptor = new Application_Descriptor();
-        applicationDescriptor.setApplication_descriptor_ID(name);
+        applicationDescriptor.setApplication_descriptor_ID(getName());
         Gateway gateway = new Gateway();
         gateway.setGateway_name(gatewayName);
         applicationDescriptor.setGateway(gateway);
@@ -171,4 +171,8 @@ public class ApplicationDescriptorResource extends AbstractResource {
     public boolean isExists(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }

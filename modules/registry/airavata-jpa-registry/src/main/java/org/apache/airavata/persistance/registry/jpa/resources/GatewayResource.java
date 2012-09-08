@@ -20,13 +20,21 @@
 */
 package org.apache.airavata.persistance.registry.jpa.resources;
 
-import org.apache.airavata.persistance.registry.jpa.Resource;
-import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.model.*;
-
-import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.Query;
+
+import org.apache.airavata.persistance.registry.jpa.Resource;
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor;
+import org.apache.airavata.persistance.registry.jpa.model.Experiment;
+import org.apache.airavata.persistance.registry.jpa.model.Gateway;
+import org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor;
+import org.apache.airavata.persistance.registry.jpa.model.Project;
+import org.apache.airavata.persistance.registry.jpa.model.Published_Workflow;
+import org.apache.airavata.persistance.registry.jpa.model.Service_Descriptor;
+import org.apache.airavata.persistance.registry.jpa.model.Users;
 
 public class GatewayResource extends AbstractResource {
     private String gatewayName;
@@ -88,18 +96,12 @@ public class GatewayResource extends AbstractResource {
 
     public void remove(ResourceType type, Object name) {
         begin();
-        if (type == ResourceType.PROJECT) {
-            Query q = em.createQuery("Delete p FROM Project p WHERE p.project_name = :proj_name and p.gateway_name = :gate_name");
-            q.setParameter("proj_name", name);
+        if (type == ResourceType.USER) {
+            Query q = em.createQuery("Delete p FROM Users p WHERE p.user_name = :usr_name and p.gateway_name = :gate_name");
+            q.setParameter("usr_name", name);
             q.setParameter("gate_name", gatewayName);
             q.executeUpdate();
         }
-//        else if (type == ResourceType.USER) {
-//            Query q = em.createQuery("Delete p FROM Users p WHERE p.user_name = :usr_name and p.gateway_name = :gate_name");
-//            q.setParameter("usr_name", name);
-//            q.setParameter("gate_name", gatewayName);
-//            q.executeUpdate();
-//        }
         else if (type == ResourceType.PUBLISHED_WORKFLOW) {
             Query q = em.createQuery("Delete p FROM Published_Workflow p WHERE p.publish_workflow_name = :pub_workflow_id and p.gateway_name = :gate_name");
             q.setParameter("pub_workflow_id", name);
@@ -189,7 +191,7 @@ public class GatewayResource extends AbstractResource {
             Host_Descriptor eHostDesc = (Host_Descriptor) q.getSingleResult();
             HostDescriptorResource hostDescriptorResource = new HostDescriptorResource(eHostDesc.getHost_descriptor_ID());
             hostDescriptorResource.setGatewayName(eHostDesc.getGateway().getGateway_name());
-            hostDescriptorResource.setContent(eHostDesc.getHost_descriptor_ID());
+            hostDescriptorResource.setContent(eHostDesc.getHost_descriptor_xml());
             end();
             return hostDescriptorResource;
 //        }
@@ -396,5 +398,113 @@ public class GatewayResource extends AbstractResource {
         return false;
     }
 
+    public boolean isHostDescriptorExists(String descriptorName){
+    	return isExists(ResourceType.HOST_DESCRIPTOR, descriptorName);
+    }
+    
+    public HostDescriptorResource createHostDescriptorResource(String hostDescriptorName){
+    	HostDescriptorResource hdr = (HostDescriptorResource)create(ResourceType.HOST_DESCRIPTOR);
+    	hdr.setHostDescName(hostDescriptorName);
+    	return hdr;
+    }
+    
+    public HostDescriptorResource getHostDescriptorResource(String hostDescriptorName){
+    	return (HostDescriptorResource)get(ResourceType.HOST_DESCRIPTOR,hostDescriptorName);
+    }
+    
+    public void removeHostDescriptor(String descriptorName){
+    	remove(ResourceType.HOST_DESCRIPTOR, descriptorName);
+    }
+    
+    public List<HostDescriptorResource> getHostDescriptorResources(){
+    	List<HostDescriptorResource> results=new ArrayList<HostDescriptorResource>();
+    	List<Resource> list = get(ResourceType.HOST_DESCRIPTOR);
+    	for (Resource resource : list) {
+    		results.add((HostDescriptorResource) resource);
+		}
+    	return results;
+    }
+    
+    public boolean isServiceDescriptorExists(String descriptorName){
+    	return isExists(ResourceType.SERVICE_DESCRIPTOR, descriptorName);
+    }
+    
+    public ServiceDescriptorResource createServiceDescriptorResource(String descriptorName){
+    	ServiceDescriptorResource hdr = (ServiceDescriptorResource)create(ResourceType.SERVICE_DESCRIPTOR);
+    	hdr.setServiceDescName(descriptorName);
+    	return hdr;
+    }
+    
+    public ServiceDescriptorResource getServiceDescriptorResource(String descriptorName){
+    	return (ServiceDescriptorResource)get(ResourceType.SERVICE_DESCRIPTOR,descriptorName);
+    }
+    
+    public void removeServiceDescriptor(String descriptorName){
+    	remove(ResourceType.SERVICE_DESCRIPTOR, descriptorName);
+    }
 
+    public List<ServiceDescriptorResource> getServiceDescriptorResources(){
+    	List<ServiceDescriptorResource> results=new ArrayList<ServiceDescriptorResource>();
+    	List<Resource> list = get(ResourceType.SERVICE_DESCRIPTOR);
+    	for (Resource resource : list) {
+    		results.add((ServiceDescriptorResource) resource);
+		}
+    	return results;
+    }
+    
+    public boolean isApplicationDescriptorExists(String descriptorName){
+    	return isExists(ResourceType.APPLICATION_DESCRIPTOR, descriptorName);
+    }
+    
+    public ApplicationDescriptorResource createApplicationDescriptorResource(String descriptorName){
+    	ApplicationDescriptorResource hdr = (ApplicationDescriptorResource)create(ResourceType.APPLICATION_DESCRIPTOR);
+    	hdr.setName(descriptorName);
+    	return hdr;
+    }
+    
+    public ApplicationDescriptorResource getApplicationDescriptorResource(String descriptorName){
+    	return (ApplicationDescriptorResource)get(ResourceType.APPLICATION_DESCRIPTOR,descriptorName);
+    }
+    
+    public void removeApplicationDescriptor(String descriptorName){
+    	remove(ResourceType.APPLICATION_DESCRIPTOR, descriptorName);
+    }
+
+    public List<ApplicationDescriptorResource> getApplicationDescriptorResources(){
+    	List<ApplicationDescriptorResource> results=new ArrayList<ApplicationDescriptorResource>();
+    	List<Resource> list = get(ResourceType.APPLICATION_DESCRIPTOR);
+    	for (Resource resource : list) {
+    		results.add((ApplicationDescriptorResource) resource);
+		}
+    	return results;
+    }
+    
+    public List<ApplicationDescriptorResource> getApplicationDescriptorResources(String serviceName,String hostName){
+    	List<ApplicationDescriptorResource> resourceList = new ArrayList<ApplicationDescriptorResource>();
+        begin();
+        String qString = "SELECT p FROM Application_Descriptor p WHERE p.gateway_name =:gate_name and p.service_descriptor_ID =:service_name";
+        if (hostName!=null){
+        	qString+=" and p.host_descriptor_ID =:host_name";
+        }
+		Query q = em.createQuery(qString);
+        q.setParameter("gate_name", gatewayName);
+        q.setParameter("service_name", serviceName);
+        if (hostName!=null){
+        	q.setParameter("host_name",hostName);
+        }
+        List<?> results = q.getResultList();
+        if (results.size() != 0) {
+            for (Object result : results) {
+                Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
+                ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(applicationDescriptor.getApplication_descriptor_ID(),applicationDescriptor.getGateway().getGateway_name(),
+                        applicationDescriptor.getHost_descriptor_ID(), applicationDescriptor.getService_descriptor_ID());
+                applicationDescriptorResource.setContent(applicationDescriptor.getApplication_descriptor_xml());
+                applicationDescriptorResource.setUpdatedUser(applicationDescriptor.getUser().getUser_name());
+                resourceList.add(applicationDescriptorResource);
+            }
+        }
+        end();
+        return resourceList;
+    }
 }
+

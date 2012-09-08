@@ -21,6 +21,7 @@
 package org.apache.airavata.persistance.registry.jpa.impl;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,9 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
@@ -40,8 +39,9 @@ import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.persistance.registry.jpa.JPAResourceAccessor;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.model.Configuration;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.HostDescriptorResource;
@@ -55,6 +55,10 @@ import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.ResourceMetadata;
 import org.apache.airavata.registry.api.WorkspaceProject;
+import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
+import org.apache.airavata.registry.api.exception.descriptor.DescriptorAlreadyExistsException;
+import org.apache.airavata.registry.api.exception.descriptor.DescriptorDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.descriptor.MalformedDescriptorException;
 import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
@@ -80,276 +84,364 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     /**---------------------------------Configuration Registry----------------------------------**/
     
     public Object getConfiguration(String key) {
-        EntityManager em = factory.createEntityManager();
-		em.getTransaction().begin();
-        Query q = em.createQuery("SELECT p FROM Configuration p WHERE p.config_key = :config_key");
-        q.setParameter("config_key", key);
-        return q.getSingleResult();
+		ConfigurationResource configuration = ResourceUtils.getConfiguration(key);
+		return configuration==null? null: configuration.getConfigVal();
     }
     // Not sure about this.. need some description
     public List<Object> getConfigurationList(String key) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	List<Object> values = new ArrayList<Object>();
+    	List<ConfigurationResource> configurations = ResourceUtils.getConfigurations(key);
+        for (ConfigurationResource configurationResource : configurations) {
+			values.add(configurationResource.getConfigVal());
+		}
+		return values;
     }
 
     public void setConfiguration(String key, String value, Date expire) {
-        EntityManager em = factory.createEntityManager();
-		em.getTransaction().begin();
-        Configuration configuraton = new Configuration();
-        configuraton.setConfig_key(key);
-        configuraton.setConfig_val(value);
-        configuraton.setExpire_date((java.sql.Date) expire);
-        em.persist(configuraton);
-        em.getTransaction().commit();
-		em.close();
-        //To change body of implemented methods use File | Settings | File Templates.
+    	ConfigurationResource config;
+		if (ResourceUtils.isConfigurationExist(key)) {
+			config = ResourceUtils.getConfiguration(key);
+		}else{
+			config = ResourceUtils.createConfiguration(key);
+		}
+    	config.setConfigVal(value);
+    	config.setExpireDate(new java.sql.Date(expire.getTime()));
+    	config.save();
     }
 
     public void addConfiguration(String key, String value, Date expire) {
-        EntityManager em = factory.createEntityManager();
-		em.getTransaction().begin();
-        Configuration configuraton = new Configuration();
-        configuraton.setConfig_key(key);
-        configuraton.setConfig_val(value);
-        configuraton.setExpire_date((java.sql.Date) expire);
-        em.persist(configuraton);
-        em.getTransaction().commit();
-		em.close();
+    	ConfigurationResource config = ResourceUtils.createConfiguration(key);
+    	config.setConfigVal(value);
+    	config.setExpireDate(new java.sql.Date(expire.getTime()));
+    	config.save();
     }
 
     public void removeAllConfiguration(String key) {
-        EntityManager em = factory.createEntityManager();
-        em.getTransaction().begin();
-        Query q = em.createQuery("SELECT p FROM Configuration p WHERE p.config_key = :config_key");
-        q.setParameter("config_key", key);
-        List<Configuration> resultList = q.getResultList();
-        for (Configuration config : resultList) {
-            em.remove(config);
-        }
-        em.getTransaction();
-        em.close();
-        //To change body of implemented methods use File | Settings | File Templates.
+    	ResourceUtils.removeConfiguration(key);
     }
 
     public void removeConfiguration(String key, String value) {
-        //To change body of implemented methods use File | Settings | File Templates.
-        EntityManager em = factory.createEntityManager();
-        em.getTransaction().begin();
-        Query q = em.createQuery("SELECT p FROM Configuration p WHERE p.config_key = :config_key AND p.config_value = :config_value");
-        q.setParameter("config_key", key);
-        q.setParameter("config_value", value);
-        Configuration config = (Configuration)q.getSingleResult();
-        em.remove(config);
-        em.getTransaction();
-        em.close();
+    	ResourceUtils.removeConfiguration(key, value);
+    }
+    
+    private static final String GFAC_URL="gfac.url";
+    private static final String INTERPRETER_URL="gfac.url";
+    private static final String MESSAGE_BOX_URL="gfac.url";
+    private static final String EVENTING_URL="gfac.url";
+    
+    public List<URI> getGFacURIs() {
+    	return retrieveURIsFromConfiguration(GFAC_URL);
     }
 
-    public List<URI> getGFacURIs() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+	private List<URI> retrieveURIsFromConfiguration(String urlType) {
+		List<URI> urls=new ArrayList<URI>();
+    	List<Object> configurationList = getConfigurationList(urlType);
+    	for (Object o : configurationList) {
+			try {
+				urls.add(new URI(o.toString()));
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+		}
+        return urls;
+	}
 
     public List<URI> getWorkflowInterpreterURIs() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	return retrieveURIsFromConfiguration(INTERPRETER_URL);
     }
 
     public URI getEventingServiceURI() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	List<URI> eventingURLs = retrieveURIsFromConfiguration(EVENTING_URL);
+		return eventingURLs.size()==0? null: eventingURLs.get(0);
     }
 
     public URI getMessageBoxURI() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    	List<URI> messageboxURLs = retrieveURIsFromConfiguration(MESSAGE_BOX_URL);
+		return messageboxURLs.size()==0? null: messageboxURLs.get(0);
     }
 
     public void addGFacURI(URI uri) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        addConfigurationURL(GFAC_URL,uri);
     }
 
+	private void addConfigurationURL(String urlType,URI uri) {
+		Calendar instance = Calendar.getInstance();
+        instance.add(Calendar.MINUTE, AiravataRegistry2.SERVICE_TTL);
+		Date expire = instance.getTime();
+		addConfigurationURL(urlType, uri, expire);
+	}
+
+	private void addConfigurationURL(String urlType, URI uri, Date expire) {
+		addConfiguration(urlType, uri.toString(), expire);
+	}
+
     public void addWorkflowInterpreterURI(URI uri) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        addConfigurationURL(INTERPRETER_URL,uri);
     }
 
     public void setEventingURI(URI uri) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    	addConfigurationURL(EVENTING_URL,uri);
     }
 
     public void setMessageBoxURI(URI uri) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    	addConfigurationURL(MESSAGE_BOX_URL,uri);
     }
 
     public void addGFacURI(URI uri, Date expire) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    	addConfigurationURL(GFAC_URL, uri, expire);
     }
 
     public void addWorkflowInterpreterURI(URI uri, Date expire) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    	addConfigurationURL(INTERPRETER_URL, uri, expire);
     }
 
     public void setEventingURI(URI uri, Date expire) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    	addConfigurationURL(EVENTING_URL, uri, expire);
     }
 
     public void setMessageBoxURI(URI uri, Date expire) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    	addConfigurationURL(MESSAGE_BOX_URL, uri, expire);
     }
 
     public void removeGFacURI(URI uri) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        removeConfiguration(GFAC_URL, uri.toString());
     }
 
-    public void removeWorkflowInterpreterURI() {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void removeWorkflowInterpreterURI(URI uri) {
+    	removeConfiguration(INTERPRETER_URL,uri.toString());
     }
 
-    public void removeAllGFacURI(URI uri) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void removeAllGFacURI() {
+        removeAllConfiguration(GFAC_URL);
     }
 
     public void removeAllWorkflowInterpreterURI() {
-        //To change body of implemented methods use File | Settings | File Templates.
+    	removeAllConfiguration(INTERPRETER_URL);
     }
 
     public void unsetEventingURI() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        removeAllConfiguration(EVENTING_URL);
     }
 
     public void unsetMessageBoxURI() {
-        //To change body of implemented methods use File | Settings | File Templates.
+    	removeAllConfiguration(MESSAGE_BOX_URL);
     }
 
-
-    // DescriptorRegistry Implementation
-    public void addHostDescriptor(HostDescription descriptor) {
-        //todo how to fill other data
-        GatewayResource gatewayResource = jpa.getGateway();
-        HostDescriptorResource resource = (HostDescriptorResource)gatewayResource.create(ResourceType.HOST_DESCRIPTOR);
-        resource.setContent(descriptor.toXML());
-        //todo fix the IDs to Names
-//        resource.setGatewayID(getGateway().getGatewayName());
-//        resource.setUserID(getUser().getUserName());
-        resource.save();
-    }
-
-    public void updateHostDescriptor(HostDescription descriptor) {
-        addHostDescriptor(descriptor);
-    }
-
-    public HostDescription getHostDescriptor(String hostName) {
-        GatewayResource gatewayResource = jpa.getGateway();
-        Resource resource = gatewayResource.get(ResourceType.HOST_DESCRIPTOR, hostName);
-        try {
-            return HostDescription.fromXML(((HostDescriptorResource)resource).getContent());
-        } catch (XmlException e) {
-            logger.error("Error parsing Host Descriptor");
+    /**---------------------------------Descriptor Registry----------------------------------**/
+    
+    public void addHostDescriptor(HostDescription descriptor) throws DescriptorAlreadyExistsException {
+        GatewayResource gateway = jpa.getGateway();
+        String hostName = descriptor.getType().getHostName();
+		if (gateway.isHostDescriptorExists(hostName)){
+        	throw new DescriptorAlreadyExistsException(hostName);
         }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        HostDescriptorResource hostDescriptorResource = gateway.createHostDescriptorResource(hostName);
+        hostDescriptorResource.setContent(descriptor.toXML());
+        hostDescriptorResource.save();
     }
 
-    public void removeHostDescriptor(String hostName) {
-       GatewayResource gatewayResource = jpa.getGateway();
-       gatewayResource.remove(ResourceType.HOST_DESCRIPTOR, hostName);
-    }
-
-    public ResourceMetadata getHostDescriptorMetadata(String hostName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void addServiceDescriptor(ServiceDescription descriptor) {
-         //todo how to fill other data
-        GatewayResource gatewayResource = jpa.getGateway();
-        ServiceDescriptorResource resource = (ServiceDescriptorResource)gatewayResource.create(ResourceType.SERVICE_DESCRIPTOR);
-        resource.setContent(descriptor.toXML());
-        //todo fix the IDs to Names
-//        resource.setGatewayID(getGateway().getGatewayName());
-//        resource.setUserID(getUser().getUserName());
-        resource.save();
-    }
-
-    public void updateServiceDescriptor(ServiceDescription descriptor) {
-        addServiceDescriptor(descriptor);
-    }
-
-    public ServiceDescription getServiceDescriptor(String serviceName) {
-        GatewayResource gatewayResource = jpa.getGateway();
-        Resource resource = gatewayResource.get(ResourceType.SERVICE_DESCRIPTOR, serviceName);
-        try {
-            return ServiceDescription.fromXML(((ServiceDescriptorResource) resource).getContent());
-        } catch (XmlException e) {
-            logger.error("Error parsing Host Descriptor");
+    public void updateHostDescriptor(HostDescription descriptor) throws DescriptorDoesNotExistsException {
+    	GatewayResource gateway = jpa.getGateway();
+        String hostName = descriptor.getType().getHostName();
+		if (!gateway.isHostDescriptorExists(hostName)){
+        	throw new DescriptorDoesNotExistsException(hostName);
         }
-        return null;
+        HostDescriptorResource hostDescriptorResource = gateway.getHostDescriptorResource(hostName);
+        hostDescriptorResource.setContent(descriptor.toXML());
+        hostDescriptorResource.save();
     }
 
-    public void removeServiceDescriptor(String serviceName) {
-       GatewayResource gatewayResource = jpa.getGateway();
-       gatewayResource.remove(ResourceType.SERVICE_DESCRIPTOR, serviceName);
+    public HostDescription getHostDescriptor(String hostName) throws DescriptorDoesNotExistsException, MalformedDescriptorException {
+        GatewayResource gateway = jpa.getGateway();
+		if (!gateway.isHostDescriptorExists(hostName)){
+        	throw new DescriptorDoesNotExistsException(hostName);
+        }
+        HostDescriptorResource hostDescriptorResource = gateway.getHostDescriptorResource(hostName);
+        return createHostDescriptor(hostDescriptorResource);
     }
 
-    public ResourceMetadata getServiceDescriptorMetadata(String serviceName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+	private HostDescription createHostDescriptor(
+			HostDescriptorResource hostDescriptorResource)
+			throws MalformedDescriptorException {
+		try {
+            return HostDescription.fromXML(hostDescriptorResource.getContent());
+        } catch (XmlException e) {
+            throw new MalformedDescriptorException(hostDescriptorResource.getHostDescName(),e);
+        }
+	}
+
+    public void removeHostDescriptor(String hostName) throws DescriptorDoesNotExistsException {
+    	GatewayResource gateway = jpa.getGateway();
+		if (!gateway.isHostDescriptorExists(hostName)){
+        	throw new DescriptorDoesNotExistsException(hostName);
+        }
+		gateway.removeHostDescriptor(hostName);
     }
 
-    public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) {
+
+	@Override
+	public List<HostDescription> getHostDescriptors()
+			throws MalformedDescriptorException, RegistryException {
+		GatewayResource gateway = jpa.getGateway();
+		List<HostDescription> list=new ArrayList<HostDescription>();
+		List<HostDescriptorResource> hostDescriptorResources = gateway.getHostDescriptorResources();
+		for (HostDescriptorResource resource : hostDescriptorResources) {
+			list.add(createHostDescriptor(resource));
+		}
+		return list;
+	}
+
+    public ResourceMetadata getHostDescriptorMetadata(String hostName) throws RegistryException {
+    	//TODO
+        throw new UnimplementedRegistryOperationException();
+    }
+
+    public void addServiceDescriptor(ServiceDescription descriptor) throws DescriptorAlreadyExistsException {
+    	GatewayResource gateway = jpa.getGateway();
+        String serviceName = descriptor.getType().getName();
+		if (gateway.isServiceDescriptorExists(serviceName)){
+        	throw new DescriptorAlreadyExistsException(serviceName);
+        }
+        ServiceDescriptorResource serviceDescriptorResource = gateway.createServiceDescriptorResource(serviceName);
+        serviceDescriptorResource.setContent(descriptor.toXML());
+        serviceDescriptorResource.save();
+    }
+
+    public void updateServiceDescriptor(ServiceDescription descriptor) throws DescriptorDoesNotExistsException {
+    	GatewayResource gateway = jpa.getGateway();
+        String serviceName = descriptor.getType().getName();
+		if (!gateway.isServiceDescriptorExists(serviceName)){
+        	throw new DescriptorDoesNotExistsException(serviceName);
+        }
+        ServiceDescriptorResource serviceDescriptorResource = gateway.getServiceDescriptorResource(serviceName);
+        serviceDescriptorResource.setContent(descriptor.toXML());
+        serviceDescriptorResource.save();
+    }
+
+    public ServiceDescription getServiceDescriptor(String serviceName) throws DescriptorDoesNotExistsException, MalformedDescriptorException {
+    	GatewayResource gateway = jpa.getGateway();
+		if (!gateway.isHostDescriptorExists(serviceName)){
+        	throw new DescriptorDoesNotExistsException(serviceName);
+        }
+        ServiceDescriptorResource serviceDescriptorResource = gateway.getServiceDescriptorResource(serviceName);
+        return createServiceDescriptor(serviceDescriptorResource);
+    }
+
+	private ServiceDescription createServiceDescriptor(
+			ServiceDescriptorResource serviceDescriptorResource)
+			throws MalformedDescriptorException {
+		try {
+            return ServiceDescription.fromXML(serviceDescriptorResource.getContent());
+        } catch (XmlException e) {
+            throw new MalformedDescriptorException(serviceDescriptorResource.getServiceDescName(),e);
+        }
+	}
+
+    public void removeServiceDescriptor(String serviceName) throws DescriptorDoesNotExistsException {
+    	GatewayResource gateway = jpa.getGateway();
+		if (!gateway.isServiceDescriptorExists(serviceName)){
+        	throw new DescriptorDoesNotExistsException(serviceName);
+        }
+		gateway.removeServiceDescriptor(serviceName);
+    }
+    
+    @Override
+	public List<ServiceDescription> getServiceDescriptors()
+			throws MalformedDescriptorException, RegistryException {
+		GatewayResource gateway = jpa.getGateway();
+		List<ServiceDescription> list=new ArrayList<ServiceDescription>();
+		List<ServiceDescriptorResource> serviceDescriptorResources = gateway.getServiceDescriptorResources();
+		for (ServiceDescriptorResource resource : serviceDescriptorResources) {
+			list.add(createServiceDescriptor(resource));
+		}
+		return list;
+	}
+    
+    public ResourceMetadata getServiceDescriptorMetadata(String serviceName) throws UnimplementedRegistryOperationException {
+    	//TODO
+        throw new UnimplementedRegistryOperationException();
+    }
+
+    private String createAppName(String serviceName, String hostName, String applicationName){
+    	return serviceName+"/"+hostName+"/"+applicationName;
+    }
+    
+    public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) throws DescriptorAlreadyExistsException {
         addApplicationDescriptor(serviceDescription.getType().getName(),hostDescriptor.getType().getHostName(),descriptor);
     }
 
-    public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) {
-        GatewayResource gatewayResource = jpa.getGateway();
-        ApplicationDescriptorResource resource = (ApplicationDescriptorResource)gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
-        resource.setContent(descriptor.toXML());
-        resource.setHostDescName(hostName);
-        resource.setServiceDescName(serviceName);
-        //todo fix the IDs to Names
-//        resource.setGatewayID(getGateway().getGatewayName());
-//        resource.setUserID(getUser().getUserName());
-        resource.save();
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void udpateApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) {
-        addApplicationDescriptor(serviceDescription,hostDescriptor,descriptor);
-    }
-
-    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) {
-        addApplicationDescriptor(serviceName,hostName,descriptor);
-    }
-
-    public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname) {
-        //todo finish implementation
-        GatewayResource gatewayResource = jpa.getGateway();
-        ApplicationDescriptorResource resource = (ApplicationDescriptorResource)gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
-        resource.setHostDescName(hostname);
-        resource.setServiceDescName(serviceName);
-//        resource.get()
-//        gatewayResource.
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName) {
-        GatewayResource gatewayResource = jpa.getGateway();
-        ServiceDescriptorResource resource = (ServiceDescriptorResource)gatewayResource.get(ResourceType.SERVICE_DESCRIPTOR,serviceName);
-        resource.setServiceDescName(serviceName);
-        List<Resource> resources = resource.get(ResourceType.APPLICATION_DESCRIPTOR);
-        HashMap<String, ApplicationDeploymentDescription> stringApplicationDescriptorResourceHashMap =
-                new HashMap<String, ApplicationDeploymentDescription>();
-        for(Resource applicationDescriptorResource:resources){
-            try {
-                stringApplicationDescriptorResourceHashMap.put(resource.getServiceDescName(),
-                        ApplicationDeploymentDescription.fromXML(((ApplicationDescriptorResource) applicationDescriptorResource).getContent()));
-            } catch (XmlException e) {
-                logger.error("Error parsing Application Descriptor");
-            }
+    public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws DescriptorAlreadyExistsException {
+    	GatewayResource gateway = jpa.getGateway();
+        String applicationName = descriptor.getType().getApplicationName().getStringValue();
+        applicationName = createAppName(serviceName, hostName, applicationName);
+		if (gateway.isApplicationDescriptorExists(applicationName)){
+        	throw new DescriptorAlreadyExistsException(applicationName);
         }
-        return stringApplicationDescriptorResourceHashMap;  //To change body of implemented methods use File | Settings | File Templates.
+        ApplicationDescriptorResource applicationDescriptorResource = gateway.createApplicationDescriptorResource(applicationName);
+        applicationDescriptorResource.setServiceDescName(serviceName);
+        applicationDescriptorResource.setHostDescName(hostName);
+        applicationDescriptorResource.setContent(descriptor.toXML());
+        applicationDescriptorResource.save();
     }
 
-    public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName) {
-
+    public void udpateApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) throws DescriptorDoesNotExistsException {
+    	updateApplicationDescriptor(serviceDescription.getType().getName(),hostDescriptor.getType().getHostName(),descriptor);
     }
 
-    public ResourceMetadata getApplicationDescriptorMetadata(String serviceName, String hostName, String applicationName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws DescriptorDoesNotExistsException {
+    	GatewayResource gateway = jpa.getGateway();
+    	String applicationName = descriptor.getType().getApplicationName().getStringValue();
+        applicationName = createAppName(serviceName, hostName, applicationName);
+		if (!gateway.isApplicationDescriptorExists(applicationName)){
+        	throw new DescriptorDoesNotExistsException(applicationName);
+        }
+        ApplicationDescriptorResource serviceDescriptorResource = gateway.getApplicationDescriptorResource(applicationName);
+        serviceDescriptorResource.setContent(descriptor.toXML());
+        serviceDescriptorResource.save();
+    }
+    private ApplicationDeploymentDescription createApplicationDescriptor(
+			ApplicationDescriptorResource applicationDescriptorResource)
+			throws MalformedDescriptorException {
+		try {
+            return ApplicationDeploymentDescription.fromXML(applicationDescriptorResource.getContent());
+        } catch (XmlException e) {
+            throw new MalformedDescriptorException(applicationDescriptorResource.getName(),e);
+        }
+	}
+    public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname) throws MalformedDescriptorException {
+    	GatewayResource gateway = jpa.getGateway();
+		List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(serviceName, hostname);
+		if (applicationDescriptorResources.size()>0){
+			return createApplicationDescriptor(applicationDescriptorResources.get(0));
+		}
+		return null;
     }
 
+    public Map<String, ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName) throws MalformedDescriptorException {
+    	GatewayResource gateway = jpa.getGateway();
+		Map<String, ApplicationDeploymentDescription> map=new HashMap<String,ApplicationDeploymentDescription>();
+		List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(serviceName, null);
+		for (ApplicationDescriptorResource resource : applicationDescriptorResources) {
+			map.put(resource.getHostDescName(),createApplicationDescriptor(resource));
+		}
+		return map;
+    }
 
+    public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName) throws DescriptorDoesNotExistsException {
+    	GatewayResource gateway = jpa.getGateway();
+    	String appName = createAppName(serviceName, hostName, applicationName);
+		if (!gateway.isApplicationDescriptorExists(appName)) {
+			throw new DescriptorDoesNotExistsException(appName);
+		}
+		gateway.removeApplicationDescriptor(appName);
+    }
+
+    public ResourceMetadata getApplicationDescriptorMetadata(String serviceName, String hostName, String applicationName) throws UnimplementedRegistryOperationException {
+    	//TODO
+        throw new UnimplementedRegistryOperationException();
+    }
+
+    /**---------------------------------Project Registry----------------------------------**/
 
     public void addWorkspaceProject(WorkspaceProject project) {
         GatewayResource gatewayResource = jpa.getGateway();
@@ -719,4 +811,5 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 }

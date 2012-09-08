@@ -49,8 +49,8 @@ public interface ConfigurationRegistry extends AiravataSubRegistry {
 	public void setMessageBoxURI(URI uri, Date expire);
 	
 	public void removeGFacURI(URI uri);
-	public void removeWorkflowInterpreterURI();
-	public void removeAllGFacURI(URI uri);
+	public void removeAllGFacURI();
+	public void removeWorkflowInterpreterURI(URI uri);
 	public void removeAllWorkflowInterpreterURI();
 	public void unsetEventingURI();
 	public void unsetMessageBoxURI();

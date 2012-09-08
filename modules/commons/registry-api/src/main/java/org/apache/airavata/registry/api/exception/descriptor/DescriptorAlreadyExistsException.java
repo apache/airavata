@@ -19,36 +19,16 @@
  *
  */
 
-package org.apache.airavata.registry.api;
+package org.apache.airavata.registry.api.exception.descriptor;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
 
-public abstract class AiravataRegistry2 implements DescriptorRegistry, ProjectsRegistry, PublishedWorkflowRegistry, UserWorkflowRegistry, ConfigurationRegistry, AiravataProvenanceRegistry{
-	private Gateway gateway;
-	private AiravataUser user;
-	
-	protected static final int SERVICE_TTL=180;
-	
-	protected void preInitialize(Gateway gateway, AiravataUser user) {
-		setGateway(gateway);
-		setUser(user);
-	}
-	
-	protected abstract void initialize();
-	
-	public Gateway getGateway() {
-		return gateway;
+public class DescriptorAlreadyExistsException extends RegistryException {
+
+	private static final long serialVersionUID = -8006347245307495767L;
+
+	public DescriptorAlreadyExistsException(String descriptorName) {
+		super("The Descriptor "+descriptorName+" already exists!!!");
 	}
 
-	public void setGateway(Gateway gateway) {
-		this.gateway = gateway;
-	}
-
-	public AiravataUser getUser() {
-		return user;
-	}
-
-	public void setUser(AiravataUser user) {
-		this.user = user;
-	}
-	
 }

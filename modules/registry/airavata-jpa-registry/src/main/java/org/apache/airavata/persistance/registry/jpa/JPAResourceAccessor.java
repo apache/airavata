@@ -21,7 +21,6 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.registry.api.AiravataRegistry2;
@@ -29,6 +28,7 @@ import org.apache.airavata.registry.api.AiravataRegistry2;
 public class JPAResourceAccessor {
 	private AiravataRegistry2 registry=null;
 	private GatewayResource gatewayResource;
+	private ResourceUtils resourceUtils = new ResourceUtils();
 	
 	public JPAResourceAccessor(AiravataRegistry2 registry) {
 		this.registry=registry;
@@ -45,5 +45,9 @@ public class JPAResourceAccessor {
 		prj.setUserName(registry.getUser().getUserName());
 		prj.setName(name);
 		return prj;
+	}
+	
+	public ResourceUtils root(){
+		return resourceUtils;
 	}
 }

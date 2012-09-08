@@ -27,7 +27,7 @@ public class RegistryException extends Exception {
     
     private static final long serialVersionUID = -2849422320139467602L;
 
-    public RegistryException(Exception e) {
+    public RegistryException(Throwable e) {
         super(ERROR_MESSAGE, e);
     }
     
@@ -35,7 +35,7 @@ public class RegistryException extends Exception {
         super(message, null);
     }
     
-    public RegistryException(String message, Exception e) {
+    public RegistryException(String message, Throwable e) {
         super(message, e);
     }
 }
