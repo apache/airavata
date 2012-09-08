@@ -24,6 +24,10 @@ package org.apache.airavata.registry.api;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectDoesNotExistsException;
+
 public class WorkspaceProject{
 	private String projectName;
 	private ProjectsRegistry projectsRegistry;
@@ -49,15 +53,15 @@ public class WorkspaceProject{
 		this.projectsRegistry = projectsRegistry;
 	}
 	
-	public void createExperiment(AiravataExperiment experiment){
+	public void createExperiment(AiravataExperiment experiment) throws WorkspaceProjectDoesNotExistsException, ExperimentDoesNotExistsException{
 		getProjectsRegistry().addExperiment(getProjectName(), experiment);
 	}
 	
-	public List<AiravataExperiment> getExperiments(){
+	public List<AiravataExperiment> getExperiments() throws RegistryException{
 		return getProjectsRegistry().getExperiments(getProjectName());
 	}
 	
-	public List<AiravataExperiment> getExperiments(Date from, Date to){
+	public List<AiravataExperiment> getExperiments(Date from, Date to) throws RegistryException{
 		return getProjectsRegistry().getExperiments(getProjectName(),from, to);
 	}
 }

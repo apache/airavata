@@ -1,24 +1,15 @@
 package org.apache.airavata.persistance.registry.jpa;
 
-import org.apache.airavata.persistance.registry.jpa.model.Project;
-import org.apache.airavata.persistance.registry.jpa.model.Users;
-import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.apache.airavata.persistance.registry.jpa.resources.HostDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
-import org.apache.airavata.persistance.registry.jpa.resources.PublishWorkflowResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
-import org.apache.airavata.registry.api.PublishedWorkflowRegistry;
-
-import java.sql.Date;
 
 
 public class Test {
 
     public static void main(String[] args) {
         GatewayResource gatewayResource = new GatewayResource();
-        gatewayResource.setName("abc");
+        gatewayResource.setGatewayName("abc");
 //        gatewayResource.setGatewayID(1);
 
         // ProjectResource projectResource = (ProjectResource)gatewayResource.create(ResourceType.PROJECT);
