@@ -41,7 +41,7 @@ import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveExce
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 
-public interface AiravataRegistry extends Registry{
+public interface AiravataRegistry1 extends Registry{
     /**
      * Find locations where the service is deployed
      * 

@@ -22,7 +22,7 @@
 package org.apache.airavata.registry.api;
 
 public class Gateway {
-	private String gatewayName;
+	private String gatewayName = "default";
 	
 	public Gateway(String gatewayName) {
 		setGatewayName(gatewayName);

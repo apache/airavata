@@ -24,7 +24,7 @@ package org.apache.airavata.registry.api;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 
-public interface Axis2Registry extends AiravataRegistry{
+public interface Axis2Registry extends AiravataRegistry1 {
 
     /**
      * Load WSDL for Axis2
