@@ -30,6 +30,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Project;
+import org.apache.airavata.persistance.registry.jpa.model.Users;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 public class ProjectResource extends AbstractResource {
@@ -67,61 +68,43 @@ public class ProjectResource extends AbstractResource {
     public void remove(ResourceType type, Object name) {
         begin();
         if (type == ResourceType.EXPERIMENT) {
-        	QueryGenerator generator = new QueryGenerator("Experiment");
-        	generator.setParameter("project_ID", id);
-        	generator.setParameter("user_name", getWorker().getUser());
-        	generator.setParameter("experiment_ID", name);
+        	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
+        	generator.setParameter(ExperimentConstants.PROJECT_ID, id);
+        	generator.setParameter(ExperimentConstants.USERNAME, getWorker().getUser());
+        	generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
         	Query q = generator.deleteQuery(em);
         	q.executeUpdate();
-//            Query q = em.createQuery("Delete p FROM Experiment p WHERE p.project_ID = :proj_id and p.user_name = :usr_name and p.experiment_ID = :ex_name");
-//            q.setParameter("proj_id", id);
-//            q.setParameter("usr_name", getWorker().getUser());
-//            q.setParameter("ex_name", name);
-//            q.executeUpdate();
         }
         end();
-    }
-
-    public void removeMe(Object[] keys) {
-
     }
 
     public Resource get(ResourceType type, Object name) {
         begin();
         if (type == ResourceType.EXPERIMENT) {
-        	QueryGenerator generator = new QueryGenerator("Experiment");
-        	generator.setParameter("project_ID", id);
-        	generator.setParameter("user_name", getWorker().getUser());
-        	generator.setParameter("experiment_ID", name);
+        	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
+        	generator.setParameter(ExperimentConstants.PROJECT_ID, id);
+        	generator.setParameter(ExperimentConstants.USERNAME, getWorker().getUser());
+        	generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
         	Query q = generator.selectQuery(em);
-//            Query q = em.createQuery("SELECT p FROM Experiment p WHERE p.project_ID = :proj_id and p.user_name = :usr_name and p.experiment_ID = :ex_name");
-//            q.setParameter("proj_id", id);
-//            q.setParameter("usr_name", getWorker().getUser());
-//            q.setParameter("ex_name", name);
             Experiment experiment = (Experiment) q.getSingleResult();
-            ExperimentResource experimentResource = new ExperimentResource(experiment.getExperiment_ID());
-            experimentResource.setProject(this);
-            experimentResource.setWorker(getWorker());
-            experimentResource.setGateway(getGateway());
-            experimentResource.setSubmittedDate(experiment.getSubmitted_date());
+            ExperimentResource experimentResource = (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
             end();
             return experimentResource;
         }
         return null;
     }
 
-    public List<Resource> getMe(Object[] keys) {
+    public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
         begin();
-        Query q = em.createQuery("SELECT p FROM Project p WHERE p.project_name = :proj_name");
-        q.setParameter("proj_name", keys[0]);
+        QueryGenerator queryGenerator = new QueryGenerator(PROJECT);
+        queryGenerator.setParameter(ProjectConstants.PROJECT_NAME, keys[0]);
+        Query q = queryGenerator.selectQuery(em);
         List<?> resultList = q.getResultList();
         if (resultList.size() != 0) {
             for (Object result : resultList) {
                 Project project = (Project) result;
-                ProjectResource projectResource = new ProjectResource();
-//                projectResource.setGateway(gateway);
-//                projectResource.setName(name)UserName(workerResource.getUser());
+                ProjectResource projectResource = (ProjectResource)Utils.getResource(ResourceType.PROJECT, project);
                 list.add(projectResource);
             }
         }
@@ -133,18 +116,14 @@ public class ProjectResource extends AbstractResource {
         List<Resource> resourceList = new ArrayList<Resource>();
         begin();
         if (type == ResourceType.EXPERIMENT) {
-        	QueryGenerator generator = new QueryGenerator("Experiment");
-        	generator.setParameter("project_ID", id);
+        	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
+        	generator.setParameter(ExperimentConstants.PROJECT_ID, id);
         	Query q = generator.selectQuery(em);
             List<?> results = q.getResultList();
             if (results.size() != 0) {
                 for (Object result : results) {
                     Experiment experiment = (Experiment) result;
-                    ExperimentResource experimentResource = new ExperimentResource(experiment.getExperiment_ID());
-                    experimentResource.setProject(this);
-                    experimentResource.setGateway(new GatewayResource(experiment.getGateway().getGateway_name()));
-                    experimentResource.setWorker(new WorkerResource(experiment.getUser().getUser_name(), experimentResource.getGateway()));
-                    experimentResource.setSubmittedDate(experiment.getSubmitted_date());
+                    ExperimentResource experimentResource = (ExperimentResource)Utils.getResource(ResourceType.USER, experiment);
                     resourceList.add(experimentResource);
                 }
             }
@@ -163,6 +142,9 @@ public class ProjectResource extends AbstractResource {
         if (id != -1) {
             project.setProject_ID(id);
         }
+        Users user = new Users();
+        user.setUser_name(worker.getUser());
+        project.setUsers(user);
         em.persist(project);
         end();
 

@@ -53,22 +53,14 @@ public class UserResource extends AbstractResource {
     }
 
     public Resource create(ResourceType type) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public void remove(ResourceType type, Object name) {
-
-    }
-
-    public void removeMe(Object[] keys) {
-
+        throw new UnsupportedOperationException();
     }
 
     public Resource get(ResourceType type, Object name) {
-        return null;
-    }
-
-    public List<Resource> getMe(Object[] keys) {
         throw new UnsupportedOperationException();
     }
 
@@ -82,13 +74,12 @@ public class UserResource extends AbstractResource {
         Users user = new Users();
         user.setUser_name(userName);
         user.setPassword(password);
-
         em.persist(user);
         end();
     }
 
     public boolean isExists(ResourceType type, Object name) {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     public ProjectResource getProjectResource() {

@@ -23,6 +23,7 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.*;
+import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 import javax.persistence.Query;
 import java.util.ArrayList;
@@ -108,12 +109,12 @@ public class ApplicationDescriptorResource extends AbstractResource {
      */
     public void removeMe(Object[] keys) {
         begin();
-        Query q = em.createQuery("Delete p FROM Application_Descriptor p WHERE p.application_descriptor_ID = :app_desc_id and p.gateway_name=:gate_name and p.host_descriptor_ID =:host_id " +
-                "and p.service_descriptor_ID =: service_desc");
-        q.setParameter("gate_name", keys[0]);
-        q.setParameter("app_desc_id", keys[1]);
-        q.setParameter("host_id", keys[2]);
-        q.setParameter("service_desc", keys[3]);
+        QueryGenerator queryGenerator = new QueryGenerator(APPLICATION_DESCRIPTOR);
+        queryGenerator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, keys[0]);
+        queryGenerator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, keys[1]);
+        queryGenerator.setParameter(ApplicationDescriptorConstants.HOST_DESC_ID, keys[2]);
+        queryGenerator.setParameter(ApplicationDescriptorConstants.SERVICE_DESC_ID, keys[3]);
+        Query q = queryGenerator.deleteQuery(em);
         q.executeUpdate();
         end();
     }
@@ -127,20 +128,17 @@ public class ApplicationDescriptorResource extends AbstractResource {
      * @param keys
      * @return
      */
-    public List<Resource> getMe(Object[] keys) {
+    public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
         begin();
-        Query q = em.createQuery("SELECT p FROM Application_Descriptor p WHERE p.application_descriptor_ID = :app_desc_name and p.gateway_name=:gate_name and p.host_descriptor_ID =:host_id " +
-                "and p.service_descriptor_ID =: service_desc");
-        q.setParameter("gate_name", keys[0]);
-        q.setParameter("app_desc_id", keys[1]);
-        q.setParameter("host_id", keys[2]);
-        q.setParameter("service_desc", keys[3]);
+        QueryGenerator queryGenerator = new QueryGenerator(APPLICATION_DESCRIPTOR);
+        queryGenerator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, keys[0]);
+        queryGenerator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, keys[1]);
+        queryGenerator.setParameter(ApplicationDescriptorConstants.HOST_DESC_ID, keys[2]);
+        queryGenerator.setParameter(ApplicationDescriptorConstants.SERVICE_DESC_ID, keys[3]);
+        Query q = queryGenerator.selectQuery(em);
         Application_Descriptor applicationDescriptor = (Application_Descriptor)q.getSingleResult();
-        ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(applicationDescriptor.getApplication_descriptor_ID(),
-                applicationDescriptor.getGateway().getGateway_name(), applicationDescriptor.getHost_descriptor_ID(), applicationDescriptor.getService_descriptor_ID());
-        applicationDescriptorResource.setUpdatedUser(applicationDescriptor.getUser().getUser_name());
-        applicationDescriptorResource.setContent(applicationDescriptor.getApplication_descriptor_xml());
+        ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource)Utils.getResource(ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
         end();
         list.add(applicationDescriptorResource);
         return list;
@@ -165,10 +163,6 @@ public class ApplicationDescriptorResource extends AbstractResource {
         applicationDescriptor.setHost_descriptor_ID(hostDescName);
         em.persist(applicationDescriptor);
         end();
-
-    }
-
-    public void save(boolean isAppendable) {
 
     }
 

@@ -173,4 +173,7 @@ public class ResourceUtils {
     public static void removeConfiguration(String configkey){
 
     }
+
+    public static Resource getResource ()
+
 }

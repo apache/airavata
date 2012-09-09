@@ -32,6 +32,7 @@ import org.apache.airavata.persistance.registry.jpa.model.Experiment;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Project;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 public class ExperimentResource extends AbstractResource {
     private WorkerResource worker;
@@ -84,21 +85,14 @@ public class ExperimentResource extends AbstractResource {
      * @param keys
      * @return
      */
-    public List<Resource> getMe(Object[] keys) {
+    public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
         begin();
-        Query q = em.createQuery("SELECT p FROM Experiment p WHERE p.experiment_ID = :exp_ID");
-        q.setParameter("exp_ID", keys[0]);
+        QueryGenerator queryGenerator = new QueryGenerator(EXPERIMENT);
+        queryGenerator.setParameter(ExperimentConstants.EXPERIMENT_ID, keys[0]);
+        Query q = queryGenerator.selectQuery(em);
         Experiment experiment = (Experiment)q.getSingleResult();
-        ExperimentResource experimentResource = new ExperimentResource(experiment.getExperiment_ID());
-        experimentResource.setGateway(getGateway());
-        experimentResource.setWorker(getWorker());
-        ProjectResource projectResource = new ProjectResource(experiment.getProject().getProject_ID());
-        projectResource.setGateway(getGateway());
-        projectResource.setWorker(getWorker());
-        projectResource.setName(experiment.getProject().getProject_name());
-        experimentResource.setProject(projectResource);
-        experimentResource.setSubmittedDate(experiment.getSubmitted_date());
+        ExperimentResource experimentResource = (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
         end();
         list.add(experimentResource);
         return list;
@@ -112,16 +106,17 @@ public class ExperimentResource extends AbstractResource {
     public void save() {
         begin();
         Experiment experiment = new Experiment();
-        experiment.setExperiment_ID(getExpID());
         Project project = new Project();
         project.setProject_ID(this.project.getId());
-        experiment.setProject(project);
         Users user = new Users();
         user.setUser_name(getWorker().getUser());
-        experiment.setUser(user);
         Gateway gateway = new Gateway();
         gateway.setGateway_name(getGateway().getGatewayName());
-		experiment.setGateway(gateway);
+
+        experiment.setProject(project);
+        experiment.setExperiment_ID(getExpID());
+        experiment.setUser(user);
+        experiment.setGateway(gateway);
         experiment.setSubmitted_date(submittedDate);
         em.persist(experiment);
         end();

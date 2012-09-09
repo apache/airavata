@@ -29,6 +29,7 @@ import javax.persistence.Query;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.Configuration;
+import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 public class ConfigurationResource extends AbstractResource {
     private int configID = -1;
@@ -68,19 +69,17 @@ public class ConfigurationResource extends AbstractResource {
      * @param keys
      * @return
      */
-    public List<Resource> getMe(Object[] keys) {
+    public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
         begin();
-        Query q = em.createQuery("SELECT p FROM Configuration p WHERE p.config_key = :confKey");
-        q.setParameter("confKey", keys[0]);
+        QueryGenerator queryGenerator = new QueryGenerator(CONFIGURATION);
+        queryGenerator.setParameter(ConfigurationConstants.CONFIG_KEY, keys[0]);
+        Query q = queryGenerator.selectQuery(em);
         List resultList = q.getResultList();
         if (resultList.size() != 0) {
             for (Object result : resultList) {
                 Configuration configuration = (Configuration) result;
-                ConfigurationResource configurationResource = new ConfigurationResource();
-                configurationResource.setConfigKey(configuration.getConfig_key());
-                configurationResource.setConfigVal(configuration.getConfig_val());
-                configurationResource.setExpireDate(configuration.getExpire_date());
+                ConfigurationResource configurationResource = (ConfigurationResource)Utils.getResource(ResourceType.CONFIGURATION, configuration);
                 list.add(configurationResource);
             }
         }
@@ -117,10 +116,6 @@ public class ConfigurationResource extends AbstractResource {
         }
         em.persist(configuration);
         end();
-    }
-
-    public void save(boolean isAppendable) {
-
     }
 
     public boolean isExists(ResourceType type, Object name) {

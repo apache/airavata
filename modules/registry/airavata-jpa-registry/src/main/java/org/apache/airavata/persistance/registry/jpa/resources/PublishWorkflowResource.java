@@ -24,6 +24,8 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Published_Workflow;
+import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 import javax.persistence.Query;
 import java.sql.Date;
@@ -98,26 +100,19 @@ public class PublishWorkflowResource extends AbstractResource {
         throw new UnsupportedOperationException();
     }
 
-    public void removeMe(Object[] keys) {
-
-    }
-
     public Resource get(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
-    public List<Resource> getMe(Object[] keys) {
+    public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
         begin();
-        Query q = em.createQuery("SELECT p FROM Published_Workflow p WHERE p.gateway_name = :gate_name and p.publish_workflow_name =:pub_wf_name");
-        q.setParameter("gate_name", keys[0]);
-        q.setParameter("pub_wf_name", keys[1]);
+        QueryGenerator generator = new QueryGenerator(PUBLISHED_WORKFLOW);
+        generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, keys[0]);
+        generator.setParameter(PublishedWorkflowConstants.PUBLISH_WORKFLOW_NAME, keys[1]);
+        Query q = generator.selectQuery(em);
         Published_Workflow publishedWorkflow = (Published_Workflow)q.getSingleResult();
-        PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource();
-        publishWorkflowResource.setGateway(new GatewayResource(publishedWorkflow.getGateway().getGateway_name()));
-        publishWorkflowResource.setContent(publishedWorkflow.getWorkflow_content());
-        publishWorkflowResource.setPublishedDate(publishedWorkflow.getPublished_date());
-        publishWorkflowResource.setVersion(publishedWorkflow.getVersion());
+        PublishWorkflowResource publishWorkflowResource = (PublishWorkflowResource)Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, publishedWorkflow);
         end();
         list.add(publishWorkflowResource);
         return list;
@@ -137,13 +132,13 @@ public class PublishWorkflowResource extends AbstractResource {
         Gateway gateway = new Gateway();
         gateway.setGateway_name(this.gateway.getGatewayName());
         publishedWorkflow.setGateway(gateway);
+        Users user = new Users();
+        user.setUser_name(createdUser);
+        publishedWorkflow.setUser(user);
         em.persist(gateway);
         end();
     }
 
-    public void save(boolean isAppendable) {
-
-    }
 
     public boolean isExists(ResourceType type, Object name) {
         throw new UnsupportedOperationException();

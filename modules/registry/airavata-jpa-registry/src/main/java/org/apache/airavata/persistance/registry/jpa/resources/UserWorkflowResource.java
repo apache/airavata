@@ -25,6 +25,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.User_Workflow;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 import javax.persistence.Query;
 import java.sql.Date;
@@ -37,6 +38,7 @@ public class UserWorkflowResource extends AbstractResource {
     private String name;
     private Date lastUpdateDate;
     private String content;
+    private String path;
 
     public UserWorkflowResource() {
     }
@@ -71,16 +73,20 @@ public class UserWorkflowResource extends AbstractResource {
         this.name = name;
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     public Resource create(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
     public void remove(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
-    }
-
-    public void removeMe(Object[] keys) {
-
     }
 
     public Resource get(ResourceType type, Object name) {
@@ -92,19 +98,16 @@ public class UserWorkflowResource extends AbstractResource {
      * @param keys should be in the order of gateway_name,user_name and user_workflow_name
      * @return
      */
-    public List<Resource> getMe(Object[] keys) {
+    public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
         begin();
-        Query q = em.createQuery("SELECT p FROM User_Workflow p WHERE p.gateway_name = :gate_name and p.user_name =:usr_name and p.user_workflow_name=:usr_wf_name");
-        q.setParameter("gate_name", keys[0]);
-        q.setParameter("usr_name", keys[1]);
-        q.setParameter("usr_wf_name",keys[2]);
+        QueryGenerator queryGenerator = new QueryGenerator(USER_WORKFLOW);
+        queryGenerator.setParameter(UserWorkflowConstants.GATEWAY_NAME, keys[0]);
+        queryGenerator.setParameter(UserWorkflowConstants.OWNER, keys[1]);
+        queryGenerator.setParameter(UserWorkflowConstants.TEMPLATE_NAME, keys[2]);
+        Query q = queryGenerator.selectQuery(em);
         User_Workflow userWorkflow = (User_Workflow)q.getSingleResult();
-        UserWorkflowResource userWorkflowResource = new UserWorkflowResource();
-//        userWorkflowResource.setUserName(userWorkflow.getUser().getUser_name());
-//        userWorkflowResource.setGatewayname(userWorkflow.getGateway().getGateway_name());
-        userWorkflowResource.setName(userWorkflow.getTemplate_name());
-        userWorkflowResource.setContent(userWorkflow.getWorkflow_graph());
+        UserWorkflowResource userWorkflowResource = (UserWorkflowResource)Utils.getResource(ResourceType.USER_WORKFLOW, userWorkflow);
         end();
         list.add(userWorkflowResource);
         return list;
@@ -121,17 +124,14 @@ public class UserWorkflowResource extends AbstractResource {
         userWorkflow.setLast_updated_date(lastUpdateDate);
         userWorkflow.setWorkflow_graph(content);
         Gateway gateway = new Gateway();
-//        gateway.setGateway_name(gatewayname);
+        gateway.setGateway_name(gateway.getGateway_name());
         userWorkflow.setGateway(gateway);
         Users user = new Users();
-//        user.setUser_name(userName);
+        user.setUser_name(worker.getUser());
         userWorkflow.setUser(user);
+        userWorkflow.setPath(path);
         em.persist(userWorkflow);
         end();
-    }
-
-    public void save(boolean isAppendable) {
-
     }
 
     public boolean isExists(ResourceType type, Object name) {
