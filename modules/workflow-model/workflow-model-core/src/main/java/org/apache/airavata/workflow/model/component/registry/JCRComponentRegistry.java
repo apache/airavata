@@ -21,18 +21,31 @@
 
 package org.apache.airavata.workflow.model.component.registry;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 
 import javax.jcr.RepositoryException;
 
+import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.common.registry.api.user.User;
 import org.apache.airavata.common.registry.api.user.UserManager;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.persistance.registry.jpa.impl.AiravataJPARegistry;
 import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.AiravataRegistryFactory;
+import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
+import org.apache.airavata.registry.api.util.WebServiceUtil;
 import org.apache.airavata.workflow.model.component.ComponentReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,16 +54,32 @@ public class JCRComponentRegistry extends ComponentRegistry {
 
     private static final Logger log = LoggerFactory.getLogger(JCRComponentRegistry.class);
     private static final String NAME = "Application Services";
+    public static final String REPOSITORY_PROPERTIES = "repository.properties";
+    public static final String GATEWAY_ID = "gateway.id";
+    public static final String REGISTRY_USER = "registry.user";
 
-    private AiravataJCRRegistry registry;
+    private AiravataRegistry2 registry;
 
-    public JCRComponentRegistry(URI url, String username, String password) throws RegistryException {
+    public JCRComponentRegistry(String username, String password) throws RegistryException {
         HashMap<String, String> map = new HashMap<String, String>();
-        map.put("org.apache.jackrabbit.repository.uri", url.toString());
-
-        this.registry = new AiravataJCRRegistry(url,
-                "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory",
-                username, password, map);
+        URL configURL = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
+        Properties properties = new Properties();
+        try {
+            properties.load(configURL.openStream());
+            if(properties.get(REGISTRY_USER) != null){
+                username = (String)properties.get(REGISTRY_USER);
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        try {
+            this.registry = AiravataRegistryFactory.getRegistry(new Gateway((String)properties.get(GATEWAY_ID)),
+                    new AiravataUser(username));
+        } catch (AiravataConfigurationException e) {
+            log.error("Error initializing AiravataRegistry2");
+        }
 
     }
 
@@ -76,10 +105,11 @@ public class JCRComponentRegistry extends ComponentRegistry {
     public List<ComponentReference> getComponentReferenceList() {
         List<ComponentReference> tree = new ArrayList<ComponentReference>();
         try {
-            List<ServiceDescription> services = this.registry.searchServiceDescription("");
+            List<ServiceDescription> services = this.registry.getServiceDescriptors();
             for (ServiceDescription serviceDescription : services) {
                 String serviceName = serviceDescription.getType().getName();
-                JCRComponentReference jcr = new JCRComponentReference(serviceName, registry.getWSDL(serviceName));
+                JCRComponentReference jcr = new JCRComponentReference(serviceName,
+                        WebServiceUtil.getWSDL(serviceDescription));
                 tree.add(jcr);
             }
         } catch (RegistryException e) {
@@ -99,10 +129,6 @@ public class JCRComponentRegistry extends ComponentRegistry {
         return NAME;
     }
 
-    public UserManager getUserManager() {
-        return registry.getUserManager();
-    }
-
 //    public String saveDeploymentDescription(String service, String host, ApplicationDeploymentDescription app) {
 //        // deploy the service on host
 //        registry.deployServiceOnHost(service, host);
@@ -111,7 +137,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
 //        return registry.saveDeploymentDescription(service, host, app);
 //    }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 }
