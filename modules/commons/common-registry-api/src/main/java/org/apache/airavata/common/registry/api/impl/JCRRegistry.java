@@ -251,7 +251,7 @@ public class JCRRegistry extends Observable implements Registry{
         this.credentials = credentials;
     }
 
-	protected Node getRootNode(Session session) throws RepositoryException {
+	public Node getRootNode(Session session) throws RepositoryException {
 		String ROOT_NODE_TEXT = "root";
 		if (!getSessionNodes().containsKey(null) || !getSessionNodes().get(null).get(ROOT_NODE_TEXT).getSession().isLive()){
 			getSessionNodes().put(null, new HashMap<String, Node>());
@@ -320,7 +320,7 @@ public class JCRRegistry extends Observable implements Registry{
         return session;
     }
 
-    protected Node getOrAddNode(Node node, String name) throws RepositoryException {
+    public Node getOrAddNode(Node node, String name) throws RepositoryException {
     	Map<Node, Map<String, Node>> sessionNodes = getSessionNodes();
     	if (sessionNodes.containsKey(node)){
     		if (sessionNodes.get(node)!=null && sessionNodes.get(node).containsKey(name)){

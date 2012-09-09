@@ -22,11 +22,15 @@
 package org.apache.airavata.registry.api.util;
 
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
+import org.apache.airavata.commons.gfac.wsdl.WSDLConstants;
+import org.apache.airavata.commons.gfac.wsdl.WSDLGenerator;
+import org.apache.airavata.schemas.gfac.*;
+
+import java.util.Hashtable;
 
 public class WebServiceUtil {
+
+
 
     public static String generateWSDL(ServiceDescription service) {
         StringBuilder builder = new StringBuilder();
@@ -165,6 +169,34 @@ public class WebServiceUtil {
             // builder.append("\"  nillable=\"true\" type=\"ax22:File\"/>");
         }
 
+    }
+
+    public static String getWSDL(ServiceDescription service) throws Exception{
+        try {
+
+            ServiceType type = service.getType().addNewService();
+            ServiceType.ServiceName name = type.addNewServiceName();
+            name.setStringValue(service.getType().getName());
+            name.setTargetNamespace("http://schemas.airavata.apache.org/gfac/type");
+            if(service.getType().getPortType() == null){
+                PortTypeType portType = service.getType().addNewPortType();
+                MethodType methodType = portType.addNewMethod();
+                methodType.setMethodName("invoke");
+            }else{
+                MethodType method = service.getType().getPortType().getMethod();
+                if (method == null) {
+                    MethodType methodType = service.getType().getPortType().addNewMethod();
+                    methodType.setMethodName("invoke");
+                } else {
+                    service.getType().getPortType().getMethod().setMethodName("invoke");
+                }
+            }
+            WSDLGenerator generator = new WSDLGenerator();
+            Hashtable table = generator.generateWSDL(null, null, null, service.getType(), true);
+            return (String) table.get(WSDLConstants.AWSDL);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
