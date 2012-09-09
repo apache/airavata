@@ -25,6 +25,8 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor;
+import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 import javax.persistence.Query;
 import java.util.ArrayList;
@@ -82,39 +84,11 @@ public class HostDescriptorResource extends AbstractResource {
     }
 
     public void remove(ResourceType type, Object name) {
-        if (type == ResourceType.APPLICATION_DESCRIPTOR) {
-            begin();
-            Query q = em.createQuery("Delete p FROM Application_Descriptor p WHERE p.application_descriptor_ID = :app_desc_id and p.host_descriptor_ID = :host_desc_name and p.gateway_name =:gate_name");
-            q.setParameter("app_desc_id", name);
-            q.setParameter("host_desc_name", getHostDescName());
-            q.setParameter("gate_name", gatewayName);
-            q.executeUpdate();
-            end();
-        }
-    }
-
-    public void removeMe(Object[] keys) {
-
+       throw new UnsupportedOperationException();
     }
 
     public Resource get(ResourceType type, Object name) {
-        if (type == ResourceType.APPLICATION_DESCRIPTOR) {
-            begin();
-            Query q = em.createQuery("SELECT p FROM Application_Descriptor p WHERE p.application_descriptor_ID = :app_desc_id and p.host_descriptor_ID =:host_desc_name and p.gateway_name =:gate_name");
-            q.setParameter("app_desc_id", name);
-            q.setParameter("host_desc_name", getHostDescName());
-            q.setParameter("gate_name", gatewayName);
-            Application_Descriptor eappDesc = (Application_Descriptor) q.getSingleResult();
-            ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(eappDesc.getApplication_descriptor_ID(),
-                    eappDesc.getGateway().getGateway_name(),
-                    eappDesc.getHost_descriptor_ID(),
-                    eappDesc.getService_descriptor_ID());
-            applicationDescriptorResource.setContent(eappDesc.getApplication_descriptor_xml());
-            applicationDescriptorResource.setUpdatedUser(eappDesc.getUser().getUser_name());
-            end();
-            return applicationDescriptorResource;
-        }
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -122,16 +96,15 @@ public class HostDescriptorResource extends AbstractResource {
      * @param keys
      * @return
      */
-    public List<Resource> getMe(Object[] keys) {
+    public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
         begin();
-        Query q = em.createQuery("SELECT p FROM Host_Descriptor p WHERE p.host_descriptor_ID = :host_desc_name");
-        q.setParameter("host_desc_name", keys[0]);
+        QueryGenerator generator = new QueryGenerator(HOST_DESCRIPTOR);
+        generator.setParameter(HostDescriptorConstants.GATEWAY_NAME, keys [0]);
+        generator.setParameter(HostDescriptorConstants.HOST_DESC_ID, keys[1]);
+        Query q = generator.selectQuery(em);
         Host_Descriptor hostDescriptor = (Host_Descriptor)q.getSingleResult();
-        HostDescriptorResource hostDescriptorResource = new HostDescriptorResource(hostDescriptor.getHost_descriptor_ID());
-        hostDescriptorResource.setGatewayName(hostDescriptor.getGateway().getGateway_name());
-        hostDescriptorResource.setUserName(hostDescriptor.getUser().getUser_name());
-        hostDescriptorResource.setContent(hostDescriptor.getHost_descriptor_xml());
+        HostDescriptorResource hostDescriptorResource = (HostDescriptorResource)Utils.getResource(ResourceType.HOST_DESCRIPTOR, hostDescriptor);
         end();
         list.add(hostDescriptorResource);
         return list;
@@ -141,19 +114,15 @@ public class HostDescriptorResource extends AbstractResource {
         List<Resource> resourceList = new ArrayList<Resource>();
         if (type == ResourceType.APPLICATION_DESCRIPTOR) {
             begin();
-            Query q = em.createQuery("SELECT p FROM Application_Descriptor p WHERE p.gateway_name =:gate_name and p.host_descriptor_ID =:host_desc_id");
-            q.setParameter("gate_name", gatewayName);
-            q.setParameter("host_desc_id", getHostDescName());
+            QueryGenerator generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
+            generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
+            generator.setParameter(ApplicationDescriptorConstants.HOST_DESC_ID, getHostDescName());
+            Query q = generator.selectQuery(em);
             List results = q.getResultList();
             if (results.size() != 0) {
                 for (Object result : results) {
                     Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
-                    ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(applicationDescriptor.getApplication_descriptor_ID(),
-                            applicationDescriptor.getGateway().getGateway_name(),
-                            applicationDescriptor.getHost_descriptor_ID(),
-                            applicationDescriptor.getService_descriptor_ID());
-                    applicationDescriptorResource.setContent(applicationDescriptor.getApplication_descriptor_xml());
-                    applicationDescriptor.setUser(applicationDescriptor.getUser());
+                    ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource)Utils.getResource(ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
                     resourceList.add(applicationDescriptorResource);
                 }
             }
@@ -165,34 +134,21 @@ public class HostDescriptorResource extends AbstractResource {
     public void save() {
         begin();
         Host_Descriptor hostDescriptor = new Host_Descriptor();
-        hostDescriptor.setHost_descriptor_ID(getHostDescName());
         Gateway gateway = new Gateway();
         gateway.setGateway_name(gatewayName);
+        Users user = new Users();
+        user.setUser_name(userName);
+        hostDescriptor.setHost_descriptor_ID(getHostDescName());
         hostDescriptor.setGateway(gateway);
         hostDescriptor.setHost_descriptor_xml(content);
+        hostDescriptor.setUser(user);
         em.persist(hostDescriptor);
         end();
 
     }
 
-    public void save(boolean isAppendable) {
-
-    }
-
     public boolean isExists(ResourceType type, Object name) {
-        if (type == ResourceType.APPLICATION_DESCRIPTOR) {
-            begin();
-            Query q = em.createQuery("SELECT p FROM Application_Descriptor p WHERE p.host_descriptor_ID =:host_desc_id and p.application_descriptor_ID =:app_dist_id");
-            q.setParameter("host_desc_id", getHostDescName());
-            q.setParameter("app_dist_id", name);
-            Application_Descriptor applicationDescriptor = (Application_Descriptor) q.getSingleResult();
-            if (applicationDescriptor != null) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return false;
+        throw new UnsupportedOperationException();
     }
 
 	public void setHostDescName(String hostDescName) {

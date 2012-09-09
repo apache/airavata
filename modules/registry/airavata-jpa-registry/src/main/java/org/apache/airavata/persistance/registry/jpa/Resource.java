@@ -27,17 +27,7 @@ public interface Resource {
 
     void remove(ResourceType type, Object name);
 
-    void removeMe(Object[] keys);
-
     Resource get(ResourceType type, Object name);
-
-    /**
-     *
-     *
-     * @param keys
-     * @return
-     */
-    List<Resource> getMe(Object[] keys);
 
     List<Resource> get(ResourceType type);
 
