@@ -119,6 +119,10 @@ public class GatewayResource extends AbstractResource {
                 ExperimentResource experimentResource =new ExperimentResource();
                 experimentResource.setGateway(this);
                 return experimentResource;
+            case GATEWAY_WORKER:
+                WorkerResource workerResource = new WorkerResource();
+                workerResource.setGateway(this);
+                return workerResource;
             default:
                 throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
         }
@@ -404,6 +408,9 @@ public class GatewayResource extends AbstractResource {
                 end();
                 return publishedWrkflow != null;
             case HOST_DESCRIPTOR:
+//                q = em.createQuery("SELECT p FROM Host_Descriptor p WHERE p.gateway_name =:gate_ID and p.host_descriptor_ID =:host_desc_name");
+//                q.setParameter("gate_ID", gatewayName);
+//                q.setParameter("host_desc_name",name);
                 generator = new QueryGenerator(HOST_DESCRIPTOR);
                 generator.setParameter(HostDescriptorConstants.GATEWAY_NAME, gatewayName);
                 generator.setParameter(HostDescriptorConstants.HOST_DESC_ID, name);

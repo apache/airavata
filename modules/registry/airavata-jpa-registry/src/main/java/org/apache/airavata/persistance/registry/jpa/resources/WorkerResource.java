@@ -37,6 +37,12 @@ public class WorkerResource extends AbstractResource {
 
     /**
      *
+     */
+    public WorkerResource() {
+    }
+
+    /**
+     *
      * @param user username
      * @param gateway  gatewayResource
      */
@@ -214,9 +220,10 @@ public class WorkerResource extends AbstractResource {
         Users users = new Users();
         users.setUser_name(user);
         gatewayWorker.setUser(users);
-        Gateway gateway = new Gateway();
-        gateway.setGateway_name(gateway.getGateway_name());
-        gatewayWorker.setGateway(gateway);
+        Gateway gatewaymodel = new Gateway();
+        gatewaymodel.setGateway_name(gateway.getGatewayName());
+        gatewaymodel.setOwner(gateway.getOwner());
+        gatewayWorker.setGateway(gatewaymodel);
         em.persist(gatewayWorker);
         end();
 	}

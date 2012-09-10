@@ -60,12 +60,12 @@ public class QueryGenerator {
 	}
 	
 	public Query selectQuery(EntityManager entityManager){
-		String queryString="SELECT "+SELECT_OBJ+" FROM "+getTableName()+" "+TABLE_OBJ;
+		String queryString="SELECT FROM "+getTableName()+" "+TABLE_OBJ;
 		return generateQueryWithParameters(entityManager, queryString);
 	}
 	
 	public Query deleteQuery(EntityManager entityManager){
-		String queryString="Delete "+DELETE_OBJ+" FROM "+getTableName()+" "+TABLE_OBJ;
+		String queryString="Delete FROM "+getTableName()+" "+TABLE_OBJ;
 		return generateQueryWithParameters(entityManager, queryString);
 	}
 

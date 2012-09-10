@@ -20,11 +20,7 @@
 */
 package org.apache.airavata.persistance.registry.jpa.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @IdClass(Gateway_Worker_PK.class)
@@ -35,12 +31,12 @@ public class Gateway_Worker {
     @Id
     private String user_name;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "user_name")
     private Users user;
 
