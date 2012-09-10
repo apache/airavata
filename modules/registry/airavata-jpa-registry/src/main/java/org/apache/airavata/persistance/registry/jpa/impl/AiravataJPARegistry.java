@@ -1078,4 +1078,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		
 	}
 
+	@Override
+	public boolean saveWorkflowExecutionStatus(String experimentId,
+			WorkflowInstanceStatus status) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

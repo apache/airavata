@@ -100,11 +100,11 @@ public interface ApplicationManager {
     public List<ApplicationDeploymentDescription> searchDeploymentDescription(String serviceName, String hostName)throws AiravataAPIInvocationException;
 
     /**
-     * Retrieve all registered deployment descriptions
+     * Retrieve all registered deployment descriptions, The key represents the service name & host name in string array
      * @return
      * @throws AiravataAPIInvocationException
      */
-    public Map<ApplicationDeploymentDescription, String> getAllDeploymentDescriptions() throws AiravataAPIInvocationException;
+    public Map<String[], ApplicationDeploymentDescription> getAllDeploymentDescriptions() throws AiravataAPIInvocationException;
 
     /**
      * Retrieve list of registered deployment descriptions of the given regex service name, regex host name & regex application name 
