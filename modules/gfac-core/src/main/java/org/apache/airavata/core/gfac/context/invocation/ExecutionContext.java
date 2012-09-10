@@ -58,7 +58,7 @@ public interface ExecutionContext {
     /**
      * Set Registry object.
      * 
-     * @param AiravataRegistry
+     * @param AiravataRegistry2
      *            object to used.
      */
     void setRegistryService(AiravataRegistry2 value);
