@@ -42,8 +42,9 @@ import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.utils.LogUtils;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
+import org.apache.airavata.registry.api.util.RegistryUtils;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -56,6 +57,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class PropertiesBasedServiceImpl extends AbstractSimpleService {
+
+    public static final String REPOSITORY_PROPERTIES = "repository.properties";
 
     private static Logger log = LoggerFactory.getLogger(PropertiesBasedServiceImpl.class+
             "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());
@@ -105,7 +108,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     private PreExecuteChain[] preChain;
     private PostExecuteChain[] postChain;
     private DataServiceChain[] dataChain;
-    private AiravataRegistry registryService;
+    private AiravataRegistry2 registryService;
 
     private String fileName = DEFAULT_FILENAME;
     private Configuration config;
@@ -235,12 +238,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
                 if (map.size() == 0)
                     map = null;
 
-                try {
-                    // TODO pass the url of the registry as the first parameter
-                    this.registryService = new AiravataJCRRegistry(null, jcrClass, userName, password, map);
-                } catch (RegistryException e) {
-                    e.printStackTrace();  // To change body of catch statement use File | Settings | File Templates.
-                }
+                this.registryService = RegistryUtils.getRegistryFromConfig(this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES));
 
                 log.info("Default registry service is created");
             }
@@ -255,7 +253,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
     @Override
     public void postProcess(InvocationContext context) throws ServiceException {
         if(this.registryService != null)
-        ((JCRRegistry)this.registryService).closeConnection();
+        ((AiravataRegistry2)this.registryService).closeConnection();
     }
 
     /*

@@ -32,8 +32,8 @@ import org.apache.airavata.core.gfac.context.message.MessageContext;
 import org.apache.airavata.core.gfac.context.message.impl.WorkflowContextImpl;
 import org.apache.airavata.core.gfac.exception.ExtensionException;
 import org.apache.airavata.core.gfac.extension.PostExecuteChain;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.DataRegistry;
-import org.apache.airavata.registry.api.AiravataRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,7 @@ public class OutputRegister extends PostExecuteChain {
         MessageContext<String> workflowContext = context.getMessageContext(WorkflowContextImpl.WORKFLOW_CONTEXT_NAME);
 
         // registry
-        AiravataRegistry registry = context.getExecutionContext().getRegistryService();
+        AiravataRegistry2 registry = context.getExecutionContext().getRegistryService();
 
         if (outputContext != null && workflowContext != null) {
 
