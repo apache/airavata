@@ -88,7 +88,7 @@ public class OutputUtils {
             throw new Exception("Data for the output parameter '"+outParam+"' was not found");
         }
     }
-    public static String[] parseStdoutArray(String stdout, String outParam)throws NullPointerException {
+    public static String[] parseStdoutArray(String stdout, String outParam) throws Exception {
         String regex = Pattern.quote(outParam) + regexPattern;
         StringBuffer match = new StringBuffer();
         Pattern pattern = Pattern.compile(regex);
@@ -99,7 +99,7 @@ public class OutputUtils {
         if (match != null) {
             return match.toString().split(",");
         } else {
-            throw new NullPointerException();
+            throw new Exception("Data for the output parameter '"+outParam+"' was not found");
         }
     }
 }
