@@ -22,6 +22,7 @@
 package org.apache.airavata.common.utils;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
 import java.util.HashMap;
@@ -31,33 +32,55 @@ import java.util.Properties;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.TransportInDescription;
 import org.apache.axis2.util.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServiceUtils {
+    private static final Logger log = LoggerFactory.getLogger(ServiceUtils.class);
     private static final String REPOSITORY_PROPERTIES = "repository.properties";
+    public static final String IP = "ip";
+    public static final String PORT = "port";
 
 	public static String generateServiceURLFromConfigurationContext(
-			ConfigurationContext configctx, String serviceName) throws IOException,
-			SocketException {
-		URL propurl = ServiceUtils.class.getClassLoader()
+			ConfigurationContext context, String serviceName) throws IOException {
+		URL url = ServiceUtils.class.getClassLoader()
 				.getResource(REPOSITORY_PROPERTIES);
-		Properties propFile = new Properties();
-		propFile.load(propurl.openStream());
-		Map<String, String> map = new HashMap<String, String>((Map) propFile);
-		String localAddress = Utils.getIpAddress(configctx
-				.getAxisConfiguration());
-		TransportInDescription transportInDescription = configctx
-				.getAxisConfiguration().getTransportsIn().get("http");
-		String port;
-		if (transportInDescription != null
-				&& transportInDescription.getParameter("port") != null) {
-			port = (String) transportInDescription.getParameter("port")
-					.getValue();
-		} else {
-			port = map.get("port");
-		}
-		localAddress = "http://" + localAddress + ":" + port;
-		localAddress = localAddress + "/" + configctx.getContextRoot() + "/"
-				+ configctx.getServicePath() + "/" + serviceName;
-		return localAddress;
+		 String localAddress = null;
+        String port = null;
+        Properties properties = new Properties();
+        try {
+            properties.load(url.openStream());
+            localAddress = (String) properties.get(IP);
+            port = (String) properties.get(PORT);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(localAddress == null){
+        try {
+            localAddress = Utils.getIpAddress(context
+                    .getAxisConfiguration());
+        } catch (SocketException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        }
+        TransportInDescription transportInDescription = context
+                .getAxisConfiguration().getTransportsIn()
+                .get("http");
+        if (port == null) {
+            if (transportInDescription != null
+                    && transportInDescription.getParameter("port") != null) {
+                port = (String) transportInDescription
+                        .getParameter("port").getValue();
+            }
+        }
+        localAddress = "http://" + localAddress + ":" + port;
+        localAddress = localAddress + "/"
+                + context.getContextRoot() + "/"
+                + context.getServicePath() + "/"
+                + serviceName;
+        log.debug("Service Address Configured:" + localAddress);
+        return localAddress;
 	}
 }

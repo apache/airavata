@@ -34,13 +34,9 @@ import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
 import java.io.IOException;
 import java.net.*;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 public class RegistryUtils {
@@ -50,7 +46,6 @@ public class RegistryUtils {
 
     public static final String REGISTRY_USER = "registry.user";
 
-    public static final String REPOSITORY_PROPERTIES = "repository.properties";
 
     public static String validateAxisService(String urlString)throws RegistryException {
         if(!urlString.endsWith("?wsdl")){

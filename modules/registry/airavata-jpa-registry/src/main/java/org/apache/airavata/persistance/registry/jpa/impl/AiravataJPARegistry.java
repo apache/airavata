@@ -107,6 +107,12 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		return values;
     }
 
+    @Override
+    public void closeConnection() {
+        //todo close the database connection safely
+
+    }
+
     public void setConfiguration(String key, String value, Date expire) {
     	ConfigurationResource config;
 		if (ResourceUtils.isConfigurationExist(key)) {
