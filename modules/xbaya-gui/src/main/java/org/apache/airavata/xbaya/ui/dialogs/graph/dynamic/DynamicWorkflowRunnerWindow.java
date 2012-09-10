@@ -122,15 +122,11 @@ public class DynamicWorkflowRunnerWindow {
      */
     public void show() {
         this.workflow = this.engine.getGUI().getWorkflow();
-        List<String> urlList=null;
-		try {
-			urlList = this.engine.getConfiguration().getJcrComponentRegistry().getRegistry().getGFacDescriptorList();
-		} catch (RegistryException e) {
-			engine.getGUI().getErrorWindow().error(e);
-		}
+        List<URI> urlList=null;
+		urlList = this.engine.getConfiguration().getJcrComponentRegistry().getRegistry().getGFacURIs();
         // When run xbaya continously urls can be repeating, so first remove everything and then add
         this.gfacUrlListField.removeAllItems();
-        for (String gfacUrl : urlList) {
+        for (URI gfacUrl : urlList) {
             if (XBayaUtil.isURLExists(gfacUrl + "?wsdl")) {
                 this.gfacUrlListField.addItem(gfacUrl);
             }

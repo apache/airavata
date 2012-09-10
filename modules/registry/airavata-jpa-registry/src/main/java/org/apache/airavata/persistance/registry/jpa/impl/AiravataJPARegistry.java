@@ -239,10 +239,13 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     /**---------------------------------Descriptor Registry----------------------------------**/
     
-    public void addHostDescriptor(HostDescription descriptor) throws DescriptorAlreadyExistsException {
+    public boolean isHostDescriptorExists(String descriptorName)throws RegistryException{
+    	return jpa.getGateway().isHostDescriptorExists(descriptorName);
+    }
+    public void addHostDescriptor(HostDescription descriptor) throws RegistryException {
         GatewayResource gateway = jpa.getGateway();
         String hostName = descriptor.getType().getHostName();
-		if (gateway.isHostDescriptorExists(hostName)){
+		if (isHostDescriptorExists(hostName)){
         	throw new DescriptorAlreadyExistsException(hostName);
         }
         HostDescriptorResource hostDescriptorResource = gateway.createHostDescriptorResource(hostName);
@@ -250,10 +253,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         hostDescriptorResource.save();
     }
 
-    public void updateHostDescriptor(HostDescription descriptor) throws DescriptorDoesNotExistsException {
+    public void updateHostDescriptor(HostDescription descriptor) throws RegistryException {
     	GatewayResource gateway = jpa.getGateway();
         String hostName = descriptor.getType().getHostName();
-		if (!gateway.isHostDescriptorExists(hostName)){
+		if (!isHostDescriptorExists(hostName)){
         	throw new DescriptorDoesNotExistsException(hostName);
         }
         HostDescriptorResource hostDescriptorResource = gateway.getHostDescriptorResource(hostName);
@@ -261,9 +264,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         hostDescriptorResource.save();
     }
 
-    public HostDescription getHostDescriptor(String hostName) throws DescriptorDoesNotExistsException, MalformedDescriptorException {
+    public HostDescription getHostDescriptor(String hostName) throws RegistryException {
         GatewayResource gateway = jpa.getGateway();
-		if (!gateway.isHostDescriptorExists(hostName)){
+		if (!isHostDescriptorExists(hostName)){
         	throw new DescriptorDoesNotExistsException(hostName);
         }
         HostDescriptorResource hostDescriptorResource = gateway.getHostDescriptorResource(hostName);
@@ -280,9 +283,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
 	}
 
-    public void removeHostDescriptor(String hostName) throws DescriptorDoesNotExistsException {
+    public void removeHostDescriptor(String hostName) throws RegistryException {
     	GatewayResource gateway = jpa.getGateway();
-		if (!gateway.isHostDescriptorExists(hostName)){
+		if (!isHostDescriptorExists(hostName)){
         	throw new DescriptorDoesNotExistsException(hostName);
         }
 		gateway.removeHostDescriptor(hostName);
@@ -306,10 +309,14 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         throw new UnimplementedRegistryOperationException();
     }
 
-    public void addServiceDescriptor(ServiceDescription descriptor) throws DescriptorAlreadyExistsException {
+    public boolean isServiceDescriptorExists(String descriptorName)throws RegistryException{
+    	return jpa.getGateway().isServiceDescriptorExists(descriptorName);
+    }
+    
+    public void addServiceDescriptor(ServiceDescription descriptor) throws RegistryException {
     	GatewayResource gateway = jpa.getGateway();
         String serviceName = descriptor.getType().getName();
-		if (gateway.isServiceDescriptorExists(serviceName)){
+		if (isServiceDescriptorExists(serviceName)){
         	throw new DescriptorAlreadyExistsException(serviceName);
         }
         ServiceDescriptorResource serviceDescriptorResource = gateway.createServiceDescriptorResource(serviceName);
@@ -317,10 +324,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         serviceDescriptorResource.save();
     }
 
-    public void updateServiceDescriptor(ServiceDescription descriptor) throws DescriptorDoesNotExistsException {
+    public void updateServiceDescriptor(ServiceDescription descriptor) throws RegistryException {
     	GatewayResource gateway = jpa.getGateway();
         String serviceName = descriptor.getType().getName();
-		if (!gateway.isServiceDescriptorExists(serviceName)){
+		if (!isServiceDescriptorExists(serviceName)){
         	throw new DescriptorDoesNotExistsException(serviceName);
         }
         ServiceDescriptorResource serviceDescriptorResource = gateway.getServiceDescriptorResource(serviceName);
@@ -347,9 +354,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
 	}
 
-    public void removeServiceDescriptor(String serviceName) throws DescriptorDoesNotExistsException {
+    public void removeServiceDescriptor(String serviceName) throws RegistryException {
     	GatewayResource gateway = jpa.getGateway();
-		if (!gateway.isServiceDescriptorExists(serviceName)){
+		if (!isServiceDescriptorExists(serviceName)){
         	throw new DescriptorDoesNotExistsException(serviceName);
         }
 		gateway.removeServiceDescriptor(serviceName);
@@ -376,15 +383,19 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     	return serviceName+"/"+hostName+"/"+applicationName;
     }
     
-    public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) throws DescriptorAlreadyExistsException {
+    public boolean isApplicationDescriptorExists(String serviceName, String hostName, String descriptorName)throws RegistryException{
+ 		return jpa.getGateway().isApplicationDescriptorExists(createAppName(serviceName, hostName, descriptorName));
+    }
+    
+    public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) throws RegistryException {
         addApplicationDescriptor(serviceDescription.getType().getName(),hostDescriptor.getType().getHostName(),descriptor);
     }
 
-    public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws DescriptorAlreadyExistsException {
+    public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws RegistryException {
     	GatewayResource gateway = jpa.getGateway();
         String applicationName = descriptor.getType().getApplicationName().getStringValue();
         applicationName = createAppName(serviceName, hostName, applicationName);
-		if (gateway.isApplicationDescriptorExists(applicationName)){
+		if (isApplicationDescriptorExists(serviceName,hostName,descriptor.getType().getApplicationName().getStringValue())){
         	throw new DescriptorAlreadyExistsException(applicationName);
         }
         ApplicationDescriptorResource applicationDescriptorResource = gateway.createApplicationDescriptorResource(applicationName);
@@ -394,15 +405,15 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         applicationDescriptorResource.save();
     }
 
-    public void udpateApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) throws DescriptorDoesNotExistsException {
+    public void udpateApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor) throws RegistryException {
     	updateApplicationDescriptor(serviceDescription.getType().getName(),hostDescriptor.getType().getHostName(),descriptor);
     }
 
-    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws DescriptorDoesNotExistsException {
+    public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws RegistryException {
     	GatewayResource gateway = jpa.getGateway();
     	String applicationName = descriptor.getType().getApplicationName().getStringValue();
         applicationName = createAppName(serviceName, hostName, applicationName);
-		if (!gateway.isApplicationDescriptorExists(applicationName)){
+		if (!isApplicationDescriptorExists(serviceName,hostName,descriptor.getType().getApplicationName().getStringValue())){
         	throw new DescriptorDoesNotExistsException(applicationName);
         }
         ApplicationDescriptorResource serviceDescriptorResource = gateway.getApplicationDescriptorResource(applicationName);
@@ -418,6 +429,15 @@ public class AiravataJPARegistry extends AiravataRegistry2{
             throw new MalformedDescriptorException(applicationDescriptorResource.getName(),e);
         }
 	}
+    
+    public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName)throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException{
+    	GatewayResource gateway = jpa.getGateway();
+		if (!isApplicationDescriptorExists(serviceName,hostname,applicationName)){
+        	throw new DescriptorDoesNotExistsException(createAppName(serviceName, hostname, applicationName));
+        }
+        return createApplicationDescriptor(gateway.getApplicationDescriptorResource(createAppName(serviceName, hostname, applicationName)));
+    }
+    
     public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname) throws MalformedDescriptorException {
     	GatewayResource gateway = jpa.getGateway();
 		List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(serviceName, hostname);
@@ -436,11 +456,21 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		}
 		return map;
     }
+    
+    public Map<String[],ApplicationDeploymentDescription> getApplicationDescriptors()throws MalformedDescriptorException, RegistryException{
+    	GatewayResource gateway = jpa.getGateway();
+		Map<String[], ApplicationDeploymentDescription> map=new HashMap<String[],ApplicationDeploymentDescription>();
+		List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources();
+		for (ApplicationDescriptorResource resource : applicationDescriptorResources) {
+			map.put(new String[]{resource.getServiceDescName(),resource.getHostDescName()},createApplicationDescriptor(resource));
+		}
+		return map;
+    }
 
-    public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName) throws DescriptorDoesNotExistsException {
+    public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName) throws RegistryException {
     	GatewayResource gateway = jpa.getGateway();
     	String appName = createAppName(serviceName, hostName, applicationName);
-		if (!gateway.isApplicationDescriptorExists(appName)) {
+    	if (!isApplicationDescriptorExists(serviceName,hostName,applicationName)){
 			throw new DescriptorDoesNotExistsException(appName);
 		}
 		gateway.removeApplicationDescriptor(appName);
@@ -575,11 +605,15 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         return newExperiments;
     }
 
-    /**---------------------------------Published Workflow Registry----------------------------------
-     * @throws PublishedWorkflowAlreadyExistsException 
-     * @throws UserWorkflowDoesNotExistsException **/
+    /**---------------------------------Published Workflow Registry----------------------------------**/
+
+	@Override
+	public boolean isPublishedWorkflowExists(String workflowName)
+			throws RegistryException {
+		return jpa.getGateway().isPublishedWorkflowExists(workflowName);
+	}
     
-    public void publishWorkflow(String workflowName, String publishWorkflowName) throws PublishedWorkflowAlreadyExistsException, UserWorkflowDoesNotExistsException {
+    public void publishWorkflow(String workflowName, String publishWorkflowName) throws RegistryException {
     	GatewayResource gateway = jpa.getGateway();
     	String workflowGraphXML = getWorkflowGraphXML(workflowName);
     	if (gateway.isPublishedWorkflowExists(publishWorkflowName)){
@@ -592,13 +626,13 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     	publishedWorkflow.save();
     }
 
-    public void publishWorkflow(String workflowName) throws PublishedWorkflowAlreadyExistsException, UserWorkflowDoesNotExistsException {
+    public void publishWorkflow(String workflowName) throws RegistryException {
     	publishWorkflow(workflowName, workflowName);
     }
 
-    public String getPublishedWorkflowGraphXML(String workflowName) throws PublishedWorkflowDoesNotExistsException {
+    public String getPublishedWorkflowGraphXML(String workflowName) throws RegistryException {
         GatewayResource gateway = jpa.getGateway();
-        if (!gateway.isPublishedWorkflowExists(workflowName)){
+        if (!isPublishedWorkflowExists(workflowName)){
         	throw new PublishedWorkflowDoesNotExistsException(workflowName);
         }
         return gateway.getPublishedWorkflow(workflowName).getContent();
@@ -624,9 +658,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     	return result;
     }
 
-    public void removePublishedWorkflow(String workflowName) throws PublishedWorkflowDoesNotExistsException {
+    public void removePublishedWorkflow(String workflowName) throws RegistryException {
         GatewayResource gateway = jpa.getGateway();
-        if (!gateway.isPublishedWorkflowExists(workflowName)){
+        if (!isPublishedWorkflowExists(workflowName)){
         	throw new PublishedWorkflowDoesNotExistsException(workflowName);
         }
         gateway.removePublishedWorkflow(workflowName);
@@ -637,11 +671,17 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         throw new UnimplementedRegistryOperationException();
     }
 
-    /**---------------------------------Project Registry----------------------------------**/
+    /**---------------------------------User Workflow Registry----------------------------------**/
 
-    public void addWorkflow(String workflowName, String workflowGraphXml) throws UserWorkflowAlreadyExistsException {
+	@Override
+	public boolean isWorkflowExists(String workflowName)
+			throws RegistryException {
+		return jpa.getWorker().isWorkflowTemplateExists(workflowName);
+	}
+	
+    public void addWorkflow(String workflowName, String workflowGraphXml) throws RegistryException {
     	WorkerResource worker = jpa.getWorker();
-		if (worker.isWorkflowTemplateExists(workflowName)){
+		if (isWorkflowExists(workflowName)){
         	throw new UserWorkflowAlreadyExistsException(workflowName);
         }
 		UserWorkflowResource workflowResource = worker.createWorkflowTemplate(workflowName);
@@ -649,9 +689,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		workflowResource.save();
     }
 
-    public void updateWorkflow(String workflowName, String workflowGraphXml) throws UserWorkflowDoesNotExistsException {
+    public void updateWorkflow(String workflowName, String workflowGraphXml) throws RegistryException {
     	WorkerResource worker = jpa.getWorker();
-		if (!worker.isWorkflowTemplateExists(workflowName)){
+		if (!isWorkflowExists(workflowName)){
         	throw new UserWorkflowDoesNotExistsException(workflowName);
         }
 		UserWorkflowResource workflowResource = worker.createWorkflowTemplate(workflowName);
@@ -659,27 +699,37 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		workflowResource.save();
     }
 
-    public String getWorkflowGraphXML(String workflowName) throws UserWorkflowDoesNotExistsException {
+    public String getWorkflowGraphXML(String workflowName) throws RegistryException {
     	WorkerResource worker = jpa.getWorker();
-		if (!worker.isWorkflowTemplateExists(workflowName)){
+		if (!isWorkflowExists(workflowName)){
         	throw new UserWorkflowDoesNotExistsException(workflowName);
         }
 		return worker.getWorkflowTemplate(workflowName).getContent();
     }
-
-    public ResourceMetadata getWorkflowMetadata(String workflowName) throws UnimplementedRegistryOperationException {
-    	//TODO
-        throw new UnimplementedRegistryOperationException();
-    }
-
-    public void removeWorkflow(String workflowName) throws UserWorkflowDoesNotExistsException {
+    
+	@Override
+	public Map<String, String> getWorkflows() throws RegistryException {
     	WorkerResource worker = jpa.getWorker();
-		if (!worker.isWorkflowTemplateExists(workflowName)){
+    	Map<String, String> workflows=new HashMap<String, String>();
+    	List<UserWorkflowResource> workflowTemplates = worker.getWorkflowTemplates();
+    	for (UserWorkflowResource resource : workflowTemplates) {
+    		workflows.put(resource.getName(), resource.getContent());
+		}
+    	return workflows;
+	}
+
+    public void removeWorkflow(String workflowName) throws RegistryException {
+    	WorkerResource worker = jpa.getWorker();
+		if (!isWorkflowExists(workflowName)){
         	throw new UserWorkflowDoesNotExistsException(workflowName);
         }
 		worker.removeWorkflowTemplate(workflowName);
     }
-
+    
+    public ResourceMetadata getWorkflowMetadata(String workflowName) throws UnimplementedRegistryOperationException {
+    	//TODO
+        throw new UnimplementedRegistryOperationException();
+    }
     public void setAiravataRegistry(AiravataRegistry2 registry) {
         //redundant
     }
@@ -1013,4 +1063,19 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public String getWorkflowExecutionTemplateName(String experimentId,
+			String workflowInstanceId) throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setWorkflowExecutionTemplateName(String experimentId,
+			String workflowInstanceId) throws RegistryException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

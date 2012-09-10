@@ -28,18 +28,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
-import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;
@@ -108,17 +106,13 @@ public class RegistryLoaderWindow {
                                 String val = null;
                                 for (String key : keys) {
                                     val = resultList.get(key);
-                                    results.add(new RegistrySearchResult(val));
-                                }
-                                Session session = null;
-                                try {
-                                    session = val.getSession();
-                                } catch (RepositoryException e) {
-                                    RegistryLoaderWindow.this.engine.getGUI().getErrorWindow().error(
-                                            ErrorMessages.UNEXPECTED_ERROR, e);
-                                }
-                                if (session != null && session.isLive()) {
-                                    session.logout();
+                                    try {
+										results.add(new RegistrySearchResult(new Workflow(val)));
+									} catch (GraphException e) {
+										e.printStackTrace();
+									} catch (ComponentException e) {
+										e.printStackTrace();
+									}
                                 }
                                 RegistryLoaderWindow.this.list.setListData(results);
                                 RegistryLoaderWindow.this.list.setEnabled(true);

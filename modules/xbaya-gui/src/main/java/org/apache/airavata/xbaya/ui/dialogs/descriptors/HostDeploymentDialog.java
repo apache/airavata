@@ -50,6 +50,8 @@ import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
@@ -490,19 +492,27 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
         this.hostName = hostName;
         if (hostName != null) {
             HostDescription hostDescription;
-            hostDescription = registry.getHostDescriptor(hostName);
-            if (hostDescription.getType() instanceof GlobusHostType) {
-                getShellApplicationDescription().getType().changeType(
-                        GramApplicationDeploymentType.type);
-            } else {
-                getShellApplicationDescription().getType().changeType(
-                        ApplicationDeploymentDescriptionType.type);
-            }
-            btnHostAdvanceOptions.setVisible(hostDescription.getType() instanceof GlobusHostType);
-            String hostAddress = hostDescription.getType().getHostAddress();
-            boolean isLocal = isLocalAddress(hostAddress);
-            btnExecBrowse.setVisible(isLocal);
-            btnTmpDirBrowse.setVisible(isLocal);
+            try {
+				hostDescription = registry.getHostDescriptor(hostName);
+				if (hostDescription.getType() instanceof GlobusHostType) {
+				    getShellApplicationDescription().getType().changeType(
+				            GramApplicationDeploymentType.type);
+				} else {
+				    getShellApplicationDescription().getType().changeType(
+				            ApplicationDeploymentDescriptionType.type);
+				}
+				btnHostAdvanceOptions.setVisible(hostDescription.getType() instanceof GlobusHostType);
+				String hostAddress = hostDescription.getType().getHostAddress();
+				boolean isLocal = isLocalAddress(hostAddress);
+				btnExecBrowse.setVisible(isLocal);
+				btnTmpDirBrowse.setVisible(isLocal);
+			} catch (DescriptorDoesNotExistsException e) {
+				e.printStackTrace();
+			} catch (MalformedDescriptorException e) {
+				e.printStackTrace();
+			} catch (RegistryException e) {
+				e.printStackTrace();
+			}
         }
         updateDialogStatus();
     }

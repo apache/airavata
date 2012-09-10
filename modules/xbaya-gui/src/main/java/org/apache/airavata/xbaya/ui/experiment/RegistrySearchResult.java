@@ -21,11 +21,9 @@
 
 package org.apache.airavata.xbaya.ui.experiment;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.xbaya.XBayaConstants;
+import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.ui.widgets.TableRenderable;
 
 public class RegistrySearchResult implements TableRenderable {
@@ -40,34 +38,27 @@ public class RegistrySearchResult implements TableRenderable {
 
     private String description;
 
-    private Node data;
-
     /**
      * Constructs a RegistrySearchResult.
      * 
      * @param node
      */
 
-    public RegistrySearchResult(Node node) {
-        try {
-            String property = node.getProperty("Type").getString();
-            if (property.equals(XBayaConstants.REGISTRY_TYPE_HOST_DESC)) {
-                // todo
-            } else if (property.equals(XBayaConstants.REGISTRY_TYPE_APPLICATION_DESC)) {
-                // todo
-            } else if (property.equals(XBayaConstants.REGISTRY_TYPE_SERVICE_DESC)) {
-                // todo
-            } else if (property.equals(XBayaConstants.REGISTRY_TYPE_WORKFLOW)) {
-                // this.qname = new ;
-                this.resourceID = new QName(node.getProperty("NamespaceURI").getString(), node.getProperty("LocalPart")
-                        .getString(), node.getProperty("Prefix").getString());
-                this.description = node.getProperty("Description").getString();
-                this.resourceName = node.getName();
-            }
-
-        } catch (RepositoryException e) {
-            e.printStackTrace();
-        }
+    public RegistrySearchResult(Workflow workflow) {
+        //Never user so far during the project lifetime, thus assumption will never need
+//            String property = node.getProperty("Type").getString();
+//            if (property.equals(XBayaConstants.REGISTRY_TYPE_HOST_DESC)) {
+//                // todo
+//            } else if (property.equals(XBayaConstants.REGISTRY_TYPE_APPLICATION_DESC)) {
+//                // todo
+//            } else if (property.equals(XBayaConstants.REGISTRY_TYPE_SERVICE_DESC)) {
+//                // todo
+//            } else if (property.equals(XBayaConstants.REGISTRY_TYPE_WORKFLOW)) {
+		    // this.qname = new ;
+		    this.resourceID = workflow.getQname();
+		    this.description = workflow.getDescription();
+		    this.resourceName = workflow.getName();
+//            }
     }
 
     /**
@@ -104,15 +95,6 @@ public class RegistrySearchResult implements TableRenderable {
      */
     public String getResourceName() {
         return this.resourceName;
-    }
-
-    /**
-     * Returns the data.
-     * 
-     * @return The data
-     */
-    public Node getData() {
-        return this.data;
     }
 
     /**

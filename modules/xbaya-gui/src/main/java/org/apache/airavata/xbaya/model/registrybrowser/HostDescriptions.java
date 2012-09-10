@@ -25,24 +25,24 @@ import java.util.List;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class HostDescriptions {
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
 
-    public HostDescriptions(AiravataRegistry registry) {
+    public HostDescriptions(AiravataRegistry2 registry) {
         setRegistry(registry);
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 
     public List<HostDescription> getDescriptions() throws RegistryException{
-        return getRegistry().searchHostDescription(".*");
+        return getRegistry().getHostDescriptors();
     }
 }

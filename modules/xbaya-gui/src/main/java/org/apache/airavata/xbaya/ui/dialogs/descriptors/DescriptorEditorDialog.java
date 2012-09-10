@@ -49,6 +49,8 @@ import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.registrybrowser.nodes.JCRBrowserIcons;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
@@ -114,8 +116,13 @@ public class DescriptorEditorDialog extends JDialog {
     		@Override
     		public void mouseClicked(MouseEvent e) {
     			if (e.getClickCount()==2){
-    				editDescriptor();
-    			}
+    				try {
+						editDescriptor();
+    				} catch (RegistryException e1) {
+    					engine.getGUI().getErrorWindow().error("Error while editing descriptor", e1);
+    					e1.printStackTrace();
+    				}
+				}
     		}
     	});
     	GridPanel infoPanel=new GridPanel();
@@ -126,7 +133,12 @@ public class DescriptorEditorDialog extends JDialog {
         JButton newButton = new JButton("New...");
         newButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	newDescriptor();
+            	try {
+					newDescriptor();
+        		} catch (RegistryException e1) {
+        			engine.getGUI().getErrorWindow().error("Error while creating descriptors", e1);
+        			e1.printStackTrace();
+        		}
             }
         });
         descriptorList.addListSelectionListener(new ListSelectionListener(){
@@ -140,14 +152,24 @@ public class DescriptorEditorDialog extends JDialog {
         editButton = new JButton("Edit...");
         editButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	editDescriptor();
+            	try {
+					editDescriptor();
+        		} catch (RegistryException e1) {
+        			engine.getGUI().getErrorWindow().error("Error while editing descriptor", e1);
+        			e1.printStackTrace();
+        		}
             }
 
         });
         removeButton = new JButton("Remove");
         removeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	deleteDescriptor();
+            	try {
+					deleteDescriptor();
+        		} catch (RegistryException e1) {
+        			engine.getGUI().getErrorWindow().error("Error while removing descriptor", e1);
+        			e1.printStackTrace();
+        		}
             }
         });
         JButton closeButton = new JButton("Close");
@@ -180,10 +202,15 @@ public class DescriptorEditorDialog extends JDialog {
         this.dialog.setDefaultButton(editButton);
         editButton.setEnabled(false);
         removeButton.setEnabled(false);
-        loadDescriptors();
+        try {
+			loadDescriptors();
+		} catch (RegistryException e1) {
+			engine.getGUI().getErrorWindow().error("Error while loading descriptors", e1);
+			e1.printStackTrace();
+		}
     }
     
-    private void editDescriptor() {
+    private void editDescriptor() throws MalformedDescriptorException, RegistryException {
     	switch (descriptorType){
 	    	case HOST:
 	    		HostDescription h = (HostDescription) getSelected();
@@ -217,7 +244,7 @@ public class DescriptorEditorDialog extends JDialog {
     	}
 	}
 
-    private void newDescriptor() {
+    private void newDescriptor() throws MalformedDescriptorException, RegistryException {
     	switch (descriptorType){
 	    	case HOST:
 	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
@@ -253,7 +280,7 @@ public class DescriptorEditorDialog extends JDialog {
 	protected boolean askQuestion(String title, String question) {
         return JOptionPane.showConfirmDialog(null, question, title, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
     }
-    private boolean deleteDescriptor(){
+    private boolean deleteDescriptor() throws DescriptorDoesNotExistsException, RegistryException{
     	String title=null;
     	String question=null;
     	switch (descriptorType){
@@ -299,7 +326,7 @@ public class DescriptorEditorDialog extends JDialog {
         return true;
     }
     
-    private void loadDescriptors() {
+    private void loadDescriptors() throws MalformedDescriptorException, RegistryException {
     	try {
     		//allow the registry cache to update
 			Thread.sleep(500);

@@ -98,7 +98,7 @@ public class HostDescriptionNode extends AbstractAiravataTreeNode {
     private boolean deleteHostDescription(JTree tree) throws RegistryException {
         if (askQuestion("Host description", "Are you sure that you want to remove the host description \""
                 + getHostDescription().getType().getHostName() + "\"?")) {
-            getRegistry().deleteHostDescription(getHostDescription().getType().getHostName());
+            getRegistry().removeHostDescriptor(getHostDescription().getType().getHostName());
             ((AbstractAiravataTreeNode) getParent()).refresh();
             reloadTreeNode(tree, getParent());
         }

@@ -27,49 +27,49 @@ import java.util.Map;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class ApplicationDeploymentDescriptions {
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
     private String serviceName;
     
-    public ApplicationDeploymentDescriptions(AiravataRegistry registry, String serviceName) {
+    public ApplicationDeploymentDescriptions(AiravataRegistry2 registry, String serviceName) {
         setRegistry(registry);
         setServiceName(serviceName);
     }
     
-    public ApplicationDeploymentDescriptions(AiravataRegistry registry) {
+    public ApplicationDeploymentDescriptions(AiravataRegistry2 registry) {
         this(registry,null);
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 
     public List<ApplicationDeploymentDescriptionWrap> getDescriptions() throws RegistryException {
         List<ApplicationDeploymentDescriptionWrap> list = new ArrayList<ApplicationDeploymentDescriptionWrap>();
         if (getServiceName()==null) {
-			Map<ApplicationDeploymentDescription, String> deploymentDescriptions = getRegistry()
-					.searchDeploymentDescription();
-			for (ApplicationDeploymentDescription descriptionWrap : deploymentDescriptions
-					.keySet()) {
-				String[] descDetails = deploymentDescriptions.get(
-						descriptionWrap).split("\\$");
-				list.add(new ApplicationDeploymentDescriptionWrap(
-						getRegistry(), descriptionWrap, descDetails[0],
-						descDetails[1]));
+        	List<ServiceDescription> serviceDescriptors = getRegistry().getServiceDescriptors();
+        	for (ServiceDescription serviceDescription : serviceDescriptors) {
+        		String serviceName = serviceDescription.getType().getName();
+				Map<String,ApplicationDeploymentDescription> deploymentDescriptions = getRegistry().getApplicationDescriptors(serviceName);
+				for (String hostName : deploymentDescriptions.keySet()) {
+					ApplicationDeploymentDescription descriptionWrap=deploymentDescriptions.get(hostName);
+					list.add(new ApplicationDeploymentDescriptionWrap(getRegistry(), descriptionWrap, serviceName,hostName));
+				}
 			}
+			
 		}else{
-	        Map<HostDescription, List<ApplicationDeploymentDescription>> deploymentDescriptions = getRegistry().searchDeploymentDescription(getServiceName());
-	        for (HostDescription descriptionWrap : deploymentDescriptions.keySet()) {
-	            list.add(new ApplicationDeploymentDescriptionWrap(getRegistry(), deploymentDescriptions.get(descriptionWrap).get(0), getServiceName(),
-	            		descriptionWrap.getType().getHostName()));
-	        }
+			Map<String,ApplicationDeploymentDescription> deploymentDescriptions = getRegistry().getApplicationDescriptors(serviceName);
+			for (String hostName : deploymentDescriptions.keySet()) {
+				ApplicationDeploymentDescription descriptionWrap=deploymentDescriptions.get(hostName);
+				list.add(new ApplicationDeploymentDescriptionWrap(getRegistry(), descriptionWrap, getServiceName(),hostName));
+			}
 		}
 		return list;
     }

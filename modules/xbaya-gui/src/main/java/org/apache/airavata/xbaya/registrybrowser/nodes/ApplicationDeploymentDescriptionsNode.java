@@ -29,7 +29,7 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptionWrap;
 import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptions;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
@@ -99,11 +99,11 @@ public class ApplicationDeploymentDescriptionsNode extends AbstractAiravataTreeN
     private void deleteApplicationDescription(JTree tree) throws Exception {
         if (askQuestion("Application descriptions",
                 "Are you sure that you want to remove all application descriptions in this registry?")) {
-            AiravataRegistry registry = getRegistry();
+            AiravataRegistry2 registry = getRegistry();
             List<ApplicationDeploymentDescriptionWrap> descriptions = getApplicationDeploymentDescriptions()
                     .getDescriptions();
             for (ApplicationDeploymentDescriptionWrap descriptionWrap : descriptions) {
-                registry.deleteDeploymentDescription(descriptionWrap.getService(), descriptionWrap.getHost(),
+                registry.removeApplicationDescriptor(descriptionWrap.getService(), descriptionWrap.getHost(),
                         descriptionWrap.getDescription().getType().getApplicationName().getStringValue());
             }
             refresh();

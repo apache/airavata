@@ -34,7 +34,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -54,7 +53,8 @@ import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
@@ -75,7 +75,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
     private XBayaTextField txtAppName;
     private XBayaTextField txtTempDir;
 
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
     private ApplicationDeploymentDescription shellApplicationDescription;
     private JLabel lblError;
     private boolean applcationDescCreated = false;
@@ -128,18 +128,16 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 					int i = 1;
 					String defaultName = baseName + i;
 					try {
-						List<ApplicationDeploymentDescription> applicationDeploymentDescriptions = getRegistry()
-								.searchDeploymentDescription(getServiceName(),
+						ApplicationDeploymentDescription applicationDeploymentDescription = getRegistry()
+								.getApplicationDescriptors(getServiceName(),
 										getHostName());
 						while (true) {
 							boolean notFound = true;
-							for (ApplicationDeploymentDescription deploymentDescription : applicationDeploymentDescriptions) {
-								if (deploymentDescription.getType()
-										.getApplicationName().getStringValue()
-										.equals(defaultName)) {
-									notFound = false;
-									break;
-								}
+							if (applicationDeploymentDescription.getType()
+									.getApplicationName().getStringValue()
+									.equals(defaultName)) {
+								notFound = false;
+								break;
 							}
 							if (notFound) {
 								break;
@@ -158,7 +156,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         iniGUI();
         if (originalService!=null){
     		try {
-    			ServiceDescription disc = getRegistry().getServiceDescription(originalService);
+    			ServiceDescription disc = getRegistry().getServiceDescriptor(originalService);
     			if(disc!=null){
     				setServiceDescription(disc);
     			}
@@ -521,7 +519,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         cmbHostName.removeAllItems();
         setHostName(null);
         try {
-            List<HostDescription> hostDescriptions = getRegistry().searchHostDescription(".*");
+            List<HostDescription> hostDescriptions = getRegistry().getHostDescriptors();
             for (HostDescription hostDescription : hostDescriptions) {
                 if (hostDescription.getType().getHostName() == null) {
                     cmbHostName.addItem(hostDescription.getType().getHostName());
@@ -606,10 +604,14 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
 
     public void saveApplicationDescription() {
         try {
-			getRegistry().saveDeploymentDescription(getServiceName(), getHostName(), getShellApplicationDescription());
+			try {
+				getRegistry().addApplicationDescriptor(getServiceName(), getHostName(), getShellApplicationDescription());
+			} catch (DescriptorAlreadyExistsException e) {
+				getRegistry().updateApplicationDescriptor(getServiceName(), getHostName(), getShellApplicationDescription());
+			}
 			if (!isNewDescritor() && (!getServiceName().equals(getOriginalService()) || !getHostName().equals(getOriginalHost()))) {
 				try {
-					getRegistry().deleteDeploymentDescription(getOriginalService(),
+					getRegistry().removeApplicationDescriptor(getOriginalService(),
 							getOriginalHost(),getOriginalDeploymentDescription().getType()
 							.getApplicationName().getStringValue());
 				} catch (RegistryException e) {
@@ -654,14 +656,14 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             throw new Exception("Name of the application cannot be empty!!!");
         }
 
-        List<ApplicationDeploymentDescription> deploymentDescriptions = null;
+        ApplicationDeploymentDescription deploymentDescriptions = null;
         try {
-            deploymentDescriptions = getRegistry().searchDeploymentDescription(getServiceName(), getHostName(),
-                    Pattern.quote(getApplicationName()));
+            deploymentDescriptions = getRegistry().getApplicationDescriptor(getServiceName(), getHostName(),
+                    getApplicationName());
         } catch (RegistryException e) {
             throw e;
         }
-        if (deploymentDescriptions.size() > 0 && (isNewDescritor() || (!getServiceName().equals(getOriginalService()) || !getHostName().equals(getOriginalHost())))) {
+        if (deploymentDescriptions!=null && (isNewDescritor() || (!getServiceName().equals(getOriginalService()) || !getHostName().equals(getOriginalHost())))) {
             throw new Exception("Application name already exists for the selected service & host!!!");
         }
 
@@ -701,7 +703,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         if (hostName!=null) {
 			HostDescription hostDescription;
 			try {
-				hostDescription = registry.getHostDescription(hostName);
+				hostDescription = registry.getHostDescriptor(hostName);
 				if (hostDescription.getType() instanceof GlobusHostType) {
 					getShellApplicationDescription().getType().changeType(
 							GramApplicationDeploymentType.type);
@@ -759,11 +761,11 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
         }
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 

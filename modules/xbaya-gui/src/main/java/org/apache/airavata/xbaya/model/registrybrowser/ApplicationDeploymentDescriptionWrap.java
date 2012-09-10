@@ -25,15 +25,15 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class ApplicationDeploymentDescriptionWrap {
     private ApplicationDeploymentDescription applicationDeploymentDescription;
     private String service;
     private String host;
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
 
-    public ApplicationDeploymentDescriptionWrap(AiravataRegistry registry,
+    public ApplicationDeploymentDescriptionWrap(AiravataRegistry2 registry,
             ApplicationDeploymentDescription applicationDeploymentDescription, String service, String host) {
         setApplicationDeploymentDescription(applicationDeploymentDescription);
         setService(service);
@@ -54,7 +54,7 @@ public class ApplicationDeploymentDescriptionWrap {
     }
 
     public ServiceDescription getServiceDescription() throws RegistryException{
-        ServiceDescription desc = getRegistry().getServiceDescription(getService());
+        ServiceDescription desc = getRegistry().getServiceDescriptor(getService());
         if(desc!=null){
         	return desc;
         }
@@ -70,18 +70,18 @@ public class ApplicationDeploymentDescriptionWrap {
     }
 
     public HostDescription getHostDescription() throws RegistryException{
-        return getRegistry().getHostDescription(getHost());
+        return getRegistry().getHostDescriptor(getHost());
     }
 
     public void setHost(String host) {
         this.host = host;
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 }

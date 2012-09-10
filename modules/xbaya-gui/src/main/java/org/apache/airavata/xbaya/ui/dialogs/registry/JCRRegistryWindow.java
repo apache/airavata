@@ -99,7 +99,7 @@ public class JCRRegistryWindow {
         }
         JCRComponentRegistry registry = null;
         try {
-            registry = new JCRComponentRegistry(url, username, password);
+            registry = new JCRComponentRegistry(username, password);
         } catch (Exception e) {
             this.engine.getGUI().getErrorWindow().error(e.getMessage());
             return;

@@ -20,22 +20,21 @@
 */
 package org.apache.airavata.xbaya.provenance;
 
+import java.sql.Timestamp;
+
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowRunTimeData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
 public class WorkflowStatusUpdater {
     private static Logger logger = LoggerFactory.getLogger(WorkflowStatusUpdater.class);
 
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
 
-    public WorkflowStatusUpdater(AiravataRegistry registry) {
+    public WorkflowStatusUpdater(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 

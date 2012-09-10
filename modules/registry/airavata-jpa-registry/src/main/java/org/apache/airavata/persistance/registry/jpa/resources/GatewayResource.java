@@ -457,7 +457,6 @@ public class GatewayResource extends AbstractResource {
     }
     
     public List<ApplicationDescriptorResource> getApplicationDescriptorResources(String serviceName,String hostName){
-    	List<ApplicationDescriptorResource> resourceList = new ArrayList<ApplicationDescriptorResource>();
         begin();
         String qString = "SELECT p FROM Application_Descriptor p WHERE p.gateway_name =:gate_name and p.service_descriptor_ID =:service_name";
         if (hostName!=null){
@@ -470,6 +469,7 @@ public class GatewayResource extends AbstractResource {
         	q.setParameter("host_name",hostName);
         }
         List<?> results = q.getResultList();
+    	List<ApplicationDescriptorResource> resourceList = new ArrayList<ApplicationDescriptorResource>();
         if (results.size() != 0) {
             for (Object result : results) {
                 Application_Descriptor applicationDescriptor = (Application_Descriptor) result;

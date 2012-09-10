@@ -21,7 +21,7 @@
 package org.apache.airavata.xbaya.provenance;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
 public class WorkflowNodeStatusUpdater {
        private static Logger logger = LoggerFactory.getLogger(WorkflowNodeStatusUpdater.class);
 
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
 
-    public WorkflowNodeStatusUpdater(AiravataRegistry registry) {
+    public WorkflowNodeStatusUpdater(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 

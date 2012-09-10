@@ -25,33 +25,28 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class InterpreterServiceURLs {
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
 
-    public InterpreterServiceURLs(AiravataRegistry registry) {
+    public InterpreterServiceURLs(AiravataRegistry2 registry) {
         setRegistry(registry);
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 
     public List<InterpreterServiceURL> getURLS() {
         List<InterpreterServiceURL> urls = new ArrayList<InterpreterServiceURL>();
-        try {
-			List<URI> gfacDescriptorList = getRegistry().getInterpreterServiceURLList();
-			for (URI uri : gfacDescriptorList) {
-		        urls.add(new InterpreterServiceURL(getRegistry(), uri));
-			}
-		} catch (RegistryException e) {
-			e.printStackTrace();
+        List<URI> gfacDescriptorList = getRegistry().getWorkflowInterpreterURIs();
+		for (URI uri : gfacDescriptorList) {
+		    urls.add(new InterpreterServiceURL(getRegistry(), uri));
 		}
         return urls;
     }

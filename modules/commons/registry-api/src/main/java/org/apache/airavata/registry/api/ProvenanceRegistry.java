@@ -99,6 +99,23 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      */
     public abstract boolean saveWorkflowExecutionMetadata(String experimentId, String metadata) throws RegistryException;
     
+    /**
+     * Return the template name of the workflow that this intance was created from
+     * @param experimentId
+     * @param workflowInstanceId
+     * @return
+     * @throws RegistryException
+     */
+    public abstract String getWorkflowExecutionTemplateName(String experimentId, String workflowInstanceId) throws RegistryException;
+    
+    /**
+     * Save the template name of the workflow that this intance was created from
+     * @param experimentId
+     * @param workflowInstanceId
+     * @throws RegistryException
+     */
+    public abstract void setWorkflowExecutionTemplateName(String experimentId, String workflowInstanceId) throws RegistryException;
+    
 	
     /*-------------------------------------- Experiment Workflow instance node data ----------------------------------------*/
     /**

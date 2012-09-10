@@ -22,7 +22,7 @@ package org.apache.airavata.xbaya.provenance;
 
 import java.util.List;
 
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 import org.apache.airavata.workflow.model.graph.Node;
@@ -33,11 +33,11 @@ public class ProvenanceReader {
 
     private String experimentId;
 
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
 
     private Node node;
 
-    public ProvenanceReader(Node node,String experimentId,AiravataRegistry registry) {
+    public ProvenanceReader(Node node,String experimentId,AiravataRegistry2 registry) {
        this.experimentId = experimentId;
         this.registry = registry;
         this.node = node;

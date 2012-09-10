@@ -64,13 +64,13 @@ public interface WorkflowInterpreterInteractor {
 //        String gfacURL;
 //        WorkflowNotifiable notifier;
 //        String topic;
-//        AiravataRegistry registry;
+//        AiravataRegistry2 registry;
 //        String serviceName;
 //        XBayaConfiguration config;
 //        boolean embeddedMode;
 //        
 //        public GFacInvokerData(boolean embeddedMode, QName portTypeQName, WsdlDefinitions wsdl, String nodeID, String messageBoxURL,
-//                String gfacURL, WorkflowNotifiable notifier,String topic,AiravataRegistry registry,String serviceName,XBayaConfiguration config) {
+//                String gfacURL, WorkflowNotifiable notifier,String topic,AiravataRegistry2 registry,String serviceName,XBayaConfiguration config) {
 //        	this.embeddedMode=embeddedMode;
 //        	this.portTypeQName = portTypeQName;
 //        	this.wsdl = wsdl;

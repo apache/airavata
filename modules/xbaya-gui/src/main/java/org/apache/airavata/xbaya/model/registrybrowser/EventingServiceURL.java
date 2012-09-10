@@ -23,22 +23,22 @@ package org.apache.airavata.xbaya.model.registrybrowser;
 
 import java.net.URI;
 
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class EventingServiceURL {
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
     private URI eventingServiceURL;
 
-    public EventingServiceURL(AiravataRegistry registry, URI eventingServiceURL) {
+    public EventingServiceURL(AiravataRegistry2 registry, URI eventingServiceURL) {
         setRegistry(registry);
         setEventingServiceURL(eventingServiceURL);
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 

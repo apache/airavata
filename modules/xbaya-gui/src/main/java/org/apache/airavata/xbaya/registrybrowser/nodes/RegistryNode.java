@@ -28,12 +28,9 @@ import java.util.List;
 import javax.swing.Icon;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.model.registrybrowser.AiravataConfigurations;
-import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptions;
-import org.apache.airavata.xbaya.model.registrybrowser.GFacURLs;
 import org.apache.airavata.xbaya.model.registrybrowser.HostDescriptions;
 import org.apache.airavata.xbaya.model.registrybrowser.ServiceDescriptions;
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowExperiments;

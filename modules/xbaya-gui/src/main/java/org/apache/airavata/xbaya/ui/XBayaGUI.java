@@ -38,8 +38,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
@@ -49,7 +47,6 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
@@ -823,16 +820,12 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
             this.newGraphCanvas(true, false);
             JCRComponentRegistry jcrComponentRegistry = this.engine.getConfiguration().getJcrComponentRegistry();
             try {
-            	javax.jcr.Node node = jcrComponentRegistry.getRegistry().getWorkflow(new QName(XBayaConstants.LEAD_NS, this.engine.getConfiguration().getWorkflow()), this.engine.getConfiguration().getRegistryUserName());
-                XmlElement xwf = XMLUtil.stringToXmlElement(node.getProperty("workflow").getString());
+            	String xml = jcrComponentRegistry.getRegistry().getWorkflowGraphXML(this.engine.getConfiguration().getWorkflow());
+                XmlElement xwf = XMLUtil.stringToXmlElement(xml);
                 Workflow workflow = new Workflow(xwf);
                 setWorkflow(workflow);
             } catch (RegistryException e) {
                getErrorWindow().error(ErrorMessages.REPOSITORY_CONFIGURATION_IS_WRONG_FAILED_TO_LOAD_THE_WORKFLOW, e);
-            } catch (PathNotFoundException e) {
-                getErrorWindow().error(ErrorMessages.GIVEN_WORKFLOW_NAME_IS_WRONG, e);
-            } catch (RepositoryException e) {
-                getErrorWindow().error(ErrorMessages.REPOSITORY_CONFIGURATION_IS_WRONG_FAILED_TO_LOAD_THE_WORKFLOW, e);
             } catch (GraphException e) {
                 getErrorWindow().error(ErrorMessages.WORKFLOW_IS_WRONG, e);
             } catch (ComponentException e) {

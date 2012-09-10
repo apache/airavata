@@ -21,7 +21,12 @@
 
 package org.apache.airavata.xbaya.interpreter;
 
-import org.apache.airavata.registry.api.AiravataRegistry;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.UUID;
+
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.wf.Workflow;
@@ -38,11 +43,6 @@ import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.UUID;
 
 public class WorkflowTest{
     final Logger logger = LoggerFactory.getLogger(WorkflowTest.class);
@@ -61,7 +61,7 @@ public class WorkflowTest{
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
         ((InputNode) workflow.getGraph().getNode("input")).setDefaultValue("1");
         XBayaConfiguration conf = WorkflowTestUtils.getConfiguration();
-        AiravataRegistry registry = conf.getJcrComponentRegistry()==null? null:conf.getJcrComponentRegistry().getRegistry();
+        AiravataRegistry2 registry = conf.getJcrComponentRegistry()==null? null:conf.getJcrComponentRegistry().getRegistry();
 		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow, UUID.randomUUID().toString(),conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null,null,null,true);
 		workflowInterpreterConfiguration.setNotifier(new StandaloneNotificationSender(workflowInterpreterConfiguration.getTopic(),workflowInterpreterConfiguration.getWorkflow()));
         SSWorkflowInterpreterInteractorImpl ssWorkflowInterpreterInteractorImpl = new SSWorkflowInterpreterInteractorImpl();

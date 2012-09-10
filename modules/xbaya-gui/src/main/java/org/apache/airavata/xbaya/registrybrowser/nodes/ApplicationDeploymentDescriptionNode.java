@@ -100,7 +100,7 @@ public class ApplicationDeploymentDescriptionNode extends AbstractAiravataTreeNo
         if (askQuestion("Application description",
                 "Are you sure that you want to remove the application description \""
                         + getApplicationDeploymentDescriptionWrap().getDescription().getType().getApplicationName().getStringValue() + "\"?")) {
-            getRegistry().deleteDeploymentDescription(getApplicationDeploymentDescriptionWrap().getService(),
+            getRegistry().removeApplicationDescriptor(getApplicationDeploymentDescriptionWrap().getService(),
                     getApplicationDeploymentDescriptionWrap().getHost(),
                     getApplicationDeploymentDescriptionWrap().getDescription().getType().getApplicationName().getStringValue());
             ((AbstractAiravataTreeNode) getParent()).refresh();

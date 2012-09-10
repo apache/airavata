@@ -21,11 +21,9 @@
 
 package org.apache.airavata.xbaya.registry;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Map;
 
-import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 
@@ -92,9 +90,9 @@ public class RegistryAccesser {
      */
     public Workflow getOGCEWorkflow(QName workflowTemplateId) throws RepositoryException, GraphException,
             ComponentException, Exception {
-        AiravataRegistry registry = connectToRegistry();
-        Node node = registry.getWorkflow(workflowTemplateId, this.engine.getConfiguration().getRegistryUserName());
-        XmlElement xwf = XMLUtil.stringToXmlElement(node.getProperty("workflow").getString());
+        AiravataRegistry2 registry = connectToRegistry();
+        String xml = registry.getWorkflowGraphXML(workflowTemplateId.getLocalPart());
+        XmlElement xwf = XMLUtil.stringToXmlElement(xml);
         Workflow workflow = new Workflow(xwf);
         return workflow;
     }
@@ -134,11 +132,18 @@ public class RegistryAccesser {
                 String workflowAsString = XMLUtil.xmlElementToString(workflow.toXML());
                 String owner = this.engine.getConfiguration().getRegistryUserName();
 
-                AiravataRegistry registry = this.connectToRegistry();
-                boolean result = registry.saveWorkflow(workflowQName, workflow.getName(), workflow.getDescription(), workflowAsString,
-                        owner, registryPublishingWindow.isMakePublic());
+                AiravataRegistry2 registry = this.connectToRegistry();
+                if (registry.isWorkflowExists(workflow.getName())){
+            		registry.updateWorkflow(workflow.getName(), workflowAsString);
+            	}else{
+            		registry.addWorkflow(workflow.getName(), workflowAsString);
+            	}
+                if (registryPublishingWindow.isMakePublic()){
+                	
+                	registry.publishWorkflow(workflow.getName());
+                }
                 registryPublishingWindow.hide();
-                return result;
+                return true;
             } catch (Exception e) {
                 this.engine.getGUI().getErrorWindow().error(e.getMessage(), e);
             }
@@ -153,8 +158,8 @@ public class RegistryAccesser {
      */
     public void deleteOGCEWorkflow(QName workflowTemplateId) throws RegistryException {
         if (XBayaUtil.acquireJCRRegistry(this.engine)) {
-            AiravataRegistry registry = connectToRegistry();
-            registry.deleteWorkflow(workflowTemplateId, this.engine.getConfiguration().getRegistryUserName());
+            AiravataRegistry2 registry = connectToRegistry();
+            registry.removeWorkflow(workflowTemplateId.getLocalPart());
         }
     }
 
@@ -164,17 +169,15 @@ public class RegistryAccesser {
      * @return
      */
     public Workflow getWorkflow(QName qname) throws RegistryException {
-        AiravataRegistry registry = connectToRegistry();
-        Node node = registry.getWorkflow(qname, this.engine.getConfiguration().getRegistryUserName());
+        AiravataRegistry2 registry = connectToRegistry();
+        String xml = registry.getWorkflowGraphXML(qname.getLocalPart());
         Workflow workflow = null;
         try {
-            XmlElement xwf = XMLUtil.stringToXmlElement(node.getProperty("workflow").getString());
+            XmlElement xwf = XMLUtil.stringToXmlElement(xml);
             workflow = new Workflow(xwf);
         } catch (GraphException e) {
             e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         } catch (ComponentException e) {
-            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
-        } catch (RepositoryException e) {
             e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
         }
         return workflow;

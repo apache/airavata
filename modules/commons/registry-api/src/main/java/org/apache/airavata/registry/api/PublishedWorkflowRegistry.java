@@ -32,6 +32,7 @@ import org.apache.airavata.registry.api.exception.worker.UserWorkflowDoesNotExis
 
 public interface PublishedWorkflowRegistry extends AiravataSubRegistry {
 	
+	public boolean isPublishedWorkflowExists(String workflowName) throws RegistryException;
 	public void publishWorkflow(String workflowName, String publishWorkflowName) throws PublishedWorkflowAlreadyExistsException, UserWorkflowDoesNotExistsException, RegistryException;
 	public void publishWorkflow(String workflowName) throws PublishedWorkflowAlreadyExistsException, UserWorkflowDoesNotExistsException, RegistryException;
 	
