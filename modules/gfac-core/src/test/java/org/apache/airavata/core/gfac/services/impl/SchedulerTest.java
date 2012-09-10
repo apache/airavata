@@ -34,7 +34,10 @@ import org.apache.airavata.core.gfac.provider.impl.GramProvider;
 import org.apache.airavata.core.gfac.provider.impl.LocalProvider;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.scheduler.impl.SchedulerImpl;
+import org.apache.airavata.persistance.registry.jpa.impl.AiravataJPARegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
+import org.apache.airavata.registry.api.util.RegistryUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
@@ -45,6 +48,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +57,7 @@ import java.util.Map;
 import static org.junit.Assert.fail;
 
 public class SchedulerTest {
-    private AiravataJCRRegistry jcrRegistry;
+    private AiravataRegistry2 jcrRegistry;
     @Before
 	public void setUp() throws Exception {
 		/*
@@ -61,9 +65,7 @@ public class SchedulerTest {
 		 */
         Map<String,String> config = new HashMap<String,String>();
             config.put("org.apache.jackrabbit.repository.home","target");
-        jcrRegistry = new AiravataJCRRegistry(null,
-				"org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-				"admin", config);
+        jcrRegistry = RegistryUtils.getRegistryFromConfig(new URL("test.properties"));
 
 		/*
 		 * Host
@@ -124,13 +126,12 @@ public class SchedulerTest {
 		/*
 		 * Save to registry
 		 */
-		jcrRegistry.saveHostDescription(host);
-		jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host
+		jcrRegistry.addHostDescriptor(host);
+		jcrRegistry.addApplicationDescriptor(serv.getType().getName(), host
 				.getType().getHostName(), appDesc);
-		jcrRegistry.saveServiceDescription(serv);
-		jcrRegistry.deployServiceOnHost(serv.getType().getName(), host
-				.getType().getHostName());
-
+		jcrRegistry.addServiceDescriptor(serv);
+//		jcrRegistry.addApplicationDescriptor(serv.getType().getName(), host
+//				.getType().getHostName());
 	}
 
 	@Test
@@ -172,7 +173,6 @@ public class SchedulerTest {
             }else {
                 junit.framework.Assert.assertTrue(false);
             }
-            jcrRegistry.getSession().logout();
             IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target"));
 
         } catch (Exception e) {
