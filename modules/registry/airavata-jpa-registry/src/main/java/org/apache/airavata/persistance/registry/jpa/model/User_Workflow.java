@@ -31,30 +31,21 @@ import java.sql.Date;
 @IdClass(User_Workflow_PK.class)
 public class User_Workflow {
     @Id
+    private String gateway_name;
+    @Id
+    private String owner;
+    @Id
+    private String template_name;
+
     @ManyToOne
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
-    @Id
     @ManyToOne
     @JoinColumn(name = "user_name")
     private Users user;
 
-    @Id
-    private String template_name;
-
     private String path;
-
-//    @Id
-//    @ManyToOne
-//    @JoinColumn(name = "user_ID")
-//    private Users users;
-//
-//    @Id
-//    @ManyToOne
-//    @JoinColumn(name = "project_ID")
-//    private Project project;
-
     private Date last_updated_date;
     private String workflow_graph;
 
@@ -66,10 +57,6 @@ public class User_Workflow {
         return user;
     }
 
-//    public Project getProject() {
-//        return project;
-//    }
-
     public void setTemplate_name(String template_name) {
         this.template_name = template_name;
     }
@@ -80,6 +67,22 @@ public class User_Workflow {
 
     public Gateway getGateway() {
         return gateway;
+    }
+
+    public String getGateway_name() {
+        return gateway_name;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setGateway_name(String gateway_name) {
+        this.gateway_name = gateway_name;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     public String getPath() {
@@ -105,11 +108,6 @@ public class User_Workflow {
     public void setWorkflow_graph(String workflow_graph) {
         this.workflow_graph = workflow_graph;
     }
-
-    //
-//    public void setProject(Project project) {
-//        this.project = project;
-//    }
 
     public void setLast_updated_date(Date last_updated_date) {
         this.last_updated_date = last_updated_date;

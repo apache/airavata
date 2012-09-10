@@ -32,10 +32,11 @@ public class Application_Descriptor {
     private String host_descriptor_ID;
     @Id
     private String service_descriptor_ID;
+    @Id
+    private String gateway_name;
 
     private String application_descriptor_xml;
 
-    @Id
     @ManyToOne
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
@@ -90,6 +91,14 @@ public class Application_Descriptor {
 
     public void setUser(Users user) {
         this.user = user;
+    }
+
+    public String getGateway_name() {
+        return gateway_name;
+    }
+
+    public void setGateway_name(String gateway_name) {
+        this.gateway_name = gateway_name;
     }
 }
 
