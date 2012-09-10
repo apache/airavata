@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.airavata.common.exception.AiravataConfigurationException;
+import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.core.gfac.context.GFacConfiguration;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
@@ -66,6 +67,9 @@ public class GFacService implements ServiceLifeCycle {
     public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
 
     public static final String REGISTRY_USER = "registry.user";
+
+    public static final String SERVICE_NAME = "GFacService";
+
     /*
      * Properties for JCR
      */
@@ -136,8 +140,7 @@ public class GFacService implements ServiceLifeCycle {
                         e.printStackTrace();
                     }
                     registry = RegistryUtils.getRegistryFromConfig(url);
-
-                    context.setProperty(GFAC_URL,properties.get(GFAC_URL));
+                    context.setProperty(GFAC_URL, ServiceUtils.generateServiceURLFromConfigurationContext(context,SERVICE_NAME));
                     GFacConfiguration gfacConfig = new GFacConfiguration(properties.getProperty(MYPROXY_SERVER),properties.getProperty(MYPROXY_USER),
                             properties.getProperty(MYPROXY_PASS),Integer.parseInt(properties.getProperty(MYPROXY_LIFE)),registry,properties.getProperty(TRUSTED_CERT_LOCATION));
 					context.setProperty(GFAC_CONFIGURATION,
