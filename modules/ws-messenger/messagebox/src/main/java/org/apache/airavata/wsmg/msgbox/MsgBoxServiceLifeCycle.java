@@ -28,11 +28,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.common.registry.api.impl.JCRRegistry;
 import org.apache.airavata.common.utils.ServiceUtils;
-import org.apache.airavata.registry.api.AiravataRegistry;
-import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.util.RegistryUtils;
 import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.commons.util.Axis2Utils;
 import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
@@ -70,22 +68,15 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
     
     public void shutDown(ConfigurationContext configurationcontext, AxisService axisservice) {
         logger.info("Message box shutting down");
-        
-        AiravataRegistry registry =  (AiravataRegistry)configurationcontext.getProperty(JCR_REGISTRY);
-        URI gfacURL = (URI) configurationcontext.getProperty(SERVICE_URL);
+        AiravataRegistry2 registry = (AiravataRegistry2) configurationcontext.getProperty(JCR_REGISTRY);
+        registry.unsetMessageBoxURI();
+        thread.interrupt();
         try {
-			registry.deleteMessageBoxServiceURL(gfacURL);
-			thread.interrupt();
-			try {
-			    thread.join();
-			} catch (InterruptedException e) {
-			    logger.info("Message box url update thread is interrupted");
-			}
-		} catch (RegistryException e) {
-			logger.error("Error while shutting down!!!", e);
-		}
-        ((JCRRegistry)registry).closeConnection();
-
+            thread.join();
+        } catch (InterruptedException e) {
+            logger.info("Message box url update thread is interrupted");
+        }
+        registry.closeConnection();
         if (configurationcontext.getProperty(MsgBoxCommonConstants.MSGBOX_STORAGE) != null) {
             MsgBoxStorage msgBoxStorage = (MsgBoxStorage) configurationcontext
                     .getProperty(MsgBoxCommonConstants.MSGBOX_STORAGE);
@@ -115,7 +106,7 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
 					} catch (InterruptedException e1) {
 						e1.printStackTrace();
 					}
-					AiravataRegistry registry = new AiravataJCRRegistry(new URI(map.get(ORG_APACHE_JACKRABBIT_REPOSITORY_URI)),map.get(JCR_CLASS), map.get(JCR_USER), map.get(JCR_PASS), map);
+					AiravataRegistry2 registry = RegistryUtils.getRegistryFromConfig(url);
 					String localAddress = ServiceUtils.generateServiceURLFromConfigurationContext(context, MESSAGE_BOX_SERVICE_NAME);
 					logger.debug("MESSAGE BOX SERVICE_ADDRESS:" + localAddress);
                     context.setProperty(SERVICE_URL,new URI(localAddress));
@@ -184,21 +175,20 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
         public void run() {
             try {
                 while (true) {
-                    try {
-						AiravataRegistry registry = (AiravataRegistry)context.getProperty(JCR_REGISTRY);
-						URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
-						registry.saveMessageBoxServiceURL(localAddress);
-						logger.info("Updated the Message box URL in to Repository");
-						Thread.sleep(GFAC_URL_UPDATE_INTERVAL);
-					} catch (RegistryException e) {
-						//in case of an registry exception best to retry sooner
-						logger.error("Error saving Message box url",e);
-						Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
-					}
+                    AiravataRegistry2 registry = (AiravataRegistry2) context.getProperty(JCR_REGISTRY);
+                    URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
+                    registry.setMessageBoxURI(localAddress);
+                    logger.info("Updated the Message box URL in to Repository");
+                    Thread.sleep(GFAC_URL_UPDATE_INTERVAL);
                 }
             } catch (InterruptedException e) {
+                try {
+                    Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
                 logger.info("Message box url update thread is interrupted");
-			}
+            }
         }
     }
 
