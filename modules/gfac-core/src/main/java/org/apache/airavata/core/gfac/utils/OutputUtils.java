@@ -30,12 +30,13 @@ import java.util.regex.Pattern;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.core.gfac.context.message.MessageContext;
-import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.StdErrParameterType;
 import org.apache.airavata.schemas.gfac.StdOutParameterType;
-import org.apache.xmlbeans.XmlException;
 
 public class OutputUtils {
+
+    private static String regexPattern = "\\s*=\\s*([^\\[\\s'\"][^\\s]*|\"[^\"]*\"|'[^']*'|\\[[^\\[]*\\])";
+
 
     private OutputUtils() {
     }
@@ -73,7 +74,7 @@ public class OutputUtils {
     }
 
     private static String parseStdout(String stdout, String outParam)throws Exception {
-        String regex = Pattern.quote(outParam) + "\\s*=\\s*([^\\[\\s'\"][^\\s]*|\"[^\"]*\"|'[^']*'|\\[[^\\[]*\\])";
+        String regex = Pattern.quote(outParam) + regexPattern;
         String match = null;
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(stdout);
@@ -85,6 +86,20 @@ public class OutputUtils {
             return match;
         } else {
             throw new Exception("Data for the output parameter '"+outParam+"' was not found");
+        }
+    }
+    public static String[] parseStdoutArray(String stdout, String outParam)throws NullPointerException {
+        String regex = Pattern.quote(outParam) + regexPattern;
+        StringBuffer match = new StringBuffer();
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(stdout);
+        while (matcher.find()) {
+            match.append(matcher.group(1)+",");
+        }
+        if (match != null) {
+            return match.toString().split(",");
+        } else {
+            throw new NullPointerException();
         }
     }
 }

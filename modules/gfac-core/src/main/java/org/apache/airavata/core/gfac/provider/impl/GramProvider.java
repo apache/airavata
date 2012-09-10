@@ -54,6 +54,7 @@ import org.apache.airavata.core.gfac.utils.GfacUtils;
 import org.apache.airavata.core.gfac.utils.OutputUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.StringArrayType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.airavata.schemas.wec.WorkflowOutputDataHandlingDocument;
@@ -304,6 +305,13 @@ public class GramProvider extends AbstractProvider {
 							stringMap.put(paramName, actualParameter);
 							invocationContext.getExecutionContext().getNotifier().output(invocationContext, actualParameter.toString());
 						}
+                        if ("StringArray".equals(actualParameter.getType().getType().toString())) {
+                            String[] valueList = OutputUtils.parseStdoutArray(stdout, paramName);
+                            ((StringArrayType) actualParameter.getType()).setValueArray(valueList);
+                            stringMap = new HashMap<String, ActualParameter>();
+                            stringMap.put(paramName, actualParameter);
+                            invocationContext.getExecutionContext().getNotifier().output(invocationContext, actualParameter.toString());
+                        }
                     	else{
                     	// This is to handle exception during the output parsing.
                         stringMap = OutputUtils.fillOutputFromStdout(invocationContext.<ActualParameter>getOutput(), stdout,stderr);
