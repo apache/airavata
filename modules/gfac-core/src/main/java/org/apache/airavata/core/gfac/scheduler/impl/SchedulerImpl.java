@@ -42,7 +42,7 @@ import org.apache.airavata.core.gfac.provider.impl.GramProvider;
 import org.apache.airavata.core.gfac.provider.impl.LocalProvider;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.wec.ApplicationSchedulingContextDocument;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.schemas.wec.SecurityContextDocument;
@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class selects {@link Provider} based on information in {@link AiravataRegistry}
+ * This class selects {@link Provider} based on information in {@link AiravataRegistry2}
  */
 public class SchedulerImpl implements Scheduler {
 
@@ -61,14 +61,14 @@ public class SchedulerImpl implements Scheduler {
 
     public Provider schedule(InvocationContext context) throws SchedulerException {
 
-        AiravataRegistry registryService = context.getExecutionContext().getRegistryService();
+        AiravataRegistry2 registryService = context.getExecutionContext().getRegistryService();
 
         /*
          * Load Service
          */
         ServiceDescription serviceDesc = null;
         try {
-            serviceDesc = registryService.getServiceDescription(context.getServiceName());
+            serviceDesc = registryService.getServiceDescriptor(context.getServiceName());
         } catch (RegistryException e2) {
             e2.printStackTrace();
         }
@@ -91,7 +91,7 @@ public class SchedulerImpl implements Scheduler {
          */
         ApplicationDeploymentDescription app = null;
         try {
-            app = registryService.getDeploymentDescription(context.getServiceName(),
+            app = registryService.getApplicationDescriptors(context.getServiceName(),
                     getRegisteredHost(registryService,context.getServiceName()).getType().getHostName());
         } catch (RegistryException e2) {
             e2.printStackTrace();
@@ -159,7 +159,7 @@ public class SchedulerImpl implements Scheduler {
         return null;
     }
 
-    private HostDescription scheduleToHost(AiravataRegistry regService, String serviceName) {
+    private HostDescription scheduleToHost(AiravataRegistry2 regService, String serviceName) {
         // Since xbaya removes the other scheduling configuration here we only have pick the 0th element of the array
         String hostName = null;
         ContextHeaderDocument.ContextHeader currentContextHeader = WorkflowContextHeaderBuilder.getCurrentContextHeader();
@@ -177,7 +177,7 @@ public class SchedulerImpl implements Scheduler {
         if(hostName != null){
             HostDescription hostDescription = null;
             try {
-                hostDescription = regService.getHostDescription(hostName);
+                hostDescription = regService.getHostDescriptor(hostName);
             } catch (RegistryException e) {
                 e.printStackTrace();
                 log.warn("Wrong host Name provided in WorkflowContext Header");
@@ -205,13 +205,13 @@ public class SchedulerImpl implements Scheduler {
 //        }
     }
 
-    private HostDescription getRegisteredHost(AiravataRegistry regService, String serviceName) {
-        Map<HostDescription, List<ApplicationDeploymentDescription>> deploymentDescription;
+    private HostDescription getRegisteredHost(AiravataRegistry2 regService, String serviceName) {
         HostDescription result = null;
         try {
-            deploymentDescription = regService.searchDeploymentDescription(serviceName);
-            for (HostDescription hostDesc : deploymentDescription.keySet()) {
-                result = hostDesc;
+            Map<String, ApplicationDeploymentDescription> applicationDescriptors = regService.getApplicationDescriptors(serviceName);
+            for (String hostDescName : applicationDescriptors.keySet()) {
+                HostDescription hostDescriptor = regService.getHostDescriptor(hostDescName);
+                result = hostDescriptor;
                 log.info("Found service on: " + result.getType().getHostAddress());
             }
         } catch (RegistryException e) {

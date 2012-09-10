@@ -35,14 +35,11 @@ import org.apache.airavata.core.gfac.factory.PropertyServiceFactory;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.notification.impl.WorkflowTrackingNotification;
 import org.apache.airavata.core.gfac.services.GenericService;
-import org.apache.airavata.registry.api.Axis2Registry;
 import org.apache.airavata.schemas.gfac.*;
-import org.apache.airavata.schemas.wec.SecurityContextDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.util.Map;
 
 public class GfacAPI {
     private static final Logger log = LoggerFactory.getLogger(GfacAPI.class +
@@ -81,7 +78,7 @@ public class GfacAPI {
         /*
     * Add workflow context
     */
-        ServiceDescription serviceDescription = gfacConfig.getRegistry().getServiceDescription(jobContext.getServiceName());
+        ServiceDescription serviceDescription = gfacConfig.getRegistry().getServiceDescriptor(jobContext.getServiceName());
         if(serviceDescription==null){
         	throw new RegistryException(new Exception("Service Description not found in registry."));
         }
