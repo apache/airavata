@@ -30,7 +30,7 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.xbaya.model.registrybrowser.HostDescriptions;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.AddAction;
@@ -98,10 +98,10 @@ public class HostDescriptionsNode extends AbstractAiravataTreeNode {
     private void deleteHostDescription(JTree tree) throws Exception {
         if (askQuestion("Host descriptions",
                 "Are you sure that you want to remove all host descriptions in this registry?")) {
-            AiravataRegistry registry = getRegistry();
+            AiravataRegistry2 registry = getRegistry();
             List<HostDescription> descriptions = getHostDescriptions().getDescriptions();
             for (HostDescription descriptionWrap : descriptions) {
-                registry.deleteHostDescription(descriptionWrap.getType().getHostName());
+                registry.removeHostDescriptor(descriptionWrap.getType().getHostName());
             }
             refresh();
             reloadTreeNode(tree, this);

@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.jcr.PathNotFoundException;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -66,9 +65,10 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
@@ -479,25 +479,36 @@ public class DeploymentDescriptionDialog extends JDialog {
     	ignoreTableChanges=true;
     	updateIODataTable(descType);
         getDeployments().clear();
-        Map<HostDescription, List<ApplicationDeploymentDescription>> descs = getRegistry().getApplicationDescriptorswithHosts(descType.getName());
-        for (HostDescription hostDesc : descs.keySet()) {
-            getDeployments().put(hostDesc.getType().getHostName(), new HostDeployment(hostDesc, descs.get(hostDesc).get(0)));
-        }
-
-        updateDeploymentTable();
-    	Boolean selected = false;
-    	if (descType.getPortType()!=null && descType.getPortType().getMethod()!=null) {
-			XmlCursor cursor = descType.getPortType().getMethod().newCursor();
-			String value = cursor.getAttributeText(new QName("forceFileStagingToWorkDir"));
-			cursor.dispose();
-			selected = false;
-			if (value != null) {
-				selected = Boolean.parseBoolean(value);
+        try {
+			Map<String, ApplicationDeploymentDescription> descs = getRegistry().getApplicationDescriptors(descType.getName());
+			for (String hostDescName : descs.keySet()) {
+			    getDeployments().put(hostDescName, new HostDeployment(getRegistry().getHostDescriptor(hostDescName), descs.get(hostDescName)));
 			}
+
+			updateDeploymentTable();
+			Boolean selected = false;
+			if (descType.getPortType()!=null && descType.getPortType().getMethod()!=null) {
+				XmlCursor cursor = descType.getPortType().getMethod().newCursor();
+				String value = cursor.getAttributeText(new QName("forceFileStagingToWorkDir"));
+				cursor.dispose();
+				selected = false;
+				if (value != null) {
+					selected = Boolean.parseBoolean(value);
+				}
+			}
+			chkForceFileStagingToWorkDir.setSelected(selected);
+			setForceFileStagingToWorkDir(selected);
+			ignoreTableChanges=false;
+		} catch (MalformedDescriptorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DescriptorDoesNotExistsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RegistryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		chkForceFileStagingToWorkDir.setSelected(selected);
-    	setForceFileStagingToWorkDir(selected);
-    	ignoreTableChanges=false;
 	}
 
 	private void updateIODataTable(ServiceDescriptionType descType) {
@@ -644,11 +655,9 @@ public class DeploymentDescriptionDialog extends JDialog {
         getServiceDescriptionType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[] {}));
         getRegistry().addServiceDescriptor(getServiceDescription());
         if (!isNewDescription()) {
-            Map<HostDescription, List<ApplicationDeploymentDescription>> descs = getRegistry().getApplicationDescriptorswithHosts(getServiceName());
-            for (HostDescription hostDesc : descs.keySet()) {
-                for (ApplicationDeploymentDescription app : descs.get(hostDesc)) {
-                    getRegistry().removeApplicationDescriptor(getServiceName(), hostDesc.getType().getHostName(), app.getType().getApplicationName().getStringValue());
-                }
+            Map<String, ApplicationDeploymentDescription> descs = getRegistry().getApplicationDescriptors(getServiceName());
+            for (String hostDescName : descs.keySet()) {
+                getRegistry().removeApplicationDescriptor(getServiceName(), hostDescName, descs.get(hostDescName).getType().getApplicationName().getStringValue());
             }
         }
         for (String hostName : getDeployments().keySet()) {

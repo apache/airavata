@@ -28,7 +28,6 @@ import javax.jcr.PathNotFoundException;
 import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
-import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.ServiceDescriptionRetrieveException;
@@ -94,7 +93,7 @@ public class XBayaWorkflowTemplateNode extends AbstractAiravataTreeNode {
         if (askQuestion("XBaya Workflow", "Are you sure that you want to remove the workflow \""
                 + getXbayaWorkflow().getWorkflowName() + "\"?")) {
             try {
-				getRegistry().deleteWorkflow(new QName(getXbayaWorkflow().getWorkflowName()), getRegistry().getUsername());
+				getRegistry().removeWorkflow(getXbayaWorkflow().getWorkflowName());
 				((AbstractAiravataTreeNode) getParent()).refresh();
 				reloadTreeNode(tree, getParent());
 			} catch (RegistryException e) {

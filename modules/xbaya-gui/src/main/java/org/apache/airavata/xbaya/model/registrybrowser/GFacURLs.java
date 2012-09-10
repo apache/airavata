@@ -22,42 +22,33 @@
 package org.apache.airavata.xbaya.model.registrybrowser;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class GFacURLs {
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
 
-    public GFacURLs(AiravataRegistry registry) {
+    public GFacURLs(AiravataRegistry2 registry) {
         setRegistry(registry);
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 
     public List<GFacURL> getURLS() {
         List<GFacURL> urls = new ArrayList<GFacURL>();
-        try {
-			List<String> gfacDescriptorList = getRegistry().getGFacDescriptorList();
-			for (String urlString : gfacDescriptorList) {
-			    try {
-			        urls.add(new GFacURL(getRegistry(), new URL(urlString)));
-			    } catch (MalformedURLException e) {
-			        // practically speaking this exception should not be possible. just in case,
-			        e.printStackTrace();
-			    }
-			}
-		} catch (RegistryException e) {
-			e.printStackTrace();
+        List<URI> gfacDescriptorList = getRegistry().getGFacURIs();
+		for (URI url : gfacDescriptorList) {
+		    urls.add(new GFacURL(getRegistry(), url));
 		}
         return urls;
     }

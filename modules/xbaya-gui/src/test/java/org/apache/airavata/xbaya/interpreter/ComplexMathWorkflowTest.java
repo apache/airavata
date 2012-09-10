@@ -21,7 +21,12 @@
 
 package org.apache.airavata.xbaya.interpreter;
 
-import org.apache.airavata.registry.api.AiravataRegistry;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.UUID;
+
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
@@ -30,8 +35,6 @@ import org.apache.airavata.xbaya.interpretor.SSWorkflowInterpreterInteractorImpl
 import org.apache.airavata.xbaya.interpretor.StandaloneNotificationSender;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreterConfiguration;
-import org.apache.airavata.xbaya.ui.dialogs.graph.dynamic.DynamicWorkflowRunnerWindow;
-import org.apache.airavata.xbaya.ui.utils.MyProxyChecker;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.MethodRule;
@@ -39,11 +42,6 @@ import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.UUID;
 
 public class ComplexMathWorkflowTest {
     final Logger logger = LoggerFactory.getLogger(ComplexMathWorkflowTest.class);
@@ -61,7 +59,7 @@ public class ComplexMathWorkflowTest {
         URL systemResource = this.getClass().getClassLoader().getSystemResource("ComplexMath.xwf");
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
         XBayaConfiguration conf = WorkflowTestUtils.getConfiguration();
-        AiravataRegistry registry = conf.getJcrComponentRegistry()==null? null:conf.getJcrComponentRegistry().getRegistry();
+        AiravataRegistry2 registry = conf.getJcrComponentRegistry()==null? null:conf.getJcrComponentRegistry().getRegistry();
 		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow, UUID.randomUUID().toString(),conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null,null,null,true);
 		workflowInterpreterConfiguration.setNotifier(new StandaloneNotificationSender(workflowInterpreterConfiguration.getTopic(),workflowInterpreterConfiguration.getWorkflow()));
         SSWorkflowInterpreterInteractorImpl ssWorkflowInterpreterInteractorImpl = new SSWorkflowInterpreterInteractorImpl();

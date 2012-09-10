@@ -21,8 +21,10 @@
 
 package org.apache.airavata.registry.api;
 
+import java.util.Observable;
 
-public abstract class AiravataRegistry2 implements DescriptorRegistry, ProjectsRegistry, PublishedWorkflowRegistry, UserWorkflowRegistry, ConfigurationRegistry, ProvenanceRegistry{
+
+public abstract class AiravataRegistry2 extends Observable implements DescriptorRegistry, ProjectsRegistry, PublishedWorkflowRegistry, UserWorkflowRegistry, ConfigurationRegistry, ProvenanceRegistry{
 	private Gateway gateway;
 	private AiravataUser user;
 	

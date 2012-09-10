@@ -21,30 +21,21 @@
 
 package org.apache.airavata.workflow.model.component.registry;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import javax.jcr.RepositoryException;
-
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.common.registry.api.user.User;
-import org.apache.airavata.common.registry.api.user.UserManager;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.persistance.registry.jpa.impl.AiravataJPARegistry;
-import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.registry.api.util.WebServiceUtil;
 import org.apache.airavata.workflow.model.component.ComponentReference;
 import org.slf4j.Logger;

@@ -21,6 +21,8 @@
 
 package org.apache.airavata.registry.api;
 
+import java.util.Map;
+
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.worker.UserWorkflowAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.worker.UserWorkflowDoesNotExistsException;
@@ -28,10 +30,13 @@ import org.apache.airavata.registry.api.exception.worker.UserWorkflowDoesNotExis
 
 public interface UserWorkflowRegistry extends AiravataSubRegistry {
 	
+	public boolean isWorkflowExists(String workflowName) throws RegistryException;
 	public void addWorkflow(String workflowName, String workflowGraphXml) throws UserWorkflowAlreadyExistsException, RegistryException;
 	public void updateWorkflow(String workflowName, String workflowGraphXml) throws UserWorkflowDoesNotExistsException, RegistryException;
 	
 	public String getWorkflowGraphXML(String workflowName) throws UserWorkflowDoesNotExistsException, RegistryException;
+	public Map<String,String> getWorkflows() throws RegistryException;
+	
 	public ResourceMetadata getWorkflowMetadata(String workflowName) throws RegistryException;	
 	
 	public void removeWorkflow(String workflowName) throws UserWorkflowDoesNotExistsException, RegistryException;

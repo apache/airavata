@@ -20,8 +20,8 @@
 */
 package org.apache.airavata.core.gfac.context;
 
-import org.apache.airavata.registry.api.AiravataRegistry;
-import org.apache.airavata.registry.api.Axis2Registry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+
 
 public class GFacConfiguration {
 
@@ -34,11 +34,11 @@ public class GFacConfiguration {
     private int myProxyLifeCycle;
 
 
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
 
     private String trustedCertLocation;
 
-    public GFacConfiguration(String myProxyServer, String myProxyUser, String myProxyPassphrase, int myProxyLifeCycle, AiravataRegistry axis2Registry, String trustedCertLocation) {
+    public GFacConfiguration(String myProxyServer, String myProxyUser, String myProxyPassphrase, int myProxyLifeCycle, AiravataRegistry2 axis2Registry, String trustedCertLocation) {
         this.myProxyServer = myProxyServer;
         this.myProxyUser = myProxyUser;
         this.myProxyPassphrase = myProxyPassphrase;
@@ -63,7 +63,7 @@ public class GFacConfiguration {
         return myProxyLifeCycle;
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 

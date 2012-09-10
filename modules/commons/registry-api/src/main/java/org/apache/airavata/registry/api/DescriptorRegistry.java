@@ -39,6 +39,7 @@ public interface DescriptorRegistry extends AiravataSubRegistry {
 	 */
 	
 	//---------Host Descriptor data------------
+	public boolean isHostDescriptorExists(String descriptorName)throws RegistryException;
 	public void addHostDescriptor(HostDescription descriptor) throws DescriptorAlreadyExistsException, RegistryException;
 	public void updateHostDescriptor(HostDescription descriptor)throws DescriptorDoesNotExistsException, RegistryException;
 	public HostDescription getHostDescriptor(String hostName)throws DescriptorDoesNotExistsException,MalformedDescriptorException, RegistryException;
@@ -47,6 +48,7 @@ public interface DescriptorRegistry extends AiravataSubRegistry {
 	public ResourceMetadata getHostDescriptorMetadata(String hostName)throws DescriptorDoesNotExistsException, RegistryException;
 
 	//---------Service Descriptor data------------
+	public boolean isServiceDescriptorExists(String descriptorName)throws RegistryException;
 	public void addServiceDescriptor(ServiceDescription descriptor)throws DescriptorAlreadyExistsException, RegistryException;
 	public void updateServiceDescriptor(ServiceDescription descriptor)throws DescriptorDoesNotExistsException, RegistryException;
 	public ServiceDescription getServiceDescriptor(String serviceName)throws DescriptorDoesNotExistsException,MalformedDescriptorException, RegistryException;
@@ -55,12 +57,15 @@ public interface DescriptorRegistry extends AiravataSubRegistry {
 	public ResourceMetadata getServiceDescriptorMetadata(String serviceName)throws DescriptorDoesNotExistsException, RegistryException;
 	
 	//---------Application Descriptor data------------
+	public boolean isApplicationDescriptorExists(String serviceName, String hostName, String descriptorName)throws RegistryException;
 	public void addApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor)throws DescriptorAlreadyExistsException, RegistryException;
 	public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor)throws DescriptorAlreadyExistsException, RegistryException;
 	public void udpateApplicationDescriptor(ServiceDescription serviceDescription, HostDescription hostDescriptor, ApplicationDeploymentDescription descriptor)throws DescriptorDoesNotExistsException, RegistryException;
 	public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor)throws DescriptorDoesNotExistsException, RegistryException;
+	public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName)throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException;
 	public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname)throws MalformedDescriptorException, RegistryException;
 	public Map<String,ApplicationDeploymentDescription> getApplicationDescriptors(String serviceName)throws MalformedDescriptorException, RegistryException;
+	public Map<String[],ApplicationDeploymentDescription> getApplicationDescriptors()throws MalformedDescriptorException, RegistryException;
 	public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName)throws DescriptorDoesNotExistsException, RegistryException;
 	public ResourceMetadata getApplicationDescriptorMetadata(String serviceName, String hostName, String applicationName)throws DescriptorDoesNotExistsException, RegistryException;
 

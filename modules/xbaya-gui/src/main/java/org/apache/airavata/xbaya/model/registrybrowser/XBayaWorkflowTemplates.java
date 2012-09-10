@@ -25,33 +25,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.jcr.Node;
-import javax.xml.namespace.QName;
-
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class XBayaWorkflowTemplates {
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
 
-    public XBayaWorkflowTemplates(AiravataRegistry registry) {
+    public XBayaWorkflowTemplates(AiravataRegistry2 registry) {
         setRegistry(registry);
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 
     public List<XBayaWorkflowTemplate> getWorkflows() {
         List<XBayaWorkflowTemplate> workflows = new ArrayList<XBayaWorkflowTemplate>();
         try {
-			Map<QName, Node> workflowMap = registry.getWorkflows(registry.getUsername());
-			for (Node xBayaWorkflowNode : workflowMap.values()) {
-			    workflows.add(new XBayaWorkflowTemplate(xBayaWorkflowNode));
+			Map<String, String> workflowMap = registry.getWorkflows();
+			for (String xBayaWorkflowName : workflowMap.keySet()) {
+			    workflows.add(new XBayaWorkflowTemplate(xBayaWorkflowName,workflowMap.get(xBayaWorkflowName)));
 			}
 		} catch (RegistryException e) {
 			e.printStackTrace();

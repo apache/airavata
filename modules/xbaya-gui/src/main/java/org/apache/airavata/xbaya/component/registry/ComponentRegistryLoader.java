@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.registry.ComponentRegistry;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
@@ -147,13 +147,13 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
 				observableRegistry.deleteObserver(this);
 			}
 			if (componentRegistry instanceof JCRComponentRegistry){
-				AiravataRegistry registry = ((JCRComponentRegistry)componentRegistry).getRegistry();
+				AiravataRegistry2 registry = ((JCRComponentRegistry)componentRegistry).getRegistry();
 				if (registry!=null && registry instanceof Observable){
 					(observableRegistry=(Observable)registry).addObserver(this);
 				}
 			}
 			load(componentRegistry);
-		}else if (observable instanceof AiravataRegistry){
+		}else if (observable instanceof AiravataRegistry2){
 			load(getEngine().getConfiguration().getJcrComponentRegistry());
 		}
 	}

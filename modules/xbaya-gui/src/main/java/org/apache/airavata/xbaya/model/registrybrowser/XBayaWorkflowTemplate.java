@@ -21,30 +21,30 @@
 
 package org.apache.airavata.xbaya.model.registrybrowser;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 
 public class XBayaWorkflowTemplate {
-    private Node workflowNode;
+    private String workflowGraph;
+    private String workflowName;
 
-    public XBayaWorkflowTemplate(Node workflowNode) {
-        setWorkflowNode(workflowNode);
+    public XBayaWorkflowTemplate(String workflowName, String workflowGraph) {
+        setWorkflowGraph(workflowGraph);
+        setWorkflowName(workflowName);
     }
 
-    public Node getWorkflowNode() {
-        return workflowNode;
+    public String getWorkflowGraph() {
+        return workflowGraph;
     }
 
-    public void setWorkflowNode(Node workflowNode) {
-        this.workflowNode = workflowNode;
+    public void setWorkflowGraph(String workflowGraph) {
+        this.workflowGraph = workflowGraph;
     }
 
-    public String getWorkflowName() {
-        try {
-            return getWorkflowNode().getName();
-        } catch (RepositoryException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+	public String getWorkflowName() {
+		return workflowName;
+	}
+
+	public void setWorkflowName(String workflowName) {
+		this.workflowName = workflowName;
+	}
+
 }

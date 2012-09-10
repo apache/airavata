@@ -25,24 +25,24 @@ import java.util.List;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class ServiceDescriptions {
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
 
-    public ServiceDescriptions(AiravataRegistry registry) {
+    public ServiceDescriptions(AiravataRegistry2 registry) {
         setRegistry(registry);
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 
     public List<ServiceDescription> getDescriptions() throws RegistryException {
-        return getRegistry().searchServiceDescription("");
+        return getRegistry().getServiceDescriptors();
     }
 }

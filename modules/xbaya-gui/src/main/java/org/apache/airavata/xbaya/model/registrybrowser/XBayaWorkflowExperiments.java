@@ -30,7 +30,7 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.xbaya.interpretor.NameValue;
@@ -38,9 +38,9 @@ import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.xml.sax.SAXException;
 
 public class XBayaWorkflowExperiments {
-	private AiravataRegistry registry;
+	private AiravataRegistry2 registry;
 	
-	public XBayaWorkflowExperiments(AiravataRegistry registry) {
+	public XBayaWorkflowExperiments(AiravataRegistry2 registry) {
 		setRegistry(registry);
 	}
 	
@@ -63,7 +63,7 @@ public class XBayaWorkflowExperiments {
 			List<String> workflowExecutionIdByUser = getRegistry().getWorkflowExecutionIdByUser(".*");
 			for (String expId : workflowExecutionIdByUser) {
 				XBayaWorkflowExperiment xBayaWorkflowExperiment = new XBayaWorkflowExperiment(expId, null);
-				xBayaWorkflowExperiment.add(new XBayaWorkflow(expId,getRegistry().getWorkflowExecutionTemplateName(expId),null));
+				xBayaWorkflowExperiment.add(new XBayaWorkflow(expId,getRegistry().getWorkflowExecutionTemplateName(expId,expId),null));
 				experiments.put(expId,xBayaWorkflowExperiment);
 			}
 		} catch (RegistryException e) {
@@ -133,10 +133,10 @@ public class XBayaWorkflowExperiments {
 		}
 	}
 		
-	public AiravataRegistry getRegistry() {
+	public AiravataRegistry2 getRegistry() {
 		return registry;
 	}
-	public void setRegistry(AiravataRegistry registry) {
+	public void setRegistry(AiravataRegistry2 registry) {
 		this.registry = registry;
 	}
 

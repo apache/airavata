@@ -20,18 +20,36 @@
 */
 package org.apache.airavata.xbaya.invoker;
 
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.commons.gfac.wsdl.WSDLConstants;
 import org.apache.airavata.core.gfac.GfacAPI;
 import org.apache.airavata.core.gfac.context.GFacConfiguration;
 import org.apache.airavata.core.gfac.context.JobContext;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
@@ -47,18 +65,11 @@ import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
+
 import xsul.wsdl.WsdlDefinitions;
 import xsul.wsif.WSIFMessage;
 import xsul.wsif.impl.WSIFMessageElement;
 import xsul.xwsif_runtime.WSIFClient;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.io.StringReader;
-import java.util.*;
-import java.util.concurrent.*;
 
 public class EmbeddedGFacInvoker implements Invoker{
 
@@ -85,7 +96,7 @@ public class EmbeddedGFacInvoker implements Invoker{
 
     private ServiceNotifiable notifier;
 
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
 
     private String topic;
 
@@ -181,7 +192,7 @@ public class EmbeddedGFacInvoker implements Invoker{
      * @param notifier
      */
     public EmbeddedGFacInvoker(QName portTypeQName, WsdlDefinitions wsdl, String nodeID, String messageBoxURL,
-            String gfacURL, WorkflowNotifiable notifier,String topic,AiravataRegistry registry,String serviceName,XBayaConfiguration config) {
+            String gfacURL, WorkflowNotifiable notifier,String topic,AiravataRegistry2 registry,String serviceName,XBayaConfiguration config) {
         final String wsdlStr = xsul.XmlConstants.BUILDER.serializeToString(wsdl);
         this.nodeID = nodeID;
         this.portTypeQName = portTypeQName;
@@ -232,7 +243,7 @@ public class EmbeddedGFacInvoker implements Invoker{
             }
             this.inputNames.add(name);
             this.inputValues.add(value);
-            ServiceDescription serviceDescription = registry.getServiceDescription(this.serviceName);
+            ServiceDescription serviceDescription = registry.getServiceDescriptor(this.serviceName);
             if(serviceDescription==null){
             	throw new RegistryException(new Exception("Service Description not found in registry."));
             }

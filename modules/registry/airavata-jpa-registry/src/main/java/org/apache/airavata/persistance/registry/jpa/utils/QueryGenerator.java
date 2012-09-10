@@ -33,9 +33,16 @@ public class QueryGenerator {
 	private static final String SELECT_OBJ="p";
 	private static final String DELETE_OBJ="p";
 	private static final String TABLE_OBJ="p";
+//	
+//	public QueryGenerator(String tableName) {
+//		setTableName(tableName);
+//	}
 	
-	public QueryGenerator(String tableName) {
+	public QueryGenerator(String tableName, Object[]...params) {
 		setTableName(tableName);
+		for (Object[] param : params) {
+			addMatch(param[0].toString(), param[1]);
+		}
 	}
 	
 	public String getTableName() {

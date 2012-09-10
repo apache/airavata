@@ -33,6 +33,7 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -41,9 +42,13 @@ import java.util.Properties;
 import java.util.UUID;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 import javax.jcr.ValueFormatException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -68,6 +73,7 @@ import org.apache.airavata.common.workflow.execution.context.WorkflowContextHead
 import org.apache.airavata.registry.api.AiravataRegistry;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.registry.api.workflow.WorkflowExecution;
+import org.apache.airavata.schemas.wec.WorkflowSchedulingContextDocument.WorkflowSchedulingContext;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.graph.GraphException;
@@ -177,6 +183,8 @@ public class AiravataClient implements AiravataAPI {
 			config.put(AiravataClient.MSGBOX,URLList==null || URLList.size()==0? "http://localhost:8080/axis2/services/MsgBoxService":URLList.get(0).toString());
 			URLList = registryObject.getInterpreterServiceURLList();
 			config.put(AiravataClient.WORKFLOWSERVICEURL,URLList==null || URLList.size()==0? "http://localhost:8080/axis2/services/WorkflowInterpretor?wsdl":URLList.get(0).toString());
+			List<String> urlList = registryObject.getGFacDescriptorList();
+			config.put(AiravataClient.GFAC,urlList==null || urlList.size()==0? "http://localhost:8080/axis2/services/GFacService":urlList.get(0).toString());
 			config.put(AiravataClient.WITHLISTENER,"true");
 		}
 		return config;
@@ -715,16 +723,105 @@ public class AiravataClient implements AiravataAPI {
 	       return builder;
 	}
 
-	public static void main(String[] args) throws Exception {
-		HashMap<String, String> config = new HashMap<String,String>();
-		AiravataClient airavataClient = new AiravataClient(config);
-		String workflowName = "Workflow1";
-		List<WorkflowInput> workflowInputs = airavataClient.getWorkflowInputs(workflowName);
-		workflowInputs.get(0).setValue("hi");
-		String topicId = airavataClient.runWorkflow(workflowName, workflowInputs);
-		System.out.println(topicId);
+ 	public static void main(String[] args) throws Exception {
+// 		AiravataAPI api = AiravataClientUtils.getAPI(new URI("http://gf7.ucs.indiana.edu:8030/jackrabbit/rmi"), "admin", "admin");
+// 		System.out.println(api.getAiravataManager().getWorkflowInterpreterServiceURL());
+// 		System.exit(0);
+// 		WorkflowSchedulingContext workflowSchedulingContext= WorkflowSchedulingContext.Factory.newInstance();
+//		WorkflowContextHeaderBuilder workflowContextHeader = api.getExecutionManager().createWorkflowContextHeader();
+//		workflowContextHeader.setWorkflowSchedulingContext(workflowSchedulingContext);
+//		workflowSchedulingContext.addNewApplicationSchedulingContext();
+// 		System.out.println(workflowContextHeader.getWorkflowSchedulingContext());
+// 		System.exit(0);
+ 		
+		HashMap<String, String> map;
+		URI uri;
+		
+		uri=new URI("http://gw56.quarry.iu.teragrid.org:8090/jackrabbit-webapp-2.4.0/rmi");
+//		uri=new URI("http://localhost:8081/rmi");
+		map = new HashMap<String, String>();
+		map.put("org.apache.jackrabbit.repository.uri", uri.toString());
+		AiravataJCRRegistry reg1 = new AiravataJCRRegistry(uri, "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", "admin","admin", map);
+		
+		uri=new URI("http://gw26.quarry.iu.teragrid.org:8090/jackrabbit-webapp-2.4.0/rmi");
+//		uri=new URI("http://localhost:8082/rmi");
+		map = new HashMap<String, String>();
+		map.put("org.apache.jackrabbit.repository.uri", uri.toString());
+		AiravataJCRRegistry reg2 = new AiravataJCRRegistry(uri, "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", "admin","admin", map);
+//		Session login = reg2.getRepository().login(new SimpleCredentials("admin","admin".toCharArray()));
+//		login.getRootNode().getNode("experiments").remove();
+//		login.getRootNode().getNode("AIRAVATA_CONFIGURATION_DATA").remove();
+//		login.save();
+//		login.logout();
+//		migrateRespositoryData(reg1, reg2);
+		System.exit(0);
 	}
-
+ 	
+	private static void addNode(Node parentNode, Node childNode) throws RepositoryException{
+		Node node;
+		String childNodeName = childNode.getName();
+		if (!parentNode.hasNode(childNodeName)){
+			node=parentNode.addNode(childNodeName);
+		}else{
+			node=parentNode.getNode(childNodeName);
+		}
+		System.out.println(node.getPath());
+		PropertyIterator childProperties = childNode.getProperties();
+		while(childProperties.hasNext()){
+			Property childProperty = childProperties.nextProperty();
+			if (!(childProperty.getName().startsWith("jcr:") || childProperty.getName().startsWith("rep:"))) {
+				if (childProperty.isMultiple()){
+					node.setProperty(childProperty.getName(),
+							childProperty.getValues());
+				}else{
+					node.setProperty(childProperty.getName(),
+							childProperty.getValue());
+				}
+				
+			}
+		}
+		NodeIterator children = childNode.getNodes();
+		while(children.hasNext()){
+			Node c=children.nextNode();
+			addNode(node,c);
+		}
+	}
+	
+	private static void migrateRespositoryData(
+			AiravataJCRRegistry sourceRegistry,
+			AiravataJCRRegistry targetRegistry) throws Exception {
+		Session session1 = null;
+		Session session2 = null;
+		try {
+			session1 = sourceRegistry.getRepository().login(new SimpleCredentials(sourceRegistry.getUsername(), new String(sourceRegistry.getPassword()).toCharArray()));
+			session2 = targetRegistry.getRepository().login(new SimpleCredentials(targetRegistry.getUsername(), new String(targetRegistry.getPassword()).toCharArray()));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw e;
+		}
+		
+		
+		NodeIterator nodes = session1.getRootNode().getNodes();
+		Node rootNode = session2.getRootNode();
+		List<String> ignoreRoots=Arrays.asList(new String[]{"/AIRAVATA_CONFIGURATION_DATA"});
+		while(nodes.hasNext()){
+			Node nextNode = nodes.nextNode();
+			String path = nextNode.getPath();
+			if (!(path.equals("/jcr:system")||path.equals("/rep:policy") || ignoreRoots.contains(path))) {
+				addNode(rootNode,nextNode);
+				System.out.println();
+			}
+		}
+		System.out.print("Saving session.");
+		session1.logout();
+		System.out.print(".");
+		session2.save();
+		System.out.print(".");
+		session2.logout();
+		System.out.println(".done");
+	}
+ 		 	
 	public AiravataManager getAiravataManager() {
 		if (airavataManagerImpl==null) {
 			airavataManagerImpl = new AiravataManagerImpl(this);

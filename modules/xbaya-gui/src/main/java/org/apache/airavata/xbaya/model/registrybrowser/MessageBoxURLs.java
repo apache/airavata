@@ -25,34 +25,27 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class MessageBoxURLs {
-    private AiravataRegistry registry;
+    private AiravataRegistry2 registry;
 
-    public MessageBoxURLs(AiravataRegistry registry) {
+    public MessageBoxURLs(AiravataRegistry2 registry) {
         setRegistry(registry);
     }
 
-    public AiravataRegistry getRegistry() {
+    public AiravataRegistry2 getRegistry() {
         return registry;
     }
 
-    public void setRegistry(AiravataRegistry registry) {
+    public void setRegistry(AiravataRegistry2 registry) {
         this.registry = registry;
     }
 
     public List<MessageBoxURL> getURLS() {
         List<MessageBoxURL> urls = new ArrayList<MessageBoxURL>();
-        try {
-			List<URI> gfacDescriptorList = getRegistry().getMessageBoxServiceURLList();
-			for (URI uri : gfacDescriptorList) {
-		        urls.add(new MessageBoxURL(getRegistry(), uri));
-			}
-		} catch (RegistryException e) {
-			e.printStackTrace();
-		}
+        URI gfacDescriptor = getRegistry().getMessageBoxURI();
+		urls.add(new MessageBoxURL(getRegistry(), gfacDescriptor));
         return urls;
     }
 }

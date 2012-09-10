@@ -41,6 +41,7 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
@@ -397,8 +398,17 @@ public class HostDescriptionDialog extends JDialog {
 
     public void saveHostDescription() {
         HostDescription desc = getHostDescription();
-        getRegistry().addHostDescriptor(desc);
-        setHostCreated(true);
+        try {
+			getRegistry().addHostDescriptor(desc);
+			setHostCreated(true);
+		} catch (DescriptorAlreadyExistsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RegistryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		setHostCreated(false);
     }
 
     public AiravataRegistry2 getRegistry() {
