@@ -36,6 +36,8 @@ public class Published_Workflow {
     private String publish_workflow_name;
 
     @Id
+    private String gateway_name;
+
     @ManyToOne
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
@@ -48,11 +50,6 @@ public class Published_Workflow {
     @ManyToOne
     @JoinColumn(name = "user_name")
     private Users user;
-
-//    @Id
-//    private String gateway_name;
-
-
 
     public String getPublish_workflow_name() {
         return publish_workflow_name;
@@ -98,13 +95,13 @@ public class Published_Workflow {
         this.path = path;
     }
 
-    //    public String getGateway_name() {
-//        return gateway_name;
-//    }
-//
-//    public void setGateway_name(String gateway_name) {
-//        this.gateway_name = gateway_name;
-//    }
+    public String getGateway_name() {
+        return gateway_name;
+    }
+
+    public void setGateway_name(String gateway_name) {
+        this.gateway_name = gateway_name;
+    }
 
     public Users getUser() {
         return user;

@@ -27,9 +27,10 @@ import javax.persistence.*;
 public class Host_Descriptor {
     @Id
     private String host_descriptor_ID;
+    @Id
+    private String gateway_name;
     private String host_descriptor_xml;
 
-    @Id
     @ManyToOne
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
@@ -48,6 +49,14 @@ public class Host_Descriptor {
 
     public Gateway getGateway() {
         return gateway;
+    }
+
+    public String getGateway_name() {
+        return gateway_name;
+    }
+
+    public void setGateway_name(String gateway_name) {
+        this.gateway_name = gateway_name;
     }
 
     public void setHost_descriptor_ID(String host_descriptor_ID) {
