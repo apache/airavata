@@ -25,7 +25,7 @@ import org.apache.airavata.core.gfac.context.invocation.ExecutionContext;
 import org.apache.airavata.core.gfac.notification.GFacNotifiable;
 import org.apache.airavata.core.gfac.notification.GFacNotifier;
 import org.apache.airavata.core.gfac.notification.impl.DefaultNotifier;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.axiom.om.OMElement;
 
 /**
@@ -35,7 +35,7 @@ import org.apache.axiom.om.OMElement;
 public class DefaultExecutionContext implements ExecutionContext {
 
     private GFacNotifier notificationService = new DefaultNotifier();
-    private AiravataRegistry registryService;
+    private AiravataRegistry2 registryService;
     private OMElement header;
 
     public GFacNotifier getNotifier() {
@@ -46,11 +46,11 @@ public class DefaultExecutionContext implements ExecutionContext {
         this.notificationService.addNotifiable(service);
     }
 
-    public AiravataRegistry getRegistryService() {
+    public AiravataRegistry2 getRegistryService() {
         return this.registryService;
     }
 
-    public void setRegistryService(AiravataRegistry registryService) {
+    public void setRegistryService(AiravataRegistry2 registryService) {
         this.registryService = registryService;
     }
 

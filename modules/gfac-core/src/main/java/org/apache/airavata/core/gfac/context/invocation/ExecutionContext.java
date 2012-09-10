@@ -23,9 +23,8 @@ package org.apache.airavata.core.gfac.context.invocation;
 
 import org.apache.airavata.core.gfac.notification.GFacNotifiable;
 import org.apache.airavata.core.gfac.notification.GFacNotifier;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.axiom.om.OMElement;
-import xsul.lead.LeadContextHeader;
 
 /**
  * The Execution Context is used for passing information around the whole service. It keeps information about general
@@ -54,7 +53,7 @@ public interface ExecutionContext {
      * 
      * @return Registry object
      */
-    AiravataRegistry getRegistryService();
+    AiravataRegistry2 getRegistryService();
 
     /**
      * Set Registry object.
@@ -62,7 +61,7 @@ public interface ExecutionContext {
      * @param AiravataRegistry
      *            object to used.
      */
-    void setRegistryService(AiravataRegistry value);
+    void setRegistryService(AiravataRegistry2 value);
 
     public OMElement getSecurityContextHeader();
 

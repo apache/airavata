@@ -50,7 +50,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.ValueFormatException;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.airavata.client.api.AiravataAPI;
@@ -70,11 +69,11 @@ import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-import org.apache.airavata.registry.api.AiravataRegistry;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.registry.api.workflow.WorkflowExecution;
-import org.apache.airavata.schemas.wec.WorkflowSchedulingContextDocument.WorkflowSchedulingContext;
 import org.apache.airavata.workflow.model.component.ComponentException;
+import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
@@ -118,7 +117,7 @@ public class AiravataClient implements AiravataAPI {
     private static WorkflowContextHeaderBuilder builder;
     private String currentUser;
     
-	private AiravataRegistry registry;
+	private AiravataRegistry2 registry;
 
     private Map<String, String> configuration = new HashMap<String, String>();
 	private AiravataManagerImpl airavataManagerImpl;
@@ -175,15 +174,15 @@ public class AiravataClient implements AiravataAPI {
 		config.put(AiravataClient.JCR,registryUrl.toString());
 		config.put(AiravataClient.JCR_USERNAME,username);
 		config.put(AiravataClient.JCR_PASSWORD,password);
-		AiravataRegistry registryObject = getRegistryObject(registryUrl, username, password);
+		AiravataRegistry2 registryObject = getRegistryObject(registryUrl, username, password);
 		if (registryObject!=null){
-			List<URI> URLList = registryObject.getEventingServiceURLList();
-			config.put(AiravataClient.BROKER,URLList==null || URLList.size()==0? "http://localhost:8080/axis2/services/EventingService":URLList.get(0).toString());
-			URLList = registryObject.getMessageBoxServiceURLList();
-			config.put(AiravataClient.MSGBOX,URLList==null || URLList.size()==0? "http://localhost:8080/axis2/services/MsgBoxService":URLList.get(0).toString());
-			URLList = registryObject.getInterpreterServiceURLList();
+			URI uri = registryObject.getEventingServiceURI();
+			config.put(AiravataClient.BROKER,uri==null? "http://localhost:8080/axis2/services/EventingService":uri.toString());
+			uri = registryObject.getMessageBoxURI();
+			config.put(AiravataClient.MSGBOX,uri==null? "http://localhost:8080/axis2/services/MsgBoxService":uri.toString());
+			List<URI> URLList = registryObject.getWorkflowInterpreterURIs();
 			config.put(AiravataClient.WORKFLOWSERVICEURL,URLList==null || URLList.size()==0? "http://localhost:8080/axis2/services/WorkflowInterpretor?wsdl":URLList.get(0).toString());
-			List<String> urlList = registryObject.getGFacDescriptorList();
+			List<URI> urlList = registryObject.getGFacURIs();
 			config.put(AiravataClient.GFAC,urlList==null || urlList.size()==0? "http://localhost:8080/axis2/services/GFacService":urlList.get(0).toString());
 			config.put(AiravataClient.WITHLISTENER,"true");
 		}
@@ -228,7 +227,7 @@ public class AiravataClient implements AiravataAPI {
 		
 		if (clientConfiguration.getJcrURL()!=null && clientConfiguration.getGfacURL()==null){
 			try {
-				clientConfiguration.setGfacURL(new URL(getRegistry().getGFacDescriptorList().get(0)));
+				clientConfiguration.setGfacURL(getRegistry().getGFacURIs().get(0).toURL());
 				configuration.put(GFAC,clientConfiguration.getGfacURL().toString());
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -479,7 +478,7 @@ public class AiravataClient implements AiravataAPI {
 		AiravataClient.workflow = workflow;
 	}
 
-	public AiravataRegistry getRegistry() throws RegistryException {
+	public AiravataRegistry2 getRegistry() throws RegistryException {
 		if (registry == null) {
 			try {
 				URL jcrURL = getClientConfiguration().getJcrURL();
@@ -494,17 +493,13 @@ public class AiravataClient implements AiravataAPI {
 		return registry;
 	}
 
-	private static AiravataRegistry getRegistryObject(URI uri,
+	private static AiravataRegistry2 getRegistryObject(URI uri,
                                                       String jcrUsername,
                                                       String jcrPassword)
             throws RegistryException {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("org.apache.jackrabbit.repository.uri", uri.toString());
-        AiravataRegistry registry = new AiravataJCRRegistry(
-                uri,
-                "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory",
-                jcrUsername,
-                jcrPassword, map);
+        AiravataRegistry2 registry = new JCRComponentRegistry(jcrUsername,jcrPassword).getRegistry();
         return registry;
 	}
 
@@ -556,12 +551,11 @@ public class AiravataClient implements AiravataAPI {
 
 	public List<String> getWorkflowTemplateIds() {
 		List<String> workflowList = new ArrayList<String>();
-		Map<QName, Node> workflows;
+		Map<String, String> workflows;
 		try {
-			workflows = getRegistry().getWorkflows(
-					getClientConfiguration().getJcrUsername());
-			for (QName qname : workflows.keySet()) {
-				workflowList.add(qname.getLocalPart());
+			workflows = getRegistry().getWorkflows();
+			for (String name : workflows.keySet()) {
+				workflowList.add(name);
 			}
 		} catch (RegistryException e) {
 			// TODO Auto-generated catch block
@@ -571,11 +565,11 @@ public class AiravataClient implements AiravataAPI {
 	}
 	
 	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs) throws Exception{
-		return runWorkflow(workflowTemplateId,inputs,getRegistry().getUsername(),null,workflowTemplateId+"_"+Calendar.getInstance().getTime().toString());
+		return runWorkflow(workflowTemplateId,inputs,getRegistry().getUser().getUserName(),null,workflowTemplateId+"_"+Calendar.getInstance().getTime().toString());
 	}
 	
 	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs,String workflowInstanceName) throws Exception{
-		return runWorkflow(workflowTemplateId,inputs,getRegistry().getUsername(),null,workflowInstanceName);
+		return runWorkflow(workflowTemplateId,inputs,getRegistry().getUser().getUserName(),null,workflowInstanceName);
 	}
 	
 	public String runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName) throws Exception{
@@ -663,13 +657,13 @@ public class AiravataClient implements AiravataAPI {
 		return null;
 	}
 
-	public Property getWorkflowAsString(String workflowTemplateId)
+	public String getWorkflowAsString(String workflowTemplateId)
 			throws RegistryException, PathNotFoundException,
 			RepositoryException {
-		Map<QName, Node> workflows = getRegistry().getWorkflows(getClientConfiguration().getJcrUsername());
-		for (QName qname : workflows.keySet()) {
-			if (qname.getLocalPart().equals(workflowTemplateId)){
-				return workflows.get(qname).getProperty("workflow");
+		Map<String, String> workflows = getRegistry().getWorkflows();
+		for (String name : workflows.keySet()) {
+			if (name.equals(workflowTemplateId)){
+				return workflows.get(name);
 			}
 		}
 		return null;
@@ -688,8 +682,7 @@ public class AiravataClient implements AiravataAPI {
 			throws RegistryException, PathNotFoundException,
 			RepositoryException, GraphException, ComponentException,
 			ValueFormatException {
-		Property workflowAsString = getWorkflowAsString(workflowTemplateId);
-		Workflow workflow = new Workflow(workflowAsString.getString());
+		Workflow workflow = new Workflow(getWorkflowAsString(workflowTemplateId));
 		return workflow;
 	}
 
@@ -870,10 +863,8 @@ public class AiravataClient implements AiravataAPI {
 
 
     public List<String> getWorkflowServiceNodeIDs(String templateID) {
-        Property workflowAsString = null;
         try {
-            workflowAsString = this.getWorkflowAsString(templateID);
-            Workflow workflow = new Workflow(workflowAsString.getString());
+            Workflow workflow = new Workflow(getWorkflowAsString(templateID));
             return workflow.getWorkflowServiceNodeIDs();
         } catch (RegistryException e) {
             e.printStackTrace();

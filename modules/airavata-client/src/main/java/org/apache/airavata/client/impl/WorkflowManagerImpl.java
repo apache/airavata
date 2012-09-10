@@ -25,23 +25,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.ValueFormatException;
-import javax.xml.namespace.QName;
-
 import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.WorkflowManager;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.wf.Workflow;
 
 public class WorkflowManagerImpl implements WorkflowManager {
 	private AiravataClient client;
-    private static final String OGCE_WORKFLOW_NS = "http://workflow.ogce.org/";
 
 	public WorkflowManagerImpl(AiravataClient client) {
 		setClient(client);
@@ -53,10 +45,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
 	public void setClient(AiravataClient client) {
 		this.client = client;
-	}
-
-	private String getWorkflowStringFromNode(Node node) throws ValueFormatException, IllegalStateException, PathNotFoundException, RepositoryException{
-		return node.getProperty("workflow").getValue().getString();
 	}
 	
 	@Override
@@ -74,7 +62,15 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	private boolean saveWorkflow(Workflow workflow, String workflowAsString,String owner)
 			throws AiravataAPIInvocationException {
 		try {
-			getClient().getRegistry().saveWorkflow(new QName(OGCE_WORKFLOW_NS,StringUtil.convertToJavaIdentifier(workflow.getName())), workflow.getName(), workflow.getDescription(), workflowAsString, owner, owner==null? true:false);
+			
+			if (getClient().getRegistry().isWorkflowExists(workflow.getName())) {
+				getClient().getRegistry().updateWorkflow(workflow.getName(),workflowAsString);
+			}else{
+				getClient().getRegistry().addWorkflow(workflow.getName(),workflowAsString);
+			}
+			if (owner==null){
+				getClient().getRegistry().publishWorkflow(workflow.getName());
+			}
 			return true;
 		} catch (RegistryException e) {
 			throw new AiravataAPIInvocationException(e);
@@ -86,9 +82,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
 			throws AiravataAPIInvocationException {
 		try {
 			List<Workflow> workflows=new ArrayList<Workflow>();
-			Map<QName, Node> workflowMap = getClient().getRegistry().getWorkflows(owner);
-			for(Node node:workflowMap.values()){
-				workflows.add(getWorkflowFromString(getWorkflowStringFromNode(node)));
+			Map<String, String> workflowMap = getClient().getRegistry().getWorkflows();
+			for(String workflowStr:workflowMap.values()){
+				workflows.add(getWorkflowFromString(workflowStr));
 			}
 			return workflows;
 		} catch (Exception e) {
@@ -101,10 +97,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
 			throws AiravataAPIInvocationException {
 		try {
 			List<String> workflowList = new ArrayList<String>();
-			Map<QName, Node> workflows;
-			workflows = getClient().getRegistry().getWorkflows(owner);
-			for (QName qname : workflows.keySet()) {
-				workflowList.add(qname.getLocalPart());
+			Map<String, String> workflows;
+			workflows = getClient().getRegistry().getWorkflows();
+			for (String name : workflows.keySet()) {
+				workflowList.add(name);
 			}
 			return workflowList;
 		} catch (RegistryException e) {
@@ -122,7 +118,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	public String getWorkflowAsString(String workflowName, String owner)
 			throws AiravataAPIInvocationException {
 		try {
-			return getWorkflowStringFromNode(getClient().getRegistry().getWorkflow(new QName(workflowName), owner));
+			return getClient().getRegistry().getWorkflowGraphXML(workflowName);
 		} catch (Exception e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -132,7 +128,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	public boolean deleteWorkflow(String workflowName, String owner)
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistry().deleteWorkflow(new QName(workflowName), owner);
+			getClient().getRegistry().removeWorkflow(workflowName);
+			return true;
 		} catch (RegistryException e) {
 			throw new AiravataAPIInvocationException(e);
 		}

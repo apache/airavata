@@ -75,6 +75,16 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
 	public abstract boolean saveWorkflowExecutionStatus(String experimentId,ExecutionStatus status)throws RegistryException;
 
     /**
+     * Save a status for this workflow execution
+     * @param experimentId
+     * @param status - contains the status
+     * @return
+     * @throws RegistryException
+     */
+	public abstract boolean saveWorkflowExecutionStatus(String experimentId,WorkflowInstanceStatus status)throws RegistryException;
+
+	
+    /**
      * Return the status of the execution
      * @param experimentId
      * @return

@@ -42,13 +42,9 @@ public class AiravataManagerImpl implements AiravataManager {
 	public List<URI> getGFaCURLs()  throws AiravataAPIInvocationException{
 		List<URI> list=new ArrayList<URI>();
 		try {
-			List<String> gFacDescriptorList = getClient().getRegistry().getGFacDescriptorList();
-			for (String urlString : gFacDescriptorList) {
-				try {
-					list.add(new URI(urlString));
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
-				}
+			List<URI> gFacDescriptorList = getClient().getRegistry().getGFacURIs();
+			for (URI url : gFacDescriptorList) {
+				list.add(url);
 			}
 		} catch (RegistryException e) {
 			throw new AiravataAPIInvocationException(e);
@@ -76,7 +72,7 @@ public class AiravataManagerImpl implements AiravataManager {
 	@Override
 	public List<URI> getWorkflowInterpreterServiceURLs()  throws AiravataAPIInvocationException{
 		try {
-			return getClient().getRegistry().getInterpreterServiceURLList();
+			return getClient().getRegistry().getWorkflowInterpreterURIs();
 		} catch (RegistryException e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -112,11 +108,12 @@ public class AiravataManagerImpl implements AiravataManager {
 		
 	}
 
+	@SuppressWarnings("serial")
 	@Override
 	public List<URI> getMessageBoxServiceURLs()
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistry().getMessageBoxServiceURLList();
+			return new ArrayList<URI>(){{add(getClient().getRegistry().getMessageBoxURI());}};
 		} catch (RegistryException e) {
 			throw new AiravataAPIInvocationException(e);
 		}
@@ -140,11 +137,12 @@ public class AiravataManagerImpl implements AiravataManager {
 		return getMessageBoxServiceURL();
 	}
 
+	@SuppressWarnings("serial")
 	@Override
 	public List<URI> getEventingServiceURLs()
 			throws AiravataAPIInvocationException {
 		try {
-			return getClient().getRegistry().getEventingServiceURLList();
+			return new ArrayList<URI>(){{add(getClient().getRegistry().getEventingServiceURI());}};
 		} catch (RegistryException e) {
 			throw new AiravataAPIInvocationException(e);
 		}
