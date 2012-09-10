@@ -24,9 +24,11 @@ import org.apache.airavata.persistance.registry.jpa.model.Configuration;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway_Worker;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
+import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -40,8 +42,12 @@ public class ResourceUtils {
     protected static EntityManagerFactory factory;
     protected static EntityManager em;
 
+    /**
+     * @param gatewayName
+     * @return
+     */
     public static Resource createGateway(String gatewayName) {
-        if(!isGatewayExist(gatewayName)){
+        if (!isGatewayExist(gatewayName)) {
             GatewayResource gatewayResource = new GatewayResource();
             gatewayResource.setGatewayName(gatewayName);
             return gatewayResource;
@@ -50,25 +56,35 @@ public class ResourceUtils {
 
     }
 
+    /**
+     * @param gatewayName
+     * @return
+     */
     public static boolean isGatewayExist(String gatewayName) {
         factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
         em = factory.createEntityManager();
         em.getTransaction().begin();
-        Query q = em.createQuery("SELECT p FROM Gateway p WHERE p.gateway_name =:gate_name");
-        q.setParameter("gate_name", gatewayName);
+        QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY);
+        generator.setParameter(AbstractResource.GatewayConstants.GATEWAY_NAME, gatewayName);
+        Query q = generator.selectQuery(em);
         Gateway gateway = (Gateway) q.getSingleResult();
         em.getTransaction().commit();
         em.close();
         return gateway != null;
     }
 
+    /**
+     * @param gatewayName
+     * @return
+     */
     public static boolean removeGateway(String gatewayName) {
         try {
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
             em = factory.createEntityManager();
             em.getTransaction().begin();
-            Query q = em.createQuery("Delete p FROM Gateway p WHERE p.gateway_name =:gate_name");
-            q.setParameter("gate_name", gatewayName);
+            QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY);
+            generator.setParameter(AbstractResource.GatewayConstants.GATEWAY_NAME, gatewayName);
+            Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
             em.close();
@@ -81,53 +97,69 @@ public class ResourceUtils {
 
     }
 
+    /**
+     * @param gatewayResource
+     * @param userResource
+     */
     public static void addGatewayWorker(GatewayResource gatewayResource, UserResource userResource) {
-          try{
-              factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-              em = factory.createEntityManager();
-              em.getTransaction().begin();
-              Gateway gateway = new Gateway();
-              gateway.setGateway_name(gatewayResource.getGatewayName());
-              Users user = new Users();
-              user.setUser_name(userResource.getUserName());
-              Gateway_Worker gatewayWorker = new Gateway_Worker();
-              gatewayWorker.setGateway(gateway);
-              gatewayWorker.setUser(user);
-              em.persist(gatewayWorker);
-              em.getTransaction().commit();
-              em.close();
-          }   catch (Exception e){
-                e.printStackTrace();
-          }
-
-    }
-
-    public static boolean removeGatewayWorker(GatewayResource gatewayResource, UserResource userResource) {
-        try{
+        try {
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
             em = factory.createEntityManager();
             em.getTransaction().begin();
-            Query q = em.createQuery("Delete p FROM Gateway_Worker p WHERE p.gateway_name =:gate_name and p.user_name =:usr_name");
-            q.setParameter("gate_name", gatewayResource.getGatewayName());
-            q.setParameter("usr_name", userResource.getUserName());
+            Gateway gateway = new Gateway();
+            gateway.setGateway_name(gatewayResource.getGatewayName());
+            Users user = new Users();
+            user.setUser_name(userResource.getUserName());
+            Gateway_Worker gatewayWorker = new Gateway_Worker();
+            gatewayWorker.setGateway(gateway);
+            gatewayWorker.setUser(user);
+            em.persist(gatewayWorker);
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * @param gatewayResource
+     * @param userResource
+     * @return
+     */
+    public static boolean removeGatewayWorker(GatewayResource gatewayResource, UserResource userResource) {
+        try {
+            factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+            em = factory.createEntityManager();
+            em.getTransaction().begin();
+            QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY_WORKER);
+            generator.setParameter(AbstractResource.GatewayWorkerConstants.GATEWAY_NAME,
+                    gatewayResource.getGatewayName());
+            generator.setParameter(AbstractResource.UserConstants.USERNAME, userResource.getUserName());
+            Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
             em.close();
             return true;
-        }   catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
 
     }
 
-    public static List<ConfigurationResource> getConfigurations (String configKey){
+    /**
+     * @param configKey
+     * @return
+     */
+    public static List<ConfigurationResource> getConfigurations(String configKey) {
         List<ConfigurationResource> list = new ArrayList<ConfigurationResource>();
         factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
         em = factory.createEntityManager();
         em.getTransaction().begin();
-        Query q = em.createQuery("SELECT p FROM Configuration p WHERE p.config_key = :confKey");
-        q.setParameter("confKey", configKey);
+        QueryGenerator generator = new QueryGenerator(AbstractResource.CONFIGURATION);
+        generator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configKey);
+        Query q = generator.selectQuery(em);
         List<?> resultList = q.getResultList();
         if (resultList.size() != 0) {
             for (Object result : resultList) {
@@ -140,37 +172,78 @@ public class ResourceUtils {
         return list;
     }
 
-    public static ConfigurationResource getConfiguration(String configKey){
-    	List<ConfigurationResource> configurations = getConfigurations(configKey);
-    	return (configurations!=null && configurations.size()>0)? configurations.get(0):null;
+    /**
+     * @param configKey
+     * @return
+     */
+    public static ConfigurationResource getConfiguration(String configKey) {
+        List<ConfigurationResource> configurations = getConfigurations(configKey);
+        return (configurations != null && configurations.size() > 0) ? configurations.get(0) : null;
     }
-    
-    public static boolean isConfigurationExist(String configKey){
-    	List<ConfigurationResource> configurations = getConfigurations(configKey);
-    	return (configurations!=null && configurations.size()>0);
-    }
-    
-    public static ConfigurationResource createConfiguration(String configKey){
-    	ConfigurationResource config = new ConfigurationResource();
-    	config.setConfigKey(configKey);
-    	return config;
-    }
-    
-	private static ConfigurationResource createConfigurationResourceObject(
-			Object result) {
-		Configuration configuration = (Configuration) result;
-		ConfigurationResource configurationResource = new ConfigurationResource(configuration.getConfig_ID());
-		configurationResource.setConfigKey(configuration.getConfig_key());
-		configurationResource.setConfigVal(configuration.getConfig_val());
-		configurationResource.setExpireDate(configuration.getExpire_date());
-		return configurationResource;
-	}
 
-    public static void removeConfiguration(String configkey, String configValue){
+    /**
+     * @param configKey
+     * @return
+     */
+    public static boolean isConfigurationExist(String configKey) {
+        List<ConfigurationResource> configurations = getConfigurations(configKey);
+        return (configurations != null && configurations.size() > 0);
+    }
+
+    /**
+     * @param configKey
+     * @return
+     */
+    public static ConfigurationResource createConfiguration(String configKey) {
+        ConfigurationResource config = new ConfigurationResource();
+        config.setConfigKey(configKey);
+        return config;
+    }
+
+    /**
+     * @param result
+     * @return
+     */
+    private static ConfigurationResource createConfigurationResourceObject(
+            Object result) {
+        Configuration configuration = (Configuration) result;
+        ConfigurationResource configurationResource = new ConfigurationResource(configuration.getConfig_ID());
+        configurationResource.setConfigKey(configuration.getConfig_key());
+        configurationResource.setConfigVal(configuration.getConfig_val());
+        configurationResource.setExpireDate(configuration.getExpire_date());
+        return configurationResource;
+    }
+
+    /**
+     * @param configkey
+     * @param configValue
+     */
+    public static void removeConfiguration(String configkey, String configValue) {
+        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+        em = factory.createEntityManager();
+        em.getTransaction().begin();
+        QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.CONFIGURATION);
+        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configkey);
+        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_VAL, configValue);
+        Query q = queryGenerator.deleteQuery(em);
+        q.executeUpdate();
+        em.getTransaction().commit();
+        em.close();
 
     }
-    
-    public static void removeConfiguration(String configkey){
 
+    /**
+     * @param configkey
+     */
+    public static void removeConfiguration(String configkey) {
+        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+        em = factory.createEntityManager();
+        em.getTransaction().begin();
+        QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.CONFIGURATION);
+        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configkey);
+        Query q = queryGenerator.deleteQuery(em);
+        q.executeUpdate();
+        em.getTransaction().commit();
+        em.close();
     }
 }

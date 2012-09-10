@@ -41,49 +41,72 @@ public class ExperimentResource extends AbstractResource {
     private GatewayResource gateway;
     private ProjectResource project;
 
+    /**
+     *
+     */
     public ExperimentResource() {
     }
 
-    public ExperimentResource(String expID) {
-        this.setExpID(expID);
-    }
-
-    public int getProjectID() {
-        return project.getId();
-    }
-
+    /**
+     *
+     * @return  experiment ID
+     */
     public String getExpID() {
         return expID;
     }
 
+    /**
+     *
+     * @return submitted date
+     */
     public Date getSubmittedDate() {
         return submittedDate;
     }
 
+    /**
+     *
+     * @param submittedDate  submitted date
+     */
     public void setSubmittedDate(Date submittedDate) {
         this.submittedDate = submittedDate;
     }
 
+    /**
+     * Since experiments are at the leaf level, this method is not
+     * valid for an experiment
+     * @param type  child resource types
+     * @return UnsupportedOperationException
+     */
     public Resource create(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Since experiments are at the leaf level, this method is not
+     * valid for an experiment
+     * @param type  child resource types
+     * @param name name of the child resource
+     * @return UnsupportedOperationException
+     */
     public void remove(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
-    public void removeMe(Object[] keys) {
-
-    }
-
+    /**
+     * Since experiments are at the leaf level, this method is not
+     * valid for an experiment
+     * @param type  child resource types
+     * @param name name of the child resource
+     * @return UnsupportedOperationException
+     */
     public Resource get(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
     /**
      * key should be the experiment ID
-     * @param keys
-     * @return
+     * @param keys experiment ID
+     * @return ExperimentResource
      */
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
@@ -92,17 +115,27 @@ public class ExperimentResource extends AbstractResource {
         queryGenerator.setParameter(ExperimentConstants.EXPERIMENT_ID, keys[0]);
         Query q = queryGenerator.selectQuery(em);
         Experiment experiment = (Experiment)q.getSingleResult();
-        ExperimentResource experimentResource = (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
+        ExperimentResource experimentResource =
+                (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
         end();
         list.add(experimentResource);
         return list;
 
     }
 
+    /**
+     * Since experiments are at the leaf level, this method is not
+     * valid for an experiment
+     * @param type  child resource types
+     * @return UnsupportedOperationException
+     */
     public List<Resource> get(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * save experiment
+     */
     public void save() {
         begin();
         Experiment experiment = new Experiment();
@@ -112,7 +145,6 @@ public class ExperimentResource extends AbstractResource {
         user.setUser_name(getWorker().getUser());
         Gateway gateway = new Gateway();
         gateway.setGateway_name(getGateway().getGatewayName());
-
         experiment.setProject(project);
         experiment.setExperiment_ID(getExpID());
         experiment.setUser(user);
@@ -120,39 +152,72 @@ public class ExperimentResource extends AbstractResource {
         experiment.setSubmitted_date(submittedDate);
         em.persist(experiment);
         end();
-
-
     }
 
+    /**
+     * Since experiments are at the leaf level, this method is not
+     * valid for an experiment
+     * @param type  child resource types
+     * @param name name of the child resource
+     * @return UnsupportedOperationException
+     */
     public boolean isExists(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
-	public void setExpID(String expID) {
+    /**
+     *
+     * @param expID experiment ID
+     */
+    public void setExpID(String expID) {
 		this.expID = expID;
 	}
 
-	public GatewayResource getGateway() {
+    /**
+     *
+     * @return gatewayResource
+     */
+    public GatewayResource getGateway() {
 		return gateway;
 	}
 
-	public void setGateway(GatewayResource gateway) {
+    /**
+     *
+     * @param gateway gateway
+     */
+    public void setGateway(GatewayResource gateway) {
 		this.gateway = gateway;
 	}
 
-	public WorkerResource getWorker() {
+    /**
+     *
+     * @return worker for the gateway
+     */
+    public WorkerResource getWorker() {
 		return worker;
 	}
 
-	public void setWorker(WorkerResource worker) {
+    /**
+     *
+     * @param worker gateway worker
+     */
+    public void setWorker(WorkerResource worker) {
 		this.worker = worker;
 	}
 
-	public ProjectResource getProject() {
+    /**
+     *
+     * @return project
+     */
+    public ProjectResource getProject() {
 		return project;
 	}
 
-	public void setProject(ProjectResource project) {
+    /**
+     *
+     * @param project  project
+     */
+    public void setProject(ProjectResource project) {
 		this.project = project;
 	}
 }

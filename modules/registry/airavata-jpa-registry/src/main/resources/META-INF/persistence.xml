@@ -57,8 +57,8 @@
             <property name="openjpa.ConnectionURL"
                       value="jdbc:mysql://localhost:3306/persitant_data" />
             <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver" />
-            <property name="openjpa.ConnectionUserName" value="root" />
-            <property name="openjpa.ConnectionPassword" value="root123" />
+            <property name="openjpa.ConnectionUserName" value="airavata" />
+            <property name="openjpa.ConnectionPassword" value="airavata" />
             <property name="openjpa.DynamicEnhancementAgent" value="true" />
             <property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
             <property name="openjpa.Log" value="SQL=TRACE" />

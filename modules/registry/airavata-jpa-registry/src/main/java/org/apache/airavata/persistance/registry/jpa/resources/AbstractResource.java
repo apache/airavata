@@ -46,13 +46,13 @@ public abstract class AbstractResource implements Resource {
     public static final String EXPERIMENT = "Experiment";
 
     //Gateway Table
-    protected final class GatewayConstants {
+    public final class GatewayConstants {
         public static final String GATEWAY_NAME = "gateway_name";
         public static final String GATEWAY_OWNER = "owner";
     }
 
     //Configuration Table
-    protected final class ConfigurationConstants{
+    public final class ConfigurationConstants {
         public static final String CONFIG_ID = "config_ID";
         public static final String CONFIG_KEY = "config_key";
         public static final String CONFIG_VAL = "config_val";
@@ -61,20 +61,19 @@ public abstract class AbstractResource implements Resource {
 
 
     //Users table
-    protected final class UserConstants{
+    public final class UserConstants {
         public static final String USERNAME = "user_name";
         public static final String PASSWORD = "password";
-
     }
 
     //Gateway_Worker table
-    protected final class GatewayWorkerConstants{
+    public final class GatewayWorkerConstants {
         public static final String USERNAME = "user_name";
         public static final String GATEWAY_NAME = "gateway_name";
     }
 
     //Project table
-    protected final class ProjectConstants {
+    public final class ProjectConstants {
         public static final String PROJECT_ID = "project_ID";
         public static final String GATEWAY_NAME = "gateway_name";
         public static final String USERNAME = "user_name";
@@ -82,7 +81,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     //Published_Workflow table
-    protected final class PublishedWorkflowConstants {
+    public final class PublishedWorkflowConstants {
         public static final String GATEWAY_NAME = "gateway_name";
         public static final String CREATED_USER = "created_user";
         public static final String PUBLISH_WORKFLOW_NAME = "publish_workflow_name";
@@ -93,7 +92,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     //User_Workflow table
-    protected final class UserWorkflowConstants {
+    public final class UserWorkflowConstants {
         public static final String GATEWAY_NAME = "gateway_name";
         public static final String OWNER = "owner";
         public static final String TEMPLATE_NAME = "template_name";
@@ -103,7 +102,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     //Host_Descriptor table
-    protected final class  HostDescriptorConstants{
+    public final class HostDescriptorConstants {
         public static final String GATEWAY_NAME = "gateway_name";
         public static final String UPDATED_USER = "updated_user";
         public static final String HOST_DESC_ID = "host_descriptor_ID";
@@ -111,7 +110,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     //Service_Descriptor table
-    protected final class  ServiceDescriptorConstants{
+    public final class ServiceDescriptorConstants {
         public static final String GATEWAY_NAME = "gateway_name";
         public static final String UPDATED_USER = "updated_user";
         public static final String SERVICE_DESC_ID = "service_descriptor_ID";
@@ -119,7 +118,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     //Application_Descriptor table
-    protected final class ApplicationDescriptorConstants{
+    public final class ApplicationDescriptorConstants {
         public static final String GATEWAY_NAME = "gateway_name";
         public static final String UPDATED_USER = "updated_user";
         public static final String APPLICATION_DESC_ID = "application_descriptor_ID";
@@ -129,7 +128,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     //Experiment table
-    protected final class ExperimentConstants{
+    public final class ExperimentConstants {
         public static final String PROJECT_ID = "project_ID";
         public static final String USERNAME = "user_name";
         public static final String GATEWAY_NAME = "gateway_name";
@@ -153,13 +152,13 @@ public abstract class AbstractResource implements Resource {
         em.close();
 
     }
-    
-	public boolean isExists(ResourceType type, Object name) {
-		try {
-			return get(type, name)!=null;
-		} catch (Exception e) {
-			return false;
-		}
-	}
+
+    public boolean isExists(ResourceType type, Object name) {
+        try {
+            return get(type, name) != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
 }

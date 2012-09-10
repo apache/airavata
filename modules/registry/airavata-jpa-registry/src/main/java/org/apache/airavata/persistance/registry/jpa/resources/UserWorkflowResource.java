@@ -96,7 +96,7 @@ public class UserWorkflowResource extends AbstractResource {
     /**
      *
      * @param keys should be in the order of gateway_name,user_name and user_workflow_name
-     * @return
+     * @return resource list
      */
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
@@ -107,7 +107,8 @@ public class UserWorkflowResource extends AbstractResource {
         queryGenerator.setParameter(UserWorkflowConstants.TEMPLATE_NAME, keys[2]);
         Query q = queryGenerator.selectQuery(em);
         User_Workflow userWorkflow = (User_Workflow)q.getSingleResult();
-        UserWorkflowResource userWorkflowResource = (UserWorkflowResource)Utils.getResource(ResourceType.USER_WORKFLOW, userWorkflow);
+        UserWorkflowResource userWorkflowResource = (UserWorkflowResource)Utils.getResource(
+                ResourceType.USER_WORKFLOW, userWorkflow);
         end();
         list.add(userWorkflowResource);
         return list;

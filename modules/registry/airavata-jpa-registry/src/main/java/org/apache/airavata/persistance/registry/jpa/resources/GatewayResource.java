@@ -34,13 +34,24 @@ public class GatewayResource extends AbstractResource {
     private String gatewayName;
     private String owner;
 
+    /**
+     *
+     * @param gatewayName gateway name
+     */
     public GatewayResource(String gatewayName) {
     	setGatewayName(gatewayName);
 	}
-    
+
+    /**
+     *
+     */
     public GatewayResource() {
 	}
-    
+
+    /**
+     *
+     * @return gateway name
+     */
     public String getGatewayName() {
         return gatewayName;
     }
@@ -49,14 +60,30 @@ public class GatewayResource extends AbstractResource {
         this.gatewayName = gatewayName;
     }
 
+    /**
+     *
+     * @return owner of the gateway
+     */
     public String getOwner() {
         return owner;
     }
 
+    /**
+     *
+     * @param owner owner of the gateway
+     */
     public void setOwner(String owner) {
         this.owner = owner;
     }
 
+    /**
+     * Gateway is at the root level.  So it can populate his child resources.
+     * Project, User, Published Workflows, User workflows, Host descriptors,
+     * Service Descriptors, Application descriptors and Experiments are all
+     * its children
+     * @param type resource type of the children
+     * @return specific child resource type
+     */
     public Resource create(ResourceType type) {
         switch (type) {
             case PROJECT:
@@ -84,7 +111,8 @@ public class GatewayResource extends AbstractResource {
                 serviceDescriptorResource.setGatewayName(gatewayName);
                 return serviceDescriptorResource;
             case APPLICATION_DESCRIPTOR:
-                ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource();
+                ApplicationDescriptorResource applicationDescriptorResource =
+                        new ApplicationDescriptorResource();
                 applicationDescriptorResource.setGatewayName(gatewayName);
                 return applicationDescriptorResource;
             case EXPERIMENT:
@@ -96,6 +124,11 @@ public class GatewayResource extends AbstractResource {
         }
     }
 
+    /**
+     * Child resources can be removed from a gateway
+     * @param type child resource type
+     * @param name child resource name
+     */
     public void remove(ResourceType type, Object name) {
         begin();
         Query q;
@@ -146,6 +179,12 @@ public class GatewayResource extends AbstractResource {
         }
     }
 
+    /**
+     * Gateway can get information of his children
+     * @param type child resource type
+     * @param name child resource name
+     * @return specific child resource type
+     */
     public Resource get(ResourceType type, Object name) {
         begin();
         QueryGenerator generator;
@@ -157,7 +196,8 @@ public class GatewayResource extends AbstractResource {
                 generator.setParameter(GatewayWorkerConstants.GATEWAY_NAME, gatewayName);
                 q = generator.selectQuery(em);
                 Users eUser = (Users) q.getSingleResult();
-                WorkerResource workerResource = (WorkerResource)Utils.getResource(ResourceType.GATEWAY_WORKER, eUser);
+                WorkerResource workerResource =
+                        (WorkerResource)Utils.getResource(ResourceType.GATEWAY_WORKER, eUser);
                 end();
                 return workerResource;
             case PUBLISHED_WORKFLOW:
@@ -166,7 +206,8 @@ public class GatewayResource extends AbstractResource {
                 generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, gatewayName);
                 q = generator.selectQuery(em);
                 Published_Workflow ePub_workflow = (Published_Workflow) q.getSingleResult();
-                PublishWorkflowResource publishWorkflowResource = (PublishWorkflowResource)Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, ePub_workflow);
+                PublishWorkflowResource publishWorkflowResource =
+                        (PublishWorkflowResource)Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, ePub_workflow);
                 end();
                 return publishWorkflowResource;
             case HOST_DESCRIPTOR:
@@ -175,7 +216,8 @@ public class GatewayResource extends AbstractResource {
                 generator.setParameter(HostDescriptorConstants.GATEWAY_NAME, gatewayName);
                 q = generator.selectQuery(em);
                 Host_Descriptor eHostDesc = (Host_Descriptor) q.getSingleResult();
-                HostDescriptorResource hostDescriptorResource = (HostDescriptorResource)Utils.getResource(ResourceType.HOST_DESCRIPTOR, eHostDesc);
+                HostDescriptorResource hostDescriptorResource =
+                        (HostDescriptorResource)Utils.getResource(ResourceType.HOST_DESCRIPTOR, eHostDesc);
                 end();
                 return hostDescriptorResource;
             case EXPERIMENT:
@@ -184,7 +226,9 @@ public class GatewayResource extends AbstractResource {
                 generator.setParameter(ExperimentConstants.GATEWAY_NAME, gatewayName);
                 q = generator.selectQuery(em);
                 Experiment experiment = (Experiment)q.getSingleResult();
-                ExperimentResource experimentResource = (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
+                ExperimentResource experimentResource =
+                        (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
+                end();
                 return experimentResource;
             case SERVICE_DESCRIPTOR:
                 generator = new QueryGenerator(SERVICE_DESCRIPTOR);
@@ -192,17 +236,22 @@ public class GatewayResource extends AbstractResource {
                 generator.setParameter(ServiceDescriptorConstants.GATEWAY_NAME, gatewayName);
                 q = generator.selectQuery(em);
                 Service_Descriptor eServiceDesc = (Service_Descriptor) q.getSingleResult();
-                ServiceDescriptorResource serviceDescriptorResource = (ServiceDescriptorResource)Utils.getResource(ResourceType.SERVICE_DESCRIPTOR, eServiceDesc);
+                ServiceDescriptorResource serviceDescriptorResource =
+                        (ServiceDescriptorResource)Utils.getResource(ResourceType.SERVICE_DESCRIPTOR, eServiceDesc);
                 end();
                 return serviceDescriptorResource;
             default:
+                end();
                 throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
 
         }
-
-
     }
 
+    /**
+     *
+     * @param type child resource type
+     * @return list of child resources
+     */
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
         begin();
@@ -218,7 +267,8 @@ public class GatewayResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         Project project = (Project) result;
-                        ProjectResource projectResource = (ProjectResource)Utils.getResource(ResourceType.PROJECT, project);
+                        ProjectResource projectResource =
+                                (ProjectResource)Utils.getResource(ResourceType.PROJECT, project);
                         resourceList.add(projectResource);
                     }
                 }
@@ -231,7 +281,8 @@ public class GatewayResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         Gateway_Worker gatewayWorker = (Gateway_Worker) result;
-                        WorkerResource workerResource = (WorkerResource)Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
+                        WorkerResource workerResource =
+                                (WorkerResource)Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
                         resourceList.add(workerResource);
                     }
                 }
@@ -244,7 +295,8 @@ public class GatewayResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         Published_Workflow publishedWorkflow = (Published_Workflow) result;
-                        PublishWorkflowResource publishWorkflowResource = (PublishWorkflowResource)Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, publishedWorkflow);
+                        PublishWorkflowResource publishWorkflowResource =
+                                (PublishWorkflowResource)Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, publishedWorkflow);
                         resourceList.add(publishWorkflowResource);
                     }
                 }
@@ -257,7 +309,8 @@ public class GatewayResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         Host_Descriptor hostDescriptor = (Host_Descriptor) result;
-                        HostDescriptorResource hostDescriptorResource = (HostDescriptorResource)Utils.getResource(ResourceType.HOST_DESCRIPTOR, hostDescriptor);
+                        HostDescriptorResource hostDescriptorResource =
+                                (HostDescriptorResource)Utils.getResource(ResourceType.HOST_DESCRIPTOR, hostDescriptor);
                         resourceList.add(hostDescriptorResource);
                     }
                 }
@@ -270,7 +323,8 @@ public class GatewayResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         Service_Descriptor serviceDescriptor = (Service_Descriptor) result;
-                        ServiceDescriptorResource serviceDescriptorResource = (ServiceDescriptorResource)Utils.getResource(ResourceType.SERVICE_DESCRIPTOR, serviceDescriptor);
+                        ServiceDescriptorResource serviceDescriptorResource =
+                                (ServiceDescriptorResource)Utils.getResource(ResourceType.SERVICE_DESCRIPTOR, serviceDescriptor);
                         resourceList.add(serviceDescriptorResource);
                     }
                 }
@@ -283,7 +337,8 @@ public class GatewayResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
-                        ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource)Utils.getResource(ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
+                        ApplicationDescriptorResource applicationDescriptorResource =
+                                (ApplicationDescriptorResource)Utils.getResource(ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
                         resourceList.add(applicationDescriptorResource);
                     }
                 }
@@ -296,7 +351,8 @@ public class GatewayResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         Experiment experiment = (Experiment) result;
-                        ExperimentResource experimentResource = (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
+                        ExperimentResource experimentResource =
+                                (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
                         resourceList.add(experimentResource);
                     }
                 }
@@ -308,14 +364,24 @@ public class GatewayResource extends AbstractResource {
         return resourceList;
     }
 
+    /**
+     * save the gateway to the database
+     */
     public void save() {
         begin();
         Gateway gateway = new Gateway();
         gateway.setGateway_name(gatewayName);
+        gateway.setOwner(owner);
         em.persist(gateway);
         end();
     }
 
+    /**
+     * check whether child resource already exist in the database
+     * @param type child resource type
+     * @param name name of the child resource
+     * @return true or false
+     */
     public boolean isExists(ResourceType type, Object name) {
         begin();
         Query q;
@@ -375,24 +441,47 @@ public class GatewayResource extends AbstractResource {
         }
     }
 
+    /**
+     *
+     * @param descriptorName host descriptor name
+     * @return whether host descriptor already available
+     */
     public boolean isHostDescriptorExists(String descriptorName){
     	return isExists(ResourceType.HOST_DESCRIPTOR, descriptorName);
     }
-    
+
+    /**
+     *
+     * @param hostDescriptorName host descriptor name
+     * @return HostDescriptorResource
+     */
     public HostDescriptorResource createHostDescriptorResource(String hostDescriptorName){
     	HostDescriptorResource hdr = (HostDescriptorResource)create(ResourceType.HOST_DESCRIPTOR);
     	hdr.setHostDescName(hostDescriptorName);
     	return hdr;
     }
-    
+
+    /**
+     *
+     * @param hostDescriptorName host descriptor name
+     * @return HostDescriptorResource
+     */
     public HostDescriptorResource getHostDescriptorResource(String hostDescriptorName){
     	return (HostDescriptorResource)get(ResourceType.HOST_DESCRIPTOR,hostDescriptorName);
     }
-    
+
+    /**
+     *
+     * @param descriptorName host descriptor name
+     */
     public void removeHostDescriptor(String descriptorName){
     	remove(ResourceType.HOST_DESCRIPTOR, descriptorName);
     }
-    
+
+    /**
+     *
+     * @return list of host descriptors available for the gateway
+     */
     public List<HostDescriptorResource> getHostDescriptorResources(){
     	List<HostDescriptorResource> results=new ArrayList<HostDescriptorResource>();
     	List<Resource> list = get(ResourceType.HOST_DESCRIPTOR);
@@ -401,25 +490,48 @@ public class GatewayResource extends AbstractResource {
 		}
     	return results;
     }
-    
+
+    /**
+     *
+     * @param descriptorName service descriptor name
+     * @return whether service descriptor already available
+     */
     public boolean isServiceDescriptorExists(String descriptorName){
     	return isExists(ResourceType.SERVICE_DESCRIPTOR, descriptorName);
     }
-    
+
+    /**
+     *
+     * @param descriptorName  service descriptor name
+     * @return  ServiceDescriptorResource
+     */
     public ServiceDescriptorResource createServiceDescriptorResource(String descriptorName){
     	ServiceDescriptorResource hdr = (ServiceDescriptorResource)create(ResourceType.SERVICE_DESCRIPTOR);
     	hdr.setServiceDescName(descriptorName);
     	return hdr;
     }
-    
+
+    /**
+     *
+     * @param descriptorName   service descriptor name
+     * @return ServiceDescriptorResource
+     */
     public ServiceDescriptorResource getServiceDescriptorResource(String descriptorName){
     	return (ServiceDescriptorResource)get(ResourceType.SERVICE_DESCRIPTOR,descriptorName);
     }
-    
+
+    /**
+     *
+     * @param descriptorName Service descriptor name
+     */
     public void removeServiceDescriptor(String descriptorName){
     	remove(ResourceType.SERVICE_DESCRIPTOR, descriptorName);
     }
 
+    /**
+     *
+     * @return list of service descriptors for the gateway
+     */
     public List<ServiceDescriptorResource> getServiceDescriptorResources(){
     	List<ServiceDescriptorResource> results=new ArrayList<ServiceDescriptorResource>();
     	List<Resource> list = get(ResourceType.SERVICE_DESCRIPTOR);
@@ -428,25 +540,48 @@ public class GatewayResource extends AbstractResource {
 		}
     	return results;
     }
-    
+
+    /**
+     *
+     * @param descriptorName application descriptor name
+     * @return  whether application descriptor already available
+     */
     public boolean isApplicationDescriptorExists(String descriptorName){
     	return isExists(ResourceType.APPLICATION_DESCRIPTOR, descriptorName);
     }
-    
+
+    /**
+     *
+     * @param descriptorName  application descriptor name
+     * @return ApplicationDescriptorResource
+     */
     public ApplicationDescriptorResource createApplicationDescriptorResource(String descriptorName){
     	ApplicationDescriptorResource hdr = (ApplicationDescriptorResource)create(ResourceType.APPLICATION_DESCRIPTOR);
     	hdr.setName(descriptorName);
     	return hdr;
     }
-    
+
+    /**
+     *
+     * @param descriptorName application descriptor name
+     * @return ApplicationDescriptorResource
+     */
     public ApplicationDescriptorResource getApplicationDescriptorResource(String descriptorName){
     	return (ApplicationDescriptorResource)get(ResourceType.APPLICATION_DESCRIPTOR,descriptorName);
     }
-    
+
+    /**
+     *
+     * @param descriptorName  application descriptor name
+     */
     public void removeApplicationDescriptor(String descriptorName){
     	remove(ResourceType.APPLICATION_DESCRIPTOR, descriptorName);
     }
 
+    /**
+     *
+     * @return list of application descriptors for the gateway
+     */
     public List<ApplicationDescriptorResource> getApplicationDescriptorResources(){
     	List<ApplicationDescriptorResource> results=new ArrayList<ApplicationDescriptorResource>();
     	List<Resource> list = get(ResourceType.APPLICATION_DESCRIPTOR);
@@ -455,10 +590,17 @@ public class GatewayResource extends AbstractResource {
 		}
     	return results;
     }
-    
+
+    /**
+     *
+     * @param serviceName service descriptor name
+     * @param hostName host descriptor name
+     * @return  list of application descriptors for the gateway
+     */
     public List<ApplicationDescriptorResource> getApplicationDescriptorResources(String serviceName,String hostName){
         begin();
-        String qString = "SELECT p FROM Application_Descriptor p WHERE p.gateway_name =:gate_name and p.service_descriptor_ID =:service_name";
+        String qString = "SELECT p FROM Application_Descriptor p WHERE " +
+                "p.gateway_name =:gate_name and p.service_descriptor_ID =:service_name";
         if (hostName!=null){
         	qString+=" and p.host_descriptor_ID =:host_name";
         }
@@ -473,8 +615,12 @@ public class GatewayResource extends AbstractResource {
         if (results.size() != 0) {
             for (Object result : results) {
                 Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
-                ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource(applicationDescriptor.getApplication_descriptor_ID(),applicationDescriptor.getGateway().getGateway_name(),
-                        applicationDescriptor.getHost_descriptor_ID(), applicationDescriptor.getService_descriptor_ID());
+                ApplicationDescriptorResource applicationDescriptorResource =
+                        new ApplicationDescriptorResource(
+                                applicationDescriptor.getApplication_descriptor_ID(),
+                                applicationDescriptor.getGateway().getGateway_name(),
+                                applicationDescriptor.getHost_descriptor_ID(),
+                                applicationDescriptor.getService_descriptor_ID());
                 applicationDescriptorResource.setContent(applicationDescriptor.getApplication_descriptor_xml());
                 applicationDescriptorResource.setUpdatedUser(applicationDescriptor.getUser().getUser_name());
                 resourceList.add(applicationDescriptorResource);
@@ -483,23 +629,43 @@ public class GatewayResource extends AbstractResource {
         end();
         return resourceList;
     }
-    
+
+    /**
+     *
+     * @param workflowTemplateName published workflow template name
+     * @return boolean - whether workflow with the same name exists
+     */
     public boolean isPublishedWorkflowExists(String workflowTemplateName){
     	return isExists(ResourceType.PUBLISHED_WORKFLOW, workflowTemplateName);
     }
-    
+
+    /**
+     *
+     * @param workflowTemplateName published workflow template name
+     * @return publish workflow resource
+     */
     public PublishWorkflowResource createPublishedWorkflow(String workflowTemplateName){
-    	PublishWorkflowResource publishedWorkflowResource = (PublishWorkflowResource)create(ResourceType.PUBLISHED_WORKFLOW);
+    	PublishWorkflowResource publishedWorkflowResource =
+                (PublishWorkflowResource)create(ResourceType.PUBLISHED_WORKFLOW);
     	publishedWorkflowResource.setName(workflowTemplateName);
     	publishedWorkflowResource.setPath("/");
     	publishedWorkflowResource.setVersion("1.0");
     	return publishedWorkflowResource;
     }
-    
+
+    /**
+     *
+     * @param workflowTemplateName published workflow template name
+     * @return publish workflow resource
+     */
     public PublishWorkflowResource getPublishedWorkflow(String workflowTemplateName){
     	return (PublishWorkflowResource)get(ResourceType.PUBLISHED_WORKFLOW,workflowTemplateName);
     }
-    
+
+    /**
+     *
+     * @return list of publish workflows for the gateway
+     */
     public List<PublishWorkflowResource> getPublishedWorkflows(){
     	List<PublishWorkflowResource> result=new ArrayList<PublishWorkflowResource>();
     	List<Resource> list = get(ResourceType.PUBLISHED_WORKFLOW);
@@ -508,7 +674,11 @@ public class GatewayResource extends AbstractResource {
 		}
     	return result;
     }
-    
+
+    /**
+     *
+     * @param workflowTemplateName published workflow template name
+     */
     public void removePublishedWorkflow(String workflowTemplateName){
     	remove(ResourceType.PUBLISHED_WORKFLOW, workflowTemplateName);
     }
