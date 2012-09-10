@@ -36,76 +36,133 @@ public class ApplicationDescriptorResource extends AbstractResource {
     private String content;
     private String hostDescName;
     private String serviceDescName;
-    
-    public ApplicationDescriptorResource(String name) {
-        this.setName(name);
-    }
-    
-    public ApplicationDescriptorResource(String name, String gatewayName, String hostDescName, String serviceDescName) {
+
+    /**
+     *
+     * @param name application descriptor name
+     * @param gatewayName  gateway name
+     * @param hostDescName host descriptor name
+     * @param serviceDescName service descriptor name
+     * returns ApplicationDescriptorResource
+     */
+    public ApplicationDescriptorResource(String name, String gatewayName,
+                                         String hostDescName, String serviceDescName) {
         this.setName(name);
         this.gatewayName = gatewayName;
         this.hostDescName = hostDescName;
         this.serviceDescName = serviceDescName;
     }
 
+    /**
+     *
+     */
     public ApplicationDescriptorResource() {
     }
 
+    /**
+     *
+     * @return gateway name
+     */
     public String getGatewayName() {
         return gatewayName;
     }
 
+    /**
+     *
+     * @param gatewayName gateway name
+     */
     public void setGatewayName(String gatewayName) {
         this.gatewayName = gatewayName;
     }
 
-    public String getUpdatedUser() {
-        return updatedUser;
-    }
-
+    /**
+     *
+     * @param updatedUser updated user
+     */
     public void setUpdatedUser(String updatedUser) {
         this.updatedUser = updatedUser;
     }
 
+    /**
+     *
+     * @return name of the application descriptor
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @return content
+     */
     public String getContent() {
         return content;
     }
 
+    /**
+     *
+     * @return  host descriptor name
+     */
     public String getHostDescName() {
         return hostDescName;
     }
 
+    /**
+     *
+     * @return service descriptor name
+     */
     public String getServiceDescName() {
         return serviceDescName;
     }
 
+    /**
+     *
+     * @param content content of the application descriptor
+     */
     public void setContent(String content) {
         this.content = content;
     }
 
+    /**
+     *
+     * @param hostDescName host descriptor name
+     */
     public void setHostDescName(String hostDescName) {
         this.hostDescName = hostDescName;
     }
 
+    /**
+     *
+     * @param serviceDescName  service descriptor name
+     */
     public void setServiceDescName(String serviceDescName) {
         this.serviceDescName = serviceDescName;
     }
 
+    /**
+     * Since application descriptors are at the leaf level, this method is not
+     * valid for application descriptors
+     * @param type  child resource types
+     * @return UnsupportedOperationException
+     */
     public Resource create(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Since application descriptors are at the leaf level, this method is not
+     * valid for application descriptors
+     * @param type child resource types
+     * @param name name of the resource
+     */
     public void remove(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
     /**
      * key should be gateway_name, application_descriptor_ID, host_descriptor_ID, service_descriptor_ID
-     * @param keys
+     *
+     * @param keys primary keys of the Application_descriptor table
      */
     public void removeMe(Object[] keys) {
         begin();
@@ -119,14 +176,23 @@ public class ApplicationDescriptorResource extends AbstractResource {
         end();
     }
 
+    /**
+     *
+     * Since application descriptors are at the leaf level, this method is not
+     * valid for application descriptors
+     * @param type child resource types
+     * @param name name of the resource
+     * @return UnsupportedOperationException
+     */
     public Resource get(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
     /**
      * keys should contain gateway_name, application_descriptor_ID, host_descriptor_ID, service_descriptor_ID
-     * @param keys
-     * @return
+     *
+     * @param keys names
+     * @return list of ApplicationDescriptorResources
      */
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
@@ -137,17 +203,28 @@ public class ApplicationDescriptorResource extends AbstractResource {
         queryGenerator.setParameter(ApplicationDescriptorConstants.HOST_DESC_ID, keys[2]);
         queryGenerator.setParameter(ApplicationDescriptorConstants.SERVICE_DESC_ID, keys[3]);
         Query q = queryGenerator.selectQuery(em);
-        Application_Descriptor applicationDescriptor = (Application_Descriptor)q.getSingleResult();
-        ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource)Utils.getResource(ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
+        Application_Descriptor applicationDescriptor = (Application_Descriptor) q.getSingleResult();
+        ApplicationDescriptorResource applicationDescriptorResource =
+                (ApplicationDescriptorResource) Utils.getResource(
+                        ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
         end();
         list.add(applicationDescriptorResource);
         return list;
     }
 
+    /**
+     * Since application descriptors are at the leaf level, this method is not
+     * valid for application descriptors
+     * @param type child resource types
+     * @return UnsupportedOperationException
+     */
     public List<Resource> get(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     *  save application descriptor to database
+     */
     public void save() {
         begin();
         Application_Descriptor applicationDescriptor = new Application_Descriptor();
@@ -166,11 +243,22 @@ public class ApplicationDescriptorResource extends AbstractResource {
 
     }
 
+    /**
+     * Since application descriptors are at the leaf level, this method is not
+     * valid for application descriptors
+     * @param type child resource types
+     * @param name name of the resource
+     * @return UnsupportedOperationException
+     */
     public boolean isExists(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    /**
+     *
+     * @param name application descriptor name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 }

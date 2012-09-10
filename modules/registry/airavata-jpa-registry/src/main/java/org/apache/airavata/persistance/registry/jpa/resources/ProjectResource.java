@@ -40,19 +40,29 @@ public class ProjectResource extends AbstractResource {
     private GatewayResource gateway;
     private WorkerResource worker;
 
+    /**
+     *
+     */
     public ProjectResource() {
     }
 
-    public ProjectResource(int id) {
-        this.id = id;
-    }
-
+    /**
+     *
+     * @param worker gateway worker
+     * @param gateway gateway
+     * @param id project id
+     */
     public ProjectResource(WorkerResource worker, GatewayResource gateway, int id) {
         this.setWorker(worker);
         this.setGateway(gateway);
         this.id = id;
     }
 
+    /**
+     *
+     * @param type child resource type
+     * @return child resource
+     */
     public Resource create(ResourceType type) {
         if (type == ResourceType.EXPERIMENT) {
             ExperimentResource experimentResource = new ExperimentResource();
@@ -65,6 +75,11 @@ public class ProjectResource extends AbstractResource {
         }
     }
 
+    /**
+     *
+     * @param type child resource type
+     * @param name child resource name
+     */
     public void remove(ResourceType type, Object name) {
         begin();
         if (type == ResourceType.EXPERIMENT) {
@@ -78,6 +93,12 @@ public class ProjectResource extends AbstractResource {
         end();
     }
 
+    /**
+     *
+     * @param type child resource type
+     * @param name child resource name
+     * @return child resource
+     */
     public Resource get(ResourceType type, Object name) {
         begin();
         if (type == ResourceType.EXPERIMENT) {
@@ -87,13 +108,19 @@ public class ProjectResource extends AbstractResource {
         	generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
         	Query q = generator.selectQuery(em);
             Experiment experiment = (Experiment) q.getSingleResult();
-            ExperimentResource experimentResource = (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
+            ExperimentResource experimentResource = (ExperimentResource)
+                    Utils.getResource(ResourceType.EXPERIMENT, experiment);
             end();
             return experimentResource;
         }
         return null;
     }
 
+    /**
+     *
+     * @param keys project name
+     * @return project resource
+     */
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
         begin();
@@ -104,7 +131,8 @@ public class ProjectResource extends AbstractResource {
         if (resultList.size() != 0) {
             for (Object result : resultList) {
                 Project project = (Project) result;
-                ProjectResource projectResource = (ProjectResource)Utils.getResource(ResourceType.PROJECT, project);
+                ProjectResource projectResource = (ProjectResource)
+                        Utils.getResource(ResourceType.PROJECT, project);
                 list.add(projectResource);
             }
         }
@@ -112,6 +140,11 @@ public class ProjectResource extends AbstractResource {
         return list;
     }
 
+    /**
+     *
+     * @param type child resource type
+     * @return list of child resources
+     */
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
         begin();
@@ -123,7 +156,8 @@ public class ProjectResource extends AbstractResource {
             if (results.size() != 0) {
                 for (Object result : results) {
                     Experiment experiment = (Experiment) result;
-                    ExperimentResource experimentResource = (ExperimentResource)Utils.getResource(ResourceType.USER, experiment);
+                    ExperimentResource experimentResource = (ExperimentResource)
+                            Utils.getResource(ResourceType.USER, experiment);
                     resourceList.add(experimentResource);
                 }
             }
@@ -132,6 +166,9 @@ public class ProjectResource extends AbstractResource {
         return resourceList;
     }
 
+    /**
+     * save project to the database
+     */
     public void save() {
         begin();
         Project project = new Project();
@@ -150,49 +187,96 @@ public class ProjectResource extends AbstractResource {
 
     }
 
+    /**
+     *
+     * @return project name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @param name  project name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     *
+     * @return project ID
+     */
     public int getId() {
         return id;
     }
 
-	public WorkerResource getWorker() {
+    /**
+     *
+     * @return gateway worker
+     */
+    public WorkerResource getWorker() {
 		return worker;
 	}
 
-	public void setWorker(WorkerResource worker) {
+    /**
+     *
+     * @param worker gateway worker
+     */
+    public void setWorker(WorkerResource worker) {
 		this.worker = worker;
 	}
 
-	public GatewayResource getGateway() {
+    /**
+     *
+     * @return gateway resource
+     */
+    public GatewayResource getGateway() {
 		return gateway;
 	}
 
-	public void setGateway(GatewayResource gateway) {
+    /**
+     *
+     * @param gateway gateway resource
+     */
+    public void setGateway(GatewayResource gateway) {
 		this.gateway = gateway;
 	}
 
-	public boolean isExperimentExists(String experimentId){
+    /**
+     *
+     * @param experimentId experiment ID
+     * @return whether the experiment exist
+     */
+    public boolean isExperimentExists(String experimentId){
 		return isExists(ResourceType.EXPERIMENT, experimentId);
 	}
-	
-	public ExperimentResource createExperiment(String experimentId){
+
+    /**
+     *
+     * @param experimentId experiment ID
+     * @return  experiment resource
+     */
+    public ExperimentResource createExperiment(String experimentId){
 		ExperimentResource experimentResource = (ExperimentResource)create(ResourceType.EXPERIMENT);
 		experimentResource.setExpID(experimentId);
 		return experimentResource;
 	}
-	
+
+    /**
+     *
+     * @param experimentId experiment ID
+     * @return experiment resource
+     */
 	public ExperimentResource getExperiment(String experimentId){
 		return (ExperimentResource)get(ResourceType.EXPERIMENT,experimentId);
 	}
-	
-	public List<ExperimentResource> getExperiments(){
+
+    /**
+     *
+     * @return  list of experiments
+     */
+    public List<ExperimentResource> getExperiments(){
 		List<Resource> list = get(ResourceType.EXPERIMENT);
 		List<ExperimentResource> result=new ArrayList<ExperimentResource>();
 		for (Resource resource : list) {
@@ -200,8 +284,12 @@ public class ProjectResource extends AbstractResource {
 		}
 		return result;
 	}
-	
-	public void removeExperiment(String experimentId){
+
+    /**
+     *
+     * @param experimentId experiment ID
+     */
+    public void removeExperiment(String experimentId){
 		remove(ResourceType.EXPERIMENT, experimentId);
 	}
 

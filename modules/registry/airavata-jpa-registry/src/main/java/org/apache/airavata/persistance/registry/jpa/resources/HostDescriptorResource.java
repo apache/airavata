@@ -38,41 +38,73 @@ public class HostDescriptorResource extends AbstractResource {
     private String userName;
     private String content;
 
-    public HostDescriptorResource(String hostDescName) {
-        this.setHostDescName(hostDescName);
-    }
-
+    /**
+     *
+     */
     public HostDescriptorResource() {
     }
 
+    /**
+     *
+     * @return user name
+     */
     public String getUserName() {
         return userName;
     }
 
+    /**
+     *
+     * @param userName user name
+     */
     public void setUserName(String userName) {
         this.userName = userName;
     }
 
+    /**
+     *
+     * @return  host descriptor name
+     */
     public String getHostDescName() {
         return hostDescName;
     }
 
+    /**
+     *
+     * @return gateway name
+     */
     public String getGatewayName() {
         return gatewayName;
     }
 
+    /**
+     *
+     * @return  content of the host descriptor
+     */
     public String getContent() {
         return content;
     }
 
+    /**
+     *
+     * @param gatewayName gateway name
+     */
     public void setGatewayName(String gatewayName) {
         this.gatewayName = gatewayName;
     }
 
+    /**
+     *
+     * @param content content of the host descriptor
+     */
     public void setContent(String content) {
         this.content = content;
     }
 
+    /**
+     * Host descriptor can create an application descriptor
+     * @param type child resource type
+     * @return child resource
+     */
     public Resource create(ResourceType type) {
         if (type == ResourceType.APPLICATION_DESCRIPTOR) {
             ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource();
@@ -83,18 +115,29 @@ public class HostDescriptorResource extends AbstractResource {
         return null;
     }
 
+    /**
+     * Host descriptor by alone cannot remove any other resource types
+     * @param type child resource type
+     * @param name child resource name
+     */
     public void remove(ResourceType type, Object name) {
        throw new UnsupportedOperationException();
     }
 
+    /**
+     * Host descriptor by alone cannot get any other resource types
+     * @param type child resource type
+     * @param name child resource name
+     * @return UnsupportedOperationException
+     */
     public Resource get(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
     /**
      * key should be host_descriptor_name
-     * @param keys
-     * @return
+     * @param keys host descriptor names
+     * @return list of host descriptors
      */
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
@@ -104,12 +147,18 @@ public class HostDescriptorResource extends AbstractResource {
         generator.setParameter(HostDescriptorConstants.HOST_DESC_ID, keys[1]);
         Query q = generator.selectQuery(em);
         Host_Descriptor hostDescriptor = (Host_Descriptor)q.getSingleResult();
-        HostDescriptorResource hostDescriptorResource = (HostDescriptorResource)Utils.getResource(ResourceType.HOST_DESCRIPTOR, hostDescriptor);
+        HostDescriptorResource hostDescriptorResource =
+                (HostDescriptorResource)Utils.getResource(ResourceType.HOST_DESCRIPTOR, hostDescriptor);
         end();
         list.add(hostDescriptorResource);
         return list;
     }
 
+    /**
+     * Host descriptors can get a list of application descriptors
+     * @param type child resource type
+     * @return list of child resources
+     */
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
         if (type == ResourceType.APPLICATION_DESCRIPTOR) {
@@ -122,7 +171,9 @@ public class HostDescriptorResource extends AbstractResource {
             if (results.size() != 0) {
                 for (Object result : results) {
                     Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
-                    ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource)Utils.getResource(ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
+                    ApplicationDescriptorResource applicationDescriptorResource =
+                            (ApplicationDescriptorResource)Utils.getResource(
+                                    ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
                     resourceList.add(applicationDescriptorResource);
                 }
             }
@@ -131,6 +182,9 @@ public class HostDescriptorResource extends AbstractResource {
         return resourceList;
     }
 
+    /**
+     * save host descriptor to the database
+     */
     public void save() {
         begin();
         Host_Descriptor hostDescriptor = new Host_Descriptor();
@@ -147,11 +201,21 @@ public class HostDescriptorResource extends AbstractResource {
 
     }
 
+    /**
+     *
+     * @param type child resource type
+     * @param name child resource name
+     * @return boolean whether the child resource already exists
+     */
     public boolean isExists(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
-	public void setHostDescName(String hostDescName) {
+    /**
+     *
+     * @param hostDescName host descriptor name
+     */
+    public void setHostDescName(String hostDescName) {
 		this.hostDescName = hostDescName;
 	}
 }

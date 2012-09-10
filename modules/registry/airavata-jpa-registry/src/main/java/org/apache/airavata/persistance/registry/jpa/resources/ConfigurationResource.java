@@ -37,37 +37,57 @@ public class ConfigurationResource extends AbstractResource {
     private String configVal;
     private Date expireDate;
 
+    /**
+     *
+     */
     public ConfigurationResource() {
     }
 
+    /**
+     *
+     * @param configID configuration ID
+     */
     public ConfigurationResource(int configID) {
         this.configID = configID;
     }
 
+    /**
+     * Since Configuration does not depend on any other data structures at the
+     * system, this method is not valid
+     * @param type child resource types
+     * @return UnsupportedOperationException
+     */
     public Resource create(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Since Configuration does not depend on any other data structures at the
+     * system, this method is not valid
+     * @param type child resource types
+     * @param name  name of the child resource
+     * throws UnsupportedOperationException
+     */
     public void remove(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
+
     /**
-     *  keys should be config key and config content
-     * @param keys
+     * Since Configuration does not depend on any other data structures at the
+     * system, this method is not valid
+     * @param type child resource types
+     * @param name  name of the child resource
+     * @return UnsupportedOperationException
      */
-    public void removeMe(Object[] keys) {
-
-    }
-
     public Resource get(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
     /**
      * key should be the configuration name
-     * @param keys
-     * @return
+     * @param keys names
+     * @return list of ConfigurationResources
      */
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
@@ -79,7 +99,8 @@ public class ConfigurationResource extends AbstractResource {
         if (resultList.size() != 0) {
             for (Object result : resultList) {
                 Configuration configuration = (Configuration) result;
-                ConfigurationResource configurationResource = (ConfigurationResource)Utils.getResource(ResourceType.CONFIGURATION, configuration);
+                ConfigurationResource configurationResource =
+                        (ConfigurationResource)Utils.getResource(ResourceType.CONFIGURATION, configuration);
                 list.add(configurationResource);
             }
         }
@@ -88,23 +109,28 @@ public class ConfigurationResource extends AbstractResource {
 
     }
 
-    public List<ConfigurationResource> getValues(){
-        return null;
-    }
-
+    /**
+     *
+     * Since Configuration does not depend on any other data structures at the
+     * system, this method is not valid
+     * @param type child resource types
+     * @return UnsupportedOperationException
+     */
     public List<Resource> get(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
-    public Date getExpireDate() {
-        return expireDate;
-
-    }
-
+    /**
+     *
+     * @param expireDate expire date of the configuration
+     */
     public void setExpireDate(Date expireDate) {
         this.expireDate = expireDate;
     }
 
+    /**
+     *  save configuration to database
+     */
     public void save() {
         begin();
         Configuration configuration = new Configuration();
@@ -118,26 +144,37 @@ public class ConfigurationResource extends AbstractResource {
         end();
     }
 
+    /**
+     * Since Configuration does not depend on any other data structures at the
+     * system, this method is not valid
+     * @param type child resource types
+     * @param name of the child resource
+     * @return UnsupportedOperationException
+     */
     public boolean isExists(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
-    public int getConfigID() {
-        return configID;
-    }
-
-    public String getConfigKey() {
-        return configKey;
-    }
-
+    /**
+     *
+     * @return configuration value
+     */
     public String getConfigVal() {
         return configVal;
     }
 
+    /**
+     *
+     * @param configKey configuration key
+     */
     public void setConfigKey(String configKey) {
         this.configKey = configKey;
     }
 
+    /**
+     *
+     * @param configVal configuration value
+     */
     public void setConfigVal(String configVal) {
         this.configVal = configVal;
     }

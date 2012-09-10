@@ -35,11 +35,21 @@ public class WorkerResource extends AbstractResource {
 	private String user;
 	private GatewayResource gateway;
 
-	public WorkerResource(String user, GatewayResource gateway) {
+    /**
+     *
+     * @param user username
+     * @param gateway  gatewayResource
+     */
+    public WorkerResource(String user, GatewayResource gateway) {
 		this.setUser(user);
 		this.gateway=gateway;
 	}
-	
+
+    /**
+     * Gateway worker can create child data structures such as projects and user workflows
+     * @param type child resource type
+     * @return  child resource
+     */
 	public Resource create(ResourceType type) {
 		Resource result = null;
 		switch (type) {
@@ -60,6 +70,11 @@ public class WorkerResource extends AbstractResource {
 		return result;
 	}
 
+    /**
+     *
+     * @param type child resource type
+     * @param name child resource name
+     */
 	public void remove(ResourceType type, Object name) {
 		begin();
         Query q;
@@ -94,6 +109,12 @@ public class WorkerResource extends AbstractResource {
 		end();
 	}
 
+    /**
+     *
+     * @param type child resource type
+     * @param name child resource name
+     * @return child resource
+     */
 	public Resource get(ResourceType type, Object name) {
 		Resource result = null;
 		begin();
@@ -107,8 +128,7 @@ public class WorkerResource extends AbstractResource {
                 generator.setParameter(ProjectConstants.GATEWAY_NAME, gateway.getGatewayName());
                 q = generator.selectQuery(em);
 	            Project project = (Project) q.getSingleResult();
-	            ProjectResource projectResource = (ProjectResource)Utils.getResource(ResourceType.PROJECT, project);
-	            result=projectResource;
+                result= Utils.getResource(ResourceType.PROJECT, project);
 				break;
 			case USER_WORKFLOW:
                 generator = new QueryGenerator(USER_WORKFLOW);
@@ -117,8 +137,7 @@ public class WorkerResource extends AbstractResource {
                 generator.setParameter(UserWorkflowConstants.GATEWAY_NAME, gateway.getGatewayName());
                 q = generator.selectQuery(em);
 	            User_Workflow userWorkflow = (User_Workflow) q.getSingleResult();
-	            UserWorkflowResource userWorkflowResource = (UserWorkflowResource)Utils.getResource(ResourceType.USER_WORKFLOW, userWorkflow);
-	            result=userWorkflowResource;
+                result= Utils.getResource(ResourceType.USER_WORKFLOW, userWorkflow);
 	            break;
 			case EXPERIMENT:
                 generator = new QueryGenerator(EXPERIMENT);
@@ -126,8 +145,7 @@ public class WorkerResource extends AbstractResource {
                 generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
                 q = generator.selectQuery(em);
 	            Experiment experiment = (Experiment) q.getSingleResult();
-	            ExperimentResource experimentResource = (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
-	            result=experimentResource;
+                result= Utils.getResource(ResourceType.EXPERIMENT, experiment);
 				break;
 			default:
 				break;
@@ -136,7 +154,12 @@ public class WorkerResource extends AbstractResource {
 		return result;
 	}
 
-	public List<Resource> get(ResourceType type) {
+    /**
+     *
+     * @param type child resource type
+     * @return list of child resources
+     */
+    public List<Resource> get(ResourceType type) {
 		List<Resource> result = new ArrayList<Resource>();
 		begin();
         QueryGenerator generator;
@@ -182,6 +205,9 @@ public class WorkerResource extends AbstractResource {
 		return result;
 	}
 
+    /**
+     * save gateway worker to database
+     */
 	public void save() {
         begin();
         Gateway_Worker gatewayWorker = new Gateway_Worker();
@@ -195,41 +221,80 @@ public class WorkerResource extends AbstractResource {
         end();
 	}
 
+    /**
+     *
+     * @return user name
+     */
 	public String getUser() {
 		return user;
 	}
 
-	public void setUser(String user) {
+    /**
+     *
+     * @param user user name
+     */
+    public void setUser(String user) {
 		this.user = user;
 	}
 
+    /**
+     *
+     * @return gateway resource
+     */
     public GatewayResource getGateway() {
         return gateway;
     }
 
+    /**
+     *
+     * @param gateway  gateway resource
+     */
     public void setGateway(GatewayResource gateway) {
         this.gateway = gateway;
     }
 
+    /**
+     *
+     * @param name  project name
+     * @return whether the project is available under the user
+     */
     public boolean isProjectExists(String name){
 		return isExists(ResourceType.PROJECT, name);
 	}
-	
+
+    /**
+     *
+     * @param name project name
+     * @return project resource for the user
+     */
 	public ProjectResource createProject(String name){
 		ProjectResource project=(ProjectResource)create(ResourceType.PROJECT);
 		project.setName(name);
 		return project;
 	}
-	
+
+    /**
+     *
+     * @param name project name
+     * @return project resource
+     */
 	public ProjectResource getProject(String name){
 		return (ProjectResource)get(ResourceType.PROJECT, name);
 	}
-	
+
+    /**
+     *
+     * @param name project name
+     */
 	public void removeProject(String name){
 		remove(ResourceType.PROJECT, name);
 	}
-	
-	public List<ProjectResource> getProjects(){
+
+    /**
+     *
+     * @return  list of projects for the user
+     */
+    public List<ProjectResource> getProjects(){
 		List<ProjectResource> result=new ArrayList<ProjectResource>();
 		List<Resource> list = get(ResourceType.PROJECT);
 		for (Resource resource : list) {
@@ -237,26 +302,49 @@ public class WorkerResource extends AbstractResource {
 		}
 		return result;
 	}
-	
+
+    /**
+     *
+     * @param templateName user workflow template
+     * @return whether the workflow is already exists under the given user
+     */
 	public boolean isWorkflowTemplateExists(String templateName){
 		return isExists(ResourceType.USER_WORKFLOW, templateName);
 	}
-	
+
+    /**
+     *
+     * @param templateName user workflow template
+     * @return user workflow resource
+     */
 	public UserWorkflowResource createWorkflowTemplate(String templateName){
 		UserWorkflowResource workflow=(UserWorkflowResource)create(ResourceType.USER_WORKFLOW);
 		workflow.setName(templateName);
 		return workflow;
 	}
-	
+
+    /**
+     *
+     * @param templateName user workflow template
+     * @return user workflow resource
+     */
 	public UserWorkflowResource getWorkflowTemplate(String templateName){
 		return (UserWorkflowResource)get(ResourceType.USER_WORKFLOW, templateName);
 	}
-	
-	public void removeWorkflowTemplate(String templateName){
+
+    /**
+     *
+     * @param templateName user workflow template
+     */
+    public void removeWorkflowTemplate(String templateName){
 		remove(ResourceType.USER_WORKFLOW, templateName);
 	}
-	
-	public List<UserWorkflowResource> getWorkflowTemplates(){
+
+    /**
+     *
+     * @return list of user workflows for the given user
+     */
+    public List<UserWorkflowResource> getWorkflowTemplates(){
 		List<UserWorkflowResource> result=new ArrayList<UserWorkflowResource>();
 		List<Resource> list = get(ResourceType.USER_WORKFLOW);
 		for (Resource resource : list) {
@@ -264,15 +352,29 @@ public class WorkerResource extends AbstractResource {
 		}
 		return result;
 	}
-	
+
+    /**
+     *
+     * @param name experiment name
+     * @return whether experiment is already exist for the given user
+     */
 	public boolean isExperimentExists(String name){
 		return isExists(ResourceType.EXPERIMENT, name);
 	}
-	
-	public ExperimentResource getExperiment(String name){
+
+    /**
+     *
+     * @param name experiment name
+     * @return experiment resource
+     */
+    public ExperimentResource getExperiment(String name){
 		return (ExperimentResource)get(ResourceType.EXPERIMENT, name);
 	}
-	
+
+    /**
+     *
+     * @return list of experiments for the user
+     */
 	public List<ExperimentResource> getExperiments(){
 		List<ExperimentResource> result=new ArrayList<ExperimentResource>();
 		List<Resource> list = get(ResourceType.EXPERIMENT);
@@ -281,7 +383,11 @@ public class WorkerResource extends AbstractResource {
 		}
 		return result;
 	}
-	
+
+    /**
+     *
+     * @param experimentId  experiment name
+     */
 	public void removeExperiment(String experimentId){
 		remove(ResourceType.EXPERIMENT, experimentId);
 	}

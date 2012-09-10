@@ -26,7 +26,13 @@ import org.apache.airavata.persistance.registry.jpa.model.*;
 
 
 public class Utils {
-    
+
+    /**
+     *
+     * @param type model type
+     * @param o model type instance
+     * @return corresponding resource object
+     */
     static Resource getResource(ResourceType type, Object o) {
         switch (type){
             case GATEWAY:
@@ -101,12 +107,22 @@ public class Utils {
 
     }
 
+    /**
+     *
+     * @param o  Gateway model object
+     * @return  GatewayResource object
+     */
     private static Resource createGateway(Gateway o) {
         GatewayResource gatewayResource = new GatewayResource();
         gatewayResource.setGatewayName(o.getGateway_name());
         return gatewayResource;
     }
 
+    /**
+     *
+     * @param o Project model object
+     * @return ProjectResource object
+     */
     private static Resource createProject(Project o) {
         ProjectResource projectResource = new ProjectResource();
         projectResource.setName(o.getProject_name());
@@ -120,6 +136,11 @@ public class Utils {
         return projectResource;
     }
 
+    /**
+     *
+     * @param o configuration model object
+     * @return configuration resource object
+     */
     private static Resource createConfiguration (Configuration o){
         ConfigurationResource configurationResource = new ConfigurationResource();
         configurationResource.setConfigKey(o.getConfig_key());
@@ -128,6 +149,11 @@ public class Utils {
         return configurationResource;
     }
 
+    /**
+     *
+     * @param o application descriptor model object
+     * @return  application descriptor resource object
+     */
     private static Resource createApplicationDescriptor(Application_Descriptor o) {
         ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource();
         applicationDescriptorResource.setName(o.getApplication_descriptor_ID());
@@ -139,6 +165,11 @@ public class Utils {
         return applicationDescriptorResource;
     }
 
+    /**
+     *
+     * @param o Experiment model object
+     * @return  Experiment resource object
+     */
     private static Resource createExperiment(Experiment o) {
         ExperimentResource experimentResource = new ExperimentResource();
         GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
@@ -154,12 +185,21 @@ public class Utils {
         return experimentResource;
     }
 
+    /**
+     *
+     * @param o Gateway_Worker model object
+     * @return  Gateway_Worker resource object
+     */
     private static Resource createGatewayWorker(Gateway_Worker o) {
         GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
-        WorkerResource workerResource = new WorkerResource(o.getUser().getUser_name(),gatewayResource);
-        return workerResource;
+        return new WorkerResource(o.getUser().getUser_name(),gatewayResource);
     }
 
+    /**
+     *
+     * @param o Host_Descriptor model object
+     * @return  HostDescriptor resource object
+     */
     private static Resource createHostDescriptor(Host_Descriptor o) {
         HostDescriptorResource hostDescriptorResource = new HostDescriptorResource();
         hostDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
@@ -169,6 +209,11 @@ public class Utils {
         return hostDescriptorResource;
     }
 
+    /**
+     *
+     * @param o  Published_Workflow model object
+     * @return  Published Workflow resource object
+     */
     private static Resource createPublishWorkflow(Published_Workflow o) {
         PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource();
         GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
@@ -182,6 +227,11 @@ public class Utils {
         return publishWorkflowResource;
     }
 
+    /**
+     *
+     * @param o Service_Descriptor model object
+     * @return ServiceDescriptor resource object
+     */
     private static Resource createServiceDescriptor(Service_Descriptor o) {
         ServiceDescriptorResource serviceDescriptorResource = new ServiceDescriptorResource();
         serviceDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
@@ -191,6 +241,11 @@ public class Utils {
         return serviceDescriptorResource;
     }
 
+    /**
+     *
+     * @param o User_Workflow model object
+     * @return User_Workflow resource object
+     */
     private static Resource createUserWorkflow(User_Workflow o) {
         UserWorkflowResource userWorkflowResource = new UserWorkflowResource();
         userWorkflowResource.setName(o.getTemplate_name());
@@ -207,6 +262,11 @@ public class Utils {
         return userWorkflowResource;
     }
 
+    /**
+     *
+     * @param o  Users model object
+     * @return  UserResource object
+     */
     private static Resource createUser(Users o) {
         UserResource userResource = new UserResource();
         userResource.setUserName(o.getUser_name());

@@ -41,69 +41,144 @@ public class PublishWorkflowResource extends AbstractResource {
     private String createdUser;
     private String path;
 
+    /**
+     *
+     */
     public PublishWorkflowResource() {
     }
 
+    /**
+     *
+     * @param gateway gateway resource
+     */
     public PublishWorkflowResource(GatewayResource gateway) {
         this.gateway = gateway;
     }
 
+    /**
+     *
+     * @return created user
+     */
     public String getCreatedUser() {
         return createdUser;
     }
 
+    /**
+     *
+     * @return path of the workflow
+     */
     public String getPath() {
         return path;
     }
 
+    /**
+     *
+     * @param createdUser  created user
+     */
     public void setCreatedUser(String createdUser) {
         this.createdUser = createdUser;
     }
 
+    /**
+     *
+     * @param path path of the workflow
+     */
     public void setPath(String path) {
         this.path = path;
     }
 
+    /**
+     *
+     * @return name of the publish workflow
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     *
+     * @return version
+     */
     public String getVersion() {
         return version;
     }
 
+    /**
+     *
+     * @return published date
+     */
     public Date getPublishedDate() {
         return publishedDate;
     }
 
+    /**
+     *
+     * @return content of the workflow
+     */
     public String getContent() {
         return content;
     }
 
+    /**
+     *
+     * @param version version of the workflow
+     */
     public void setVersion(String version) {
         this.version = version;
     }
 
+    /**
+     *
+     * @param publishedDate published date of the workflow
+     */
     public void setPublishedDate(Date publishedDate) {
         this.publishedDate = publishedDate;
     }
 
+    /**
+     *
+     * @param content content of the workflow
+     */
     public void setContent(String content) {
         this.content = content;
     }
 
+    /**
+     * Since published workflows are at the leaf level of the
+     * data structure, this method is not valid
+     * @param type type of the child resource
+     * @return UnsupportedOperationException
+     */
     public Resource create(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Since published workflows are at the leaf level of the
+     * data structure, this method is not valid
+     * @param type type of the child resource
+     * @param name name of the child resource
+     */
     public void remove(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Since published workflows are at the leaf level of the
+     * data structure, this method is not valid
+     * @param type type of the child resource
+     * @param name name of the child resource
+     * @return UnsupportedOperationException
+     */
     public Resource get(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     *
+     * @param keys object list including gateway name and published workflow name
+     * @return published workflow resource
+     */
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
         begin();
@@ -112,16 +187,26 @@ public class PublishWorkflowResource extends AbstractResource {
         generator.setParameter(PublishedWorkflowConstants.PUBLISH_WORKFLOW_NAME, keys[1]);
         Query q = generator.selectQuery(em);
         Published_Workflow publishedWorkflow = (Published_Workflow)q.getSingleResult();
-        PublishWorkflowResource publishWorkflowResource = (PublishWorkflowResource)Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, publishedWorkflow);
+        PublishWorkflowResource publishWorkflowResource = (PublishWorkflowResource)
+                Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, publishedWorkflow);
         end();
         list.add(publishWorkflowResource);
         return list;
     }
 
+    /**
+     * since published workflows are at the leaf level of the
+     * data structure, this method is not valid
+     * @param type type of the child resource
+     * @return UnsupportedOperationException
+     */
     public List<Resource> get(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * save published workflow to the database
+     */
     public void save() {
         begin();
         Published_Workflow publishedWorkflow = new Published_Workflow();
@@ -140,19 +225,38 @@ public class PublishWorkflowResource extends AbstractResource {
     }
 
 
+    /**
+     * Since published workflows are at the leaf level of the
+     * data structure, this method is not valid
+     * @param type type of the child resource
+     * @param name name of the child resource
+     * @return UnsupportedOperationException
+     */
     public boolean isExists(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
-	public GatewayResource getGateway() {
+    /**
+     *
+     * @return gateway resource
+     */
+    public GatewayResource getGateway() {
 		return gateway;
 	}
 
-	public void setGateway(GatewayResource gateway) {
+    /**
+     *
+     * @param gateway gateway resource
+     */
+    public void setGateway(GatewayResource gateway) {
 		this.gateway = gateway;
 	}
 
-	public void setName(String name) {
+    /**
+     *
+     * @param name published workflow name
+     */
+    public void setName(String name) {
 		this.name = name;
 	}
 }
