@@ -52,144 +52,144 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class PropertiesBasedServiceImplTest {
-	@Before
-	public void setUp() throws Exception {
-		/*
-		 * Create database
-		 */
-        Map<String,String> config = new HashMap<String,String>();
-            config.put("org.apache.jackrabbit.repository.home","target");
-		AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
-				"org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-				"admin", config);
-
-		/*
-		 * Host
-		 */
-		HostDescription host = new HostDescription();
-		host.getType().setHostName("localhost");
-		host.getType().setHostAddress("localhost");
-
-		/*
-		 * App
-		 */
-		ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription();
-		ApplicationDeploymentDescriptionType app = appDesc.getType();
-		ApplicationName name = ApplicationName.Factory.newInstance();
-		name.setStringValue("EchoLocal");
-		app.setApplicationName(name);
-		
-		/*
-		 * Use bat file if it is compiled on Windows
-		 */
-		if(SystemUtils.IS_OS_WINDOWS){
-			URL url = this.getClass().getClassLoader().getResource("echo.bat");
-			app.setExecutableLocation(url.getFile());
-		}else{
-			//for unix and Mac
-			app.setExecutableLocation("/bin/echo");	
-		}
-		
-		/*
-		 * Default tmp location
-		 */
-		String tempDir = System.getProperty("java.io.tmpdir");
-		if(tempDir == null){
-			tempDir = "/tmp";
-		}
-		
-		app.setScratchWorkingDirectory(tempDir);
-		app.setStaticWorkingDirectory(tempDir);
-		app.setInputDataDirectory(tempDir + File.separator + "input");
-		app.setOutputDataDirectory(tempDir + File.separator + "output");
-		app.setStandardOutput(tempDir + File.separator + "echo.stdout");
-		app.setStandardError(tempDir + File.separator + "echo.stdout");
-
-		/*
-		 * Service
-		 */
-		ServiceDescription serv = new ServiceDescription();
-		serv.getType().setName("SimpleEcho");
-
-		List<InputParameterType> inputList = new ArrayList<InputParameterType>();		
-		InputParameterType input = InputParameterType.Factory.newInstance();
-		input.setParameterName("echo_input");
-		input.setParameterType(StringParameterType.Factory.newInstance());		
-		inputList.add(input);
-		InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList
-				.size()]);
-		
-		List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
-		OutputParameterType output = OutputParameterType.Factory.newInstance();
-		output.setParameterName("echo_output");
-		output.setParameterType(StringParameterType.Factory.newInstance());		
-		outputList.add(output);
-		OutputParameterType[] outputParamList = outputList
-				.toArray(new OutputParameterType[outputList.size()]);
-		
-		serv.getType().setInputParametersArray(inputParamList);
-		serv.getType().setOutputParametersArray(outputParamList);
-
-		/*
-		 * Save to registry
-		 */
-		jcrRegistry.saveHostDescription(host);
-		jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host
-				.getType().getHostName(), appDesc);
-		jcrRegistry.saveServiceDescription(serv);
-		jcrRegistry.deployServiceOnHost(serv.getType().getName(), host
-				.getType().getHostName());
-	}
-
-	@Test
-	public void testExecute() {
-		try {
-
-			DefaultInvocationContext ct = new DefaultInvocationContext();
-			DefaultExecutionContext ec = new DefaultExecutionContext();
-			ec.addNotifiable(new LoggingNotification());
-			ct.setExecutionContext(ec);
-             Map<String,String> config = new HashMap<String,String>();
-            config.put("org.apache.jackrabbit.repository.home","target");
-		    AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
-				"org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-				"admin", config);
-
-            ec.setRegistryService(jcrRegistry);
-			ct.setServiceName("SimpleEcho");
-
-			/*
-			 * Input
-			 */			
-			ParameterContextImpl input = new ParameterContextImpl();
-			ActualParameter echo_input = new ActualParameter();
-			((StringParameterType)echo_input.getType()).setValue("echo_output=hello");
-			input.add("echo_input", echo_input);
-
-			/*
-			 * Output
-			 */
-			ParameterContextImpl output = new ParameterContextImpl();
-			ActualParameter echo_output = new ActualParameter();
-			output.add("echo_output", echo_output);
-
-			// parameter
-			ct.setInput(input);
-			ct.setOutput(output);
-
-			PropertiesBasedServiceImpl service = new PropertiesBasedServiceImpl();
-			service.init();
-			service.execute(ct);
-
-			Assert.assertNotNull(ct.getOutput());
-			Assert.assertNotNull(ct.getOutput().getValue("echo_output"));
-			Assert.assertEquals("hello", ((StringParameterType)((ActualParameter)ct.getOutput().getValue("echo_output")).getType()).getValue());
-            jcrRegistry.getSession().logout();
-            IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target"));
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("ERROR");
-		}
-	}
+//	@Before
+//	public void setUp() throws Exception {
+//		/*
+//		 * Create database
+//		 */
+//        Map<String,String> config = new HashMap<String,String>();
+//            config.put("org.apache.jackrabbit.repository.home","target");
+//		AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
+//				"org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
+//				"admin", config);
+//
+//		/*
+//		 * Host
+//		 */
+//		HostDescription host = new HostDescription();
+//		host.getType().setHostName("localhost");
+//		host.getType().setHostAddress("localhost");
+//
+//		/*
+//		 * App
+//		 */
+//		ApplicationDeploymentDescription appDesc = new ApplicationDeploymentDescription();
+//		ApplicationDeploymentDescriptionType app = appDesc.getType();
+//		ApplicationName name = ApplicationName.Factory.newInstance();
+//		name.setStringValue("EchoLocal");
+//		app.setApplicationName(name);
+//
+//		/*
+//		 * Use bat file if it is compiled on Windows
+//		 */
+//		if(SystemUtils.IS_OS_WINDOWS){
+//			URL url = this.getClass().getClassLoader().getResource("echo.bat");
+//			app.setExecutableLocation(url.getFile());
+//		}else{
+//			//for unix and Mac
+//			app.setExecutableLocation("/bin/echo");
+//		}
+//
+//		/*
+//		 * Default tmp location
+//		 */
+//		String tempDir = System.getProperty("java.io.tmpdir");
+//		if(tempDir == null){
+//			tempDir = "/tmp";
+//		}
+//
+//		app.setScratchWorkingDirectory(tempDir);
+//		app.setStaticWorkingDirectory(tempDir);
+//		app.setInputDataDirectory(tempDir + File.separator + "input");
+//		app.setOutputDataDirectory(tempDir + File.separator + "output");
+//		app.setStandardOutput(tempDir + File.separator + "echo.stdout");
+//		app.setStandardError(tempDir + File.separator + "echo.stdout");
+//
+//		/*
+//		 * Service
+//		 */
+//		ServiceDescription serv = new ServiceDescription();
+//		serv.getType().setName("SimpleEcho");
+//
+//		List<InputParameterType> inputList = new ArrayList<InputParameterType>();
+//		InputParameterType input = InputParameterType.Factory.newInstance();
+//		input.setParameterName("echo_input");
+//		input.setParameterType(StringParameterType.Factory.newInstance());
+//		inputList.add(input);
+//		InputParameterType[] inputParamList = inputList.toArray(new InputParameterType[inputList
+//				.size()]);
+//
+//		List<OutputParameterType> outputList = new ArrayList<OutputParameterType>();
+//		OutputParameterType output = OutputParameterType.Factory.newInstance();
+//		output.setParameterName("echo_output");
+//		output.setParameterType(StringParameterType.Factory.newInstance());
+//		outputList.add(output);
+//		OutputParameterType[] outputParamList = outputList
+//				.toArray(new OutputParameterType[outputList.size()]);
+//
+//		serv.getType().setInputParametersArray(inputParamList);
+//		serv.getType().setOutputParametersArray(outputParamList);
+//
+//		/*
+//		 * Save to registry
+//		 */
+//		jcrRegistry.saveHostDescription(host);
+//		jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host
+//				.getType().getHostName(), appDesc);
+//		jcrRegistry.saveServiceDescription(serv);
+//		jcrRegistry.deployServiceOnHost(serv.getType().getName(), host
+//				.getType().getHostName());
+//	}
+//
+//	@Test
+//	public void testExecute() {
+//		try {
+//
+//			DefaultInvocationContext ct = new DefaultInvocationContext();
+//			DefaultExecutionContext ec = new DefaultExecutionContext();
+//			ec.addNotifiable(new LoggingNotification());
+//			ct.setExecutionContext(ec);
+//             Map<String,String> config = new HashMap<String,String>();
+//            config.put("org.apache.jackrabbit.repository.home","target");
+//		    AiravataJCRRegistry jcrRegistry = new AiravataJCRRegistry(null,
+//				"org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
+//				"admin", config);
+//
+//            ec.setRegistryService(jcrRegistry);
+//			ct.setServiceName("SimpleEcho");
+//
+//			/*
+//			 * Input
+//			 */
+//			ParameterContextImpl input = new ParameterContextImpl();
+//			ActualParameter echo_input = new ActualParameter();
+//			((StringParameterType)echo_input.getType()).setValue("echo_output=hello");
+//			input.add("echo_input", echo_input);
+//
+//			/*
+//			 * Output
+//			 */
+//			ParameterContextImpl output = new ParameterContextImpl();
+//			ActualParameter echo_output = new ActualParameter();
+//			output.add("echo_output", echo_output);
+//
+//			// parameter
+//			ct.setInput(input);
+//			ct.setOutput(output);
+//
+//			PropertiesBasedServiceImpl service = new PropertiesBasedServiceImpl();
+//			service.init();
+//			service.execute(ct);
+//
+//			Assert.assertNotNull(ct.getOutput());
+//			Assert.assertNotNull(ct.getOutput().getValue("echo_output"));
+//			Assert.assertEquals("hello", ((StringParameterType)((ActualParameter)ct.getOutput().getValue("echo_output")).getType()).getValue());
+//            jcrRegistry.getSession().logout();
+//            IOUtil.deleteDirectory(new File((new File(".")).getAbsolutePath() + File.separator + "target"));
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			fail("ERROR");
+//		}
+//	}
 }
