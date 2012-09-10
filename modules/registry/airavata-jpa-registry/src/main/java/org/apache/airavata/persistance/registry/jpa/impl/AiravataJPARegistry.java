@@ -91,6 +91,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     	jpa = new JPAResourceAccessor(this);
     }
 
+    @Override
+    public void closeConnection() {
+    }
+
     /**---------------------------------Configuration Registry----------------------------------**/
     
     public Object getConfiguration(String key) {
@@ -105,12 +109,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			values.add(configurationResource.getConfigVal());
 		}
 		return values;
-    }
-
-    @Override
-    public void closeConnection() {
-        //todo close the database connection safely
-
     }
 
     public void setConfiguration(String key, String value, Date expire) {
