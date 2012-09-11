@@ -31,11 +31,11 @@ public class Host_Descriptor {
     private String gateway_name;
     private String host_descriptor_xml;
 
-    @ManyToOne(cascade=CascadeType.PERSIST)
+    @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
-    @ManyToOne (cascade=CascadeType.PERSIST)
+    @ManyToOne (cascade=CascadeType.MERGE)
     @JoinColumn(name = "updated_user", referencedColumnName = "user_name")
     private Users user;
 

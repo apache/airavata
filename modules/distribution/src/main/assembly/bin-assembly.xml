@@ -132,7 +132,13 @@
                 <include>*sql*</include>
             </includes>
         </fileSet>
-
+	 <fileSet>
+            <directory>../registry/airavata-jpa-registry/src/main/resources</directory>
+            <outputDirectory>standalone-server/bin/database_scripts</outputDirectory>
+            <includes>
+                <include>*sql*</include>
+            </includes>
+        </fileSet>
         <fileSet>
             <directory>src/main/resources/bin</directory>
             <outputDirectory>bin</outputDirectory>
@@ -287,6 +293,7 @@
                 <include>org.apache.airavata:airavata-message-broker:jar</include>
                 <include>org.apache.airavata:airavata-xbaya-gui:jar</include>
                 <include>org.apache.airavata:airavata-gfac-axis2-interface:jar</include>
+		<include>org.apache.airavata:airavata-registry-service:jar</include>
             </includes>
         </dependencySet>
         <dependencySet>

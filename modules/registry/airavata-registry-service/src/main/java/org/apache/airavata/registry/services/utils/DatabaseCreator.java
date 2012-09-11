@@ -66,7 +66,7 @@ public class DatabaseCreator {
      *
      * @throws Exception
      */
-    public static void createMsgBoxDatabase(Connection conn) throws Exception {
+    public static void createRegistryDatabase(Connection conn) throws Exception {
         createDatabase("data", conn);
     }
 

@@ -10,7 +10,7 @@
 	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
 	OF ANY ~ KIND, either express or implied. See the License for the specific 
 	language governing permissions and limitations under the License. -->
-<service name="RegistryService" >
+<service name="RegistryService" class="org.apache.airavata.registry.services.RegistryService" >
 	<Description>
 		Provide Simple Service for Testing Purpose including addition, subtraction, multiplication, array-generator
 	</Description>

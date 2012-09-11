@@ -139,9 +139,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
     
     private static final String GFAC_URL="gfac.url";
-    private static final String INTERPRETER_URL="gfac.url";
-    private static final String MESSAGE_BOX_URL="gfac.url";
-    private static final String EVENTING_URL="gfac.url";
+    private static final String INTERPRETER_URL="interpreter.url";
+    private static final String MESSAGE_BOX_URL="messagebox.url";
+    private static final String EVENTING_URL="eventing.url";
     
     public List<URI> getGFacURIs() {
     	return retrieveURIsFromConfiguration(GFAC_URL);
@@ -248,11 +248,13 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
     public void addHostDescriptor(HostDescription descriptor) throws RegistryException {
         GatewayResource gateway = jpa.getGateway();
+        WorkerResource workerResource = jpa.getWorker();
         String hostName = descriptor.getType().getHostName();
 		if (isHostDescriptorExists(hostName)){
         	throw new DescriptorAlreadyExistsException(hostName);
         }
         HostDescriptorResource hostDescriptorResource = gateway.createHostDescriptorResource(hostName);
+        hostDescriptorResource.setUserName(workerResource.getUser());
         hostDescriptorResource.setContent(descriptor.toXML());
         hostDescriptorResource.save();
     }
