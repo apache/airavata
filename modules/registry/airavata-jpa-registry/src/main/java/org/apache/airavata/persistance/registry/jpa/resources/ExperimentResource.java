@@ -150,7 +150,7 @@ public class ExperimentResource extends AbstractResource {
         experiment.setUser(user);
         experiment.setGateway(gateway);
         experiment.setSubmitted_date(submittedDate);
-        em.persist(experiment);
+        em.merge(experiment);
         end();
     }
 

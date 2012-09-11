@@ -376,7 +376,7 @@ public class GatewayResource extends AbstractResource {
         Gateway gateway = new Gateway();
         gateway.setGateway_name(gatewayName);
         gateway.setOwner(owner);
-        em.persist(gateway);
+        em.merge(gateway);
         end();
     }
 

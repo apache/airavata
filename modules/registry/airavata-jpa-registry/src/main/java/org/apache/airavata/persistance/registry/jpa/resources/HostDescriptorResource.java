@@ -196,7 +196,7 @@ public class HostDescriptorResource extends AbstractResource {
         hostDescriptor.setGateway(gateway);
         hostDescriptor.setHost_descriptor_xml(content);
         hostDescriptor.setUser(user);
-        em.persist(hostDescriptor);
+        em.merge(hostDescriptor);
         end();
 
     }
