@@ -36,8 +36,8 @@ public class Service_Descriptor {
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
-    @ManyToOne
-    @JoinColumn(name = "user_name")
+//    @ManyToOne
+    @JoinColumn(name = "updated_user", referencedColumnName = "user_name")
     private Users user;
 
     public String getService_descriptor_ID() {
