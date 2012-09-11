@@ -60,7 +60,7 @@ public class QueryGenerator {
 	}
 	
 	public Query selectQuery(EntityManager entityManager){
-		String queryString="SELECT FROM "+getTableName()+" "+TABLE_OBJ;
+		String queryString="SELECT "+ SELECT_OBJ + " FROM " +getTableName()+" "+TABLE_OBJ;
 		return generateQueryWithParameters(entityManager, queryString);
 	}
 	
