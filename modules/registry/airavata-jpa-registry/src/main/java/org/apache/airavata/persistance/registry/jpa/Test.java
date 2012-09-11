@@ -1,42 +1,53 @@
 package org.apache.airavata.persistance.registry.jpa;
 
-import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
-import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
+import org.apache.airavata.persistance.registry.jpa.resources.*;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 
 public class Test {
 
     public static void main(String[] args) {
+//        String PERSISTENCE_UNIT_NAME = "airavata_data";
+//        EntityManagerFactory factory;
+//        EntityManager em;
+//        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+//        em = factory.createEntityManager();
+
         GatewayResource gatewayResource = new GatewayResource();
-        gatewayResource.setGatewayName("abc");
-//        gatewayResource.setGatewayID(1);
+        gatewayResource.setGatewayName("default");
+        gatewayResource.setOwner("default");
 
-        // ProjectResource projectResource = (ProjectResource)gatewayResource.create(ResourceType.PROJECT);
-        UserResource userResource = (UserResource)gatewayResource.create(ResourceType.USER);
-        //PublishWorkflowResource publishWorkflowResource = (PublishWorkflowResource)gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
-        //ServiceDescriptorResource serviceDescriptorResource = (ServiceDescriptorResource) gatewayResource.create(ResourceType.SERVICE_DESCRIPTOR);
-        //HostDescriptorResource hostDescriptorResource = (HostDescriptorResource) gatewayResource.create(ResourceType.HOST_DESCRIPTOR);
-        //ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource) gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
+        gatewayResource.isExists(ResourceType.HOST_DESCRIPTOR, "Localhost");
+//
+//        boolean state = gatewayResource.isExists(ResourceType.HOST_DESCRIPTOR, "Localhost");
+//        System.out.println(state);
 
+        ConfigurationResource configurationResource = new ConfigurationResource();
+        ResourceUtils.removeConfiguration("messagebox.url","http://140.182.199.161:8080/axis2/services/MsgBoxService");
 
-        userResource.setUserName("chathuri");
-        userResource.setPassword("11111111");
+//        GatewayResource gatewayResource = new GatewayResource();
+//        gatewayResource.setGatewayName("abc");
+//        gatewayResource.setOwner("lahiru");
+//
+//        WorkerResource workerResource = (WorkerResource)gatewayResource.create(ResourceType.GATEWAY_WORKER);
+//        workerResource.setUser("aaaaa");
+//        workerResource.setGateway(gatewayResource);
+//
+//        UserResource userResource = (UserResource)gatewayResource.create(ResourceType.USER);
+//        userResource.setUserName("aaaaa");
+//        userResource.setPassword("11111111");
+//
+//        ConfigurationResource configurationResource = new ConfigurationResource();
+////        configurationResource.setConfigKey();
+//
+//
+////        gatewayResource.save();
+////        userResource.save();
+//        workerResource.save();
 
-       // projectResource.setName("myproject");
-
-        //userResource.setProjectResource(projectResource);
-
-        //Date date = new Date(2012, 9, 5);
-
-        //publishWorkflowResource.setPublishedDate(date);
-        //publishWorkflowResource.setContent("mycontent");
-        //publishWorkflowResource.setVersion("1");
-
-        gatewayResource.save();
-        userResource.save();
-        //projectResource.save();
-        //publishWorkflowResource.save();
 
     }
 

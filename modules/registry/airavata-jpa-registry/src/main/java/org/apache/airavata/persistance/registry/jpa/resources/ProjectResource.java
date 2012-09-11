@@ -182,7 +182,7 @@ public class ProjectResource extends AbstractResource {
         Users user = new Users();
         user.setUser_name(worker.getUser());
         project.setUsers(user);
-        em.persist(project);
+        em.merge(project);
         end();
 
     }

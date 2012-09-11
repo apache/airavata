@@ -131,7 +131,7 @@ public class UserWorkflowResource extends AbstractResource {
         user.setUser_name(worker.getUser());
         userWorkflow.setUser(user);
         userWorkflow.setPath(path);
-        em.persist(userWorkflow);
+        em.merge(userWorkflow);
         end();
     }
 

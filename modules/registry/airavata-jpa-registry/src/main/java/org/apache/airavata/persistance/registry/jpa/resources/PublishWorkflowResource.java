@@ -220,7 +220,7 @@ public class PublishWorkflowResource extends AbstractResource {
         Users user = new Users();
         user.setUser_name(createdUser);
         publishedWorkflow.setUser(user);
-        em.persist(gateway);
+        em.merge(gateway);
         end();
     }
 

@@ -238,7 +238,7 @@ public class ApplicationDescriptorResource extends AbstractResource {
         applicationDescriptor.setApplication_descriptor_xml(content);
         applicationDescriptor.setService_descriptor_ID(serviceDescName);
         applicationDescriptor.setHost_descriptor_ID(hostDescName);
-        em.persist(applicationDescriptor);
+        em.merge(applicationDescriptor);
         end();
 
     }

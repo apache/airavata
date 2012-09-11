@@ -139,7 +139,7 @@ public class ServiceDescriptorResource extends AbstractResource {
         Users user = new Users();
         user.setUser_name(userName);
         serviceDescriptor.setUser(user);
-        em.persist(serviceDescriptor);
+        em.merge(serviceDescriptor);
         end();
 
     }

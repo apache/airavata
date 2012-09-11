@@ -224,7 +224,7 @@ public class WorkerResource extends AbstractResource {
         gatewaymodel.setGateway_name(gateway.getGatewayName());
         gatewaymodel.setOwner(gateway.getOwner());
         gatewayWorker.setGateway(gatewaymodel);
-        em.persist(gatewayWorker);
+        em.merge(gatewayWorker);
         end();
 	}
 
