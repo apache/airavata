@@ -42,7 +42,7 @@ public class User_Workflow {
     private Gateway gateway;
 
     @ManyToOne
-    @JoinColumn(name = "user_name")
+    @JoinColumn(name = "owner", referencedColumnName = "user_name")
     private Users user;
 
     private String path;

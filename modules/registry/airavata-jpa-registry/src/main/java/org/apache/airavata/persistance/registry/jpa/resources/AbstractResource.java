@@ -144,12 +144,16 @@ public abstract class AbstractResource implements Resource {
     }
 
     protected void begin() {
+        if(em == null){
+            factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+            em = factory.createEntityManager();
+        }
         em.getTransaction().begin();
     }
 
     protected void end() {
         em.getTransaction().commit();
-        em.close();
+//        em.close();
 
     }
 

@@ -48,7 +48,7 @@ public class Published_Workflow {
     private String path;
 
     @ManyToOne
-    @JoinColumn(name = "user_name")
+    @JoinColumn(name = "created_user", referencedColumnName = "user_name")
     private Users user;
 
     public String getPublish_workflow_name() {

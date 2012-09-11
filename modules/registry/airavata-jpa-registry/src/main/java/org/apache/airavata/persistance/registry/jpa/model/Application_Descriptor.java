@@ -42,7 +42,7 @@ public class Application_Descriptor {
     private Gateway gateway;
 
     @ManyToOne
-    @JoinColumn(name = "user_name")
+    @JoinColumn(name = "updated_user", referencedColumnName = "user_name")
     private Users user;
 
     public String getApplication_descriptor_ID() {

@@ -60,9 +60,15 @@ public class QueryGenerator {
 	}
 	
 	public Query selectQuery(EntityManager entityManager){
-		String queryString="SELECT "+ SELECT_OBJ + " FROM " +getTableName()+" "+TABLE_OBJ;
-		return generateQueryWithParameters(entityManager, queryString);
-	}
+        String queryString="SELECT "+ SELECT_OBJ + " FROM " +getTableName()+" "+TABLE_OBJ;
+        return generateQueryWithParameters(entityManager, queryString);
+    }
+
+//    public Query countQuery(EntityManager entityManager){
+//        SELECT COUNT(p.host_descriptor_ID) FROM Host_Descriptor p WHERE p.gateway_name =:gate_ID and p.host_descriptor_ID =:host_desc_name")
+//        String queryString="SELECT COUNT("+ SELECT_OBJ + " FROM " +getTableName()+" "+TABLE_OBJ;
+//        return generateQueryWithParameters(entityManager, queryString);
+//    }
 	
 	public Query deleteQuery(EntityManager entityManager){
 		String queryString="Delete FROM "+getTableName()+" "+TABLE_OBJ;
