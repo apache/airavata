@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.registry.services;
 
-import com.sun.tools.corba.se.idl.toJavaPortable.StringGen;
 import org.apache.airavata.registry.services.utils.DatabaseCreator;
 import org.apache.airavata.registry.services.utils.JdbcStorage;
 import org.apache.axis2.context.ConfigurationContext;
