@@ -29,12 +29,15 @@ import org.apache.axis2.engine.ServiceLifeCycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.net.URL;
 import java.sql.Connection;
+import java.util.Properties;
 
 public class RegistryService implements ServiceLifeCycle {
     private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
 
-    public static final String PERSISTANT_DATA = "persistant_data";
+    public static final String PERSISTANT_DATA = "Configuration";
     private JdbcStorage db;
 
     @Override
@@ -42,14 +45,22 @@ public class RegistryService implements ServiceLifeCycle {
         //todo have to read these properties from some configuration
         String jdbcUrl = null;
         String jdbcDriver = null;
-
+        URL resource = this.getClass().getClassLoader().getResource("repository.properties");
+        Properties properties = new Properties();
+        try {
+            properties.load(resource.openStream());
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        jdbcDriver = properties.getProperty("registry.jdbc.driver");
+        jdbcUrl = properties.getProperty("registry.jdbc.url");
         db = new JdbcStorage(10, 50, jdbcUrl, jdbcDriver, true);
 
         Connection conn = null;
         try {
             conn = db.connect();
             if (!DatabaseCreator.isDatabaseStructureCreated(PERSISTANT_DATA, conn)) {
-                DatabaseCreator.createMsgBoxDatabase(conn);
+                DatabaseCreator.createRegistryDatabase(conn);
                 logger.info("New Database created for Registry");
             } else {
                 logger.info("Database already created for Registry!");

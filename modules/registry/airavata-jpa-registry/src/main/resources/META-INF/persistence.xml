@@ -29,7 +29,7 @@
 		<class>org.apache.airavata.provenance.model.Gram_Data</class>
 		<properties>
 			<property name="openjpa.ConnectionURL"
-				value="jdbc:mysql://gf7.ucs.indiana.edu:3306/workflow_provenance" />
+				value="jdbc:mysql://140.182.193.104:3306/workflow_provenance" />
 			<property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver" />
 			<property name="openjpa.ConnectionUserName" value="airavata" />
 			<property name="openjpa.ConnectionPassword" value="airavata" />
@@ -55,7 +55,7 @@
         <class>org.apache.airavata.persistance.registry.jpa.model.Experiment</class>
         <properties>
             <property name="openjpa.ConnectionURL"
-                      value="jdbc:mysql://localhost:3306/persitant_data" />
+                      value="jdbc:mysql://140.182.193.104:3306/persitant_data" />
             <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver" />
             <property name="openjpa.ConnectionUserName" value="airavata" />
             <property name="openjpa.ConnectionPassword" value="airavata" />

@@ -30,6 +30,7 @@
             </activation>
             <modules>
                 <module>airavata-jpa-registry</module>
+                <module>airavata-registry-service</module>
             </modules>
         </profile>
     </profiles>
