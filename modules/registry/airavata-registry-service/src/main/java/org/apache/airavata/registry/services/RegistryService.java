@@ -53,6 +53,9 @@ public class RegistryService implements ServiceLifeCycle {
         }
         jdbcDriver = properties.getProperty("registry.jdbc.driver");
         jdbcUrl = properties.getProperty("registry.jdbc.url");
+        String jdbcUser = properties.getProperty("registry.jdbc.user");
+        String jdbcPassword = properties.getProperty("registry.jdbc.password");
+        jdbcUrl = jdbcUrl + "?"  + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
         db = new JdbcStorage(10, 50, jdbcUrl, jdbcDriver, true);
 
         Connection conn = null;
