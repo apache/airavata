@@ -219,9 +219,9 @@ public class ResourceUtils {
      * @param configValue
      */
     public static void removeConfiguration(String configkey, String configValue) {
-//        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-//        em = factory.createEntityManager();
-//        em.getTransaction().begin();
+        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+        em = factory.createEntityManager();
+        em.getTransaction().begin();
 //        Query q = em.createQuery("Delete FROM Configuration p WHERE p.config_key = :configKey and p.config_val = :configVal");
 //        q.setParameter("configKey", configkey);
 //        q.setParameter("configVal", configValue);
