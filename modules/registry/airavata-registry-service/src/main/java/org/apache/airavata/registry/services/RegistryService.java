@@ -20,6 +20,10 @@
 */
 package org.apache.airavata.registry.services;
 
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.registry.services.utils.DatabaseCreator;
 import org.apache.airavata.registry.services.utils.JdbcStorage;
 import org.apache.axis2.context.ConfigurationContext;
@@ -37,6 +41,9 @@ public class RegistryService implements ServiceLifeCycle {
     private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
 
     public static final String PERSISTANT_DATA = "Configuration";
+    public static final String GATEWAY_ID = "gateway.id";
+    public static final String REGISTRY_USER = "registry.user";
+    public static final String REGISTRY_PASSWORD = "registry.password";
     private JdbcStorage db;
 
     @Override
@@ -73,6 +80,17 @@ public class RegistryService implements ServiceLifeCycle {
         } finally {
             db.closeConnection(conn);
         }
+        GatewayResource gatewayResource = new GatewayResource();
+        gatewayResource.setGatewayName((String)properties.get(GATEWAY_ID));
+        gatewayResource.setOwner((String)properties.get(GATEWAY_ID));
+        gatewayResource.save();
+        UserResource userResource = (UserResource)gatewayResource.create(ResourceType.USER);
+        userResource.setUserName((String)properties.get(REGISTRY_USER));
+        userResource.setPassword((String)properties.get(REGISTRY_PASSWORD));
+        userResource.save();
+        WorkerResource workerResource = (WorkerResource)gatewayResource.create(ResourceType.GATEWAY_WORKER);
+        workerResource.setUser(userResource.getUserName());
+        workerResource.save();
     }
 
     @Override
