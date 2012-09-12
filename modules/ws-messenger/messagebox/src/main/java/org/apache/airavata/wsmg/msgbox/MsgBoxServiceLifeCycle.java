@@ -76,7 +76,6 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
         } catch (InterruptedException e) {
             logger.info("Message box url update thread is interrupted");
         }
-        registry.closeConnection();
         if (configurationcontext.getProperty(MsgBoxCommonConstants.MSGBOX_STORAGE) != null) {
             MsgBoxStorage msgBoxStorage = (MsgBoxStorage) configurationcontext
                     .getProperty(MsgBoxCommonConstants.MSGBOX_STORAGE);

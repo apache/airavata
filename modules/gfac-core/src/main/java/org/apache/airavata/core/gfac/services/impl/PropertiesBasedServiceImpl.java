@@ -252,8 +252,6 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     @Override
     public void postProcess(InvocationContext context) throws ServiceException {
-        if(this.registryService != null)
-        ((AiravataRegistry2)this.registryService).closeConnection();
     }
 
     /*

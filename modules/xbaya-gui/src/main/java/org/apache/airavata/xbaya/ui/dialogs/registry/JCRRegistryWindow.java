@@ -162,15 +162,15 @@ public class JCRRegistryWindow {
         });
 
         GridPanel infoPanel = new GridPanel();
-        infoPanel.add(urlLabel);
-        infoPanel.add(this.urlTextField);
+//        infoPanel.add(urlLabel);
+//        infoPanel.add(this.urlTextField);
         infoPanel.add(nameLabel);
         infoPanel.add(this.usernameTextField);
         infoPanel.add(passLabel);
         infoPanel.add(this.passwordTextField);
         infoPanel.add(emptyLabel);
         infoPanel.add(this.newUserButton);
-        infoPanel.layout(4, 2, GridPanel.WEIGHT_NONE, 1);
+        infoPanel.layout(3, 2, GridPanel.WEIGHT_NONE, 1);
         
         infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
