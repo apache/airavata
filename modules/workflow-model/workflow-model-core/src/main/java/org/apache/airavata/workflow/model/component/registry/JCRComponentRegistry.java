@@ -55,6 +55,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
         HashMap<String, String> map = new HashMap<String, String>();
         URL configURL = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
         Properties properties = new Properties();
+        if(configURL != null){
         try {
             properties.load(configURL.openStream());
             if(properties.get(REGISTRY_USER) != null){
@@ -64,6 +65,10 @@ public class JCRComponentRegistry extends ComponentRegistry {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (IOException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        }else {
+            // provide a way to get gatewayid from xbaya gui
+            properties.setProperty(GATEWAY_ID, "default");
         }
         try {
             this.registry = AiravataRegistryFactory.getRegistry(new Gateway((String)properties.get(GATEWAY_ID)),
