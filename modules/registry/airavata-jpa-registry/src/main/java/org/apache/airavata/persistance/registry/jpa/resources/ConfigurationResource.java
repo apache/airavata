@@ -23,11 +23,14 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Configuration;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
@@ -91,7 +94,8 @@ public class ConfigurationResource extends AbstractResource {
      */
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         QueryGenerator queryGenerator = new QueryGenerator(CONFIGURATION);
         queryGenerator.setParameter(ConfigurationConstants.CONFIG_KEY, keys[0]);
         Query q = queryGenerator.selectQuery(em);
@@ -104,7 +108,8 @@ public class ConfigurationResource extends AbstractResource {
                 list.add(configurationResource);
             }
         }
-        end();
+        em.getTransaction().commit();
+        em.close();
         return list;
 
     }
@@ -131,17 +136,20 @@ public class ConfigurationResource extends AbstractResource {
     /**
      *  save configuration to database
      */
-    public void save() {
-        begin();
-        Configuration configuration = new Configuration();
-        configuration.setConfig_key(configKey);
-        configuration.setConfig_val(configVal);
-        configuration.setExpire_date(expireDate);
-        if (configID != -1) {
-            configuration.setConfig_ID(configID);
-        }
-        em.persist(configuration);
-        end();
+    public synchronized void save() {
+        return;
+//        EntityManager em = ResourceUtils.getEntityManager();
+//        em.getTransaction().begin();
+//        Configuration configuration = new Configuration();
+//        configuration.setConfig_key(configKey);
+//        configuration.setConfig_val(configVal);
+//        configuration.setExpire_date(expireDate);
+//        if (configID != -1) {
+//            configuration.setConfig_ID(configID);
+//        }
+//        em.merge(configuration);
+//        em.getTransaction().commit();
+//        em.close();
     }
 
     /**

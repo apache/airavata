@@ -35,11 +35,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ResourceUtils {
     private static final String PERSISTENCE_UNIT_NAME = "airavata_data";
     protected static EntityManagerFactory factory;
-    protected static EntityManager em;
+    // protected static EntityManager em;
+
+    private static Lock lock = new ReentrantLock();
 
     public static EntityManager getEntityManager(){
         Map<String, String> properties = new HashMap<String, String>();
@@ -49,12 +53,15 @@ public class ResourceUtils {
         properties.put("openjpa.ConnectionPassword",Utils.getJDBCPassword());
         properties.put("openjpa.DynamicEnhancementAgent","true");
         properties.put("openjpa.RuntimeUnenhancedClasses","supported");
-        properties.put("openjpa.Log","SQL=ERROR");
+        properties.put("openjpa.Log","SQL=TRACE");
+        properties.put("openjpa.LockManager", "none");
         properties.put("openjpa.ConnectionFactoryProperties","PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000");
 
-        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
-        em = factory.createEntityManager();
-        return em;
+        if (factory == null) {
+            factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
+        }
+
+        return factory.createEntityManager();
     }
 
     /**
@@ -76,14 +83,15 @@ public class ResourceUtils {
      * @return
      */
     public static boolean isGatewayExist(String gatewayName) {
-        em = getEntityManager();
+
+        EntityManager em = getEntityManager();
         em.getTransaction().begin();
         QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY);
         generator.setParameter(AbstractResource.GatewayConstants.GATEWAY_NAME, gatewayName);
         Query q = generator.selectQuery(em);
         Gateway gateway = (Gateway) q.getSingleResult();
         em.getTransaction().commit();
-//        em.close();
+        em.close();
         return gateway != null;
     }
 
@@ -93,14 +101,14 @@ public class ResourceUtils {
      */
     public static boolean removeGateway(String gatewayName) {
         try {
-            em = getEntityManager();
+            EntityManager em = getEntityManager();
             em.getTransaction().begin();
             QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY);
             generator.setParameter(AbstractResource.GatewayConstants.GATEWAY_NAME, gatewayName);
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-//            em.close();
+            em.close();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -116,7 +124,7 @@ public class ResourceUtils {
      */
     public static void addGatewayWorker(GatewayResource gatewayResource, UserResource userResource) {
         try {
-            em = getEntityManager();
+            EntityManager em = getEntityManager();
             em.getTransaction().begin();
             Gateway gateway = new Gateway();
             gateway.setGateway_name(gatewayResource.getGatewayName());
@@ -127,7 +135,7 @@ public class ResourceUtils {
             gatewayWorker.setUser(user);
             em.persist(gatewayWorker);
             em.getTransaction().commit();
-//            em.close();
+            em.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -141,7 +149,7 @@ public class ResourceUtils {
      */
     public static boolean removeGatewayWorker(GatewayResource gatewayResource, UserResource userResource) {
         try {
-            em = getEntityManager();
+            EntityManager em = getEntityManager();
             em.getTransaction().begin();
             QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY_WORKER);
             generator.setParameter(AbstractResource.GatewayWorkerConstants.GATEWAY_NAME,
@@ -150,7 +158,7 @@ public class ResourceUtils {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-//            em.close();
+            em.close();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,7 +173,7 @@ public class ResourceUtils {
      */
     public static List<ConfigurationResource> getConfigurations(String configKey) {
         List<ConfigurationResource> list = new ArrayList<ConfigurationResource>();
-        em = getEntityManager();
+        EntityManager em = getEntityManager();
         em.getTransaction().begin();
         QueryGenerator generator = new QueryGenerator(AbstractResource.CONFIGURATION);
         generator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configKey);
@@ -178,7 +186,7 @@ public class ResourceUtils {
             }
         }
         em.getTransaction().commit();
-//        em.close();
+        em.close();
         return list;
     }
 
@@ -229,32 +237,34 @@ public class ResourceUtils {
      * @param configValue
      */
     public static void removeConfiguration(String configkey, String configValue) {
-        em = getEntityManager();
+        EntityManager em = getEntityManager();
         em.getTransaction().begin();
-//        Query q = em.createQuery("Delete FROM Configuration p WHERE p.config_key = :configKey and p.config_val = :configVal");
-//        q.setParameter("configKey", configkey);
-//        q.setParameter("configVal", configValue);
-        QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.CONFIGURATION);
-        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configkey);
-        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_VAL, configValue);
-        Query q = queryGenerator.deleteQuery(em);
-        q.executeUpdate();
+//        QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.CONFIGURATION);
+//        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configkey);
+//        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_VAL, configValue);
+//        Query q = queryGenerator.deleteQuery(em);
+//        q.executeUpdate();
         em.getTransaction().commit();
-//        em.close();
-
+        em.close();
     }
 
     /**
      * @param configkey
      */
     public static void removeConfiguration(String configkey) {
-        em = getEntityManager();
+        EntityManager em = getEntityManager();
         em.getTransaction().begin();
-        QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.CONFIGURATION);
-        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configkey);
-        Query q = queryGenerator.deleteQuery(em);
-        q.executeUpdate();
+
+//        QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.CONFIGURATION);
+//        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configkey);
+//        Query q = queryGenerator.deleteQuery(em);
+//        q.executeUpdate();
         em.getTransaction().commit();
-//        em.close();
+        em.close();
+
+    }
+
+    public static Lock getLock() {
+        return lock;
     }
 }

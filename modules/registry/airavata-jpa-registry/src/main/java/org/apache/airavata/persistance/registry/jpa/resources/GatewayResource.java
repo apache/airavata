@@ -23,10 +23,12 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
@@ -134,7 +136,8 @@ public class GatewayResource extends AbstractResource {
      * @param name child resource name
      */
     public void remove(ResourceType type, Object name) {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Query q;
         QueryGenerator generator;
         switch (type){
@@ -143,7 +146,6 @@ public class GatewayResource extends AbstractResource {
                 generator.setParameter(UserConstants.USERNAME, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
-                end();
                 break;
             case PUBLISHED_WORKFLOW:
                 generator = new QueryGenerator(PUBLISHED_WORKFLOW);
@@ -151,7 +153,6 @@ public class GatewayResource extends AbstractResource {
                 generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, gatewayName);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
-                end();
                 break;
             case HOST_DESCRIPTOR:
                 generator = new QueryGenerator(HOST_DESCRIPTOR);
@@ -159,7 +160,6 @@ public class GatewayResource extends AbstractResource {
                 generator.setParameter(HostDescriptorConstants.GATEWAY_NAME, gatewayName);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
-                end();
                 break;
             case SERVICE_DESCRIPTOR:
                 generator = new QueryGenerator(SERVICE_DESCRIPTOR);
@@ -167,7 +167,6 @@ public class GatewayResource extends AbstractResource {
                 generator.setParameter(ServiceDescriptorConstants.GATEWAY_NAME, gatewayName);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
-                end();
                 break;
             case EXPERIMENT:
                 generator = new QueryGenerator(EXPERIMENT);
@@ -175,12 +174,14 @@ public class GatewayResource extends AbstractResource {
                 generator.setParameter(ExperimentConstants.GATEWAY_NAME, gatewayName);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
-                end();
                 break;
             default:
                 break;
 
         }
+
+        em.getTransaction().commit();
+        em.close();
     }
 
     /**
@@ -190,7 +191,8 @@ public class GatewayResource extends AbstractResource {
      * @return specific child resource type
      */
     public Resource get(ResourceType type, Object name) {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         QueryGenerator generator;
         Query q;
         switch (type) {
@@ -202,7 +204,8 @@ public class GatewayResource extends AbstractResource {
                 Users eUser = (Users) q.getSingleResult();
                 WorkerResource workerResource =
                         (WorkerResource)Utils.getResource(ResourceType.GATEWAY_WORKER, eUser);
-                end();
+                em.getTransaction().commit();
+                em.close();
                 return workerResource;
             case PUBLISHED_WORKFLOW:
                 generator = new QueryGenerator(PUBLISHED_WORKFLOW);
@@ -212,7 +215,8 @@ public class GatewayResource extends AbstractResource {
                 Published_Workflow ePub_workflow = (Published_Workflow) q.getSingleResult();
                 PublishWorkflowResource publishWorkflowResource =
                         (PublishWorkflowResource)Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, ePub_workflow);
-                end();
+                em.getTransaction().commit();
+                em.close();
                 return publishWorkflowResource;
             case HOST_DESCRIPTOR:
                 generator = new QueryGenerator(HOST_DESCRIPTOR);
@@ -222,7 +226,8 @@ public class GatewayResource extends AbstractResource {
                 Host_Descriptor eHostDesc = (Host_Descriptor) q.getSingleResult();
                 HostDescriptorResource hostDescriptorResource =
                         (HostDescriptorResource)Utils.getResource(ResourceType.HOST_DESCRIPTOR, eHostDesc);
-                end();
+                em.getTransaction().commit();
+                em.close();
                 return hostDescriptorResource;
             case EXPERIMENT:
                 generator = new QueryGenerator(EXPERIMENT);
@@ -232,7 +237,8 @@ public class GatewayResource extends AbstractResource {
                 Experiment experiment = (Experiment)q.getSingleResult();
                 ExperimentResource experimentResource =
                         (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
-                end();
+                em.getTransaction().commit();
+                em.close();
                 return experimentResource;
             case SERVICE_DESCRIPTOR:
                 generator = new QueryGenerator(SERVICE_DESCRIPTOR);
@@ -242,10 +248,12 @@ public class GatewayResource extends AbstractResource {
                 Service_Descriptor eServiceDesc = (Service_Descriptor) q.getSingleResult();
                 ServiceDescriptorResource serviceDescriptorResource =
                         (ServiceDescriptorResource)Utils.getResource(ResourceType.SERVICE_DESCRIPTOR, eServiceDesc);
-                end();
+                em.getTransaction().commit();
+                em.close();
                 return serviceDescriptorResource;
             default:
-                end();
+                em.getTransaction().commit();
+                em.close();
                 throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
 
         }
@@ -258,7 +266,8 @@ public class GatewayResource extends AbstractResource {
      */
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Query q;
         QueryGenerator generator;
         List results;
@@ -362,9 +371,12 @@ public class GatewayResource extends AbstractResource {
                 }
                 break;
             default:
+                em.getTransaction().commit();
+                em.close();
                 throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
         }
-        end();
+        em.getTransaction().commit();
+        em.close();
         return resourceList;
     }
 
@@ -372,12 +384,14 @@ public class GatewayResource extends AbstractResource {
      * save the gateway to the database
      */
     public void save() {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Gateway gateway = new Gateway();
         gateway.setGateway_name(gatewayName);
         gateway.setOwner(owner);
         em.merge(gateway);
-        end();
+        em.getTransaction().commit();
+        em.close();
     }
 
     /**
@@ -387,7 +401,8 @@ public class GatewayResource extends AbstractResource {
      * @return true or false
      */
     public boolean isExists(ResourceType type, Object name) {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Query q;
         Number count;
         QueryGenerator generator;
@@ -397,7 +412,8 @@ public class GatewayResource extends AbstractResource {
                 q.setParameter("gate_name", gatewayName);
                 q.setParameter("userName",name);
                 count = (Number) q.getSingleResult();
-                end();
+                em.getTransaction().commit();
+                em.close();
                 return count.intValue() != 0;
 //                generator = new QueryGenerator(GATEWAY_WORKER);
 //                generator.setParameter(GatewayWorkerConstants.GATEWAY_NAME, gatewayName);
@@ -411,7 +427,8 @@ public class GatewayResource extends AbstractResource {
                 q.setParameter("gate_name", gatewayName);
                 q.setParameter("pub_wf_name",name);
                 count = (Number) q.getSingleResult();
-                end();
+                em.getTransaction().commit();
+                em.close();
                 return count.intValue() != 0;
 //                generator = new QueryGenerator(PUBLISHED_WORKFLOW);
 //                generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, gatewayName);
@@ -425,14 +442,16 @@ public class GatewayResource extends AbstractResource {
                 q.setParameter("gate_name", gatewayName);
                 q.setParameter("host_desc_name",name);
                 count = (Number) q.getSingleResult();
-                end();
+                em.getTransaction().commit();
+                em.close();
                 return count.intValue() != 0;
             case SERVICE_DESCRIPTOR:
                 q = em.createQuery("SELECT COUNT(p.service_descriptor_ID) FROM Service_Descriptor p WHERE p.gateway_name =:gate_name and p.service_descriptor_ID =:service_desc_name");
                 q.setParameter("gate_name", gatewayName);
                 q.setParameter("service_desc_name",name);
                 count = (Number) q.getSingleResult();
-                end();
+                em.getTransaction().commit();
+                em.close();
                 return count.intValue() != 0;
 //                generator = new QueryGenerator(SERVICE_DESCRIPTOR);
 //                generator.setParameter(ServiceDescriptorConstants.GATEWAY_NAME, gatewayName);
@@ -446,7 +465,8 @@ public class GatewayResource extends AbstractResource {
                 q.setParameter("gate_name", gatewayName);
                 q.setParameter("service_desc_name",name);
                 count = (Number) q.getSingleResult();
-                end();
+                em.getTransaction().commit();
+                em.close();
                 return count.intValue() != 0;
 //                generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
 //                generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
@@ -460,7 +480,8 @@ public class GatewayResource extends AbstractResource {
                 q.setParameter("gate_name", gatewayName);
                 q.setParameter("exp_name",name);
                 count = (Number) q.getSingleResult();
-                end();
+                em.getTransaction().commit();
+                em.close();
                 return count.intValue() != 0;
 //                generator = new QueryGenerator(EXPERIMENT);
 //                generator.setParameter(ExperimentConstants.GATEWAY_NAME, gatewayName);
@@ -470,7 +491,8 @@ public class GatewayResource extends AbstractResource {
 //                end();
 //                return experiment != null;
             default:
-                end();
+                em.getTransaction().commit();
+                em.close();
                 throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
         }
     }
@@ -632,7 +654,8 @@ public class GatewayResource extends AbstractResource {
      * @return  list of application descriptors for the gateway
      */
     public List<ApplicationDescriptorResource> getApplicationDescriptorResources(String serviceName,String hostName){
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         String qString = "SELECT p FROM Application_Descriptor p WHERE " +
                 "p.gateway_name =:gate_name and p.service_descriptor_ID =:service_name";
         if (hostName!=null){
@@ -660,7 +683,8 @@ public class GatewayResource extends AbstractResource {
                 resourceList.add(applicationDescriptorResource);
             }
         }
-        end();
+        em.getTransaction().commit();
+        em.close();
         return resourceList;
     }
 

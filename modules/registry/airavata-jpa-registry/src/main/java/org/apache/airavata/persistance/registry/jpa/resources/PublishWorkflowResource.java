@@ -22,11 +22,13 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Published_Workflow;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -181,7 +183,8 @@ public class PublishWorkflowResource extends AbstractResource {
      */
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         QueryGenerator generator = new QueryGenerator(PUBLISHED_WORKFLOW);
         generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, keys[0]);
         generator.setParameter(PublishedWorkflowConstants.PUBLISH_WORKFLOW_NAME, keys[1]);
@@ -189,7 +192,8 @@ public class PublishWorkflowResource extends AbstractResource {
         Published_Workflow publishedWorkflow = (Published_Workflow)q.getSingleResult();
         PublishWorkflowResource publishWorkflowResource = (PublishWorkflowResource)
                 Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, publishedWorkflow);
-        end();
+        em.getTransaction().commit();
+        em.close();
         list.add(publishWorkflowResource);
         return list;
     }
@@ -208,7 +212,8 @@ public class PublishWorkflowResource extends AbstractResource {
      * save published workflow to the database
      */
     public void save() {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Published_Workflow publishedWorkflow = new Published_Workflow();
         publishedWorkflow.setPublish_workflow_name(getName());
         publishedWorkflow.setPublished_date(publishedDate);
@@ -221,7 +226,8 @@ public class PublishWorkflowResource extends AbstractResource {
         user.setUser_name(createdUser);
         publishedWorkflow.setUser(user);
         em.merge(gateway);
-        end();
+        em.getTransaction().commit();
+        em.close();
     }
 
 

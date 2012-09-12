@@ -22,9 +22,11 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
@@ -165,7 +167,8 @@ public class ApplicationDescriptorResource extends AbstractResource {
      * @param keys primary keys of the Application_descriptor table
      */
     public void removeMe(Object[] keys) {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         QueryGenerator queryGenerator = new QueryGenerator(APPLICATION_DESCRIPTOR);
         queryGenerator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, keys[0]);
         queryGenerator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, keys[1]);
@@ -173,7 +176,8 @@ public class ApplicationDescriptorResource extends AbstractResource {
         queryGenerator.setParameter(ApplicationDescriptorConstants.SERVICE_DESC_ID, keys[3]);
         Query q = queryGenerator.deleteQuery(em);
         q.executeUpdate();
-        end();
+        em.getTransaction().commit();
+        em.close();
     }
 
     /**
@@ -196,7 +200,8 @@ public class ApplicationDescriptorResource extends AbstractResource {
      */
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         QueryGenerator queryGenerator = new QueryGenerator(APPLICATION_DESCRIPTOR);
         queryGenerator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, keys[0]);
         queryGenerator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, keys[1]);
@@ -207,7 +212,8 @@ public class ApplicationDescriptorResource extends AbstractResource {
         ApplicationDescriptorResource applicationDescriptorResource =
                 (ApplicationDescriptorResource) Utils.getResource(
                         ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
-        end();
+        em.getTransaction().commit();
+        em.close();
         list.add(applicationDescriptorResource);
         return list;
     }
@@ -226,7 +232,8 @@ public class ApplicationDescriptorResource extends AbstractResource {
      *  save application descriptor to database
      */
     public void save() {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Application_Descriptor applicationDescriptor = new Application_Descriptor();
         applicationDescriptor.setApplication_descriptor_ID(getName());
         Gateway gateway = new Gateway();
@@ -239,7 +246,8 @@ public class ApplicationDescriptorResource extends AbstractResource {
         applicationDescriptor.setService_descriptor_ID(serviceDescName);
         applicationDescriptor.setHost_descriptor_ID(hostDescName);
         em.merge(applicationDescriptor);
-        end();
+        em.getTransaction().commit();
+        em.close();
 
     }
 

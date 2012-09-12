@@ -24,10 +24,12 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
@@ -82,7 +84,8 @@ public class WorkerResource extends AbstractResource {
      * @param name child resource name
      */
 	public void remove(ResourceType type, Object name) {
-		begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Query q;
         QueryGenerator generator;
 		switch (type) {
@@ -112,7 +115,8 @@ public class WorkerResource extends AbstractResource {
 			default:
 				break;
 		}
-		end();
+        em.getTransaction().commit();
+        em.close();
 	}
 
     /**
@@ -123,7 +127,8 @@ public class WorkerResource extends AbstractResource {
      */
 	public Resource get(ResourceType type, Object name) {
 		Resource result = null;
-		begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         QueryGenerator generator;
         Query q;
 		switch (type) {
@@ -156,7 +161,8 @@ public class WorkerResource extends AbstractResource {
 			default:
 				break;
 		}
-		end();
+        em.getTransaction().commit();
+        em.close();
 		return result;
 	}
 
@@ -167,7 +173,8 @@ public class WorkerResource extends AbstractResource {
      */
     public List<Resource> get(ResourceType type) {
 		List<Resource> result = new ArrayList<Resource>();
-		begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         QueryGenerator generator;
         Query q;
 		switch (type) {
@@ -207,7 +214,8 @@ public class WorkerResource extends AbstractResource {
 			default:
 				break;
 		}
-		end();
+        em.getTransaction().commit();
+        em.close();
 		return result;
 	}
 
@@ -215,7 +223,8 @@ public class WorkerResource extends AbstractResource {
      * save gateway worker to database
      */
 	public void save() {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Gateway_Worker gatewayWorker = new Gateway_Worker();
         Users users = new Users();
         users.setUser_name(user);
@@ -225,7 +234,8 @@ public class WorkerResource extends AbstractResource {
         gatewaymodel.setOwner(gateway.getOwner());
         gatewayWorker.setGateway(gatewaymodel);
         em.merge(gatewayWorker);
-        end();
+        em.getTransaction().commit();
+        em.close();
 	}
 
     /**
