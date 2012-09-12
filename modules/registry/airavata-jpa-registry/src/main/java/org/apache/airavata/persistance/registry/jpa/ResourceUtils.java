@@ -24,10 +24,7 @@ import org.apache.airavata.persistance.registry.jpa.model.Configuration;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway_Worker;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
-import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
-import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
+import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 import javax.persistence.EntityManager;
@@ -35,12 +32,30 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ResourceUtils {
     private static final String PERSISTENCE_UNIT_NAME = "airavata_data";
     protected static EntityManagerFactory factory;
     protected static EntityManager em;
+
+    public static EntityManager getEntityManager(){
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("openjpa.ConnectionURL", Utils.getJDBCURL());
+        properties.put("openjpa.ConnectionDriverName", Utils.getJDBCDriver());
+        properties.put("openjpa.ConnectionUserName",Utils.getJDBCUser());
+        properties.put("openjpa.ConnectionPassword",Utils.getJDBCPassword());
+        properties.put("openjpa.DynamicEnhancementAgent","true");
+        properties.put("openjpa.RuntimeUnenhancedClasses","supported");
+        properties.put("openjpa.Log","SQL=ERROR");
+        properties.put("openjpa.ConnectionFactoryProperties","PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000");
+
+        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
+        em = factory.createEntityManager();
+        return em;
+    }
 
     /**
      * @param gatewayName
@@ -61,15 +76,14 @@ public class ResourceUtils {
      * @return
      */
     public static boolean isGatewayExist(String gatewayName) {
-        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        em = factory.createEntityManager();
+        em = getEntityManager();
         em.getTransaction().begin();
         QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY);
         generator.setParameter(AbstractResource.GatewayConstants.GATEWAY_NAME, gatewayName);
         Query q = generator.selectQuery(em);
         Gateway gateway = (Gateway) q.getSingleResult();
         em.getTransaction().commit();
-        em.close();
+//        em.close();
         return gateway != null;
     }
 
@@ -79,15 +93,14 @@ public class ResourceUtils {
      */
     public static boolean removeGateway(String gatewayName) {
         try {
-            factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-            em = factory.createEntityManager();
+            em = getEntityManager();
             em.getTransaction().begin();
             QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY);
             generator.setParameter(AbstractResource.GatewayConstants.GATEWAY_NAME, gatewayName);
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+//            em.close();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,8 +116,7 @@ public class ResourceUtils {
      */
     public static void addGatewayWorker(GatewayResource gatewayResource, UserResource userResource) {
         try {
-            factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-            em = factory.createEntityManager();
+            em = getEntityManager();
             em.getTransaction().begin();
             Gateway gateway = new Gateway();
             gateway.setGateway_name(gatewayResource.getGatewayName());
@@ -115,7 +127,7 @@ public class ResourceUtils {
             gatewayWorker.setUser(user);
             em.persist(gatewayWorker);
             em.getTransaction().commit();
-            em.close();
+//            em.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,8 +141,7 @@ public class ResourceUtils {
      */
     public static boolean removeGatewayWorker(GatewayResource gatewayResource, UserResource userResource) {
         try {
-            factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-            em = factory.createEntityManager();
+            em = getEntityManager();
             em.getTransaction().begin();
             QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY_WORKER);
             generator.setParameter(AbstractResource.GatewayWorkerConstants.GATEWAY_NAME,
@@ -139,7 +150,7 @@ public class ResourceUtils {
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
-            em.close();
+//            em.close();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -154,8 +165,7 @@ public class ResourceUtils {
      */
     public static List<ConfigurationResource> getConfigurations(String configKey) {
         List<ConfigurationResource> list = new ArrayList<ConfigurationResource>();
-        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        em = factory.createEntityManager();
+        em = getEntityManager();
         em.getTransaction().begin();
         QueryGenerator generator = new QueryGenerator(AbstractResource.CONFIGURATION);
         generator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configKey);
@@ -168,7 +178,7 @@ public class ResourceUtils {
             }
         }
         em.getTransaction().commit();
-        em.close();
+//        em.close();
         return list;
     }
 
@@ -219,8 +229,7 @@ public class ResourceUtils {
      * @param configValue
      */
     public static void removeConfiguration(String configkey, String configValue) {
-        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        em = factory.createEntityManager();
+        em = getEntityManager();
         em.getTransaction().begin();
 //        Query q = em.createQuery("Delete FROM Configuration p WHERE p.config_key = :configKey and p.config_val = :configVal");
 //        q.setParameter("configKey", configkey);
@@ -231,7 +240,7 @@ public class ResourceUtils {
         Query q = queryGenerator.deleteQuery(em);
         q.executeUpdate();
         em.getTransaction().commit();
-        em.close();
+//        em.close();
 
     }
 
@@ -239,14 +248,13 @@ public class ResourceUtils {
      * @param configkey
      */
     public static void removeConfiguration(String configkey) {
-        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        em = factory.createEntityManager();
+        em = getEntityManager();
         em.getTransaction().begin();
         QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.CONFIGURATION);
         queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configkey);
         Query q = queryGenerator.deleteQuery(em);
         q.executeUpdate();
         em.getTransaction().commit();
-        em.close();
+//        em.close();
     }
 }

@@ -53,9 +53,9 @@
         <class>org.apache.airavata.persistance.registry.jpa.model.Service_Descriptor</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Experiment</class>
-        <properties>
+        <!--properties>
             <property name="openjpa.ConnectionURL"
-                      value="jdbc:mysql://140.182.193.104:3306/persitant_data" />
+                      value="jdbc:mysql://localhost:3306/persitant_data" />
             <property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver" />
             <property name="openjpa.ConnectionUserName" value="airavata" />
             <property name="openjpa.ConnectionPassword" value="airavata" />
@@ -64,6 +64,6 @@
             <property name="openjpa.Log" value="SQL=TRACE" />
             <property name="openjpa.ConnectionFactoryProperties"
                       value="PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000" />
-       </properties>
+       </properties-->
     </persistence-unit>
 </persistence>
