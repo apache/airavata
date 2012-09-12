@@ -24,10 +24,12 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Project;
@@ -110,14 +112,16 @@ public class ExperimentResource extends AbstractResource {
      */
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         QueryGenerator queryGenerator = new QueryGenerator(EXPERIMENT);
         queryGenerator.setParameter(ExperimentConstants.EXPERIMENT_ID, keys[0]);
         Query q = queryGenerator.selectQuery(em);
         Experiment experiment = (Experiment)q.getSingleResult();
         ExperimentResource experimentResource =
                 (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
-        end();
+        em.getTransaction().commit();
+        em.close();
         list.add(experimentResource);
         return list;
 
@@ -137,7 +141,8 @@ public class ExperimentResource extends AbstractResource {
      * save experiment
      */
     public void save() {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Experiment experiment = new Experiment();
         Project project = new Project();
         project.setProject_ID(this.project.getId());
@@ -151,7 +156,8 @@ public class ExperimentResource extends AbstractResource {
         experiment.setGateway(gateway);
         experiment.setSubmitted_date(submittedDate);
         em.merge(experiment);
-        end();
+        em.getTransaction().commit();
+        em.close();
     }
 
     /**

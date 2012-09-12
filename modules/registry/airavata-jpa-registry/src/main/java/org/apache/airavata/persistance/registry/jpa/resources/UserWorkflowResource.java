@@ -22,11 +22,13 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.User_Workflow;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -100,7 +102,8 @@ public class UserWorkflowResource extends AbstractResource {
      */
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         QueryGenerator queryGenerator = new QueryGenerator(USER_WORKFLOW);
         queryGenerator.setParameter(UserWorkflowConstants.GATEWAY_NAME, keys[0]);
         queryGenerator.setParameter(UserWorkflowConstants.OWNER, keys[1]);
@@ -109,7 +112,8 @@ public class UserWorkflowResource extends AbstractResource {
         User_Workflow userWorkflow = (User_Workflow)q.getSingleResult();
         UserWorkflowResource userWorkflowResource = (UserWorkflowResource)Utils.getResource(
                 ResourceType.USER_WORKFLOW, userWorkflow);
-        end();
+        em.getTransaction().commit();
+        em.close();
         list.add(userWorkflowResource);
         return list;
     }
@@ -119,7 +123,8 @@ public class UserWorkflowResource extends AbstractResource {
     }
 
     public void save() {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         User_Workflow userWorkflow = new User_Workflow();
         userWorkflow.setTemplate_name(name);
         userWorkflow.setLast_updated_date(lastUpdateDate);
@@ -132,7 +137,8 @@ public class UserWorkflowResource extends AbstractResource {
         userWorkflow.setUser(user);
         userWorkflow.setPath(path);
         em.merge(userWorkflow);
-        end();
+        em.getTransaction().commit();
+        em.close();
     }
 
     public boolean isExists(ResourceType type, Object name) {

@@ -23,10 +23,12 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Project;
@@ -81,7 +83,8 @@ public class ProjectResource extends AbstractResource {
      * @param name child resource name
      */
     public void remove(ResourceType type, Object name) {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         if (type == ResourceType.EXPERIMENT) {
         	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
         	generator.setParameter(ExperimentConstants.PROJECT_ID, id);
@@ -90,7 +93,8 @@ public class ProjectResource extends AbstractResource {
         	Query q = generator.deleteQuery(em);
         	q.executeUpdate();
         }
-        end();
+        em.getTransaction().commit();
+        em.close();
     }
 
     /**
@@ -100,7 +104,8 @@ public class ProjectResource extends AbstractResource {
      * @return child resource
      */
     public Resource get(ResourceType type, Object name) {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         if (type == ResourceType.EXPERIMENT) {
         	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
         	generator.setParameter(ExperimentConstants.PROJECT_ID, id);
@@ -110,7 +115,8 @@ public class ProjectResource extends AbstractResource {
             Experiment experiment = (Experiment) q.getSingleResult();
             ExperimentResource experimentResource = (ExperimentResource)
                     Utils.getResource(ResourceType.EXPERIMENT, experiment);
-            end();
+            em.getTransaction().commit();
+            em.close();
             return experimentResource;
         }
         return null;
@@ -123,7 +129,8 @@ public class ProjectResource extends AbstractResource {
      */
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         QueryGenerator queryGenerator = new QueryGenerator(PROJECT);
         queryGenerator.setParameter(ProjectConstants.PROJECT_NAME, keys[0]);
         Query q = queryGenerator.selectQuery(em);
@@ -136,7 +143,8 @@ public class ProjectResource extends AbstractResource {
                 list.add(projectResource);
             }
         }
-        end();
+        em.getTransaction().commit();
+        em.close();
         return list;
     }
 
@@ -147,7 +155,8 @@ public class ProjectResource extends AbstractResource {
      */
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         if (type == ResourceType.EXPERIMENT) {
         	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
         	generator.setParameter(ExperimentConstants.PROJECT_ID, id);
@@ -162,7 +171,8 @@ public class ProjectResource extends AbstractResource {
                 }
             }
         }
-        end();
+        em.getTransaction().commit();
+        em.close();
         return resourceList;
     }
 
@@ -170,7 +180,8 @@ public class ProjectResource extends AbstractResource {
      * save project to the database
      */
     public void save() {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Project project = new Project();
         project.setProject_name(name);
         Gateway gatewayO = new Gateway();
@@ -183,7 +194,8 @@ public class ProjectResource extends AbstractResource {
         user.setUser_name(worker.getUser());
         project.setUsers(user);
         em.merge(project);
-        end();
+        em.getTransaction().commit();
+        em.close();
 
     }
 

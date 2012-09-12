@@ -2,10 +2,10 @@ package org.apache.airavata.persistance.registry.jpa;
 
 import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.model.Project;
-import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.apache.airavata.persistance.registry.jpa.resources.HostDescriptorResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
-import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.persistance.registry.jpa.resources.*;
+
+import java.util.Calendar;
+import java.util.List;
 
 public class GatewayResourceTest extends TestCase {
     private GatewayResource gatewayResource;
@@ -14,12 +14,54 @@ public class GatewayResourceTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
 
+
+
+
 //        gatewayResource = new GatewayResource();
 //        gatewayResource.setGatewayName("default");
 //        gatewayResource.setOwner("default");
+//        gatewayResource.save();
+//        UserResource userResource = (UserResource)gatewayResource.create(ResourceType.USER);
+//        userResource.setUserName("admin");
+//        userResource.setPassword("admin");
+//        userResource.save();
+//        WorkerResource workerResource = (WorkerResource)gatewayResource.create(ResourceType.GATEWAY_WORKER);
+//        workerResource.setUser(userResource.getUserName());
+//        workerResource.save();
+
     }
 
     public void testSave() throws Exception {
+//        List<HostDescriptorResource>  list = gatewayResource.getHostDescriptorResources();
+//        for(HostDescriptorResource resource : list) {
+//            System.out.println("Host Descriptor name :" +  resource.getHostDescName());
+//        }
+//        Thread t = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                ResourceUtils.removeConfiguration("aa", "http://129.79.49.142:8080/axis2/services/WorkflowInterpretor");
+//                }
+//            }
+//        });
+//        Thread t2 = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    ConfigurationResource configurationResource = new ConfigurationResource();
+//                    configurationResource.setConfigKey("aa");
+//                    configurationResource.setConfigVal("http://129.79.49.142:8080/axis2/services/WorkflowInterpretor");
+//                    Calendar calendar = Calendar.getInstance();
+//                    //configurationResource.setExpireDate(calendar.);
+//                    configurationResource.save();
+//                }
+//            }
+//        });
+//        t.start();
+//        t2.start();
+//        while(true) {
+//            Thread.sleep(10000);
+//        }
 
     }
 

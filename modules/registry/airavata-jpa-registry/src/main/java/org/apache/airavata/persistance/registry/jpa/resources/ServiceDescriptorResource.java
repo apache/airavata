@@ -22,12 +22,14 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Service_Descriptor;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,14 +97,16 @@ public class ServiceDescriptorResource extends AbstractResource {
 
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         QueryGenerator generator = new QueryGenerator(SERVICE_DESCRIPTOR);
         generator.setParameter(ServiceDescriptorConstants.GATEWAY_NAME, keys[0]);
         generator.setParameter(ServiceDescriptorConstants.SERVICE_DESC_ID, keys[1]);
         Query q = generator.selectQuery(em);
         Service_Descriptor serviceDescriptor = (Service_Descriptor)q.getSingleResult();
         ServiceDescriptorResource serviceDescriptorResource = (ServiceDescriptorResource)Utils.getResource(ResourceType.SERVICE_DESCRIPTOR, serviceDescriptor);
-        end();
+        em.getTransaction().commit();
+        em.close();
         list.add(serviceDescriptorResource);
         return list;
     }
@@ -110,7 +114,8 @@ public class ServiceDescriptorResource extends AbstractResource {
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
         if (type == ResourceType.APPLICATION_DESCRIPTOR) {
-            begin();
+            EntityManager em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
             QueryGenerator queryGenerator = new QueryGenerator(APPLICATION_DESCRIPTOR);
             queryGenerator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
             queryGenerator.setParameter(ApplicationDescriptorConstants.SERVICE_DESC_ID, serviceDescName);
@@ -123,13 +128,15 @@ public class ServiceDescriptorResource extends AbstractResource {
                     resourceList.add(applicationDescriptorResource);
                 }
             }
-            end();
+            em.getTransaction().commit();
+            em.close();
         }
         return resourceList;
     }
 
     public void save() {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Service_Descriptor serviceDescriptor = new Service_Descriptor();
         serviceDescriptor.setService_descriptor_ID(getServiceDescName());
         Gateway gateway = new Gateway();
@@ -140,7 +147,8 @@ public class ServiceDescriptorResource extends AbstractResource {
         user.setUser_name(userName);
         serviceDescriptor.setUser(user);
         em.merge(serviceDescriptor);
-        end();
+        em.getTransaction().commit();
+        em.close();
 
     }
 

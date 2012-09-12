@@ -24,7 +24,10 @@ import java.util.List;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
+
+import javax.persistence.EntityManager;
 
 public class UserResource extends AbstractResource {
     private String userName;
@@ -111,12 +114,14 @@ public class UserResource extends AbstractResource {
      * save user to the database
      */
     public void save() {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Users user = new Users();
         user.setUser_name(userName);
         user.setPassword(password);
         em.merge(user);
-        end();
+        em.getTransaction().commit();
+        em.close();
     }
 
     /**

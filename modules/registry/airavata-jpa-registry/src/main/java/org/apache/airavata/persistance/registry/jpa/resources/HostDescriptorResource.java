@@ -22,12 +22,14 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
+import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
@@ -141,7 +143,8 @@ public class HostDescriptorResource extends AbstractResource {
      */
     public List<Resource> populate(Object[] keys) {
         List<Resource> list = new ArrayList<Resource>();
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         QueryGenerator generator = new QueryGenerator(HOST_DESCRIPTOR);
         generator.setParameter(HostDescriptorConstants.GATEWAY_NAME, keys [0]);
         generator.setParameter(HostDescriptorConstants.HOST_DESC_ID, keys[1]);
@@ -149,7 +152,8 @@ public class HostDescriptorResource extends AbstractResource {
         Host_Descriptor hostDescriptor = (Host_Descriptor)q.getSingleResult();
         HostDescriptorResource hostDescriptorResource =
                 (HostDescriptorResource)Utils.getResource(ResourceType.HOST_DESCRIPTOR, hostDescriptor);
-        end();
+        em.getTransaction().commit();
+        em.close();
         list.add(hostDescriptorResource);
         return list;
     }
@@ -162,7 +166,8 @@ public class HostDescriptorResource extends AbstractResource {
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
         if (type == ResourceType.APPLICATION_DESCRIPTOR) {
-            begin();
+            EntityManager em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
             QueryGenerator generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
             generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
             generator.setParameter(ApplicationDescriptorConstants.HOST_DESC_ID, getHostDescName());
@@ -177,7 +182,8 @@ public class HostDescriptorResource extends AbstractResource {
                     resourceList.add(applicationDescriptorResource);
                 }
             }
-            end();
+            em.getTransaction().commit();
+            em.close();
         }
         return resourceList;
     }
@@ -186,7 +192,8 @@ public class HostDescriptorResource extends AbstractResource {
      * save host descriptor to the database
      */
     public void save() {
-        begin();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Host_Descriptor hostDescriptor = new Host_Descriptor();
         Gateway gateway = new Gateway();
         gateway.setGateway_name(gatewayName);
@@ -197,7 +204,8 @@ public class HostDescriptorResource extends AbstractResource {
         hostDescriptor.setHost_descriptor_xml(content);
         hostDescriptor.setUser(user);
         em.merge(hostDescriptor);
-        end();
+        em.getTransaction().commit();
+        em.close();
 
     }
 
