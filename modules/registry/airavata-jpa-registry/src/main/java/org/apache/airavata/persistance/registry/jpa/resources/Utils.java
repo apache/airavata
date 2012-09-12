@@ -24,8 +24,53 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Properties;
+
 
 public class Utils {
+
+    public static Properties loadProperties(){
+        URL resource = Utils.class.getClassLoader().getResource("repository.properties");
+        Properties properties = new Properties();
+        try {
+            properties.load(resource.openStream());
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return properties;
+    }
+
+    public static String getJDBCFullURL(){
+        String jdbcUrl = null;
+        Properties properties = loadProperties();
+        jdbcUrl = properties.getProperty("registry.jdbc.url");
+        String jdbcUser = properties.getProperty("registry.jdbc.user");
+        String jdbcPassword = properties.getProperty("registry.jdbc.password");
+        jdbcUrl = jdbcUrl + "?"  + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
+        return jdbcUrl;
+    }
+
+    public static String getJDBCURL(){
+        Properties properties = loadProperties();
+        return properties.getProperty("registry.jdbc.url");
+    }
+
+    public static String getJDBCUser(){
+        Properties properties = loadProperties();
+        return properties.getProperty("registry.jdbc.user");
+    }
+
+    public static String getJDBCPassword(){
+        Properties properties = loadProperties();
+        return properties.getProperty("registry.jdbc.password");
+    }
+
+    public static String getJDBCDriver(){
+        Properties properties = loadProperties();
+        return properties.getProperty("registry.jdbc.driver");
+    }
 
     /**
      *

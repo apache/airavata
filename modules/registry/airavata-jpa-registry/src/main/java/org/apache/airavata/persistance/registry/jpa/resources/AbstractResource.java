@@ -22,14 +22,11 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 public abstract class AbstractResource implements Resource {
-    private static final String PERSISTENCE_UNIT_NAME = "airavata_data";
-    protected EntityManagerFactory factory;
     protected EntityManager em;
 
     //table names
@@ -137,16 +134,13 @@ public abstract class AbstractResource implements Resource {
 
     }
 
-
     protected AbstractResource() {
-        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-        em = factory.createEntityManager();
+        em = ResourceUtils.getEntityManager();
     }
 
     protected void begin() {
         if(em == null){
-            factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-            em = factory.createEntityManager();
+            em = ResourceUtils.getEntityManager();
         }
         em.getTransaction().begin();
     }
