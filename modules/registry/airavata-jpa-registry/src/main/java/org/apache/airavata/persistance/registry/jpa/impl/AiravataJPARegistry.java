@@ -85,15 +85,21 @@ import org.slf4j.LoggerFactory;
 public class AiravataJPARegistry extends AiravataRegistry2{
     private final static Logger logger = LoggerFactory.getLogger(AiravataJPARegistry.class);
     private JPAResourceAccessor jpa;
-
+    private boolean active=false;
+    
     @Override
     protected void initialize() {
     	jpa = new JPAResourceAccessor(this);
+    	//TODO check if the db connections are proper & accessible & the relevant db/tables are 
+    	//present
+    	active=true;
     }
+    
 
-    @Override
-    public void closeConnection() {
-    }
+	@Override
+	public boolean isActive() {
+		return active;
+	}
 
     /**---------------------------------Configuration Registry----------------------------------**/
     

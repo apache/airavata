@@ -108,7 +108,6 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
                     log.info("Message box url update thread is interrupted");
                 }
 
-                (registry).closeConnection();
             }
         }
         log.info("broker shut down");

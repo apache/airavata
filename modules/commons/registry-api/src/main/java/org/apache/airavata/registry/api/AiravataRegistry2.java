@@ -52,7 +52,5 @@ public abstract class AiravataRegistry2 extends Observable implements Descriptor
 	public void setUser(AiravataUser user) {
 		this.user = user;
 	}
-
-    public abstract void closeConnection();
 	
 }
