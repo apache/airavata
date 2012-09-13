@@ -31,8 +31,11 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GatewayResource extends AbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(GatewayResource.class);
     private String gatewayName;
     private String owner;
 
@@ -58,6 +61,10 @@ public class GatewayResource extends AbstractResource {
         return gatewayName;
     }
 
+    /**
+     *
+     * @param gatewayName
+     */
     public void setGatewayName(String gatewayName) {
         this.gatewayName = gatewayName;
     }
@@ -177,7 +184,6 @@ public class GatewayResource extends AbstractResource {
                 break;
             default:
                 break;
-
         }
 
         em.getTransaction().commit();
@@ -257,6 +263,7 @@ public class GatewayResource extends AbstractResource {
                 throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
 
         }
+
     }
 
     /**
@@ -416,88 +423,33 @@ public class GatewayResource extends AbstractResource {
         Number count;
         switch (type){
             case USER:
-                q = em.createQuery("SELECT COUNT(p.user_name) FROM Gateway_Worker p WHERE p.gateway_name =:gate_name and p.user_name =:userName");
-                q.setParameter("gate_name", gatewayName);
-                q.setParameter("userName",name);
-                count = (Number) q.getSingleResult();
-                em.getTransaction().commit();
+                Gateway_Worker existingWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayName, name.toString()));
                 em.close();
-                return count.intValue() != 0;
-//                generator = new QueryGenerator(GATEWAY_WORKER);
-//                generator.setParameter(GatewayWorkerConstants.GATEWAY_NAME, gatewayName);
-//                generator.setParameter(GatewayWorkerConstants.USERNAME, name);
-//                q = generator.selectQuery(em);
-//                Gateway_Worker gatewayWorker = (Gateway_Worker) q.getSingleResult();
-//                end();
-//                return gatewayWorker != null;
+                return existingWorker!= null;
             case PUBLISHED_WORKFLOW:
-                q = em.createQuery("SELECT COUNT(p.publish_workflow_name) FROM Published_Workflow p WHERE p.gateway_name =:gate_name and p.publish_workflow_name =:pub_wf_name");
-                q.setParameter("gate_name", gatewayName);
-                q.setParameter("pub_wf_name",name);
-                count = (Number) q.getSingleResult();
-                em.getTransaction().commit();
+                Published_Workflow existingWf = em.find(Published_Workflow.class, new Published_Workflow_PK(gatewayName, name.toString()));
                 em.close();
-                return count.intValue() != 0;
-//                generator = new QueryGenerator(PUBLISHED_WORKFLOW);
-//                generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, gatewayName);
-//                generator.setParameter(PublishedWorkflowConstants.PUBLISH_WORKFLOW_NAME, name);
-//                q = generator.selectQuery(em);
-//                Published_Workflow publishedWrkflow = (Published_Workflow) q.getSingleResult();
-//                end();
-//                return publishedWrkflow != null;
+                return existingWf != null;
             case HOST_DESCRIPTOR:
-                q = em.createQuery("SELECT COUNT(p.host_descriptor_ID) FROM Host_Descriptor p WHERE p.gateway_name =:gate_name and p.host_descriptor_ID =:host_desc_name");
-                q.setParameter("gate_name", gatewayName);
-                q.setParameter("host_desc_name",name);
-                count = (Number) q.getSingleResult();
-                em.getTransaction().commit();
+                Host_Descriptor existingHostDesc = em.find(Host_Descriptor.class, new Host_Descriptor_PK(gatewayName, name.toString()));
                 em.close();
-                return count.intValue() != 0;
+                return existingHostDesc != null;
             case SERVICE_DESCRIPTOR:
-                q = em.createQuery("SELECT COUNT(p.service_descriptor_ID) FROM Service_Descriptor p WHERE p.gateway_name =:gate_name and p.service_descriptor_ID =:service_desc_name");
-                q.setParameter("gate_name", gatewayName);
-                q.setParameter("service_desc_name",name);
-                count = (Number) q.getSingleResult();
-                em.getTransaction().commit();
+                Service_Descriptor existingServiceDesc = em.find(Service_Descriptor.class, new Service_Descriptor_PK(gatewayName, name.toString()));
                 em.close();
-                return count.intValue() != 0;
-//                generator = new QueryGenerator(SERVICE_DESCRIPTOR);
-//                generator.setParameter(ServiceDescriptorConstants.GATEWAY_NAME, gatewayName);
-//                generator.setParameter(ServiceDescriptorConstants.SERVICE_DESC_ID, name);
-//                q = generator.selectQuery(em);
-//                Service_Descriptor serviceDescriptor = (Service_Descriptor) q.getSingleResult();
-//                end();
-//                return serviceDescriptor != null;
+                return existingServiceDesc != null;
             case APPLICATION_DESCRIPTOR:
-                q = em.createQuery("SELECT COUNT(p.service_descriptor_ID) FROM Service_Descriptor p WHERE p.gateway_name =:gate_name and p.service_descriptor_ID =:service_desc_name");
+                q = em.createQuery("SELECT COUNT(p.application_descriptor_ID) FROM Application_Descriptor p WHERE p.gateway_name =:gate_name and p.application_descriptor_ID =:app_desc_name");
                 q.setParameter("gate_name", gatewayName);
-                q.setParameter("service_desc_name",name);
+                q.setParameter("app_desc_name",name);
                 count = (Number) q.getSingleResult();
                 em.getTransaction().commit();
                 em.close();
                 return count.intValue() != 0;
-//                generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
-//                generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
-//                generator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, name);
-//                q = generator.selectQuery(em);
-//                Application_Descriptor applicationDescriptor = (Application_Descriptor) q.getSingleResult();
-//                end();
-//                return applicationDescriptor != null;
             case EXPERIMENT:
-                q = em.createQuery("SELECT COUNT(p.experiment_ID) FROM Experiment p WHERE p.gateway_name =:gate_name and p.experiment_ID =:exp_name");
-                q.setParameter("gate_name", gatewayName);
-                q.setParameter("exp_name",name);
-                count = (Number) q.getSingleResult();
-                em.getTransaction().commit();
+                Experiment existingExp = em.find(Experiment.class, name.toString());
                 em.close();
-                return count.intValue() != 0;
-//                generator = new QueryGenerator(EXPERIMENT);
-//                generator.setParameter(ExperimentConstants.GATEWAY_NAME, gatewayName);
-//                generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
-//                q = generator.selectQuery(em);
-//                Experiment experiment = (Experiment) q.getSingleResult();
-//                end();
-//                return experiment != null;
+                return existingExp != null;
             default:
                 em.getTransaction().commit();
                 em.close();
