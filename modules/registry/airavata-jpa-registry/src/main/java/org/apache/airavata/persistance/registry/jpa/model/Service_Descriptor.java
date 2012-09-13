@@ -30,14 +30,13 @@ public class Service_Descriptor {
     @Id
     private String gateway_name;
 
-    private String updated_user;
     private String service_descriptor_xml;
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
-//    @ManyToOne
+    @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "updated_user", referencedColumnName = "user_name")
     private Users user;
 
@@ -79,14 +78,6 @@ public class Service_Descriptor {
 
     public void setGateway_name(String gateway_name) {
         this.gateway_name = gateway_name;
-    }
-
-    public String getUpdated_user() {
-        return updated_user;
-    }
-
-    public void setUpdated_user(String updated_user) {
-        this.updated_user = updated_user;
     }
 }
 

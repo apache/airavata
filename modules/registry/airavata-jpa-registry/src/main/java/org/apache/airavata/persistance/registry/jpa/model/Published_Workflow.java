@@ -20,12 +20,7 @@
 */
 package org.apache.airavata.persistance.registry.jpa.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.sql.Date;
 
 @Entity
@@ -38,7 +33,7 @@ public class Published_Workflow {
     @Id
     private String gateway_name;
 
-    @ManyToOne
+    @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
@@ -47,7 +42,7 @@ public class Published_Workflow {
     private String workflow_content;
     private String path;
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "created_user", referencedColumnName = "user_name")
     private Users user;
 

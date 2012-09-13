@@ -31,12 +31,12 @@ public class Gateway_Worker {
     @Id
     private String user_name;
 
-    @ManyToOne()
+    @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
 
-    @ManyToOne()
+    @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "user_name")
     private Users user;
 
