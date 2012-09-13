@@ -279,7 +279,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     public HostDescription getHostDescriptor(String hostName) throws RegistryException {
         GatewayResource gateway = jpa.getGateway();
 		if (!isHostDescriptorExists(hostName)){
-        	throw new DescriptorDoesNotExistsException(hostName);
+        	return null;
         }
         HostDescriptorResource hostDescriptorResource = gateway.getHostDescriptorResource(hostName);
         return createHostDescriptor(hostDescriptorResource);
@@ -349,8 +349,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     public ServiceDescription getServiceDescriptor(String serviceName) throws DescriptorDoesNotExistsException, MalformedDescriptorException {
     	GatewayResource gateway = jpa.getGateway();
-		if (!gateway.isHostDescriptorExists(serviceName)){
-        	throw new DescriptorDoesNotExistsException(serviceName);
+		if (!gateway.isServiceDescriptorExists(serviceName)){
+        	return null;
         }
         ServiceDescriptorResource serviceDescriptorResource = gateway.getServiceDescriptorResource(serviceName);
         return createServiceDescriptor(serviceDescriptorResource);
