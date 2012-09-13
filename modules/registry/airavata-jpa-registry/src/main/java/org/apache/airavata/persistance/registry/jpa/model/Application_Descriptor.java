@@ -37,11 +37,11 @@ public class Application_Descriptor {
 
     private String application_descriptor_xml;
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "updated_user", referencedColumnName = "user_name")
     private Users user;
 

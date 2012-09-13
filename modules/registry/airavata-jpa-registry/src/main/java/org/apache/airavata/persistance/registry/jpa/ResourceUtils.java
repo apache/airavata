@@ -47,6 +47,9 @@ public class ResourceUtils {
         properties.put("openjpa.DynamicEnhancementAgent","true");
         properties.put("openjpa.RuntimeUnenhancedClasses","supported");
         properties.put("openjpa.Log","SQL=TRACE");
+        properties.put("openjpa.ReadLockLevel", "none");
+        properties.put("openjpa.WriteLockLevel", "none");
+        properties.put("openjpa.LockTimeout", "30000");
         properties.put("openjpa.LockManager", "none");
         properties.put("openjpa.ConnectionFactoryProperties","PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000");
 
