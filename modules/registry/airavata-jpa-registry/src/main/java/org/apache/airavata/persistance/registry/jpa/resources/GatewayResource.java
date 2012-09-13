@@ -417,28 +417,33 @@ public class GatewayResource extends AbstractResource {
      * @return true or false
      */
     public boolean isExists(ResourceType type, Object name) {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
+        EntityManager em;
         Query q;
         Number count;
         switch (type){
             case USER:
+                em = ResourceUtils.getEntityManager();
                 Gateway_Worker existingWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayName, name.toString()));
                 em.close();
                 return existingWorker!= null;
             case PUBLISHED_WORKFLOW:
+                em = ResourceUtils.getEntityManager();
                 Published_Workflow existingWf = em.find(Published_Workflow.class, new Published_Workflow_PK(gatewayName, name.toString()));
                 em.close();
                 return existingWf != null;
             case HOST_DESCRIPTOR:
+                em = ResourceUtils.getEntityManager();
                 Host_Descriptor existingHostDesc = em.find(Host_Descriptor.class, new Host_Descriptor_PK(gatewayName, name.toString()));
                 em.close();
                 return existingHostDesc != null;
             case SERVICE_DESCRIPTOR:
+                em = ResourceUtils.getEntityManager();
                 Service_Descriptor existingServiceDesc = em.find(Service_Descriptor.class, new Service_Descriptor_PK(gatewayName, name.toString()));
                 em.close();
                 return existingServiceDesc != null;
             case APPLICATION_DESCRIPTOR:
+                em = ResourceUtils.getEntityManager();
+                em.getTransaction().begin();
                 q = em.createQuery("SELECT COUNT(p.application_descriptor_ID) FROM Application_Descriptor p WHERE p.gateway_name =:gate_name and p.application_descriptor_ID =:app_desc_name");
                 q.setParameter("gate_name", gatewayName);
                 q.setParameter("app_desc_name",name);
@@ -447,12 +452,11 @@ public class GatewayResource extends AbstractResource {
                 em.close();
                 return count.intValue() != 0;
             case EXPERIMENT:
+                em = ResourceUtils.getEntityManager();
                 Experiment existingExp = em.find(Experiment.class, name.toString());
                 em.close();
                 return existingExp != null;
             default:
-                em.getTransaction().commit();
-                em.close();
                 throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
         }
     }
