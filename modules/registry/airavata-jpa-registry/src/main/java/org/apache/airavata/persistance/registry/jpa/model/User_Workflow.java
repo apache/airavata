@@ -20,11 +20,7 @@
 */
 package org.apache.airavata.persistance.registry.jpa.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.sql.Date;
 
 @Entity
@@ -37,11 +33,11 @@ public class User_Workflow {
     @Id
     private String template_name;
 
-    @ManyToOne
+    @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "owner", referencedColumnName = "user_name")
     private Users user;
 

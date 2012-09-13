@@ -28,11 +28,11 @@ public class Project {
     private int project_ID;
     private String project_name;
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
-    @ManyToOne
+    @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "user_name")
     private Users users;
 
