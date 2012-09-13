@@ -156,7 +156,7 @@ public class ConfigurationResource extends AbstractResource {
             if(existing != null){
                configuration = em.merge(existing);
             }  else {
-                em.persist(configuration);
+                em.merge(configuration);
             }
 
             em.getTransaction().commit();

@@ -327,11 +327,13 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     
     public void addServiceDescriptor(ServiceDescription descriptor) throws RegistryException {
     	GatewayResource gateway = jpa.getGateway();
+        WorkerResource workerResource = jpa.getWorker();
         String serviceName = descriptor.getType().getName();
 		if (isServiceDescriptorExists(serviceName)){
         	throw new DescriptorAlreadyExistsException(serviceName);
         }
         ServiceDescriptorResource serviceDescriptorResource = gateway.createServiceDescriptorResource(serviceName);
+        serviceDescriptorResource.setUserName(workerResource.getUser());
         serviceDescriptorResource.setContent(descriptor.toXML());
         serviceDescriptorResource.save();
     }
@@ -405,12 +407,14 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws RegistryException {
     	GatewayResource gateway = jpa.getGateway();
+        WorkerResource workerResource = jpa.getWorker();
         String applicationName = descriptor.getType().getApplicationName().getStringValue();
         applicationName = createAppName(serviceName, hostName, applicationName);
 		if (isApplicationDescriptorExists(serviceName,hostName,descriptor.getType().getApplicationName().getStringValue())){
         	throw new DescriptorAlreadyExistsException(applicationName);
         }
         ApplicationDescriptorResource applicationDescriptorResource = gateway.createApplicationDescriptorResource(applicationName);
+        applicationDescriptorResource.setUpdatedUser(workerResource.getUser());
         applicationDescriptorResource.setServiceDescName(serviceName);
         applicationDescriptorResource.setHostDescName(hostName);
         applicationDescriptorResource.setContent(descriptor.toXML());
