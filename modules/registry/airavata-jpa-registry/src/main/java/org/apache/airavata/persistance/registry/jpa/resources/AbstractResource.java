@@ -31,10 +31,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractResource implements Resource {
-    private static final String PERSISTENCE_UNIT_NAME = "airavata_data";
-    protected EntityManagerFactory factory;
-    // protected EntityManager em;
-
     //table names
     public static final String GATEWAY = "Gateway";
     public static final String CONFIGURATION = "Configuration";
@@ -56,7 +52,7 @@ public abstract class AbstractResource implements Resource {
 
     //Configuration Table
     public final class ConfigurationConstants {
-        public static final String CONFIG_ID = "config_ID";
+//        public static final String CONFIG_ID = "config_ID";
         public static final String CONFIG_KEY = "config_key";
         public static final String CONFIG_VAL = "config_val";
         public static final String EXPIRE_DATE = "expire_date";
@@ -141,32 +137,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     protected AbstractResource() {
-//        Map<String, String> properties = new HashMap<String, String>();
-//        properties.put("openjpa.ConnectionURL", Utils.getJDBCURL());
-//        properties.put("openjpa.ConnectionDriverName", Utils.getJDBCDriver());
-//        properties.put("openjpa.ConnectionUserName",Utils.getJDBCUser());
-//        properties.put("openjpa.ConnectionPassword",Utils.getJDBCPassword());
-//        properties.put("openjpa.DynamicEnhancementAgent","true");
-//        properties.put("openjpa.RuntimeUnenhancedClasses","supported");
-//        properties.put("openjpa.Log","SQL=ERROR");
-//        properties.put("openjpa.ConnectionFactoryProperties","PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000");
-//
-//        factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
-        // em = ResourceUtils.getEntityManager();
     }
-
-//    protected void begin() {
-////        if(em == null)
-//            em = ResourceUtils.getEntityManager();
-////        }
-//        em.getTransaction().begin();
-//    }
-
-//    protected void end() {
-//        em.getTransaction().commit();
-//        //em.close();
-//
-//    }
 
     public boolean isExists(ResourceType type, Object name) {
         try {

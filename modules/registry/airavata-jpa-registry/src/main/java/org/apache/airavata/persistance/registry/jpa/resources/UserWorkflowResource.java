@@ -25,6 +25,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.User_Workflow;
+import org.apache.airavata.persistance.registry.jpa.model.User_Workflow_PK;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
@@ -124,6 +125,10 @@ public class UserWorkflowResource extends AbstractResource {
 
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
+        User_Workflow existingWF = em.find(User_Workflow.class, new User_Workflow_PK(gateway.getGatewayName(), name));
+        em.close();
+
+        em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         User_Workflow userWorkflow = new User_Workflow();
         userWorkflow.setTemplate_name(name);
@@ -136,7 +141,11 @@ public class UserWorkflowResource extends AbstractResource {
         user.setUser_name(worker.getUser());
         userWorkflow.setUser(user);
         userWorkflow.setPath(path);
-        em.merge(userWorkflow);
+        if(existingWF != null){
+            userWorkflow = em.merge(existingWF);
+        } else {
+            em.merge(userWorkflow);
+        }
         em.getTransaction().commit();
         em.close();
     }

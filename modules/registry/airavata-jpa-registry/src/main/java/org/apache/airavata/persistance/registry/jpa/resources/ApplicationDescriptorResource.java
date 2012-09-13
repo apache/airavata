@@ -233,6 +233,11 @@ public class ApplicationDescriptorResource extends AbstractResource {
      */
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
+        Application_Descriptor existingAppDesc = em.find(Application_Descriptor.class, new Application_Descriptor_PK(gatewayName,
+                name, hostDescName, serviceDescName));
+        em.close();
+
+        em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Application_Descriptor applicationDescriptor = new Application_Descriptor();
         applicationDescriptor.setApplication_descriptor_ID(getName());
@@ -245,10 +250,14 @@ public class ApplicationDescriptorResource extends AbstractResource {
         applicationDescriptor.setApplication_descriptor_xml(content);
         applicationDescriptor.setService_descriptor_ID(serviceDescName);
         applicationDescriptor.setHost_descriptor_ID(hostDescName);
-        em.merge(applicationDescriptor);
+        if (existingAppDesc != null) {
+            applicationDescriptor = em.merge(existingAppDesc);
+        } else {
+            em.merge(applicationDescriptor);
+        }
+
         em.getTransaction().commit();
         em.close();
-
     }
 
     /**

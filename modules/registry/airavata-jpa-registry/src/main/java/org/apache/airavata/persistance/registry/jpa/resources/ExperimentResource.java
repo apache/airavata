@@ -142,6 +142,10 @@ public class ExperimentResource extends AbstractResource {
      */
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
+        Experiment existingExp = em.find(Experiment.class, expID);
+        em.close();
+
+        em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Experiment experiment = new Experiment();
         Project project = new Project();
@@ -155,7 +159,12 @@ public class ExperimentResource extends AbstractResource {
         experiment.setUser(user);
         experiment.setGateway(gateway);
         experiment.setSubmitted_date(submittedDate);
-        em.merge(experiment);
+        if(existingExp != null){
+            experiment = em.merge(existingExp);
+        } else{
+           em.merge(experiment);
+        }
+
         em.getTransaction().commit();
         em.close();
     }

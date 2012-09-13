@@ -224,6 +224,10 @@ public class WorkerResource extends AbstractResource {
      */
 	public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
+        Gateway_Worker existingWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gateway.getGatewayName(), user));
+        em.close();
+
+        em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Gateway_Worker gatewayWorker = new Gateway_Worker();
         Users users = new Users();
@@ -233,7 +237,11 @@ public class WorkerResource extends AbstractResource {
         gatewaymodel.setGateway_name(gateway.getGatewayName());
         gatewaymodel.setOwner(gateway.getOwner());
         gatewayWorker.setGateway(gatewaymodel);
-        em.merge(gatewayWorker);
+        if(existingWorker != null){
+            gatewayWorker = em.merge(existingWorker);
+        }else {
+            em.merge(gatewayWorker);
+        }
         em.getTransaction().commit();
         em.close();
 	}

@@ -27,11 +27,10 @@ create table Gateway
 
 create table Configuration
 (
-        config_ID int(11) NOT NULL AUTO_INCREMENT,
         config_key varchar(255),
         config_val varchar(255),
         expire_date TIMESTAMP DEFAULT '0000-00-00 00:00:00',
-        PRIMARY KEY(config_ID)
+        PRIMARY KEY(config_key, config_val)
 );
 
 create table Users

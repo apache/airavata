@@ -32,6 +32,29 @@ public class GatewayResourceTest extends TestCase {
     }
 
     public void testSave() throws Exception {
+//        Calendar cal = Calendar.getInstance();
+//        cal.set( cal.YEAR, 1970 );
+//        cal.set( cal.MONTH, cal.JANUARY );
+//        cal.set( cal.DATE, 1 );
+//
+//        cal.set( cal.HOUR_OF_DAY, 0 );
+//        cal.set( cal.MINUTE, 0 );
+//        cal.set( cal.SECOND, 0 );
+//        cal.set( cal.MILLISECOND, 0 );
+//
+//        java.sql.Date jsqlD =
+//                new java.sql.Date( cal.getTime().getTime() );
+//
+//        ConfigurationResource config = ResourceUtils.createConfiguration("aa");
+//        config.setConfigVal("http://129.79.49.142:8080/axis2/services/WorkflowInterpretor/aaaa");
+//        config.setExpireDate(jsqlD);
+//        config.save();
+
+//        ConfigurationResource configurationResource = new ConfigurationResource();
+//        configurationResource.setConfigKey("cc");
+//        configurationResource.setConfigVal("http://129.79.49.142:8080/axis2/services/WorkflowInterpretor/aaaa");
+//        configurationResource.setExpireDate(jsqlD);
+//        configurationResource.save();
 //        List<HostDescriptorResource>  list = gatewayResource.getHostDescriptorResources();
 //        for(HostDescriptorResource resource : list) {
 //            System.out.println("Host Descriptor name :" +  resource.getHostDescName());

@@ -385,13 +385,22 @@ public class GatewayResource extends AbstractResource {
      */
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
+        Gateway existingGateway = em.find(Gateway.class, gatewayName);
+        em.close();
+
+        em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Gateway gateway = new Gateway();
         gateway.setGateway_name(gatewayName);
         gateway.setOwner(owner);
-        em.merge(gateway);
+        if (existingGateway != null) {
+            gateway = em.merge(existingGateway);
+        } else {
+            em.persist(gateway);
+        }
         em.getTransaction().commit();
         em.close();
+
     }
 
     /**
@@ -405,7 +414,6 @@ public class GatewayResource extends AbstractResource {
         em.getTransaction().begin();
         Query q;
         Number count;
-        QueryGenerator generator;
         switch (type){
             case USER:
                 q = em.createQuery("SELECT COUNT(p.user_name) FROM Gateway_Worker p WHERE p.gateway_name =:gate_name and p.user_name =:userName");
