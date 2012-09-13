@@ -148,6 +148,8 @@ public class ServiceDescriptorResource extends AbstractResource {
         user.setUser_name(userName);
         serviceDescriptor.setUser(user);
         if(existingServiceDesc != null) {
+            existingServiceDesc.setUser(user);
+            existingServiceDesc.setService_descriptor_xml(content);
             serviceDescriptor = em.merge(existingServiceDesc);
         }else {
             em.merge(serviceDescriptor);

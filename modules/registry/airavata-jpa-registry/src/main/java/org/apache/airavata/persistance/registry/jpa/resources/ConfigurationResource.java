@@ -153,9 +153,10 @@ public class ConfigurationResource extends AbstractResource {
             configuration.setConfig_key(configKey);
             configuration.setConfig_val(configVal);
             configuration.setExpire_date(expireDate);
-            if(existing != null){
-               configuration = em.merge(existing);
-            }  else {
+            if (existing != null) {
+                existing.setExpire_date(expireDate);
+                configuration = em.merge(existing);
+            } else {
                 em.merge(configuration);
             }
 

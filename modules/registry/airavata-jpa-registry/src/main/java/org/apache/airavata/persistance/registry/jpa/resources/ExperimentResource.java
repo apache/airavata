@@ -160,6 +160,10 @@ public class ExperimentResource extends AbstractResource {
         experiment.setGateway(gateway);
         experiment.setSubmitted_date(submittedDate);
         if(existingExp != null){
+            existingExp.setGateway(gateway);
+            existingExp.setProject(project);
+            existingExp.setUser(user);
+            existingExp.setSubmitted_date(submittedDate);
             experiment = em.merge(existingExp);
         } else{
            em.merge(experiment);
