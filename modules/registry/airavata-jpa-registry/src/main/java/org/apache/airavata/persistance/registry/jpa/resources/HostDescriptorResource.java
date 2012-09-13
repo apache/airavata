@@ -23,10 +23,7 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor;
-import org.apache.airavata.persistance.registry.jpa.model.Gateway;
-import org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor;
-import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 import javax.persistence.EntityManager;
@@ -193,6 +190,10 @@ public class HostDescriptorResource extends AbstractResource {
      */
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
+        Host_Descriptor existingHost_desc = em.find(Host_Descriptor.class, new Host_Descriptor_PK(gatewayName, hostDescName));
+        em.close();
+
+        em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Host_Descriptor hostDescriptor = new Host_Descriptor();
         Gateway gateway = new Gateway();
@@ -203,7 +204,12 @@ public class HostDescriptorResource extends AbstractResource {
         hostDescriptor.setGateway(gateway);
         hostDescriptor.setHost_descriptor_xml(content);
         hostDescriptor.setUser(user);
-        em.merge(hostDescriptor);
+        if(existingHost_desc != null){
+            hostDescriptor = em.merge(existingHost_desc);
+        } else {
+            em.merge(hostDescriptor);
+        }
+
         em.getTransaction().commit();
         em.close();
 

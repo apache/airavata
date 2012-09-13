@@ -32,10 +32,10 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Configuration;
+import org.apache.airavata.persistance.registry.jpa.model.Configuration_PK;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 public class ConfigurationResource extends AbstractResource {
-    private int configID = -1;
     private String configKey;
     private String configVal;
     private Date expireDate;
@@ -48,10 +48,12 @@ public class ConfigurationResource extends AbstractResource {
 
     /**
      *
-     * @param configID configuration ID
+     * @param configKey
+     * @param configVal
      */
-    public ConfigurationResource(int configID) {
-        this.configID = configID;
+    public ConfigurationResource(String configKey, String configVal) {
+        this.configKey = configKey;
+        this.configVal = configVal;
     }
 
     /**
@@ -137,19 +139,32 @@ public class ConfigurationResource extends AbstractResource {
      *  save configuration to database
      */
     public synchronized void save() {
-        return;
-//        EntityManager em = ResourceUtils.getEntityManager();
-//        em.getTransaction().begin();
-//        Configuration configuration = new Configuration();
-//        configuration.setConfig_key(configKey);
-//        configuration.setConfig_val(configVal);
-//        configuration.setExpire_date(expireDate);
-//        if (configID != -1) {
-//            configuration.setConfig_ID(configID);
-//        }
-//        em.merge(configuration);
-//        em.getTransaction().commit();
-//        em.close();
+        Lock lock = ResourceUtils.getLock();
+        lock.lock();
+        try {
+            EntityManager em = ResourceUtils.getEntityManager();
+            //whether existing
+            Configuration existing = em.find(Configuration.class, new Configuration_PK(configKey, configVal));
+            em.close();
+
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Configuration configuration = new Configuration();
+            configuration.setConfig_key(configKey);
+            configuration.setConfig_val(configVal);
+            configuration.setExpire_date(expireDate);
+            if(existing != null){
+               configuration = em.merge(existing);
+            }  else {
+                em.persist(configuration);
+            }
+
+            em.getTransaction().commit();
+            em.close();
+        }
+        finally {
+            lock.unlock();
+        }
     }
 
     /**

@@ -23,10 +23,7 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor;
-import org.apache.airavata.persistance.registry.jpa.model.Gateway;
-import org.apache.airavata.persistance.registry.jpa.model.Service_Descriptor;
-import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 import javax.persistence.EntityManager;
@@ -136,6 +133,10 @@ public class ServiceDescriptorResource extends AbstractResource {
 
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
+        Service_Descriptor existingServiceDesc = em.find(Service_Descriptor.class, new Service_Descriptor_PK(gatewayName, serviceDescName));
+        em.close();
+
+        em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Service_Descriptor serviceDescriptor = new Service_Descriptor();
         serviceDescriptor.setService_descriptor_ID(getServiceDescName());
@@ -146,7 +147,11 @@ public class ServiceDescriptorResource extends AbstractResource {
         Users user = new Users();
         user.setUser_name(userName);
         serviceDescriptor.setUser(user);
-        em.merge(serviceDescriptor);
+        if(existingServiceDesc != null) {
+            serviceDescriptor = em.merge(existingServiceDesc);
+        }else {
+            em.merge(serviceDescriptor);
+        }
         em.getTransaction().commit();
         em.close();
 

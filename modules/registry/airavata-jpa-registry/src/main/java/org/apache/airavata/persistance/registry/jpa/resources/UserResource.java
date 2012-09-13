@@ -115,11 +115,19 @@ public class UserResource extends AbstractResource {
      */
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
+        Users existingUser = em.find(Users.class, userName);
+        em.close();
+
+        em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Users user = new Users();
         user.setUser_name(userName);
         user.setPassword(password);
-        em.merge(user);
+        if(existingUser != null){
+            user = em.merge(existingUser);
+        }else {
+            em.persist(user);
+        }
         em.getTransaction().commit();
         em.close();
     }

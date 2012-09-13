@@ -20,17 +20,11 @@
 */
 package org.apache.airavata.persistance.registry.jpa;
 
-import org.apache.airavata.persistance.registry.jpa.model.Configuration;
-import org.apache.airavata.persistance.registry.jpa.model.Gateway;
-import org.apache.airavata.persistance.registry.jpa.model.Gateway_Worker;
-import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +35,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ResourceUtils {
     private static final String PERSISTENCE_UNIT_NAME = "airavata_data";
     protected static EntityManagerFactory factory;
-    // protected static EntityManager em;
 
     private static Lock lock = new ReentrantLock();
 
@@ -225,9 +218,7 @@ public class ResourceUtils {
     private static ConfigurationResource createConfigurationResourceObject(
             Object result) {
         Configuration configuration = (Configuration) result;
-        ConfigurationResource configurationResource = new ConfigurationResource(configuration.getConfig_ID());
-        configurationResource.setConfigKey(configuration.getConfig_key());
-        configurationResource.setConfigVal(configuration.getConfig_val());
+        ConfigurationResource configurationResource = new ConfigurationResource(configuration.getConfig_key(), configuration.getConfig_val());
         configurationResource.setExpireDate(configuration.getExpire_date());
         return configurationResource;
     }
@@ -237,31 +228,44 @@ public class ResourceUtils {
      * @param configValue
      */
     public static void removeConfiguration(String configkey, String configValue) {
-        EntityManager em = getEntityManager();
-        em.getTransaction().begin();
-//        QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.CONFIGURATION);
-//        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configkey);
-//        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_VAL, configValue);
-//        Query q = queryGenerator.deleteQuery(em);
-//        q.executeUpdate();
-        em.getTransaction().commit();
-        em.close();
+        QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.CONFIGURATION);
+        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configkey);
+        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_VAL, configValue);
+        if(isConfigurationExists(configkey, configValue)){
+            EntityManager em = getEntityManager();
+            em.getTransaction().begin();
+            Query q = queryGenerator.deleteQuery(em);
+            q.executeUpdate();
+            em.getTransaction().commit();
+            em.close();
+        }
     }
 
     /**
      * @param configkey
      */
     public static void removeConfiguration(String configkey) {
-        EntityManager em = getEntityManager();
-        em.getTransaction().begin();
+        QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.CONFIGURATION);
+        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configkey);
+        if(isConfigurationExist(configkey)){
+            EntityManager em = getEntityManager();
+            em.getTransaction().begin();
+            Query q = queryGenerator.deleteQuery(em);
+            q.executeUpdate();
+            em.getTransaction().commit();
+            em.close();
+        }
+    }
 
-//        QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.CONFIGURATION);
-//        queryGenerator.setParameter(AbstractResource.ConfigurationConstants.CONFIG_KEY, configkey);
-//        Query q = queryGenerator.deleteQuery(em);
-//        q.executeUpdate();
-        em.getTransaction().commit();
-        em.close();
-
+    public static boolean isConfigurationExists(String configKey, String configVal){
+        try{
+            EntityManager em = ResourceUtils.getEntityManager();
+            Configuration existing = em.find(Configuration.class, new Configuration_PK(configKey, configVal));
+            em.close();
+            return existing!= null;
+        } catch (Exception e){
+            throw new EntityNotFoundException();
+        }
     }
 
     public static Lock getLock() {
