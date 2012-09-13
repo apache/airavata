@@ -156,7 +156,7 @@ public class ServiceDescriptorResource extends AbstractResource {
             em.merge(serviceDescriptor);
         }
         em.getTransaction().commit();
-        em.close();
+         em.close();
 
     }
 

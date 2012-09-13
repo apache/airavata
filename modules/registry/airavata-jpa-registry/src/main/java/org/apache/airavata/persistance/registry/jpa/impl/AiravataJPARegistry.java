@@ -39,6 +39,8 @@ import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.persistance.registry.jpa.JPAResourceAccessor;
+import org.apache.airavata.persistance.registry.jpa.Resource;
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
@@ -489,7 +491,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     	if (!isApplicationDescriptorExists(serviceName,hostName,applicationName)){
 			throw new DescriptorDoesNotExistsException(appName);
 		}
-		gateway.removeApplicationDescriptor(appName);
+        ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource)gateway.create(ResourceType.APPLICATION_DESCRIPTOR);
+        String[] strings = {gateway.getGatewayName(), appName, hostName, serviceName};
+        applicationDescriptorResource.removeMe(strings);
     }
 
     public ResourceMetadata getApplicationDescriptorMetadata(String serviceName, String hostName, String applicationName) throws UnimplementedRegistryOperationException {
