@@ -205,6 +205,8 @@ public class HostDescriptorResource extends AbstractResource {
         hostDescriptor.setHost_descriptor_xml(content);
         hostDescriptor.setUser(user);
         if(existingHost_desc != null){
+            existingHost_desc.setUser(user);
+            existingHost_desc.setHost_descriptor_xml(content);
             hostDescriptor = em.merge(existingHost_desc);
         } else {
             em.merge(hostDescriptor);

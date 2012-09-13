@@ -231,6 +231,11 @@ public class PublishWorkflowResource extends AbstractResource {
         user.setUser_name(createdUser);
         publishedWorkflow.setUser(user);
         if(existingWF != null){
+            existingWF.setUser(user);
+            existingWF.setPublished_date(publishedDate);
+            existingWF.setWorkflow_content(content);
+            existingWF.setVersion(version);
+            existingWF.setPath(path);
             publishedWorkflow = em.merge(existingWF);
         }else {
             em.merge(gateway);

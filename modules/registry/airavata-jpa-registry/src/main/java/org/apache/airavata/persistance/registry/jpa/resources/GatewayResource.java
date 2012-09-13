@@ -401,6 +401,7 @@ public class GatewayResource extends AbstractResource {
         gateway.setGateway_name(gatewayName);
         gateway.setOwner(owner);
         if (existingGateway != null) {
+            existingGateway.setOwner(owner);
             gateway = em.merge(existingGateway);
         } else {
             em.persist(gateway);

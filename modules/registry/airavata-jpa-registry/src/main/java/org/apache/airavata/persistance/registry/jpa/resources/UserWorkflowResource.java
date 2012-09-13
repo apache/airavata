@@ -134,14 +134,16 @@ public class UserWorkflowResource extends AbstractResource {
         userWorkflow.setTemplate_name(name);
         userWorkflow.setLast_updated_date(lastUpdateDate);
         userWorkflow.setWorkflow_graph(content);
-        Gateway gateway = new Gateway();
-        gateway.setGateway_name(gateway.getGateway_name());
-        userWorkflow.setGateway(gateway);
-        Users user = new Users();
-        user.setUser_name(worker.getUser());
-        userWorkflow.setUser(user);
+        userWorkflow.setGateway_name(this.gateway.getGatewayName());
+        userWorkflow.setOwner(this.getWorker().getUser());
         userWorkflow.setPath(path);
         if(existingWF != null){
+            existingWF.setGateway_name(this.gateway.getGatewayName());
+            existingWF.setOwner(this.getWorker().getUser());
+            existingWF.setTemplate_name(name);
+            existingWF.setLast_updated_date(lastUpdateDate);
+            existingWF.setPath(path);
+            existingWF.setWorkflow_graph(content);
             userWorkflow = em.merge(existingWF);
         } else {
             em.merge(userWorkflow);

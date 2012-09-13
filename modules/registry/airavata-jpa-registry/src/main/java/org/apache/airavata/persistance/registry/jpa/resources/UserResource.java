@@ -124,6 +124,7 @@ public class UserResource extends AbstractResource {
         user.setUser_name(userName);
         user.setPassword(password);
         if(existingUser != null){
+            existingUser.setPassword(password);
             user = em.merge(existingUser);
         }else {
             em.persist(user);
