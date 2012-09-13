@@ -243,7 +243,11 @@ public class DeploymentDescriptionDialog extends JDialog {
                 okButton.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                         try {
-							saveServiceDescription();
+                            if ("Register".equals(okButton.getText())) {
+                                saveServiceDescription(false);
+                            } else {
+                                saveServiceDescription(true);
+                            }
 							close();
 						} catch (RegistryException e1) {
 							e1.printStackTrace();
@@ -621,6 +625,56 @@ public class DeploymentDescriptionDialog extends JDialog {
         }
     }
 
+    public void saveServiceDescription(boolean update) throws RegistryException {
+        List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
+        List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
+
+        for (int i = 0; i < defaultTableModel.getRowCount(); i++) {
+            String parameterName = (String) defaultTableModel.getValueAt(i, 1);
+            String paramType = (String) defaultTableModel.getValueAt(i, 2);
+            String parameterDescription = (String) defaultTableModel.getValueAt(i, 3);
+            if (parameterName != null && !parameterName.trim().equals("")) {
+                // todo how to handle Enum
+                if (getIOStringList()[0].equals(defaultTableModel.getValueAt(i, 0))) {
+                    InputParameterType parameter = InputParameterType.Factory.newInstance();
+                    parameter.setParameterName(parameterName);
+                    parameter.setParameterDescription(parameterDescription);
+                    ParameterType parameterType = parameter.addNewParameterType();
+                    parameterType.setType(DataType.Enum.forString(paramType));
+                    parameterType.setName(paramType);
+                    inputParameters.add(parameter);
+
+                } else {
+                    OutputParameterType parameter = OutputParameterType.Factory.newInstance();
+                    parameter.setParameterName(parameterName);
+                    parameter.setParameterDescription(parameterDescription);
+                    ParameterType parameterType = parameter.addNewParameterType();
+                    parameterType.setType(DataType.Enum.forString(paramType));
+                    parameterType.setName(paramType);
+                    outputParameters.add(parameter);
+                }
+            }
+        }
+        getServiceDescriptionType().setInputParametersArray(inputParameters.toArray(new InputParameterType[] {}));
+        getServiceDescriptionType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[] {}));
+        if (update) {
+            getRegistry().updateServiceDescriptor(getServiceDescription());
+        } else {
+            getRegistry().addServiceDescriptor(getServiceDescription());
+        }
+        if (!isNewDescription()) {
+            Map<String, ApplicationDeploymentDescription> descs = getRegistry().getApplicationDescriptors(getServiceName());
+            for (String hostDescName : descs.keySet()) {
+                getRegistry().removeApplicationDescriptor(getServiceName(), hostDescName, descs.get(hostDescName).getType().getApplicationName().getStringValue());
+            }
+        }
+        for (String hostName : getDeployments().keySet()) {
+            getRegistry().addApplicationDescriptor(getServiceName(), hostName, getDeployments().get(hostName).getApplicationDescription());
+        }
+        setServiceCreated(true);
+        JOptionPane.showMessageDialog(this, "Application '" + getServiceName() + "' is registered Successfully !");
+    }
+
     public void saveServiceDescription() throws RegistryException {
         List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
         List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
@@ -666,7 +720,6 @@ public class DeploymentDescriptionDialog extends JDialog {
         setServiceCreated(true);
         JOptionPane.showMessageDialog(this, "Application '" + getServiceName() + "' is registered Successfully !");
     }
-
     public void close() {
         getDialog().setVisible(false);
     }
