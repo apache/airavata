@@ -32,6 +32,17 @@ public class GatewayResourceTest extends TestCase {
     }
 
     public void testSave() throws Exception {
+//        ServiceDescriptorResource serviceDescriptorResource = gatewayResource.createServiceDescriptorResource("bb");
+//        serviceDescriptorResource.setUserName("admin");
+//        serviceDescriptorResource.setContent("ccccc");
+//        serviceDescriptorResource.save();
+//
+//        ApplicationDescriptorResource applicationDescriptorResource = gatewayResource.createApplicationDescriptorResource("test");
+//        applicationDescriptorResource.setUpdatedUser("admin");
+//        applicationDescriptorResource.setContent("abc");
+//        applicationDescriptorResource.setHostDescName("aa");
+//        applicationDescriptorResource.setServiceDescName("bb");
+//        applicationDescriptorResource.save();
 //        Calendar cal = Calendar.getInstance();
 //        cal.set( cal.YEAR, 1970 );
 //        cal.set( cal.MONTH, cal.JANUARY );

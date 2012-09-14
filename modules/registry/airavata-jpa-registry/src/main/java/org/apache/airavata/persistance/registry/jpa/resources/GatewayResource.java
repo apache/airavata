@@ -182,6 +182,13 @@ public class GatewayResource extends AbstractResource {
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
+            case APPLICATION_DESCRIPTOR:
+                generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
+                generator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, name);
+                generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
             default:
                 break;
         }
@@ -257,6 +264,17 @@ public class GatewayResource extends AbstractResource {
                 em.getTransaction().commit();
                 em.close();
                 return serviceDescriptorResource;
+            case APPLICATION_DESCRIPTOR:
+                generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
+                generator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, name);
+                generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
+                q = generator.selectQuery(em);
+                Application_Descriptor eAppDesc = (Application_Descriptor) q.getSingleResult();
+                ApplicationDescriptorResource applicationDescriptorResource =
+                        (ApplicationDescriptorResource)Utils.getResource(ResourceType.APPLICATION_DESCRIPTOR, eAppDesc);
+                em.getTransaction().commit();
+                em.close();
+                return applicationDescriptorResource;
             default:
                 em.getTransaction().commit();
                 em.close();
@@ -444,14 +462,9 @@ public class GatewayResource extends AbstractResource {
                 return existingServiceDesc != null;
             case APPLICATION_DESCRIPTOR:
                 em = ResourceUtils.getEntityManager();
-                em.getTransaction().begin();
-                q = em.createQuery("SELECT COUNT(p.application_descriptor_ID) FROM Application_Descriptor p WHERE p.gateway_name =:gate_name and p.application_descriptor_ID =:app_desc_name");
-                q.setParameter("gate_name", gatewayName);
-                q.setParameter("app_desc_name",name);
-                count = (Number) q.getSingleResult();
-                em.getTransaction().commit();
+                Application_Descriptor existingAppDesc = em.find(Application_Descriptor.class, new Application_Descriptor_PK(gatewayName, name.toString()));
                 em.close();
-                return count.intValue() != 0;
+                return existingAppDesc != null;
             case EXPERIMENT:
                 em = ResourceUtils.getEntityManager();
                 Experiment existingExp = em.find(Experiment.class, name.toString());
@@ -582,22 +595,22 @@ public class GatewayResource extends AbstractResource {
     	return hdr;
     }
 
-//    /**
-//     *
-//     * @param descriptorName application descriptor name
-//     * @return ApplicationDescriptorResource
-//     */
-//    public ApplicationDescriptorResource getApplicationDescriptorResource(String descriptorName){
-//    	return (ApplicationDescriptorResource)get(ResourceType.APPLICATION_DESCRIPTOR,descriptorName);
-//    }
+    /**
+     *
+     * @param descriptorName application descriptor name
+     * @return ApplicationDescriptorResource
+     */
+    public ApplicationDescriptorResource getApplicationDescriptorResource(String descriptorName){
+    	return (ApplicationDescriptorResource)get(ResourceType.APPLICATION_DESCRIPTOR,descriptorName);
+    }
 
     /**
      *
      * @param descriptorName  application descriptor name
      */
-//    public void removeApplicationDescriptor(String descriptorName){
-//    	remove(ResourceType.APPLICATION_DESCRIPTOR, descriptorName);
-//    }
+    public void removeApplicationDescriptor(String descriptorName){
+    	remove(ResourceType.APPLICATION_DESCRIPTOR, descriptorName);
+    }
 
     /**
      *
@@ -640,11 +653,11 @@ public class GatewayResource extends AbstractResource {
                 ApplicationDescriptorResource applicationDescriptorResource =
                         new ApplicationDescriptorResource(
                                 applicationDescriptor.getApplication_descriptor_ID(),
-                                applicationDescriptor.getGateway().getGateway_name(),
-                                applicationDescriptor.getHost_descriptor_ID(),
-                                applicationDescriptor.getService_descriptor_ID());
+                                applicationDescriptor.getGateway().getGateway_name());
                 applicationDescriptorResource.setContent(applicationDescriptor.getApplication_descriptor_xml());
                 applicationDescriptorResource.setUpdatedUser(applicationDescriptor.getUser().getUser_name());
+                applicationDescriptorResource.setHostDescName(applicationDescriptor.getHost_descriptor_ID());
+                applicationDescriptorResource.setServiceDescName(applicationDescriptor.getService_descriptor_ID());
                 resourceList.add(applicationDescriptorResource);
             }
         }

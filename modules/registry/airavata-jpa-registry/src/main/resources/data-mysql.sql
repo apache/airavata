@@ -120,7 +120,7 @@ create table Application_Descriptor
          host_descriptor_ID varchar(255),
          service_descriptor_ID varchar(255),
          application_descriptor_xml varchar(2000),
-         PRIMARY KEY(gateway_name,host_descriptor_ID, service_descriptor_ID,application_descriptor_ID),
+         PRIMARY KEY(gateway_name,application_descriptor_ID),
          FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
          FOREIGN KEY (updated_user) REFERENCES Users(user_name) ON DELETE CASCADE
 );
