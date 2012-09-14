@@ -329,7 +329,7 @@ public class DynamicWorkflowRunnerWindow {
             inputNode.setDefaultValue(value);
         }
 
-        final String gFacUrl = (String) this.gfacUrlListField.getSelectedItem();
+        final String gFacUrl = ((URI) this.gfacUrlListField.getSelectedItem()).toASCIIString();
         if (null != gFacUrl && !"".equals(gFacUrl)) {
             try {
                 this.engine.getConfiguration().setGFacURL(new URI(gFacUrl));
