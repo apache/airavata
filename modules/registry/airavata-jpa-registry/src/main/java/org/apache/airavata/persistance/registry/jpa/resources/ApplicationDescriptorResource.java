@@ -166,19 +166,19 @@ public class ApplicationDescriptorResource extends AbstractResource {
      *
      * @param keys primary keys of the Application_descriptor table
      */
-    public void removeMe(Object[] keys) {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        QueryGenerator queryGenerator = new QueryGenerator(APPLICATION_DESCRIPTOR);
-        queryGenerator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, keys[0]);
-        queryGenerator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, keys[1]);
-        queryGenerator.setParameter(ApplicationDescriptorConstants.HOST_DESC_ID, keys[2]);
-        queryGenerator.setParameter(ApplicationDescriptorConstants.SERVICE_DESC_ID, keys[3]);
-        Query q = queryGenerator.deleteQuery(em);
-        q.executeUpdate();
-        em.getTransaction().commit();
-        em.close();
-    }
+//    public void removeMe(Object[] keys) {
+//        EntityManager em = ResourceUtils.getEntityManager();
+//        em.getTransaction().begin();
+//        QueryGenerator queryGenerator = new QueryGenerator(APPLICATION_DESCRIPTOR);
+//        queryGenerator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, keys[0]);
+//        queryGenerator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, keys[1]);
+//        queryGenerator.setParameter(ApplicationDescriptorConstants.HOST_DESC_ID, keys[2]);
+//        queryGenerator.setParameter(ApplicationDescriptorConstants.SERVICE_DESC_ID, keys[3]);
+//        Query q = queryGenerator.deleteQuery(em);
+//        q.executeUpdate();
+//        em.getTransaction().commit();
+//        em.close();
+//    }
 
     /**
      *
