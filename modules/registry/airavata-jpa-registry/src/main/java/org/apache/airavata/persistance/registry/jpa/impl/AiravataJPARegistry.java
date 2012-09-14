@@ -434,7 +434,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isApplicationDescriptorExists(serviceName,hostName,descriptor.getType().getApplicationName().getStringValue())){
         	throw new DescriptorDoesNotExistsException(applicationName);
         }
-        ApplicationDescriptorResource serviceDescriptorResource = gateway.getApplicationDescriptorResource(applicationName);
+        ApplicationDescriptorResource serviceDescriptorResource = ResourceUtils.getApplicationDescriptorResource(applicationName, gateway.getGatewayName(),
+                hostName, serviceName);
         serviceDescriptorResource.setContent(descriptor.toXML());
         serviceDescriptorResource.save();
     }
@@ -450,10 +451,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     
     public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName)throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException{
     	GatewayResource gateway = jpa.getGateway();
+        String appName = createAppName(serviceName, hostname, applicationName);
 		if (!isApplicationDescriptorExists(serviceName,hostname,applicationName)){
         	throw new DescriptorDoesNotExistsException(createAppName(serviceName, hostname, applicationName));
         }
-        return createApplicationDescriptor(gateway.getApplicationDescriptorResource(createAppName(serviceName, hostname, applicationName)));
+        return createApplicationDescriptor(ResourceUtils.getApplicationDescriptorResource(appName,gateway.getGatewayName(),hostname, serviceName));
     }
     
     public ApplicationDeploymentDescription getApplicationDescriptors(String serviceName, String hostname) throws MalformedDescriptorException {
@@ -491,9 +493,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     	if (!isApplicationDescriptorExists(serviceName,hostName,applicationName)){
 			throw new DescriptorDoesNotExistsException(appName);
 		}
-        ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource)gateway.create(ResourceType.APPLICATION_DESCRIPTOR);
-        String[] strings = {gateway.getGatewayName(), appName, hostName, serviceName};
-        applicationDescriptorResource.removeMe(strings);
+        ResourceUtils.removeApplicationDescriptor(gateway.getGatewayName(), appName, hostName, serviceName);
     }
 
     public ResourceMetadata getApplicationDescriptorMetadata(String serviceName, String hostName, String applicationName) throws UnimplementedRegistryOperationException {

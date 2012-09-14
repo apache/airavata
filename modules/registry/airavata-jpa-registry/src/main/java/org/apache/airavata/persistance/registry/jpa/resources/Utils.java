@@ -78,7 +78,7 @@ public class Utils {
      * @param o model type instance
      * @return corresponding resource object
      */
-    static Resource getResource(ResourceType type, Object o) {
+    public static Resource getResource(ResourceType type, Object o) {
         switch (type){
             case GATEWAY:
                 if (o instanceof Gateway) {

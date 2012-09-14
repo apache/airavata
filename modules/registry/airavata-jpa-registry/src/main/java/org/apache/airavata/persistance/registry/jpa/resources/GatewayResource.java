@@ -582,22 +582,22 @@ public class GatewayResource extends AbstractResource {
     	return hdr;
     }
 
-    /**
-     *
-     * @param descriptorName application descriptor name
-     * @return ApplicationDescriptorResource
-     */
-    public ApplicationDescriptorResource getApplicationDescriptorResource(String descriptorName){
-    	return (ApplicationDescriptorResource)get(ResourceType.APPLICATION_DESCRIPTOR,descriptorName);
-    }
+//    /**
+//     *
+//     * @param descriptorName application descriptor name
+//     * @return ApplicationDescriptorResource
+//     */
+//    public ApplicationDescriptorResource getApplicationDescriptorResource(String descriptorName){
+//    	return (ApplicationDescriptorResource)get(ResourceType.APPLICATION_DESCRIPTOR,descriptorName);
+//    }
 
     /**
      *
      * @param descriptorName  application descriptor name
      */
-    public void removeApplicationDescriptor(String descriptorName){
-    	remove(ResourceType.APPLICATION_DESCRIPTOR, descriptorName);
-    }
+//    public void removeApplicationDescriptor(String descriptorName){
+//    	remove(ResourceType.APPLICATION_DESCRIPTOR, descriptorName);
+//    }
 
     /**
      *
