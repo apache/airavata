@@ -42,7 +42,10 @@ import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationCo
 import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.core.gfac.utils.GfacUtils;
+import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.Axis2Registry;
+import org.apache.airavata.registry.api.util.RegistryUtils;
+import org.apache.airavata.registry.api.util.WebServiceUtil;
 import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.schemas.wec.SecurityContextDocument;
@@ -79,9 +82,10 @@ public class GFacMessageReciever implements MessageReceiver {
     public static final String MYPROXY_PASS = "myproxy.pass";
     public static final String MYPROXY_LIFE = "myproxy.life";
     public static final String GFAC_URL = "GFacURL";
+    public static final String REPOSITORY_PROPERTIES = "repository.properties";
     private GFacConfiguration gfacContext;
     private GenericService service;
-    private Axis2Registry registry;
+    private AiravataRegistry2 registry;
     private  GfacAPI gfacAPI;
 
     public void receive(org.apache.axis2.context.MessageContext axisRequestMsgCtx) throws AxisFault {
@@ -172,7 +176,7 @@ public class GFacMessageReciever implements MessageReceiver {
         //Set the WorkflowContext Header to the ThreadLocal of the Gfac Service, so that this can be accessed easilly
         WorkflowContextHeaderBuilder.setCurrentContextHeader(document.getContextHeader());
         Map<Parameter,ActualParameter> actualParameters = new LinkedHashMap<Parameter,ActualParameter>();
-        ServiceDescription serviceDescription = getRegistry(context).getServiceDescription(serviceName);
+        ServiceDescription serviceDescription = getRegistry(context).getServiceDescriptor(serviceName);
         if(serviceDescription==null){
         	throw new RegistryException(new Exception("Service Description not found in registry."));
         }
@@ -299,7 +303,7 @@ public class GFacMessageReciever implements MessageReceiver {
     private OMElement getWSDL(ConfigurationContext context, String serviceName) throws XMLStreamException {
         String WSDL = null;
 		try {
- 			WSDL = getRegistry(context).getWSDL(serviceName);
+ 			WSDL = WebServiceUtil.getWSDL(getRegistry(context).getServiceDescriptor(serviceName));
 		} catch (RegistryException e) {
 			//TODO this scenario occur if the service is not present in the registry.
 			//someone should handle this
@@ -321,11 +325,8 @@ public class GFacMessageReciever implements MessageReceiver {
      * @return
      *
      */
-    private Axis2Registry getRegistry(ConfigurationContext context) {
-        if (this.registry == null) {
-            this.registry = (Axis2Registry) ((GFacConfiguration)context.getProperty(GFacService.GFAC_CONFIGURATION)).getRegistry();
-        }
-        return registry;
+    private AiravataRegistry2 getRegistry(ConfigurationContext context) {
+        return RegistryUtils.getRegistryFromConfig(this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES));
     }
 
     private String getOriginalServiceName(MessageContext messageContext) {
