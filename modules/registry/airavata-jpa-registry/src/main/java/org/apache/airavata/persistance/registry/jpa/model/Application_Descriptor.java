@@ -29,19 +29,17 @@ public class Application_Descriptor {
     @Id
     private String application_descriptor_ID;
     @Id
-    private String host_descriptor_ID;
-    @Id
-    private String service_descriptor_ID;
-    @Id
     private String gateway_name;
 
+    private String host_descriptor_ID;
+    private String service_descriptor_ID;
     private String application_descriptor_xml;
 
-    @ManyToOne(cascade=CascadeType.MERGE)
+    @ManyToOne(cascade=CascadeType.PERSIST)
     @JoinColumn(name = "gateway_name")
     private Gateway gateway;
 
-    @ManyToOne(cascade=CascadeType.MERGE)
+    @ManyToOne(cascade=CascadeType.PERSIST)
     @JoinColumn(name = "updated_user", referencedColumnName = "user_name")
     private Users user;
 

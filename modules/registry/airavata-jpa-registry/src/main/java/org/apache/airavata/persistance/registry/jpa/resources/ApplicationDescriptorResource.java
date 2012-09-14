@@ -43,16 +43,11 @@ public class ApplicationDescriptorResource extends AbstractResource {
      *
      * @param name application descriptor name
      * @param gatewayName  gateway name
-     * @param hostDescName host descriptor name
-     * @param serviceDescName service descriptor name
      * returns ApplicationDescriptorResource
      */
-    public ApplicationDescriptorResource(String name, String gatewayName,
-                                         String hostDescName, String serviceDescName) {
+    public ApplicationDescriptorResource(String name, String gatewayName) {
         this.setName(name);
         this.gatewayName = gatewayName;
-        this.hostDescName = hostDescName;
-        this.serviceDescName = serviceDescName;
     }
 
     /**
@@ -232,34 +227,38 @@ public class ApplicationDescriptorResource extends AbstractResource {
      *  save application descriptor to database
      */
     public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        Application_Descriptor existingAppDesc = em.find(Application_Descriptor.class, new Application_Descriptor_PK(gatewayName,
-                name, hostDescName, serviceDescName));
-        em.close();
+        try{
+            EntityManager em = ResourceUtils.getEntityManager();
+            Application_Descriptor existingAppDesc = em.find(Application_Descriptor.class, new Application_Descriptor_PK(gatewayName, name));
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Application_Descriptor applicationDescriptor = new Application_Descriptor();
-        applicationDescriptor.setApplication_descriptor_ID(getName());
-        Gateway gateway = new Gateway();
-        gateway.setGateway_name(gatewayName);
-        applicationDescriptor.setGateway(gateway);
-        Users user = new Users();
-        user.setUser_name(updatedUser);
-        applicationDescriptor.setUser(user);
-        applicationDescriptor.setApplication_descriptor_xml(content);
-        applicationDescriptor.setService_descriptor_ID(serviceDescName);
-        applicationDescriptor.setHost_descriptor_ID(hostDescName);
-        if (existingAppDesc != null) {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Application_Descriptor applicationDescriptor = new Application_Descriptor();
+            applicationDescriptor.setApplication_descriptor_ID(getName());
+
+            Gateway gateway = em.find(Gateway.class, gatewayName);
+            Users user = em.find(Users.class, updatedUser);
+            applicationDescriptor.setGateway(gateway);
             applicationDescriptor.setUser(user);
             applicationDescriptor.setApplication_descriptor_xml(content);
-            applicationDescriptor = em.merge(existingAppDesc);
-        } else {
-            em.merge(applicationDescriptor);
+            applicationDescriptor.setService_descriptor_ID(serviceDescName);
+            applicationDescriptor.setHost_descriptor_ID(hostDescName);
+            if (existingAppDesc != null) {
+                existingAppDesc.setUser(user);
+                existingAppDesc.setApplication_descriptor_xml(content);
+                existingAppDesc.setHost_descriptor_ID(hostDescName);
+                existingAppDesc.setService_descriptor_ID(serviceDescName);
+                applicationDescriptor = em.merge(existingAppDesc);
+            } else {
+                em.persist(applicationDescriptor);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e){
+            e.printStackTrace();
         }
 
-        em.getTransaction().commit();
-        em.close();
     }
 
     /**

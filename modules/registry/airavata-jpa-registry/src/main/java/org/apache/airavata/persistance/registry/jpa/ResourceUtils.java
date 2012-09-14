@@ -275,44 +275,4 @@ public class ResourceUtils {
         return lock;
     }
 
-    public static ApplicationDescriptorResource getApplicationDescriptorResource(String applicationDescName,
-                                                                          String gatewayName,
-                                                                          String hostDescName,
-                                                                          String serviceDescName){
-
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.APPLICATION_DESCRIPTOR);
-        queryGenerator.setParameter(AbstractResource.ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
-        queryGenerator.setParameter(AbstractResource.ApplicationDescriptorConstants.APPLICATION_DESC_ID, applicationDescName);
-        queryGenerator.setParameter(AbstractResource.ApplicationDescriptorConstants.HOST_DESC_ID, hostDescName);
-        queryGenerator.setParameter(AbstractResource.ApplicationDescriptorConstants.SERVICE_DESC_ID, serviceDescName);
-        Query q = queryGenerator.selectQuery(em);
-        Application_Descriptor applicationDescriptor = (Application_Descriptor) q.getSingleResult();
-        ApplicationDescriptorResource applicationDescriptorResource =
-                (ApplicationDescriptorResource) Utils.getResource(
-                        ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
-        em.getTransaction().commit();
-        em.close();
-        return applicationDescriptorResource;
-    }
-
-    public static void removeApplicationDescriptor(String gatewayName,
-                                                   String appDescName,
-                                                   String hostDescName,
-                                                   String serviceDescName){
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        QueryGenerator queryGenerator = new QueryGenerator(AbstractResource.APPLICATION_DESCRIPTOR);
-        queryGenerator.setParameter(AbstractResource.ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
-        queryGenerator.setParameter(AbstractResource.ApplicationDescriptorConstants.APPLICATION_DESC_ID, appDescName);
-        queryGenerator.setParameter(AbstractResource.ApplicationDescriptorConstants.HOST_DESC_ID, hostDescName);
-        queryGenerator.setParameter(AbstractResource.ApplicationDescriptorConstants.SERVICE_DESC_ID, serviceDescName);
-        Query q = queryGenerator.deleteQuery(em);
-        q.executeUpdate();
-        em.getTransaction().commit();
-        em.close();
-
-    }
-
 }

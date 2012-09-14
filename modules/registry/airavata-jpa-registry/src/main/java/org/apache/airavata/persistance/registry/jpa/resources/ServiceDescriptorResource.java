@@ -138,15 +138,13 @@ public class ServiceDescriptorResource extends AbstractResource {
 
         em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
+
         Service_Descriptor serviceDescriptor = new Service_Descriptor();
         serviceDescriptor.setService_descriptor_ID(getServiceDescName());
-        Gateway gateway = new Gateway();
-        gateway.setGateway_name(gatewayName);
+        Gateway gateway = em.find(Gateway.class, gatewayName);
         serviceDescriptor.setGateway(gateway);
         serviceDescriptor.setService_descriptor_xml(content);
-        Users user = new Users();
-        user.setUser_name(userName);
-        serviceDescriptor.setUser(user);
+        Users user = em.find(Users.class, userName);
         serviceDescriptor.setUser(user);
         if(existingServiceDesc != null) {
             existingServiceDesc.setUser(user);
@@ -156,7 +154,7 @@ public class ServiceDescriptorResource extends AbstractResource {
             em.merge(serviceDescriptor);
         }
         em.getTransaction().commit();
-         em.close();
+        em.close();
 
     }
 
