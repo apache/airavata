@@ -186,7 +186,7 @@ public class GFacService implements ServiceLifeCycle {
                     try {
 						AiravataRegistry2 registry = ((GFacConfiguration)context.getProperty(GFAC_CONFIGURATION)).getRegistry();
 						String localAddress = (String) this.context.getProperty(GFAC_URL);
-						registry.removeGFacURI(new URI(localAddress));
+                        registry.addGFacURI(new URI(localAddress));
 						log.info("Updated the GFac URL in to Repository");
 						Thread.sleep(GFAC_URL_UPDATE_INTERVAL);
                     }catch (URISyntaxException e) {
