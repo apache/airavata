@@ -21,25 +21,6 @@
 * -->
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
-	<persistence-unit name="airavata_provenance">
-		<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-		<class>org.apache.airavata.provenance.model.Experiment_Data</class>
-		<class>org.apache.airavata.provenance.model.Workflow_Data</class>
-		<class>org.apache.airavata.provenance.model.Node_Data</class>
-		<class>org.apache.airavata.provenance.model.Gram_Data</class>
-		<properties>
-			<property name="openjpa.ConnectionURL"
-				value="jdbc:mysql://140.182.193.104:3306/workflow_provenance" />
-			<property name="openjpa.ConnectionDriverName" value="com.mysql.jdbc.Driver" />
-			<property name="openjpa.ConnectionUserName" value="airavata" />
-			<property name="openjpa.ConnectionPassword" value="airavata" />
-			<property name="openjpa.DynamicEnhancementAgent" value="true" />
-			<property name="openjpa.RuntimeUnenhancedClasses" value="supported" />
-			<property name="openjpa.Log" value="SQL=TRACE" />
-			<property name="openjpa.ConnectionFactoryProperties"
-				value="PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000" />
-		</properties>
-	</persistence-unit>
     <persistence-unit name="airavata_data">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
         <class>org.apache.airavata.persistance.registry.jpa.model.Gateway</class>
@@ -53,6 +34,10 @@
         <class>org.apache.airavata.persistance.registry.jpa.model.Service_Descriptor</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Experiment</class>
+        <class>org.apache.airavata.provenance.model.Experiment_Data</class>
+		<class>org.apache.airavata.provenance.model.Workflow_Data</class>
+		<class>org.apache.airavata.provenance.model.Node_Data</class>
+		<class>org.apache.airavata.provenance.model.Gram_Data</class>
         <!--properties>
             <property name="openjpa.ConnectionURL"
                       value="jdbc:mysql://localhost:3306/persitant_data" />
