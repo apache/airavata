@@ -757,9 +757,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     
-    private static final String PERSISTENCE_UNIT_NAME = "airavata_provenance";
-	private EntityManagerFactory factory;
-	
     @Override
 	public WorkflowExecution getWorkflowExecution(String arg0)
 			throws RegistryException {
@@ -811,7 +808,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public WorkflowIOData getWorkflowExecutionOutput(String instanceID, String nodeID)
 			throws RegistryException {
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = ResourceUtils.getEntityManager();
 		em.getTransaction().begin();
         Query q = em.createQuery("SELECT p FROM Node_Data p WHERE p.workflow_InstanceID = :workflow_InstanceID AND p.node_id = :node_id");
         q.setParameter("workflow_InstanceID", instanceID);
@@ -831,7 +828,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public WorkflowInstanceStatus getWorkflowExecutionStatus(String instanceID)
 			throws RegistryException {
-		EntityManager em = factory.createEntityManager();
+		EntityManager em = ResourceUtils.getEntityManager();
 		em.getTransaction().begin();
         Query q = em.createQuery("SELECT p FROM Workflow_Data p WHERE p.workflow_InstanceID = :workflow_InstanceID");
         q.setParameter("workflow_InstanceID", instanceID);
@@ -853,7 +850,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	public boolean saveWorkflowData(WorkflowRunTimeData arg0)
 			throws RegistryException {
 		// TODO Auto-generated method stub
-		EntityManager em = factory.createEntityManager();
+		EntityManager em = ResourceUtils.getEntityManager();
 		em.getTransaction().begin();
 		Query q = em.createQuery("SELECT p FROM Experiment_Data p WHERE p.experiment_ID = :exp_ID");
 		q.setParameter("exp_ID", arg0.getExperimentID());
@@ -887,7 +884,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		
-		EntityManager em = factory.createEntityManager();
+		EntityManager em = ResourceUtils.getEntityManager();
 		em.getTransaction().begin();
 		
 		Experiment_Data expData = new Experiment_Data();
@@ -920,7 +917,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	public boolean saveWorkflowExecutionServiceInput(WorkflowServiceIOData arg0)
 			throws RegistryException {
 		// TODO Auto-generated method stub
-		EntityManager em = factory.createEntityManager();
+		EntityManager em = ResourceUtils.getEntityManager();
 		em.getTransaction().begin();
 		
 		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
@@ -947,7 +944,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			throws RegistryException {
 		// TODO Auto-generated method stub
 
-        EntityManager em = factory.createEntityManager();
+        EntityManager em = ResourceUtils.getEntityManager();
 		em.getTransaction().begin();
 		
 		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
@@ -972,7 +969,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		
-		EntityManager em = factory.createEntityManager();
+		EntityManager em = ResourceUtils.getEntityManager();
 		em.getTransaction().begin();
 		
 		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
@@ -1006,7 +1003,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		
-		EntityManager em = factory.createEntityManager();
+		EntityManager em = ResourceUtils.getEntityManager();
 		em.getTransaction().begin();
 		
 		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
@@ -1041,7 +1038,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			ExecutionStatus arg2) throws RegistryException {
 		// TODO Auto-generated method stub
 		
-		EntityManager em = factory.createEntityManager();
+		EntityManager em = ResourceUtils.getEntityManager();
 		em.getTransaction().begin();
 		
 		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
