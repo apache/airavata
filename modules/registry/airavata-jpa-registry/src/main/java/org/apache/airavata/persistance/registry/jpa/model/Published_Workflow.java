@@ -39,6 +39,8 @@ public class Published_Workflow {
 
     private String version;
     private Date published_date;
+
+    @Lob
     private String workflow_content;
     private String path;
 

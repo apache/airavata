@@ -69,7 +69,7 @@ create table Published_Workflow
        version varchar(255),
        published_date TIMESTAMP DEFAULT '0000-00-00 00:00:00',
        path varchar (255),
-       workflow_content varchar(2000),
+       workflow_content BLOB,
        PRIMARY KEY(gateway_name, publish_workflow_name),
        FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
        FOREIGN KEY (created_user) REFERENCES Users(user_name) ON DELETE CASCADE
@@ -83,7 +83,7 @@ create table User_Workflow
        template_name varchar(255),
        last_updated_date TIMESTAMP DEFAULT now() on update now(),
        path varchar (255),
-       workflow_graph varchar(2000),
+       workflow_graph BLOB,
        PRIMARY KEY(gateway_name, owner, template_name),
        FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
        FOREIGN KEY (owner) REFERENCES Users(user_name) ON DELETE CASCADE
