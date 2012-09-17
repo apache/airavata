@@ -43,6 +43,8 @@ public class User_Workflow {
 
     private String path;
     private Date last_updated_date;
+
+    @Lob
     private String workflow_graph;
 
     public String getTemplate_name() {
