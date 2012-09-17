@@ -369,7 +369,7 @@ public class WorkflowInterpreterLaunchWindow {
                             ,null,configuration.getMessageBoxURL().toASCIIString());
                     stub._getServiceClient().addHeader(AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml())));
                     stub.launchWorkflow(workflow.toXMLText(), topicString,inputNameVals);
-                    engine.getConfiguration().getJcrComponentRegistry().getRegistry().saveWorkflowExecutionName(topicString, instanceNameFinal);
+//                    engine.getConfiguration().getJcrComponentRegistry().getRegistry().saveWorkflowExecutionName(topicString, instanceNameFinal);
                 } catch (Exception e) {
                     WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e);
                 }
