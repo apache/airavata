@@ -106,6 +106,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static  ConfigurationContext configurationContext;
     public static final String OUTPUT_DATA_PATH = "outputDataPath";
     public static final String SERVICE_NAME="WorkflowInterpretor";
+    public static boolean notInterrupted = true;
 
 	protected static final String SERVICE_URL = "interpreter_service_url";
 
@@ -387,6 +388,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
          if (runner != null) {
              runner.shutDown();
          }
+         notInterrupted = false;
     }
 
     private List<HostDescription> getDefinedHostDescriptions() {
@@ -430,23 +432,27 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         }
 
         public void run() {
-            try {
+            try{
                 while (true) {
                     try {
-						AiravataRegistry2 registry = (AiravataRegistry2 )context.getProperty(JCR_REG);
-						URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
-						registry.addWorkflowInterpreterURI(localAddress);
-						log.info("Updated Workflow Interpreter service URL in to Repository");
-						Thread.sleep(URL_UPDATE_INTERVAL);
-					} catch (Exception e) {
-						//in case of an registry exception best to retry sooner
-						log.severe("Error saving GFac descriptor",e);
-						Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
-					}
+                        AiravataRegistry2 registry = (AiravataRegistry2) context.getProperty(JCR_REG);
+                        URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
+                        registry.addWorkflowInterpreterURI(localAddress);
+                        log.info("Updated Workflow Interpreter service URL in to Repository");
+                        Thread.sleep(URL_UPDATE_INTERVAL);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
                 }
-            } catch (InterruptedException e) {
+            }catch (Exception e){
+                try {
+                    Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    return;
+                }
                 log.severe("Workflow Interpreter Service URL update thread is interrupted");
-			}
+            }
         }
     }
 }

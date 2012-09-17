@@ -180,23 +180,28 @@ public class GFacService implements ServiceLifeCycle {
             this.context = context;
         }
 
-        public void run() {
-            try {
+         public void run() {
+            try{
                 while (true) {
                     try {
-						AiravataRegistry2 registry = ((GFacConfiguration)context.getProperty(GFAC_CONFIGURATION)).getRegistry();
-						String localAddress = (String) this.context.getProperty(GFAC_URL);
-                        registry.addGFacURI(new URI(localAddress));
-						log.info("Updated the GFac URL in to Repository");
-						Thread.sleep(GFAC_URL_UPDATE_INTERVAL);
-                    }catch (URISyntaxException e) {
-                        Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        AiravataRegistry2 registry = ((GFacConfiguration)context.getProperty(GFAC_CONFIGURATION)).getRegistry();
+                        URI localAddress = new URI((String)this.context.getProperty(GFAC_URL));
+                        registry.addGFacURI(localAddress);
+                        log.info("Updated Workflow Interpreter service URL in to Repository");
+                        Thread.sleep(GFAC_URL_UPDATE_INTERVAL);
+                    } catch (InterruptedException e) {
+                        break;
                     }
                 }
-            } catch (InterruptedException e) {
-                log.info("GFacURL update thread is interrupted");
-			}
+            }catch (Exception e){
+                try {
+                    Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    return;
+                }
+                log.error("Workflow Interpreter Service URL update thread is interrupted");
+            }
         }
     }
 }

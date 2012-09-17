@@ -311,21 +311,26 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
         public void run() {
             try {
                 while (true) {
-                    AiravataRegistry2 registry = (AiravataRegistry2) context.getProperty(JCR_REGISTRY);
-                    URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
-                    registry.setEventingURI(localAddress);
-                    log.info("Updated the Eventing service URL in to Repository");
-                    Thread.sleep(GFAC_URL_UPDATE_INTERVAL);
-
+                    try {
+                        AiravataRegistry2 registry = (AiravataRegistry2) context.getProperty(JCR_REGISTRY);
+                        URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
+                        registry.setEventingURI(localAddress);
+                        log.info("Updated Workflow Interpreter service URL in to Repository");
+                        Thread.sleep(GFAC_URL_UPDATE_INTERVAL);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
                 }
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 try {
                     Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    return;
                 }
-                log.info("Eventing service url update thread is interrupted");
+                log.error("Workflow Interpreter Service URL update thread is interrupted");
             }
         }
+
     }
 }
