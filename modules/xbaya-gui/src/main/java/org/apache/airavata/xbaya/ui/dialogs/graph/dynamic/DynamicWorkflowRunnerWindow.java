@@ -369,11 +369,11 @@ public class DynamicWorkflowRunnerWindow {
                         workflowInterpreter.setResourceMapping(resourceMapping);
 
                     workflowInterpreter.scheduleDynamically();
-                    try {
-						engine.getConfiguration().getJcrComponentRegistry().getRegistry().saveWorkflowExecutionName(topicString, instanceNameFinal);
-					} catch (RegistryException e) {
-						e.printStackTrace();
-					}
+//                    try {
+//						engine.getConfiguration().getJcrComponentRegistry().getRegistry().saveWorkflowExecutionName(topicString, instanceNameFinal);
+//					} catch (RegistryException e) {
+//						e.printStackTrace();
+//					}
                 } catch (WorkflowException e) {
                     try {
                         workflowInterpreter.cleanup();
