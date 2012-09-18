@@ -146,6 +146,36 @@ public class Utils {
                 } else {
                     throw  new IllegalArgumentException("Object should be a Gateway Worker.");
                 }
+            case EXPERIMENT_DATA:
+                if (o instanceof  Experiment_Data){
+                    return createExperimentData((Experiment_Data)o);
+                }else {
+                    throw new IllegalArgumentException("Object should be a Experiment Data.");
+                }
+            case EXPERIMENT_METADATA:
+                if (o instanceof  Experiment_Metadata){
+                    return createExperimentMetadata((Experiment_Metadata)o);
+                }else {
+                    throw new IllegalArgumentException("Object should be a Experiment Metadata.");
+                }
+            case WORKFLOW_DATA:
+                if (o instanceof  Workflow_Data){
+                    return createWorkflowData((Workflow_Data) o);
+                }else {
+                    throw new IllegalArgumentException("Object should be a Workflow Data.");
+                }
+            case NODE_DATA:
+                if (o instanceof  Node_Data){
+                    return createNodeData((Node_Data) o);
+                }else {
+                    throw new IllegalArgumentException("Object should be a Node Data.");
+                }
+            case GRAM_DATA:
+                if (o instanceof  Gram_Data){
+                    return createGramData((Gram_Data) o);
+                }else {
+                    throw new IllegalArgumentException("Object should be a Gram Data.");
+                }
             default:
         }
         return null;
@@ -319,4 +349,54 @@ public class Utils {
         return userResource;
     }
 
+    private static Resource createExperimentData(Experiment_Data o){
+        ExperimentDataResource experimentDataResource = new ExperimentDataResource();
+        experimentDataResource.setExperimentID(o.getExperiment_ID());
+        experimentDataResource.setExpName(o.getName());
+        experimentDataResource.setUserName(o.getUsername());
+        return experimentDataResource;
+    }
+
+    private static Resource createExperimentMetadata(Experiment_Metadata o) {
+        ExperimentMetadataResource experimentMetadataResource = new ExperimentMetadataResource();
+        experimentMetadataResource.setExpID(o.getExperiment_ID());
+        experimentMetadataResource.setMetadata(o.getMetadata());
+        return experimentMetadataResource;
+    }
+
+    private static Resource createWorkflowData(Workflow_Data o){
+        WorkflowDataResource workflowDataResource = new WorkflowDataResource();
+        workflowDataResource.setExperimentID(o.getExperiment_Data().getExperiment_ID());
+        workflowDataResource.setWorkflowInstanceID(o.getWorkflow_instanceID());
+        workflowDataResource.setTemplateName(o.getTemplate_name());
+        workflowDataResource.setStatus(o.getStatus());
+        workflowDataResource.setStartTime(o.getStart_time());
+        workflowDataResource.setLastUpdatedTime(o.getLast_update_time());
+        return workflowDataResource;
+    }
+
+    private static Resource createNodeData (Node_Data o){
+        NodeDataResource nodeDataResource = new NodeDataResource();
+        WorkflowDataResource workflowDataResource = (WorkflowDataResource)createWorkflowData(o.getWorkflow_Data());
+        nodeDataResource.setWorkflowDataResource(workflowDataResource);
+        nodeDataResource.setNodeID(o.getNode_id());
+        nodeDataResource.setNodeType(o.getNode_type());
+        nodeDataResource.setInputs(o.getInputs());
+        nodeDataResource.setOutputs(o.getOutputs());
+        nodeDataResource.setStatus(o.getStatus());
+        nodeDataResource.setStartTime(o.getStart_time());
+        nodeDataResource.setLastUpdateTime(o.getLast_update_time());
+        return nodeDataResource;
+    }
+
+    private static Resource createGramData (Gram_Data o){
+        GramDataResource gramDataResource = new GramDataResource();
+        WorkflowDataResource workflowDataResource = (WorkflowDataResource)createWorkflowData(o.getWorkflow_Data());
+        gramDataResource.setWorkflowDataResource(workflowDataResource);
+        gramDataResource.setNodeID(o.getNode_id());
+        gramDataResource.setRsl(o.getRsl());
+        gramDataResource.setInvokedHost(o.getInvoked_host());
+        gramDataResource.setLocalJobID(o.getLocal_Job_ID());
+        return gramDataResource;
+    }
 }

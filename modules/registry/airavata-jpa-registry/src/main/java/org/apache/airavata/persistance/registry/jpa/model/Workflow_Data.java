@@ -18,19 +18,18 @@
  * under the License.
  *
 */
-package org.apache.airavata.provenance.model;
+package org.apache.airavata.persistance.registry.jpa.model;
+
+import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
 
 import java.sql.Timestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 public class Workflow_Data {
 
-	@ManyToOne()
+	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name="experiment_ID")
 	private Experiment_Data experiment_Data;
 	@Id

@@ -22,18 +22,6 @@ package org.apache.airavata.provenance.test;
 
 import static org.junit.Assert.assertTrue;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-
-import org.apache.airavata.provenance.model.Experiment_Data;
-import org.apache.airavata.provenance.model.Gram_Data;
-import org.apache.airavata.provenance.model.Node_Data;
-import org.apache.airavata.provenance.model.Workflow_Data;
-import org.junit.Before;
-import org.junit.Test;
-
 public class JpaTest {
 //	private static final String PERSISTENCE_UNIT_NAME = "airavata_provenance";
 //	private EntityManagerFactory factory;

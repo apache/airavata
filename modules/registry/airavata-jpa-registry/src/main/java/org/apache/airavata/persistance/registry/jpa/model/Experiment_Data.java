@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.provenance.model;
+package org.apache.airavata.persistance.registry.jpa.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -28,6 +28,7 @@ public class Experiment_Data {
 	@Id
 	private String experiment_ID;
 	private String name;
+    private String username;
 
 	/*@OneToMany(cascade=CascadeType.ALL, mappedBy = "Experiment_Data")
 	private final List<Workflow_Data> workflows = new ArrayList<Workflow_Data>();*/
@@ -47,8 +48,16 @@ public class Experiment_Data {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	/*public List<Workflow_Data> getWorkflows() {
-		return workflows;
-	}*/
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /*public List<Workflow_Data> getWorkflows() {
+        return workflows;
+    }*/
 }

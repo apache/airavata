@@ -136,6 +136,47 @@ public abstract class AbstractResource implements Resource {
 
     }
 
+    //Experiment_Data table
+    public final class ExperimentDataConstants{
+        public static final String EXPERIMENT_ID="experiment_ID";
+        public static final String NAME = "name";
+        public static final String USERNAME = "username";
+        public static final String METADATA = "metadata";
+    }
+
+    //Workflow_Data table
+    public final class WorkflowDataConstants{
+        public static final String EXPERIMENT_ID="experiment_ID";
+        public static final String WORKFLOW_INSTANCE_ID = "workflow_instanceID";
+        public static final String TEMPLATE_NAME = "template_name";
+        public static final String STATUS = "status";
+        public static final String START_TIME = "start_time";
+        public static final String LAST_UPDATE_TIME = "last_update_time";
+    }
+
+    //Node_Data table
+    public final class NodeDataConstants{
+        public static final String WORKFLOW_INSTANCE_ID = "workflow_instanceID";
+        public static final String NODE_ID = "node_id";
+        public static final String NODE_TYPE = "node_type";
+        public static final String INPUTS = "inputs";
+        public static final String OUTPUTS = "outputs";
+        public static final String STATUS = "status";
+        public static final String START_TIME = "start_time";
+        public static final String LAST_UPDATE_TIME = "last_update_time";
+    }
+
+    //Gram_Data table
+    public final class GramDataConstants{
+        public static final String WORKFLOW_INSTANCE_ID = "workflow_instanceID";
+        public static final String NODE_ID = "node_id";
+        public static final String RSL = "rsl";
+        public static final String INVOKED_HOST = "invoked_host";
+        public static final String LOCAL_JOB_ID = "local_Job_ID";
+
+
+    }
+
     protected AbstractResource() {
     }
 

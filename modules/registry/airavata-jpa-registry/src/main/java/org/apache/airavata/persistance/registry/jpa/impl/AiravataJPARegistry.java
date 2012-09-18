@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
@@ -39,8 +38,6 @@ import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.persistance.registry.jpa.JPAResourceAccessor;
-import org.apache.airavata.persistance.registry.jpa.Resource;
-import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
@@ -52,9 +49,9 @@ import org.apache.airavata.persistance.registry.jpa.resources.PublishWorkflowRes
 import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
-import org.apache.airavata.provenance.model.Experiment_Data;
-import org.apache.airavata.provenance.model.Node_Data;
-import org.apache.airavata.provenance.model.Workflow_Data;
+import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
+import org.apache.airavata.persistance.registry.jpa.model.Node_Data;
+import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
 import org.apache.airavata.registry.api.AiravataExperiment;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataUser;

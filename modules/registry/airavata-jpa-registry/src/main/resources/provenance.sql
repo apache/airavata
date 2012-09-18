@@ -30,7 +30,7 @@ create table Experiment_Data
 create table Experiment_Metadata
 (
 	experiment_ID varchar(255),
-	metadata varchar(2000),
+	metadata BLOB,
 	PRIMARY KEY (experiment_ID)
 );
 
@@ -52,8 +52,8 @@ create table Node_Data
        workflow_instanceID varchar(255),
        node_id varchar(255),
        node_type varchar(255),
-       inputs varchar(1000),
-       outputs varchar(1000),
+       inputs BLOB,
+       outputs BLOB,
        status varchar(100),
        start_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
        last_update_time TIMESTAMP DEFAULT now() on update now(),
@@ -65,9 +65,9 @@ create table Gram_Data
 (
        workflow_instanceID varchar(255),
        node_id varchar(255),
-       rsl varchar(2000),
+       rsl BLOB,
        invoked_host varchar(255),
-       
+       local_Job_ID varchar(255),
        PRIMARY KEY(workflow_instanceID, node_id),
        FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID) ON DELETE CASCADE
 );
