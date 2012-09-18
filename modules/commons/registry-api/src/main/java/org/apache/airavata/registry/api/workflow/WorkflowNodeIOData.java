@@ -21,7 +21,7 @@
 
 package org.apache.airavata.registry.api.workflow;
 
-public class WorkflowServiceIOData extends WorkflowIOData {
+public class WorkflowNodeIOData extends WorkflowIOData {
 	private String experimentId;
     private String workflowName;
     private String workflowId;
@@ -33,10 +33,10 @@ public class WorkflowServiceIOData extends WorkflowIOData {
     private WorkflowInstanceStatus nodeStatus = new
             WorkflowInstanceStatus(new WorkflowInstance(experimentId,workflowId,workflowName), WorkflowInstanceStatus.ExecutionStatus.STARTED);
     
-    public WorkflowServiceIOData() {
+    public WorkflowNodeIOData() {
 	}
     
-	public WorkflowServiceIOData(String data, String experimentId,String workflowInstanceID, String workflowId,
+	public WorkflowNodeIOData(String data, String experimentId,String workflowInstanceID, String workflowId,
             String nodeId,String workflowName) {
 		super(nodeId,data);
 		setExperimentId(experimentId);
@@ -45,12 +45,12 @@ public class WorkflowServiceIOData extends WorkflowIOData {
 		setWorkflowName(workflowName);
 	}
 
-	public WorkflowServiceIOData(String data, String experimentId,String workflowInstanceID,
+	public WorkflowNodeIOData(String data, String experimentId,String workflowInstanceID,
             String nodeId,String workflowName) {
 		this(data, experimentId, experimentId,workflowInstanceID, nodeId, workflowName);
 	}
 
-    public WorkflowServiceIOData(String experimentId,String workflowInstanceID, String workflowName, String workflowId, WorkflowNodeType nodeType) {
+    public WorkflowNodeIOData(String experimentId,String workflowInstanceID, String workflowName, String workflowId, WorkflowNodeType nodeType) {
         this.experimentId = experimentId;
         this.workflowInstanceId = workflowInstanceID;
         this.workflowName = workflowName;

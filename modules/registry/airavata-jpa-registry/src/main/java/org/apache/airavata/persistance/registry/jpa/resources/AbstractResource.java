@@ -22,13 +22,6 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class AbstractResource implements Resource {
     //table names

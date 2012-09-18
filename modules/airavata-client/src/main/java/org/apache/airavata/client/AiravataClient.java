@@ -403,15 +403,15 @@ public class AiravataClient implements AiravataAPI {
     private void runPreWorkflowExecutionTasks(String topic, String user,
     		String metadata,String workflowInstanceName) throws RegistryException {
 		if (user != null) {
-			getRegistry().saveWorkflowExecutionUser(topic, user);
+			getRegistry().updateExperimentExecutionUser(topic, user);
 		}
 		if (metadata != null) {
-			getRegistry().saveWorkflowExecutionMetadata(topic, metadata);
+			getRegistry().updateExperimentMetadata(topic, metadata);
 		}
 		if (workflowInstanceName==null) {
 			workflowInstanceName=topic;
 		}
-		getRegistry().saveWorkflowExecutionName(topic, workflowInstanceName);
+		getRegistry().updateExperimentName(topic, workflowInstanceName);
 	}
 
     public String runWorkflow(String topic, NameValue[] inputs) throws Exception {
@@ -457,17 +457,17 @@ public class AiravataClient implements AiravataAPI {
 
 	public List<WorkflowExecution> getWorkflowExecutionDataByUser(String user)
 			throws RegistryException {
-		return getRegistry().getWorkflowExecutionByUser(user);
+		return getRegistry().getExperimentByUser(user);
 	}
 
 	public WorkflowExecution getWorkflowExecutionData(String topic)
 			throws RegistryException {
-		return getRegistry().getWorkflowExecution(topic);
+		return getRegistry().getExperiment(topic);
 	}
 
 	public List<WorkflowExecution> getWorkflowExecutionData(String user,
 			int pageSize, int PageNo) throws RegistryException {
-		return getRegistry().getWorkflowExecutionByUser(user, pageSize, PageNo);
+		return getRegistry().getExperimentByUser(user, pageSize, PageNo);
 	}
 
 	public static String getWorkflow() {

@@ -31,7 +31,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.xbaya.interpretor.NameValue;
 import org.apache.airavata.xbaya.util.XBayaUtil;
@@ -48,8 +48,8 @@ public class XBayaWorkflowExperiments {
 		Map<String, XBayaWorkflowExperiment> experiments=new HashMap<String,XBayaWorkflowExperiment>();
     	try {
     		initializeExperimentMap(experiments);
-			List<WorkflowServiceIOData> workflowInput = getRegistry().searchWorkflowExecutionServiceInput(null, null, null);
-			List<WorkflowServiceIOData> workflowOutput = getRegistry().searchWorkflowExecutionServiceOutput(null, null, null);
+			List<WorkflowNodeIOData> workflowInput = getRegistry().searchWorkflowInstanceNodeInput(null, null, null);
+			List<WorkflowNodeIOData> workflowOutput = getRegistry().searchWorkflowInstanceNodeOutput(null, null, null);
 			createChildren(experiments, workflowInput, true);
 			createChildren(experiments, workflowOutput, false);
 		} catch (RegistryException e) {
@@ -60,7 +60,7 @@ public class XBayaWorkflowExperiments {
 	
 	public void initializeExperimentMap(Map<String, XBayaWorkflowExperiment> experiments){
 		try {
-			List<String> workflowExecutionIdByUser = getRegistry().getWorkflowExecutionIdByUser(".*");
+			List<String> workflowExecutionIdByUser = getRegistry().getExperimentIdByUser(".*");
 			for (String expId : workflowExecutionIdByUser) {
 				XBayaWorkflowExperiment xBayaWorkflowExperiment = new XBayaWorkflowExperiment(expId, null);
 				xBayaWorkflowExperiment.add(new XBayaWorkflow(expId,getRegistry().getWorkflowExecutionTemplateName(expId,expId),null));
@@ -73,8 +73,8 @@ public class XBayaWorkflowExperiments {
 	
 	private void createChildren(
 			Map<String, XBayaWorkflowExperiment> experiments,
-			List<WorkflowServiceIOData> workflowIO, boolean inputData) {
-		for (WorkflowServiceIOData workflowIOData : workflowIO) {
+			List<WorkflowNodeIOData> workflowIO, boolean inputData) {
+		for (WorkflowNodeIOData workflowIOData : workflowIO) {
 			if (!experiments.containsKey(workflowIOData.getExperimentId())){
 				experiments.put(workflowIOData.getExperimentId(),new XBayaWorkflowExperiment(workflowIOData.getExperimentId(), null));
 			}

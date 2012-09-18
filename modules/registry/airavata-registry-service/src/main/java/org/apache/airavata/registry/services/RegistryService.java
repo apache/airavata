@@ -49,7 +49,11 @@ public class RegistryService implements ServiceLifeCycle {
     @Override
     public void startUp(ConfigurationContext configurationContext, AxisService axisService) {
         //todo have to read these properties from some configuration
-        String jdbcUrl = null;
+        initializeDB();
+    }
+
+	private void initializeDB() {
+		String jdbcUrl = null;
         String jdbcDriver = null;
         URL resource = this.getClass().getClassLoader().getResource("repository.properties");
         Properties properties = new Properties();
@@ -91,7 +95,7 @@ public class RegistryService implements ServiceLifeCycle {
         WorkerResource workerResource = (WorkerResource)gatewayResource.create(ResourceType.GATEWAY_WORKER);
         workerResource.setUser(userResource.getUserName());
         workerResource.save();
-    }
+	}
 
     @Override
     public void shutDown(ConfigurationContext configurationContext, AxisService axisService) {

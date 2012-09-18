@@ -27,13 +27,13 @@ import java.util.List;
 import org.apache.airavata.registry.api.workflow.WorkflowExecution;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
-import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 
 public class WorkflowExecutionImpl implements WorkflowExecution{
 	private WorkflowInstanceStatus executionStatus;
 	private String user;
-	private List<WorkflowServiceIOData> serviceInput;
-	private List<WorkflowServiceIOData> serviceOutput;
+	private List<WorkflowNodeIOData> serviceInput;
+	private List<WorkflowNodeIOData> serviceOutput;
 	private List<WorkflowIOData> output;
 	private String experimentId;
 	private String metadata;
@@ -69,22 +69,22 @@ public class WorkflowExecutionImpl implements WorkflowExecution{
 	public void setUser(String user) {
 		this.user = user;
 	}
-	public List<WorkflowServiceIOData> getServiceInput() {
+	public List<WorkflowNodeIOData> getServiceInput() {
 		if (serviceInput==null){
-			serviceInput=new ArrayList<WorkflowServiceIOData>();
+			serviceInput=new ArrayList<WorkflowNodeIOData>();
 		}
 		return serviceInput;
 	}
-	public void setServiceInput(List<WorkflowServiceIOData> serviceInput) {
+	public void setServiceInput(List<WorkflowNodeIOData> serviceInput) {
 		this.serviceInput = serviceInput;
 	}
-	public List<WorkflowServiceIOData> getServiceOutput() {
+	public List<WorkflowNodeIOData> getServiceOutput() {
 		if (serviceOutput==null){
-			serviceOutput=new ArrayList<WorkflowServiceIOData>();
+			serviceOutput=new ArrayList<WorkflowNodeIOData>();
 		}
 		return serviceOutput;
 	}
-	public void setServiceOutput(List<WorkflowServiceIOData> serviceOutput) {
+	public void setServiceOutput(List<WorkflowNodeIOData> serviceOutput) {
 		this.serviceOutput = serviceOutput;
 	}
 	public List<WorkflowIOData> getOutput() {
@@ -97,24 +97,24 @@ public class WorkflowExecutionImpl implements WorkflowExecution{
 		this.output = output;
 	}
 	
-	public void addServiceInput(WorkflowServiceIOData serviceInput) {
+	public void addServiceInput(WorkflowNodeIOData serviceInput) {
 		getServiceInput().add(serviceInput);
 	}
-	public void addServiceOutput(WorkflowServiceIOData serviceOutput) {
+	public void addServiceOutput(WorkflowNodeIOData serviceOutput) {
 		getServiceOutput().add(serviceOutput);
 	}
 	public void addOutput(WorkflowIOData output) {
 		getOutput().add(output);
 	}
 	
-	public WorkflowServiceIOData getServiceInput(String nodeId) {
-		return (WorkflowServiceIOData)getIOData(nodeId, getServiceInput());
+	public WorkflowNodeIOData getServiceInput(String nodeId) {
+		return (WorkflowNodeIOData)getIOData(nodeId, getServiceInput());
 	}
-	public WorkflowServiceIOData getServiceOutput(String nodeId) {
-		return (WorkflowServiceIOData)getIOData(nodeId, getServiceOutput());
+	public WorkflowNodeIOData getServiceOutput(String nodeId) {
+		return (WorkflowNodeIOData)getIOData(nodeId, getServiceOutput());
 	}
 	public WorkflowIOData getOutput(String nodeId) {
-		return (WorkflowServiceIOData)getIOData(nodeId, getOutput());
+		return (WorkflowNodeIOData)getIOData(nodeId, getOutput());
 	}
 
 	private WorkflowIOData getIOData(String nodeId, List<?> list) {
