@@ -18,15 +18,11 @@
  * under the License.
  *
 */
-package org.apache.airavata.provenance.model;
+package org.apache.airavata.persistance.registry.jpa.model;
 
 import java.sql.Timestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @IdClass(Node_DataPK.class)
@@ -41,8 +37,10 @@ public class Node_Data {
 	private String node_id;
 
 	private String node_type;
-	private String inputs;
-	private String outputs;
+	@Lob
+    private String inputs;
+	@Lob
+    private String outputs;
 	private String status;
 	private Timestamp start_time;
 	private Timestamp last_update_time;
@@ -112,37 +110,3 @@ public class Node_Data {
 	}
 }
 
-class Node_DataPK {
-	private String workflow_Data;
-	private String node_id;
-
-	public Node_DataPK() {
-		;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return 1;
-	}
-
-	public String getWorkflow_Data() {
-		return workflow_Data;
-	}
-
-	public void setWorkflow_Data(String workflow_Data) {
-		this.workflow_Data = workflow_Data;
-	}
-
-	public String getNode_id() {
-		return node_id;
-	}
-
-	public void setNode_id(String node_id) {
-		this.node_id = node_id;
-	}
-}

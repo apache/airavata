@@ -34,10 +34,10 @@
         <class>org.apache.airavata.persistance.registry.jpa.model.Service_Descriptor</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Experiment</class>
-        <class>org.apache.airavata.provenance.model.Experiment_Data</class>
-		<class>org.apache.airavata.provenance.model.Workflow_Data</class>
-		<class>org.apache.airavata.provenance.model.Node_Data</class>
-		<class>org.apache.airavata.provenance.model.Gram_Data</class>
+        <class>org.apache.airavata.persistance.registry.jpa.model.Experiment_Data</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.Workflow_Data</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.Node_Data</class>
+		<class>org.apache.airavata.persistance.registry.jpa.model.Gram_Data</class>
         <!--properties>
             <property name="openjpa.ConnectionURL"
                       value="jdbc:mysql://localhost:3306/persitant_data" />

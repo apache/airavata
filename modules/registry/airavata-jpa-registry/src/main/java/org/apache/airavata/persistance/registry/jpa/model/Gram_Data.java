@@ -18,28 +18,26 @@
  * under the License.
  *
 */
-package org.apache.airavata.provenance.model;
+package org.apache.airavata.persistance.registry.jpa.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @IdClass(Gram_DataPK.class)
 public class Gram_Data {
 
 	@Id
-	@ManyToOne()
+	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "workflow_instanceID")
 	private Workflow_Data workflow_Data;
 
 	@Id
 	private String node_id;
 
+    @Lob
 	private String rsl;
 	private String invoked_host;
+    private String local_Job_ID;
 
 	public Workflow_Data getWorkflow_Data() {
 		return workflow_Data;
@@ -73,39 +71,12 @@ public class Gram_Data {
 		this.invoked_host = invoked_host;
 	}
 
+    public String getLocal_Job_ID() {
+        return local_Job_ID;
+    }
+
+    public void setLocal_Job_ID(String local_Job_ID) {
+        this.local_Job_ID = local_Job_ID;
+    }
 }
 
-class Gram_DataPK {
-	private String workflow_Data;
-	private String node_id;
-
-	public Gram_DataPK() {
-		;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return 1;
-	}
-
-	public String getWorkflow_Data() {
-		return workflow_Data;
-	}
-
-	public void setWorkflow_Data(String workflow_Data) {
-		this.workflow_Data = workflow_Data;
-	}
-
-	public String getNode_id() {
-		return node_id;
-	}
-
-	public void setNode_id(String node_id) {
-		this.node_id = node_id;
-	}
-}
