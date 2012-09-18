@@ -25,12 +25,14 @@ public class WorkflowNodeGramData {
     String rsl;
     String invokedHost;
     String gramJobID;
+    private String workflowInstanceId;
 
-    public WorkflowNodeGramData(String nodeID, String rsl, String invokedHost, String gramJobID) {
+    public WorkflowNodeGramData(String workflowInstanceId, String nodeID, String rsl, String invokedHost, String gramJobID) {
         NodeID = nodeID;
         this.rsl = rsl;
         this.invokedHost = invokedHost;
         this.gramJobID = gramJobID;
+        this.setWorkflowInstanceId(workflowInstanceId);
     }
 
     public void setNodeID(String nodeID) {
@@ -64,4 +66,12 @@ public class WorkflowNodeGramData {
     public String getGramJobID() {
         return gramJobID;
     }
+
+	public String getWorkflowInstanceId() {
+		return workflowInstanceId;
+	}
+
+	public void setWorkflowInstanceId(String workflowInstanceId) {
+		this.workflowInstanceId = workflowInstanceId;
+	}
 }

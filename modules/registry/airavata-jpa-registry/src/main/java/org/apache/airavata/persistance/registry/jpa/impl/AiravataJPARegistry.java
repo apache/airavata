@@ -76,7 +76,7 @@ import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
 import org.apache.airavata.registry.api.workflow.WorkflowRunTimeData;
-import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -755,42 +755,42 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
     
     @Override
-	public WorkflowExecution getWorkflowExecution(String arg0)
+	public WorkflowExecution getExperiment(String arg0)
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<WorkflowExecution> getWorkflowExecutionByUser(String arg0)
+	public List<WorkflowExecution> getExperimentByUser(String arg0)
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<WorkflowExecution> getWorkflowExecutionByUser(String arg0,
+	public List<WorkflowExecution> getExperimentByUser(String arg0,
 			int arg1, int arg2) throws RegistryException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<String> getWorkflowExecutionIdByUser(String arg0)
+	public List<String> getExperimentIdByUser(String arg0)
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getWorkflowExecutionMetadata(String arg0)
+	public String getExperimentMetadata(String arg0)
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public String getWorkflowExecutionName(String arg0)
+	public String getExperimentName(String arg0)
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		return null;
@@ -811,7 +811,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         q.setParameter("workflow_InstanceID", instanceID);
         q.setParameter("node_id", nodeID);
         Node_Data singleResult = (Node_Data) q.getSingleResult();
-        WorkflowServiceIOData workflowIOData = new WorkflowServiceIOData(singleResult.getOutputs(),instanceID,instanceID,null,nodeID,null);
+        WorkflowNodeIOData workflowIOData = new WorkflowNodeIOData(singleResult.getOutputs(),instanceID,instanceID,null,nodeID,null);
         return workflowIOData;
 	}
 
@@ -823,7 +823,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public WorkflowInstanceStatus getWorkflowExecutionStatus(String instanceID)
+	public WorkflowInstanceStatus getWorkflowInstanceStatus(String instanceID)
 			throws RegistryException {
 		EntityManager em = ResourceUtils.getEntityManager();
 		em.getTransaction().begin();
@@ -837,7 +837,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public String getWorkflowExecutionUser(String arg0)
+	public String getExperimentExecutionUser(String arg0)
 			throws RegistryException {
 
 		return null;
@@ -870,14 +870,14 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public boolean saveWorkflowExecutionMetadata(String arg0, String arg1)
+	public boolean updateExperimentMetadata(String arg0, String arg1)
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
-	public boolean saveWorkflowExecutionName(String arg0, String arg1)
+	public boolean updateExperimentName(String arg0, String arg1)
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		
@@ -911,7 +911,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public boolean saveWorkflowExecutionServiceInput(WorkflowServiceIOData arg0)
+	public boolean updateWorkflowNodeInput(WorkflowNodeIOData arg0)
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		EntityManager em = ResourceUtils.getEntityManager();
@@ -937,7 +937,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public boolean saveWorkflowExecutionServiceOutput(WorkflowServiceIOData arg0)
+	public boolean updateWorkflowNodeOutput(WorkflowNodeIOData arg0)
 			throws RegistryException {
 		// TODO Auto-generated method stub
 
@@ -962,7 +962,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public boolean saveWorkflowExecutionStatus(String arg0, ExecutionStatus arg1)
+	public boolean updateWorkflowInstanceStatus(String arg0, ExecutionStatus arg1)
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		
@@ -982,7 +982,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public boolean saveWorkflowExecutionUser(String arg0, String arg1)
+	public boolean updateExperimentExecutionUser(String arg0, String arg1)
 			throws RegistryException {
 		// TODO Auto-generated method stub
 		return false;
@@ -1062,7 +1062,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public List<WorkflowServiceIOData> searchWorkflowExecutionServiceInput(
+	public List<WorkflowNodeIOData> searchWorkflowInstanceNodeInput(
 			String arg0, String arg1, String arg2) throws RegistryException {
 		// TODO Auto-generated method stub
 
@@ -1070,7 +1070,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public List<WorkflowServiceIOData> searchWorkflowExecutionServiceOutput(
+	public List<WorkflowNodeIOData> searchWorkflowInstanceNodeOutput(
 			String arg0, String arg1, String arg2) throws RegistryException {
 		// TODO Auto-generated method stub
 		return null;
@@ -1091,10 +1091,52 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public boolean saveWorkflowExecutionStatus(String experimentId,
+	public boolean updateWorkflowInstanceStatus(String experimentId,
 			WorkflowInstanceStatus status) throws RegistryException {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+
+	@Override
+	public boolean isExperimentExists(String experimentId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public List<WorkflowInstance> getExperimentWorkflowInstances(
+			String experimentId) throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public boolean isWorkflowInstanceExists(String instanceId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public List<WorkflowNodeIOData> getWorkflowInstanceNodeInput(
+			String workflowInstanceId, String nodeType)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public List<WorkflowNodeIOData> getWorkflowInstanceNodeOutput(
+			String workflowInstanceId, String nodeType)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

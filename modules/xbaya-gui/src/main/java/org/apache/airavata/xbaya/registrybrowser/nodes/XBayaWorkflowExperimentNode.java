@@ -51,7 +51,7 @@ public class XBayaWorkflowExperimentNode extends AbstractAiravataTreeNode {
     public String getCaption(boolean selected, boolean expanded, boolean leaf, boolean hasFocus) {
     	if (workflowExecutionName==null) {
 			try {
-				workflowExecutionName = getRegistry().getWorkflowExecutionName(getExperiment().getExperimentId());
+				workflowExecutionName = getRegistry().getExperimentName(getExperiment().getExperimentId());
 			} catch (RegistryException e) {
 				e.printStackTrace();
 			}
@@ -61,7 +61,7 @@ public class XBayaWorkflowExperimentNode extends AbstractAiravataTreeNode {
 		}
     	String caption=workflowExecutionName;
     	try {
-			WorkflowInstanceStatus workflowExecutionStatus = getRegistry().getWorkflowExecutionStatus(getExperiment().getExperimentId());
+			WorkflowInstanceStatus workflowExecutionStatus = getRegistry().getWorkflowInstanceStatus(getExperiment().getExperimentId());
 			if (workflowExecutionStatus!=null && workflowExecutionStatus.getExecutionStatus()!=null){
 				caption += " - <i>" + workflowExecutionStatus.getExecutionStatus().toString()+"</i>";
 				if (workflowExecutionStatus.getStatusUpdateTime()!=null) {

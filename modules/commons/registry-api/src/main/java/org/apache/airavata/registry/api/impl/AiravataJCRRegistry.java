@@ -821,22 +821,22 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         return false;
     }
 
-    public boolean saveWorkflowExecutionServiceInput(WorkflowServiceIOData workflowInputData) throws RegistryException{
+    public boolean saveWorkflowExecutionServiceInput(WorkflowNodeIOData workflowInputData) throws RegistryException{
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().saveWorkflowExecutionServiceInput(workflowInputData);
+    		return getProvenanceRegistry().updateWorkflowNodeInput(workflowInputData);
     	}
         return saveWorkflowIO(workflowInputData, INPUT);
     }
 
-    public boolean saveWorkflowExecutionServiceOutput(WorkflowServiceIOData workflowOutputData) throws RegistryException{
+    public boolean saveWorkflowExecutionServiceOutput(WorkflowNodeIOData workflowOutputData) throws RegistryException{
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().saveWorkflowExecutionServiceOutput(workflowOutputData);
+    		return getProvenanceRegistry().updateWorkflowNodeOutput(workflowOutputData);
     	}
         return saveWorkflowIO(workflowOutputData, OUTPUT);
     }
 
 
-    private boolean saveWorkflowIO(WorkflowServiceIOData workflowOutputData, String type) throws RegistryException{
+    private boolean saveWorkflowIO(WorkflowNodeIOData workflowOutputData, String type) throws RegistryException{
         Session session = null;
         boolean isSaved = true;
         try {
@@ -855,18 +855,18 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
         return isSaved;
     }
 
-    public List<WorkflowServiceIOData> searchWorkflowExecutionServiceInput(String experimentIdRegEx, String workflowNameRegEx,
+    public List<WorkflowNodeIOData> searchWorkflowExecutionServiceInput(String experimentIdRegEx, String workflowNameRegEx,
             String nodeNameRegEx) throws RegistryException{
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().searchWorkflowExecutionServiceInput(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx);
+    		return getProvenanceRegistry().searchWorkflowInstanceNodeInput(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx);
     	}
         return searchWorkflowIO(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx, INPUT);
     }
 
-    public List<WorkflowServiceIOData> searchWorkflowExecutionServiceOutput(String experimentIdRegEx, String workflowNameRegEx,
+    public List<WorkflowNodeIOData> searchWorkflowExecutionServiceOutput(String experimentIdRegEx, String workflowNameRegEx,
             String nodeNameRegEx) throws RegistryException{
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().searchWorkflowExecutionServiceOutput(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx);
+    		return getProvenanceRegistry().searchWorkflowInstanceNodeOutput(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx);
     	}
         return searchWorkflowIO(experimentIdRegEx, workflowNameRegEx, nodeNameRegEx, OUTPUT);
     }
@@ -893,9 +893,9 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	    return null;
 	}
 
-    private List<WorkflowServiceIOData> searchWorkflowIO(String experimentIdRegEx, String workflowNameRegEx,
+    private List<WorkflowNodeIOData> searchWorkflowIO(String experimentIdRegEx, String workflowNameRegEx,
             String nodeNameRegEx, String type) throws RegistryException{
-        List<WorkflowServiceIOData> workflowIODataList = new ArrayList<WorkflowServiceIOData>();
+        List<WorkflowNodeIOData> workflowIODataList = new ArrayList<WorkflowNodeIOData>();
         Session session = null;
         try {
             session = getSession();
@@ -923,7 +923,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
                         }
                         Node ioNode = getOrAddNode(serviceNode, type);
                         if (ioNode.hasProperty(PROPERTY_WORKFLOW_IO_CONTENT)) {
-							WorkflowServiceIOData workflowIOData = new WorkflowServiceIOData();
+							WorkflowNodeIOData workflowIOData = new WorkflowNodeIOData();
 							workflowIOData.setExperimentId(experimentNode
 									.getName());
 							workflowIOData
@@ -947,7 +947,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 
     public boolean saveWorkflowExecutionStatus(String experimentId,WorkflowInstanceStatus status)throws RegistryException{
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().saveWorkflowExecutionStatus(experimentId, status.getExecutionStatus());
+    		return getProvenanceRegistry().updateWorkflowInstanceStatus(experimentId, status.getExecutionStatus());
     	}
         Session session = null;
         boolean isSaved = true;
@@ -973,7 +973,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 
     public WorkflowInstanceStatus getWorkflowExecutionStatus(String experimentId)throws RegistryException{
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().getWorkflowExecutionStatus(experimentId);
+    		return getProvenanceRegistry().getWorkflowInstanceStatus(experimentId);
     	}
     	Session session = null;
     	WorkflowInstanceStatus property = null;
@@ -1166,7 +1166,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	public boolean saveWorkflowExecutionUser(String experimentId, String user)
 			throws RegistryException {
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().saveWorkflowExecutionUser(experimentId, user);
+    		return getProvenanceRegistry().updateExperimentExecutionUser(experimentId, user);
     	}
 		Session session = null;
         boolean isSaved = true;
@@ -1195,7 +1195,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	public String getWorkflowExecutionUser(String experimentId)
 			throws RegistryException {
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().getWorkflowExecutionUser(experimentId);
+    		return getProvenanceRegistry().getExperimentExecutionUser(experimentId);
     	}
 		Session session = null;
         String property = null;
@@ -1218,7 +1218,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	public WorkflowExecution getWorkflowExecution(String experimentId)
 			throws RegistryException {
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().getWorkflowExecution(experimentId);
+    		return getProvenanceRegistry().getExperiment(experimentId);
     	}
 		WorkflowExecution workflowExecution = new WorkflowExecutionImpl();
 		workflowExecution.setExperimentId(experimentId);
@@ -1248,7 +1248,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	public List<String> getWorkflowExecutionIdByUser(String user)
 			throws RegistryException {
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().getWorkflowExecutionIdByUser(user);
+    		return getProvenanceRegistry().getExperimentIdByUser(user);
     	}
 		Session session = null;
 		List<String> ids=new ArrayList<String>();
@@ -1273,7 +1273,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	public List<WorkflowExecution> getWorkflowExecutionByUser(String user)
 			throws RegistryException {
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().getWorkflowExecutionByUser(user);
+    		return getProvenanceRegistry().getExperimentByUser(user);
     	}
 		return getWorkflowExecution(user,-1,-1);
 	}
@@ -1298,7 +1298,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	public List<WorkflowExecution> getWorkflowExecutionByUser(String user,
 			int pageSize, int pageNo) throws RegistryException {
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().getWorkflowExecutionByUser(user, pageSize, pageNo);
+    		return getProvenanceRegistry().getExperimentByUser(user, pageSize, pageNo);
     	}
 		return getWorkflowExecution(user,pageSize*pageNo,pageSize*(pageNo+1));
 	}
@@ -1306,7 +1306,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	public String getWorkflowExecutionMetadata(String experimentId)
 			throws RegistryException {
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().getWorkflowExecutionMetadata(experimentId);
+    		return getProvenanceRegistry().getExperimentMetadata(experimentId);
     	}
 		Session session = null;
     	String property = null;
@@ -1329,7 +1329,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	public boolean saveWorkflowExecutionMetadata(String experimentId,
 			String metadata) throws RegistryException {
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().saveWorkflowExecutionMetadata(experimentId, metadata);
+    		return getProvenanceRegistry().updateExperimentMetadata(experimentId, metadata);
     	}
 		Session session = null;
         boolean isSaved = true;
@@ -1351,7 +1351,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	public boolean saveWorkflowExecutionStatus(String experimentId,
 			ExecutionStatus status) throws RegistryException {
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().saveWorkflowExecutionStatus(experimentId, status);
+    		return getProvenanceRegistry().updateWorkflowInstanceStatus(experimentId, status);
     	}
 		return saveWorkflowExecutionStatus(experimentId,new WorkflowInstanceStatus(new WorkflowInstance(experimentId, experimentId), status));
 	}
@@ -1360,7 +1360,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	public boolean saveWorkflowExecutionName(String experimentId,
 			String workflowIntanceName) throws RegistryException {
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().saveWorkflowExecutionName(experimentId, workflowIntanceName);
+    		return getProvenanceRegistry().updateExperimentName(experimentId, workflowIntanceName);
     	}
 		Session session = null;
         boolean isSaved = true;
@@ -1382,7 +1382,7 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
 	public String getWorkflowExecutionName(String experimentId)
 			throws RegistryException {
     	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().getWorkflowExecutionName(experimentId);
+    		return getProvenanceRegistry().getExperimentName(experimentId);
     	}
 		Session session = null;
     	String property = null;

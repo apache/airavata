@@ -24,7 +24,7 @@ import java.util.List;
 
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.workflow.WorkflowExecution;
-import org.apache.airavata.registry.api.workflow.WorkflowServiceIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 import org.apache.airavata.workflow.model.graph.Node;
 
 public class ProvenanceReader {
@@ -45,12 +45,12 @@ public class ProvenanceReader {
 
     public Object read() throws Exception {
         try {
-            WorkflowExecution workflowExecution = registry.getWorkflowExecution(experimentId);
-            List<WorkflowServiceIOData> serviceOutput = workflowExecution.getServiceOutput();
+            WorkflowExecution workflowExecution = registry.getExperiment(experimentId);
+            List<WorkflowNodeIOData> serviceOutput = workflowExecution.getServiceOutput();
             if (serviceOutput.size() == 0) {
                 return null;
             }
-            for (WorkflowServiceIOData data : serviceOutput) {
+            for (WorkflowNodeIOData data : serviceOutput) {
                 if (this.node.getID().equals(data.getNodeId())) {
                     return data.getValue();
                 }

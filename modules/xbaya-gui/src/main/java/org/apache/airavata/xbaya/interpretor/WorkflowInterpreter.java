@@ -271,7 +271,7 @@ public class WorkflowInterpreter {
 					try {
 						try {
 							this.getConfig().getConfiguration().getJcrComponentRegistry().getRegistry()
-									.saveWorkflowExecutionStatus(this.config.getTopic(), ExecutionStatus.FINISHED);
+									.updateWorkflowInstanceStatus(this.config.getTopic(), ExecutionStatus.FINISHED);
 						} catch (Exception e) {
 							throw new WorkflowException(e);
 						}
@@ -284,7 +284,7 @@ public class WorkflowInterpreter {
 				if (this.config.isActOnProvenance()) {
 					try {
 						this.getConfig().getConfiguration().getJcrComponentRegistry().getRegistry()
-								.saveWorkflowExecutionStatus(this.config.getTopic(), ExecutionStatus.FAILED);
+								.updateWorkflowInstanceStatus(this.config.getTopic(), ExecutionStatus.FAILED);
 					} catch (RegistryException e) {
 						throw new WorkflowException(e);
 					}

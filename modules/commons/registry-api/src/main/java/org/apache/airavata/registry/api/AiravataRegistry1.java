@@ -234,15 +234,15 @@ public interface AiravataRegistry1 extends Registry{
 
     public void deleteHostDescription(String hostId) throws RegistryException;
 
-    public boolean saveWorkflowExecutionServiceInput(WorkflowServiceIOData workflowInputData) throws RegistryException;
+    public boolean saveWorkflowExecutionServiceInput(WorkflowNodeIOData workflowInputData) throws RegistryException;
 
-    public boolean saveWorkflowExecutionServiceOutput(WorkflowServiceIOData workflowOutputData)throws RegistryException;
+    public boolean saveWorkflowExecutionServiceOutput(WorkflowNodeIOData workflowOutputData)throws RegistryException;
     
-    public List<WorkflowServiceIOData> searchWorkflowExecutionServiceInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
+    public List<WorkflowNodeIOData> searchWorkflowExecutionServiceInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
     
     public String getWorkflowExecutionTemplateName(String experimentId) throws RegistryException;
 
-    public List<WorkflowServiceIOData> searchWorkflowExecutionServiceOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
+    public List<WorkflowNodeIOData> searchWorkflowExecutionServiceOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
     
     public boolean saveWorkflowExecutionName(String experimentId,String workflowIntanceName)throws RegistryException;
     
