@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class RegistryService implements ServiceLifeCycle {
@@ -83,6 +84,11 @@ public class RegistryService implements ServiceLifeCycle {
             throw new RuntimeException("Database failure");
         } finally {
             db.closeConnection(conn);
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         }
         GatewayResource gatewayResource = new GatewayResource();
         gatewayResource.setGatewayName((String)properties.get(GATEWAY_ID));
