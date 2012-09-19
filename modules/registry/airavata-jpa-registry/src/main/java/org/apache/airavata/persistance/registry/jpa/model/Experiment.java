@@ -29,6 +29,9 @@ public class Experiment {
     @Id
     private String experiment_ID;
     private Date submitted_date;
+    private String user_name;
+    private String gateway_name;
+    private int project_ID;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "user_name")
