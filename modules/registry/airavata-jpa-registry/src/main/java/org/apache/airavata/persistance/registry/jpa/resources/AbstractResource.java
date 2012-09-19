@@ -20,6 +20,9 @@
 */
 package org.apache.airavata.persistance.registry.jpa.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 
@@ -36,7 +39,10 @@ public abstract class AbstractResource implements Resource {
     public static final String SERVICE_DESCRIPTOR = "Service_Descriptor";
     public static final String APPLICATION_DESCRIPTOR = "Application_Descriptor";
     public static final String EXPERIMENT = "Experiment";
-
+    public static final String EXPERIMENT_DATA = "Experiment_Data";
+    public static final String WORKFLOW_DATA = "Workflow_Data";
+    public static final String EXPERIMENT_METADATA = "Experiment_Metadata";
+    
     //Gateway Table
     public final class GatewayConstants {
         public static final String GATEWAY_NAME = "gateway_name";
@@ -179,6 +185,15 @@ public abstract class AbstractResource implements Resource {
         } catch (Exception e) {
             return false;
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+	public static <T> List<T> getResourceList(List<Resource> resources, Class<?> T){
+    	List<T> list=new ArrayList<T>();
+    	for (Resource o : resources) {
+    		list.add((T) o);
+		}
+    	return list;
     }
 
 }

@@ -31,6 +31,7 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
+import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource.WorkflowDataConstants;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 public class WorkerResource extends AbstractResource {
@@ -112,6 +113,12 @@ public class WorkerResource extends AbstractResource {
                 q = generator.deleteQuery(em);
 	            q.executeUpdate();
 	            break;
+            case WORKFLOW_DATA:
+                generator = new QueryGenerator(WORKFLOW_DATA);
+                generator.setParameter(WorkflowDataConstants.WORKFLOW_INSTANCE_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
 			default:
 				break;
 		}
@@ -158,6 +165,15 @@ public class WorkerResource extends AbstractResource {
 	            Experiment experiment = (Experiment) q.getSingleResult();
                 result= Utils.getResource(ResourceType.EXPERIMENT, experiment);
 				break;
+			case WORKFLOW_DATA:
+                generator = new QueryGenerator(WORKFLOW_DATA);
+                generator.setParameter(WorkflowDataConstants.WORKFLOW_INSTANCE_ID, name);
+                q = generator.selectQuery(em);
+                Workflow_Data eworkflowData = (Workflow_Data)q.getSingleResult();
+                WorkflowDataResource workflowDataResource = (WorkflowDataResource)Utils.getResource(ResourceType.WORKFLOW_DATA, eworkflowData);
+                em.getTransaction().commit();
+                em.close();
+                result= workflowDataResource;
 			default:
 				break;
 		}
@@ -416,4 +432,16 @@ public class WorkerResource extends AbstractResource {
 	public void removeExperiment(String experimentId){
 		remove(ResourceType.EXPERIMENT, experimentId);
 	}
+	
+    public boolean isWorkflowInstancePresent(String workflowInstanceId){
+		return isExists(ResourceType.WORKFLOW_DATA, workflowInstanceId);
+    }
+    
+    public WorkflowDataResource getWorkflowInstance(String workflowInstanceId){
+    	return (WorkflowDataResource)get(ResourceType.WORKFLOW_DATA, workflowInstanceId);
+    }
+    
+    public void removeWorkflowInstance(String workflowInstanceId){
+    	remove(ResourceType.WORKFLOW_DATA, workflowInstanceId);
+    }
 }

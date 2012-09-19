@@ -20,6 +20,14 @@
 */
 package org.apache.airavata.registry.api.util;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Properties;
+
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry2;
@@ -33,11 +41,6 @@ import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedExcep
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.*;
-import java.util.HashMap;
-import java.util.Properties;
 
 public class RegistryUtils {
     private static final Logger log = LoggerFactory.getLogger(RegistryUtils.class);

@@ -23,7 +23,8 @@ package org.apache.airavata.xbaya.provenance;
 import java.util.List;
 
 import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.workflow.WorkflowExecution;
+import org.apache.airavata.registry.api.workflow.ExperimentData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 import org.apache.airavata.workflow.model.graph.Node;
 
@@ -45,14 +46,14 @@ public class ProvenanceReader {
 
     public Object read() throws Exception {
         try {
-            WorkflowExecution workflowExecution = registry.getExperiment(experimentId);
-            List<WorkflowNodeIOData> serviceOutput = workflowExecution.getServiceOutput();
-            if (serviceOutput.size() == 0) {
+            ExperimentData workflowExecution = registry.getExperiment(experimentId);
+            List<WorkflowInstanceNodeData> nodeDataList = workflowExecution.getWorkflowInstanceData().get(0).getNodeDataList();
+            if (nodeDataList.size() == 0) {
                 return null;
             }
-            for (WorkflowNodeIOData data : serviceOutput) {
-                if (this.node.getID().equals(data.getNodeId())) {
-                    return data.getValue();
+            for (WorkflowInstanceNodeData data : nodeDataList) {
+                if (this.node.getID().equals(data.getWorkflowInstanceNode().getNodeId())) {
+                    return data.getOutputData().get(0).getValue();
                 }
             }
             return null;

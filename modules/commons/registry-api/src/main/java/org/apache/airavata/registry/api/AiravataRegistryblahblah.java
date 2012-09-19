@@ -268,13 +268,13 @@ public interface AiravataRegistryblahblah extends Registry{
     
     public String getWorkflowExecutionName(String experimentId) throws RegistryException;
     
-    public WorkflowExecution getWorkflowExecution(String experimentId) throws RegistryException;
+    public ExperimentData getWorkflowExecution(String experimentId) throws RegistryException;
     
     public List<String> getWorkflowExecutionIdByUser(String user) throws RegistryException;
 
-    public List<WorkflowExecution> getWorkflowExecutionByUser(String user) throws RegistryException;
+    public List<ExperimentData> getWorkflowExecutionByUser(String user) throws RegistryException;
     
-    public List<WorkflowExecution> getWorkflowExecutionByUser(String user, int pageSize, int pageNo) throws RegistryException;
+    public List<ExperimentData> getWorkflowExecutionByUser(String user, int pageSize, int pageNo) throws RegistryException;
     
     public String getWorkflowExecutionMetadata(String experimentId) throws RegistryException;
     

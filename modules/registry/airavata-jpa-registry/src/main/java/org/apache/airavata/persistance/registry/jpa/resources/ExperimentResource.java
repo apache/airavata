@@ -31,6 +31,7 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment;
+import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Project;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
@@ -80,7 +81,14 @@ public class ExperimentResource extends AbstractResource {
      * @return UnsupportedOperationException
      */
     public Resource create(ResourceType type) {
-        throw new UnsupportedOperationException();
+    	switch (type){
+	        case EXPERIMENT_DATA:
+	        	ExperimentDataResource expDataResource = new ExperimentDataResource();
+	            expDataResource.setExperimentID(getExpID());
+	            return expDataResource;
+	        default:
+	            throw new IllegalArgumentException("Unsupported resource type for experiment data resource.");
+	    }
     }
 
     /**
@@ -102,7 +110,26 @@ public class ExperimentResource extends AbstractResource {
      * @return UnsupportedOperationException
      */
     public Resource get(ResourceType type, Object name) {
-        throw new UnsupportedOperationException();
+    	EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        QueryGenerator generator;
+        Query q;
+        switch (type) {
+            case EXPERIMENT_DATA:
+                generator = new QueryGenerator(EXPERIMENT_DATA);
+                generator.setParameter(ExperimentDataConstants.EXPERIMENT_ID, name);
+                q = generator.selectQuery(em);
+                Experiment_Data experimentwData = (Experiment_Data)q.getSingleResult();
+                ExperimentDataResource experimentDataResource = (ExperimentDataResource)Utils.getResource(ResourceType.EXPERIMENT_DATA, experimentwData);
+                em.getTransaction().commit();
+                em.close();
+                return experimentDataResource;
+            default:
+                em.getTransaction().commit();
+                em.close();
+                throw new IllegalArgumentException("Unsupported resource type for experiment data resource.");
+        }
+
     }
 
     /**
@@ -239,4 +266,12 @@ public class ExperimentResource extends AbstractResource {
     public void setProject(ProjectResource project) {
 		this.project = project;
 	}
+    
+    public ExperimentDataResource getData(){
+    	if (isExists(ResourceType.EXPERIMENT_DATA, getExpID())){
+    		return (ExperimentDataResource) get(ResourceType.EXPERIMENT_DATA, getExpID());
+    	}else{
+    		return (ExperimentDataResource) create(ResourceType.EXPERIMENT_DATA);
+    	}
+    }
 }

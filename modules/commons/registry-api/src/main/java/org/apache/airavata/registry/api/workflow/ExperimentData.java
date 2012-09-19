@@ -23,31 +23,31 @@ package org.apache.airavata.registry.api.workflow;
 
 import java.util.List;
 
-
-public interface WorkflowExecution {
+public interface ExperimentData {
 	public String getExperimentId();
 	public String getTopic();
-	public WorkflowInstanceStatus getExecutionStatus();
+//	public WorkflowInstanceStatus getExecutionStatus();
 	public String getUser();
-	public List<WorkflowNodeIOData> getServiceInput();
-	public List<WorkflowNodeIOData> getServiceOutput();
-	public List<WorkflowIOData> getOutput();
-	public WorkflowNodeIOData getServiceInput(String nodeId);
-	public WorkflowNodeIOData getServiceOutput(String nodeId);
-	public WorkflowIOData getOutput(String nodeId);
+//	public List<WorkflowNodeIOData> getServiceInput();
+//	public List<WorkflowNodeIOData> getServiceOutput();
+//	public List<WorkflowIOData> getOutput();
+//	public WorkflowNodeIOData getServiceInput(String nodeId);
+//	public WorkflowNodeIOData getServiceOutput(String nodeId);
+//	public WorkflowIOData getOutput(String nodeId);
 	public String getMetadata();
-	public String getWorkflowInstanceName();
+	public String getExperimentName();
+	public List<WorkflowInstanceData> getWorkflowInstanceData();
 	
 	public void setExperimentId(String experimentId);
 	public void setTopic(String topic);
-	public void setExecutionStatus(WorkflowInstanceStatus executionStatus);
+//	public void setExecutionStatus(WorkflowInstanceStatus executionStatus);
 	public void setUser(String user);
-	public void setServiceInput(List<WorkflowNodeIOData> serviceInputs);
-	public void setServiceOutput(List<WorkflowNodeIOData> serviceOutputs);
-	public void setOutput(List<WorkflowIOData> outputs);
-	public void addServiceInput(WorkflowNodeIOData serviceInput);
-	public void addServiceOutput(WorkflowNodeIOData serviceOutput);
-	public void addOutput(WorkflowIOData output);
+//	public void setServiceInput(List<WorkflowNodeIOData> serviceInputs);
+//	public void setServiceOutput(List<WorkflowNodeIOData> serviceOutputs);
+//	public void setOutput(List<WorkflowIOData> outputs);
+//	public void addServiceInput(WorkflowNodeIOData serviceInput);
+//	public void addServiceOutput(WorkflowNodeIOData serviceOutput);
+//	public void addOutput(WorkflowIOData output);
 	public void setMetadata(String metadata);
-	public void setWorkflowInstanceName(String workflowInstanceName);
+	public void setExperimentName(String experimentName);
 }

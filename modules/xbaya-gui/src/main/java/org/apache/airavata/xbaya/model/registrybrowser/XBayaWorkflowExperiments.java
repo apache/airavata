@@ -31,6 +31,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 import org.apache.airavata.schemas.gfac.Parameter;
 import org.apache.airavata.xbaya.interpretor.NameValue;
@@ -63,7 +64,8 @@ public class XBayaWorkflowExperiments {
 			List<String> workflowExecutionIdByUser = getRegistry().getExperimentIdByUser(".*");
 			for (String expId : workflowExecutionIdByUser) {
 				XBayaWorkflowExperiment xBayaWorkflowExperiment = new XBayaWorkflowExperiment(expId, null);
-				xBayaWorkflowExperiment.add(new XBayaWorkflow(expId,getRegistry().getWorkflowExecutionTemplateName(expId,expId),null));
+				WorkflowInstanceData workflowInstanceData = getRegistry().getWorkflowInstanceData(expId);
+				xBayaWorkflowExperiment.add(new XBayaWorkflow(expId,workflowInstanceData.getWorkflowName(),null));
 				experiments.put(expId,xBayaWorkflowExperiment);
 			}
 		} catch (RegistryException e) {

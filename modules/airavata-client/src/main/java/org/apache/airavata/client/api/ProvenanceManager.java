@@ -24,6 +24,7 @@ package org.apache.airavata.client.api;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceMetadata;
@@ -279,7 +280,7 @@ public interface ProvenanceManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public List<WorkflowInstance> getWorkflowInstances() throws AiravataAPIInvocationException;
+	public List<ExperimentData> getWorkflowExperimentData() throws AiravataAPIInvocationException;
 
     /**
      * Retrieve all the experiments run by the given owner
@@ -287,7 +288,7 @@ public interface ProvenanceManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public List<WorkflowInstance> getWorkflowInstances(String user) throws AiravataAPIInvocationException;
+	public List<ExperimentData> getWorkflowExperimentData(String user) throws AiravataAPIInvocationException;
 
     /**
      * Retrieve all the experiment data run by the given owner with paging
@@ -297,7 +298,7 @@ public interface ProvenanceManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public List<WorkflowInstanceData> getWorkflowInstances(String user, int pageSize, int pageNo) throws AiravataAPIInvocationException;
+	public List<ExperimentData> getWorkflowExperimentData(String user, int pageSize, int pageNo) throws AiravataAPIInvocationException;
 
     /**
      * Retrieve experiment data for a given workflow instance
@@ -314,7 +315,7 @@ public interface ProvenanceManager {
      * @return
      * @throws AiravataAPIInvocationException
      */
-	public WorkflowInstanceData getWorkflowInstanceData(WorkflowInstance workflowInstance) throws AiravataAPIInvocationException;
+	public WorkflowInstanceData getWorkflowIsntanceData(WorkflowInstance workflowInstance) throws AiravataAPIInvocationException;
 
     /**
      * Retrieve output node names of a experiment
