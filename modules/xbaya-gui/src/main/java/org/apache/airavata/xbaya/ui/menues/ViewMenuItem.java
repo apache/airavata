@@ -97,11 +97,7 @@ public class ViewMenuItem {
 		JMenuItem menuItem = new JMenuItem("Airavata Registry");
 		menuItem.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-                List<URI> list = engine.getConfiguration().getJcrComponentRegistry().getRegistry().getGFacURIs();
-                for(URI uris: list){
-                    System.out.println(uris.toString());
-                }
-//				engine.getGUI().viewJCRBrowserPanel();
+				engine.getGUI().viewJCRBrowserPanel();
 			}
 		});
 		return menuItem;
