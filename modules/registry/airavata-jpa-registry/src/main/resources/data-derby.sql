@@ -97,7 +97,7 @@ create table Host_Descriptor
        gateway_name varchar(255),
        updated_user varchar(255),
        host_descriptor_ID varchar(255),
-       host_descriptor_xml varchar(2000),
+       host_descriptor_xml BLOB,
        PRIMARY KEY(gateway_name, host_descriptor_ID),
        FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
        FOREIGN KEY (updated_user) REFERENCES Users(user_name) ON DELETE CASCADE
@@ -108,7 +108,7 @@ create table Service_Descriptor
          gateway_name varchar(255),
          updated_user varchar(255),
          service_descriptor_ID varchar(255),
-         service_descriptor_xml varchar(2000),
+         service_descriptor_xml BLOB,
          PRIMARY KEY(gateway_name,service_descriptor_ID),
          FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
          FOREIGN KEY (updated_user) REFERENCES Users(user_name) ON DELETE CASCADE
@@ -121,7 +121,7 @@ create table Application_Descriptor
          application_descriptor_ID varchar(255),
          host_descriptor_ID varchar(255),
          service_descriptor_ID varchar(255),
-         application_descriptor_xml varchar(2000),
+         application_descriptor_xml BLOB,
          PRIMARY KEY(gateway_name,application_descriptor_ID),
          FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
          FOREIGN KEY (updated_user) REFERENCES Users(user_name) ON DELETE CASCADE
@@ -163,7 +163,7 @@ create table Workflow_Data
        template_name varchar(255),
        status varchar(100),
        start_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
-       last_update_time TIMESTAMP DEFAULT now() on update now(),
+       last_update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
        PRIMARY KEY(workflow_instanceID),
        FOREIGN KEY (experiment_ID) REFERENCES Experiment_Data(experiment_ID) ON DELETE CASCADE
 );
@@ -177,7 +177,7 @@ create table Node_Data
        outputs BLOB,
        status varchar(100),
        start_time TIMESTAMP DEFAULT '0000-00-00 00:00:00',
-       last_update_time TIMESTAMP DEFAULT now() on update now(),
+       last_update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
        PRIMARY KEY(workflow_instanceID, node_id),
        FOREIGN KEY (workflow_instanceID) REFERENCES Workflow_Data(workflow_instanceID) ON DELETE CASCADE
 );

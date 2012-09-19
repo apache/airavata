@@ -95,7 +95,7 @@ create table Host_Descriptor
        gateway_name varchar(255),
        updated_user varchar(255),
        host_descriptor_ID varchar(255),
-       host_descriptor_xml varchar(2000),
+       host_descriptor_xml BLOB,
        PRIMARY KEY(gateway_name, host_descriptor_ID),
        FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
        FOREIGN KEY (updated_user) REFERENCES Users(user_name) ON DELETE CASCADE
@@ -106,7 +106,7 @@ create table Service_Descriptor
          gateway_name varchar(255),
          updated_user varchar(255),
          service_descriptor_ID varchar(255),
-         service_descriptor_xml varchar(2000),
+         service_descriptor_xml BLOB,
          PRIMARY KEY(gateway_name,service_descriptor_ID),
          FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
          FOREIGN KEY (updated_user) REFERENCES Users(user_name) ON DELETE CASCADE
@@ -119,7 +119,7 @@ create table Application_Descriptor
          application_descriptor_ID varchar(255),
          host_descriptor_ID varchar(255),
          service_descriptor_ID varchar(255),
-         application_descriptor_xml varchar(2000),
+         application_descriptor_xml BLOB,
          PRIMARY KEY(gateway_name,application_descriptor_ID),
          FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
          FOREIGN KEY (updated_user) REFERENCES Users(user_name) ON DELETE CASCADE

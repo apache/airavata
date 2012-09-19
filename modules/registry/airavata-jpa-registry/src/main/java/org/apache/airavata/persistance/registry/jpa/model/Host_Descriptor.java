@@ -29,6 +29,7 @@ public class Host_Descriptor {
     private String host_descriptor_ID;
     @Id
     private String gateway_name;
+    @Lob
     private String host_descriptor_xml;
 
     @ManyToOne(cascade=CascadeType.MERGE)
