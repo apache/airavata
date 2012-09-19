@@ -33,6 +33,8 @@ public class Application_Descriptor {
 
     private String host_descriptor_ID;
     private String service_descriptor_ID;
+
+    @Lob
     private String application_descriptor_xml;
 
     @ManyToOne(cascade=CascadeType.PERSIST)

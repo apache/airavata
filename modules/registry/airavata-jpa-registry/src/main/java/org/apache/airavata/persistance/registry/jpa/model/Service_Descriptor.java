@@ -29,7 +29,7 @@ public class Service_Descriptor {
     private String service_descriptor_ID;
     @Id
     private String gateway_name;
-
+    @Lob
     private String service_descriptor_xml;
 
     @ManyToOne(cascade=CascadeType.MERGE)
