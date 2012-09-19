@@ -192,6 +192,7 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
                     e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     return;
                 }
+                logger.error(e.getMessage());
                 logger.error("Workflow Interpreter Service URL update thread is interrupted");
             }
         }
