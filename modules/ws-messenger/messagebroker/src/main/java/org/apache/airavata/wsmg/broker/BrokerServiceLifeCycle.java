@@ -328,6 +328,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
                     e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     return;
                 }
+                log.error(e.getMessage());
                 log.error("Workflow Interpreter Service URL update thread is interrupted");
             }
         }
