@@ -97,7 +97,7 @@ public class ExperimentDataResource extends AbstractResource{
         switch (type) {
             case WORKFLOW_DATA:
                 generator = new QueryGenerator(WORKFLOW_DATA);
-                generator.setParameter(WorkflowDataConstants.EXPERIMENT_ID, experimentID);
+//                generator.setParameter(WorkflowDataConstants.EXPERIMENT_ID, experimentID);
                 generator.setParameter(WorkflowDataConstants.WORKFLOW_INSTANCE_ID, name);
                 q = generator.selectQuery(em);
                 Workflow_Data eworkflowData = (Workflow_Data)q.getSingleResult();
@@ -107,8 +107,7 @@ public class ExperimentDataResource extends AbstractResource{
                 return workflowDataResource;
             case EXPERIMENT_METADATA:
                 generator = new QueryGenerator(EXPERIMENT_METADATA);
-                generator.setParameter(ExperimentDataConstants.EXPERIMENT_ID, experimentID);
-                generator.setParameter(ExperimentDataConstants.METADATA, name);
+                generator.setParameter(ExperimentDataConstants.EXPERIMENT_ID, name);
                 q = generator.selectQuery(em);
                 Experiment_Metadata expMetadata = (Experiment_Metadata)q.getSingleResult();
                 ExperimentMetadataResource experimentMetadataResource = (ExperimentMetadataResource)Utils.getResource(ResourceType.EXPERIMENT_METADATA, expMetadata);

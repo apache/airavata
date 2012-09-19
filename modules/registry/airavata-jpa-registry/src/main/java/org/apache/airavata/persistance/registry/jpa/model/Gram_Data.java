@@ -26,11 +26,12 @@ import javax.persistence.*;
 @IdClass(Gram_DataPK.class)
 public class Gram_Data {
 
-	@Id
 	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "workflow_instanceID")
 	private Workflow_Data workflow_Data;
 
+    @Id
+    private String workflow_instanceID;
 	@Id
 	private String node_id;
 
@@ -77,6 +78,14 @@ public class Gram_Data {
 
     public void setLocal_Job_ID(String local_Job_ID) {
         this.local_Job_ID = local_Job_ID;
+    }
+
+    public String getWorkflow_instanceID() {
+        return workflow_instanceID;
+    }
+
+    public void setWorkflow_instanceID(String workflow_instanceID) {
+        this.workflow_instanceID = workflow_instanceID;
     }
 }
 

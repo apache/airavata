@@ -20,8 +20,6 @@
 */
 package org.apache.airavata.persistance.registry.jpa.model;
 
-import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
-
 import java.sql.Timestamp;
 
 import javax.persistence.*;
@@ -31,7 +29,9 @@ public class Workflow_Data {
 
 	@ManyToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name="experiment_ID")
-	private Experiment_Data experiment_Data;
+    private Experiment_Data experiment_data;
+
+//	private String experiment_ID;
 	@Id
 	private String workflow_instanceID;
 	private String template_name;
@@ -39,13 +39,13 @@ public class Workflow_Data {
 	private Timestamp start_time;
 	private Timestamp last_update_time;
 
-	public Experiment_Data getExperiment_Data() {
-		return experiment_Data;
-	}
-
-	public void setExperiment_Data(Experiment_Data experiment_Data) {
-		this.experiment_Data = experiment_Data;
-	}
+//	public String getExperiment_ID() {
+//		return experiment_ID;
+//	}
+//
+//	public void setExperiment_ID(String experiment_ID) {
+//		this.experiment_ID = experiment_ID;
+//	}
 
 	public String getWorkflow_instanceID() {
 		return workflow_instanceID;
@@ -86,4 +86,12 @@ public class Workflow_Data {
 	public void setLast_update_time(Timestamp last_update_time) {
 		this.last_update_time = last_update_time;
 	}
+
+    public Experiment_Data getExperiment_data() {
+        return experiment_data;
+    }
+
+    public void setExperiment_data(Experiment_Data experiment_data) {
+        this.experiment_data = experiment_data;
+    }
 }

@@ -57,14 +57,18 @@ public class ExperimentMetadataResource extends AbstractResource{
         em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Experiment_Metadata experimentMetadata = new Experiment_Metadata();
-        existingExpMetaData.setMetadata(metadata);
+        experimentMetadata.setExperiment_ID(expID);
+        experimentMetadata.setMetadata(metadata);
 
         if(existingExpMetaData != null){
             existingExpMetaData.setMetadata(metadata);
+            existingExpMetaData.setExperiment_ID(expID);
             experimentMetadata = em.merge(existingExpMetaData);
         }else{
-            em.persist(existingExpMetaData);
+            em.persist(experimentMetadata);
         }
+        em.getTransaction().commit();
+        em.close();
 
     }
 }

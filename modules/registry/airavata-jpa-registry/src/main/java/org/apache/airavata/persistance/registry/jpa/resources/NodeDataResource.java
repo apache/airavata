@@ -113,6 +113,7 @@ public class NodeDataResource extends AbstractResource{
         em.close();
 
         em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Node_Data nodeData = new Node_Data();
         nodeData.setNode_id(nodeID);
         Workflow_Data workflow_data = em.find(Workflow_Data.class, workflowDataResource.getWorkflowInstanceID());

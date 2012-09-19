@@ -29,6 +29,8 @@ import javax.persistence.*;
 public class Node_Data {
 
 	@Id
+    private String workflow_instanceID;
+
 	@ManyToOne()
 	@JoinColumn(name = "workflow_instanceID")
 	private Workflow_Data workflow_Data;
@@ -108,5 +110,13 @@ public class Node_Data {
 	public void setLast_update_time(Timestamp last_update_time) {
 		this.last_update_time = last_update_time;
 	}
+
+    public String getWorkflow_instanceID() {
+        return workflow_instanceID;
+    }
+
+    public void setWorkflow_instanceID(String workflow_instanceID) {
+        this.workflow_instanceID = workflow_instanceID;
+    }
 }
 
