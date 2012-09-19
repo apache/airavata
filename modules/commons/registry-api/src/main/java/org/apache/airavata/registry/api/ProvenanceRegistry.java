@@ -21,12 +21,21 @@
 
 package org.apache.airavata.registry.api;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.workflow.*;
+import org.apache.airavata.registry.api.workflow.ExperimentData;
+import org.apache.airavata.registry.api.workflow.WorkflowIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 
 public interface ProvenanceRegistry extends AiravataSubRegistry{
 
@@ -68,11 +77,11 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
     /**
      * Save a name for this workflow execution
      * @param experimentId
-     * @param workflowIntanceName
+     * @param experimentName
      * @return
      * @throws RegistryException
      */
-	public abstract boolean updateExperimentName(String experimentId,String workflowIntanceName)throws RegistryException;
+	public abstract boolean updateExperimentName(String experimentId,String experimentName)throws RegistryException;
     
 	/**
      * Return the metadata information saved for the experiment
@@ -93,20 +102,19 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
     
     /**
      * Return the template name of the workflow that this intance was created from
-     * @param experimentId
      * @param workflowInstanceId
      * @return
      * @throws RegistryException
      */
-    public abstract String getWorkflowExecutionTemplateName(String experimentId, String workflowInstanceId) throws RegistryException;
+    public abstract String getWorkflowExecutionTemplateName(String workflowInstanceId) throws RegistryException;
     
     /**
      * Save the template name of the workflow that this intance was created from
-     * @param experimentId
      * @param workflowInstanceId
+     * @param templateName
      * @throws RegistryException
      */
-    public abstract void setWorkflowExecutionTemplateName(String experimentId, String workflowInstanceId) throws RegistryException;
+    public abstract void setWorkflowInstanceTemplateName(String workflowInstanceId, String templateName) throws RegistryException;
     
     public List<WorkflowInstance> getExperimentWorkflowInstances(String experimentId) throws RegistryException;
 	
@@ -130,7 +138,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract boolean updateWorkflowInstanceStatus(String instanceId,WorkflowInstanceStatus status)throws RegistryException;
+	public abstract boolean updateWorkflowInstanceStatus(WorkflowInstanceStatus status)throws RegistryException;
 
 	
     /**
@@ -237,7 +245,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract WorkflowExecution getExperiment(String experimentId) throws RegistryException;
+	public abstract ExperimentData getExperiment(String experimentId) throws RegistryException;
     
     /**
      * Return experiment ids of experiments launched by the given user
@@ -253,7 +261,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
 	 * @return experiment object list each populated by current data of that experiment
 	 * @throws RegistryException
 	 */
-    public abstract List<WorkflowExecution> getExperimentByUser(String user) throws RegistryException;
+    public abstract List<ExperimentData> getExperimentByUser(String user) throws RegistryException;
     
     /**
      * Return the pageNo set of experiments launched by the given user if grouped in to pages of size pageSize
@@ -263,14 +271,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-    public abstract List<WorkflowExecution> getExperimentByUser(String user, int pageSize, int pageNo) throws RegistryException;
-
-    /**
-     * This store set of metadata for each Workflow Run, Not the workflowNode Specific data, just full workflow Run specific data
-     * @param runTimeData
-     * @return
-     */
-    public abstract boolean saveWorkflowData(WorkflowRunTimeData runTimeData)throws RegistryException;
+    public abstract List<ExperimentData> getExperimentByUser(String user, int pageSize, int pageNo) throws RegistryException;
 
     /**
      * This will update the workflowStatus for given experimentID,workflowInstanceID combination.
@@ -278,46 +279,29 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @param workflowStatus
      * @return
      */
-    public abstract boolean saveWorkflowStatus(String workflowInstanceID,WorkflowInstanceStatus workflowStatus)throws RegistryException;
+    public abstract boolean updateWorkflowNodeStatus(WorkflowInstanceNodeStatus workflowStatusNode)throws RegistryException;
 
-    /**
-     * This will update the last update time of the workflow.
-     * @param workflowInstanceID
-     * @param lastUpdateTime
-     * @return
-     */
-    public abstract boolean saveWorkflowLastUpdateTime(String workflowInstanceID,Timestamp lastUpdateTime)throws RegistryException;
+    public abstract boolean updateWorkflowNodeStatus(String workflowInstanceId, String nodeId, ExecutionStatus status)throws RegistryException;
+    
+    public abstract boolean updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode, ExecutionStatus status)throws RegistryException;
 
-    /**
-     * This will change the status of a given WorkflowNode for a given workflowInstanceID(given workflow Run).
-     * @param workflowInstanceID
-     * @param status
-     * @return
-     */
-    public abstract boolean saveWorkflowNodeStatus(String workflowInstanceID,String workflowNodeID,ExecutionStatus status)throws RegistryException;
-
-    /**
-     * This will change the lastUpdate time for a given Workflow Node for a given workflow Run.
-     * @param workflowInstanceID
-     * @param workflowNodeID
-     * @param lastUpdateTime
-     * @return
-     */
-    public abstract boolean saveWorkflowNodeLastUpdateTime(String workflowInstanceID,String workflowNodeID,Timestamp lastUpdateTime)throws RegistryException;
-
+    public WorkflowInstanceNodeStatus getWorkflowNodeStatus(WorkflowInstanceNode workflowNode)throws RegistryException;
+    
+    public Date getWorkflowNodeStartTime(WorkflowInstanceNode workflowNode)throws RegistryException;
+    
+    public Date getWorkflowStartTime(WorkflowInstance workflowInstance)throws RegistryException;
+    
     /**
      * This will store the gram specific data in to repository, this can be called before submitting the workflow in to Grid
      * @param workflowNodeGramData
      * @return
      */
-    public abstract boolean saveWorkflowNodeGramData(WorkflowNodeGramData workflowNodeGramData)throws RegistryException;
-
-    /**
-     * This will update the local job ID for a submitted job to grid.
-     * @param workflowInstanceID
-     * @param workflowNodeID
-     * @param localJobID
-     * @return
-     */
-    public abstract boolean saveWorkflowNodeGramLocalJobID(String workflowInstanceID,String workflowNodeID,String localJobID)throws RegistryException;
+    public abstract boolean updateWorkflowNodeGramData(WorkflowNodeGramData workflowNodeGramData)throws RegistryException;
+    
+    public WorkflowInstanceData getWorkflowInstanceData(String workflowInstanceId)throws RegistryException;
+    
+    public boolean isWorkflowInstanceNodePresent(String workflowInstanceId, String nodeId)throws RegistryException;
+    
+    public WorkflowInstanceNodeData getWorkflowInstanceNodeData(String workflowInstanceId, String nodeId)throws RegistryException;
+    
 }

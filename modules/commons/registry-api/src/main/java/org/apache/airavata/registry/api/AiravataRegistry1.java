@@ -268,27 +268,19 @@ public interface AiravataRegistry1 extends Registry{
     
     public String getWorkflowExecutionName(String experimentId) throws RegistryException;
     
-    public WorkflowExecution getWorkflowExecution(String experimentId) throws RegistryException;
+    public ExperimentData getWorkflowExecution(String experimentId) throws RegistryException;
     
     public List<String> getWorkflowExecutionIdByUser(String user) throws RegistryException;
 
-    public List<WorkflowExecution> getWorkflowExecutionByUser(String user) throws RegistryException;
+    public List<ExperimentData> getWorkflowExecutionByUser(String user) throws RegistryException;
     
-    public List<WorkflowExecution> getWorkflowExecutionByUser(String user, int pageSize, int pageNo) throws RegistryException;
+    public List<ExperimentData> getWorkflowExecutionByUser(String user, int pageSize, int pageNo) throws RegistryException;
     
     public String getWorkflowExecutionMetadata(String experimentId) throws RegistryException;
     
     public boolean saveWorkflowExecutionMetadata(String experimentId, String metadata) throws RegistryException;
 
-    public boolean saveWorkflowData(WorkflowRunTimeData workflowData)throws RegistryException;
-
-    public  boolean saveWorkflowLastUpdateTime(String experimentId,Timestamp timestamp)throws RegistryException;
-
     public boolean saveWorkflowNodeStatus(String workflowInstanceID,String workflowNodeID,ExecutionStatus status)throws RegistryException;
 
-    public boolean saveWorkflowNodeLastUpdateTime(String workflowInstanceID,String workflowNodeID,Timestamp lastUpdateTime)throws RegistryException;
-
     public boolean saveWorkflowNodeGramData(WorkflowNodeGramData workflowNodeGramData)throws RegistryException;
-
-    public boolean saveWorkflowNodeGramLocalJobID(String workflowInstanceID,String workflowNodeID,String localJobID)throws RegistryException;
 }

@@ -24,12 +24,13 @@ package org.apache.airavata.registry.api.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.registry.api.workflow.WorkflowExecution;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 
-public class WorkflowExecutionImpl implements WorkflowExecution{
+public class ExperimentDataImpl implements ExperimentData{
 	private WorkflowInstanceStatus executionStatus;
 	private String user;
 	private List<WorkflowNodeIOData> serviceInput;
@@ -38,7 +39,8 @@ public class WorkflowExecutionImpl implements WorkflowExecution{
 	private String experimentId;
 	private String metadata;
 	private String workflowInstanceName;
-	
+	private List<WorkflowInstanceData> workflowInstanceDataList=new ArrayList<WorkflowInstanceData>();
+			
 	public String getMetadata() {
 		return metadata;
 	}
@@ -126,14 +128,20 @@ public class WorkflowExecutionImpl implements WorkflowExecution{
 		}
 		return null;
 	}
+	
 	@Override
-	public String getWorkflowInstanceName() {
+	public String getExperimentName() {
 		return workflowInstanceName;
 	}
 	
 	@Override
-	public void setWorkflowInstanceName(String workflowInstanceName) {
+	public void setExperimentName(String workflowInstanceName) {
 		this.workflowInstanceName=workflowInstanceName;
 		
+	}
+	
+	@Override
+	public List<WorkflowInstanceData> getWorkflowInstanceData() {
+		return workflowInstanceDataList;
 	}
 }

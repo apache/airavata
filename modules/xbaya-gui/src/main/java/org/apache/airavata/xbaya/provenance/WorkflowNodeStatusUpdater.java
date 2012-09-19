@@ -44,8 +44,8 @@ public class WorkflowNodeStatusUpdater {
             WorkflowNodeType workflowNodeType = new WorkflowNodeType();
             workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
             workflowServiceIOData.setNodeType(workflowNodeType);
-            registry.updateWorkflowNodeInput(workflowServiceIOData);                                                                                             registry.saveWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.STARTED);
-            registry.saveWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.STARTED);
+            registry.updateWorkflowNodeInput(workflowServiceIOData);                                                                                             registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.STARTED);
+            registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.STARTED);
         } catch (RegistryException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
@@ -55,7 +55,7 @@ public class WorkflowNodeStatusUpdater {
 
     public boolean workflowFailed(String workflowInstanceID,String nodeID){
         try {
-            registry.saveWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.FAILED);
+            registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.FAILED);
         } catch (RegistryException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
@@ -69,7 +69,7 @@ public class WorkflowNodeStatusUpdater {
              WorkflowNodeType workflowNodeType = new WorkflowNodeType();
             workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
             registry.updateWorkflowNodeOutput(workflowServiceIOData);
-            registry.saveWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.FINISHED);
+            registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.FINISHED);
         } catch (RegistryException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
@@ -79,7 +79,7 @@ public class WorkflowNodeStatusUpdater {
 
     public boolean workflowRunning(String workflowInstanceID,String nodeID){
         try {
-            registry.saveWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.RUNNING);
+            registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.RUNNING);
         } catch (RegistryException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
@@ -89,7 +89,7 @@ public class WorkflowNodeStatusUpdater {
 
      public boolean workflowPaused(String workflowInstanceID,String nodeID){
         try {
-            registry.saveWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.PAUSED);
+            registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.PAUSED);
         } catch (RegistryException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;

@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExperimentDataResource extends AbstractResource{
-    public static final String WORKFLOW_DATA = "Workflow_Data";
-    public static final String EXPERIMENT_METADATA = "Experiment_Metadata";
 
     private String experimentID;
     private String expName;
@@ -131,7 +129,7 @@ public class ExperimentDataResource extends AbstractResource{
         em.getTransaction().begin();
         Query q;
         QueryGenerator generator;
-        List results;
+        List<?> results;
         switch (type){
             case WORKFLOW_DATA:
                 generator = new QueryGenerator(WORKFLOW_DATA);
@@ -191,5 +189,43 @@ public class ExperimentDataResource extends AbstractResource{
         em.getTransaction().commit();
         em.close();
 
+    }
+    
+    public boolean isWorkflowInstancePresent(String workflowInstanceId){
+		return isExists(ResourceType.WORKFLOW_DATA, workflowInstanceId);
+    }
+    
+    public boolean isExperimentMetadataPresent(){
+		return isExists(ResourceType.EXPERIMENT_METADATA, getExperimentID());
+    }
+    
+    public WorkflowDataResource getWorkflowInstance(String workflowInstanceId){
+    	return (WorkflowDataResource)get(ResourceType.WORKFLOW_DATA, workflowInstanceId);
+    }
+    
+    public ExperimentMetadataResource getExperimentMetadata(){
+    	return (ExperimentMetadataResource)get(ResourceType.EXPERIMENT_METADATA,getExperimentID());
+    }
+    
+    public List<WorkflowDataResource> getWorkflowInstances(){
+    	return getResourceList(get(ResourceType.WORKFLOW_DATA),WorkflowDataResource.class);
+    }
+    
+    public WorkflowDataResource createWorkflowInstanceResource(String workflowInstanceID){
+    	WorkflowDataResource r=(WorkflowDataResource)create(ResourceType.WORKFLOW_DATA);
+    	r.setWorkflowInstanceID(workflowInstanceID);
+    	return r;
+    }
+    
+    public ExperimentMetadataResource createExperimentMetadata(){
+    	return (ExperimentMetadataResource)create(ResourceType.EXPERIMENT_METADATA);
+    }
+    
+    public void removeWorkflowInstance(String workflowInstanceId){
+    	remove(ResourceType.WORKFLOW_DATA, workflowInstanceId);
+    }
+    
+    public void removeExperimentMetadata(){
+    	remove(ResourceType.EXPERIMENT_METADATA,getExperimentID());
     }
 }

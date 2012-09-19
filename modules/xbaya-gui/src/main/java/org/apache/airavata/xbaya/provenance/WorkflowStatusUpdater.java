@@ -24,8 +24,8 @@ import java.sql.Timestamp;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowRunTimeData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,11 +90,10 @@ public class WorkflowStatusUpdater {
 
     public boolean saveWorkflowData(String experimentID,String workflowInstanceID,String workflowTemplateID) {
         Timestamp currentTime = new Timestamp((new java.util.Date()).getTime());
-        WorkflowRunTimeData workflowRunTimeData = new WorkflowRunTimeData(experimentID, workflowInstanceID, workflowTemplateID, currentTime,
-                WorkflowInstanceStatus.ExecutionStatus.STARTED, currentTime);
         try {
             registry.updateExperimentName(experimentID, workflowInstanceID);
-            registry.saveWorkflowData(workflowRunTimeData);
+            registry.setWorkflowInstanceTemplateName(workflowInstanceID, workflowTemplateID);
+            registry.updateWorkflowInstanceStatus(new WorkflowInstanceStatus(new WorkflowInstance(experimentID, workflowInstanceID), WorkflowInstanceStatus.ExecutionStatus.STARTED,currentTime));
         } catch (RegistryException e) {
             logger.error("Error saving Workflow Data !!");
         }

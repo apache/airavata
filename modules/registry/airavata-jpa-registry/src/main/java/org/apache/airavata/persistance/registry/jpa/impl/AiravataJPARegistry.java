@@ -30,9 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -41,17 +38,19 @@ import org.apache.airavata.persistance.registry.jpa.JPAResourceAccessor;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentDataResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentMetadataResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.GramDataResource;
 import org.apache.airavata.persistance.registry.jpa.resources.HostDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.NodeDataResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.persistance.registry.jpa.resources.PublishWorkflowResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
-import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
-import org.apache.airavata.persistance.registry.jpa.model.Node_Data;
-import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkflowDataResource;
 import org.apache.airavata.registry.api.AiravataExperiment;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataUser;
@@ -67,15 +66,22 @@ import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowDoesN
 import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.worker.UserWorkflowAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.worker.UserWorkflowDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.worker.WorkflowInstanceDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.worker.WorkflowInstanceNodeDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectDoesNotExistsException;
-import org.apache.airavata.registry.api.workflow.WorkflowExecution;
+import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
+import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodePortData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
-import org.apache.airavata.registry.api.workflow.WorkflowRunTimeData;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
@@ -753,372 +759,242 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         setUser(user);
     }
 
-    
-    @Override
-	public WorkflowExecution getExperiment(String arg0)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<WorkflowExecution> getExperimentByUser(String arg0)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<WorkflowExecution> getExperimentByUser(String arg0,
-			int arg1, int arg2) throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<String> getExperimentIdByUser(String arg0)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getExperimentMetadata(String arg0)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getExperimentName(String arg0)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<WorkflowIOData> getWorkflowExecutionOutput(String arg0)
-			throws RegistryException {
-		return null;
-	}
-
-	@Override
-	public WorkflowIOData getWorkflowExecutionOutput(String instanceID, String nodeID)
-			throws RegistryException {
-        EntityManager em = ResourceUtils.getEntityManager();
-		em.getTransaction().begin();
-        Query q = em.createQuery("SELECT p FROM Node_Data p WHERE p.workflow_InstanceID = :workflow_InstanceID AND p.node_id = :node_id");
-        q.setParameter("workflow_InstanceID", instanceID);
-        q.setParameter("node_id", nodeID);
-        Node_Data singleResult = (Node_Data) q.getSingleResult();
-        WorkflowNodeIOData workflowIOData = new WorkflowNodeIOData(singleResult.getOutputs(),instanceID,instanceID,null,nodeID,null);
-        return workflowIOData;
-	}
-
-	@Override
-	public String[] getWorkflowExecutionOutputNames(String arg0)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public WorkflowInstanceStatus getWorkflowInstanceStatus(String instanceID)
-			throws RegistryException {
-		EntityManager em = ResourceUtils.getEntityManager();
-		em.getTransaction().begin();
-        Query q = em.createQuery("SELECT p FROM Workflow_Data p WHERE p.workflow_InstanceID = :workflow_InstanceID");
-        q.setParameter("workflow_InstanceID", instanceID);
-        Workflow_Data singleResult = (Workflow_Data) q.getSingleResult();
-        WorkflowInstanceStatus workflowInstanceStatus = new
-                WorkflowInstanceStatus(new WorkflowInstance(singleResult.getExperiment_Data().getExperiment_ID(),singleResult.getTemplate_name())
-                ,ExecutionStatus.valueOf(singleResult.getStatus()),new Date(singleResult.getLast_update_time().getTime()));
-        return workflowInstanceStatus;
-	}
-
-	@Override
-	public String getExperimentExecutionUser(String arg0)
-			throws RegistryException {
-
-		return null;
-	}
-
-	@Override
-	public boolean saveWorkflowData(WorkflowRunTimeData arg0)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		EntityManager em = ResourceUtils.getEntityManager();
-		em.getTransaction().begin();
-		Query q = em.createQuery("SELECT p FROM Experiment_Data p WHERE p.experiment_ID = :exp_ID");
-		q.setParameter("exp_ID", arg0.getExperimentID());
-		Experiment_Data eData = (Experiment_Data) q.getSingleResult();
-		
-		Workflow_Data wData = new Workflow_Data();
-		wData.setExperiment_Data(eData);
-		wData.setExperiment_Data(eData);
-		wData.setTemplate_name(arg0.getTemplateID());
-		wData.setWorkflow_instanceID(arg0.getWorkflowInstanceID());
-		wData.setStatus(arg0.getWorkflowStatus().toString());
-		wData.setStart_time(arg0.getStartTime());
-		
-		em.persist(wData);
-		
-		em.getTransaction().commit();
-		em.close();
-		
-		return true;
-	}
-
-	@Override
-	public boolean updateExperimentMetadata(String arg0, String arg1)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	@Override
-	public boolean updateExperimentName(String arg0, String arg1)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		
-		EntityManager em = ResourceUtils.getEntityManager();
-		em.getTransaction().begin();
-		
-		Experiment_Data expData = new Experiment_Data();
-		expData.setExperiment_ID(arg0);
-		expData.setName(arg1);
-		
-		em.persist(expData);
-		
-		em.getTransaction().commit();
-		em.close();
-		
-		return true;
-	}
-
-	@Override
-	public boolean saveWorkflowExecutionOutput(String arg0, WorkflowIOData arg1)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
-	@Override
-	public boolean saveWorkflowExecutionOutput(String arg0, String arg1,
-			String arg2) throws RegistryException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean updateWorkflowNodeInput(WorkflowNodeIOData arg0)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		EntityManager em = ResourceUtils.getEntityManager();
-		em.getTransaction().begin();
-		
-		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
-		q.setParameter("workflow_ID", arg0.getWorkflowInstanceId());
-		Workflow_Data wData = (Workflow_Data) q.getSingleResult();
-		
-		Node_Data nData = new Node_Data();
-		nData.setWorkflow_Data(wData);
-		nData.setNode_id(arg0.getNodeId());
-		nData.setInputs(arg0.getValue());
-		nData.setNode_type((arg0.getNodeType().getNodeType().toString()));
-		nData.setStatus(arg0.getNodeStatus().getExecutionStatus().toString());
-		
-		em.persist(nData);
-	
-		em.getTransaction().commit();
-		em.close();
-		
-		return true;
-	}
-
-	@Override
-	public boolean updateWorkflowNodeOutput(WorkflowNodeIOData arg0)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-
-        EntityManager em = ResourceUtils.getEntityManager();
-		em.getTransaction().begin();
-		
-		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
-		q.setParameter("workflow_ID", arg0.getWorkflowInstanceId());
-		Workflow_Data wData = (Workflow_Data) q.getSingleResult();
-
-		q = em.createQuery("SELECT p FROM Node_Data p WHERE p.workflow_Data = :workflow_data AND p.node_id = :node_ID");
-		q.setParameter("workflow_data", wData);
-		q.setParameter("node_ID", arg0.getNodeId());
-		Node_Data nData = (Node_Data) q.getSingleResult();
-		nData.setOutputs(arg0.getValue());
-
-		em.getTransaction().commit();
-		em.close();
-
-		
-		return true;
-	}
-
-	@Override
-	public boolean updateWorkflowInstanceStatus(String arg0, ExecutionStatus arg1)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		
-		EntityManager em = ResourceUtils.getEntityManager();
-		em.getTransaction().begin();
-		
-		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
-		q.setParameter("workflow_ID", arg0);
-		Workflow_Data wData = (Workflow_Data) q.getSingleResult();
-
-		wData.setStatus(arg1.toString());
-		em.persist(wData);
-		em.getTransaction().commit();
-		em.close();
-		
-		return true;
-	}
-
-	@Override
-	public boolean updateExperimentExecutionUser(String arg0, String arg1)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean saveWorkflowLastUpdateTime(String arg0, Timestamp arg1)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean saveWorkflowNodeGramData(WorkflowNodeGramData arg0)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		
-		EntityManager em = ResourceUtils.getEntityManager();
-		em.getTransaction().begin();
-		
-		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
-		q.setParameter("workflow_ID", arg0);
-		Workflow_Data wData = (Workflow_Data) q.getSingleResult();
-		
-		q = em.createQuery("SELECT p FROM Node_Data p WHERE p.workflow_Data = :workflow_data AND p.node_id = :node_ID");
-		q.setParameter("workflow_data", wData);
-		q.setParameter("node_ID", arg0.getNodeID());
-		em.getTransaction().commit();
-		em.close();
-		
-		return true;
-	}
-
-	@Override
-	public boolean saveWorkflowNodeGramLocalJobID(String arg0, String arg1,
-			String arg2) throws RegistryException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean saveWorkflowNodeLastUpdateTime(String arg0, String arg1,
-			Timestamp arg2) throws RegistryException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean saveWorkflowNodeStatus(String arg0, String arg1,
-			ExecutionStatus arg2) throws RegistryException {
-		// TODO Auto-generated method stub
-		
-		EntityManager em = ResourceUtils.getEntityManager();
-		em.getTransaction().begin();
-		
-		Query q = em.createQuery("SELECT w FROM Workflow_Data w WHERE w.workflow_instanceID = :workflow_ID");
-		q.setParameter("workflow_ID", arg0);
-		Workflow_Data wData = (Workflow_Data) q.getSingleResult();
-		
-		q = em.createQuery("SELECT p FROM Node_Data p WHERE p.workflow_Data = :workflow_data AND p.node_id = :node_ID");
-		q.setParameter("workflow_data", wData);
-		q.setParameter("node_ID", arg1);
-		Node_Data nData = (Node_Data) q.getSingleResult();
-		nData.setStatus(arg2.toString());
-		
-		em.getTransaction().commit();
-		em.close();
-		
-		return true;
-	}
-
-	@Override
-	public boolean saveWorkflowStatus(String arg0, WorkflowInstanceStatus arg1)
-			throws RegistryException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public List<WorkflowNodeIOData> searchWorkflowInstanceNodeInput(
-			String arg0, String arg1, String arg2) throws RegistryException {
-		// TODO Auto-generated method stub
-
-		return null;
-	}
-
-	@Override
-	public List<WorkflowNodeIOData> searchWorkflowInstanceNodeOutput(
-			String arg0, String arg1, String arg2) throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getWorkflowExecutionTemplateName(String experimentId,
-			String workflowInstanceId) throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setWorkflowExecutionTemplateName(String experimentId,
-			String workflowInstanceId) throws RegistryException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public boolean updateWorkflowInstanceStatus(String experimentId,
-			WorkflowInstanceStatus status) throws RegistryException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
+    /**---------------------------------Provenance Registry----------------------------------**/
 
 	@Override
 	public boolean isExperimentExists(String experimentId)
 			throws RegistryException {
-		// TODO Auto-generated method stub
+		return jpa.getWorker().isExperimentExists(experimentId);
+	}
+
+
+	@Override
+	public boolean updateExperimentExecutionUser(String experimentId,
+			String user) throws RegistryException {
+		if (!isExperimentExists(experimentId)){
+			throw new ExperimentDoesNotExistsException(experimentId);
+		}
+		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+		ExperimentDataResource data = experiment.getData();
+		data.setUserName(user);
+		data.save();
+		return true;
+	}
+
+
+	@Override
+	public String getExperimentExecutionUser(String experimentId)
+			throws RegistryException {
+		if (!isExperimentExists(experimentId)){
+			throw new ExperimentDoesNotExistsException(experimentId);
+		}
+		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+		return experiment.getData().getUserName();
+	}
+
+
+	@Override
+	public String getExperimentName(String experimentId)
+			throws RegistryException {
+		if (!isExperimentExists(experimentId)){
+			throw new ExperimentDoesNotExistsException(experimentId);
+		}
+		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+		return experiment.getData().getExpName();
+	}
+
+
+	@Override
+	public boolean updateExperimentName(String experimentId,
+			String experimentName) throws RegistryException {
+		if (!isExperimentExists(experimentId)){
+			throw new ExperimentDoesNotExistsException(experimentId);
+		}
+		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+		ExperimentDataResource data = experiment.getData();
+		data.setExpName(experimentName);
+		data.save();
 		return false;
+	}
+
+
+	@Override
+	public String getExperimentMetadata(String experimentId)
+			throws RegistryException {
+		if (!isExperimentExists(experimentId)){
+			throw new ExperimentDoesNotExistsException(experimentId);
+		}
+		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+		ExperimentDataResource data = experiment.getData();
+		if (data.isExperimentMetadataPresent()){
+			return data.getExperimentMetadata().getMetadata();
+		}
+		return null;
+	}
+
+
+	@Override
+	public boolean updateExperimentMetadata(String experimentId, String metadata)
+			throws RegistryException {
+		if (!isExperimentExists(experimentId)){
+			throw new ExperimentDoesNotExistsException(experimentId);
+		}
+		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+		ExperimentDataResource data = experiment.getData();
+		ExperimentMetadataResource experimentMetadata;
+		if (data.isExperimentMetadataPresent()){
+			experimentMetadata = data.getExperimentMetadata();
+			experimentMetadata.setMetadata(metadata);
+		}else{
+			experimentMetadata = data.createExperimentMetadata();
+			experimentMetadata.setMetadata(metadata);
+		}
+		experimentMetadata.save();
+		return true;
+	}
+
+
+	@Override
+	public String getWorkflowExecutionTemplateName(String workflowInstanceId) throws RegistryException {
+		if (!isWorkflowInstanceExists(workflowInstanceId)){
+			throw new WorkflowInstanceDoesNotExistsException(workflowInstanceId);
+		}
+		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
+		return wi.getTemplateName();
+	}
+
+
+	@Override
+	public void setWorkflowInstanceTemplateName(String workflowInstanceId,
+			String templateName) throws RegistryException {
+		if (!isWorkflowInstanceExists(workflowInstanceId)){
+			throw new WorkflowInstanceDoesNotExistsException(workflowInstanceId);
+		}
+		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
+		wi.setTemplateName(templateName);
 	}
 
 
 	@Override
 	public List<WorkflowInstance> getExperimentWorkflowInstances(
 			String experimentId) throws RegistryException {
-		// TODO Auto-generated method stub
-		return null;
+		if (!isExperimentExists(experimentId)){
+			throw new ExperimentDoesNotExistsException(experimentId);
+		}
+		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+		ExperimentDataResource data = experiment.getData();
+		List<WorkflowInstance> result=new ArrayList<WorkflowInstance>();
+		List<WorkflowDataResource> workflowInstances = data.getWorkflowInstances();
+		for (WorkflowDataResource resource : workflowInstances) {
+			WorkflowInstance workflowInstance = new WorkflowInstance(resource.getExperimentID(), resource.getWorkflowInstanceID());
+			workflowInstance.setWorkflowName(resource.getTemplateName());
+			result.add(workflowInstance);
+		}
+		return result;
 	}
 
 
 	@Override
 	public boolean isWorkflowInstanceExists(String instanceId)
 			throws RegistryException {
-		// TODO Auto-generated method stub
-		return false;
+		return jpa.getWorker().isWorkflowInstancePresent(instanceId);
+	}
+
+
+	@Override
+	public boolean updateWorkflowInstanceStatus(String instanceId,
+			ExecutionStatus status) throws RegistryException {
+		if (!isWorkflowInstanceExists(instanceId)){
+			throw new WorkflowInstanceDoesNotExistsException(instanceId);
+		}
+		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(instanceId);
+		Timestamp currentTime = new Timestamp(Calendar.getInstance().getTime().getTime());
+		wi.setStatus(status.toString());
+		if (status==ExecutionStatus.STARTED){
+			wi.setStartTime(currentTime);
+		}
+		wi.setLastUpdatedTime(currentTime);
+		return true;
+	}
+
+
+	@Override
+	public boolean updateWorkflowInstanceStatus(WorkflowInstanceStatus status)
+			throws RegistryException {
+		if (!isWorkflowInstanceExists(status.getWorkflowInstance().getWorkflowInstanceId())){
+			throw new WorkflowInstanceDoesNotExistsException(status.getWorkflowInstance().getWorkflowInstanceId());
+		}
+		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(status.getWorkflowInstance().getWorkflowInstanceId());
+		Timestamp currentTime = new Timestamp(status.getStatusUpdateTime().getTime());
+		wi.setStatus(status.getExecutionStatus().toString());
+		if (status.getExecutionStatus()==ExecutionStatus.STARTED){
+			wi.setStartTime(currentTime);
+		}
+		wi.setLastUpdatedTime(currentTime);
+		return true;
+	}
+
+
+	@Override
+	public WorkflowInstanceStatus getWorkflowInstanceStatus(String instanceId)
+			throws RegistryException {
+		if (!isWorkflowInstanceExists(instanceId)){
+			throw new WorkflowInstanceDoesNotExistsException(instanceId);
+		}
+		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(instanceId);
+		return new WorkflowInstanceStatus(new WorkflowInstance(wi.getExperimentID(),wi.getWorkflowInstanceID()),ExecutionStatus.valueOf(wi.getStatus()),wi.getLastUpdatedTime());
+	}
+
+
+	@Override
+	public boolean updateWorkflowNodeInput(WorkflowNodeIOData workflowInputData)
+			throws RegistryException {
+		if (!isWorkflowInstanceExists(workflowInputData.getWorkflowInstanceId())){
+			throw new WorkflowInstanceDoesNotExistsException(workflowInputData.getWorkflowInstanceId());
+		}
+		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowInputData.getWorkflowInstanceId());
+		NodeDataResource nodeData;
+		if (wi.isNodeExists(workflowInputData.getNodeId())){
+			nodeData = wi.getNodeData(workflowInputData.getNodeId());
+		}else{
+			nodeData = wi.createNodeData(workflowInputData.getNodeId());
+		}
+		nodeData.setInputs(workflowInputData.getValue());
+		return true;
+	}
+
+
+	@Override
+	public boolean updateWorkflowNodeOutput(
+			WorkflowNodeIOData workflowOutputData) throws RegistryException {
+		if (!isWorkflowInstanceExists(workflowOutputData.getWorkflowInstanceId())){
+			throw new WorkflowInstanceDoesNotExistsException(workflowOutputData.getWorkflowInstanceId());
+		}
+		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowOutputData.getWorkflowInstanceId());
+		NodeDataResource nodeData;
+		if (wi.isNodeExists(workflowOutputData.getNodeId())){
+			nodeData = wi.getNodeData(workflowOutputData.getNodeId());
+		}else{
+			nodeData = wi.createNodeData(workflowOutputData.getNodeId());
+		}
+		nodeData.setOutputs(workflowOutputData.getValue());
+		return true;
+	}
+
+
+	@Override
+	public List<WorkflowNodeIOData> searchWorkflowInstanceNodeInput(
+			String experimentIdRegEx, String workflowNameRegEx,
+			String nodeNameRegEx) throws RegistryException {
+		return null;
+	}
+
+
+	@Override
+	public List<WorkflowNodeIOData> searchWorkflowInstanceNodeOutput(
+			String experimentIdRegEx, String workflowNameRegEx,
+			String nodeNameRegEx) throws RegistryException {
+		return null;
 	}
 
 
@@ -1126,7 +1002,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	public List<WorkflowNodeIOData> getWorkflowInstanceNodeInput(
 			String workflowInstanceId, String nodeType)
 			throws RegistryException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -1135,8 +1010,241 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	public List<WorkflowNodeIOData> getWorkflowInstanceNodeOutput(
 			String workflowInstanceId, String nodeType)
 			throws RegistryException {
+		return null;
+	}
+
+
+	@Deprecated
+	@Override
+	public boolean saveWorkflowExecutionOutput(String experimentId,
+			String outputNodeName, String output) throws RegistryException {
+		return false;
+	}
+
+	@Deprecated
+	@Override
+	public boolean saveWorkflowExecutionOutput(String experimentId,
+			WorkflowIOData data) throws RegistryException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Deprecated
+	@Override
+	public WorkflowIOData getWorkflowExecutionOutput(String experimentId,
+			String outputNodeName) throws RegistryException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	@Deprecated
+	@Override
+	public List<WorkflowIOData> getWorkflowExecutionOutput(String experimentId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Deprecated
+	@Override
+	public String[] getWorkflowExecutionOutputNames(String exeperimentId)
+			throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public ExperimentData getExperiment(String experimentId)
+			throws RegistryException {
+		if (!isExperimentExists(experimentId)){
+			throw new ExperimentDoesNotExistsException(experimentId);
+		}
+		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+		ExperimentDataResource data = experiment.getData();
+		ExperimentData e = new ExperimentDataImpl();
+		e.setExperimentId(experiment.getExpID());
+		e.setExperimentName(data.getExpName());
+		e.setUser(data.getUserName());
+		e.setMetadata(getExperimentMetadata(experimentId));
+		e.setTopic(experiment.getExpID());
+		List<WorkflowInstance> experimentWorkflowInstances = getExperimentWorkflowInstances(experimentId);
+		for (WorkflowInstance workflowInstance : experimentWorkflowInstances) {
+			e.getWorkflowInstanceData().add(getWorkflowInstanceData(workflowInstance.getWorkflowInstanceId()));
+		}
+		return e;
+	}
+
+
+	@Override
+	public List<String> getExperimentIdByUser(String user)
+			throws RegistryException {
+		List<String> result=new ArrayList<String>();
+		List<ExperimentResource> experiments = jpa.getWorker().getExperiments();
+		for (ExperimentResource resource : experiments) {
+			if (resource.getData().getUserName().equals(user)){
+				result.add(resource.getExpID());
+			}
+		}
+		return result;
+	}
+
+
+	@Override
+	public List<ExperimentData> getExperimentByUser(String user)
+			throws RegistryException {
+		List<String> experimentIdByUser = getExperimentIdByUser(user);
+		List<ExperimentData> result=new ArrayList<ExperimentData>();
+		for (String id : experimentIdByUser) {
+			result.add(getExperiment(id));
+		}
+		return result;
+	}
+
+
+	@Override
+	public List<ExperimentData> getExperimentByUser(String user,
+			int pageSize, int pageNo) throws RegistryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public boolean updateWorkflowNodeStatus(
+			WorkflowInstanceNodeStatus workflowStatusNode)
+			throws RegistryException {
+		if (!isWorkflowInstanceNodePresent(workflowStatusNode.getWorkflowInstanceNode().getWorkflowInstance().getWorkflowInstanceId(), workflowStatusNode.getWorkflowInstanceNode().getNodeId())){
+			throw new WorkflowInstanceNodeDoesNotExistsException(workflowStatusNode.getWorkflowInstanceNode().getWorkflowInstance().getWorkflowInstanceId(), workflowStatusNode.getWorkflowInstanceNode().getNodeId());
+		}
+		NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(workflowStatusNode.getWorkflowInstanceNode().getWorkflowInstance().getWorkflowInstanceId()).getNodeData(workflowStatusNode.getWorkflowInstanceNode().getNodeId());
+		nodeData.setStatus(workflowStatusNode.getExecutionStatus().toString());
+		if (workflowStatusNode.getExecutionStatus()==ExecutionStatus.STARTED){
+			nodeData.setStartTime(new Timestamp(workflowStatusNode.getStatusUpdateTime().getTime()));
+		}
+		nodeData.setLastUpdateTime(new Timestamp(workflowStatusNode.getStatusUpdateTime().getTime()));
+		nodeData.save();
+		return true;
+	}
+
+
+	@Override
+	public boolean updateWorkflowNodeStatus(String workflowInstanceId,
+			String nodeId, ExecutionStatus status) throws RegistryException {
+		return updateWorkflowNodeStatus(new WorkflowInstanceNode(new WorkflowInstance(workflowInstanceId, workflowInstanceId), nodeId), status);
+	}
+
+
+	@Override
+	public boolean updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode,
+			ExecutionStatus status) throws RegistryException {
+		return updateWorkflowNodeStatus(new WorkflowInstanceNodeStatus(workflowNode, status, Calendar.getInstance().getTime()));
+	}
+
+
+	@Override
+	public WorkflowInstanceNodeStatus getWorkflowNodeStatus(
+			WorkflowInstanceNode workflowNode) throws RegistryException {
+		String id = workflowNode.getWorkflowInstance().getWorkflowInstanceId();
+		String nodeId = workflowNode.getNodeId();
+		if (!isWorkflowInstanceNodePresent(id, nodeId)){
+			throw new WorkflowInstanceNodeDoesNotExistsException(id, nodeId);
+		}
+		WorkflowDataResource workflowInstance = jpa.getWorker().getWorkflowInstance(id);
+		NodeDataResource nodeData = workflowInstance.getNodeData(nodeId);
+		return new WorkflowInstanceNodeStatus(new WorkflowInstanceNode(new WorkflowInstance(workflowInstance.getExperimentID(), workflowInstance.getWorkflowInstanceID()), nodeData.getNodeID()), ExecutionStatus.valueOf(nodeData.getStatus()),nodeData.getLastUpdateTime());
+	}
+
+
+	@Override
+	public Date getWorkflowNodeStartTime(WorkflowInstanceNode workflowNode)
+			throws RegistryException {
+		String id = workflowNode.getWorkflowInstance().getWorkflowInstanceId();
+		String nodeId = workflowNode.getNodeId();
+		if (!isWorkflowInstanceNodePresent(id, nodeId)){
+			throw new WorkflowInstanceNodeDoesNotExistsException(id, nodeId);
+		}
+		WorkflowDataResource workflowInstance = jpa.getWorker().getWorkflowInstance(id);
+		NodeDataResource nodeData = workflowInstance.getNodeData(nodeId);
+		return nodeData.getStartTime();
+	}
+
+
+	@Override
+	public Date getWorkflowStartTime(WorkflowInstance workflowInstance)
+			throws RegistryException {
+		if (!isWorkflowInstanceExists(workflowInstance.getWorkflowInstanceId())){
+			throw new WorkflowInstanceDoesNotExistsException(workflowInstance.getWorkflowInstanceId());
+		}
+		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowInstance.getWorkflowInstanceId());
+		return wi.getStartTime();
+	}
+
+
+	@Override
+	public boolean updateWorkflowNodeGramData(
+			WorkflowNodeGramData workflowNodeGramData) throws RegistryException {
+		if (!isWorkflowInstanceNodePresent(workflowNodeGramData.getWorkflowInstanceId(),workflowNodeGramData.getNodeID())){
+			throw new WorkflowInstanceNodeDoesNotExistsException(workflowNodeGramData.getWorkflowInstanceId(),workflowNodeGramData.getNodeID());
+		}
+		WorkflowDataResource workflowInstance = jpa.getWorker().getWorkflowInstance(workflowNodeGramData.getWorkflowInstanceId());
+		GramDataResource gramData;
+		if (workflowInstance.isGramDataExists(workflowNodeGramData.getNodeID())){
+			gramData = workflowInstance.getGramData(workflowNodeGramData.getNodeID());
+		}else{
+			gramData = workflowInstance.createGramData(workflowNodeGramData.getNodeID());
+		}
+		gramData.setInvokedHost(workflowNodeGramData.getInvokedHost());
+		gramData.setLocalJobID(workflowNodeGramData.getGramJobID());
+		gramData.setRsl(workflowNodeGramData.getRsl());
+		gramData.save();
+		return true;
+	}
+
+
+	@Override
+	public WorkflowInstanceData getWorkflowInstanceData(
+			String workflowInstanceId) throws RegistryException {
+		if (!isWorkflowInstanceExists(workflowInstanceId)){
+			throw new WorkflowInstanceDoesNotExistsException(workflowInstanceId);
+		}
+		WorkflowDataResource resource = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
+		WorkflowInstance workflowInstance = new WorkflowInstance(resource.getExperimentID(), resource.getWorkflowInstanceID());
+		WorkflowInstanceData workflowInstanceData = new WorkflowInstanceData(null, workflowInstance, new WorkflowInstanceStatus(workflowInstance, ExecutionStatus.valueOf(resource.getStatus()),resource.getLastUpdatedTime()), null);
+		List<NodeDataResource> nodeData = resource.getNodeData();
+		for (NodeDataResource nodeDataResource : nodeData) {
+			workflowInstanceData.getNodeDataList().add(getWorkflowInstanceNodeData(workflowInstanceId, nodeDataResource.getNodeID()));
+		}
+		return workflowInstanceData;
+	}
+
+
+	@Override
+	public WorkflowInstanceNodeData getWorkflowInstanceNodeData(
+			String workflowInstanceId, String nodeId) throws RegistryException {
+		if (!isWorkflowInstanceNodePresent(workflowInstanceId,nodeId)){
+			throw new WorkflowInstanceNodeDoesNotExistsException(workflowInstanceId,nodeId);
+		}
+		NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(workflowInstanceId).getNodeData(nodeId);
+		WorkflowInstanceNodeData data = new WorkflowInstanceNodeData(null,null,null,null);
+		data.getInputData().add(new WorkflowInstanceNodePortData(new WorkflowNodeIOData(nodeData.getInputs(), null, null, nodeId,(String) null)));
+		data.getOutputData().add(new WorkflowInstanceNodePortData(new WorkflowNodeIOData(nodeData.getOutputs(), null, null, nodeId,(String) null)));
+		//TODO setup status
+		return data;
+	}
+
+
+	@Override
+	public boolean isWorkflowInstanceNodePresent(String workflowInstanceId,
+			String nodeId) throws RegistryException {
+		if (!isWorkflowInstanceExists(workflowInstanceId)){
+			throw new WorkflowInstanceDoesNotExistsException(workflowInstanceId);
+		}
+		return jpa.getWorker().getWorkflowInstance(workflowInstanceId).isNodeExists(nodeId);
+
 	}
 
 }

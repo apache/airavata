@@ -71,7 +71,7 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
-import org.apache.airavata.registry.api.workflow.WorkflowExecution;
+import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
@@ -455,17 +455,17 @@ public class AiravataClient implements AiravataAPI {
 		return topic;
 	}
 
-	public List<WorkflowExecution> getWorkflowExecutionDataByUser(String user)
+	public List<ExperimentData> getWorkflowExecutionDataByUser(String user)
 			throws RegistryException {
 		return getRegistry().getExperimentByUser(user);
 	}
 
-	public WorkflowExecution getWorkflowExecutionData(String topic)
+	public ExperimentData getWorkflowExecutionData(String topic)
 			throws RegistryException {
 		return getRegistry().getExperiment(topic);
 	}
 
-	public List<WorkflowExecution> getWorkflowExecutionData(String user,
+	public List<ExperimentData> getWorkflowExecutionData(String user,
 			int pageSize, int PageNo) throws RegistryException {
 		return getRegistry().getExperimentByUser(user, pageSize, PageNo);
 	}

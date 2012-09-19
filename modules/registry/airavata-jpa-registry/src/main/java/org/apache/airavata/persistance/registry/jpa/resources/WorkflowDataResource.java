@@ -160,7 +160,7 @@ public class WorkflowDataResource extends AbstractResource{
         em.getTransaction().begin();
         Query q;
         QueryGenerator generator;
-        List results;
+        List<?> results;
         switch (type){
             case NODE_DATA:
                 generator = new QueryGenerator(NODE_DATA);
@@ -228,4 +228,49 @@ public class WorkflowDataResource extends AbstractResource{
         em.getTransaction().commit();
         em.close();
     }
+    
+    public boolean isNodeExists(String nodeId){
+    	return isExists(ResourceType.NODE_DATA, nodeId);
+    }
+    
+    public boolean isGramDataExists(String nodeId){
+    	return isExists(ResourceType.GRAM_DATA, nodeId);
+    }
+    
+    public NodeDataResource getNodeData(String nodeId){
+    	return (NodeDataResource) get(ResourceType.NODE_DATA,nodeId);
+    }
+    
+    public GramDataResource getGramData(String nodeId){
+    	return (GramDataResource) get(ResourceType.GRAM_DATA,nodeId);
+    }
+    
+    public List<NodeDataResource> getNodeData(){
+    	return getResourceList(get(ResourceType.NODE_DATA),NodeDataResource.class);
+    }
+    
+    public List<GramDataResource> getGramData(){
+    	return getResourceList(get(ResourceType.GRAM_DATA),GramDataResource.class);
+    }
+
+    public NodeDataResource createNodeData(String nodeId){
+    	NodeDataResource data=(NodeDataResource)create(ResourceType.NODE_DATA);
+    	data.setNodeID(nodeId);
+    	return data;
+    }
+    
+    public GramDataResource createGramData(String nodeId){
+    	GramDataResource data=(GramDataResource)create(ResourceType.GRAM_DATA);
+    	data.setNodeID(nodeId);
+    	return data;
+    }
+    
+    public void removeNodeData(String nodeId){
+    	remove(ResourceType.NODE_DATA, nodeId);
+    }
+    
+    public void removeGramData(String nodeId){
+    	remove(ResourceType.GRAM_DATA, nodeId);
+    }
+    
 }

@@ -30,19 +30,15 @@ import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.Executio
 
 public class WorkflowInstanceData {
 	private WorkflowInstance workflowInstance;
-	private WorkflowInstanceUser workflowInstanceUser;
+	private ExperimentData experimentData;
 	private WorkflowInstanceStatus workflowInstanceStatus;
-	private WorkflowInstanceMetadata workflowInstanceMetadata;
-	private WorkflowInstanceName workflowInstanceName;
 	
 	private List<WorkflowInstanceNodeData> nodeDataList;
 	
-	public WorkflowInstanceData(WorkflowInstance workflowInstance,WorkflowInstanceName workflowInstanceName,WorkflowInstanceUser workflowInstanceUser,WorkflowInstanceStatus workflowInstanceStatus,WorkflowInstanceMetadata workflowInstanceMetadata,List<WorkflowInstanceNodeData> nodeDataList) {
+	public WorkflowInstanceData(ExperimentData experimentData, WorkflowInstance workflowInstance,WorkflowInstanceStatus workflowInstanceStatus,List<WorkflowInstanceNodeData> nodeDataList) {
+		this.experimentData=experimentData;
 		this.workflowInstance=workflowInstance;
-		this.workflowInstanceUser=workflowInstanceUser;
 		this.workflowInstanceStatus=workflowInstanceStatus;
-		this.workflowInstanceMetadata=workflowInstanceMetadata;
-		this.workflowInstanceName=workflowInstanceName;
 		this.nodeDataList=nodeDataList;
 	}
 
@@ -69,10 +65,6 @@ public class WorkflowInstanceData {
 		return workflowInstance.getWorkflowName();
 	}
 	
-	public String getUser(){
-		return workflowInstanceUser.getUser();
-	}
-	
 	public ExecutionStatus getStatus(){
 		return workflowInstanceStatus.getExecutionStatus();
 	}
@@ -80,11 +72,7 @@ public class WorkflowInstanceData {
 	public Date getStatusUpdateTime(){
 		return workflowInstanceStatus.getStatusUpdateTime();
 	}
-	
-	public String getMetadata(){
-		return workflowInstanceMetadata.getMetadata();
-	}
-	
+
 	public WorkflowInstanceNodeData getNodeData(String nodeId){
 		for (WorkflowInstanceNodeData nodeData : getNodeDataList()) {
 			if (nodeData.getWorkflowInstanceNode().getNodeId().equals(nodeId)){
@@ -104,8 +92,12 @@ public class WorkflowInstanceData {
 		return null;
 	}
 
-	public WorkflowInstanceName getWorkflowInstanceName() {
-		return workflowInstanceName;
+	public ExperimentData getExperimentData() {
+		return experimentData;
+	}
+
+	public void setExperimentData(ExperimentData experimentData) {
+		this.experimentData = experimentData;
 	}
 
 }
