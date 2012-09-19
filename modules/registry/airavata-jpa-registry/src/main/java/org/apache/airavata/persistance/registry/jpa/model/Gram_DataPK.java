@@ -2,15 +2,15 @@ package org.apache.airavata.persistance.registry.jpa.model;
 
 
 public class Gram_DataPK {
-	private String workflow_Data;
+	private String workflow_instanceID;
 	private String node_id;
 
 	public Gram_DataPK() {
 		;
 	}
 
-    public Gram_DataPK(String workflow_Data, String node_id) {
-        this.workflow_Data = workflow_Data;
+    public Gram_DataPK(String workflow_instanceID, String node_id) {
+        this.workflow_instanceID = workflow_instanceID;
         this.node_id = node_id;
     }
 
@@ -24,15 +24,15 @@ public class Gram_DataPK {
 		return 1;
 	}
 
-	public String getWorkflow_Data() {
-		return workflow_Data;
-	}
+    public String getWorkflow_instanceID() {
+        return workflow_instanceID;
+    }
 
-	public void setWorkflow_Data(String workflow_Data) {
-		this.workflow_Data = workflow_Data;
-	}
+    public void setWorkflow_instanceID(String workflow_instanceID) {
+        this.workflow_instanceID = workflow_instanceID;
+    }
 
-	public String getNode_id() {
+    public String getNode_id() {
 		return node_id;
 	}
 

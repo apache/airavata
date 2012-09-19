@@ -209,14 +209,14 @@ public class WorkflowDataResource extends AbstractResource{
         em.getTransaction().begin();
         Workflow_Data workflowData = new Workflow_Data();
         Experiment_Data expData = em.find(Experiment_Data.class, experimentID);
-        workflowData.setExperiment_Data(expData);
+        workflowData.setExperiment_data(expData);
         workflowData.setWorkflow_instanceID(workflowInstanceID);
         workflowData.setLast_update_time(lastUpdatedTime);
         workflowData.setStart_time(startTime);
         workflowData.setTemplate_name(templateName);
         workflowData.setStatus(status);
         if(existingWFData != null){
-            existingWFData.setExperiment_Data(expData);
+            existingWFData.setExperiment_data(expData);
             existingWFData.setLast_update_time(lastUpdatedTime);
             existingWFData.setStart_time(startTime);
             existingWFData.setStatus(status);

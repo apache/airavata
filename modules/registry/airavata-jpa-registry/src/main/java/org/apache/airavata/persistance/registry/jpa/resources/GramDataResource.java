@@ -86,6 +86,7 @@ public class GramDataResource extends AbstractResource{
         em.close();
 
         em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
         Gram_Data gramData = new Gram_Data();
         gramData.setNode_id(nodeID);
         Workflow_Data workflow_data = em.find(Workflow_Data.class, workflowDataResource.getWorkflowInstanceID());

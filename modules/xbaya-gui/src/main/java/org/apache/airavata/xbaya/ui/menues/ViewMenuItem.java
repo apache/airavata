@@ -23,6 +23,8 @@ package org.apache.airavata.xbaya.ui.menues;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.net.URI;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenu;
@@ -95,7 +97,11 @@ public class ViewMenuItem {
 		JMenuItem menuItem = new JMenuItem("Airavata Registry");
 		menuItem.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				engine.getGUI().viewJCRBrowserPanel();
+                List<URI> list = engine.getConfiguration().getJcrComponentRegistry().getRegistry().getGFacURIs();
+                for(URI uris: list){
+                    System.out.println(uris.toString());
+                }
+//				engine.getGUI().viewJCRBrowserPanel();
 			}
 		});
 		return menuItem;

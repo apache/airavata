@@ -366,7 +366,7 @@ public class Utils {
 
     private static Resource createWorkflowData(Workflow_Data o){
         WorkflowDataResource workflowDataResource = new WorkflowDataResource();
-        workflowDataResource.setExperimentID(o.getExperiment_Data().getExperiment_ID());
+        workflowDataResource.setExperimentID(o.getExperiment_data().getExperiment_ID());
         workflowDataResource.setWorkflowInstanceID(o.getWorkflow_instanceID());
         workflowDataResource.setTemplateName(o.getTemplate_name());
         workflowDataResource.setStatus(o.getStatus());
