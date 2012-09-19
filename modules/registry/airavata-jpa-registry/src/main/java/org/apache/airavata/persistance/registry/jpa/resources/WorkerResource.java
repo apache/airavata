@@ -209,7 +209,7 @@ public class WorkerResource extends AbstractResource {
                 generator = new QueryGenerator(USER_WORKFLOW);
                 generator.setParameter(UserWorkflowConstants.OWNER, getUser());
                 q = generator.selectQuery(em);
-	            q.setParameter("usr_name", getUser());
+//	            q.setParameter("usr_name", getUser());
 	            for (Object o : q.getResultList()) {
 		            User_Workflow userWorkflow = (User_Workflow) o;
 		            UserWorkflowResource userWorkflowResource = (UserWorkflowResource)Utils.getResource(ResourceType.USER_WORKFLOW, userWorkflow);
