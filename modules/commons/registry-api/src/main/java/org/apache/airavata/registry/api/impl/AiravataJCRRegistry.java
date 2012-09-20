@@ -836,16 +836,16 @@ public class AiravataJCRRegistry extends JCRRegistry implements Axis2Registry, D
     }
 
     public boolean saveWorkflowExecutionServiceInput(WorkflowNodeIOData workflowInputData) throws RegistryException{
-    	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().updateWorkflowNodeInput(workflowInputData);
-    	}
+//    	if (getProvenanceRegistry()!=null){
+//    		return getProvenanceRegistry().updateWorkflowNodeInput(workflowInputData);
+//    	}
         return saveWorkflowIO(workflowInputData, INPUT);
     }
 
     public boolean saveWorkflowExecutionServiceOutput(WorkflowNodeIOData workflowOutputData) throws RegistryException{
-    	if (getProvenanceRegistry()!=null){
-    		return getProvenanceRegistry().updateWorkflowNodeOutput(workflowOutputData);
-    	}
+//    	if (getProvenanceRegistry()!=null){
+//    		return getProvenanceRegistry().updateWorkflowNodeOutput(workflowOutputData);
+//    	}
         return saveWorkflowIO(workflowOutputData, OUTPUT);
     }
 

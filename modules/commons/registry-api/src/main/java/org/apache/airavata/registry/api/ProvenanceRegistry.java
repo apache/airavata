@@ -33,6 +33,7 @@ import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
@@ -155,7 +156,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
 	 * @return true if successfully saved
 	 * @throws RegistryException
 	 */
-	public abstract boolean updateWorkflowNodeInput(WorkflowNodeIOData workflowInputData) throws RegistryException;
+	public abstract boolean updateWorkflowNodeInput(WorkflowInstanceNode node, String data) throws RegistryException;
 
     /**
      * Save the output data of a node in the workflow instance of an experiment
@@ -163,7 +164,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return true if successfully saved
      * @throws RegistryException
      */
-	public abstract boolean updateWorkflowNodeOutput(WorkflowNodeIOData workflowOutputData)throws RegistryException;
+	public abstract boolean updateWorkflowNodeOutput(WorkflowInstanceNode node, String data)throws RegistryException;
     
     /**
      * Return a list of data passed as input for service node which regex matched nodeId, workflow template id & experiment id 
@@ -303,5 +304,9 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
     public boolean isWorkflowInstanceNodePresent(String workflowInstanceId, String nodeId)throws RegistryException;
     
     public WorkflowInstanceNodeData getWorkflowInstanceNodeData(String workflowInstanceId, String nodeId)throws RegistryException;
+
+    public boolean addWorkflowInstance(String experimentId, String workflowInstanceId, String templateName) throws RegistryException;
+    
+    public boolean updateWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type) throws RegistryException;
     
 }

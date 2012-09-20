@@ -21,13 +21,15 @@
 
 package org.apache.airavata.registry.api.workflow;
 
-public class WorkflowInstanceNodePortData extends WorkflowNodeIOData {
+public class WorkflowInstanceNodePortData {
 	private WorkflowInstanceNode workflowInstanceNode;
+	private String name;
+	private String value;
 	
-	public WorkflowInstanceNodePortData(WorkflowNodeIOData data) {
-		workflowInstanceNode=new WorkflowInstanceNode(new WorkflowInstance(data.getExperimentId(), data.getWorkflowId()),data.getNodeId());
-		workflowInstanceNode.getWorkflowInstance().setWorkflowName(data.getWorkflowName());
-		setValue(data.getValue());
+	public WorkflowInstanceNodePortData(WorkflowInstanceNode workflowInstanceNode, String portName, String portValue) {
+		setWorkflowInstanceNode(workflowInstanceNode);
+		setName(portName);
+		setValue(portValue);
 	}
 	
 	public WorkflowInstanceNodePortData(WorkflowInstanceNode workflowInstanceNode, String data) {
@@ -43,18 +45,19 @@ public class WorkflowInstanceNodePortData extends WorkflowNodeIOData {
 		this.workflowInstanceNode = workflowInstanceNode;
 	}
 
-	@Override
-	public String getNodeId() {
-		return getWorkflowInstanceNode().getNodeId();
+	public String getValue() {
+		return value;
 	}
-	
-	@Override
-	public String getExperimentId() {
-		return getWorkflowInstanceNode().getWorkflowInstance().getExperimentId();
+
+	public void setValue(String value) {
+		this.value = value;
 	}
-	
-	@Override
-	public String getWorkflowId() {
-		return getWorkflowInstanceNode().getWorkflowInstance().getWorkflowInstanceId();
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

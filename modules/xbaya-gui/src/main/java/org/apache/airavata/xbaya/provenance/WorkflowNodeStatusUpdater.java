@@ -22,9 +22,10 @@ package org.apache.airavata.xbaya.provenance;
 
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +40,12 @@ public class WorkflowNodeStatusUpdater {
 
     public boolean workflowStarted(String workflowInstanceID,String nodeID,String inputs,String workflowID){
         try {
-            WorkflowNodeIOData workflowServiceIOData = new WorkflowNodeIOData(inputs, workflowInstanceID,workflowInstanceID, workflowID, nodeID, null);
             //todo we currently save only service nodes
             WorkflowNodeType workflowNodeType = new WorkflowNodeType();
             workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
-            workflowServiceIOData.setNodeType(workflowNodeType);
-            registry.updateWorkflowNodeInput(workflowServiceIOData);                                                                                             registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.STARTED);
+            WorkflowInstanceNode node = new WorkflowInstanceNode(new WorkflowInstance(workflowInstanceID,workflowInstanceID), nodeID);
+			registry.updateWorkflowNodeInput(node,inputs);
+            registry.updateWorkflowNodeType(node, workflowNodeType);
             registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.STARTED);
         } catch (RegistryException e) {
             logger.error("Error updating Wokflow Node status !!");
@@ -65,10 +66,11 @@ public class WorkflowNodeStatusUpdater {
 
     public boolean workflowFinished(String workflowInstanceID,String nodeID,String inputs,String workflowID){
         try {
-            WorkflowNodeIOData workflowServiceIOData = new WorkflowNodeIOData(inputs, workflowInstanceID,workflowInstanceID, workflowID, nodeID, null);
-             WorkflowNodeType workflowNodeType = new WorkflowNodeType();
+        	WorkflowNodeType workflowNodeType = new WorkflowNodeType();
             workflowNodeType.setNodeType(WorkflowNodeType.WorkflowNode.SERVICENODE);
-            registry.updateWorkflowNodeOutput(workflowServiceIOData);
+            WorkflowInstanceNode node = new WorkflowInstanceNode(new WorkflowInstance(workflowInstanceID,workflowInstanceID), nodeID);
+            registry.updateWorkflowNodeOutput(node,inputs);
+            registry.updateWorkflowNodeType(node,workflowNodeType);
             registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.FINISHED);
         } catch (RegistryException e) {
             logger.error("Error updating Wokflow Node status !!");
