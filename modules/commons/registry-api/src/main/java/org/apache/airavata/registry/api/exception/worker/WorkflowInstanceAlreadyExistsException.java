@@ -19,30 +19,16 @@
  *
  */
 
-package org.apache.airavata.registry.api.workflow;
+package org.apache.airavata.registry.api.exception.worker;
 
-public class WorkflowInstanceUser {
-	private WorkflowInstance workflowInstance;
-	private String user;
-	
-	public WorkflowInstanceUser(WorkflowInstance workflowInstance, String user) {
-		setWorkflowInstance(workflowInstance);
-		setUser(user);
+import org.apache.airavata.common.registry.api.exception.RegistryException;
+
+public class WorkflowInstanceAlreadyExistsException extends RegistryException {
+
+	private static final long serialVersionUID = -8006347245307495767L;
+
+	public WorkflowInstanceAlreadyExistsException(String instanceId) {
+		super("The workflow instance "+instanceId+" is already added to the registry & workflowInstanceId should be unique for the system!!!");
 	}
 
-	public WorkflowInstance getWorkflowInstance() {
-		return workflowInstance;
-	}
-
-	public void setWorkflowInstance(WorkflowInstance workflowInstance) {
-		this.workflowInstance = workflowInstance;
-	}
-
-	public String getUser() {
-		return user;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
-	}
 }

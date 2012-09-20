@@ -21,21 +21,13 @@
 
 package org.apache.airavata.registry.api.workflow;
 
-public class WorkflowInstanceName {
-	private WorkflowInstance workflowInstance;
+public class ExperimentName {
+	private String experimentId;
 	private String instanceName;
 	
-	public WorkflowInstanceName(WorkflowInstance workflowInstance, String instanceName) {
-		setWorkflowInstance(workflowInstance);
+	public ExperimentName(String experimentId, String instanceName) {
+		setExperimentId(experimentId);
 		setInstanceName(instanceName);
-	}
-
-	public WorkflowInstance getWorkflowInstance() {
-		return workflowInstance;
-	}
-
-	public void setWorkflowInstance(WorkflowInstance workflowInstance) {
-		this.workflowInstance = workflowInstance;
 	}
 
 	public String getInstanceName() {
@@ -44,6 +36,14 @@ public class WorkflowInstanceName {
 
 	public void setInstanceName(String instanceName) {
 		this.instanceName = instanceName;
+	}
+
+	public String getExperimentId() {
+		return experimentId;
+	}
+
+	public void setExperimentId(String experimentId) {
+		this.experimentId = experimentId;
 	}
 
 }

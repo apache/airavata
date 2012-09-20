@@ -21,28 +21,21 @@
 
 package org.apache.airavata.registry.api.workflow;
 
-public class WorkflowInstance {
+public class ExperimentMetadata {
 	private String experimentId;
-	private String workflowInstanceId;
-	private String templateName;
+	private String metadata;
 	
-	public WorkflowInstance(String experimentId,String instanceId) {
+	public ExperimentMetadata(String experimentId, String metadata) {
 		setExperimentId(experimentId);
-		setWorkflowInstanceId(instanceId);
+		setMetadata(metadata);
 	}
 
-    public WorkflowInstance(String experimentId, String workflowInstanceId, String templateName) {
-        this.experimentId = experimentId;
-        this.workflowInstanceId = workflowInstanceId;
-        this.templateName = templateName;
-    }
-
-    public String getWorkflowInstanceId() {
-		return workflowInstanceId;
+	public String getMetadata() {
+		return metadata;
 	}
 
-	public void setWorkflowInstanceId(String workflowInstanceId) {
-		this.workflowInstanceId = workflowInstanceId;
+	public void setMetadata(String metadata) {
+		this.metadata = metadata;
 	}
 
 	public String getExperimentId() {
@@ -53,11 +46,4 @@ public class WorkflowInstance {
 		this.experimentId = experimentId;
 	}
 
-	public String getTemplateName() {
-		return templateName;
-	}
-
-	public void setTemplateName(String templateName) {
-		this.templateName = templateName;
-	}
 }

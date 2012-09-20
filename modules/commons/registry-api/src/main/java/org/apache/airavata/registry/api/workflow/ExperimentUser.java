@@ -21,29 +21,28 @@
 
 package org.apache.airavata.registry.api.workflow;
 
-public class WorkflowInstanceMetadata {
-	private WorkflowInstance workflowInstance;
-	private String metadata;
+public class ExperimentUser {
+	private String experimentId;
+	private String user;
 	
-	public WorkflowInstanceMetadata(WorkflowInstance workflowInstance, String metadata) {
-		setWorkflowInstance(workflowInstance);
-		setMetadata(metadata);
+	public ExperimentUser(String experimentId, String user) {
+		setExperimentId(experimentId);
+		setUser(user);
 	}
 
-	public WorkflowInstance getWorkflowInstance() {
-		return workflowInstance;
+	public String getUser() {
+		return user;
 	}
 
-	public void setWorkflowInstance(WorkflowInstance workflowInstance) {
-		this.workflowInstance = workflowInstance;
+	public void setUser(String user) {
+		this.user = user;
 	}
 
-	public String getMetadata() {
-		return metadata;
+	public String getExperimentId() {
+		return experimentId;
 	}
 
-	public void setMetadata(String metadata) {
-		this.metadata = metadata;
+	public void setExperimentId(String experimentId) {
+		this.experimentId = experimentId;
 	}
-
 }

@@ -24,16 +24,14 @@ package org.apache.airavata.registry.api.workflow;
 import java.util.List;
 
 public class WorkflowInstanceNodeData{
-	private WorkflowInstanceData workflowInstanceData;
 	private WorkflowInstanceNode workflowInstanceNode;
 	private List<WorkflowInstanceNodePortData> inputData;
 	private List<WorkflowInstanceNodePortData> outputData;
+	private String input;
+	private String output;
 	
-	public WorkflowInstanceNodeData(WorkflowInstanceData workflowInstanceData, WorkflowInstanceNode workflowInstanceNode, List<WorkflowInstanceNodePortData> inputData,List<WorkflowInstanceNodePortData> outputData) {
-		setWorkflowInstanceData(workflowInstanceData);
+	public WorkflowInstanceNodeData(WorkflowInstanceNode workflowInstanceNode) {
 		setWorkflowInstanceNode(workflowInstanceNode);
-		setInputData(inputData);
-		setOutputData(outputData);
 	}
 
 	public WorkflowInstanceNode getWorkflowInstanceNode() {
@@ -60,11 +58,19 @@ public class WorkflowInstanceNodeData{
 		this.outputData = outputData;
 	}
 
-	public WorkflowInstanceData getWorkflowInstanceData() {
-		return workflowInstanceData;
+	public String getInput() {
+		return input;
 	}
 
-	public void setWorkflowInstanceData(WorkflowInstanceData workflowInstanceData) {
-		this.workflowInstanceData = workflowInstanceData;
+	public void setInput(String input) {
+		this.input = input;
+	}
+
+	public String getOutput() {
+		return output;
+	}
+
+	public void setOutput(String output) {
+		this.output = output;
 	}
 }

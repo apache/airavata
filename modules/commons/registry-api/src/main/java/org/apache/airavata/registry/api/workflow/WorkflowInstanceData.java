@@ -62,7 +62,7 @@ public class WorkflowInstanceData {
 	}
 	
 	public String getWorkflowName(){
-		return workflowInstance.getWorkflowName();
+		return workflowInstance.getTemplateName();
 	}
 	
 	public ExecutionStatus getStatus(){
