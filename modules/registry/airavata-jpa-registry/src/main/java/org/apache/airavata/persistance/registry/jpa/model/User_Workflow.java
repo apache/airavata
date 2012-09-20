@@ -45,7 +45,7 @@ public class User_Workflow {
     private Date last_updated_date;
 
     @Lob
-    private String workflow_graph;
+    private byte[] workflow_graph;
 
     public String getTemplate_name() {
         return template_name;
@@ -91,7 +91,7 @@ public class User_Workflow {
         return last_updated_date;
     }
 
-    public String getWorkflow_graph() {
+    public byte[] getWorkflow_graph() {
         return workflow_graph;
     }
 
@@ -103,7 +103,7 @@ public class User_Workflow {
         this.path = path;
     }
 
-    public void setWorkflow_graph(String workflow_graph) {
+    public void setWorkflow_graph(byte[] workflow_graph) {
         this.workflow_graph = workflow_graph;
     }
 

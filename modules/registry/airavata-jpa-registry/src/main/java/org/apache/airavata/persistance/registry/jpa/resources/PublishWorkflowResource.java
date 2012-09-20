@@ -223,7 +223,8 @@ public class PublishWorkflowResource extends AbstractResource {
         publishedWorkflow.setPublish_workflow_name(getName());
         publishedWorkflow.setPublished_date(publishedDate);
         publishedWorkflow.setVersion(version);
-        publishedWorkflow.setWorkflow_content(content);
+        byte[] bytes = content.getBytes();
+        publishedWorkflow.setWorkflow_content(bytes);
         Gateway gateway = new Gateway();
         gateway.setGateway_name(this.gateway.getGatewayName());
         publishedWorkflow.setGateway(gateway);
@@ -233,7 +234,7 @@ public class PublishWorkflowResource extends AbstractResource {
         if(existingWF != null){
             existingWF.setUser(user);
             existingWF.setPublished_date(publishedDate);
-            existingWF.setWorkflow_content(content);
+            existingWF.setWorkflow_content(bytes);
             existingWF.setVersion(version);
             existingWF.setPath(path);
             publishedWorkflow = em.merge(existingWF);

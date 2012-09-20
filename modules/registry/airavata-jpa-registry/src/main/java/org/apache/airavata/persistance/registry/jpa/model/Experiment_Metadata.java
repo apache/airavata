@@ -9,17 +9,17 @@ public class Experiment_Metadata {
     @Id
     private String experiment_ID;
     @Lob
-    private String metadata;
+    private byte[] metadata;
 
     public String getExperiment_ID() {
         return experiment_ID;
     }
 
-    public String getMetadata() {
+    public byte[] getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(String metadata) {
+    public void setMetadata(byte[] metadata) {
         this.metadata = metadata;
     }
 

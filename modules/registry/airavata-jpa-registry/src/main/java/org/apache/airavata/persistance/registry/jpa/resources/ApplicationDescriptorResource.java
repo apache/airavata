@@ -241,12 +241,13 @@ public class ApplicationDescriptorResource extends AbstractResource {
             Users user = em.find(Users.class, updatedUser);
             applicationDescriptor.setGateway(gateway);
             applicationDescriptor.setUser(user);
-            applicationDescriptor.setApplication_descriptor_xml(content);
+            byte[] contentBytes = content.getBytes();
+            applicationDescriptor.setApplication_descriptor_xml(contentBytes);
             applicationDescriptor.setService_descriptor_ID(serviceDescName);
             applicationDescriptor.setHost_descriptor_ID(hostDescName);
             if (existingAppDesc != null) {
                 existingAppDesc.setUser(user);
-                existingAppDesc.setApplication_descriptor_xml(content);
+                existingAppDesc.setApplication_descriptor_xml(contentBytes);
                 existingAppDesc.setHost_descriptor_ID(hostDescName);
                 existingAppDesc.setService_descriptor_ID(serviceDescName);
                 applicationDescriptor = em.merge(existingAppDesc);

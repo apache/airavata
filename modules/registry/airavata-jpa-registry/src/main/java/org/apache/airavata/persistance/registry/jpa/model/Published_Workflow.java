@@ -41,7 +41,7 @@ public class Published_Workflow {
     private Date published_date;
 
     @Lob
-    private String workflow_content;
+    private byte[] workflow_content;
     private String path;
 
     @ManyToOne(cascade=CascadeType.MERGE)
@@ -60,7 +60,7 @@ public class Published_Workflow {
         return published_date;
     }
 
-    public String getWorkflow_content() {
+    public byte[] getWorkflow_content() {
         return workflow_content;
     }
 
@@ -80,7 +80,7 @@ public class Published_Workflow {
         this.published_date = published_date;
     }
 
-    public void setWorkflow_content(String workflow_content) {
+    public void setWorkflow_content(byte[] workflow_content) {
         this.workflow_content = workflow_content;
     }
 

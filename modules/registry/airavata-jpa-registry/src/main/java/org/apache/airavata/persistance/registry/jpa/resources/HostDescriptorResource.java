@@ -28,6 +28,9 @@ import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.sql.rowset.serial.SerialBlob;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -189,31 +192,36 @@ public class HostDescriptorResource extends AbstractResource {
      * save host descriptor to the database
      */
     public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        Host_Descriptor existingHost_desc = em.find(Host_Descriptor.class, new Host_Descriptor_PK(gatewayName, hostDescName));
-        em.close();
+        try {
+            EntityManager em = ResourceUtils.getEntityManager();
+            Host_Descriptor existingHost_desc = em.find(Host_Descriptor.class, new Host_Descriptor_PK(gatewayName, hostDescName));
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Host_Descriptor hostDescriptor = new Host_Descriptor();
-        Gateway gateway = new Gateway();
-        gateway.setGateway_name(gatewayName);
-        Users user = new Users();
-        user.setUser_name(userName);
-        hostDescriptor.setHost_descriptor_ID(getHostDescName());
-        hostDescriptor.setGateway(gateway);
-        hostDescriptor.setHost_descriptor_xml(content);
-        hostDescriptor.setUser(user);
-        if(existingHost_desc != null){
-            existingHost_desc.setUser(user);
-            existingHost_desc.setHost_descriptor_xml(content);
-            hostDescriptor = em.merge(existingHost_desc);
-        } else {
-            em.merge(hostDescriptor);
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Host_Descriptor hostDescriptor = new Host_Descriptor();
+            Gateway gateway = new Gateway();
+            gateway.setGateway_name(gatewayName);
+            Users user = new Users();
+            user.setUser_name(userName);
+            hostDescriptor.setHost_descriptor_ID(getHostDescName());
+            hostDescriptor.setGateway(gateway);
+            byte[] contentBytes = content.getBytes();
+            hostDescriptor.setHost_descriptor_xml(contentBytes);
+            hostDescriptor.setUser(user);
+            if (existingHost_desc != null) {
+                existingHost_desc.setUser(user);
+                existingHost_desc.setHost_descriptor_xml(contentBytes);
+                hostDescriptor = em.merge(existingHost_desc);
+            } else {
+                em.merge(hostDescriptor);
+            }
+
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        em.getTransaction().commit();
-        em.close();
 
     }
 

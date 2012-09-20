@@ -59,27 +59,22 @@ public class GramDataResource extends AbstractResource{
         this.localJobID = localJobID;
     }
 
-    @Override
     public Resource create(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public void remove(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public Resource get(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public List<Resource> get(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
         Gram_Data existingGramData = em.find(Gram_Data.class, new Gram_DataPK(workflowDataResource.getWorkflowInstanceID(), nodeID));
@@ -94,11 +89,12 @@ public class GramDataResource extends AbstractResource{
         gramData.setNode_id(nodeID);
         gramData.setInvoked_host(invokedHost);
         gramData.setLocal_Job_ID(localJobID);
-        gramData.setRsl(rsl);
+        byte[] bytes = rsl.getBytes();
+        gramData.setRsl(bytes);
         if(existingGramData != null){
             existingGramData.setInvoked_host(invokedHost);
             existingGramData.setLocal_Job_ID(localJobID);
-            existingGramData.setRsl(rsl);
+            existingGramData.setRsl(bytes);
             gramData = em.merge(existingGramData);
         }  else {
             em.persist(gramData);

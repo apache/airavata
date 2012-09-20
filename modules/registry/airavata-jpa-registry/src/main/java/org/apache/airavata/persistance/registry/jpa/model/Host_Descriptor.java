@@ -30,7 +30,7 @@ public class Host_Descriptor {
     @Id
     private String gateway_name;
     @Lob
-    private String host_descriptor_xml;
+    private byte[] host_descriptor_xml;
 
     @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "gateway_name")
@@ -44,7 +44,7 @@ public class Host_Descriptor {
         return host_descriptor_ID;
     }
 
-    public String getHost_descriptor_xml() {
+    public byte[] getHost_descriptor_xml() {
         return host_descriptor_xml;
     }
 
@@ -64,7 +64,7 @@ public class Host_Descriptor {
         this.host_descriptor_ID = host_descriptor_ID;
     }
 
-    public void setHost_descriptor_xml(String host_descriptor_xml) {
+    public void setHost_descriptor_xml(byte[] host_descriptor_xml) {
         this.host_descriptor_xml = host_descriptor_xml;
     }
 

@@ -35,7 +35,7 @@ public class Application_Descriptor {
     private String service_descriptor_ID;
 
     @Lob
-    private String application_descriptor_xml;
+    private byte[] application_descriptor_xml;
 
     @ManyToOne(cascade=CascadeType.PERSIST)
     @JoinColumn(name = "gateway_name")
@@ -49,7 +49,7 @@ public class Application_Descriptor {
         return application_descriptor_ID;
     }
 
-    public String getApplication_descriptor_xml() {
+    public byte[] getApplication_descriptor_xml() {
         return application_descriptor_xml;
     }
 
@@ -77,7 +77,7 @@ public class Application_Descriptor {
         this.application_descriptor_ID = application_descriptor_ID;
     }
 
-    public void setApplication_descriptor_xml(String application_descriptor_xml) {
+    public void setApplication_descriptor_xml(byte[] application_descriptor_xml) {
         this.application_descriptor_xml = application_descriptor_xml;
     }
 
