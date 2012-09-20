@@ -717,37 +717,46 @@ public class AiravataClient implements AiravataAPI {
 	}
 
  	public static void main(String[] args) throws Exception {
-// 		AiravataAPI api = AiravataClientUtils.getAPI(new URI("http://gf7.ucs.indiana.edu:8030/jackrabbit/rmi"), "admin", "admin");
-// 		System.out.println(api.getAiravataManager().getWorkflowInterpreterServiceURL());
-// 		System.exit(0);
-// 		WorkflowSchedulingContext workflowSchedulingContext= WorkflowSchedulingContext.Factory.newInstance();
-//		WorkflowContextHeaderBuilder workflowContextHeader = api.getExecutionManager().createWorkflowContextHeader();
-//		workflowContextHeader.setWorkflowSchedulingContext(workflowSchedulingContext);
-//		workflowSchedulingContext.addNewApplicationSchedulingContext();
-// 		System.out.println(workflowContextHeader.getWorkflowSchedulingContext());
-// 		System.exit(0);
+		AiravataAPI api = AiravataClientUtils.getAPI(new URI("http://localhost:8080"), "admin", "admin");
+ 		ProvenanceManager pm = api.getProvenanceManager();
+// 		List<String> experiments = pm.getExperiments();
+// 		for (String id : experiments) {
+//			System.out.println(id);
+//		}
+ 		api.getAiravataManager().getEventingServiceURL();
+// 		System.out.println(api.getAiravataManager().getEventingServiceURL());
  		
-		HashMap<String, String> map;
-		URI uri;
-		
-		uri=new URI("http://gw56.quarry.iu.teragrid.org:8090/jackrabbit-webapp-2.4.0/rmi");
-//		uri=new URI("http://localhost:8081/rmi");
-		map = new HashMap<String, String>();
-		map.put("org.apache.jackrabbit.repository.uri", uri.toString());
-		AiravataJCRRegistry reg1 = new AiravataJCRRegistry(uri, "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", "admin","admin", map);
-		
-		uri=new URI("http://gw26.quarry.iu.teragrid.org:8090/jackrabbit-webapp-2.4.0/rmi");
-//		uri=new URI("http://localhost:8082/rmi");
-		map = new HashMap<String, String>();
-		map.put("org.apache.jackrabbit.repository.uri", uri.toString());
-		AiravataJCRRegistry reg2 = new AiravataJCRRegistry(uri, "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", "admin","admin", map);
-//		Session login = reg2.getRepository().login(new SimpleCredentials("admin","admin".toCharArray()));
-//		login.getRootNode().getNode("experiments").remove();
-//		login.getRootNode().getNode("AIRAVATA_CONFIGURATION_DATA").remove();
-//		login.save();
-//		login.logout();
-//		migrateRespositoryData(reg1, reg2);
-		System.exit(0);
+//// 		AiravataAPI api = AiravataClientUtils.getAPI(new URI("http://gf7.ucs.indiana.edu:8030/jackrabbit/rmi"), "admin", "admin");
+//// 		System.out.println(api.getAiravataManager().getWorkflowInterpreterServiceURL());
+//// 		System.exit(0);
+//// 		WorkflowSchedulingContext workflowSchedulingContext= WorkflowSchedulingContext.Factory.newInstance();
+////		WorkflowContextHeaderBuilder workflowContextHeader = api.getExecutionManager().createWorkflowContextHeader();
+////		workflowContextHeader.setWorkflowSchedulingContext(workflowSchedulingContext);
+////		workflowSchedulingContext.addNewApplicationSchedulingContext();
+//// 		System.out.println(workflowContextHeader.getWorkflowSchedulingContext());
+//// 		System.exit(0);
+// 		
+//		HashMap<String, String> map;
+//		URI uri;
+//		
+//		uri=new URI("http://gw56.quarry.iu.teragrid.org:8090/jackrabbit-webapp-2.4.0/rmi");
+////		uri=new URI("http://localhost:8081/rmi");
+//		map = new HashMap<String, String>();
+//		map.put("org.apache.jackrabbit.repository.uri", uri.toString());
+//		AiravataJCRRegistry reg1 = new AiravataJCRRegistry(uri, "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", "admin","admin", map);
+//		
+//		uri=new URI("http://gw26.quarry.iu.teragrid.org:8090/jackrabbit-webapp-2.4.0/rmi");
+////		uri=new URI("http://localhost:8082/rmi");
+//		map = new HashMap<String, String>();
+//		map.put("org.apache.jackrabbit.repository.uri", uri.toString());
+//		AiravataJCRRegistry reg2 = new AiravataJCRRegistry(uri, "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory", "admin","admin", map);
+////		Session login = reg2.getRepository().login(new SimpleCredentials("admin","admin".toCharArray()));
+////		login.getRootNode().getNode("experiments").remove();
+////		login.getRootNode().getNode("AIRAVATA_CONFIGURATION_DATA").remove();
+////		login.save();
+////		login.logout();
+////		migrateRespositoryData(reg1, reg2);
+//		System.exit(0);
 	}
  	
 	private static void addNode(Node parentNode, Node childNode) throws RepositoryException{
