@@ -654,7 +654,7 @@ public class GatewayResource extends AbstractResource {
                         new ApplicationDescriptorResource(
                                 applicationDescriptor.getApplication_descriptor_ID(),
                                 applicationDescriptor.getGateway().getGateway_name());
-                applicationDescriptorResource.setContent(applicationDescriptor.getApplication_descriptor_xml());
+                applicationDescriptorResource.setContent(new String(applicationDescriptor.getApplication_descriptor_xml()));
                 applicationDescriptorResource.setUpdatedUser(applicationDescriptor.getUser().getUser_name());
                 applicationDescriptorResource.setHostDescName(applicationDescriptor.getHost_descriptor_ID());
                 applicationDescriptorResource.setServiceDescName(applicationDescriptor.getService_descriptor_ID());

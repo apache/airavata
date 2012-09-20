@@ -36,7 +36,7 @@ public class Gram_Data {
 	private String node_id;
 
     @Lob
-	private String rsl;
+	private byte[] rsl;
 	private String invoked_host;
     private String local_Job_ID;
 
@@ -56,11 +56,11 @@ public class Gram_Data {
 		this.node_id = node_id;
 	}
 
-	public String getRsl() {
+	public byte[] getRsl() {
 		return rsl;
 	}
 
-	public void setRsl(String rsl) {
+	public void setRsl(byte[] rsl) {
 		this.rsl = rsl;
 	}
 

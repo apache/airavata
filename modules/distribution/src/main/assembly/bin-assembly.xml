@@ -144,7 +144,8 @@
             <outputDirectory>bin</outputDirectory>
             <includes>
                 <include>*.sh</include>
-		<include>*.bat</include>
+		        <include>*.bat</include>
+                <include>startNetworkServer</include>
             </includes>
         </fileSet>
         <fileSet>
@@ -233,6 +234,8 @@
             <includes>
                 <include>org.apache.derby:derby:jar</include>
                 <include>org.apache.derby:derbytools:jar</include>
+                <include>org.apache.derby:derbyclient:jar</include>
+                <include>org.apache.derby:derbynet:jar</include>
                 <include>org.apache.jackrabbit:jackrabbit-core:jar</include>
                 <include>org.apache.jackrabbit:jackrabbit-jcr-rmi:jar</include>
                 <include>org.slf4j:log4j-over-slf4j:jar</include>

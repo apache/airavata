@@ -133,7 +133,8 @@ public class UserWorkflowResource extends AbstractResource {
         User_Workflow userWorkflow = new User_Workflow();
         userWorkflow.setTemplate_name(name);
         userWorkflow.setLast_updated_date(lastUpdateDate);
-        userWorkflow.setWorkflow_graph(content);
+        byte[] bytes = content.getBytes();
+        userWorkflow.setWorkflow_graph(bytes);
         userWorkflow.setGateway_name(this.gateway.getGatewayName());
         userWorkflow.setOwner(this.getWorker().getUser());
         userWorkflow.setPath(path);
@@ -143,7 +144,7 @@ public class UserWorkflowResource extends AbstractResource {
             existingWF.setTemplate_name(name);
             existingWF.setLast_updated_date(lastUpdateDate);
             existingWF.setPath(path);
-            existingWF.setWorkflow_graph(content);
+            existingWF.setWorkflow_graph(bytes);
             userWorkflow = em.merge(existingWF);
         } else {
             em.merge(userWorkflow);

@@ -30,7 +30,7 @@ public class Service_Descriptor {
     @Id
     private String gateway_name;
     @Lob
-    private String service_descriptor_xml;
+    private byte[] service_descriptor_xml;
 
     @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "gateway_name")
@@ -44,7 +44,7 @@ public class Service_Descriptor {
         return service_descriptor_ID;
     }
 
-    public String getService_descriptor_xml() {
+    public byte[] getService_descriptor_xml() {
         return service_descriptor_xml;
     }
 
@@ -56,7 +56,7 @@ public class Service_Descriptor {
         this.service_descriptor_ID = service_descriptor_ID;
     }
 
-    public void setService_descriptor_xml(String service_descriptor_xml) {
+    public void setService_descriptor_xml(byte[] service_descriptor_xml) {
         this.service_descriptor_xml = service_descriptor_xml;
     }
 

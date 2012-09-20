@@ -28,27 +28,22 @@ public class ExperimentMetadataResource extends AbstractResource{
         this.metadata = metadata;
     }
 
-    @Override
     public Resource create(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public void remove(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public Resource get(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public List<Resource> get(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
         Experiment_Metadata existingExpMetaData = em.find(Experiment_Metadata.class, expID);
@@ -58,10 +53,11 @@ public class ExperimentMetadataResource extends AbstractResource{
         em.getTransaction().begin();
         Experiment_Metadata experimentMetadata = new Experiment_Metadata();
         experimentMetadata.setExperiment_ID(expID);
-        experimentMetadata.setMetadata(metadata);
+        byte[] contentBytes = metadata.getBytes();
+        experimentMetadata.setMetadata(contentBytes);
 
         if(existingExpMetaData != null){
-            existingExpMetaData.setMetadata(metadata);
+            existingExpMetaData.setMetadata(contentBytes);
             existingExpMetaData.setExperiment_ID(expID);
             experimentMetadata = em.merge(existingExpMetaData);
         }else{

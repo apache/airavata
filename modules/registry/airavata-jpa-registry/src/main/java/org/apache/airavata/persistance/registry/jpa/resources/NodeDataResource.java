@@ -86,27 +86,22 @@ public class NodeDataResource extends AbstractResource{
         this.lastUpdateTime = lastUpdateTime;
     }
 
-    @Override
     public Resource create(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public void remove(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public Resource get(ResourceType type, Object name) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public List<Resource> get(ResourceType type) {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
         Node_Data existingNodeData = em.find(Node_Data.class, new Node_DataPK(workflowDataResource.getWorkflowInstanceID(), nodeID));
@@ -118,15 +113,17 @@ public class NodeDataResource extends AbstractResource{
         nodeData.setNode_id(nodeID);
         Workflow_Data workflow_data = em.find(Workflow_Data.class, workflowDataResource.getWorkflowInstanceID());
         nodeData.setWorkflow_Data(workflow_data);
-        nodeData.setInputs(inputs);
-        nodeData.setOutputs(outputs);
+        byte[] inputsByte = inputs.getBytes();
+        nodeData.setInputs(inputsByte);
+        byte[] outputsByte = outputs.getBytes();
+        nodeData.setOutputs(outputsByte);
         nodeData.setNode_type(nodeType);
         nodeData.setLast_update_time(lastUpdateTime);
         nodeData.setStart_time(startTime);
         nodeData.setStatus(status);
         if(existingNodeData != null){
-            existingNodeData.setInputs(inputs);
-            existingNodeData.setOutputs(outputs);
+            existingNodeData.setInputs(inputsByte);
+            existingNodeData.setOutputs(outputsByte);
             existingNodeData.setLast_update_time(lastUpdateTime);
             existingNodeData.setNode_type(nodeType);
             existingNodeData.setStart_time(startTime);

@@ -143,12 +143,13 @@ public class ServiceDescriptorResource extends AbstractResource {
         serviceDescriptor.setService_descriptor_ID(getServiceDescName());
         Gateway gateway = em.find(Gateway.class, gatewayName);
         serviceDescriptor.setGateway(gateway);
-        serviceDescriptor.setService_descriptor_xml(content);
+        byte[] bytes = content.getBytes();
+        serviceDescriptor.setService_descriptor_xml(bytes);
         Users user = em.find(Users.class, userName);
         serviceDescriptor.setUser(user);
         if(existingServiceDesc != null) {
             existingServiceDesc.setUser(user);
-            existingServiceDesc.setService_descriptor_xml(content);
+            existingServiceDesc.setService_descriptor_xml(bytes);
             serviceDescriptor = em.merge(existingServiceDesc);
         }else {
             em.merge(serviceDescriptor);

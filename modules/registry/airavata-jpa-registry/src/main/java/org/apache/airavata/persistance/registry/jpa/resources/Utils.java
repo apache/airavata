@@ -26,6 +26,8 @@ import org.apache.airavata.persistance.registry.jpa.model.*;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.Properties;
 
 
@@ -234,7 +236,7 @@ public class Utils {
         applicationDescriptorResource.setName(o.getApplication_descriptor_ID());
         applicationDescriptorResource.setHostDescName(o.getHost_descriptor_ID());
         applicationDescriptorResource.setServiceDescName(o.getService_descriptor_ID());
-        applicationDescriptorResource.setContent(o.getApplication_descriptor_xml());
+        applicationDescriptorResource.setContent(new String(o.getApplication_descriptor_xml()));
         applicationDescriptorResource.setUpdatedUser(o.getUser().getUser_name());
         applicationDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
         return applicationDescriptorResource;
@@ -276,12 +278,18 @@ public class Utils {
      * @return  HostDescriptor resource object
      */
     private static Resource createHostDescriptor(Host_Descriptor o) {
-        HostDescriptorResource hostDescriptorResource = new HostDescriptorResource();
-        hostDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
-        hostDescriptorResource.setUserName(o.getUser().getUser_name());
-        hostDescriptorResource.setHostDescName(o.getHost_descriptor_ID());
-        hostDescriptorResource.setContent(o.getHost_descriptor_xml());
-        return hostDescriptorResource;
+        try {
+            HostDescriptorResource hostDescriptorResource = new HostDescriptorResource();
+            hostDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
+            hostDescriptorResource.setUserName(o.getUser().getUser_name());
+            hostDescriptorResource.setHostDescName(o.getHost_descriptor_ID());
+            byte[] bytes = o.getHost_descriptor_xml();
+            hostDescriptorResource.setContent(new String(bytes));
+            return hostDescriptorResource;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -295,7 +303,7 @@ public class Utils {
         publishWorkflowResource.setGateway(gatewayResource);
         publishWorkflowResource.setCreatedUser(o.getUser().getUser_name());
         publishWorkflowResource.setName(o.getPublish_workflow_name());
-        publishWorkflowResource.setContent(o.getWorkflow_content());
+        publishWorkflowResource.setContent(new String(o.getWorkflow_content()));
         publishWorkflowResource.setPublishedDate(o.getPublished_date());
         publishWorkflowResource.setVersion(o.getVersion());
         publishWorkflowResource.setPath(o.getPath());
@@ -312,7 +320,7 @@ public class Utils {
         serviceDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
         serviceDescriptorResource.setUserName(o.getUser().getUser_name());
         serviceDescriptorResource.setServiceDescName(o.getService_descriptor_ID());
-        serviceDescriptorResource.setContent(o.getService_descriptor_xml());
+        serviceDescriptorResource.setContent(new String(o.getService_descriptor_xml()));
         return serviceDescriptorResource;
     }
 
@@ -332,7 +340,7 @@ public class Utils {
         WorkerResource workerResource = (WorkerResource) createGatewayWorker(gateway_worker);
         userWorkflowResource.setWorker(workerResource);
         userWorkflowResource.setLastUpdateDate(o.getLast_updated_date());
-        userWorkflowResource.setContent(o.getWorkflow_graph());
+        userWorkflowResource.setContent(new String(o.getWorkflow_graph()));
         userWorkflowResource.setPath(o.getPath());
         return userWorkflowResource;
     }
@@ -360,7 +368,7 @@ public class Utils {
     private static Resource createExperimentMetadata(Experiment_Metadata o) {
         ExperimentMetadataResource experimentMetadataResource = new ExperimentMetadataResource();
         experimentMetadataResource.setExpID(o.getExperiment_ID());
-        experimentMetadataResource.setMetadata(o.getMetadata());
+        experimentMetadataResource.setMetadata(new String(o.getMetadata()));
         return experimentMetadataResource;
     }
 
@@ -381,8 +389,8 @@ public class Utils {
         nodeDataResource.setWorkflowDataResource(workflowDataResource);
         nodeDataResource.setNodeID(o.getNode_id());
         nodeDataResource.setNodeType(o.getNode_type());
-        nodeDataResource.setInputs(o.getInputs());
-        nodeDataResource.setOutputs(o.getOutputs());
+        nodeDataResource.setInputs(new String(o.getInputs()));
+        nodeDataResource.setOutputs(new String(o.getOutputs()));
         nodeDataResource.setStatus(o.getStatus());
         nodeDataResource.setStartTime(o.getStart_time());
         nodeDataResource.setLastUpdateTime(o.getLast_update_time());
@@ -394,9 +402,14 @@ public class Utils {
         WorkflowDataResource workflowDataResource = (WorkflowDataResource)createWorkflowData(o.getWorkflow_Data());
         gramDataResource.setWorkflowDataResource(workflowDataResource);
         gramDataResource.setNodeID(o.getNode_id());
-        gramDataResource.setRsl(o.getRsl());
+        gramDataResource.setRsl(new String(o.getRsl()));
         gramDataResource.setInvokedHost(o.getInvoked_host());
         gramDataResource.setLocalJobID(o.getLocal_Job_ID());
         return gramDataResource;
     }
+
+//    public static byte[] getByteArray(String content){
+//        byte[] contentBytes = content.getBytes();
+//        return contentBytes;
+//    }
 }

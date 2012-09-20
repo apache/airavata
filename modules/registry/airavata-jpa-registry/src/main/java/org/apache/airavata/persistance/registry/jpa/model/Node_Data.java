@@ -40,9 +40,9 @@ public class Node_Data {
 
 	private String node_type;
 	@Lob
-    private String inputs;
+    private byte[] inputs;
 	@Lob
-    private String outputs;
+    private byte[] outputs;
 	private String status;
 	private Timestamp start_time;
 	private Timestamp last_update_time;
@@ -71,19 +71,19 @@ public class Node_Data {
 		this.node_type = node_type;
 	}
 
-	public String getInputs() {
+	public byte[] getInputs() {
 		return inputs;
 	}
 
-	public void setInputs(String inputs) {
+	public void setInputs(byte[] inputs) {
 		this.inputs = inputs;
 	}
 
-	public String getOutputs() {
+	public byte[] getOutputs() {
 		return outputs;
 	}
 
-	public void setOutputs(String outputs) {
+	public void setOutputs(byte[] outputs) {
 		this.outputs = outputs;
 	}
 
