@@ -237,13 +237,7 @@ public class WorkflowDataResource extends AbstractResource{
     }
     
     public NodeDataResource getNodeData(String nodeId){
-    	if (isNodeExists(nodeId)){
-    		return (NodeDataResource) get(ResourceType.NODE_DATA,nodeId);
-    	}else{
-    		NodeDataResource nodeData = createNodeData(nodeId);
-    		nodeData.save();
-    		return nodeData;
-    	}
+		return (NodeDataResource) get(ResourceType.NODE_DATA,nodeId);
     }
     
     public GramDataResource getGramData(String nodeId){
