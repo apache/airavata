@@ -826,7 +826,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean updateExperimentExecutionUser(String experimentId,
 			String user) throws RegistryException {
-		if (!isExperimentExists(experimentId)){
+		if (!isExperimentExists(experimentId, true)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
 		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
@@ -862,7 +862,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean updateExperimentName(String experimentId,
 			String experimentName) throws RegistryException {
-		if (!isExperimentExists(experimentId)){
+		if (!isExperimentExists(experimentId, true)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
 		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
@@ -876,7 +876,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public String getExperimentMetadata(String experimentId)
 			throws RegistryException {
-		if (!isExperimentExists(experimentId)){
+		if (!isExperimentExists(experimentId, true)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
 		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
@@ -891,7 +891,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean updateExperimentMetadata(String experimentId, String metadata)
 			throws RegistryException {
-		if (!isExperimentExists(experimentId)){
+		if (!isExperimentExists(experimentId, true)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
 		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
@@ -1325,7 +1325,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean addWorkflowInstance(String experimentId,
 			String workflowInstanceId, String templateName) throws RegistryException {
-		if (!isExperimentExists(experimentId)){
+		if (!isExperimentExists(experimentId, true)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
 		if (isWorkflowInstanceExists(workflowInstanceId)){
