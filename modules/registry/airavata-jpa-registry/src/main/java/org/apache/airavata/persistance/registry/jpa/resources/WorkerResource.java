@@ -167,8 +167,6 @@ public class WorkerResource extends AbstractResource {
                 q = generator.selectQuery(em);
                 Workflow_Data eworkflowData = (Workflow_Data)q.getSingleResult();
                 WorkflowDataResource workflowDataResource = (WorkflowDataResource)Utils.getResource(ResourceType.WORKFLOW_DATA, eworkflowData);
-                em.getTransaction().commit();
-                em.close();
                 result= workflowDataResource;
 			default:
 				break;

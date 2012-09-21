@@ -50,6 +50,8 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      */
 	public abstract boolean isExperimentExists(String experimentId) throws RegistryException;
 	
+	public abstract boolean isExperimentExists(String experimentId, boolean createIfNotPresent) throws RegistryException;
+	
     /**
      * Save the username of the user who runs this experiment 
      * @param experimentId
@@ -122,6 +124,8 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
     /*-------------------------------------- Experiment Workflow instance node data ----------------------------------------*/
 
     public boolean isWorkflowInstanceExists(String instanceId) throws RegistryException;
+    
+    public boolean isWorkflowInstanceExists(String instanceId, boolean createIfNotPresent) throws RegistryException;
     
     /**
      * Save a status for this workflow execution with the current time at the moment
