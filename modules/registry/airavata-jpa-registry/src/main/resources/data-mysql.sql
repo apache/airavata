@@ -68,7 +68,7 @@ create table Published_Workflow
        version varchar(255),
        published_date TIMESTAMP DEFAULT '0000-00-00 00:00:00',
        path varchar (255),
-       workflow_content BLOB,
+       workflow_content MEDIUMBLOB,
        PRIMARY KEY(gateway_name, publish_workflow_name),
        FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
        FOREIGN KEY (created_user) REFERENCES Users(user_name) ON DELETE CASCADE
