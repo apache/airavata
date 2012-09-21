@@ -51,8 +51,8 @@ public class XBayaWorkflowExperiments {
     		initializeExperimentMap(experiments);
 			List<WorkflowNodeIOData> workflowInput = getRegistry().searchWorkflowInstanceNodeInput(null, null, null);
 			List<WorkflowNodeIOData> workflowOutput = getRegistry().searchWorkflowInstanceNodeOutput(null, null, null);
-			createChildren(experiments, workflowInput, true);
-			createChildren(experiments, workflowOutput, false);
+//			createChildren(experiments, workflowInput, true);
+//			createChildren(experiments, workflowOutput, false);
 		} catch (RegistryException e) {
 			e.printStackTrace();
 		}

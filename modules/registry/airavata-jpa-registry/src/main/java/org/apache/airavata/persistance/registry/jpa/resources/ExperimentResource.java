@@ -84,6 +84,7 @@ public class ExperimentResource extends AbstractResource {
     	switch (type){
 	        case EXPERIMENT_DATA:
 	        	ExperimentDataResource expDataResource = new ExperimentDataResource();
+	        	expDataResource.setUserName(getWorker().getUser());
 	            expDataResource.setExperimentID(getExpID());
 	            return expDataResource;
 	        default:
@@ -199,17 +200,6 @@ public class ExperimentResource extends AbstractResource {
     }
 
     /**
-     * Since experiments are at the leaf level, this method is not
-     * valid for an experiment
-     * @param type  child resource types
-     * @param name name of the child resource
-     * @return UnsupportedOperationException
-     */
-    public boolean isExists(ResourceType type, Object name) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      *
      * @param expID experiment ID
      */
@@ -269,7 +259,9 @@ public class ExperimentResource extends AbstractResource {
     	if (isExists(ResourceType.EXPERIMENT_DATA, getExpID())){
     		return (ExperimentDataResource) get(ResourceType.EXPERIMENT_DATA, getExpID());
     	}else{
-    		return (ExperimentDataResource) create(ResourceType.EXPERIMENT_DATA);
+    		ExperimentDataResource data = (ExperimentDataResource) create(ResourceType.EXPERIMENT_DATA);
+    		data.save();
+			return data;
     	}
     }
 }

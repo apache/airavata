@@ -117,11 +117,17 @@ public class NodeDataResource extends AbstractResource{
         nodeData.setNode_id(nodeID);
         Workflow_Data workflow_data = em.find(Workflow_Data.class, workflowDataResource.getWorkflowInstanceID());
         nodeData.setWorkflow_Data(workflow_data);
-        byte[] inputsByte = inputs.getBytes();
-        nodeData.setInputs(inputsByte);
-        byte[] outputsByte = outputs.getBytes();
-        nodeData.setOutputs(outputsByte);
-        nodeData.setNode_type(nodeType);
+        byte[] inputsByte = null;
+        if (inputs!=null) {
+			inputsByte = inputs.getBytes();
+			nodeData.setInputs(inputsByte);
+		}
+		byte[] outputsByte = null;
+        if (outputs!=null) {
+			outputsByte = outputs.getBytes();
+			nodeData.setOutputs(outputsByte);
+		}
+		nodeData.setNode_type(nodeType);
         nodeData.setLast_update_time(lastUpdateTime);
         nodeData.setStart_time(startTime);
         nodeData.setStatus(status);

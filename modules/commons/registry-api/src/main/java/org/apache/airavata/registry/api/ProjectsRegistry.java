@@ -32,6 +32,8 @@ import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectDoesNot
 public interface ProjectsRegistry extends AiravataSubRegistry {
 	
 	//------------Project management
+	public boolean isWorkspaceProjectExists(String projectName) throws RegistryException;
+	public boolean isWorkspaceProjectExists(String projectName, boolean createIfNotExists) throws RegistryException;
 	public void addWorkspaceProject(WorkspaceProject project) throws WorkspaceProjectAlreadyExistsException, RegistryException;
 	public void updateWorkspaceProject(WorkspaceProject project) throws WorkspaceProjectDoesNotExistsException, RegistryException;
 	public void deleteWorkspaceProject(String projectName) throws WorkspaceProjectDoesNotExistsException, RegistryException;
@@ -39,7 +41,7 @@ public interface ProjectsRegistry extends AiravataSubRegistry {
 	public List<WorkspaceProject> getWorkspaceProjects() throws RegistryException;
 	
 	//------------Experiment management
-	public void addExperiment(String projectName, AiravataExperiment experiment) throws WorkspaceProjectDoesNotExistsException, ExperimentDoesNotExistsException;
+	public void addExperiment(String projectName, AiravataExperiment experiment) throws WorkspaceProjectDoesNotExistsException, ExperimentDoesNotExistsException, RegistryException;
 	public void removeExperiment(String experimentId) throws ExperimentDoesNotExistsException;
 	public List<AiravataExperiment> getExperiments() throws RegistryException;
 	public List<AiravataExperiment> getExperiments(String projectName)throws RegistryException;
