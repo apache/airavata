@@ -752,7 +752,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isWorkflowExists(workflowName)){
         	throw new UserWorkflowDoesNotExistsException(workflowName);
         }
-		UserWorkflowResource workflowResource = worker.createWorkflowTemplate(workflowName);
+		UserWorkflowResource workflowResource = worker.getWorkflowTemplate(workflowName);
 		workflowResource.setContent(workflowGraphXml);
 		workflowResource.save();
     }
