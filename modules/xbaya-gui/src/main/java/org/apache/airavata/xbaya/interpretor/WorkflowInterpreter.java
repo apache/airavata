@@ -1496,7 +1496,7 @@ public class WorkflowInterpreter {
 						// whether the control port is done
 						// FIXME I changed the "||" to a "&&" in the following since thats the only this 
 						// that makes sense and if anyone found a scenario it should be otherwise pls fix
-								&& ((ControlPort) edge.getFromPort()).isConditionMet());
+								|| ((ControlPort) edge.getFromPort()).isConditionMet());
 					}
 				}
 
