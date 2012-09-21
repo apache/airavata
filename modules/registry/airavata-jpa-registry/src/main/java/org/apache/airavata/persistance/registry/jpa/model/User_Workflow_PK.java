@@ -6,9 +6,10 @@ public class User_Workflow_PK {
     private String gateway_name;
     private String owner;
 
-    public User_Workflow_PK(String template_name, String gateway_name) {
+    public User_Workflow_PK(String template_name, String owner, String gateway_name) {
         this.template_name = template_name;
         this.gateway_name = gateway_name;
+        this.owner = owner;
     }
 
     public User_Workflow_PK() {

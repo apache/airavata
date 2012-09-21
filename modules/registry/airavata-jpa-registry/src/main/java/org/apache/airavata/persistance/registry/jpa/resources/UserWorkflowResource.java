@@ -126,7 +126,7 @@ public class UserWorkflowResource extends AbstractResource {
 
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
-        User_Workflow existingWF = em.find(User_Workflow.class, new User_Workflow_PK(gateway.getGatewayName(), name));
+        User_Workflow existingWF = em.find(User_Workflow.class, new User_Workflow_PK(name, worker.getUser(), gateway.getGatewayName()));
         em.close();
 
         em = ResourceUtils.getEntityManager();

@@ -239,7 +239,7 @@ public class PublishWorkflowResource extends AbstractResource {
             existingWF.setPath(path);
             publishedWorkflow = em.merge(existingWF);
         }else {
-            em.merge(gateway);
+            em.merge(publishedWorkflow);
         }
 
         em.getTransaction().commit();
