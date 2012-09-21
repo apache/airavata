@@ -18,9 +18,5 @@
 # under the License.
 
 . `dirname $0`/setenv.sh
-#cd $AIRAVATA_HOME/bin
-#chmod 777 derby.sh
-#chmod 777 startNetworkServer
-#./derby.sh &
 cd $AIRAVATA_HOME/standalone-server/bin
 ./axis2server.sh $*

@@ -32,6 +32,7 @@ import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,6 +133,10 @@ public class UserWorkflowResource extends AbstractResource {
         em.getTransaction().begin();
         User_Workflow userWorkflow = new User_Workflow();
         userWorkflow.setTemplate_name(name);
+        if(lastUpdateDate == null){
+            java.util.Date date= new java.util.Date();
+            lastUpdateDate = new java.sql.Date(date.getTime());
+        }
         userWorkflow.setLast_updated_date(lastUpdateDate);
         byte[] bytes = content.getBytes();
         userWorkflow.setWorkflow_graph(bytes);
@@ -147,7 +152,7 @@ public class UserWorkflowResource extends AbstractResource {
             existingWF.setWorkflow_graph(bytes);
             userWorkflow = em.merge(existingWF);
         } else {
-            em.merge(userWorkflow);
+            em.persist(userWorkflow);
         }
         em.getTransaction().commit();
         em.close();
