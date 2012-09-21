@@ -56,6 +56,7 @@ create table Project
        gateway_name varchar(255),
        user_name varchar(255),
        project_name varchar(255),
+       PRIMARY KEY (project_name),
        FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
        FOREIGN KEY (user_name) REFERENCES Users(user_name) ON DELETE CASCADE
 );
@@ -80,7 +81,7 @@ create table User_Workflow
        gateway_name varchar(255),
        owner varchar(255),
        template_name varchar(255),
-       last_updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+       last_updated_date TIMESTAMP DEFAULT CURRENT TIMESTAMP,
        path varchar (255),
        workflow_graph BLOB,
        PRIMARY KEY(gateway_name, owner, template_name),

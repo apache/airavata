@@ -90,8 +90,6 @@ fi
 
 # set local classpath, don't overwrite the user's
 LOCALCLASSPATH=$DERBY_LIB/derby.jar:$DERBY_LIB/derbynet.jar:$DERBY_LIB/derbytools.jar:$DERBY_LIB/derbyclient.jar
-#LOCALCLASSPATH=$DERBY_LIB/derby-10.9.1.0.jar:$DERBY_LIB/derbynet-10.9.1.0.jar:$DERBY_LIB/derbytools-10.9.1.0.jar:$DERBY_LIB/derbyclient-10.9.1.0.jar
-
 
 # if CLASSPATH_OVERRIDE env var is set, LOCALCLASSPATH will be
 # user CLASSPATH first and derby-found jars after.

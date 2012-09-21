@@ -73,7 +73,6 @@ public class WorkflowDataResource extends AbstractResource{
         this.lastUpdatedTime = lastUpdatedTime;
     }
 
-    @Override
     public Resource create(ResourceType type) {
        switch (type){
            case NODE_DATA:
@@ -89,7 +88,6 @@ public class WorkflowDataResource extends AbstractResource{
        }
     }
 
-    @Override
     public void remove(ResourceType type, Object name) {
         EntityManager em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
@@ -117,7 +115,6 @@ public class WorkflowDataResource extends AbstractResource{
         em.close();
     }
 
-    @Override
     public Resource get(ResourceType type, Object name) {
         EntityManager em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
@@ -153,7 +150,6 @@ public class WorkflowDataResource extends AbstractResource{
         }
     }
 
-    @Override
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
         EntityManager em = ResourceUtils.getEntityManager();
@@ -199,8 +195,11 @@ public class WorkflowDataResource extends AbstractResource{
         return resourceList;
     }
 
-    @Override
     public void save() {
+        if(lastUpdatedTime == null){
+            java.util.Date date= new java.util.Date();
+            lastUpdatedTime = new Timestamp(date.getTime());
+        }
         EntityManager em = ResourceUtils.getEntityManager();
         Workflow_Data existingWFData = em.find(Workflow_Data.class, workflowInstanceID);
         em.close();

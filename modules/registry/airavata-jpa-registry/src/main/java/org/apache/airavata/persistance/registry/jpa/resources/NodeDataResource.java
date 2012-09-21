@@ -103,6 +103,10 @@ public class NodeDataResource extends AbstractResource{
     }
 
     public void save() {
+        if(lastUpdateTime == null){
+            java.util.Date date= new java.util.Date();
+            lastUpdateTime = new Timestamp(date.getTime());
+        }
         EntityManager em = ResourceUtils.getEntityManager();
         Node_Data existingNodeData = em.find(Node_Data.class, new Node_DataPK(workflowDataResource.getWorkflowInstanceID(), nodeID));
         em.close();

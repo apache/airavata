@@ -142,6 +142,7 @@
         <fileSet>
             <directory>src/main/resources/bin</directory>
             <outputDirectory>bin</outputDirectory>
+            <fileMode>777</fileMode>
             <includes>
                 <include>*.sh</include>
 		        <include>*.bat</include>
@@ -231,11 +232,21 @@
     <dependencySets>
         <dependencySet>
             <outputDirectory>standalone-server/lib</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
             <includes>
                 <include>org.apache.derby:derby:jar</include>
                 <include>org.apache.derby:derbytools:jar</include>
-                <include>org.apache.derby:derbyclient:jar</include>
                 <include>org.apache.derby:derbynet:jar</include>
+                <include>org.apache.derby:derbyclient:jar</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>standalone-server/lib</outputDirectory>
+            <includes>
+                <!--<include>org.apache.derby:derby:jar</include>-->
+                <!--<include>org.apache.derby:derbytools:jar</include>-->
+                <!--<include>org.apache.derby:derbyclient:jar</include>-->
+                <!--<include>org.apache.derby:derbynet:jar</include>-->
                 <include>org.apache.jackrabbit:jackrabbit-core:jar</include>
                 <include>org.apache.jackrabbit:jackrabbit-jcr-rmi:jar</include>
                 <include>org.slf4j:log4j-over-slf4j:jar</include>
