@@ -92,9 +92,7 @@ public class WorkerResource extends AbstractResource {
 		switch (type) {
 			case PROJECT:
                 generator = new QueryGenerator(PROJECT);
-                generator.setParameter(ProjectConstants.USERNAME, getUser());
                 generator.setParameter(ProjectConstants.PROJECT_NAME, name);
-                generator.setParameter(ProjectConstants.GATEWAY_NAME, gateway.getGatewayName());
                 q = generator.deleteQuery(em);
 	            q.executeUpdate();
 				break;
@@ -141,9 +139,7 @@ public class WorkerResource extends AbstractResource {
 		switch (type) {
 			case PROJECT:
                 generator = new QueryGenerator(PROJECT);
-                generator.setParameter(ProjectConstants.USERNAME, getUser());
                 generator.setParameter(ProjectConstants.PROJECT_NAME, name);
-                generator.setParameter(ProjectConstants.GATEWAY_NAME, gateway.getGatewayName());
                 q = generator.selectQuery(em);
 	            Project project = (Project) q.getSingleResult();
                 result= Utils.getResource(ResourceType.PROJECT, project);

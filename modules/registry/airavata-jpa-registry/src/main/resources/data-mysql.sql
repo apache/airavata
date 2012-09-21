@@ -52,11 +52,10 @@ create table Gateway_Worker
 
 create table Project
 (
-       project_ID int(11) NOT NULL AUTO_INCREMENT,
        gateway_name varchar(255),
        user_name varchar(255),
        project_name varchar(255),
-       PRIMARY KEY(project_ID),
+       PRIMARY KEY(project_name),
        FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
        FOREIGN KEY (user_name) REFERENCES Users(user_name) ON DELETE CASCADE
 );
@@ -127,14 +126,14 @@ create table Application_Descriptor
 
 create table Experiment
 (
-          project_ID int(11),
+          project_name varchar(255),
 	      gateway_name varchar(255),
           user_name varchar(255),
           experiment_ID varchar(255),
           submitted_date TIMESTAMP DEFAULT '0000-00-00 00:00:00',
           PRIMARY KEY(experiment_ID),
           FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
-          FOREIGN KEY (project_ID) REFERENCES Project(project_ID) ON DELETE CASCADE,
+          FOREIGN KEY (project_name) REFERENCES Project(project_name) ON DELETE CASCADE,
           FOREIGN KEY (user_name) REFERENCES Users(user_name) ON DELETE CASCADE
 );
 

@@ -53,9 +53,6 @@ create table Gateway_Worker
 
 create table Project
 (
-       project_ID int NOT NULL primary key
-        GENERATED ALWAYS AS IDENTITY
-        (START WITH 1, INCREMENT BY 1),
        gateway_name varchar(255),
        user_name varchar(255),
        project_name varchar(255),
@@ -83,7 +80,7 @@ create table User_Workflow
        gateway_name varchar(255),
        owner varchar(255),
        template_name varchar(255),
-       last_updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ,
+       last_updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
        path varchar (255),
        workflow_graph BLOB,
        PRIMARY KEY(gateway_name, owner, template_name),
@@ -129,14 +126,14 @@ create table Application_Descriptor
 
 create table Experiment
 (
-          project_ID int,
+          project_name varchar(255),
 	      gateway_name varchar(255),
           user_name varchar(255),
           experiment_ID varchar(255),
           submitted_date TIMESTAMP DEFAULT '0000-00-00 00:00:00',
           PRIMARY KEY(experiment_ID),
           FOREIGN KEY (gateway_name) REFERENCES Gateway(gateway_name) ON DELETE CASCADE,
-          FOREIGN KEY (project_ID) REFERENCES Project(project_ID) ON DELETE CASCADE,
+          FOREIGN KEY (project_name) REFERENCES Project(project_name) ON DELETE CASCADE,
           FOREIGN KEY (user_name) REFERENCES Users(user_name) ON DELETE CASCADE
 );
 
