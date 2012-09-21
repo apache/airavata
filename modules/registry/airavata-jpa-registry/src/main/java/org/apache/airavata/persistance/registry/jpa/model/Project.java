@@ -25,7 +25,6 @@ import javax.persistence.*;
 @Entity
 public class Project {
     @Id
-    private int project_ID;
     private String project_name;
 
     @ManyToOne(cascade=CascadeType.MERGE)
@@ -36,20 +35,12 @@ public class Project {
     @JoinColumn(name = "user_name")
     private Users users;
 
-    public int getProject_ID() {
-        return project_ID;
-    }
-
     public String getProject_name() {
         return project_name;
     }
 
     public Gateway getGateway() {
         return gateway;
-    }
-
-    public void setProject_ID(int project_ID) {
-        this.project_ID = project_ID;
     }
 
     public void setProject_name(String project_name) {

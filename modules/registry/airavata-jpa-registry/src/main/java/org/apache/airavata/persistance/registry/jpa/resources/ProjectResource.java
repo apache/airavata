@@ -38,7 +38,6 @@ import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 public class ProjectResource extends AbstractResource {
 
     private String name;
-    private int id = -1;
     private GatewayResource gateway;
     private WorkerResource worker;
 
@@ -52,12 +51,12 @@ public class ProjectResource extends AbstractResource {
      *
      * @param worker gateway worker
      * @param gateway gateway
-     * @param id project id
+     * @param projectName project name
      */
-    public ProjectResource(WorkerResource worker, GatewayResource gateway, int id) {
+    public ProjectResource(WorkerResource worker, GatewayResource gateway, String projectName) {
         this.setWorker(worker);
         this.setGateway(gateway);
-        this.id = id;
+        this.name = projectName;
     }
 
     /**
@@ -87,7 +86,7 @@ public class ProjectResource extends AbstractResource {
         em.getTransaction().begin();
         if (type == ResourceType.EXPERIMENT) {
         	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
-        	generator.setParameter(ExperimentConstants.PROJECT_ID, id);
+        	generator.setParameter(ExperimentConstants.PROJECT_NAME, name);
         	generator.setParameter(ExperimentConstants.USERNAME, getWorker().getUser());
         	generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
         	Query q = generator.deleteQuery(em);
@@ -108,7 +107,7 @@ public class ProjectResource extends AbstractResource {
         em.getTransaction().begin();
         if (type == ResourceType.EXPERIMENT) {
         	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
-        	generator.setParameter(ExperimentConstants.PROJECT_ID, id);
+        	generator.setParameter(ExperimentConstants.PROJECT_NAME, name);
         	generator.setParameter(ExperimentConstants.USERNAME, getWorker().getUser());
         	generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
         	Query q = generator.selectQuery(em);
@@ -159,7 +158,7 @@ public class ProjectResource extends AbstractResource {
         em.getTransaction().begin();
         if (type == ResourceType.EXPERIMENT) {
         	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
-        	generator.setParameter(ExperimentConstants.PROJECT_ID, id);
+        	generator.setParameter(ExperimentConstants.PROJECT_NAME, name);
         	Query q = generator.selectQuery(em);
             List<?> results = q.getResultList();
             if (results.size() != 0) {
@@ -181,19 +180,26 @@ public class ProjectResource extends AbstractResource {
      */
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
+        Project existingprojectResource = em.find(Project.class, name);
+        em.close();
+
+        em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Project project = new Project();
         project.setProject_name(name);
-        Gateway gatewayO = new Gateway();
-        gatewayO.setGateway_name(gateway.getGatewayName());
-        project.setGateway(gatewayO);
-        if (id != -1) {
-            project.setProject_ID(id);
-        }
-        Users user = new Users();
-        user.setUser_name(worker.getUser());
+        Gateway modelGateway = em.find(Gateway.class, gateway.getGatewayName());
+        project.setGateway(modelGateway);
+        Users user = em.find(Users.class, worker.getUser());
         project.setUsers(user);
-        em.merge(project);
+
+        if(existingprojectResource != null){
+           existingprojectResource.setGateway(modelGateway);
+            existingprojectResource.setUsers(user);
+            project = em.merge(existingprojectResource);
+        }else {
+            em.persist(project);
+        }
+
         em.getTransaction().commit();
         em.close();
 
@@ -213,14 +219,6 @@ public class ProjectResource extends AbstractResource {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     *
-     * @return project ID
-     */
-    public int getId() {
-        return id;
     }
 
     /**

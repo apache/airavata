@@ -72,7 +72,6 @@ public abstract class AbstractResource implements Resource {
 
     //Project table
     public final class ProjectConstants {
-        public static final String PROJECT_ID = "project_ID";
         public static final String GATEWAY_NAME = "gateway_name";
         public static final String USERNAME = "user_name";
         public static final String PROJECT_NAME = "project_name";
@@ -127,7 +126,7 @@ public abstract class AbstractResource implements Resource {
 
     //Experiment table
     public final class ExperimentConstants {
-        public static final String PROJECT_ID = "project_ID";
+        public static final String PROJECT_NAME = "project_name";
         public static final String USERNAME = "user_name";
         public static final String GATEWAY_NAME = "gateway_name";
         public static final String EXPERIMENT_ID = "experiment_ID";

@@ -175,20 +175,18 @@ public class ExperimentResource extends AbstractResource {
         em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Experiment experiment = new Experiment();
-        Project project = new Project();
-        project.setProject_ID(this.project.getId());
-        Users user = new Users();
-        user.setUser_name(getWorker().getUser());
-        Gateway gateway = new Gateway();
-        gateway.setGateway_name(getGateway().getGatewayName());
-        experiment.setProject(project);
+        Project projectmodel = em.find(Project.class, project.getName());
+        experiment.setProject(projectmodel);
+        Users user = em.find(Users.class, getWorker().getUser());
+        Gateway gateway = em.find(Gateway.class, getGateway().getGatewayName());
+        experiment.setProject(projectmodel);
         experiment.setExperiment_ID(getExpID());
         experiment.setUser(user);
         experiment.setGateway(gateway);
         experiment.setSubmitted_date(submittedDate);
         if(existingExp != null){
             existingExp.setGateway(gateway);
-            existingExp.setProject(project);
+            existingExp.setProject(projectmodel);
             existingExp.setUser(user);
             existingExp.setSubmitted_date(submittedDate);
             experiment = em.merge(existingExp);
