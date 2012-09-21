@@ -31,7 +31,7 @@ public class Experiment {
     private Date submitted_date;
     private String user_name;
     private String gateway_name;
-    private int project_ID;
+    private String project_name;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "user_name")
@@ -42,7 +42,7 @@ public class Experiment {
     private Gateway gateway;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name = "project_ID")
+    @JoinColumn(name = "project_name")
     private Project project;
 
     public String getExperiment_ID() {
