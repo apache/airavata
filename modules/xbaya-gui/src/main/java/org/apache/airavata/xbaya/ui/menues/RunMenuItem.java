@@ -358,9 +358,8 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
     
     private void createLaunchXBayaInterpreterItem() {
         this.launchXBayaInterpreterItem = new JMenuItem("Run on Interpreter Server...");
-        launchXBayaInterpreterItem.addActionListener(new AbstractAction() {
+        AbstractAction action = new AbstractAction() {
             private WorkflowInterpreterLaunchWindow window;
-
             public void actionPerformed(ActionEvent e) {
                 if (this.window == null) {
                     this.window = new WorkflowInterpreterLaunchWindow(engine);
@@ -370,9 +369,11 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
                 } catch (Exception e1) {
                     engine.getGUI().getErrorWindow().error(e1);
                 }
-
             }
-        });
+        };
+        launchXBayaInterpreterItem.addActionListener(action);
+        toolbarButtonRunWorkflow = getToolBar().addToolbarButton(EXECUTE_ACTIONS, launchXBayaInterpreterItem.getText(), MenuIcons.RUN_ICON, "Run workflow", action,1);
+        toolbarButtonRunWorkflow.setEnabled(launchXBayaInterpreterItem.isEnabled());
         launchXBayaInterpreterItem.setEnabled(false);
     }
 
@@ -393,17 +394,17 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
      */
     public void eventReceived(Event event) {
         Type type = event.getType();
-        if (type.equals(Event.Type.MONITOR_CONFIGURATION_CHANGED)) {
+        if (type.equals(Type.MONITOR_CONFIGURATION_CHANGED)) {
             MonitorConfiguration configuration = this.engine.getMonitor().getConfiguration();
             boolean valid = configuration.isValid();
             resumeMonitoringItem.setVisible(valid);
             pauseMonitoringItem.setVisible(false);
             resetMonitoringItem.setVisible(false);
-        } else if (type.equals(Event.Type.MONITOR_STARTED)) {
+        } else if (type.equals(Type.MONITOR_STARTED)) {
             resumeMonitoringItem.setVisible(false);
             pauseMonitoringItem.setVisible(true);
             resetMonitoringItem.setVisible(true);
-        } else if (type.equals(Event.Type.MONITOR_STOPED)) {
+        } else if (type.equals(Type.MONITOR_STOPED)) {
             resumeMonitoringItem.setVisible(true);
             pauseMonitoringItem.setVisible(false);
             resetMonitoringItem.setVisible(false);
