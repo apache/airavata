@@ -20,6 +20,15 @@
 */
 package org.apache.airavata.test.suite.gfac;
 
+import static org.junit.Assert.fail;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -30,31 +39,36 @@ import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
 import org.apache.airavata.core.gfac.context.security.impl.GSISecurityContext;
 import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.services.impl.PropertiesBasedServiceImpl;
-import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
-import org.apache.airavata.schemas.gfac.*;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.AiravataRegistryFactory;
+import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.Gateway;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.GramApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.JobTypeType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.ParameterType;
+import org.apache.airavata.schemas.gfac.ProjectAccountType;
+import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.net.URL;
-import java.util.*;
-
-import static org.junit.Assert.fail;
 
 public class GramProviderMPIRangerTest {
 
     public static final String MYPROXY = "myproxy";
     public static final String GRAM_PROPERTIES = "gram-ranger.properties";
-    private AiravataJCRRegistry jcrRegistry = null;
+    private AiravataRegistry2 jcrRegistry = null;
 
     @Before
     public void setUp() throws Exception {
         Map<String,String> config = new HashMap<String,String>();
             config.put("org.apache.jackrabbit.repository.home","target");
 
-        jcrRegistry = new AiravataJCRRegistry(null,
-                "org.apache.jackrabbit.core.RepositoryFactoryImpl", "admin",
-                "admin", config);
+        jcrRegistry = AiravataRegistryFactory.getRegistry(new Gateway("default"), new AiravataUser("admin"));
+
 
         // Host
         URL url = this.getClass().getClassLoader().getResource(GRAM_PROPERTIES);
@@ -105,10 +119,10 @@ public class GramProviderMPIRangerTest {
         serv.getType().setOutputParametersArray(outputParamList);
 
         /* Save to Registry */
-        jcrRegistry.saveHostDescription(host);
-        jcrRegistry.saveDeploymentDescription(serv.getType().getName(), host.getType().getHostName(), appDesc);
-        jcrRegistry.saveServiceDescription(serv);
-        jcrRegistry.deployServiceOnHost(serv.getType().getName(), host.getType().getHostName());
+        jcrRegistry.addHostDescriptor(host);
+        jcrRegistry.addApplicationDescriptor(serv.getType().getName(), host.getType().getHostName(), appDesc);
+        jcrRegistry.addServiceDescriptor(serv);
+//        jcrRegistry.deployServiceOnHost(serv.getType().getName(), host.getType().getHostName());
     }
 
     @Test
