@@ -201,7 +201,7 @@
    limitations under the License.
 
 ===================================================================================
-The Apache Airavata (incubating) distribution includes a number of run time 
+The Apache Airavata distribution includes a number of run time 
 dependencies with separate copyright notices and license terms. Your use of the
 code for Airavata is subject to the terms and conditions of the following licenses.
 ===================================================================================
@@ -1009,7 +1009,7 @@ For wsdl4j-1.6.2.jar:
     Containing Project URL: http://sourceforge.net/projects/wsdl4j/
 
 Common Public License Version 1.0
-￼
+
 THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS COMMON PUBLIC LICENSE ("AGREEMENT"). ANY USE, REPRODUCTION OR DISTRIBUTION OF THE PROGRAM CONSTITUTES RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT.
 1. DEFINITIONS
 "Contribution" means:

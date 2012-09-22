@@ -177,7 +177,7 @@ print_help(){
 	echo "   --start_tomcat	Once setup is done start the tomcat server"
 	echo
 	echo "Example:"
-	echo "   \$ $script_name --tomcat=dists/apache-tomcat-7.0.26.zip --airavata=dists/apache-airavata-0.3-incubating-SNAPSHOT-bin.zip --axis2=downloaded_webapps/axis2.war --jackrabbit=downloaded_webapps/jackrabbit-webapp-2.4.0.war --properties=airavata-tomcat.properties"
+	echo "   \$ $script_name --tomcat=dists/apache-tomcat-7.0.26.zip --airavata=dists/apache-airavata-0.5-SNAPSHOT-bin.zip --axis2=downloaded_webapps/axis2.war --jackrabbit=downloaded_webapps/jackrabbit-webapp-2.4.0.war --properties=airavata-tomcat.properties"
 }
 
 print_debug(){
@@ -465,5 +465,5 @@ fi
 cd $CURRENT_DIR
 
 
-#rm -rf apache-tomcat-7.0.26; ./a.sh --tomcat=apache-tomcat-7.0.26.zip --airavata=apache-airavata-0.3-incubating-SNAPSHOT-bin.zip --axis2=axis2.war --jackrabbit=jackrabbit-webapp-2.4.0.war --properties=airavata-tomcat.properties
+#rm -rf apache-tomcat-7.0.26; ./a.sh --tomcat=apache-tomcat-7.0.26.zip --airavata=apache-airavata-0.5-SNAPSHOT-bin.zip --axis2=axis2.war --jackrabbit=jackrabbit-webapp-2.4.0.war --properties=airavata-tomcat.properties
 

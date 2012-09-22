@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <version>0.5-incubating-SNAPSHOT</version>
+        <version>0.5-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -22,8 +22,7 @@
     <packaging>jar</packaging>
     <name>Simple Math Service</name>
     <description>Sample web services to construct as workflows to test XBaya. </description>
-
-    <url>http://incubator.apache.org/airavata/index.html</url>
+    <url>http://airavata.apache.org/</url>
 
     <properties>
         <axis2.version>1.5.1</axis2.version>
