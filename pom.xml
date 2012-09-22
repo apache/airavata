@@ -27,7 +27,7 @@
     <artifactId>airavata</artifactId>
     <packaging>pom</packaging>
     <name>Airavata</name>
-    <version>0.5-incubating-SNAPSHOT</version>
+    <version>0.5-SNAPSHOT</version>
 
     <url>http://airavata.apache.org/</url>
     <inceptionYear>2011</inceptionYear>
@@ -39,13 +39,23 @@
     </scm>
 
     <mailingLists>
+        
         <mailingList>
             <name>Airavata Developer List</name>
-            <subscribe>airavata-dev-subscribe@incubator.apache.org</subscribe>
-            <unsubscribe>airavata-dev-unsubscribe@incubator.apache.org</unsubscribe>
-            <post>mailto:airavata-dev@incubator.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/incubator-airavata-dev/</archive>
+            <subscribe>dev-subscribe@airavata.apache.org</subscribe>
+            <unsubscribe>dev-unsubscribe@airavata.apache.org</unsubscribe>
+            <post>mailto:dev@airavata.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/airavata-dev/</archive>
         </mailingList>
+        
+        <mailingList>
+            <name>Airavata Users List</name>
+            <subscribe>users-subscribe@airavata.apache.org</subscribe>
+            <unsubscribe>users-unsubscribe@airavata.apache.org</unsubscribe>
+            <post>mailto:users@airavata.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/airavata-users/</archive>
+        </mailingList>
+        
     </mailingLists>
 
     <issueManagement>
@@ -71,16 +81,15 @@
 
     <developers>
         <developer>
-            <id>chinthaka</id>
-            <name>Eran Chinthaka</name>
-            <email>chinthaka@apache.org</email>
-            <timezone>-8</timezone>
-            <organization>Nextag</organization>
-            <organizationUrl>http://www.nextag.com/</organizationUrl>
+            <id>aslom</id>
+            <name>Aleksander Slominski</name>
+            <email>aslom@us.ibm.com</email>
+            <timezone>-5</timezone>
+            <organization>IBM</organization>
+            <organizationUrl>http://www.ibm.com/us/en/</organizationUrl>
             <roles>
                 <role>committer</role>
-                <role>PPMC member</role>
-                <role>IPMC member</role>
+                <role>PMC member</role>
             </roles>
         </developer>
         <developer>
@@ -91,56 +100,8 @@
             <organization>Hippo</organization>
             <organizationUrl>http://www.onehippo.com</organizationUrl>
             <roles>
-                <role>mentor</role>
-                <role>IPMC member</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>rgardler</id>
-            <name>Ross Gardler</name>
-            <email>rgardler@apache.org</email>
-            <organization>OpenDirective</organization>
-            <organizationUrl>http://www.opendirective.com/</organizationUrl>
-            <roles>
-                <role>champion</role>
-                <role>mentor</role>
-                <role>IPMC member</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>lahiru</id>
-            <name>Lahiru Gunathilake</name>
-            <email>glahiru@gmail.com</email>
-            <timezone>-5</timezone>
-            <organization>Indiana University</organization>
-            <organizationUrl>http://www.iub.edu</organizationUrl>
-            <roles>
                 <role>committer</role>
-                <role>PPMC member</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>thilina</id>
-            <name>Thilina Gunaratne</name>
-            <email>thilina@apache.org</email>
-            <timezone>-5</timezone>
-            <organization>Indiana University</organization>
-            <organizationUrl>http://www.iub.edu</organizationUrl>
-            <roles>
-                <role>committer</role>
-                <role>PPMC member</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>barbara</id>
-            <name>Barbara Hallock</name>
-            <email>bahalloc@apache.org</email>
-            <timezone>-5</timezone>
-            <organization>Indiana University</organization>
-            <organizationUrl>http://www.iub.edu</organizationUrl>
-            <roles>
-                <role>committer</role>
-                <role>PPMC member</role>
+                <role>PMC member</role>
             </roles>
         </developer>
         <developer>
@@ -152,45 +113,55 @@
             <organizationUrl>http://www.knight.com</organizationUrl>
             <roles>
                 <role>committer</role>
-                <role>PPMC member</role>
+                <role>PMC member</role>
             </roles>
         </developer>
         <developer>
-            <id>chris</id>
+            <id>mattmann</id>
             <name>Chris Mattmann</name>
             <email>chris.a.mattmann@jpl.nasa.gov</email>
             <timezone>-5</timezone>
             <organization>NASA JPL</organization>
             <organizationUrl>http://www.jpl.nasa.gov/</organizationUrl>
             <roles>
-                <role>mentor</role>
-                <role>IPMC member</role>
+                <role>committer</role>
+                <role>PMC member</role>
             </roles>
         </developer>
         <developer>
-            <id>smarru</id>
-            <name>Suresh Marru</name>
-            <email>smarru@apache.org</email>
+            <id>chinthaka</id>
+            <name>Eran Chinthaka</name>
+            <email>chinthaka@apache.org</email>
+            <timezone>-8</timezone>
+            <organization>Wize Commerce</organization>
+            <organizationUrl>http://www.wizecommerce.com/</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>heshan</id>
+            <name>Heshan Suriyarachchi</name>
+            <email>heshan@apache.org</email>
             <timezone>-5</timezone>
             <organization>Indiana University</organization>
             <organizationUrl>http://www.iub.edu</organizationUrl>
             <roles>
                 <role>committer</role>
-                <role>PPMC member</role>
-                <role>release manager</role>
+                <role>PMC member</role>
             </roles>
         </developer>
         <developer>
-            <id>hemapani</id>
-            <name>Srinath Perera</name>
-            <email>hemapani@apache.org</email>
-            <timezone>+1</timezone>
-            <organization>Lanka Software Foundation</organization>
-            <organizationUrl>http://opensource.lk</organizationUrl>
+            <id>lahiru</id>
+            <name>Lahiru Gunathilake</name>
+            <email>glahiru@gmail.com</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://www.iub.edu</organizationUrl>
             <roles>
                 <role>committer</role>
-                <role>PPMC member</role>
-                <role>IPMC member</role>
+                <role>PMC member</role>
             </roles>
         </developer>
         <developer>
@@ -202,9 +173,21 @@
             <organizationUrl>http://www.iub.edu</organizationUrl>
             <roles>
                 <role>committer</role>
-                <role>PPMC member</role>
+                <role>PMC member</role>
             </roles>
         </developer>
+        <developer>
+            <id>patanachai</id>
+            <name>Patanachai Tangchaisin</name>
+            <email>patanachai@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Wize Commerce</organization>
+            <organizationUrl>http://www.wizecommerce.com/</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PMC member</role>
+            </roles>
+        </developer>   
         <developer>
             <id>raminder</id>
             <name>Raminderjeet Singh</name>
@@ -218,54 +201,6 @@
             </roles>
         </developer>
         <developer>
-            <id>aslom</id>
-            <name>Aleksander Slominski</name>
-            <email>aslom@us.ibm.com</email>
-            <timezone>-5</timezone>
-            <organization>IBM</organization>
-            <organizationUrl>http://www.ibm.com/us/en/</organizationUrl>
-            <roles>
-                <role>committer</role>
-                <role>mentor</role>
-                <role>PPMC member</role>
-                <role>IPMC member</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>heshan</id>
-            <name>Heshan Suriyarachchi</name>
-            <email>heshan@apache.org</email>
-            <timezone>-5</timezone>
-            <organization>Indiana University</organization>
-            <organizationUrl>http://www.iub.edu</organizationUrl>
-            <roles>
-                <role>committer</role>
-                <role>PPMC member</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>patanachai</id>
-            <name>Patanachai Tangchaisin</name>
-            <email>patanachai@apache.org</email>
-            <timezone>-5</timezone>
-            <organization>Nextag</organization>
-            <organizationUrl>http://www.nextag.com/</organizationUrl>
-            <roles>
-                <role>committer</role>
-                <role>PPMC member</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Sanjiva Weerawarana</name>
-            <id>sanjiva</id>
-            <email>sanjiva@wso2.com</email>
-            <organization>WSO2</organization>
-            <roles>
-                <role>mentor</role>
-                <role>IPMC member</role>
-            </roles>
-        </developer>
-        <developer>
             <id>saminda</id>
             <name>Saminda Wijeratne</name>
             <email>samindaw@apache.org</email>
@@ -274,7 +209,56 @@
             <organizationUrl>http://www.iub.edu</organizationUrl>
             <roles>
                 <role>committer</role>
-                <role>PPMC member</role>
+                <role>PMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>shahani</id>
+            <name>Shahani Weerawarana</name>
+            <email>shahani@apache.org</email>
+            <timezone>+5.5</timezone>
+            <organization>University of Moratuwa</organization>
+            <organizationUrl>http://www.mrt.ac.lk/web/</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>hemapani</id>
+            <name>Srinath Perera</name>
+            <email>hemapani@apache.org</email>
+            <timezone>+5.5</timezone>
+            <organization>WSO2</organization>
+            <organizationUrl>http://wso2.com/</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PMC member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>smarru</id>
+            <name>Suresh Marru</name>
+            <email>smarru@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://www.iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PMC Chair</role>
+                <role>release manager</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>thilina</id>
+            <name>Thilina Gunaratne</name>
+            <email>thilina@apache.org</email>
+            <timezone>-5</timezone>
+            <organization>Indiana University</organization>
+            <organizationUrl>http://www.iub.edu</organizationUrl>
+            <roles>
+                <role>committer</role>
+                <role>PMC member</role>
             </roles>
         </developer>
     </developers>
@@ -528,12 +512,6 @@
                                 <goals>
                                     <goal>process</goal>
                                 </goals>
-                                <configuration>
-                                    <!-- add apache-incubator-disclaimer-resource-bundle to be removed again when graduating from Incubator -->
-                                    <resourceBundles combine.children="append">
-                                        <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
-                                    </resourceBundles>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

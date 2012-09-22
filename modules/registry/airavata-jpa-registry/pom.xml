@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>registry</artifactId>
-        <version>0.5-incubating-SNAPSHOT</version>
+        <version>0.5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -21,7 +21,7 @@
     <artifactId>airavata-jpa-registry</artifactId>
     <packaging>jar</packaging>
     <name>Airavata JPA Registry</name>
-    <url>http://incubator.apache.org/airavata/</url>
+    <url>http://airavata.apache.org/</url>
 
     <dependencies>
         <dependency>

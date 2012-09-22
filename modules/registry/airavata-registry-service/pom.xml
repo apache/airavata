@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <version>0.5-incubating-SNAPSHOT</version>
+        <version>0.5-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
@@ -20,8 +20,10 @@
     <artifactId>airavata-registry-service</artifactId>
     <name>Airavata Registry Service</name>
     <description>Registry Service to expose Registry as a web service</description>
+    <url>http://airavata.apache.org/</url>
+    
     <dependencies>
-<dependency>
+        <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-adb</artifactId>
             <version>${axis2.version}</version>
@@ -41,7 +43,7 @@
             <artifactId>axiom-impl</artifactId>
             <version>1.2.8</version>
         </dependency>
-<dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -57,7 +59,7 @@
             <version>${org.slf4j.version}</version>
             <scope>runtime</scope>
         </dependency>
-	<dependency>
+	   <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-jpa-registry</artifactId>
             <version>${project.version}</version>

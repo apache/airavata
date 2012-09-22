@@ -1,39 +1,27 @@
-Apache Airavata (incubating) - README.txt
+Apache Airavata - README.txt
 Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 --------------------------------------------------------------------------------
 
 About
 =====
-Apache Airavata, a software framework to compose, manage, execute, and monitor 
-distributed applications and workflows on computational resources ranging from 
-local resources to computational grids and clouds. Airavata can be used as individual components or 
+Apache Airavata, a software framework to executing and managing computational jobs on 
+distributed computing resources including local clusters, supercomputers, national grids, 
+academic and commercial clouds. Airavata can be used as individual components or 
 as an integrated solution to build science gateways or general-purpose distributed 
 application and workflow management systems. Users can use Airavata back end services 
 and build gadgets to deploy in open social containers such as Apache Rave and modify them 
 to suit their needs. Airavata builds on general concepts of service oriented computing, 
 distributed messaging, and workflow composition and orchestration.
 
-Disclaimer
-==========
-Apache Airavata is an effort undergoing incubation at The Apache Software
-Foundation (ASF), sponsored by the Apache Incubator PMC. Incubation is required
-of all newly accepted projects until a further review indicates that the
-infrastructure, communications, and decision making process have stabilized in a
-manner consistent with other successful ASF projects. While incubation status is
-not necessarily a reflection of the completeness or stability of the code, it
-does indicate that the project has yet to be fully endorsed by the ASF.
-
 Release Notes
 =============
-0.4-INCUBATNG is the third release of Airavata (skipped 0.1-INCUBATNG). This release focuses on improving test cases
+0.5 is the fourth release of Airavata (skipped 0.1-INCUBATNG). This release focuses on improving test cases
 and stability of code, documentation. For detailed tasks list, please see RELEASE_NOTES.
 
 Building from source
 ====================
 For brief installation instructions, see INSTALL
-For detailed installation and further instructions refer http://incubator.apache.org/airavata/ - Documentation 
-section in right hand panel. Step by step with proper documentation and screenshots is
-provided.
+For detailed installation and further instructions refer http://airavata.apache.org/ - Documentation section in left hand panel. Step by step with proper documentation are provided.
 
 Known Issues in This Release
 ============================
@@ -59,7 +47,6 @@ Airavata Binary Distribution Directory Structure
         |       -- services <folder>
         |   |-- bin <folder>
                 |-- database_scripts
-        |-- DISCLAIMER <file>
         |-- NOTICE <file>
         |-- LICENSE <file>
         |-- README <file>
@@ -70,9 +57,9 @@ How to test and run samples
 ===========================
 * If you built Airavata from source, and if you see "BUILD SUCCESS", then the test cases should have passes.
 * The test cases are beyond unit level, they startup embedded services and run through basic workflow use cases.
-* To walk through Airavata features, follow "Airavata in Five Minutes" tutorial at http://incubator.apache.org/airavata/documentation/system/airavata-in-5-minutes.html
-* For intermediate level Airavata features, follow "Airavata in Ten Minutes" tutorial at http://incubator.apache.org/airavata/documentation/system/airavata-in-10-minutes.html 
-* For advanced use cases, please contact mailing lists - http://incubator.apache.org/airavata/community/mailing-lists.html
+* To walk through Airavata features, follow "Airavata in Five Minutes" tutorial at http://airavata.apache.org/documentation/system/airavata-in-5-minutes.html
+* For intermediate level Airavata features, follow "Airavata in Ten Minutes" tutorial at http://airavata.apache.org/documentation/system/airavata-in-10-minutes.html 
+* For advanced use cases, please contact mailing lists - http://airavata.apache.org/community/mailing-lists.html
 
 Description of Directory Structure
 ==================================
