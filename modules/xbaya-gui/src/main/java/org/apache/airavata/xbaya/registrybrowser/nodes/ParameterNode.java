@@ -30,16 +30,16 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.xbaya.model.registrybrowser.ServiceParameter;
+import org.apache.airavata.xbaya.model.registrybrowser.NodeParameter;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.CopyAction;
 import org.apache.airavata.xbaya.ui.actions.registry.browser.ViewAction;
 import org.apache.airavata.xbaya.ui.dialogs.TextWindow;
 
 public class ParameterNode extends AbstractAiravataTreeNode {
-	private ServiceParameter parameter;
+	private NodeParameter parameter;
 	
-	public ParameterNode(ServiceParameter parameter, TreeNode parent) {
+	public ParameterNode(NodeParameter parameter, TreeNode parent) {
 		super(parent);
 		setParameter(parameter);
 	}
@@ -109,11 +109,11 @@ public class ParameterNode extends AbstractAiravataTreeNode {
 		return null;
 	}
 
-	public ServiceParameter getParameter() {
+	public NodeParameter getParameter() {
 		return parameter;
 	}
 
-	public void setParameter(ServiceParameter parameter) {
+	public void setParameter(NodeParameter parameter) {
 		this.parameter = parameter;
 	}
 }

@@ -28,30 +28,30 @@ import java.util.List;
 import org.apache.airavata.schemas.gfac.Parameter;
 
 public class ServiceParameters {
-	private List<ServiceParameter> parameters;
+	private List<NodeParameter> parameters;
 	
 	public ServiceParameters(Parameter[] parameters) {
 		if (parameters!=null) {
-			List<ServiceParameter> serviceParaList = new ArrayList<ServiceParameter>();
+			List<NodeParameter> serviceParaList = new ArrayList<NodeParameter>();
 			for (Parameter parameter : parameters) {
-				serviceParaList.add(new ServiceParameter(parameter));
+				serviceParaList.add(new NodeParameter(parameter));
 			}
 			setParameters(serviceParaList);
 		}
 	}
 	
-	public ServiceParameters(ServiceParameter[] parameters) {
+	public ServiceParameters(NodeParameter[] parameters) {
 		if (parameters!=null) {
 			setParameters(Arrays.asList(parameters));
 		}
 	}
-	public List<ServiceParameter> getParameters() {
+	public List<NodeParameter> getParameters() {
 		if (parameters==null){
-			parameters=new ArrayList<ServiceParameter>();
+			parameters=new ArrayList<NodeParameter>();
 		}
 		return parameters;
 	}
-	public void setParameters(List<ServiceParameter> parameters) {
+	public void setParameters(List<NodeParameter> parameters) {
 		this.parameters = parameters;
 	}
 }

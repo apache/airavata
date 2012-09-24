@@ -24,18 +24,31 @@ package org.apache.airavata.xbaya.model.registrybrowser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+
 public class XBayaWorkflowExperiment {
 	private List<XBayaWorkflow> workflows;
 	private String experimentId;
+	private AiravataRegistry2 registry;
 	
-	public XBayaWorkflowExperiment(String experimentId, List<XBayaWorkflow> workflows) {
-		setWorkflows(workflows);
+	public XBayaWorkflowExperiment(String experimentId, AiravataRegistry2 registry) {
 		setExperimentId(experimentId);
+		setRegistry(registry);
 	}
 
 	public List<XBayaWorkflow> getWorkflows() {
 		if (workflows==null){
 			workflows=new ArrayList<XBayaWorkflow>();
+			try {
+				List<WorkflowInstance> experimentWorkflowInstances = getRegistry().getExperimentWorkflowInstances(getExperimentId());
+				for (WorkflowInstance workflowInstance : experimentWorkflowInstances) {
+					workflows.add(new XBayaWorkflow(workflowInstance, getRegistry()));
+				}
+			} catch (RegistryException e) {
+				e.printStackTrace();
+			}
 		}
 		return workflows;
 	}
@@ -54,5 +67,13 @@ public class XBayaWorkflowExperiment {
 
 	public void setExperimentId(String experimentId) {
 		this.experimentId = experimentId;
+	}
+
+	public AiravataRegistry2 getRegistry() {
+		return registry;
+	}
+
+	public void setRegistry(AiravataRegistry2 registry) {
+		this.registry = registry;
 	}
 }

@@ -25,7 +25,7 @@ import org.apache.airavata.schemas.gfac.Parameter;
 
 public class InputParameters extends ServiceParameters {
 
-	public InputParameters(ServiceParameter[] parameters) {
+	public InputParameters(NodeParameter[] parameters) {
 		super(parameters);
 	}
 	
