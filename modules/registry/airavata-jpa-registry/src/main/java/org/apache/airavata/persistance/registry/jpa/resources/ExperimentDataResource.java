@@ -128,7 +128,9 @@ public class ExperimentDataResource extends AbstractResource{
         switch (type){
             case WORKFLOW_DATA:
                 generator = new QueryGenerator(WORKFLOW_DATA);
-                generator.setParameter(WorkflowDataConstants.EXPERIMENT_ID, experimentID);
+//                generator.setParameter(WorkflowDataConstants.EXPERIMENT_ID, experimentID);
+                Experiment_Data experiment_data = em.find(Experiment_Data.class, experimentID);
+                generator.setParameter("experiment_data", experiment_data);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
