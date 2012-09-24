@@ -1018,7 +1018,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			throw new WorkflowInstanceDoesNotExistsException(instanceId);
 		}
 		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(instanceId);
-		return new WorkflowInstanceStatus(new WorkflowInstance(wi.getExperimentID(),wi.getWorkflowInstanceID()),ExecutionStatus.valueOf(wi.getStatus()),wi.getLastUpdatedTime());
+		return new WorkflowInstanceStatus(new WorkflowInstance(wi.getExperimentID(),wi.getWorkflowInstanceID()),wi.getStatus()==null?null:ExecutionStatus.valueOf(wi.getStatus()),wi.getLastUpdatedTime());
 	}
 
 
@@ -1227,7 +1227,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		}
 		WorkflowDataResource workflowInstance = jpa.getWorker().getWorkflowInstance(id);
 		NodeDataResource nodeData = workflowInstance.getNodeData(nodeId);
-		return new WorkflowInstanceNodeStatus(new WorkflowInstanceNode(new WorkflowInstance(workflowInstance.getExperimentID(), workflowInstance.getWorkflowInstanceID()), nodeData.getNodeID()), ExecutionStatus.valueOf(nodeData.getStatus()),nodeData.getLastUpdateTime());
+		return new WorkflowInstanceNodeStatus(new WorkflowInstanceNode(new WorkflowInstance(workflowInstance.getExperimentID(), workflowInstance.getWorkflowInstanceID()), nodeData.getNodeID()), nodeData.getStatus()==null?null:ExecutionStatus.valueOf(nodeData.getStatus()),nodeData.getLastUpdateTime());
 	}
 
 
@@ -1285,7 +1285,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		}
 		WorkflowDataResource resource = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
 		WorkflowInstance workflowInstance = new WorkflowInstance(resource.getExperimentID(), resource.getWorkflowInstanceID());
-		WorkflowInstanceData workflowInstanceData = new WorkflowInstanceData(null, workflowInstance, new WorkflowInstanceStatus(workflowInstance, ExecutionStatus.valueOf(resource.getStatus()),resource.getLastUpdatedTime()), null);
+		WorkflowInstanceData workflowInstanceData = new WorkflowInstanceData(null, workflowInstance, new WorkflowInstanceStatus(workflowInstance, resource.getStatus()==null? null:ExecutionStatus.valueOf(resource.getStatus()),resource.getLastUpdatedTime()), null);
 		List<NodeDataResource> nodeData = resource.getNodeData();
 		for (NodeDataResource nodeDataResource : nodeData) {
 			workflowInstanceData.getNodeDataList().add(getWorkflowInstanceNodeData(workflowInstanceId, nodeDataResource.getNodeID()));
