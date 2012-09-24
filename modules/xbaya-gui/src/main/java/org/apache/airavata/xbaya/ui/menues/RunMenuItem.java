@@ -331,8 +331,6 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
         };
 		menuItem.addActionListener(action);
 		menuItem.setEnabled(false);
-        toolbarButtonRunWorkflow = getToolBar().addToolbarButton(EXECUTE_ACTIONS,menuItem.getText(), MenuIcons.RUN_ICON, "Run workflow", action,1);
-        toolbarButtonRunWorkflow.setEnabled(menuItem.isEnabled());
         return menuItem;
     }
     
