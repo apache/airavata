@@ -30,25 +30,25 @@ import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
 import org.apache.airavata.xbaya.model.registrybrowser.ServiceParameters;
-import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowService;
+import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowNodeElement;
 import org.apache.airavata.xbaya.ui.actions.AbstractBrowserActionItem;
 
-public class XBayaWorkflowServiceNode extends AbstractAiravataTreeNode {
-    private XBayaWorkflowService xbayaWorkflowService;
+public class XBayaWorkflowNodeElementNode extends AbstractAiravataTreeNode {
+    private XBayaWorkflowNodeElement xbayaWorkflowService;
 
-    public XBayaWorkflowServiceNode(XBayaWorkflowService xbayaWorkflowService, TreeNode parent) {
+    public XBayaWorkflowNodeElementNode(XBayaWorkflowNodeElement xbayaWorkflowNodeElement, TreeNode parent) {
         super(parent);
-        setXbayaWorkflowService(xbayaWorkflowService);
+        setXbayaWorkflowNodeElement(xbayaWorkflowNodeElement);
     }
 
     @Override
     protected List<TreeNode> getChildren() {
 		List<ServiceParameters> parameterTypeList=new ArrayList<ServiceParameters>();
-		if (getXbayaWorkflowService().getInputParameters()!=null && getXbayaWorkflowService().getInputParameters().getParameters().size()>0){
-			parameterTypeList.add(getXbayaWorkflowService().getInputParameters());
+		if (getXbayaWorkflowNodeElement().getInputParameters()!=null && getXbayaWorkflowNodeElement().getInputParameters().getParameters().size()>0){
+			parameterTypeList.add(getXbayaWorkflowNodeElement().getInputParameters());
 		}
-		if (getXbayaWorkflowService().getOutputParameters()!=null && getXbayaWorkflowService().getOutputParameters().getParameters().size()>0){
-			parameterTypeList.add(getXbayaWorkflowService().getOutputParameters());
+		if (getXbayaWorkflowNodeElement().getOutputParameters()!=null && getXbayaWorkflowNodeElement().getOutputParameters().getParameters().size()>0){
+			parameterTypeList.add(getXbayaWorkflowNodeElement().getOutputParameters());
 		}
 		return getTreeNodeList(parameterTypeList.toArray(), this);
     }
@@ -59,7 +59,7 @@ public class XBayaWorkflowServiceNode extends AbstractAiravataTreeNode {
 //        if (selected) {
 //			type = " <font color=\"#D3D3D3\">Service call</font>";
 //		}
-		return wrapAsHtml(getXbayaWorkflowService().getServiceNodeId(),type);
+		return wrapAsHtml(getXbayaWorkflowNodeElement().getNodeId(),type);
     }
 
     @Override
@@ -91,11 +91,11 @@ public class XBayaWorkflowServiceNode extends AbstractAiravataTreeNode {
         return null;
     }
 
-	public XBayaWorkflowService getXbayaWorkflowService() {
+	public XBayaWorkflowNodeElement getXbayaWorkflowNodeElement() {
 		return xbayaWorkflowService;
 	}
 
-	public void setXbayaWorkflowService(XBayaWorkflowService xbayaWorkflowService) {
-		this.xbayaWorkflowService = xbayaWorkflowService;
+	public void setXbayaWorkflowNodeElement(XBayaWorkflowNodeElement xbayaWorkflowNodeElement) {
+		this.xbayaWorkflowService = xbayaWorkflowNodeElement;
 	}
 }

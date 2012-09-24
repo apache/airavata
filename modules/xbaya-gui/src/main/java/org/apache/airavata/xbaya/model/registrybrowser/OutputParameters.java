@@ -25,7 +25,7 @@ import org.apache.airavata.schemas.gfac.Parameter;
 
 public class OutputParameters extends ServiceParameters {
 
-	public OutputParameters(ServiceParameter[] parameters) {
+	public OutputParameters(NodeParameter[] parameters) {
 		super(parameters);
 	}
 	

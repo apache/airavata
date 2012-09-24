@@ -1157,7 +1157,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		List<String> result=new ArrayList<String>();
 		List<ExperimentResource> experiments = jpa.getWorker().getExperiments();
 		for (ExperimentResource resource : experiments) {
-			if (resource.getData().getUserName().equals(user)){
+			if (user==null || resource.getData().getUserName().equals(user)){
 				result.add(resource.getExpID());
 			}
 		}

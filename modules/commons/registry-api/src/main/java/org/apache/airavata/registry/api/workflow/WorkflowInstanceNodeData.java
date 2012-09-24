@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.api.workflow;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WorkflowInstanceNodeData{
@@ -41,8 +42,35 @@ public class WorkflowInstanceNodeData{
 	public void setWorkflowInstanceNode(WorkflowInstanceNode workflowInstanceNode) {
 		this.workflowInstanceNode = workflowInstanceNode;
 	}
-
+	
+	private static class NameValue{
+		String name;
+		String value;
+		public NameValue(String name, String value) {
+			this.name=name;
+			this.value=value;
+		}
+	}
+	
+	private static List<NameValue> getIOParameterData(String data){
+		List<NameValue> parameters=new ArrayList<NameValue>();
+		String[] pairs = data.split(",");
+		for (String paras : pairs) {
+			String[] nameVals = paras.trim().split("=");
+			NameValue pair = new NameValue(nameVals[0].trim(),nameVals[1].trim());
+			parameters.add(pair);
+		}
+		return parameters;
+	}
+	
 	public List<WorkflowInstanceNodePortData> getInputData() {
+		if (inputData==null){
+			inputData=new ArrayList<WorkflowInstanceNodePortData>();
+			List<NameValue> data = getIOParameterData(getInput());
+			for (NameValue nameValue : data) {
+				inputData.add(new WorkflowInstanceNodePortData(getWorkflowInstanceNode(), nameValue.name, nameValue.value));
+			}
+		}
 		return inputData;
 	}
 
@@ -51,6 +79,13 @@ public class WorkflowInstanceNodeData{
 	}
 
 	public List<WorkflowInstanceNodePortData> getOutputData() {
+		if (outputData==null){
+			outputData=new ArrayList<WorkflowInstanceNodePortData>();
+			List<NameValue> data = getIOParameterData(getOutput());
+			for (NameValue nameValue : data) {
+				outputData.add(new WorkflowInstanceNodePortData(getWorkflowInstanceNode(), nameValue.name, nameValue.value));
+			}
+		}
 		return outputData;
 	}
 

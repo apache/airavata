@@ -24,45 +24,67 @@ package org.apache.airavata.xbaya.model.registrybrowser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeData;
+
 public class XBayaWorkflow {
-	private List<XBayaWorkflowService> workflowServices;
-	private String workflowId;
-	private String workflowName;
+	private List<XBayaWorkflowNodeElement> workflowServices;
+	private WorkflowInstance workflowInstance;
+	private AiravataRegistry2 registry;
 	
-	public XBayaWorkflow(String workflowId, String workflowName, List<XBayaWorkflowService> workflowServices) {
-		setWorkflowId(workflowId);
-		setWorkflowName(workflowName);
-		setWorkflowServices(workflowServices);
+	public XBayaWorkflow(WorkflowInstance workflowInstance, AiravataRegistry2 registry) {
+		setWorkflowInstance(workflowInstance);
+		setRegistry(registry);
 	}
 
-	public List<XBayaWorkflowService> getWorkflowServices() {
+	public List<XBayaWorkflowNodeElement> getWorkflowServices() {
 		if (workflowServices==null){
-			workflowServices=new ArrayList<XBayaWorkflowService>();
+			workflowServices=new ArrayList<XBayaWorkflowNodeElement>();
+			try {
+				WorkflowInstanceData workflowInstanceData = getRegistry().getWorkflowInstanceData(getWorkflowId());
+				List<WorkflowInstanceNodeData> nodeDataList = workflowInstanceData.getNodeDataList();
+				for (WorkflowInstanceNodeData nodeData : nodeDataList) {
+					workflowServices.add(new XBayaWorkflowNodeElement(nodeData.getWorkflowInstanceNode().getNodeId(), nodeData));
+				}
+			} catch (RegistryException e) {
+				e.printStackTrace();
+			}
 		}
 		return workflowServices;
 	}
 
-	public void setWorkflowServices(List<XBayaWorkflowService> workflowServices) {
+	public void setWorkflowNodes(List<XBayaWorkflowNodeElement> workflowServices) {
 		this.workflowServices = workflowServices;
 	}
 	
-	public void add(XBayaWorkflowService workflowService){
+	public void add(XBayaWorkflowNodeElement workflowService){
 		getWorkflowServices().add(workflowService);
 	}
 
 	public String getWorkflowName() {
-		return workflowName;
-	}
-
-	public void setWorkflowName(String workflowName) {
-		this.workflowName = workflowName;
+		return getWorkflowInstance().getTemplateName();
 	}
 
 	public String getWorkflowId() {
-		return workflowId;
+		return getWorkflowInstance().getWorkflowInstanceId();
 	}
 
-	public void setWorkflowId(String workflowId) {
-		this.workflowId = workflowId;
+	public AiravataRegistry2 getRegistry() {
+		return registry;
+	}
+
+	public void setRegistry(AiravataRegistry2 registry) {
+		this.registry = registry;
+	}
+
+	public WorkflowInstance getWorkflowInstance() {
+		return workflowInstance;
+	}
+
+	public void setWorkflowInstance(WorkflowInstance workflowInstance) {
+		this.workflowInstance = workflowInstance;
 	}
 }

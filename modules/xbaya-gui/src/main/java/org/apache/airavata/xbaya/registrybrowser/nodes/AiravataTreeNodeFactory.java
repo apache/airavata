@@ -42,12 +42,12 @@ import org.apache.airavata.xbaya.model.registrybrowser.MessageBoxURL;
 import org.apache.airavata.xbaya.model.registrybrowser.MessageBoxURLs;
 import org.apache.airavata.xbaya.model.registrybrowser.OutputParameters;
 import org.apache.airavata.xbaya.model.registrybrowser.ServiceDescriptions;
-import org.apache.airavata.xbaya.model.registrybrowser.ServiceParameter;
+import org.apache.airavata.xbaya.model.registrybrowser.NodeParameter;
 import org.apache.airavata.xbaya.model.registrybrowser.ServiceParameters;
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflow;
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowExperiment;
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowExperiments;
-import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowService;
+import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowNodeElement;
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowTemplate;
 import org.apache.airavata.xbaya.model.registrybrowser.XBayaWorkflowTemplates;
 
@@ -89,8 +89,8 @@ public class AiravataTreeNodeFactory {
 			return new XBayaWorkflowTemplatesNode((XBayaWorkflowTemplates)o,parent);
 		}else if (o instanceof XBayaWorkflowTemplate){
 			return new XBayaWorkflowTemplateNode((XBayaWorkflowTemplate)o,parent);
-		}else if (o instanceof ServiceParameter){
-			return new ParameterNode((ServiceParameter)o,parent);
+		}else if (o instanceof NodeParameter){
+			return new ParameterNode((NodeParameter)o,parent);
 		}else if (o instanceof InputParameters){
 			return new InputParametersNode((InputParameters)o,parent);
 		}else if (o instanceof OutputParameters){
@@ -103,8 +103,8 @@ public class AiravataTreeNodeFactory {
 			return new XBayaWorkflowExperimentNode((XBayaWorkflowExperiment)o,parent);
 		}else if (o instanceof XBayaWorkflow){
 			return new XBayaWorkflowNode((XBayaWorkflow)o,parent);
-		}else if (o instanceof XBayaWorkflowService){
-			return new XBayaWorkflowServiceNode((XBayaWorkflowService)o,parent);
+		}else if (o instanceof XBayaWorkflowNodeElement){
+			return new XBayaWorkflowNodeElementNode((XBayaWorkflowNodeElement)o,parent);
 		}else{
 			return new DefaultMutableTreeNode(o);
 		}

@@ -24,15 +24,15 @@ package org.apache.airavata.xbaya.model.registrybrowser;
 import org.apache.airavata.schemas.gfac.Parameter;
 
 
-public class ServiceParameter {
+public class NodeParameter {
 	private Parameter parameter;
 	private Object value;
 	
-	public ServiceParameter(Parameter parameter) {
+	public NodeParameter(Parameter parameter) {
 		this(parameter,null);
 	}
 	
-	public ServiceParameter(Parameter parameter, Object value) {
+	public NodeParameter(Parameter parameter, Object value) {
 		setParameter(parameter);
 		setValue(value);
 	}
