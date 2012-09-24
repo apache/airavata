@@ -389,9 +389,13 @@ public class Utils {
         nodeDataResource.setWorkflowDataResource(workflowDataResource);
         nodeDataResource.setNodeID(o.getNode_id());
         nodeDataResource.setNodeType(o.getNode_type());
-        nodeDataResource.setInputs(new String(o.getInputs()));
-        nodeDataResource.setOutputs(new String(o.getOutputs()));
-        nodeDataResource.setStatus(o.getStatus());
+        if (o.getInputs()!=null) {
+			nodeDataResource.setInputs(new String(o.getInputs()));
+		}
+		if (o.getOutputs()!=null) {
+			nodeDataResource.setOutputs(new String(o.getOutputs()));
+		}
+		nodeDataResource.setStatus(o.getStatus());
         nodeDataResource.setStartTime(o.getStart_time());
         nodeDataResource.setLastUpdateTime(o.getLast_update_time());
         return nodeDataResource;

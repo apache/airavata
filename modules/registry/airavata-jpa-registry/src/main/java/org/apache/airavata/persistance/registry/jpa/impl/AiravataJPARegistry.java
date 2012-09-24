@@ -928,6 +928,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		}
 		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
 		wi.setTemplateName(templateName);
+		wi.save();
 	}
 
 
@@ -987,6 +988,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			wi.setStartTime(currentTime);
 		}
 		wi.setLastUpdatedTime(currentTime);
+		wi.save();
 		return true;
 	}
 
@@ -1036,13 +1038,18 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 	@Override
 	public boolean updateWorkflowNodeOutput(WorkflowInstanceNode node, String data) throws RegistryException {
-		if (!isWorkflowInstanceNodePresent(node.getWorkflowInstance().getWorkflowInstanceId(),node.getNodeId(),true)){
-			throw new WorkflowInstanceNodeDoesNotExistsException(node.getWorkflowInstance().getWorkflowInstanceId(), node.getNodeId());
+		try {
+			if (!isWorkflowInstanceNodePresent(node.getWorkflowInstance().getWorkflowInstanceId(),node.getNodeId(),true)){
+				throw new WorkflowInstanceNodeDoesNotExistsException(node.getWorkflowInstance().getWorkflowInstanceId(), node.getNodeId());
+			}
+			WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(node.getWorkflowInstance().getWorkflowInstanceId());
+			NodeDataResource nodeData = wi.getNodeData(node.getNodeId());
+			nodeData.setOutputs(data);
+			nodeData.save();
+		} catch (RegistryException e) {
+			e.printStackTrace();
+			throw e;
 		}
-		WorkflowDataResource wi = jpa.getWorker().getWorkflowInstance(node.getWorkflowInstance().getWorkflowInstanceId());
-		NodeDataResource nodeData = wi.getNodeData(node.getNodeId());
-		nodeData.setOutputs(data);
-		nodeData.save();
 		return true;
 	}
 
@@ -1347,13 +1354,18 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public boolean updateWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type)
 			throws RegistryException {
-		if (!isWorkflowInstanceNodePresent(node.getWorkflowInstance().getWorkflowInstanceId(),node.getNodeId(), true)){
-			throw new WorkflowInstanceNodeDoesNotExistsException(node.getWorkflowInstance().getWorkflowInstanceId(),node.getNodeId());
+		try {
+			if (!isWorkflowInstanceNodePresent(node.getWorkflowInstance().getWorkflowInstanceId(),node.getNodeId(), true)){
+				throw new WorkflowInstanceNodeDoesNotExistsException(node.getWorkflowInstance().getWorkflowInstanceId(),node.getNodeId());
+			}
+			NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(node.getWorkflowInstance().getWorkflowInstanceId()).getNodeData(node.getNodeId());
+			nodeData.setNodeType(type.getNodeType().toString());
+			nodeData.save();
+		} catch (RegistryException e) {
+			e.printStackTrace();
+			throw e;
 		}
-		NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(node.getWorkflowInstance().getWorkflowInstanceId()).getNodeData(node.getNodeId());
-		nodeData.setNodeType(type.getNodeType().toString());
-		nodeData.save();
-		return false;
+		return true;
 	}
 
 

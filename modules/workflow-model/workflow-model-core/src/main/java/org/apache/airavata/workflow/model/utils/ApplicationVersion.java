@@ -28,7 +28,7 @@ public class ApplicationVersion {
     /**
      * Version number
      */
-    public final static Version VERSION = new Version("Airavata",0,4,null,"INCUBATING",null);//"0.3-INCUBATING";
+    public final static Version VERSION = new Version("Airavata",0,5,null,null,null);//"0.3-INCUBATING";
 
     /**
      * Prints the version
