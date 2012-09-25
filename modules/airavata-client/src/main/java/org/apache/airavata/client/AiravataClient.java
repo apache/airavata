@@ -72,6 +72,11 @@ import org.apache.airavata.common.workflow.execution.context.WorkflowContextHead
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstance;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
+import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
@@ -129,7 +134,7 @@ public class AiravataClient implements AiravataAPI {
 
 	// private NameValue[] configurations = new NameValue[7];
 
-	private static final Version API_VERSION=new Version("Airavata",0,4,null,"INCUBATING",null);
+	private static final Version API_VERSION=new Version("Airavata",0,5,null,null,null);
 	
 	protected AiravataClient(Map<String,String> configuration)
 			throws MalformedURLException {
@@ -619,6 +624,7 @@ public class AiravataClient implements AiravataAPI {
 			}
 			workflow=workflowString;
 			String topic=workflowObj.getName()+"_"+UUID.randomUUID();
+			getRegistry().setWorkflowInstanceTemplateName(topic, workflowObj.getName());
 			return runWorkflow(topic, inputValues.toArray(new NameValue[]{}), user, metadata, workflowInstanceName,builder);
 		} catch (PathNotFoundException e) {
 			e.printStackTrace();
@@ -719,11 +725,18 @@ public class AiravataClient implements AiravataAPI {
  	public static void main(String[] args) throws Exception {
 		AiravataAPI api = AiravataClientUtils.getAPI(new URI("http://localhost:8080"), "admin", "admin");
  		ProvenanceManager pm = api.getProvenanceManager();
+ 		ExperimentData workflowExperimentData = pm.getWorkflowExperimentData("Workflow1_9341caee-b3fc-4474-9b15-b943756a5839");
+ 		
+// 		pm.getExperimentIdList(owner)
+// 		workflowInstanceData = d.getWorkflowInstanceData().get(0).getNodeDataList();
+// 		d.get
+// 		pm.setWorkflowInstanceNodeOutput(new WorkflowInstanceNode(new WorkflowInstance("test", "test"), "test_node"), "some_data");
+// 		pm.setWorkflowInstanceStatus(new WorkflowInstanceStatus(new WorkflowInstance("test", "test"), ExecutionStatus.RUNNING));
 // 		List<String> experiments = pm.getExperiments();
 // 		for (String id : experiments) {
 //			System.out.println(id);
 //		}
- 		api.getAiravataManager().getEventingServiceURL();
+// 		api.getAiravataManager().getEventingServiceURL();
 // 		System.out.println(api.getAiravataManager().getEventingServiceURL());
  		
 //// 		AiravataAPI api = AiravataClientUtils.getAPI(new URI("http://gf7.ucs.indiana.edu:8030/jackrabbit/rmi"), "admin", "admin");
