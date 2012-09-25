@@ -91,7 +91,6 @@ public class WorkflowStatusUpdater {
     public boolean saveWorkflowData(String experimentID,String workflowInstanceID,String workflowTemplateID) {
         Timestamp currentTime = new Timestamp((new java.util.Date()).getTime());
         try {
-            registry.updateExperimentName(experimentID, workflowInstanceID);
             registry.setWorkflowInstanceTemplateName(workflowInstanceID, workflowTemplateID);
             registry.updateWorkflowInstanceStatus(new WorkflowInstanceStatus(new WorkflowInstance(experimentID, workflowInstanceID), WorkflowInstanceStatus.ExecutionStatus.STARTED,currentTime));
         } catch (RegistryException e) {

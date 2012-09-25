@@ -54,11 +54,14 @@ public class WorkflowInstanceNodeData{
 	
 	private static List<NameValue> getIOParameterData(String data){
 		List<NameValue> parameters=new ArrayList<NameValue>();
-		String[] pairs = data.split(",");
-		for (String paras : pairs) {
-			String[] nameVals = paras.trim().split("=");
-			NameValue pair = new NameValue(nameVals[0].trim(),nameVals[1].trim());
-			parameters.add(pair);
+		if (data!=null) {
+			String[] pairs = data.split(",");
+			for (String paras : pairs) {
+				String[] nameVals = paras.trim().split("=");
+				NameValue pair = new NameValue(nameVals[0].trim(),
+						nameVals[1].trim());
+				parameters.add(pair);
+			}
 		}
 		return parameters;
 	}
