@@ -69,27 +69,45 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <build>
-        <defaultGoal>install</defaultGoal>
-        <plugins>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.6</version>
-                <executions>
-                    <execution>
-                        <id>restore-persistence</id>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <tasks>
-                                <copy file="${project.build.outputDirectory}/services.xml" tofile="${project.build.outputDirectory}/META-INF/services.xml" />
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+	<build>
+		<defaultGoal>install</defaultGoal>
+		<plugins>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>restore-persistence</id>
+						<phase>prepare-package</phase>
+						<configuration>
+							<tasks>
+								<copy file="${project.build.outputDirectory}/services.xml"
+									tofile="${project.build.outputDirectory}/META-INF/services.xml" />
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.axis2</groupId>
+				<artifactId>axis2-aar-maven-plugin</artifactId>
+				<version>${axis2.version}</version>
+				<configuration>
+					<servicesXmlFile>src/main/resources/services.xml</servicesXmlFile>
+				</configuration>
+				<executions>
+					<execution>
+						<id>createAAR</id>
+						<phase>package</phase>
+						<goals>
+							<goal>aar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
