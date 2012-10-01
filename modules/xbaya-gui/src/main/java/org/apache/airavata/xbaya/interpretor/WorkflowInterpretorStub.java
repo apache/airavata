@@ -243,6 +243,7 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
             }
         } finally {
             _serviceClient.cleanup();
+            _serviceClient.cleanupTransport();
             _messageContext.getTransportOut().getSender().cleanup(_messageContext);
         }
     }
