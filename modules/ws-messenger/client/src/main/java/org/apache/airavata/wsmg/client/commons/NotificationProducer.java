@@ -53,6 +53,7 @@ public class NotificationProducer {
         ServiceClient client = createServiceClient(type, notificationMessage, brokerLocationEPR, timeout, null);
 
         OMElement ret = client.sendReceive(notificationMessage);
+        client.cleanup();
         client.cleanupTransport();
         return ret;
 
@@ -65,6 +66,7 @@ public class NotificationProducer {
                 topicExpressionEl);
 
         OMElement ret = client.sendReceive(notificationMessage);
+        client.cleanup();
         client.cleanupTransport();
         return ret;
 

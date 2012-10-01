@@ -75,6 +75,7 @@ public class WsntCreatePublishReg extends WidgetStub {
         ServiceClient client = createServiceClient(message);
 
         OMElement responseMessage = client.sendReceive(message);
+        client.cleanup();
         client.cleanupTransport();
 
         OMElement publisherRegistrationRef = responseMessage.getFirstChildWithName(new QName(NameSpaceConstants.WSBR_NS

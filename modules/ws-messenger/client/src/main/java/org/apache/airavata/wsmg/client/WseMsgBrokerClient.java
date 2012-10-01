@@ -114,6 +114,7 @@ public class WseMsgBrokerClient extends CommonMsgBrokerClient implements Message
                     xpathExpression, expireTime);
             ServiceClient serviceClient = configureServiceClientForSubscription(subscriptionMsg);
             OMElement responseMessage = serviceClient.sendReceive(subscriptionMsg);
+            serviceClient.cleanup();
             serviceClient.cleanupTransport();
 
             if (responseMessage == null) {
@@ -150,6 +151,7 @@ public class WseMsgBrokerClient extends CommonMsgBrokerClient implements Message
             CommonRoutines.setHeaders(soapAction, brokerEndpointRef.getAddress(), client, identifierEl);
 
             client.sendReceive(message);
+            client.cleanup();
             client.cleanupTransport();
 
         } catch (AxisFault e) {
