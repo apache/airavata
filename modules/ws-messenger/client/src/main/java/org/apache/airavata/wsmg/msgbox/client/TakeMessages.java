@@ -82,6 +82,7 @@ public class TakeMessages {
             responseMessage.build(); // free the input stream.
 
         } finally {
+            serviceClient.cleanup();
             serviceClient.cleanupTransport();
         }
 

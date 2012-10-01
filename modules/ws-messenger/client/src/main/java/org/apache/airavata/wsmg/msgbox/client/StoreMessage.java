@@ -72,6 +72,7 @@ public class StoreMessage {
         try {
             responseMessage = serviceClient.sendReceive(messageIn);
         } finally {
+            serviceClient.cleanup();
             serviceClient.cleanupTransport();
         }
 

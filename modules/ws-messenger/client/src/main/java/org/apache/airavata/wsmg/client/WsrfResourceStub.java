@@ -114,7 +114,14 @@ public class WsrfResourceStub {
         }
         client.setOptions(opts);
 
-        client.sendRobust(message);
+        try {
+            client.sendRobust(message);
+        } catch (AxisFault axisFault) {
+            axisFault.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }finally {
+            client.cleanup();
+            client.cleanupTransport();
+        }
     }
 
     public void setTerminationTime(Calendar cal) throws AxisFault {
@@ -156,7 +163,13 @@ public class WsrfResourceStub {
             client.addHeader(to);
         }
         client.setOptions(opts);
-        client.sendRobust(message);
+        try {
+            client.sendRobust(message);
+        } catch (AxisFault axisFault) {
+            axisFault.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }finally {
+            client.cleanupTransport();
+        }
 
     }
 

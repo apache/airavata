@@ -109,6 +109,7 @@ public class WsntMsgBrokerClient extends CommonMsgBrokerClient implements Messag
             ServiceClient client = createServiceClient(message);
 
             OMElement responseMessage = client.sendReceive(message);
+            client.cleanup();
             client.cleanupTransport();
 
             OMElement sr = responseMessage.getFirstChildWithName(new QName(

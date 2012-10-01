@@ -70,6 +70,7 @@ public class WseCreateSubscription {
 
         ServiceClient serviceClient = createServiceClient(message);
         OMElement responseMessage = serviceClient.sendReceive(message);
+        serviceClient.cleanup();
         serviceClient.cleanupTransport();
         if (responseMessage == null) {
             throw AxisFault.makeFault(new RuntimeException("no response recieved for subscription message"));
