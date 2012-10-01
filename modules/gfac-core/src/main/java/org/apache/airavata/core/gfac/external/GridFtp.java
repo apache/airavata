@@ -30,7 +30,10 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.airavata.core.gfac.exception.GfacException;
@@ -149,6 +152,11 @@ public class GridFtp {
             ftpClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
 
             log.debug("Uploading file");
+            if (checkBinaryExtensions(remoteFile)) {
+                log.info("Transfer mode is set to Binary for a file upload");
+                ftpClient.setType(Session.TYPE_IMAGE);
+            }
+
 
             ftpClient.put(remoteFile, new DataSourceStream(io), new MarkerListener() {
                 public void markerArrived(Marker marker) {
@@ -193,7 +201,12 @@ public class GridFtp {
             destClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
 
 
-            log.debug("Uploading file");
+           log.debug("Uploading file");
+            if (checkBinaryExtensions(remoteFile)) {
+                log.info("Transfer mode is set to Binary for a file upload");
+                srcClient.setType(Session.TYPE_IMAGE);
+            }
+
             srcClient.transfer(srcURI.getPath(),destClient, remoteFile, false, null);
 
             log.info("Upload file to:" + remoteFile + " is done");
@@ -241,6 +254,11 @@ public class GridFtp {
             ftpClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
 
             log.debug("Uploading file");
+            if (checkBinaryExtensions(remoteFile)) {
+                log.info("Transfer mode is set to Binary for a file upload");
+                ftpClient.setType(Session.TYPE_IMAGE);
+            }
+
 
             ftpClient.put(localFile, remoteFile, false);
 
@@ -288,6 +306,10 @@ public class GridFtp {
             ftpClient.setDataChannelAuthentication(DataChannelAuthentication.SELF);
 
             log.debug("Downloading file");
+            if (checkBinaryExtensions(remoteFile)) {
+                log.info("Transfer mode is set to Binary to download a file");
+                ftpClient.setType(Session.TYPE_IMAGE);
+            }
 
             ftpClient.get(remoteFile, localFile);
 
@@ -379,13 +401,18 @@ public class GridFtp {
             destClient = new GridFTPClient(desthost.getHost(), desthost.getPort());
             destClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             destClient.authenticate(gssCred);
-            destClient.setType(Session.TYPE_IMAGE);
-
+            if (checkBinaryExtensions(desthost.getPath())) {
+                log.info("Transfer mode is set to Binary");
+                destClient.setType(Session.TYPE_IMAGE);
+            }
 
             srcClient = new GridFTPClient(srchost.getHost(), srchost.getPort());
             srcClient.setAuthorization(new HostAuthorization(GridFtp.HOST));
             srcClient.authenticate(gssCred);
-            srcClient.setType(Session.TYPE_IMAGE);
+            if (checkBinaryExtensions(srchost.getPath())) {
+                log.info("Transfer mode is set to Binary");
+                srcClient.setType(Session.TYPE_IMAGE);
+            }
 
             if (srcActive) {
                 log.debug("Set src active");
@@ -500,4 +527,19 @@ public class GridFtp {
 	            }
 		}
 	}
+    /**
+     * Method to check file extension as binary to set transfer type
+     * @param filePath
+     * @return
+     */
+    private static boolean checkBinaryExtensions(String filePath){
+        String extension = filePath.substring(filePath.lastIndexOf(".")+1,filePath.length());
+        Set<String> extensions = new HashSet<String>(Arrays.asList(new String[] {"tar","zip","gz","tgz"}));
+        if(extensions.contains(extension)){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
 }
