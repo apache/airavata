@@ -25,7 +25,6 @@ import java.util.Iterator;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
-import org.apache.jackrabbit.core.cache.ConcurrentCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;

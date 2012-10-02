@@ -278,16 +278,6 @@
             <version>${jcr.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-core</artifactId>
-            <version>${jackrabbit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-jcr-rmi</artifactId>
-            <version>${jackrabbit.version}</version>
-        </dependency>
-        <dependency>
             <groupId>globus</groupId>
             <artifactId>transfer-api-client</artifactId>
             <version>0.10</version>
