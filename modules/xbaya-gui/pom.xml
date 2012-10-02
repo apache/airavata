@@ -41,11 +41,11 @@
                 <!-- Deployment Information -->
                 <jnlpURLPrefix>http://localhost/airavata-xbaya</jnlpURLPrefix>
                 <jnlpFileName>xbaya.jnlp</jnlpFileName>
-
+		<!--
                 <registryEPR>
                     http://localhost:8090/jackrabbit-webapp-2.4.0/rmi
                 </registryEPR>
-
+		-->
             </properties>
         </profile>
 
@@ -381,16 +381,6 @@
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
             <version>${jcr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-core</artifactId>
-            <version>${jackrabbit.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-jcr-rmi</artifactId>
-            <version>${jackrabbit.version}</version>
         </dependency>
         <dependency>
             <groupId>globus</groupId>

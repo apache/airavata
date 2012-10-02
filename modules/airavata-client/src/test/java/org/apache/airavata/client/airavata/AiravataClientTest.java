@@ -23,8 +23,7 @@ package org.apache.airavata.client.airavata;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.common.registry.api.impl.JCRRegistry;
 import org.apache.airavata.xbaya.interpretor.NameValue;
-import org.apache.jackrabbit.core.RepositoryCopier;
-import org.apache.jackrabbit.core.config.RepositoryConfig;
+
 import org.junit.Test;
 
 import javax.jcr.ImportUUIDBehavior;
@@ -64,49 +63,49 @@ public class AiravataClientTest {
 
     @Test
     public void testExperimentDeletion() {
-        URI uri1 = null,uri2 = null;
-        try {
-            uri1 = new URI("http://gw56.quarry.iu.teragrid.org:8090/jackrabbit-webapp-2.4.0/rmi");
-            uri2 = new URI("http://gf7.ucs.indiana.edu:8030/jackrabbit/rmi");
-        } catch (URISyntaxException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        HashMap<String, String> map = new HashMap<String, String>();
-        map.put("org.apache.jackrabbit.repository.uri", "http://gf7.ucs.indiana.edu:8030/jackrabbit/rmi");
-        try {
-            JCRRegistry jcrRegistry1 = new JCRRegistry(
-                    uri1,
-                    "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory",
-                    "admin",
-                    "admin", map);
-            Session session = jcrRegistry1.getSession();
-//            session.importXML("/SERVICE_HOST",export, ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING);
-            javax.jcr.Node serviceHost = jcrRegistry1.getOrAddNode(jcrRegistry1.getRootNode(session), "experiments");
-            serviceHost.remove();
-            session.save();
-//            javax.jcr.Node appHost = jcrRegistry1.getOrAddNode(jcrRegistry1.getRootNode(session), "APP_HOST");
-//            javax.jcr.Node workflows = jcrRegistry1.getOrAddNode(jcrRegistry1.getRootNode(session), "WORKFLOWS");
-//
-//            HashMap<String, String> map2 = new HashMap<String, String>();
-//            map2.put("org.apache.jackrabbit.repository.uri", "http://gf7.ucs.indiana.edu:8030/jackrabbit/rmi");
-//            JCRRegistry jcrRegistry2 = new JCRRegistry(
-//                    uri2,
+//        URI uri1 = null,uri2 = null;
+//        try {
+//            uri1 = new URI("http://gw56.quarry.iu.teragrid.org:8090/jackrabbit-webapp-2.4.0/rmi");
+//            uri2 = new URI("http://gf7.ucs.indiana.edu:8030/jackrabbit/rmi");
+//        } catch (URISyntaxException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
+//        HashMap<String, String> map = new HashMap<String, String>();
+//        map.put("org.apache.jackrabbit.repository.uri", "http://gf7.ucs.indiana.edu:8030/jackrabbit/rmi");
+//        try {
+//            JCRRegistry jcrRegistry1 = new JCRRegistry(
+//                    uri1,
 //                    "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory",
 //                    "admin",
-//                    "admin", map2);
-//            Session session2 = jcrRegistry2.getSession();
+//                    "admin", map);
+//            Session session = jcrRegistry1.getSession();
+////            session.importXML("/SERVICE_HOST",export, ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING);
+//            javax.jcr.Node serviceHost = jcrRegistry1.getOrAddNode(jcrRegistry1.getRootNode(session), "experiments");
+//            serviceHost.remove();
+//            session.save();
+////            javax.jcr.Node appHost = jcrRegistry1.getOrAddNode(jcrRegistry1.getRootNode(session), "APP_HOST");
+////            javax.jcr.Node workflows = jcrRegistry1.getOrAddNode(jcrRegistry1.getRootNode(session), "WORKFLOWS");
+////
+////            HashMap<String, String> map2 = new HashMap<String, String>();
+////            map2.put("org.apache.jackrabbit.repository.uri", "http://gf7.ucs.indiana.edu:8030/jackrabbit/rmi");
+////            JCRRegistry jcrRegistry2 = new JCRRegistry(
+////                    uri2,
+////                    "org.apache.jackrabbit.rmi.repository.RmiRepositoryFactory",
+////                    "admin",
+////                    "admin", map2);
+////            Session session2 = jcrRegistry2.getSession();
+////
+////            RepositoryCopier.copy(session.getRepository(),jcrRegistry2.getRepository());
+////            Node service_host = jcrRegistry2.getOrAddNode(jcrRegistry2.getRootNode(session2), "SERVICE_HOST");
+////            service_host = serviceHost;
+////            session2.save();
+////
 //
-//            RepositoryCopier.copy(session.getRepository(),jcrRegistry2.getRepository());
-//            Node service_host = jcrRegistry2.getOrAddNode(jcrRegistry2.getRootNode(session2), "SERVICE_HOST");
-//            service_host = serviceHost;
-//            session2.save();
-//
-
-        } catch (RepositoryException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }  catch (RegistryException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+//        } catch (RepositoryException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }  catch (RegistryException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
     }
 
 
