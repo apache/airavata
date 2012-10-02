@@ -59,10 +59,10 @@ public class    WorkflowInstanceNodeData{
 			for (String paras : pairs) {
 				String[] nameVals = paras.trim().split("=");
                 NameValue pair = null;
-                if(nameVals.length != 0){
+                if(nameVals.length >= 2){
 				 pair = new NameValue(nameVals[0].trim(),
 						nameVals[1].trim());
-                }else{
+                }else if(nameVals.length == 1){
                   pair = new NameValue(nameVals[0].trim(),
 						"");
                 }
@@ -117,4 +117,10 @@ public class    WorkflowInstanceNodeData{
 	public void setOutput(String output) {
 		this.output = output;
 	}
+
+    public static void main(String[] args) {
+        String input="molecule_id=3pom, geom_mol2=http://ccg-mw1.ncsa.uiuc.edu/cgenff/x_baya/cgenff_project/3pom/3pom.mol2, toppar_main_tgz=/u/ac/ccguser/proposed_dir_structure/toppar/cgenff/releases/2b7/main.tgz, toppar_usr_tgz=gsiftp://login-ember.ncsa.teragrid.org, toppar_mol_str=http://ccg-mw1.ncsa.uiuc.edu/cgenff/x_baya/cgenff_project/3pom/toppar/3pom.str, molecule_dir_in_tgz=, GC_UserName=x_baya, GC_ProjectName=x_baya, GC_WorkflowName=3pom__1349212666 | opt_freq_input_gjf=/gpfs2/scratch/users/ccguser/xbaya-workdirs/login-ember.ncsa.teragrid.org_application_Tue_Oct_02_17_18_34_EDT_2012_0933dae4-f7c7-4022-87d9-ab370c49a8bd/3pom/gauss/3pom_opt_freq_mp2.gjf, charmm_miminized_crd=/gpfs2/scratch/users/ccguser/xbaya-workdirs/login-ember.ncsa.teragrid.org_application_Tue_Oct_02_17_18_34_EDT_2012_0933dae4-f7c7-4022-87d9-ab370c49a8bd/3pom/generate/3pom_min.crd, step1_log=/gpfs2/scratch/users/ccguser/xbaya-workdirs/login-ember.ncsa.teragrid.org_application_Tue_Oct_02_17_18_34_EDT_2012_0933dae4-f7c7-4022-87d9-ab370c49a8bd/3pom/generate/generate.out, molecule_dir_out_tgz=/gpfs2/scratch/users/ccguser/xbaya-workdirs/login-ember.ncsa.teragrid.org_application_Tue_Oct_02_17_18_34_EDT_2012_0933dae4-f7c7-4022-87d9-ab370c49a8bd/molecule_dir_out.tgz, gcvars=/gpfs2/scratch/users/ccguser/xbaya-workdirs/login-ember.ncsa.teragrid.org_application_Tue_Oct_02_17_18_34_EDT_2012_0933dae4-f7c7-4022-87d9-ab370c49a8bd/GCVARS";
+
+         getIOParameterData(input);
+    }
 }
