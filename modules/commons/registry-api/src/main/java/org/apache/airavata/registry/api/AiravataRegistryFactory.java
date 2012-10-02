@@ -35,6 +35,7 @@ public class AiravataRegistryFactory {
 
 	private static final String REPOSITORY_PROPERTIES = "repository.properties";
 	private static final String REGISTRY_ACCESSOR_CLASS = "class.registry.accessor";
+	private static AiravataRegistryConnectionDataProvider dataProvider;
 
 	/***
 	 * Return a registry accessor object capable of handling all data in the
@@ -115,6 +116,18 @@ public class AiravataRegistryFactory {
 		}
 		return null;
 
+	}
+	
+	public static void registerRegistryConnectionDataProvider(AiravataRegistryConnectionDataProvider provider){
+		dataProvider=provider;
+	}
+	
+	public static void unregisterRegistryConnectionDataProvider(){
+		dataProvider=null;
+	}
+	
+	public static AiravataRegistryConnectionDataProvider getRegistryConnectionDataProvider(){
+		return dataProvider;
 	}
 
 }

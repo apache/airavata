@@ -20,15 +20,32 @@
  */
 package org.apache.airavata.persistance.registry.jpa.resources;
 
-import org.apache.airavata.persistance.registry.jpa.Resource;
-import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.model.*;
-
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.util.Properties;
+
+import org.apache.airavata.persistance.registry.jpa.JPAConstants;
+import org.apache.airavata.persistance.registry.jpa.Resource;
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor;
+import org.apache.airavata.persistance.registry.jpa.model.Configuration;
+import org.apache.airavata.persistance.registry.jpa.model.Experiment;
+import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
+import org.apache.airavata.persistance.registry.jpa.model.Experiment_Metadata;
+import org.apache.airavata.persistance.registry.jpa.model.Gateway;
+import org.apache.airavata.persistance.registry.jpa.model.Gateway_Worker;
+import org.apache.airavata.persistance.registry.jpa.model.Gram_Data;
+import org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor;
+import org.apache.airavata.persistance.registry.jpa.model.Node_Data;
+import org.apache.airavata.persistance.registry.jpa.model.Project;
+import org.apache.airavata.persistance.registry.jpa.model.Published_Workflow;
+import org.apache.airavata.persistance.registry.jpa.model.Service_Descriptor;
+import org.apache.airavata.persistance.registry.jpa.model.User_Workflow;
+import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
+import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
+import org.apache.airavata.registry.api.AiravataRegistryFactory;
+import org.apache.airavata.registry.api.exception.UnknownRegistryConnectionDataException;
 
 
 public class Utils {
@@ -45,33 +62,63 @@ public class Utils {
     }
 
     public static String getJDBCFullURL(){
-        String jdbcUrl = null;
-        Properties properties = loadProperties();
-        jdbcUrl = properties.getProperty("registry.jdbc.url");
-        String jdbcUser = properties.getProperty("registry.jdbc.user");
-        String jdbcPassword = properties.getProperty("registry.jdbc.password");
+		String jdbcUrl = getJDBCURL();
+		String jdbcUser = getJDBCUser();
+		String jdbcPassword = getJDBCPassword();
         jdbcUrl = jdbcUrl + "?"  + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
         return jdbcUrl;
     }
 
     public static String getJDBCURL(){
-        Properties properties = loadProperties();
-        return properties.getProperty("registry.jdbc.url");
+    	try {
+			if (getProvider()!=null){
+				return getProvider().getValue(JPAConstants.KEY_JDBC_URL).toString();
+			}
+		} catch (UnknownRegistryConnectionDataException e) {
+			e.printStackTrace();
+		}
+    	Properties properties = loadProperties();
+        return properties.getProperty(JPAConstants.KEY_JDBC_URL);
     }
 
+	private static AiravataRegistryConnectionDataProvider getProvider() {
+		return AiravataRegistryFactory.getRegistryConnectionDataProvider();
+	}
+
     public static String getJDBCUser(){
+    	try {
+			if (getProvider()!=null){
+				return getProvider().getValue(JPAConstants.KEY_JDBC_USER).toString();
+			}
+		} catch (UnknownRegistryConnectionDataException e) {
+			e.printStackTrace();
+		}
         Properties properties = loadProperties();
-        return properties.getProperty("registry.jdbc.user");
+        return properties.getProperty(JPAConstants.KEY_JDBC_USER);
     }
 
     public static String getJDBCPassword(){
+    	try {
+			if (getProvider()!=null){
+				return getProvider().getValue(JPAConstants.KEY_JDBC_PASSWORD).toString();
+			}
+		} catch (UnknownRegistryConnectionDataException e) {
+			e.printStackTrace();
+		}
         Properties properties = loadProperties();
-        return properties.getProperty("registry.jdbc.password");
+        return properties.getProperty(JPAConstants.KEY_JDBC_PASSWORD);
     }
 
     public static String getJDBCDriver(){
+    	try {
+			if (getProvider()!=null){
+				return getProvider().getValue(JPAConstants.KEY_JDBC_DRIVER).toString();
+			}
+		} catch (UnknownRegistryConnectionDataException e) {
+			e.printStackTrace();
+		}
         Properties properties = loadProperties();
-        return properties.getProperty("registry.jdbc.driver");
+        return properties.getProperty(JPAConstants.KEY_JDBC_DRIVER);
     }
 
     /**
