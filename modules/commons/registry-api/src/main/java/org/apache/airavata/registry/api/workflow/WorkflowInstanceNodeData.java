@@ -24,7 +24,7 @@ package org.apache.airavata.registry.api.workflow;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorkflowInstanceNodeData{
+public class    WorkflowInstanceNodeData{
 	private WorkflowInstanceNode workflowInstanceNode;
 	private List<WorkflowInstanceNodePortData> inputData;
 	private List<WorkflowInstanceNodePortData> outputData;
@@ -58,8 +58,14 @@ public class WorkflowInstanceNodeData{
 			String[] pairs = data.split(",");
 			for (String paras : pairs) {
 				String[] nameVals = paras.trim().split("=");
-				NameValue pair = new NameValue(nameVals[0].trim(),
+                NameValue pair = null;
+                if(nameVals.length != 0){
+				 pair = new NameValue(nameVals[0].trim(),
 						nameVals[1].trim());
+                }else{
+                  pair = new NameValue(nameVals[0].trim(),
+						"");
+                }
 				parameters.add(pair);
 			}
 		}
