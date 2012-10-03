@@ -43,7 +43,7 @@ public class XBayaConstants {
     /**
      * The URL of the web page of the application
      */
-    public static final URI WEB_URL = URI.create("http://airavata.org");
+    public static final URI WEB_URL = URI.create("http://airavata.apache.org/");
 
     // Default values
 
