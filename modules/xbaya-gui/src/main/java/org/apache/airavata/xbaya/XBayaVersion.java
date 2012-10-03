@@ -26,7 +26,7 @@ public class XBayaVersion {
     /**
      * Version number
      */
-    public final static String VERSION = "0.3-INCUBATING";
+    public final static String VERSION = "Airavata XBaya 0.5";
 
     /**
      * Prints the version
