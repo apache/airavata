@@ -42,4 +42,13 @@ public class JobSubmissionFault extends ProviderException {
     public void setReason(String reason) {
         this.reason = reason;
     }
+
+    public void sendFaultNotification(String message,
+			InvocationContext invocationContext, Exception e,
+			String... additionalExceptiondata) {
+		if (additionalExceptiondata==null || additionalExceptiondata.length==0){
+        	additionalExceptiondata=new String[]{message,e.getLocalizedMessage()};
+        }
+		invocationContext.getExecutionContext().getNotifier().executionFail(invocationContext,e,additionalExceptiondata);
+	}
 }

@@ -228,6 +228,7 @@ public class GramProvider extends AbstractProvider {
          } catch (GramException e) {
             JobSubmissionFault error = new JobSubmissionFault(this, e, host.getHostAddress(), gateKeeper, job.getRSL(), invocationContext);
             int errCode = listener.getError();
+            error.sendFaultNotification(error.getMessage(),invocationContext,error,host.getHostAddress()+ "," + job.getRSL());
 		    throw errorReason(errCode, error);
         } catch (GSSException e) {
             throw new ProviderException(e.getMessage(), e, invocationContext);
