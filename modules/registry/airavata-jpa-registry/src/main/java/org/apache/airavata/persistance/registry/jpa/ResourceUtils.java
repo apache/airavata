@@ -39,22 +39,21 @@ public class ResourceUtils {
     private static Lock lock = new ReentrantLock();
 
     public static EntityManager getEntityManager(){
-        Map<String, String> properties = new HashMap<String, String>();
-        properties.put("openjpa.ConnectionURL", Utils.getJDBCURL());
-        properties.put("openjpa.ConnectionDriverName", Utils.getJDBCDriver());
-        properties.put("openjpa.ConnectionUserName",Utils.getJDBCUser());
-        properties.put("openjpa.ConnectionPassword",Utils.getJDBCPassword());
-        properties.put("openjpa.DynamicEnhancementAgent","true");
-        properties.put("openjpa.RuntimeUnenhancedClasses","supported");
-        properties.put("openjpa.Log","SQL=ERROR");
-        properties.put("openjpa.ReadLockLevel", "none");
-        properties.put("openjpa.WriteLockLevel", "none");
-        properties.put("openjpa.LockTimeout", "30000");
-        properties.put("openjpa.LockManager", "none");
-//        properties.put("openjpa.jdbc.Schema", "AIRAVATA");
-        properties.put("openjpa.ConnectionFactoryProperties","PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000");
-
         if (factory == null) {
+            Map<String, String> properties = new HashMap<String, String>();
+            properties.put("openjpa.ConnectionURL", Utils.getJDBCURL());
+            properties.put("openjpa.ConnectionDriverName", Utils.getJDBCDriver());
+            properties.put("openjpa.ConnectionUserName",Utils.getJDBCUser());
+            properties.put("openjpa.ConnectionPassword",Utils.getJDBCPassword());
+            properties.put("openjpa.DynamicEnhancementAgent","true");
+            properties.put("openjpa.RuntimeUnenhancedClasses","supported");
+            properties.put("openjpa.Log","SQL=ERROR");
+            properties.put("openjpa.ReadLockLevel", "none");
+            properties.put("openjpa.WriteLockLevel", "none");
+            properties.put("openjpa.LockTimeout", "30000");
+            properties.put("openjpa.LockManager", "none");
+//            properties.put("openjpa.jdbc.Schema", "AIRAVATA");
+            properties.put("openjpa.ConnectionFactoryProperties","PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }
 
