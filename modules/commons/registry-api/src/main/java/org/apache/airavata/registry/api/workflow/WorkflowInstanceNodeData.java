@@ -61,7 +61,7 @@ public class    WorkflowInstanceNodeData{
                 NameValue pair = null;
                 if(nameVals.length >= 2){
 				 pair = new NameValue(nameVals[0].trim(),
-						nameVals[1].trim());
+						nameVals.length>1? nameVals[1].trim():"");
                 }else if(nameVals.length == 1){
                   pair = new NameValue(nameVals[0].trim(),
 						"");
