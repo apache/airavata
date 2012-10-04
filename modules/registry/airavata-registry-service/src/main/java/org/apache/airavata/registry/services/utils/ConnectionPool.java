@@ -379,4 +379,22 @@ public class ConnectionPool {
             }
         }
     }
+
+    public void shutdown(){
+        for (Connection c : availableConnections) {
+            try {
+                c.close();
+            } catch (SQLException e) {
+
+            }
+        }
+
+        for (Connection c : busyConnections) {
+            try {
+                c.close();
+            } catch (SQLException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+    }
 }
