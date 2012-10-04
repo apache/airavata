@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor 
+	license agreements. See the NOTICE file distributed with this work for additional 
+	information regarding copyright ownership. The ASF licenses this file to 
+	you under the Apache License, Version 2.0 (theÏ "License"); you may not use 
+	this file except in compliance with the License. You may obtain a copy of 
+	the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+	by applicable law or agreed to in writing, software distributed under the 
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+	OF ANY ~ KIND, either express or implied. See the License for the specific 
+	language governing permissions and limitations under the License. -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.apache.airavata</groupId>
+	<artifactId>airavata-xbaya-gui</artifactId>
+	<version>0.5-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>Airavata XBaya</name>
+	<url>http://airavata.apache.org/</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<axis2.version>1.5.1</axis2.version>
+		<derby.version>10.9.1.0</derby.version>
+		<logback.version>0.9.20</logback.version>
+		<org.slf4j.version>1.6.1</org.slf4j.version>
+		<log4j.version>1.2.16</log4j.version>
+		<axiom.version>1.2.8</axiom.version>
+		<surefire.version>2.12</surefire.version>
+		<jcr.version>2.0</jcr.version>
+		<xmlbeans.version>2.5.0</xmlbeans.version>
+		<xpp3.version>1.1.3_7</xpp3.version>
+		<skipTests>false</skipTests>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>standalone</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<build.scope>provided</build.scope>
+				<build.jsf>compile</build.jsf>
+
+				<!-- JNLP Properties -->
+				<!-- Deployment Information -->
+				<jnlpURLPrefix>http://localhost/~smarru/</jnlpURLPrefix>
+				<jnlpFileName>xbaya.jnlp</jnlpFileName>
+			</properties>
+		</profile>
+	</profiles>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>restore-persistence</id>
+						<phase>prepare-package</phase>
+						<configuration>
+							<tasks>
+								<copy file="${project.build.outputDirectory}/services.xml"
+									tofile="${project.build.outputDirectory}/META-INF/services.xml" />
+								<copy file="src/main/resources/WorkflowInterpretor.wsdl"
+									tofile="${project.build.outputDirectory}/META-INF/service.wsdl" />
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${surefire.version}</version>
+				<configuration>
+					<includes>
+						<include>**/*Suite.java</include>
+					</includes>
+					<excludes>
+						<exclude>**/*Test.java</exclude>
+						<exclude>**/*Tests.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/jnlp/lib</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+							<excludeTransitive>false</excludeTransitive>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>webstart-maven-plugin</artifactId>
+				<version>1.0-beta-3</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jnlp</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<resourcesDirectory>src/main/resources/</resourcesDirectory>
+					<jnlp>
+						<inputTemplate>src/main/resources/xbaya-jnlp-template.vm</inputTemplate>
+						<outputFile>${jnlpFileName}</outputFile>
+						<mainClass>org.apache.airavata.xbaya.XBaya</mainClass>
+					</jnlp>
+					<libPath>lib</libPath>
+					<sign>
+						<keystore>${basedir}/target/keystore</keystore>
+						<keypass>xbaya-secret</keypass>
+						<storepass>xbaya-secret</storepass>
+						<alias>xbaya</alias>
+						<validity>365</validity>
+
+						<dnameCn>Airavata</dnameCn>
+						<dnameOu>Apache</dnameOu>
+						<dnameO>Apache Software Foundation</dnameO>
+
+						<keystoreConfig>
+							<delete>true</delete>
+							<gen>true</gen>
+						</keystoreConfig>
+					</sign>
+					<verifyjar>true</verifyjar>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>xpp3</groupId>
+			<artifactId>xpp3_xpath</artifactId>
+			<version>1.1.4c</version>
+		</dependency>
+		<dependency>
+			<groupId>xpp3</groupId>
+			<artifactId>xpp3</artifactId>
+			<version>1.1.4c</version>
+		</dependency>
+		<dependency>
+			<groupId>xpp5</groupId>
+			<artifactId>xpp5</artifactId>
+			<version>1.2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>xpp5</groupId>
+			<artifactId>xpp5_xpath</artifactId>
+			<version>1.2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>xsul5-ogce</groupId>
+			<artifactId>xsul5-2007-02-27</artifactId>
+			<version>1</version>
+		</dependency>
+		<dependency>
+			<groupId>gpel</groupId>
+			<artifactId>gpel_client</artifactId>
+			<version>1.0.7-BETA</version>
+		</dependency>
+		<dependency>
+			<groupId>atomixmiser</groupId>
+			<artifactId>atomixmiser</artifactId>
+			<version>0.9.4</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+		</dependency>
+		<dependency>
+			<groupId>lead-security</groupId>
+			<artifactId>cryptix32</artifactId>
+			<version>versionless</version>
+		</dependency>
+		<dependency>
+			<groupId>lead-security</groupId>
+			<artifactId>cryptix-asn1</artifactId>
+			<version>versionless</version>
+		</dependency>
+		<dependency>
+			<groupId>lead-security</groupId>
+			<artifactId>puretls</artifactId>
+			<version>0.9b4-1</version>
+		</dependency>
+		<dependency>
+			<groupId>xutil</groupId>
+			<artifactId>xutil</artifactId>
+			<version>0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>jython</groupId>
+			<artifactId>jython</artifactId>
+			<version>2.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>cog-jglobus</groupId>
+			<artifactId>cog-jglobus</artifactId>
+			<version>1.8.0_1</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.7</version>
+		</dependency>
+		<dependency>
+			<groupId>xsul</groupId>
+			<artifactId>xsul</artifactId>
+			<version>2.10.5_d</version>
+		</dependency>
+		<dependency>
+			<groupId>xmlbeans</groupId>
+			<artifactId>xbean</artifactId>
+			<version>${xmlbeans.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>xbaya</groupId>
+			<artifactId>pegasuswebservice</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-adb</artifactId>
+			<version>${axis2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-kernel</artifactId>
+			<version>${axis2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ws.commons.axiom</groupId>
+			<artifactId>axiom-api</artifactId>
+			<version>1.2.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ws.commons.axiom</groupId>
+			<artifactId>axiom-impl</artifactId>
+			<version>1.2.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ws.commons.axiom</groupId>
+			<artifactId>axiom-dom</artifactId>
+			<version>1.2.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ws.commons.schema</groupId>
+			<artifactId>XmlSchema</artifactId>
+			<version>1.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.neethi</groupId>
+			<artifactId>neethi</artifactId>
+			<version>2.0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-transport-local</artifactId>
+			<version>${axis2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-transport-http</artifactId>
+			<version>${axis2.version}</version>
+		</dependency>
+
+		<!-- AMAZON STUFFS -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.3.20</version>
+		</dependency>
+		<dependency>
+			<groupId>amazon</groupId>
+			<artifactId>MapReduce.Service.Client</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.java.dev.jets3t</groupId>
+			<artifactId>jets3t</artifactId>
+			<version>0.8.0</version>
+		</dependency>
+
+		<!-- AIRAVATA modules -->
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>airavata-workflow-model-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>airavata-message-broker</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>airavata-registry-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>airavata-common-utils</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>airavata-workflow-tracking</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- JCR Support -->
+		<!-- TODO need clean up -->
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>airavata-gfac-schema-utils</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>airavata-gfac-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${org.slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${org.slf4j.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${org.slf4j.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.jcr</groupId>
+			<artifactId>jcr</artifactId>
+			<version>${jcr.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>globus</groupId>
+			<artifactId>transfer-api-client</artifactId>
+			<version>0.10</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>airavata-workflow-execution-context</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>airavata-common-registry-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
+			<artifactId>airavata-jpa-registry</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+	    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central</name>
+            <url>http://repo1.maven.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <name>ogce.m2.all</name>
+            <id>ogce.m2.all</id>
+            <url>http://community.ucs.indiana.edu:9090/archiva/repository/ogce.m2.all</url>
+            <snapshots>
+                <!--updatePolicy>daily</updatePolicy -->
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>m2-snapshot-repository</id>
+            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+            <releases>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+</project>
