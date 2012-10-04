@@ -159,8 +159,8 @@ public class AiravataClient implements AiravataAPI {
 				.getProperty(DEFAULT_BROKER_URL)));
 		configuration.put(WORKFLOWSERVICEURL,validateAxisService(properties
 				.getProperty(WORKFLOWSERVICEURL)));
-		configuration.put(JCR,validateURL(properties
-				.getProperty(DEFAULT_JCR_URL)));
+		configuration.put(JCR,properties
+				.getProperty(DEFAULT_JCR_URL));
 		configuration.put(JCR_USERNAME,properties.getProperty(JCR_USERNAME));
 
 		configuration.put(JCR_PASSWORD,properties.getProperty(JCR_PASSWORD));
@@ -179,7 +179,7 @@ public class AiravataClient implements AiravataAPI {
 		config.put(AiravataClient.JCR,registryUrl.toString());
 		config.put(AiravataClient.JCR_USERNAME,username);
 		config.put(AiravataClient.JCR_PASSWORD,password);
-		AiravataRegistry2 registryObject = getRegistryObject(registryUrl, username, password);
+		AiravataRegistry2 registryObject = getRegistryObject(username, password);
 		if (registryObject!=null){
 			URI uri = registryObject.getEventingServiceURI();
 			config.put(AiravataClient.BROKER,uri==null? "http://localhost:8080/axis2/services/EventingService":uri.toString());
@@ -485,25 +485,17 @@ public class AiravataClient implements AiravataAPI {
 
 	public AiravataRegistry2 getRegistry() throws RegistryException {
 		if (registry == null) {
-			try {
-				URL jcrURL = getClientConfiguration().getJcrURL();
-				URI uri = jcrURL.toURI();
 				String jcrUsername = getClientConfiguration().getJcrUsername();
 				String jcrPassword = getClientConfiguration().getJcrPassword();
-				registry = getRegistryObject(uri, jcrUsername, jcrPassword);
-			} catch (URISyntaxException e) {
-				throw new RegistryException("Error in uri..", e);
-			}
+				registry = getRegistryObject(jcrUsername, jcrPassword);
         }
 		return registry;
 	}
 
-	private static AiravataRegistry2 getRegistryObject(URI uri,
+	private static AiravataRegistry2 getRegistryObject(
                                                       String jcrUsername,
                                                       String jcrPassword)
             throws RegistryException {
-        HashMap<String, String> map = new HashMap<String, String>();
-        map.put("org.apache.jackrabbit.repository.uri", uri.toString());
         AiravataRegistry2 registry = new JCRComponentRegistry(jcrUsername,jcrPassword).getRegistry();
         return registry;
 	}

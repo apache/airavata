@@ -94,6 +94,7 @@ public class Axis2Protocol implements DeliveryProtocol {
         } finally {
             if (client != null) {
                 try {
+                    client.cleanup();
                     client.cleanupTransport();
                 } catch (AxisFault ex) {
                     logger.error(ex.getMessage(), ex);
