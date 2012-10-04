@@ -81,7 +81,7 @@ public class ServiceDescriptorResource extends AbstractResource {
             applicationDescriptorResource.setHostDescName(getServiceDescName());
             return applicationDescriptorResource;
         }
-        return null;
+        throw new IllegalArgumentException("Unsupported resource type for service descriptor resource.");
     }
 
     public void remove(ResourceType type, Object name) {

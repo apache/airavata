@@ -72,7 +72,7 @@ public class ProjectResource extends AbstractResource {
             experimentResource.setWorker(getWorker());
             return experimentResource;
         } else {
-            return null;
+            throw new IllegalArgumentException("Unsupported resource type for project resource.");
         }
     }
 
@@ -103,9 +103,9 @@ public class ProjectResource extends AbstractResource {
      * @return child resource
      */
     public Resource get(ResourceType type, Object name) {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
         if (type == ResourceType.EXPERIMENT) {
+            EntityManager em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
         	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
         	generator.setParameter(ExperimentConstants.PROJECT_NAME, name);
         	generator.setParameter(ExperimentConstants.USERNAME, getWorker().getUser());
@@ -117,8 +117,10 @@ public class ProjectResource extends AbstractResource {
             em.getTransaction().commit();
             em.close();
             return experimentResource;
+        }else{
+            throw new IllegalArgumentException("Unsupported resource type for project resource.");
         }
-        return null;
+
     }
 
     /**
@@ -154,9 +156,10 @@ public class ProjectResource extends AbstractResource {
      */
     public List<Resource> get(ResourceType type) {
         List<Resource> resourceList = new ArrayList<Resource>();
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
+
         if (type == ResourceType.EXPERIMENT) {
+            EntityManager em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
         	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
         	generator.setParameter(ExperimentConstants.PROJECT_NAME, name);
         	Query q = generator.selectQuery(em);
@@ -169,9 +172,9 @@ public class ProjectResource extends AbstractResource {
                     resourceList.add(experimentResource);
                 }
             }
+            em.getTransaction().commit();
+            em.close();
         }
-        em.getTransaction().commit();
-        em.close();
         return resourceList;
     }
 

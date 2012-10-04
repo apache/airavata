@@ -21,6 +21,7 @@
 package org.apache.airavata.persistance.registry.jpa.resources;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Properties;
 
@@ -71,19 +72,59 @@ public class Utils {
 
     public static String getJDBCURL(){
     	try {
-			if (getProvider()!=null){
-				return getProvider().getValue(JPAConstants.KEY_JDBC_URL).toString();
-			}
+            return getProvider().getValue(JPAConstants.KEY_JDBC_URL).toString();
 		} catch (UnknownRegistryConnectionDataException e) {
 			e.printStackTrace();
+            return null;
 		}
-    	Properties properties = loadProperties();
-        return properties.getProperty(JPAConstants.KEY_JDBC_URL);
+    }
+
+    public static String getHost(){
+        try{
+            String jdbcURL = getJDBCURL();
+            String cleanURI = jdbcURL.substring(5);
+            URI uri = URI.create(cleanURI);
+            return uri.getHost();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static int getPort(){
+        try{
+            String jdbcURL = getJDBCURL();
+            String cleanURI = jdbcURL.substring(5);
+            URI uri = URI.create(cleanURI);
+            return uri.getPort();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    public static String getDBType(){
+        try{
+            String jdbcURL = getJDBCURL();
+            String cleanURI = jdbcURL.substring(5);
+            URI uri = URI.create(cleanURI);
+            return uri.getScheme();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 	private static AiravataRegistryConnectionDataProvider getProvider() {
 		return AiravataRegistryFactory.getRegistryConnectionDataProvider();
 	}
+
+    static {
+        if(AiravataRegistryFactory.getRegistryConnectionDataProvider() == null){
+            AiravataRegistryFactory.registerRegistryConnectionDataProvider(new AiravataRegistryConnectionDataProviderImpl());
+        }
+
+    }
 
     public static String getJDBCUser(){
     	try {

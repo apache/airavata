@@ -173,4 +173,8 @@ public class JdbcStorage {
         if (connectionPool != null)
             connectionPool.dispose();
     }
+
+    public void shutdown() {
+        connectionPool.shutdown();
+    }
 }
