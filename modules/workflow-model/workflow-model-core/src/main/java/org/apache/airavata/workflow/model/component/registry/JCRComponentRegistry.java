@@ -72,10 +72,14 @@ public class JCRComponentRegistry extends ComponentRegistry {
 		        }
 	        }
         }else{
-        	if (username==null){
-				username=provider.getValue(RegistryConstants.KEY_DEFAULT_REGISTRY_USER).toString();
-            }
-        	gatewayName = provider.getValue(RegistryConstants.KEY_DEFAULT_GATEWAY_ID).toString();
+        	try {
+				if (username==null){
+					username=provider.getValue(RegistryConstants.KEY_DEFAULT_REGISTRY_USER).toString();
+				}
+				gatewayName = provider.getValue(RegistryConstants.KEY_DEFAULT_GATEWAY_ID).toString();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
         }
         if (username==null){
         	username="admin";	
