@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -33,9 +32,11 @@ import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
+import org.apache.airavata.registry.api.util.RegistryConstants;
 import org.apache.airavata.registry.api.util.WebServiceUtil;
 import org.apache.airavata.workflow.model.component.ComponentReference;
 import org.slf4j.Logger;
@@ -46,32 +47,44 @@ public class JCRComponentRegistry extends ComponentRegistry {
     private static final Logger log = LoggerFactory.getLogger(JCRComponentRegistry.class);
     private static final String NAME = "Application Services";
     public static final String REPOSITORY_PROPERTIES = "repository.properties";
-    public static final String GATEWAY_ID = "gateway.id";
-    public static final String REGISTRY_USER = "registry.user";
 
     private AiravataRegistry2 registry;
 
     public JCRComponentRegistry(String username, String password) throws RegistryException {
-        HashMap<String, String> map = new HashMap<String, String>();
-        URL configURL = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
-        Properties properties = new Properties();
-        if(configURL != null){
-        try {
-            properties.load(configURL.openStream());
-            if(properties.get(REGISTRY_USER) != null){
-                username = (String)properties.get(REGISTRY_USER);
+        String gatewayName=null;
+        AiravataRegistryConnectionDataProvider provider = AiravataRegistryFactory.getRegistryConnectionDataProvider();
+		if (provider==null){
+	        URL configURL = this.getClass().getClassLoader().getResource(REPOSITORY_PROPERTIES);
+	        if(configURL != null){
+		        try {
+			        Properties properties = new Properties();
+		            properties.load(configURL.openStream());
+		            if (username==null){
+			            if(properties.get(RegistryConstants.KEY_DEFAULT_REGISTRY_USER) != null){
+			                username = (String)properties.get(RegistryConstants.KEY_DEFAULT_REGISTRY_USER);
+			            }
+		            }
+		            gatewayName = (String)properties.get(RegistryConstants.KEY_DEFAULT_GATEWAY_ID);
+		        } catch (MalformedURLException e) {
+		            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		        } catch (IOException e) {
+		            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		        }
+	        }
+        }else{
+        	if (username==null){
+				username=provider.getValue(RegistryConstants.KEY_DEFAULT_REGISTRY_USER).toString();
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        	gatewayName = provider.getValue(RegistryConstants.KEY_DEFAULT_GATEWAY_ID).toString();
         }
-        }else {
-            // provide a way to get gatewayid from xbaya gui
-            properties.setProperty(GATEWAY_ID, "default");
+        if (username==null){
+        	username="admin";	
+        }
+        if (gatewayName==null){
+        	gatewayName="default";	
         }
         try {
-            this.registry = AiravataRegistryFactory.getRegistry(new Gateway((String)properties.get(GATEWAY_ID)),
+			this.registry = AiravataRegistryFactory.getRegistry(new Gateway(gatewayName),
                     new AiravataUser(username));
         } catch (AiravataConfigurationException e) {
             log.error("Error initializing AiravataRegistry2");
