@@ -127,7 +127,6 @@ public class ExperimentDataRetriever {
     }
 
     public List<String> getExperimentIdByUser(String user){
-        System.out.println("#######User ####### " + user);
         List<String> result=new ArrayList<String>();
         String connectionURL =  Utils.getJDBCURL();
         Connection connection = null;
@@ -143,7 +142,7 @@ public class ExperimentDataRetriever {
             String queryString = "SELECT ed.experiment_ID FROM Experiment_Data ed " +
                     "LEFT JOIN Experiment e " +
                     "ON ed.experiment_ID = e.experiment_ID " +
-                    "WHERE ed.username ='" + user + "'";
+                    "WHERE ed.username REGEXP '^" + user + "$'";
             rs = statement.executeQuery(queryString);
             if(rs != null){
                 while (rs.next()) {
@@ -365,7 +364,7 @@ public class ExperimentDataRetriever {
                     "ON e.experiment_ID = ed.experiment_ID " +
                     "LEFT JOIN Experiment_Metadata em " +
                     "ON ed.experiment_ID = em.experiment_ID  " +
-                    "WHERE ed.username ='" + user + "'";
+                    "WHERE ed.username REGEXP '^" + user + "$'";
 
             rs = statement.executeQuery(queryString);
             if (rs != null){
