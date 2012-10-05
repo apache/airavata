@@ -225,7 +225,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
 
         WseMsgBrokerClient wseClient = new WseMsgBrokerClient();
         MsgboxHandler msgboxHandler = new MsgboxHandler();
-        EndpointReference msgBoxAddr = msgboxHandler.createPullMsgBox(this.messageBoxUrl, 1000l);
+        EndpointReference msgBoxAddr = msgboxHandler.createPullMsgBox(this.messageBoxUrl, 12000l);
 
         String messageBoxAddress = msgBoxAddr.getAddress();
         if (logger.isDebugEnabled())
@@ -250,7 +250,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
 
         WseMsgBrokerClient wseClient = new WseMsgBrokerClient();
         MsgboxHandler msgboxHandler = new MsgboxHandler();
-        EndpointReference msgBoxAddr = msgboxHandler.createPullMsgBox(this.messageBoxUrl, 1000l);
+        EndpointReference msgBoxAddr = msgboxHandler.createPullMsgBox(this.messageBoxUrl, 12000l);
         if (logger.isDebugEnabled())
             logger.info("\n\nCreated Messagebox at address :" + msgBoxAddr.getAddress());
 

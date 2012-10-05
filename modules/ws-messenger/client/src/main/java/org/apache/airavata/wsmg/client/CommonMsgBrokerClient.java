@@ -38,9 +38,10 @@ abstract class CommonMsgBrokerClient implements MessageBrokerClient {
 
     private final static Logger logger = LoggerFactory.getLogger(CommonMsgBrokerClient.class);
     protected ConsumerServer xs;
+    private long socketTimeout = 200000L;
+
     protected MsgboxHandler msgboxHandler = new MsgboxHandler();
 
-    private long socketTimeout = 200000L;
 
     public CommonMsgBrokerClient(long timeout) {
         socketTimeout = timeout;
@@ -126,6 +127,7 @@ abstract class CommonMsgBrokerClient implements MessageBrokerClient {
         ret = msgboxHandler.createPullMsgBox(msgBoxServerLoc);
         return ret;
     }
+
 
     public MessagePuller startPullingEventsFromMsgBox(EndpointReference msgBoxEpr, NotificationHandler handler,
             long interval, long timeout) throws MsgBrokerClientException {

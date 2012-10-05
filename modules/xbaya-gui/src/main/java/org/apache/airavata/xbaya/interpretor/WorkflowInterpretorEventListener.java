@@ -103,7 +103,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
         }
         try {
             if (this.pullMode) {
-                EndpointReference messageBoxEPR = this.wseClient.createPullMsgBox(this.messageBoxURL.toString());
+                EndpointReference messageBoxEPR = this.wseClient.createPullMsgBox(this.messageBoxURL.toString(),20000L);
                 this.subscriptionID = this.wseClient.subscribe(messageBoxEPR.getAddress(), this.topic, null);
                 this.messagePuller = this.wseClient.startPullingEventsFromMsgBox(messageBoxEPR, this, 1000L, 20000L);
             } else {
