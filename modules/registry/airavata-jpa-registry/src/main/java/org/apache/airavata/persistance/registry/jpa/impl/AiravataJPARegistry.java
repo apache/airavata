@@ -22,7 +22,7 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -36,7 +36,21 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.persistance.registry.jpa.JPAResourceAccessor;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.resources.*;
+import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentDataResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentMetadataResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
+import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.GramDataResource;
+import org.apache.airavata.persistance.registry.jpa.resources.HostDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.NodeDataResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
+import org.apache.airavata.persistance.registry.jpa.resources.PublishWorkflowResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResource;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkflowDataResource;
 import org.apache.airavata.registry.api.AiravataExperiment;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataUser;
@@ -58,6 +72,7 @@ import org.apache.airavata.registry.api.exception.worker.WorkflowInstanceNodeAlr
 import org.apache.airavata.registry.api.exception.worker.WorkflowInstanceNodeDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectDoesNotExistsException;
+import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
@@ -840,8 +855,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isExperimentExists(experimentId)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
-        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
-        return experimentDataRetriever.getExperimentName(experimentId, jpa.getWorker().getUser());
+		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+		return experiment.getData().getExpName();
 	}
 
 
@@ -1120,17 +1135,33 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isExperimentExists(experimentId)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
-        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
-        ExperimentData experimentData =  experimentDataRetriever.getExperiment(experimentId);
-        return experimentDataRetriever.getExperiment(experimentId);
+		ExperimentResource experiment = jpa.getWorker().getExperiment(experimentId);
+		ExperimentDataResource data = experiment.getData();
+		ExperimentData e = new ExperimentDataImpl();
+		e.setExperimentId(experiment.getExpID());
+		e.setExperimentName(data.getExpName());
+		e.setUser(data.getUserName());
+		e.setMetadata(getExperimentMetadata(experimentId));
+		e.setTopic(experiment.getExpID());
+		List<WorkflowInstance> experimentWorkflowInstances = getExperimentWorkflowInstances(experimentId);
+		for (WorkflowInstance workflowInstance : experimentWorkflowInstances) {
+			e.getWorkflowInstanceData().add(getWorkflowInstanceData(workflowInstance.getWorkflowInstanceId()));
+		}
+		return e;
 	}
 
 
 	@Override
 	public List<String> getExperimentIdByUser(String user)
 			throws RegistryException {
-        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
-        return experimentDataRetriever.getExperimentIdByUser(jpa.getWorker().getUser());
+		List<String> result=new ArrayList<String>();
+		List<ExperimentResource> experiments = jpa.getWorker().getExperiments();
+		for (ExperimentResource resource : experiments) {
+			if (user==null || resource.getData().getUserName().equals(user)){
+				result.add(resource.getExpID());
+			}
+		}
+		return result;
 	}
 
 
@@ -1254,7 +1285,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		}
 		WorkflowDataResource resource = jpa.getWorker().getWorkflowInstance(workflowInstanceId);
 		WorkflowInstance workflowInstance = new WorkflowInstance(resource.getExperimentID(), resource.getWorkflowInstanceID());
-        workflowInstance.setTemplateName(resource.getTemplateName());
 		WorkflowInstanceData workflowInstanceData = new WorkflowInstanceData(null, workflowInstance, new WorkflowInstanceStatus(workflowInstance, resource.getStatus()==null? null:ExecutionStatus.valueOf(resource.getStatus()),resource.getLastUpdatedTime()), null);
 		List<NodeDataResource> nodeData = resource.getNodeData();
 		for (NodeDataResource nodeDataResource : nodeData) {
