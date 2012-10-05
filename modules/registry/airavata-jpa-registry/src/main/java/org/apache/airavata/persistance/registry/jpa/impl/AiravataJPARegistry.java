@@ -46,6 +46,7 @@ import org.apache.airavata.registry.api.WorkspaceProject;
 import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
+import org.apache.airavata.registry.api.exception.gateway.InsufficientDataException;
 import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;
 import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowDoesNotExistsException;
@@ -399,6 +400,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws RegistryException {
+    	if (serviceName==null || hostName==null){
+    		throw new InsufficientDataException("Service name or Host name cannot be null");
+    	}
     	GatewayResource gateway = jpa.getGateway();
         WorkerResource workerResource = jpa.getWorker();
         String applicationName = descriptor.getType().getApplicationName().getStringValue();
@@ -419,6 +423,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDeploymentDescription descriptor) throws RegistryException {
+    	if (serviceName==null || hostName==null){
+    		throw new InsufficientDataException("Service name or Host name cannot be null");
+    	}
     	GatewayResource gateway = jpa.getGateway();
     	String applicationName = descriptor.getType().getApplicationName().getStringValue();
         applicationName = createAppName(serviceName, hostName, applicationName);
@@ -440,6 +447,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
     
     public ApplicationDeploymentDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName)throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException{
+    	if (serviceName==null || hostname==null){
+    		throw new InsufficientDataException("Service name or Host name cannot be null");
+    	}
     	GatewayResource gateway = jpa.getGateway();
 		if (!isApplicationDescriptorExists(serviceName,hostname,applicationName)){
         	throw new DescriptorDoesNotExistsException(createAppName(serviceName, hostname, applicationName));
