@@ -398,5 +398,49 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 		
 	}
 
+	@Override
+	public ExperimentData getExperimentMetaInformation(String experimentId)
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistry().getExperimentMetaInformation(experimentId);
+		} catch (RegistryException e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public List<ExperimentData> getAllExperimentMetaInformation(String user)
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistry().getAllExperimentMetaInformation(user);
+		} catch (RegistryException e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public List<ExperimentData> getExperimentDataList()
+			throws AiravataAPIInvocationException {
+		return getWorkflowExperimentDataList();
+	}
+
+	@Override
+	public List<ExperimentData> getExperimentDataList(String user)
+			throws AiravataAPIInvocationException {
+		return getWorkflowExperimentDataList(user);
+	}
+
+	@Override
+	public List<ExperimentData> getExperimentData(String user, int pageSize,
+			int pageNo) throws AiravataAPIInvocationException {
+		return getWorkflowExperimentData(user, pageSize, pageNo);
+	}
+
+	@Override
+	public ExperimentData getExperimentData(String experimentId)
+			throws AiravataAPIInvocationException {
+		return getWorkflowExperimentData(experimentId);
+	}
+
 	
 }

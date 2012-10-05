@@ -21,6 +21,7 @@
 
 package org.apache.airavata.persistance.registry.jpa.resources;
 
+import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
@@ -91,7 +92,11 @@ public class ExperimentDataRetriever {
                     workflowInstanceNodeData.setOutput(rs.getString(12));
 
                     workflowInstanceData.getNodeDataList().add(workflowInstanceNodeData);
-                    experimentData.getWorkflowInstanceData().add(workflowInstanceData);
+                    try {
+						experimentData.getWorkflowInstanceData().add(workflowInstanceData);
+					} catch (ExperimentLazyLoadedException e) {
+						e.printStackTrace();
+					}
                 }
             }
             if(rs != null){
@@ -248,7 +253,11 @@ public class ExperimentDataRetriever {
                 workflowInstanceNodeData.setOutput(rs.getString(12));
 
                 workflowInstanceData.getNodeDataList().add(workflowInstanceNodeData);
-                experimentData.getWorkflowInstanceData().add(workflowInstanceData);
+                try {
+					experimentData.getWorkflowInstanceData().add(workflowInstanceData);
+				} catch (ExperimentLazyLoadedException e) {
+					e.printStackTrace();
+				}
                 experimentDataList.add(experimentData);
             }
             rs.close();

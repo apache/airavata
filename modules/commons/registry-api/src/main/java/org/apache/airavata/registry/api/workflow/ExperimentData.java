@@ -23,6 +23,8 @@ package org.apache.airavata.registry.api.workflow;
 
 import java.util.List;
 
+import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
+
 public interface ExperimentData {
 	public String getExperimentId();
 	public String getTopic();
@@ -36,7 +38,7 @@ public interface ExperimentData {
 //	public WorkflowIOData getOutput(String nodeId);
 	public String getMetadata();
 	public String getExperimentName();
-	public List<WorkflowInstanceData> getWorkflowInstanceData();
+	public List<WorkflowInstanceData> getWorkflowInstanceData() throws ExperimentLazyLoadedException;
 	
 	public void setExperimentId(String experimentId);
 	public void setTopic(String topic);

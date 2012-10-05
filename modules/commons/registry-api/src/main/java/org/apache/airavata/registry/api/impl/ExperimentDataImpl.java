@@ -24,6 +24,7 @@ package org.apache.airavata.registry.api.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedException;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.WorkflowIOData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
@@ -33,14 +34,13 @@ import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 public class ExperimentDataImpl implements ExperimentData{
 	private WorkflowInstanceStatus executionStatus;
 	private String user;
-	private List<WorkflowNodeIOData> serviceInput;
-	private List<WorkflowNodeIOData> serviceOutput;
 	private List<WorkflowIOData> output;
 	private String experimentId;
 	private String metadata;
 	private String workflowInstanceName;
 	private List<WorkflowInstanceData> workflowInstanceDataList=new ArrayList<WorkflowInstanceData>();
-			
+	private boolean lazyLoaded=false;
+	
 	public String getMetadata() {
 		return metadata;
 	}
@@ -71,24 +71,6 @@ public class ExperimentDataImpl implements ExperimentData{
 	public void setUser(String user) {
 		this.user = user;
 	}
-	public List<WorkflowNodeIOData> getServiceInput() {
-		if (serviceInput==null){
-			serviceInput=new ArrayList<WorkflowNodeIOData>();
-		}
-		return serviceInput;
-	}
-	public void setServiceInput(List<WorkflowNodeIOData> serviceInput) {
-		this.serviceInput = serviceInput;
-	}
-	public List<WorkflowNodeIOData> getServiceOutput() {
-		if (serviceOutput==null){
-			serviceOutput=new ArrayList<WorkflowNodeIOData>();
-		}
-		return serviceOutput;
-	}
-	public void setServiceOutput(List<WorkflowNodeIOData> serviceOutput) {
-		this.serviceOutput = serviceOutput;
-	}
 	public List<WorkflowIOData> getOutput() {
 		if (output==null){
 			output=new ArrayList<WorkflowIOData>();
@@ -98,22 +80,8 @@ public class ExperimentDataImpl implements ExperimentData{
 	public void setOutput(List<WorkflowIOData> output) {
 		this.output = output;
 	}
-	
-	public void addServiceInput(WorkflowNodeIOData serviceInput) {
-		getServiceInput().add(serviceInput);
-	}
-	public void addServiceOutput(WorkflowNodeIOData serviceOutput) {
-		getServiceOutput().add(serviceOutput);
-	}
 	public void addOutput(WorkflowIOData output) {
 		getOutput().add(output);
-	}
-	
-	public WorkflowNodeIOData getServiceInput(String nodeId) {
-		return (WorkflowNodeIOData)getIOData(nodeId, getServiceInput());
-	}
-	public WorkflowNodeIOData getServiceOutput(String nodeId) {
-		return (WorkflowNodeIOData)getIOData(nodeId, getServiceOutput());
 	}
 	public WorkflowIOData getOutput(String nodeId) {
 		return (WorkflowNodeIOData)getIOData(nodeId, getOutput());
@@ -141,7 +109,16 @@ public class ExperimentDataImpl implements ExperimentData{
 	}
 	
 	@Override
-	public List<WorkflowInstanceData> getWorkflowInstanceData() {
+	public List<WorkflowInstanceData> getWorkflowInstanceData() throws ExperimentLazyLoadedException{
+		if (isLazyLoaded()){
+			throw new ExperimentLazyLoadedException(getExperimentId());
+		}
 		return workflowInstanceDataList;
+	}
+	public boolean isLazyLoaded() {
+		return lazyLoaded;
+	}
+	public void setLazyLoaded(boolean lazyLoaded) {
+		this.lazyLoaded = lazyLoaded;
 	}
 }

@@ -61,7 +61,15 @@ public class WorkflowInstanceData {
 		return workflowInstance.getWorkflowInstanceId();
 	}
 	
+	/**
+	 * @deprecated Use "WorkflowInstanceData.getTemplateName()" instead
+	 * @return
+	 */
 	public String getWorkflowName(){
+		return getTemplateName();
+	}
+	
+	public String getTemplateName(){
 		return workflowInstance.getTemplateName();
 	}
 	
@@ -79,16 +87,6 @@ public class WorkflowInstanceData {
 				return nodeData;
 			}
 		}
-		return null;
-	}
-	
-	public List<WorkflowInstanceNodeData> getInputNodeData(){
-		//TODO
-		return null;
-	}
-	
-	public List<WorkflowInstanceNodeData> getOutputNodeData(){
-		//TODO
 		return null;
 	}
 

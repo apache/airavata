@@ -716,8 +716,14 @@ public class AiravataClient implements AiravataAPI {
 
  	public static void main(String[] args) throws Exception {
 		AiravataAPI api = AiravataClientUtils.getAPI(new URI("http://localhost:8080"), "admin", "admin");
- 		ProvenanceManager pm = api.getProvenanceManager();
- 		ExperimentData workflowExperimentData = pm.getWorkflowExperimentData("Workflow1_9341caee-b3fc-4474-9b15-b943756a5839");
+		Workflow w = api.getWorkflowManager().getWorkflow("Workflow1");
+		List<WorkflowInput> workflowInputs = w.getWorkflowInputs();
+		for (WorkflowInput input : workflowInputs) {
+			input.setValue("0");
+		}
+		System.out.println(api.getExecutionManager().runExperiment(w,workflowInputs));
+// 		ProvenanceManager pm = api.getProvenanceManager();
+// 		ExperimentData workflowExperimentData = pm.getWorkflowExperimentData("Workflow1_9341caee-b3fc-4474-9b15-b943756a5839");
  		
 // 		pm.getExperimentIdList(owner)
 // 		workflowInstanceData = d.getWorkflowInstanceData().get(0).getNodeDataList();
