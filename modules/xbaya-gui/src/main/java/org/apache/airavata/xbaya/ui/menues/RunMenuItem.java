@@ -138,8 +138,8 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
         runMenu = new JMenu("Run");
         runMenu.setMnemonic(KeyEvent.VK_R);
 
-        runMenu.add(launchDynamicWorkflowItem);
         runMenu.add(launchXBayaInterpreterItem);
+        runMenu.add(launchDynamicWorkflowItem);
         
         runMenu.addSeparator();
         runMenu.add(stopWorkflowItem);
@@ -295,7 +295,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
     }
 
     private JMenuItem createLaunchDynamicWorkflowItem() {
-        JMenuItem menuItem = new JMenuItem("Run workflow...", MenuIcons.RUN_ICON);
+        JMenuItem menuItem = new JMenuItem("Run workflow...");
         menuItem.setMnemonic(KeyEvent.VK_D);
         AbstractAction action = new AbstractAction() {
             private DynamicWorkflowRunnerWindow window;
@@ -355,7 +355,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
     }
     
     private void createLaunchXBayaInterpreterItem() {
-        this.launchXBayaInterpreterItem = new JMenuItem("Run on Interpreter Server...");
+        this.launchXBayaInterpreterItem = new JMenuItem("Run on Interpreter Server...", MenuIcons.RUN_ICON);
         AbstractAction action = new AbstractAction() {
             private WorkflowInterpreterLaunchWindow window;
             public void actionPerformed(ActionEvent e) {
