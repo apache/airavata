@@ -139,10 +139,11 @@ public class ExperimentDataRetriever {
             statement = connection.createStatement();
 
 //            String queryString = "SELECT experiment_ID FROM Experiment WHERE user_name ='" +  user + "'";
+            // FIXME : pass user ID as a regular expression
             String queryString = "SELECT ed.experiment_ID FROM Experiment_Data ed " +
                     "LEFT JOIN Experiment e " +
                     "ON ed.experiment_ID = e.experiment_ID " +
-                    "WHERE ed.username REGEXP '^" + user + "$'";
+                    "WHERE ed.username ='" + user + "'";
             rs = statement.executeQuery(queryString);
             if(rs != null){
                 while (rs.next()) {
@@ -357,6 +358,7 @@ public class ExperimentDataRetriever {
             Class.forName(Utils.getJDBCDriver()).newInstance();
             connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(), Utils.getJDBCPassword());
             statement = connection.createStatement();
+            //FIXME : pass user ID as a regular expression
             String queryString = "SELECT e.experiment_ID, ed.name, ed.username, em.metadata, " +
                     "e.project_name, e.submitted_date " +
                     "FROM Experiment e " +
@@ -364,7 +366,7 @@ public class ExperimentDataRetriever {
                     "ON e.experiment_ID = ed.experiment_ID " +
                     "LEFT JOIN Experiment_Metadata em " +
                     "ON ed.experiment_ID = em.experiment_ID  " +
-                    "WHERE ed.username REGEXP '^" + user + "$'";
+                    "WHERE ed.username ='" + user + "'";
 
             rs = statement.executeQuery(queryString);
             if (rs != null){
