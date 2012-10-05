@@ -5,6 +5,8 @@ import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.registry.api.exception.UnknownRegistryConnectionDataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
@@ -12,6 +14,7 @@ import java.util.Properties;
 
 public class AiravataRegistryConnectionDataProviderImpl implements AiravataRegistryConnectionDataProvider {
 
+    private final static Logger logger = LoggerFactory.getLogger(AiravataRegistryConnectionDataProviderImpl.class);
     public static Properties loadProperties(){
         URL resource = Utils.class.getClassLoader().getResource("repository.properties");
         Properties properties = new Properties();
@@ -19,6 +22,8 @@ public class AiravataRegistryConnectionDataProviderImpl implements AiravataRegis
             properties.load(resource.openStream());
         } catch (IOException e) {
             e.printStackTrace();
+            logger.error("Unable to read repository properties " + e);
+
         }
         return properties;
     }

@@ -29,6 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -47,7 +50,7 @@ public class ExperimentDataRetriever {
             Class.forName(Utils.getJDBCDriver()).newInstance();
             connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(), Utils.getJDBCPassword());
             statement = connection.createStatement();
-            String queryString = "SELECT e.experiment_ID, ed.name, e.user_name, em.metadata, " +
+            String queryString = "SELECT ed.experiment_ID, ed.name, ed.username, em.metadata, " +
                     "wd.workflow_instanceID, wd.template_name, wd.status, wd.start_time," +
                     "wd.last_update_time, nd.node_id, nd.inputs, nd.outputs, " +
                     "e.project_name, e.submitted_date, nd.node_type, nd.status," +
@@ -79,7 +82,8 @@ public class ExperimentDataRetriever {
                     workflowInstance.setWorkflowInstanceId(rs.getString(5));
                     experimentWorkflowInstances.add(workflowInstance);
 
-                    Date lastUpdateDate = new Date(rs.getLong(9));
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+                    Date lastUpdateDate = dateFormat.parse(rs.getString(9));
                     WorkflowInstanceData workflowInstanceData = new WorkflowInstanceData(null,
                             workflowInstance, new WorkflowInstanceStatus(workflowInstance,
                             rs.getString(7)==null? null:ExecutionStatus.valueOf(rs.getString(7)),lastUpdateDate), null);
@@ -115,11 +119,15 @@ public class ExperimentDataRetriever {
             logger.error(e.getMessage(), e);
         } catch (SQLException e){
             e.printStackTrace();
+        }catch (ParseException e) {
+            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return experimentData;
     }
 
     public List<String> getExperimentIdByUser(String user){
+        System.out.println("#######User ####### " + user);
         List<String> result=new ArrayList<String>();
         String connectionURL =  Utils.getJDBCURL();
         Connection connection = null;
@@ -131,7 +139,11 @@ public class ExperimentDataRetriever {
             connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(), Utils.getJDBCPassword());
             statement = connection.createStatement();
 
-            String queryString = "SELECT experiment_ID FROM Experiment WHERE user_name ='" +  user + "'";
+//            String queryString = "SELECT experiment_ID FROM Experiment WHERE user_name ='" +  user + "'";
+            String queryString = "SELECT ed.experiment_ID FROM Experiment_Data ed " +
+                    "LEFT JOIN Experiment e " +
+                    "ON ed.experiment_ID = e.experiment_ID " +
+                    "WHERE ed.username ='" + user + "'";
             rs = statement.executeQuery(queryString);
             if(rs != null){
                 while (rs.next()) {
@@ -154,13 +166,14 @@ public class ExperimentDataRetriever {
             logger.error(e.getMessage(), e);
         } catch (SQLException e){
             e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 
         return result;
 
     }
 
-    public String getExperimentName(String experimentId, String user){
+    public String getExperimentName(String experimentId){
         String connectionURL =  Utils.getJDBCURL();
         Connection connection;
         Statement statement;
@@ -172,8 +185,7 @@ public class ExperimentDataRetriever {
             String queryString = "SELECT ed.name FROM Experiment e " +
                     "LEFT JOIN Experiment_Data ed " +
                     "ON e.experiment_ID = ed.experiment_ID " +
-                    "WHERE e.user_name ='" +  user +
-                    "' AND e.experiment_ID='" + experimentId + "'";
+                    "WHERE e.experiment_ID='" + experimentId + "'";
             rs = statement.executeQuery(queryString);
             if(rs != null){
                 while (rs.next()) {
@@ -211,7 +223,7 @@ public class ExperimentDataRetriever {
             connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(),
                     Utils.getJDBCPassword());
             statement = connection.createStatement();
-            String queryString = "SELECT e.experiment_ID, ed.name, e.user_name, em.metadata, " +
+            String queryString = "SELECT e.experiment_ID, ed.name, ed.username, em.metadata, " +
                     "wd.workflow_instanceID, wd.template_name, wd.status, wd.start_time," +
                     "wd.last_update_time, nd.node_id, nd.inputs, nd.outputs, " +
                     "e.project_name, e.submitted_date, nd.node_type, nd.status," +
@@ -271,6 +283,125 @@ public class ExperimentDataRetriever {
             logger.error(e.getMessage(), e);
         } catch (SQLException e){
             e.printStackTrace();
+            logger.error(e.getMessage(), e);
+        }
+        return experimentDataList;
+    }
+
+    public ExperimentData getExperimentMetaInformation(String experimentId){
+        String connectionURL =  Utils.getJDBCURL();
+        Connection connection = null;
+        ResultSet rs = null;
+        Statement statement;
+        List<WorkflowInstance> experimentWorkflowInstances = new ArrayList<WorkflowInstance>();
+        ExperimentData experimentData = null;
+        try {
+            Class.forName(Utils.getJDBCDriver()).newInstance();
+            connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(), Utils.getJDBCPassword());
+            statement = connection.createStatement();
+            String queryString = "SELECT e.experiment_ID, ed.name, ed.username, em.metadata, " +
+                    "e.project_name, e.submitted_date " +
+                    "FROM Experiment e " +
+                    "LEFT JOIN Experiment_Data ed " +
+                    "ON e.experiment_ID = ed.experiment_ID " +
+                    "LEFT JOIN Experiment_Metadata em " +
+                    "ON ed.experiment_ID = em.experiment_ID  " +
+                    "WHERE e.experiment_ID ='" + experimentId + "'";
+
+            rs = statement.executeQuery(queryString);
+            if (rs != null){
+                while (rs.next()) {
+                    experimentData = new ExperimentDataImpl(true);
+                    experimentData.setExperimentId(rs.getString(1));
+                    experimentData.setExperimentName(rs.getString(2));
+                    experimentData.setUser(rs.getString(3));
+                    experimentData.setMetadata(rs.getString(4));
+                    experimentData.setTopic(rs.getString(1));
+
+                    WorkflowInstance workflowInstance = new WorkflowInstance(experimentId, rs.getString(5));
+                    workflowInstance.setTemplateName(rs.getString(6));
+                    workflowInstance.setExperimentId(rs.getString(1));
+                    workflowInstance.setWorkflowInstanceId(rs.getString(5));
+                    experimentWorkflowInstances.add(workflowInstance);
+                }
+            }
+            if(rs != null){
+                rs.close();
+            }
+            statement.close();
+            connection.close();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+        } catch (SQLException e){
+            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+        }
+        return experimentData;
+    }
+
+    public List<ExperimentData> getAllExperimentMetaInformation(String user){
+        String connectionURL =  Utils.getJDBCURL();
+        Connection connection = null;
+        ResultSet rs = null;
+        Statement statement;
+        List<ExperimentData> experimentDataList = new ArrayList<ExperimentData>();
+        List<WorkflowInstance> experimentWorkflowInstances = new ArrayList<WorkflowInstance>();
+        ExperimentData experimentData = null;
+        try {
+            Class.forName(Utils.getJDBCDriver()).newInstance();
+            connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(), Utils.getJDBCPassword());
+            statement = connection.createStatement();
+            String queryString = "SELECT e.experiment_ID, ed.name, ed.username, em.metadata, " +
+                    "e.project_name, e.submitted_date " +
+                    "FROM Experiment e " +
+                    "LEFT JOIN Experiment_Data ed " +
+                    "ON e.experiment_ID = ed.experiment_ID " +
+                    "LEFT JOIN Experiment_Metadata em " +
+                    "ON ed.experiment_ID = em.experiment_ID  " +
+                    "WHERE ed.username ='" + user + "'";
+
+            rs = statement.executeQuery(queryString);
+            if (rs != null){
+                while (rs.next()) {
+                    experimentData = new ExperimentDataImpl(true);
+                    experimentData.setExperimentId(rs.getString(1));
+                    experimentData.setExperimentName(rs.getString(2));
+                    experimentData.setUser(rs.getString(3));
+                    experimentData.setMetadata(rs.getString(4));
+                    experimentData.setTopic(rs.getString(1));
+
+                    WorkflowInstance workflowInstance = new WorkflowInstance(rs.getString(1), rs.getString(5));
+                    workflowInstance.setTemplateName(rs.getString(6));
+                    workflowInstance.setExperimentId(rs.getString(1));
+                    workflowInstance.setWorkflowInstanceId(rs.getString(5));
+                    experimentWorkflowInstances.add(workflowInstance);
+                    experimentDataList.add(experimentData);
+                }
+            }
+            if(rs != null){
+                rs.close();
+            }
+            statement.close();
+            connection.close();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+        } catch (SQLException e){
+            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return experimentDataList;
     }

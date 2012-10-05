@@ -40,8 +40,16 @@ public class ExperimentDataImpl implements ExperimentData{
 	private String workflowInstanceName;
 	private List<WorkflowInstanceData> workflowInstanceDataList=new ArrayList<WorkflowInstanceData>();
 	private boolean lazyLoaded=false;
-	
-	public String getMetadata() {
+
+    public ExperimentDataImpl() {
+        this(false);
+    }
+
+    public ExperimentDataImpl(boolean lazyLoaded) {
+        this.lazyLoaded = lazyLoaded;
+    }
+
+    public String getMetadata() {
 		return metadata;
 	}
 	public void setMetadata(String metadata) {
@@ -115,9 +123,11 @@ public class ExperimentDataImpl implements ExperimentData{
 		}
 		return workflowInstanceDataList;
 	}
+
 	public boolean isLazyLoaded() {
 		return lazyLoaded;
 	}
+
 	public void setLazyLoaded(boolean lazyLoaded) {
 		this.lazyLoaded = lazyLoaded;
 	}

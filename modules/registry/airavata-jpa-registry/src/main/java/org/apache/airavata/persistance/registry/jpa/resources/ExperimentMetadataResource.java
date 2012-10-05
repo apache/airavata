@@ -4,11 +4,14 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment_Metadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
 public class ExperimentMetadataResource extends AbstractResource{
+    private static final Logger logger = LoggerFactory.getLogger(ExperimentMetadataResource.class);
     private String expID;
     private String metadata;
 
@@ -29,6 +32,7 @@ public class ExperimentMetadataResource extends AbstractResource{
     }
 
     public Resource create(ResourceType type) {
+
         throw new UnsupportedOperationException();
     }
 

@@ -840,8 +840,8 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isExperimentExists(experimentId)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
-        ExperimentDataRetriever workflowDataRetriever = new ExperimentDataRetriever();
-        return workflowDataRetriever.getExperimentName(experimentId, jpa.getWorker().getUser());
+        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
+        return experimentDataRetriever.getExperimentName(experimentId);
 	}
 
 
@@ -1120,17 +1120,20 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		if (!isExperimentExists(experimentId)){
 			throw new ExperimentDoesNotExistsException(experimentId);
 		}
-        ExperimentDataRetriever workflowDataRetriever = new ExperimentDataRetriever();
-        ExperimentData experimentData =  workflowDataRetriever.getExperiment(experimentId);
-        return workflowDataRetriever.getExperiment(experimentId);
+        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
+        ExperimentData experimentData =  experimentDataRetriever.getExperiment(experimentId);
+        return experimentDataRetriever.getExperiment(experimentId);
 	}
 
 
 	@Override
 	public List<String> getExperimentIdByUser(String user)
 			throws RegistryException {
-        ExperimentDataRetriever workflowDataRetriever = new ExperimentDataRetriever();
-        return workflowDataRetriever.getExperimentIdByUser(jpa.getWorker().getUser());
+        if(user == null){
+            user = jpa.getWorker().getUser();
+        }
+        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
+        return experimentDataRetriever.getExperimentIdByUser(user);
 	}
 
 
@@ -1354,14 +1357,19 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public ExperimentData getExperimentMetaInformation(String experimentId)
 			throws RegistryException {
-		return null;
+        if (!isExperimentExists(experimentId)){
+            throw new ExperimentDoesNotExistsException(experimentId);
+        }
+        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
+        return experimentDataRetriever.getExperimentMetaInformation(experimentId);
 	}
 
 
 	@Override
 	public List<ExperimentData> getAllExperimentMetaInformation(String user)
 			throws RegistryException {
-		return null;
+        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
+        return experimentDataRetriever.getAllExperimentMetaInformation(user);
 	}
 
 
