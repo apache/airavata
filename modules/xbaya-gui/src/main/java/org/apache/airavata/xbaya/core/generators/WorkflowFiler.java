@@ -197,8 +197,6 @@ public class WorkflowFiler {
         int returnVal = this.graphFileChooser.showOpenDialog(this.engine.getGUI().getFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = this.graphFileChooser.getSelectedFile();
-
-            Workflow workflow = this.engine.getGUI().getWorkflow();
             try {
 
                 String path = file.getPath();
@@ -212,7 +210,6 @@ public class WorkflowFiler {
                 }
                 GraphCanvas newGraphCanvas = engine.getGUI().newGraphCanvas(true);
                 newGraphCanvas.setWorkflow(importedWorkflow);
-                workflow.importWorkflow(importedWorkflow);
                 this.engine.getGUI().setWorkflow(importedWorkflow);
                 engine.getGUI().getGraphCanvas().setWorkflowFile(file);
 
