@@ -49,6 +49,8 @@ public class Monitor extends EventProducer {
     protected WsmgClient wsmgClient;
 
     protected boolean print;
+
+    protected long timeout = 20000L;
     
     /**
      * Constructs a Monitor.
@@ -202,6 +204,7 @@ public class Monitor extends EventProducer {
 
     private void subscribe() throws MonitorException {
         this.wsmgClient = new WsmgClient(this);
+        this.wsmgClient.setTimeout(this.getTimeout());
         //Users can set the timeout and interval for the subscription using wsmg setter methods, here we use the default values
         this.wsmgClient.subscribe();
 
@@ -220,4 +223,11 @@ public class Monitor extends EventProducer {
         this.print = print;
     }
 
+    public long getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
 }

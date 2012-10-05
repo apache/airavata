@@ -86,7 +86,7 @@ public class WsmgClient implements ConsumerNotificationHandler, NotificationHand
     public synchronized void subscribe() throws MonitorException {
         try {
             if (this.pullMode) {
-                EndpointReference messageBoxEPR = this.wseClient.createPullMsgBox(this.messageBoxURL.toString());
+                EndpointReference messageBoxEPR = this.wseClient.createPullMsgBox(this.messageBoxURL.toString(),getTimeout());
                 this.subscriptionID = this.wseClient.subscribe(messageBoxEPR.getAddress(), this.topic, null);
                 this.messagePuller = this.wseClient.startPullingEventsFromMsgBox(messageBoxEPR, this, getInterval(), getTimeout());
             } else {
