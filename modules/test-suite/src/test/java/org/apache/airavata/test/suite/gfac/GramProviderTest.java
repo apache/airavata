@@ -59,7 +59,8 @@ import org.junit.Test;
 public class GramProviderTest {
 
     public static final String MYPROXY = "myproxy";
-    public static final String GRAM_PROPERTIES = "gram.properties";
+//    public static final String GRAM_PROPERTIES = "gram.properties";
+    public static final String GRAM_PROPERTIES = "gram-ranger.properties";
     private AiravataRegistry2 jcrRegistry = null;
 
     @Before
@@ -133,9 +134,26 @@ public class GramProviderTest {
         /*
            * Save to registry
            */
-        jcrRegistry.addHostDescriptor(host);
-        jcrRegistry.addApplicationDescriptor(serv.getType().getName(), host.getType().getHostName(), appDesc);
-        jcrRegistry.addServiceDescriptor(serv);
+
+        jcrRegistry.getApplicationDescriptors(serv.getType().getName());
+
+        if(jcrRegistry.isHostDescriptorExists(host.getType().getHostName())) {
+            jcrRegistry.updateHostDescriptor(host);
+        } else {
+            jcrRegistry.addHostDescriptor(host);
+        }
+
+        if (jcrRegistry.isApplicationDescriptorExists(serv.getType().getName(),host.getType().getHostName(),appDesc.getType().getApplicationName().getStringValue())){
+            jcrRegistry.updateApplicationDescriptor(serv.getType().getName(), host.getType().getHostName(), appDesc);
+        } else {
+            jcrRegistry.addApplicationDescriptor(serv.getType().getName(), host.getType().getHostName(), appDesc);
+        }
+
+        if (jcrRegistry.isServiceDescriptorExists(serv.getType().getName())){
+            jcrRegistry.updateServiceDescriptor(serv);
+        } else {
+            jcrRegistry.addServiceDescriptor(serv);
+        }
 //        jcrRegistry.deployServiceOnHost(serv.getType().getName(), host.getType().getHostName());
     }
 
