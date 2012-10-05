@@ -239,6 +239,10 @@ public interface ProvenanceManager {
      */
 	public List<String> getExperimentIdList(String owner) throws AiravataAPIInvocationException;
 
+	public ExperimentData getExperimentMetaInformation(String experimentId)throws AiravataAPIInvocationException;
+	
+	public List<ExperimentData> getAllExperimentMetaInformation(String user)throws AiravataAPIInvocationException;
+	
     /**
      * Retrieve the id's of all the experiments run by the current user
      * @return
@@ -248,21 +252,28 @@ public interface ProvenanceManager {
 
     /**
      * Retrieve all the experiments run by the current user
+     * @deprecated
      * @return
      * @throws AiravataAPIInvocationException
      */
 	public List<ExperimentData> getWorkflowExperimentDataList() throws AiravataAPIInvocationException;
 
+	public List<ExperimentData> getExperimentDataList() throws AiravataAPIInvocationException;
+	
     /**
      * Retrieve all the experiments run by the given owner
+     * @deprecated
      * @param user
      * @return
      * @throws AiravataAPIInvocationException
      */
 	public List<ExperimentData> getWorkflowExperimentDataList(String user) throws AiravataAPIInvocationException;
+	
+	public List<ExperimentData> getExperimentDataList(String user) throws AiravataAPIInvocationException;
 
     /**
      * Retrieve all the experiment data run by the given owner with paging
+     * @deprecated
      * @param user
      * @param pageSize
      * @param pageNo
@@ -270,9 +281,12 @@ public interface ProvenanceManager {
      * @throws AiravataAPIInvocationException
      */
 	public List<ExperimentData> getWorkflowExperimentData(String user, int pageSize, int pageNo) throws AiravataAPIInvocationException;
+	
+	public List<ExperimentData> getExperimentData(String user, int pageSize, int pageNo) throws AiravataAPIInvocationException;
 
 	/**
      * Retrieve all the experiment data run by the given owner with paging
+     * @deprecated
      * @param user
      * @param pageSize
      * @param pageNo
@@ -280,6 +294,8 @@ public interface ProvenanceManager {
      * @throws AiravataAPIInvocationException
      */
 	public ExperimentData getWorkflowExperimentData(String experimentId) throws AiravataAPIInvocationException;
+	
+	public ExperimentData getExperimentData(String experimentId) throws AiravataAPIInvocationException;
 	
     /**
      * Retrieve experiment data for a given workflow instance

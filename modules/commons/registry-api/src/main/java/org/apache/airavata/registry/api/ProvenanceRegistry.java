@@ -251,6 +251,10 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @throws RegistryException
      */
 	public abstract ExperimentData getExperiment(String experimentId) throws RegistryException;
+	
+	public ExperimentData getExperimentMetaInformation(String experimentId)throws RegistryException;
+	
+	public List<ExperimentData> getAllExperimentMetaInformation(String user)throws RegistryException;
     
     /**
      * Return experiment ids of experiments launched by the given user

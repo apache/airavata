@@ -1351,4 +1351,18 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 
+	@Override
+	public ExperimentData getExperimentMetaInformation(String experimentId)
+			throws RegistryException {
+		return null;
+	}
+
+
+	@Override
+	public List<ExperimentData> getAllExperimentMetaInformation(String user)
+			throws RegistryException {
+		return null;
+	}
+
+
 }
