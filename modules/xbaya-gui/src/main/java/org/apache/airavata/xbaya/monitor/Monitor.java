@@ -115,6 +115,20 @@ public class Monitor extends EventProducer {
 
         }
     }
+    
+    public void startMonitoring(){
+    	final Monitor m=this;
+    	new Thread(){
+    		@Override
+    		public void run() {
+    			try {
+					m.start();
+				} catch (MonitorException e) {
+					e.printStackTrace();
+				}
+    		}
+    	}.start();
+    }
 
     /**
      * Stops monitoring.

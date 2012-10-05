@@ -392,31 +392,21 @@ public class AiravataClient implements AiravataAPI {
         final Monitor monitor = new Monitor(monitorConfiguration);
         monitor.setPrint(true);
         monitor.getEventData().registerEventListener(listener);
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    monitor.start();
-                } catch (MonitorException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
         return monitor;
     }
     
     private void runPreWorkflowExecutionTasks(String topic, String user,
-    		String metadata,String workflowInstanceName) throws RegistryException {
+    		String metadata,String experimentName) throws RegistryException {
 		if (user != null) {
 			getRegistry().updateExperimentExecutionUser(topic, user);
 		}
 		if (metadata != null) {
 			getRegistry().updateExperimentMetadata(topic, metadata);
 		}
-		if (workflowInstanceName==null) {
-			workflowInstanceName=topic;
+		if (experimentName==null) {
+			experimentName=topic;
 		}
-		getRegistry().updateExperimentName(topic, workflowInstanceName);
+		getRegistry().updateExperimentName(topic, experimentName);
 	}
 
     public String runWorkflow(String topic, NameValue[] inputs) throws Exception {
@@ -428,35 +418,25 @@ public class AiravataClient implements AiravataAPI {
 	}
 
 	public String runWorkflow(final String topic, final NameValue[] inputs, final String user,
-			final String metadata, final String workflowInstanceName) throws Exception{
-		return runWorkflow(topic, inputs, user, metadata, workflowInstanceName, builder);
+			final String metadata, final String experimentName) throws Exception{
+		return runWorkflow(topic, inputs, user, metadata, experimentName, builder);
+	}
+	public String runWorkflow(final String topic, final NameValue[] inputs, final String user,
+			final String metadata, final String experimentName, final WorkflowContextHeaderBuilder builder) throws Exception{
+		return runWorkflow(topic, inputs, user, metadata, experimentName, builder, false);
 	}
 	
 	public String runWorkflow(final String topic, final NameValue[] inputs, final String user,
-			final String metadata, final String workflowInstanceName, final WorkflowContextHeaderBuilder builder) throws Exception{
-		new Thread(new Runnable() {
-			public void run() {
-				try {
-					WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
-							getClientConfiguration().getXbayaServiceURL()
-									.toString());
-					stub._getServiceClient().addHeader(
-							AXIOMUtil.stringToOM(XMLUtil
-									.xmlElementToString(builder.getXml())));
-					runPreWorkflowExecutionTasks(topic, user, metadata,workflowInstanceName);
-					stub.launchWorkflow(workflow, topic, inputs);
-					//			log.info("Workflow output : " + worflowoutput);
-				} catch (RegistryException e) {
-					//			log.fine(e.getMessage(), e);
-				} catch (AxisFault e) {
-					e.printStackTrace();
-				} catch (XMLStreamException e) {
-					e.printStackTrace();
-				} catch (RemoteException e) {
-					e.printStackTrace();
+			final String metadata, final String experimentName, final WorkflowContextHeaderBuilder builder, boolean launchOnThread) throws Exception{
+		if (launchOnThread) {
+			new Thread(new Runnable() {
+				public void run() {
+					launchWorkflow(topic, inputs, user, metadata, experimentName, builder);
 				}
-			}
-		}).start();
+			}).start();
+		}else{
+			launchWorkflow(topic, inputs, user, metadata, experimentName, builder);
+		}
 		return topic;
 	}
 
@@ -904,6 +884,31 @@ public class AiravataClient implements AiravataAPI {
 
 	public void setCurrentUser(String currentUser) {
 		this.currentUser = currentUser;
+	}
+
+	private void launchWorkflow(final String topic, final NameValue[] inputs,
+			final String user, final String metadata,
+			final String experimentName,
+			final WorkflowContextHeaderBuilder builder) {
+		try {
+			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
+					getClientConfiguration().getXbayaServiceURL()
+							.toString());
+			stub._getServiceClient().addHeader(
+					AXIOMUtil.stringToOM(XMLUtil
+							.xmlElementToString(builder.getXml())));
+			runPreWorkflowExecutionTasks(topic, user, metadata,experimentName);
+			stub.launchWorkflow(workflow, topic, inputs);
+			//			log.info("Workflow output : " + worflowoutput);
+		} catch (RegistryException e) {
+			//			log.fine(e.getMessage(), e);
+		} catch (AxisFault e) {
+			e.printStackTrace();
+		} catch (XMLStreamException e) {
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
