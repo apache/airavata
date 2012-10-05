@@ -78,7 +78,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
 				}
 				gatewayName = provider.getValue(RegistryConstants.KEY_DEFAULT_GATEWAY_ID).toString();
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.warn(e.getMessage());
 			}
         }
         if (username==null){
