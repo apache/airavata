@@ -49,7 +49,7 @@ public class MsgboxHandler {
     }
 
     public EndpointReference createPullMsgBox(String msgBoxServerLoc) throws MsgBrokerClientException {
-        return createPullMsgBox(msgBoxServerLoc, 2000L);
+        return createPullMsgBox(msgBoxServerLoc, 12000L);
     }
 
     public MessagePuller startPullingEventsFromMsgBox(EndpointReference msgBoxEpr, NotificationHandler handler,
