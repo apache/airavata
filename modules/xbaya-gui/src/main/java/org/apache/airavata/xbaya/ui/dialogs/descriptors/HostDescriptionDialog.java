@@ -399,7 +399,11 @@ public class HostDescriptionDialog extends JDialog {
     public void saveHostDescription() {
         HostDescription desc = getHostDescription();
         try {
-			getRegistry().addHostDescriptor(desc);
+        	if (getRegistry().isHostDescriptorExists(desc.getType().getHostName())){
+        		getRegistry().updateHostDescriptor(desc);	
+        	}else{
+        		getRegistry().addHostDescriptor(desc);
+        	}
 			setHostCreated(true);
 		} catch (DescriptorAlreadyExistsException e) {
 			// TODO Auto-generated catch block
