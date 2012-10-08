@@ -1,17 +1,17 @@
-package org.apache.airavata.persistance.registry.jpa;
-
-import junit.framework.TestCase;
-import org.apache.airavata.persistance.registry.jpa.resources.*;
-
-
-public class GatewayResourceTest extends TestCase {
-    private GatewayResource gatewayResource;
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-//        gatewayResource = (GatewayResource)ResourceUtils.createGateway("gateway1");
-    }
+//package org.apache.airavata.persistance.registry.jpa;
+//
+//import junit.framework.TestCase;
+//import org.apache.airavata.persistance.registry.jpa.resources.*;
+//
+//
+//public class GatewayResourceTest extends TestCase {
+//    private GatewayResource gatewayResource;
+//
+//    @Override
+//    public void setUp() throws Exception {
+//        super.setUp();
+////        gatewayResource = (GatewayResource)ResourceUtils.createGateway("gateway1");
+//    }
 
 //    public void testSave() throws Exception {
 //        gatewayResource.setOwner("owner1");
@@ -46,4 +46,4 @@ public class GatewayResourceTest extends TestCase {
 //    public void testGetList() throws Exception {
 //
 //    }
-}
+//}
