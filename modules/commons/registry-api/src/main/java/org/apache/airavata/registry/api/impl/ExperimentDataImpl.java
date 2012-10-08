@@ -115,8 +115,18 @@ public class ExperimentDataImpl implements ExperimentData{
 		this.workflowInstanceName=workflowInstanceName;
 		
 	}
-	
-	@Override
+
+    @Override
+    public WorkflowInstanceData getWorkflowInstance(String workflowInstanceID) throws ExperimentLazyLoadedException {
+        for(WorkflowInstanceData workflowInstanceData : getWorkflowInstanceData()){
+            if(workflowInstanceData.getWorkflowInstanceId().equals(workflowInstanceID)){
+                return workflowInstanceData;
+            }
+        }
+        return null;
+    }
+
+    @Override
 	public List<WorkflowInstanceData> getWorkflowInstanceData() throws ExperimentLazyLoadedException{
 		if (isLazyLoaded()){
 			throw new ExperimentLazyLoadedException(getExperimentId());

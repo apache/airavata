@@ -52,4 +52,5 @@ public interface ExperimentData {
 //	public void addOutput(WorkflowIOData output);
 	public void setMetadata(String metadata);
 	public void setExperimentName(String experimentName);
+    public WorkflowInstanceData getWorkflowInstance(String workflowInstanceID) throws ExperimentLazyLoadedException;
 }
