@@ -423,9 +423,11 @@ public class AiravataClient implements AiravataAPI {
 	}
 	public String runWorkflow(final String topic, final NameValue[] inputs, final String user,
 			final String metadata, final String experimentName, final WorkflowContextHeaderBuilder builder) throws Exception{
-		return runWorkflow(topic, inputs, user, metadata, experimentName, builder, false);
+		return runWorkflow(topic, inputs, user, metadata, experimentName, builder, true);
 	}
 	
+	private static int TIMEOUT_STEP=1000;
+	private static int MAX_TIMEOUT=60000;
 	public String runWorkflow(final String topic, final NameValue[] inputs, final String user,
 			final String metadata, final String experimentName, final WorkflowContextHeaderBuilder builder, boolean launchOnThread) throws Exception{
 		if (launchOnThread) {
@@ -434,6 +436,11 @@ public class AiravataClient implements AiravataAPI {
 					launchWorkflow(topic, inputs, user, metadata, experimentName, builder);
 				}
 			}).start();
+			int timeout=0;
+			while(!getRegistry().isExperimentExists(topic) && timeout<MAX_TIMEOUT){
+				Thread.sleep(TIMEOUT_STEP);
+				timeout+=MAX_TIMEOUT;
+			}
 		}else{
 			launchWorkflow(topic, inputs, user, metadata, experimentName, builder);
 		}
