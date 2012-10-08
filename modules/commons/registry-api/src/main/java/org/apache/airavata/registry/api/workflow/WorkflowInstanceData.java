@@ -42,7 +42,11 @@ public class WorkflowInstanceData {
 		this.nodeDataList=nodeDataList;
 	}
 
-	public List<WorkflowInstanceNodeData> getNodeDataList() {
+    public WorkflowInstance getWorkflowInstance() {
+        return workflowInstance;
+    }
+
+    public List<WorkflowInstanceNodeData> getNodeDataList() {
 		if (nodeDataList==null){
 			nodeDataList=new ArrayList<WorkflowInstanceNodeData>();
 		}
@@ -56,10 +60,18 @@ public class WorkflowInstanceData {
 	public String getExperimentId(){
 		return workflowInstance.getExperimentId();
 	}
-	
+
+    /**
+     * @deprecated Use "getWorkflowInstanceID() instead
+     * @return
+     */
 	public String getTopicId(){
 		return workflowInstance.getWorkflowInstanceId();
 	}
+
+    public String getWorkflowInstanceId(){
+        return workflowInstance.getWorkflowInstanceId();
+    }
 	
 	/**
 	 * @deprecated Use "WorkflowInstanceData.getTemplateName()" instead
