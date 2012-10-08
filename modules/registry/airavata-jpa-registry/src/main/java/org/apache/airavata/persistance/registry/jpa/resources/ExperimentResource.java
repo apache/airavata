@@ -36,8 +36,11 @@ import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Project;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExperimentResource extends AbstractResource {
+    private static final Logger logger = LoggerFactory.getLogger(ExperimentResource.class);
     private WorkerResource worker;
     private String expID;
     private Date submittedDate;
@@ -88,24 +91,37 @@ public class ExperimentResource extends AbstractResource {
 	            expDataResource.setExperimentID(getExpID());
 	            return expDataResource;
 	        default:
-	            throw new IllegalArgumentException("Unsupported resource type for experiment data resource.");
+                logger.error("Unsupported resource type for experiment resource.", new IllegalArgumentException());
+	            throw new IllegalArgumentException("Unsupported resource type for experiment resource.");
 	    }
     }
 
     /**
-     * Since experiments are at the leaf level, this method is not
-     * valid for an experiment
+     *
      * @param type  child resource types
      * @param name name of the child resource
      * @return UnsupportedOperationException
      */
     public void remove(ResourceType type, Object name) {
-        throw new UnsupportedOperationException();
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        Query q;
+        QueryGenerator generator;
+        switch (type){
+            case EXPERIMENT_DATA:
+                generator = new QueryGenerator(EXPERIMENT_DATA);
+                generator.setParameter(ExperimentDataConstants.EXPERIMENT_ID, name);
+                q = generator.deleteQuery(em);
+                q.executeUpdate();
+                break;
+        }
+        em.getTransaction().commit();
+        em.close();
+
     }
 
     /**
-     * Since experiments are at the leaf level, this method is not
-     * valid for an experiment
+     *
      * @param type  child resource types
      * @param name name of the child resource
      * @return UnsupportedOperationException
@@ -128,6 +144,7 @@ public class ExperimentResource extends AbstractResource {
             default:
                 em.getTransaction().commit();
                 em.close();
+                logger.error("Unsupported resource type for experiment resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for experiment data resource.");
         }
 
@@ -156,12 +173,12 @@ public class ExperimentResource extends AbstractResource {
     }
 
     /**
-     * Since experiments are at the leaf level, this method is not
-     * valid for an experiment
+     *
      * @param type  child resource types
      * @return UnsupportedOperationException
      */
     public List<Resource> get(ResourceType type) {
+        logger.error("Unsupported resource type for experiment resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 

@@ -29,6 +29,8 @@ import org.apache.airavata.persistance.registry.jpa.model.Gram_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Node_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -37,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorkflowDataResource extends AbstractResource{
+    private final static Logger logger = LoggerFactory.getLogger(WorkflowDataResource.class);
     public static final String NODE_DATA = "Node_Data";
     public static final String GRAM_DATA = "Gram_Data";
     private String experimentID;
@@ -105,6 +108,7 @@ public class WorkflowDataResource extends AbstractResource{
                gramDataResource.setWorkflowDataResource(this);
                return gramDataResource;
            default:
+               logger.error("Unsupported resource type for workflow data resource.", new IllegalArgumentException());
                throw new IllegalArgumentException("Unsupported resource type for workflow data resource.");
        }
     }
@@ -130,6 +134,7 @@ public class WorkflowDataResource extends AbstractResource{
                 q.executeUpdate();
                 break;
             default:
+                logger.error("Unsupported resource type for workflow data resource.", new IllegalArgumentException());
                 break;
         }
         em.getTransaction().commit();
@@ -165,6 +170,7 @@ public class WorkflowDataResource extends AbstractResource{
             default:
                 em.getTransaction().commit();
                 em.close();
+                logger.error("Unsupported resource type for workflow data resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for workflow data resource.");
 
 
@@ -209,6 +215,7 @@ public class WorkflowDataResource extends AbstractResource{
             default:
                 em.getTransaction().commit();
                 em.close();
+                logger.error("Unsupported resource type for workflow data resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for workflow data resource.");
         }
         em.getTransaction().commit();

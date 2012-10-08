@@ -28,6 +28,8 @@ import org.apache.airavata.persistance.registry.jpa.model.Published_Workflow;
 import org.apache.airavata.persistance.registry.jpa.model.Published_Workflow_PK;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -36,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PublishWorkflowResource extends AbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(PublishWorkflowResource.class);
     private String name;
     private String version;
     private Date publishedDate;
@@ -153,6 +156,7 @@ public class PublishWorkflowResource extends AbstractResource {
      * @return UnsupportedOperationException
      */
     public Resource create(ResourceType type) {
+        logger.error("Unsupported resource type for published workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
@@ -163,6 +167,7 @@ public class PublishWorkflowResource extends AbstractResource {
      * @param name name of the child resource
      */
     public void remove(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for published workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
@@ -174,6 +179,7 @@ public class PublishWorkflowResource extends AbstractResource {
      * @return UnsupportedOperationException
      */
     public Resource get(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for published workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
@@ -206,6 +212,7 @@ public class PublishWorkflowResource extends AbstractResource {
      * @return UnsupportedOperationException
      */
     public List<Resource> get(ResourceType type) {
+        logger.error("Unsupported resource type for published workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
@@ -255,6 +262,7 @@ public class PublishWorkflowResource extends AbstractResource {
      * @return UnsupportedOperationException
      */
     public boolean isExists(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for published workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 

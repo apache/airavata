@@ -25,6 +25,8 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -35,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HostDescriptorResource extends AbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(HostDescriptorResource.class);
     private String hostDescName;
     private String gatewayName;
     private String userName;
@@ -113,8 +116,11 @@ public class HostDescriptorResource extends AbstractResource {
             applicationDescriptorResource.setGatewayName(gatewayName);
             applicationDescriptorResource.setHostDescName(getHostDescName());
             return applicationDescriptorResource;
+        }else{
+            logger.error("Unsupported resource type for host descriptor resource.", new IllegalArgumentException());
+            throw new IllegalArgumentException("Unsupported resource type for host descriptor resource.");
         }
-        return null;
+
     }
 
     /**
@@ -123,7 +129,8 @@ public class HostDescriptorResource extends AbstractResource {
      * @param name child resource name
      */
     public void remove(ResourceType type, Object name) {
-       throw new UnsupportedOperationException();
+        logger.error("Unsupported resource type for host descriptor resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -133,6 +140,7 @@ public class HostDescriptorResource extends AbstractResource {
      * @return UnsupportedOperationException
      */
     public Resource get(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for host descriptor resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
@@ -232,6 +240,7 @@ public class HostDescriptorResource extends AbstractResource {
      * @return boolean whether the child resource already exists
      */
     public boolean isExists(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for host descriptor resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 

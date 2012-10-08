@@ -34,9 +34,11 @@ import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Project;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProjectResource extends AbstractResource {
-
+    private final static Logger logger = LoggerFactory.getLogger(ProjectResource.class);
     private String name;
     private GatewayResource gateway;
     private WorkerResource worker;
@@ -72,6 +74,7 @@ public class ProjectResource extends AbstractResource {
             experimentResource.setWorker(getWorker());
             return experimentResource;
         } else {
+            logger.error("Unsupported resource type for project resource.", new IllegalArgumentException());
             throw new IllegalArgumentException("Unsupported resource type for project resource.");
         }
     }
@@ -91,6 +94,9 @@ public class ProjectResource extends AbstractResource {
         	generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
         	Query q = generator.deleteQuery(em);
         	q.executeUpdate();
+        }else {
+            logger.error("Unsupported resource type for project resource.", new IllegalArgumentException());
+            throw new IllegalArgumentException("Unsupported resource type for project resource.");
         }
         em.getTransaction().commit();
         em.close();
@@ -118,6 +124,7 @@ public class ProjectResource extends AbstractResource {
             em.close();
             return experimentResource;
         }else{
+            logger.error("Unsupported resource type for project resource.", new IllegalArgumentException());
             throw new IllegalArgumentException("Unsupported resource type for project resource.");
         }
 
@@ -174,6 +181,9 @@ public class ProjectResource extends AbstractResource {
             }
             em.getTransaction().commit();
             em.close();
+        } else {
+            logger.error("Unsupported resource type for project resource.", new IllegalArgumentException());
+            throw new IllegalArgumentException("Unsupported resource type for project resource.");
         }
         return resourceList;
     }
