@@ -32,9 +32,8 @@ import java.sql.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.Date;
-import java.util.List;
 
 public class ExperimentDataRetriever {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentDataRetriever.class);
@@ -54,7 +53,7 @@ public class ExperimentDataRetriever {
                     "wd.workflow_instanceID, wd.template_name, wd.status, wd.start_time," +
                     "wd.last_update_time, nd.node_id, nd.inputs, nd.outputs, " +
                     "e.project_name, e.submitted_date, nd.node_type, nd.status," +
-                        "nd.start_time, nd.last_update_time " +
+                    "nd.start_time, nd.last_update_time " +
                     "FROM Experiment e " +
                     "LEFT JOIN Experiment_Data ed " +
                     "ON e.experiment_ID = ed.experiment_ID " +
@@ -78,28 +77,7 @@ public class ExperimentDataRetriever {
                         experimentData.setMetadata(rs.getString(4));
                         experimentData.setTopic(rs.getString(1));
                     }
-
-                    WorkflowInstanceData workflowInstanceData = experimentData.getWorkflowInstance(rs.getString(5));
-                    if(workflowInstanceData == null){
-                        WorkflowInstance workflowInstance = new WorkflowInstance(experimentId, rs.getString(5));
-                        workflowInstance.setTemplateName(rs.getString(6));
-                        workflowInstance.setExperimentId(rs.getString(1));
-                        workflowInstance.setWorkflowInstanceId(rs.getString(5));
-                        experimentWorkflowInstances.add(workflowInstance);
-                        Date lastUpdateDate = getTime(rs.getString(9));
-                        String wdStatus = rs.getString(7);
-                        workflowInstanceData = new WorkflowInstanceData(null,
-                                workflowInstance, new WorkflowInstanceStatus(workflowInstance,
-                                createExecutionStatus(wdStatus),lastUpdateDate), null);
-                        workflowInstanceData.setExperimentData(experimentData);
-                        experimentData.getWorkflowInstanceData().add(workflowInstanceData);
-                    }
-                    WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(workflowInstanceData.getWorkflowInstance(), rs.getString(10));
-                    WorkflowInstanceNodeData workflowInstanceNodeData = new WorkflowInstanceNodeData(workflowInstanceNode);
-                    workflowInstanceNodeData.setInput(rs.getString(11));
-                    workflowInstanceNodeData.setOutput(rs.getString(12));
-                    workflowInstanceNodeData.setStatus(createExecutionStatus(rs.getString(16)),getTime(rs.getString(18)));
-                    workflowInstanceData.getNodeDataList().add(workflowInstanceNodeData);
+                    fillWorkflowInstanceData(experimentData, rs, experimentWorkflowInstances);
                 }
             }
             if(rs != null){
@@ -122,13 +100,43 @@ public class ExperimentDataRetriever {
         return experimentData;
     }
 
+    private void fillWorkflowInstanceData (ExperimentData experimentData,
+                                                           ResultSet rs,
+                                                           List<WorkflowInstance> workflowInstances) throws SQLException, ExperimentLazyLoadedException, ParseException {
+        WorkflowInstanceData workflowInstanceData = experimentData.getWorkflowInstance(rs.getString(5));
+        if (workflowInstanceData == null){
+            WorkflowInstance workflowInstance = new WorkflowInstance(experimentData.getExperimentId(), rs.getString(5));
+            workflowInstance.setTemplateName(rs.getString(6));
+            workflowInstance.setExperimentId(rs.getString(1));
+            workflowInstance.setWorkflowInstanceId(rs.getString(5));
+            workflowInstances.add(workflowInstance);
+            Date lastUpdateDate = getTime(rs.getString(9));
+            String wdStatus = rs.getString(7);
+            workflowInstanceData = new WorkflowInstanceData(null,
+                    workflowInstance, new WorkflowInstanceStatus(workflowInstance,
+                    createExecutionStatus(wdStatus),lastUpdateDate), null);
+            workflowInstanceData.setExperimentData(experimentData);
+            experimentData.getWorkflowInstanceData().add(workflowInstanceData);
+        }
+        WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(workflowInstanceData.getWorkflowInstance(), rs.getString(10));
+        WorkflowInstanceNodeData workflowInstanceNodeData = new WorkflowInstanceNodeData(workflowInstanceNode);
+        workflowInstanceNodeData.setInput(rs.getString(11));
+        workflowInstanceNodeData.setOutput(rs.getString(12));
+        workflowInstanceNodeData.setStatus(createExecutionStatus(rs.getString(16)), getTime(rs.getString(18)));
+        workflowInstanceData.getNodeDataList().add(workflowInstanceNodeData);
+    }
+
     private ExecutionStatus createExecutionStatus (String status){
        return status == null ? ExecutionStatus.UNKNOWN : ExecutionStatus.valueOf(status);
     }
 
     private Date getTime (String date) throws ParseException {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
-        return dateFormat.parse(date);
+        if (date != null){
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            return dateFormat.parse(date);
+        }
+        return null;
+
     }
 
     public List<String> getExperimentIdByUser(String user){
@@ -210,14 +218,15 @@ public class ExperimentDataRetriever {
         return null;
     }
 
-    public List<ExperimentData> getExperiments(){
-        List<ExperimentData> experimentDataList = new ArrayList<ExperimentData>();
-        String connectionURL =  Utils.getJDBCURL();
+    public List<ExperimentData> getExperiments(String user) {
+        String connectionURL = Utils.getJDBCURL();
         Connection connection = null;
         ResultSet rs = null;
         Statement statement;
+        Map<String, ExperimentData> experimentDataMap = new HashMap<String, ExperimentData>();
+        List<ExperimentData> experimentDataList = new ArrayList<ExperimentData>();
         List<WorkflowInstance> experimentWorkflowInstances = new ArrayList<WorkflowInstance>();
-        ExperimentData experimentData;
+
         try {
             Class.forName(Utils.getJDBCDriver()).newInstance();
             connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(),
@@ -235,44 +244,31 @@ public class ExperimentDataRetriever {
                     "LEFT JOIN Workflow_Data wd " +
                     "ON e.experiment_ID = wd.experiment_ID " +
                     "LEFT JOIN Node_Data nd " +
-                    "ON wd.workflow_instanceID = nd.workflow_instanceID'";
+                    "ON wd.workflow_instanceID = nd.workflow_instanceID " +
+                    "WHERE ed.username='" + user + "'";
 
             rs = statement.executeQuery(queryString);
-            while (rs.next()) {
-                experimentData = new ExperimentDataImpl();
-                experimentData.setExperimentId(rs.getString(1));
-                experimentData.setExperimentName(rs.getString(2));
-                experimentData.setUser(rs.getString(3));
-                experimentData.setMetadata(rs.getString(4));
-                experimentData.setTopic(rs.getString(1));
-
-                WorkflowInstance workflowInstance = new WorkflowInstance(rs.getString(1), rs.getString(5));
-                workflowInstance.setTemplateName(rs.getString(6));
-                workflowInstance.setExperimentId(rs.getString(1));
-                workflowInstance.setWorkflowInstanceId(rs.getString(5));
-                experimentWorkflowInstances.add(workflowInstance);
-
-                Date lastUpdateDate = new Date(rs.getLong(9));
-                WorkflowInstanceData workflowInstanceData = new WorkflowInstanceData(null,
-                        workflowInstance, new WorkflowInstanceStatus(workflowInstance,
-                        rs.getString(7)==null? null: WorkflowInstanceStatus.ExecutionStatus.valueOf(rs.getString(7)),lastUpdateDate), null);
-                workflowInstanceData.setExperimentData(experimentData);
-
-                WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(workflowInstance, rs.getString(10));
-
-                WorkflowInstanceNodeData workflowInstanceNodeData = new WorkflowInstanceNodeData(workflowInstanceNode);
-                workflowInstanceNodeData.setInput(rs.getString(11));
-                workflowInstanceNodeData.setOutput(rs.getString(12));
-
-                workflowInstanceData.getNodeDataList().add(workflowInstanceNodeData);
-                try {
-					experimentData.getWorkflowInstanceData().add(workflowInstanceData);
-				} catch (ExperimentLazyLoadedException e) {
-					e.printStackTrace();
-				}
-                experimentDataList.add(experimentData);
+            if (rs != null) {
+                while (rs.next()) {
+                    ExperimentData experimentData = null;
+                    if (experimentDataMap.containsKey(rs.getString(1))) {
+                        experimentData = experimentDataMap.get(rs.getString(1));
+                    }else{
+                        experimentData = new ExperimentDataImpl();
+                        experimentData.setExperimentId(rs.getString(1));
+                        experimentData.setExperimentName(rs.getString(2));
+                        experimentData.setUser(rs.getString(3));
+                        experimentData.setMetadata(rs.getString(4));
+                        experimentData.setTopic(rs.getString(1));
+                        experimentDataMap.put(experimentData.getExperimentId(),experimentData);
+                        experimentDataList.add(experimentData);
+                    }
+                    fillWorkflowInstanceData(experimentData, rs, experimentWorkflowInstances);
+                }
             }
-            rs.close();
+            if (rs != null) {
+                rs.close();
+            }
             statement.close();
             connection.close();
         } catch (InstantiationException e) {
@@ -281,11 +277,17 @@ public class ExperimentDataRetriever {
             logger.error(e.getMessage(), e);
         } catch (ClassNotFoundException e) {
             logger.error(e.getMessage(), e);
-        } catch (SQLException e){
+        } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
+        } catch (ExperimentLazyLoadedException e) {
+            logger.error(e.getMessage(), e);
+        } catch (ParseException e) {
             logger.error(e.getMessage(), e);
         }
-        return experimentDataList;
+       return experimentDataList;
+
     }
+
 
     public ExperimentData getExperimentMetaInformation(String experimentId){
         String connectionURL =  Utils.getJDBCURL();
