@@ -1150,12 +1150,17 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	@Override
 	public List<ExperimentData> getExperimentByUser(String user)
 			throws RegistryException {
-		List<String> experimentIdByUser = getExperimentIdByUser(user);
-		List<ExperimentData> result=new ArrayList<ExperimentData>();
-		for (String id : experimentIdByUser) {
-			result.add(getExperiment(id));
-		}
-		return result;
+        if(user == null){
+            user = jpa.getWorker().getUser();
+        }
+        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
+        return experimentDataRetriever.getExperiments(user);
+//		List<String> experimentIdByUser = getExperimentIdByUser(user);
+//		List<ExperimentData> result=new ArrayList<ExperimentData>();
+//		for (String id : experimentIdByUser) {
+//			result.add(getExperiment(id));
+//		}
+//		return result;
 	}
 
 
