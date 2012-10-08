@@ -28,12 +28,15 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Node_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Node_DataPK;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import java.sql.Timestamp;
 import java.util.List;
 
 public class NodeDataResource extends AbstractResource{
+    private final static Logger logger = LoggerFactory.getLogger(NodeDataResource.class);
     private WorkflowDataResource workflowDataResource;
     private String nodeID;
     private String nodeType;
@@ -108,18 +111,22 @@ public class NodeDataResource extends AbstractResource{
     }
 
     public Resource create(ResourceType type) {
+        logger.error("Unsupported resource type for node data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
     public void remove(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for node data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
     public Resource get(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for node data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
     public List<Resource> get(ResourceType type) {
+        logger.error("Unsupported resource type for node data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 

@@ -133,6 +133,7 @@ public class GatewayResource extends AbstractResource {
                 workerResource.setGateway(this);
                 return workerResource;
             default:
+                logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
         }
     }
@@ -190,6 +191,7 @@ public class GatewayResource extends AbstractResource {
                 q.executeUpdate();
                 break;
             default:
+                logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
                 break;
         }
 
@@ -278,6 +280,7 @@ public class GatewayResource extends AbstractResource {
             default:
                 em.getTransaction().commit();
                 em.close();
+                logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
 
         }
@@ -398,6 +401,7 @@ public class GatewayResource extends AbstractResource {
             default:
                 em.getTransaction().commit();
                 em.close();
+                logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
         }
         em.getTransaction().commit();
@@ -471,6 +475,7 @@ public class GatewayResource extends AbstractResource {
                 em.close();
                 return existingExp != null;
             default:
+                logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
         }
     }

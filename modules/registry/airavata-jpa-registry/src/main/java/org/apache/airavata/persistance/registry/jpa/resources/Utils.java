@@ -47,9 +47,12 @@ import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
 import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.exception.UnknownRegistryConnectionDataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class Utils {
+    private final static Logger logger = LoggerFactory.getLogger(Utils.class);
 
     public static Properties loadProperties(){
         URL resource = Utils.class.getClassLoader().getResource("repository.properties");
@@ -57,7 +60,7 @@ public class Utils {
         try {
             properties.load(resource.openStream());
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Unable to read repository properties..", e);
         }
         return properties;
     }
@@ -74,7 +77,7 @@ public class Utils {
     	try {
             return getProvider().getValue(JPAConstants.KEY_JDBC_URL).toString();
 		} catch (UnknownRegistryConnectionDataException e) {
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return null;
 		}
     }
@@ -86,7 +89,7 @@ public class Utils {
             URI uri = URI.create(cleanURI);
             return uri.getHost();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return null;
         }
     }
@@ -98,7 +101,7 @@ public class Utils {
             URI uri = URI.create(cleanURI);
             return uri.getPort();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return -1;
         }
     }
@@ -110,7 +113,7 @@ public class Utils {
             URI uri = URI.create(cleanURI);
             return uri.getScheme();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return null;
         }
     }
@@ -132,7 +135,7 @@ public class Utils {
 				return getProvider().getValue(JPAConstants.KEY_JDBC_USER).toString();
 			}
 		} catch (UnknownRegistryConnectionDataException e) {
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
 		}
         Properties properties = loadProperties();
         return properties.getProperty(JPAConstants.KEY_JDBC_USER);
@@ -144,7 +147,7 @@ public class Utils {
 				return getProvider().getValue(JPAConstants.KEY_JDBC_PASSWORD).toString();
 			}
 		} catch (UnknownRegistryConnectionDataException e) {
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
 		}
         Properties properties = loadProperties();
         return properties.getProperty(JPAConstants.KEY_JDBC_PASSWORD);
@@ -156,7 +159,7 @@ public class Utils {
 				return getProvider().getValue(JPAConstants.KEY_JDBC_DRIVER).toString();
 			}
 		} catch (UnknownRegistryConnectionDataException e) {
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
 		}
         Properties properties = loadProperties();
         return properties.getProperty(JPAConstants.KEY_JDBC_DRIVER);
@@ -174,96 +177,112 @@ public class Utils {
                 if (o instanceof Gateway) {
                     return createGateway((Gateway) o);
                 } else {
+                    logger.error("Object should be a Gateway.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Gateway.");
                 }
             case PROJECT:
                 if (o instanceof Project){
                     return createProject((Project) o);
                 } else {
+                    logger.error("Object should be a Project.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Project.");
                 }
             case CONFIGURATION:
                 if(o instanceof Configuration){
                     return createConfiguration((Configuration) o);
                 }else {
+                    logger.error("Object should be a Configuration.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Configuration.");
                 }
             case APPLICATION_DESCRIPTOR:
                 if (o instanceof Application_Descriptor){
                     return createApplicationDescriptor((Application_Descriptor) o);
                 } else {
+                    logger.error("Object should be a Application Descriptor.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Application Descriptor.");
                 }
             case EXPERIMENT:
                 if (o instanceof Experiment){
                     return createExperiment((Experiment) o);
                 }  else {
+                    logger.error("Object should be a Experiment.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Experiment.");
                 }
             case USER:
                 if(o instanceof Users) {
                     return createUser((Users) o);
                 }else {
+                    logger.error("Object should be a User.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a User.");
                 }
             case HOST_DESCRIPTOR:
                 if (o instanceof Host_Descriptor){
                     return createHostDescriptor((Host_Descriptor) o);
                 }else {
+                    logger.error("Object should be a Host Descriptor.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Host Descriptor.");
                 }
             case SERVICE_DESCRIPTOR:
                 if (o instanceof Service_Descriptor){
                     return createServiceDescriptor((Service_Descriptor) o);
                 }else {
+                    logger.error("Object should be a Service Descriptor.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Service Descriptor.");
                 }
             case PUBLISHED_WORKFLOW:
                 if (o instanceof Published_Workflow){
                     return createPublishWorkflow((Published_Workflow) o);
                 }else {
+                    logger.error("Object should be a Publish Workflow.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Publish Workflow.");
                 }
             case USER_WORKFLOW:
                 if (o instanceof User_Workflow){
                     return createUserWorkflow((User_Workflow) o);
                 }else {
+                    logger.error("Object should be a User Workflow.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a User Workflow.");
                 }
             case GATEWAY_WORKER:
                 if (o instanceof Gateway_Worker){
                     return createGatewayWorker((Gateway_Worker)o);
                 } else {
+                    logger.error("Object should be a Gateway Worker.", new IllegalArgumentException());
                     throw  new IllegalArgumentException("Object should be a Gateway Worker.");
                 }
             case EXPERIMENT_DATA:
                 if (o instanceof  Experiment_Data){
                     return createExperimentData((Experiment_Data)o);
                 }else {
+                    logger.error("Object should be a Experiment Data.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Experiment Data.");
                 }
             case EXPERIMENT_METADATA:
                 if (o instanceof  Experiment_Metadata){
                     return createExperimentMetadata((Experiment_Metadata)o);
                 }else {
+                    logger.error("Object should be a Experiment Metadata.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Experiment Metadata.");
                 }
             case WORKFLOW_DATA:
                 if (o instanceof  Workflow_Data){
                     return createWorkflowData((Workflow_Data) o);
                 }else {
+                    logger.error("Object should be a Workflow Data.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Workflow Data.");
                 }
             case NODE_DATA:
                 if (o instanceof  Node_Data){
                     return createNodeData((Node_Data) o);
                 }else {
+                    logger.error("Object should be a Node Data.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Node Data.");
                 }
             case GRAM_DATA:
                 if (o instanceof  Gram_Data){
                     return createGramData((Gram_Data) o);
                 }else {
+                    logger.error("Object should be a Gram Data.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Gram Data.");
                 }
             default:
@@ -445,6 +464,11 @@ public class Utils {
         return userResource;
     }
 
+    /**
+     *
+     * @param o Experiment Data model object
+     * @return Experiment Data resource object
+     */
     private static Resource createExperimentData(Experiment_Data o){
         ExperimentDataResource experimentDataResource = new ExperimentDataResource();
         experimentDataResource.setExperimentID(o.getExperiment_ID());
@@ -453,6 +477,11 @@ public class Utils {
         return experimentDataResource;
     }
 
+    /**
+     *
+     * @param o Experiment MetaData model object
+     * @return Experiment MetaData resource object
+     */
     private static Resource createExperimentMetadata(Experiment_Metadata o) {
         ExperimentMetadataResource experimentMetadataResource = new ExperimentMetadataResource();
         experimentMetadataResource.setExpID(o.getExperiment_ID());
@@ -460,6 +489,11 @@ public class Utils {
         return experimentMetadataResource;
     }
 
+    /**
+     *
+     * @param o  Workflow_Data model object
+     * @return  WorkflowDataResource object
+     */
     private static Resource createWorkflowData(Workflow_Data o){
         WorkflowDataResource workflowDataResource = new WorkflowDataResource();
         workflowDataResource.setExperimentID(o.getExperiment_data().getExperiment_ID());
@@ -471,6 +505,11 @@ public class Utils {
         return workflowDataResource;
     }
 
+    /**
+     *
+     * @param o  Node_Data model object
+     * @return Node Data resource
+     */
     private static Resource createNodeData (Node_Data o){
         NodeDataResource nodeDataResource = new NodeDataResource();
         WorkflowDataResource workflowDataResource = (WorkflowDataResource)createWorkflowData(o.getWorkflow_Data());
@@ -489,6 +528,11 @@ public class Utils {
         return nodeDataResource;
     }
 
+    /**
+     *
+     * @param o GramData model object
+     * @return GramData Resource object
+     */
     private static Resource createGramData (Gram_Data o){
         GramDataResource gramDataResource = new GramDataResource();
         WorkflowDataResource workflowDataResource = (WorkflowDataResource)createWorkflowData(o.getWorkflow_Data());

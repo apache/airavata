@@ -26,10 +26,13 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 
 public class UserResource extends AbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(UserResource.class);
     private String userName;
     private String password;
     private String gatewayName;
@@ -79,6 +82,7 @@ public class UserResource extends AbstractResource {
      * @return child resource
      */
     public Resource create(ResourceType type) {
+        logger.error("Unsupported resource type for user resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
@@ -88,6 +92,7 @@ public class UserResource extends AbstractResource {
      * @param name child resource name
      */
     public void remove(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for user resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
@@ -98,6 +103,7 @@ public class UserResource extends AbstractResource {
      * @return UnsupportedOperationException
      */
     public Resource get(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for user resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
@@ -107,6 +113,7 @@ public class UserResource extends AbstractResource {
      * @return UnsupportedOperationException
      */
     public List<Resource> get(ResourceType type) {
+        logger.error("Unsupported resource type for user resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
@@ -140,6 +147,7 @@ public class UserResource extends AbstractResource {
      * @return UnsupportedOperationException
      */
     public boolean isExists(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for user resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 

@@ -25,6 +25,8 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -32,15 +34,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceDescriptorResource extends AbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(ServiceDescriptorResource.class);
     private String serviceDescName;
     private String gatewayName;
     private String userName;
     private String content;
-
-
-    public ServiceDescriptorResource(String serviceDescName) {
-        this.setServiceDescName(serviceDescName);
-    }
 
     public ServiceDescriptorResource() {
 
@@ -81,14 +79,17 @@ public class ServiceDescriptorResource extends AbstractResource {
             applicationDescriptorResource.setHostDescName(getServiceDescName());
             return applicationDescriptorResource;
         }
+        logger.error("Unsupported resource type for service descriptor resource.", new IllegalArgumentException());
         throw new IllegalArgumentException("Unsupported resource type for service descriptor resource.");
     }
 
     public void remove(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for service descriptor resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
     public Resource get(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for service descriptor resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
@@ -160,6 +161,7 @@ public class ServiceDescriptorResource extends AbstractResource {
     }
 
     public boolean isExists(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for service descriptor resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 

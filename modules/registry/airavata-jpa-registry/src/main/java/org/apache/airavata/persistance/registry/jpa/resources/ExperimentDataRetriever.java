@@ -109,18 +109,13 @@ public class ExperimentDataRetriever {
             statement.close();
             connection.close();
         } catch (InstantiationException e) {
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         } catch (SQLException e){
-            e.printStackTrace();
         }catch (ParseException e) {
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         }
         return experimentData;
@@ -138,7 +133,6 @@ public class ExperimentDataRetriever {
             connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(), Utils.getJDBCPassword());
             statement = connection.createStatement();
 
-//            String queryString = "SELECT experiment_ID FROM Experiment WHERE user_name ='" +  user + "'";
             // FIXME : pass user ID as a regular expression
             String queryString = "SELECT ed.experiment_ID FROM Experiment_Data ed " +
                     "LEFT JOIN Experiment e " +
@@ -156,16 +150,12 @@ public class ExperimentDataRetriever {
             statement.close();
             connection.close();
         } catch (InstantiationException e) {
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         } catch (SQLException e){
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         }
 
@@ -282,7 +272,6 @@ public class ExperimentDataRetriever {
         } catch (ClassNotFoundException e) {
             logger.error(e.getMessage(), e);
         } catch (SQLException e){
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         }
         return experimentDataList;
@@ -331,16 +320,12 @@ public class ExperimentDataRetriever {
             statement.close();
             connection.close();
         } catch (InstantiationException e) {
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         } catch (SQLException e){
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         }
         return experimentData;
@@ -392,16 +377,12 @@ public class ExperimentDataRetriever {
             statement.close();
             connection.close();
         } catch (InstantiationException e) {
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         } catch (SQLException e){
-            e.printStackTrace();
             logger.error(e.getMessage(), e);
         }
         return experimentDataList;

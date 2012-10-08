@@ -23,6 +23,8 @@ package org.apache.airavata.persistance.registry.jpa;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ResourceUtils {
+    private final static Logger logger = LoggerFactory.getLogger(ResourceUtils.class);
     private static final String PERSISTENCE_UNIT_NAME = "airavata_data";
     protected static EntityManagerFactory factory;
 
@@ -52,7 +55,6 @@ public class ResourceUtils {
             properties.put("openjpa.WriteLockLevel", "none");
             properties.put("openjpa.LockTimeout", "30000");
             properties.put("openjpa.LockManager", "none");
-//            properties.put("openjpa.jdbc.Schema", "AIRAVATA");
             properties.put("openjpa.ConnectionFactoryProperties","PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }
@@ -107,7 +109,7 @@ public class ResourceUtils {
             em.close();
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return false;
         }
 
@@ -133,7 +135,7 @@ public class ResourceUtils {
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 
     }
@@ -157,7 +159,7 @@ public class ResourceUtils {
             em.close();
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return false;
         }
 
@@ -267,6 +269,7 @@ public class ResourceUtils {
             em.close();
             return existing!= null;
         } catch (Exception e){
+            logger.error(e.getMessage(), e);
             throw new EntityNotFoundException();
         }
     }

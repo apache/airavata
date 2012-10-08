@@ -29,11 +29,14 @@ import org.apache.airavata.persistance.registry.jpa.model.Gram_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Gram_DataPK;
 import org.apache.airavata.persistance.registry.jpa.model.Node_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
 public class GramDataResource extends AbstractResource{
+    private final static Logger logger = LoggerFactory.getLogger(GramDataResource.class);
     private WorkflowDataResource workflowDataResource;
     private String nodeID;
     private String rsl;
@@ -81,18 +84,22 @@ public class GramDataResource extends AbstractResource{
     }
 
     public Resource create(ResourceType type) {
+        logger.error("Unsupported resource type for Gram data resource" ,new UnsupportedOperationException() );
         throw new UnsupportedOperationException();
     }
 
     public void remove(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for Gram data resource" ,new UnsupportedOperationException() );
         throw new UnsupportedOperationException();
     }
 
     public Resource get(ResourceType type, Object name) {
+        logger.error("Unsupported resource type for Gram data resource" ,new UnsupportedOperationException() );
         throw new UnsupportedOperationException();
     }
 
     public List<Resource> get(ResourceType type) {
+        logger.error("Unsupported resource type for Gram data resource" ,new UnsupportedOperationException() );
         throw new UnsupportedOperationException();
     }
 

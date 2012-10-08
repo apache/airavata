@@ -33,9 +33,12 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource.WorkflowDataConstants;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WorkerResource extends AbstractResource {
-	private String user;
+    private final static Logger logger = LoggerFactory.getLogger(WorkerResource.class);
+    private String user;
 	private GatewayResource gateway;
 
     /**
@@ -74,7 +77,9 @@ public class WorkerResource extends AbstractResource {
 				userWorkflowResource.setGateway(gateway);
 				result=userWorkflowResource;
 			default:
-				break;
+                logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported resource type for worker resource.");
+
 		}
 		return result;
 	}
@@ -118,7 +123,8 @@ public class WorkerResource extends AbstractResource {
                 q.executeUpdate();
                 break;
 			default:
-				break;
+                logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
+                break;
 		}
         em.getTransaction().commit();
         em.close();
@@ -169,7 +175,8 @@ public class WorkerResource extends AbstractResource {
                 WorkflowDataResource workflowDataResource = (WorkflowDataResource)Utils.getResource(ResourceType.WORKFLOW_DATA, eworkflowData);
                 result= workflowDataResource;
 			default:
-				break;
+                logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
+                break;
 		}
         em.getTransaction().commit();
         em.close();
@@ -222,7 +229,8 @@ public class WorkerResource extends AbstractResource {
 	            }
 	            break;
 			default:
-				break;
+                logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
+                break;
 		}
         em.getTransaction().commit();
         em.close();
