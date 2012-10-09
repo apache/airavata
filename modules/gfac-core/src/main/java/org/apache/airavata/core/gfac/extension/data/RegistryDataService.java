@@ -62,7 +62,7 @@ public class RegistryDataService extends DataServiceChain {
                 date = date.replaceAll(":", "_");
 
                 String tmpDir = appDesc.getScratchWorkingDirectory() + File.separator
-                        + appDesc.getApplicationName().getStringValue() + "_" + date + "_" + UUID.randomUUID();
+                        + serviceDesc.getType().getName() + "_" + date + "_" + UUID.randomUUID();
 
                 appDesc.setStaticWorkingDirectory(tmpDir);
             }
