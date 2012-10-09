@@ -1176,17 +1176,22 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	public boolean updateWorkflowNodeStatus(
 			WorkflowInstanceNodeStatus workflowStatusNode)
 			throws RegistryException {
-		if (!isWorkflowInstanceNodePresent(workflowStatusNode.getWorkflowInstanceNode().getWorkflowInstance().getWorkflowInstanceId(), workflowStatusNode.getWorkflowInstanceNode().getNodeId(), true)){
-			throw new WorkflowInstanceNodeDoesNotExistsException(workflowStatusNode.getWorkflowInstanceNode().getWorkflowInstance().getWorkflowInstanceId(), workflowStatusNode.getWorkflowInstanceNode().getNodeId());
+		WorkflowInstance workflowInstance = workflowStatusNode.getWorkflowInstanceNode().getWorkflowInstance();
+		String nodeId = workflowStatusNode.getWorkflowInstanceNode().getNodeId();
+		if (!isWorkflowInstanceNodePresent(workflowInstance.getWorkflowInstanceId(), nodeId, true)){
+			throw new WorkflowInstanceNodeDoesNotExistsException(workflowInstance.getWorkflowInstanceId(), nodeId);
 		}
-		NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(workflowStatusNode.getWorkflowInstanceNode().getWorkflowInstance().getWorkflowInstanceId()).getNodeData(workflowStatusNode.getWorkflowInstanceNode().getNodeId());
+		NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(workflowInstance.getWorkflowInstanceId()).getNodeData(nodeId);
 		nodeData.setStatus(workflowStatusNode.getExecutionStatus().toString());
+		Timestamp t = new Timestamp(workflowStatusNode.getStatusUpdateTime().getTime());
 		if (workflowStatusNode.getExecutionStatus()==ExecutionStatus.STARTED){
-			nodeData.setStartTime(new Timestamp(workflowStatusNode.getStatusUpdateTime().getTime()));
+			nodeData.setStartTime(t);
 		}
-		nodeData.setLastUpdateTime(new Timestamp(workflowStatusNode.getStatusUpdateTime().getTime()));
+		nodeData.setLastUpdateTime(t);
 		nodeData.save();
-		return true;
+		//Each time node status is updated the the time of update for the workflow status is going to be the same
+		WorkflowInstanceStatus currentWorkflowInstanceStatus = getWorkflowInstanceStatus(workflowInstance.getWorkflowInstanceId());
+		return updateWorkflowInstanceStatus(new WorkflowInstanceStatus(workflowInstance, currentWorkflowInstanceStatus.getExecutionStatus(),t));
 	}
 
 
