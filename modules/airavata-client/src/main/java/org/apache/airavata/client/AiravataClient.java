@@ -430,10 +430,11 @@ public class AiravataClient implements AiravataAPI {
 	private static int MAX_TIMEOUT=60000;
 	public String runWorkflow(final String topic, final NameValue[] inputs, final String user,
 			final String metadata, final String experimentName, final WorkflowContextHeaderBuilder builder, boolean launchOnThread) throws Exception{
+		runPreWorkflowExecutionTasks(topic, user, metadata,experimentName);
 		if (launchOnThread) {
 			new Thread(new Runnable() {
 				public void run() {
-					launchWorkflow(topic, inputs, user, metadata, experimentName, builder);
+					launchWorkflow(topic, inputs, builder);
 				}
 			}).start();
 			int timeout=0;
@@ -442,7 +443,7 @@ public class AiravataClient implements AiravataAPI {
 				timeout+=MAX_TIMEOUT;
 			}
 		}else{
-			launchWorkflow(topic, inputs, user, metadata, experimentName, builder);
+			launchWorkflow(topic, inputs, builder);
 		}
 		return topic;
 	}
@@ -894,8 +895,6 @@ public class AiravataClient implements AiravataAPI {
 	}
 
 	private void launchWorkflow(final String topic, final NameValue[] inputs,
-			final String user, final String metadata,
-			final String experimentName,
 			final WorkflowContextHeaderBuilder builder) {
 		try {
 			WorkflowInterpretorStub stub = new WorkflowInterpretorStub(
@@ -904,11 +903,8 @@ public class AiravataClient implements AiravataAPI {
 			stub._getServiceClient().addHeader(
 					AXIOMUtil.stringToOM(XMLUtil
 							.xmlElementToString(builder.getXml())));
-			runPreWorkflowExecutionTasks(topic, user, metadata,experimentName);
 			stub.launchWorkflow(workflow, topic, inputs);
 			//			log.info("Workflow output : " + worflowoutput);
-		} catch (RegistryException e) {
-			//			log.fine(e.getMessage(), e);
 		} catch (AxisFault e) {
 			e.printStackTrace();
 		} catch (XMLStreamException e) {
