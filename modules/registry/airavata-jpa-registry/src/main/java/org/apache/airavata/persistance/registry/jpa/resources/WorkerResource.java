@@ -76,6 +76,7 @@ public class WorkerResource extends AbstractResource {
 				userWorkflowResource.setWorker(this);
 				userWorkflowResource.setGateway(gateway);
 				result=userWorkflowResource;
+                break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for worker resource.");
@@ -174,6 +175,7 @@ public class WorkerResource extends AbstractResource {
                 Workflow_Data eworkflowData = (Workflow_Data)q.getSingleResult();
                 WorkflowDataResource workflowDataResource = (WorkflowDataResource)Utils.getResource(ResourceType.WORKFLOW_DATA, eworkflowData);
                 result= workflowDataResource;
+                break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 break;
