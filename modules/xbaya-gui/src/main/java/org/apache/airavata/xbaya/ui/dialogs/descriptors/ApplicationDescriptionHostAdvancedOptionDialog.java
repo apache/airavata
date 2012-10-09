@@ -126,16 +126,17 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         DefaultComboBoxModel cmbModelJobType = new DefaultComboBoxModel(getJobTypesAsStrings());
 		cmbJobType = new XBayaComboBox(cmbModelJobType);
         cmbJobType.setEditable(false);
-        cmbJobType.getSwingComponent().addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				boolean disabled=cmbJobType.getText().equalsIgnoreCase(JobTypeType.SERIAL.toString()) || cmbJobType.getText().equalsIgnoreCase(JobTypeType.SINGLE.toString());
-				txtCpuCount.setEnabled(!disabled);
-				txtProcessorsPerNode.setEnabled(!disabled);
-				lblCpuCount.getSwingComponent().setEnabled(!disabled);
-				lblProcessorPerNode.getSwingComponent().setEnabled(!disabled);
-			}
-        });
+        //FIXME:: Machines like trestles are mandating to have cpu and node types set. So better to have these enabled.
+//        cmbJobType.getSwingComponent().addActionListener(new ActionListener(){
+//			@Override
+//			public void actionPerformed(ActionEvent arg0) {
+//				boolean disabled=cmbJobType.getText().equalsIgnoreCase(JobTypeType.SERIAL.toString()) || cmbJobType.getText().equalsIgnoreCase(JobTypeType.SINGLE.toString());
+//				txtCpuCount.setEnabled(!disabled);
+//				txtProcessorsPerNode.setEnabled(!disabled);
+//				lblCpuCount.getSwingComponent().setEnabled(!disabled);
+//				lblProcessorPerNode.getSwingComponent().setEnabled(!disabled);
+//			}
+//        });
         
 		XBayaLabel lbljobType = new XBayaLabel("Job Type",cmbJobType);
 		XBayaLabel lblProjectAccountNumber = new XBayaLabel("Project Account Number *",txtProjectAccountNumber);
