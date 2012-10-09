@@ -57,6 +57,7 @@ public class WorkflowNodeStatusUpdater {
     public boolean workflowFailed(String workflowInstanceID,String nodeID){
         try {
             registry.updateWorkflowNodeStatus(workflowInstanceID, nodeID, WorkflowInstanceStatus.ExecutionStatus.FAILED);
+            registry.updateWorkflowInstanceStatus(workflowInstanceID, WorkflowInstanceStatus.ExecutionStatus.FAILED);
         } catch (RegistryException e) {
             logger.error("Error updating Wokflow Node status !!");
             return false;
