@@ -175,6 +175,11 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
         } else if (type == MonitorUtil.EventType.WORKFLOW_TERMINATED) {
             workflowFinished(graph, forward);
             workflowStatusUpdater.workflowFinished(event.getExperimentID());
+            try {
+                this.unsubscribe();
+            } catch (MonitorException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         } else if (type == EventType.INVOKING_SERVICE || type == EventType.SERVICE_INVOKED) {
             if (node == null) {
                 logger.warn("There is no node that has ID, " + nodeID);
@@ -191,7 +196,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
                 logger.warn("There is no node that has ID, " + nodeID);
             } else {
                 nodeFinished(node, forward);
-                workflowNodeStatusUpdater.workflowFinished(event.getExperimentID(), event.getNodeID(),event.getMessage(),
+                workflowNodeStatusUpdater.workflowFinished(event.getExperimentID(), event.getNodeID(), event.getMessage(),
                         event.getWorkflowID().toASCIIString());
             }
         } else if (type == EventType.INVOKING_SERVICE_FAILED || type == EventType.RECEIVED_FAULT
@@ -202,6 +207,11 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
             } else {
                 nodeFailed(node, forward);
                 workflowNodeStatusUpdater.workflowFailed(event.getExperimentID(), event.getNodeID());
+            }
+            try {
+                this.unsubscribe();
+            } catch (MonitorException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         } else if (type == MonitorUtil.EventType.RESOURCE_MAPPING) {
             if (node == null) {
