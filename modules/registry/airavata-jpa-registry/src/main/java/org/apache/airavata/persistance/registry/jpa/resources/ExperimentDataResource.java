@@ -92,15 +92,14 @@ public class ExperimentDataResource extends AbstractResource{
         switch (type){
             case WORKFLOW_DATA:
                 generator = new QueryGenerator(WORKFLOW_DATA);
-                generator.setParameter(WorkflowDataConstants.EXPERIMENT_ID, experimentID);
+//                generator.setParameter(WorkflowDataConstants.EXPERIMENT_ID, experimentID);
                 generator.setParameter(WorkflowDataConstants.WORKFLOW_INSTANCE_ID, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;
             case EXPERIMENT_METADATA:
                 generator = new QueryGenerator(EXPERIMENT_METADATA);
-                generator.setParameter(ExperimentDataConstants.EXPERIMENT_ID, experimentID);
-                generator.setParameter(ExperimentDataConstants.METADATA, name);
+                generator.setParameter(ExperimentDataConstants.EXPERIMENT_ID, name);
                 q = generator.deleteQuery(em);
                 q.executeUpdate();
                 break;

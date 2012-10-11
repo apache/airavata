@@ -216,9 +216,9 @@ public class GatewayResource extends AbstractResource {
                 generator.setParameter(GatewayWorkerConstants.USERNAME, name);
                 generator.setParameter(GatewayWorkerConstants.GATEWAY_NAME, gatewayName);
                 q = generator.selectQuery(em);
-                Users eUser = (Users) q.getSingleResult();
+                Gateway_Worker worker = (Gateway_Worker) q.getSingleResult();
                 WorkerResource workerResource =
-                        (WorkerResource)Utils.getResource(ResourceType.GATEWAY_WORKER, eUser);
+                        (WorkerResource)Utils.getResource(ResourceType.GATEWAY_WORKER, worker);
                 em.getTransaction().commit();
                 em.close();
                 return workerResource;
@@ -302,7 +302,8 @@ public class GatewayResource extends AbstractResource {
         switch (type){
             case PROJECT:
                 generator = new QueryGenerator(PROJECT);
-                generator.setParameter(ProjectConstants.GATEWAY_NAME, gatewayName);
+                Gateway gatewayModel = em.find(Gateway.class, gatewayName);
+                generator.setParameter("gateway", gatewayModel);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -453,6 +454,7 @@ public class GatewayResource extends AbstractResource {
                 em = ResourceUtils.getEntityManager();
                 Published_Workflow existingWf = em.find(Published_Workflow.class, new Published_Workflow_PK(gatewayName, name.toString()));
                 em.close();
+                boolean a = existingWf != null;
                 return existingWf != null;
             case HOST_DESCRIPTOR:
                 em = ResourceUtils.getEntityManager();

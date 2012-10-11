@@ -113,8 +113,8 @@ public class ProjectResource extends AbstractResource {
             EntityManager em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
         	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
-        	generator.setParameter(ExperimentConstants.PROJECT_NAME, name);
-        	generator.setParameter(ExperimentConstants.USERNAME, getWorker().getUser());
+//        	generator.setParameter(ExperimentConstants.PROJECT_NAME, name);
+//        	generator.setParameter(ExperimentConstants.USERNAME, getWorker().getUser());
         	generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
         	Query q = generator.selectQuery(em);
             Experiment experiment = (Experiment) q.getSingleResult();
@@ -175,7 +175,7 @@ public class ProjectResource extends AbstractResource {
                 for (Object result : results) {
                     Experiment experiment = (Experiment) result;
                     ExperimentResource experimentResource = (ExperimentResource)
-                            Utils.getResource(ResourceType.USER, experiment);
+                            Utils.getResource(ResourceType.EXPERIMENT, experiment);
                     resourceList.add(experimentResource);
                 }
             }

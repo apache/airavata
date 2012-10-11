@@ -76,6 +76,27 @@ public class ResourceUtils {
 
     }
 
+    public static Resource getGateway(String gatewayName) {
+        if (isGatewayExist(gatewayName)) {
+            EntityManager em = getEntityManager();
+            Gateway gateway = em.find(Gateway.class, gatewayName);
+            GatewayResource gatewayResource = (GatewayResource)Utils.getResource(ResourceType.GATEWAY, gateway);
+            em.close();
+            return gatewayResource;
+        }
+        return null;
+
+    }
+
+    public static Resource getWorker(String gatewayName, String userName) {
+        EntityManager em = getEntityManager();
+        Gateway_Worker gatewayWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayName, userName));
+        WorkerResource workerResource = (WorkerResource) Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
+        em.close();
+        return workerResource;
+    }
+
+
     /**
      * @param gatewayName
      * @return
