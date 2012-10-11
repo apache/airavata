@@ -412,7 +412,7 @@ public class HostDescriptionDialog extends JDialog {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		setHostCreated(false);
+//		setHostCreated(false);
     }
 
     public AiravataRegistry2 getRegistry() {
