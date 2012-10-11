@@ -343,6 +343,7 @@ public class WorkflowInterpreter {
 			// we reset all the state
 			cleanup();
 			this.config.getNotifier().cleanup();
+            this.config.getNotifier().workflowFailed(e.getMessage());
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
 			raiseException(e);
 		}
