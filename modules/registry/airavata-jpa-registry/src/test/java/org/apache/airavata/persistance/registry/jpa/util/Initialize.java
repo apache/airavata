@@ -91,7 +91,8 @@ public class Initialize {
 
 
         if (Utils.getDBType().equals("derby")) {
-            startDerbyInServerMode();
+//            startDerbyInServerMode();
+            startDerbyInEmbeddedMode();
         }
 
 
@@ -254,5 +255,16 @@ public class Initialize {
                     "specified port is available");
         }
 
+    }
+
+    private void startDerbyInEmbeddedMode(){
+        try {
+            Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+            DriverManager.getConnection("jdbc:derby:memory:unit-testing-jpa;create=true").close();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (SQLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 }
