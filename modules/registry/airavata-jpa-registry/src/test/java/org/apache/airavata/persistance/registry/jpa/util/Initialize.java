@@ -91,8 +91,8 @@ public class Initialize {
 
 
         if (Utils.getDBType().equals("derby")) {
-//            startDerbyInServerMode();
-            startDerbyInEmbeddedMode();
+            startDerbyInServerMode();
+//            startDerbyInEmbeddedMode();
         }
 
 
@@ -243,7 +243,7 @@ public class Initialize {
         try {
             System.setProperty(DERBY_SERVER_MODE_SYS_PROPERTY, "true");
             server = new NetworkServerControl(InetAddress.getByName(Utils.getHost()),
-                    Utils.getPort(),
+                    20000,
                     Utils.getJDBCUser(), Utils.getJDBCUser());
             java.io.PrintWriter consoleWriter = new java.io.PrintWriter(System.out, true);
             server.start(consoleWriter);
