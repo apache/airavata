@@ -375,8 +375,10 @@ public class Utils {
      * @return  Gateway_Worker resource object
      */
     private static Resource createGatewayWorker(Gateway_Worker o) {
-        GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
-        return new WorkerResource(o.getUser().getUser_name(),gatewayResource);
+        GatewayResource gatewayResource = new GatewayResource(o.getGateway().getGateway_name());
+        gatewayResource.setOwner(o.getGateway().getOwner());
+        WorkerResource workerResource = new WorkerResource(o.getUser().getUser_name(), gatewayResource);
+        return workerResource;
     }
 
     /**

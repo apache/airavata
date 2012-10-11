@@ -77,6 +77,12 @@ public class WorkerResource extends AbstractResource {
 				userWorkflowResource.setGateway(gateway);
 				result=userWorkflowResource;
                 break;
+            case EXPERIMENT:
+                ExperimentResource experimentResource = new ExperimentResource();
+                experimentResource.setWorker(this);
+                experimentResource.setGateway(gateway);
+                result=experimentResource;
+                break;
 			default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for worker resource.");
@@ -199,8 +205,12 @@ public class WorkerResource extends AbstractResource {
 		switch (type) {
 			case PROJECT:
                 generator = new QueryGenerator(PROJECT);
-                generator.setParameter(ProjectConstants.USERNAME, getUser());
-                generator.setParameter(ProjectConstants.GATEWAY_NAME, gateway.getGatewayName());
+                Users users = em.find(Users.class, getUser());
+                Gateway gatewayModel = em.find(Gateway.class, gateway.getGatewayName());
+                generator.setParameter("users", users);
+                generator.setParameter("gateway", gatewayModel);
+//                generator.setParameter(ProjectConstants.USERNAME, getUser());
+//                generator.setParameter(ProjectConstants.GATEWAY_NAME, gateway.getGatewayName());
                 q = generator.selectQuery(em);
 	            for (Object o : q.getResultList()) {
 	            	Project project = (Project) o;
