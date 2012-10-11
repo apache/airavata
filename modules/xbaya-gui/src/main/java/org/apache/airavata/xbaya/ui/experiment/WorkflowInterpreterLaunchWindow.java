@@ -204,12 +204,12 @@ public class WorkflowInterpreterLaunchWindow {
         infoPanel.add(this.topicTextField);
         infoPanel.add(workflowInterpreterLabel);
         infoPanel.add(this.workflowInterpreterTextField);
-        infoPanel.add(RegistryLabel);
-        infoPanel.add(this.RegistryTextField);
         infoPanel.add(gfacLabel);
         infoPanel.add(this.gfacTextField);
+//        infoPanel.add(RegistryLabel);
+//        infoPanel.add(this.RegistryTextField);
 
-        infoPanel.layout(5, 2, GridPanel.WEIGHT_NONE, 1);
+        infoPanel.layout(4, 2, GridPanel.WEIGHT_NONE, 1);
 
         GridPanel mainPanel = new GridPanel();
         mainPanel.add(this.parameterPanel);
