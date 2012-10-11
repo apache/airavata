@@ -224,11 +224,18 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
      */
 
 	public java.lang.String launchWorkflow(java.lang.String workflowAsString, java.lang.String topic, NameValue[] inputs) throws XMLStreamException {
-        OMElement workflowContext = getWorkflowContextHeader();        Map<String, String> configuration = new HashMap<String, String>();
+        OMElement workflowContext = getWorkflowContextHeader();
+        Map<String, String> configuration = new HashMap<String, String>();
         WorkflowContextHeaderBuilder workflowContextHeaderBuilder = parseContextHeader(workflowContext, configuration);
-        return setupAndLaunch(workflowAsString, topic,
-                (String)configurationContext.getProperty(MYPROXY_USER),(String)configurationContext.getProperty(MYPROXY_PASS),inputs,configuration,runInThread,workflowContextHeaderBuilder);
-	}
+        String s = null;
+        try {
+             s = setupAndLaunch(workflowAsString, topic,
+                    (String) configurationContext.getProperty(MYPROXY_USER), (String) configurationContext.getProperty(MYPROXY_PASS), inputs, configuration, runInThread, workflowContextHeaderBuilder);
+        } catch (XMLStreamException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return s;
+    }
 
     private OMElement getWorkflowContextHeader() {
         MessageContext currentMessageContext = MessageContext.getCurrentMessageContext();
