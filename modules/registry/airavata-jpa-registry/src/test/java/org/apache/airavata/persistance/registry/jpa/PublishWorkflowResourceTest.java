@@ -21,36 +21,32 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.PublishWorkflowResource;
-import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 import java.sql.Date;
 import java.util.Calendar;
 
-public class PublishWorkflowResourceTest extends TestCase {
+public class PublishWorkflowResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
     private PublishWorkflowResource publishWorkflowResource;
 
-    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
-        initialize = new Initialize();
-        initialize.initializeDB();
-        gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
+        super.setUp();
+        gatewayResource = super.getGatewayResource();
         publishWorkflowResource = gatewayResource.createPublishedWorkflow("workflow1");
         publishWorkflowResource.setCreatedUser("testUser");
         publishWorkflowResource.setContent("testContent");
         Calendar calender = Calendar.getInstance();
-        java.util.Date d =  calender.getTime();
+        java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
         publishWorkflowResource.setPublishedDate(currentTime);
     }
 
     public void testSave() throws Exception {
         publishWorkflowResource.save();
-        if(gatewayResource.isPublishedWorkflowExists("workflow1")){
+        if (gatewayResource.isPublishedWorkflowExists("workflow1")) {
             assertTrue("published workflow saved successfully", true);
         }
         //remove workflow
@@ -58,8 +54,7 @@ public class PublishWorkflowResourceTest extends TestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        initialize.stopDerbyServer();
-//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 }

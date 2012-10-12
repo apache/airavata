@@ -21,34 +21,32 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
 import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 import java.sql.Date;
 import java.util.Calendar;
 
-public class ConfigurationResourceTest extends TestCase {
+public class ConfigurationResourceTest extends AbstractResourceTest {
 
-    private Initialize initialize ;
+    private Initialize initialize;
+
     @Override
     public void setUp() throws Exception {
-        initialize = new Initialize();
-        initialize.initializeDB();
-//        super.setUp();
+        super.setUp();
     }
 
     public void testSave() throws Exception {
         ConfigurationResource configuration = ResourceUtils.createConfiguration("testConfigKey");
         configuration.setConfigVal("testConfigValue");
         Calendar calender = Calendar.getInstance();
-        java.util.Date d =  calender.getTime();
+        java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
         configuration.setExpireDate(currentTime);
         configuration.save();
 
-        if(ResourceUtils.isConfigurationExist("testConfigKey")){
-            assertTrue("Configuration Save succuessful" , true);
+        if (ResourceUtils.isConfigurationExist("testConfigKey")) {
+            assertTrue("Configuration Save succuessful", true);
         }
 
         //remove test configuration
@@ -56,8 +54,7 @@ public class ConfigurationResourceTest extends TestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        initialize.stopDerbyServer();
-//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 }

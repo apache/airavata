@@ -21,34 +21,22 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 import org.junit.*;
 
-public class ApplicationDescriptorResourceTest extends TestCase {
+public class ApplicationDescriptorResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
-    private Initialize initialize;
 
     @BeforeClass
     public void setUp() throws Exception {
-        initialize = new Initialize();
-        initialize.initializeDB();
-        Class[] testClasses = { ConfigurationResourceTest.class,
-                GatewayResourceTest.class, UserResourceTest.class, WorkerResourceTest.class, ProjectResourceTest.class,
-                HostDescriptorResourceTest.class, ServiceDescriptorResourceTest.class, ApplicationDescriptorResourceTest.class,
-                UserWorkflowResourceTest.class, PublishWorkflowResourceTest.class,
-                ExperimentResourceTest.class, ExperimentMetadataResourceTest.class, ExperimentDataResourceTest.class,
-                WorkflowDataResourceTest.class, NodeDataResourceTest.class, GramDataResourceTest.class};
-        TestSuite testSuite = new TestSuite(testClasses);
-        gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
+        super.setUp();
+        gatewayResource = super.getGatewayResource();
     }
 
     @org.junit.Test
-    public void testSave() throws Exception{
-        ApplicationDescriptorResource applicationDescriptorResouce = (ApplicationDescriptorResource)gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
+    public void testSave() throws Exception {
+        ApplicationDescriptorResource applicationDescriptorResouce = (ApplicationDescriptorResource) gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
         applicationDescriptorResouce.setHostDescName("testHostDesc");
         applicationDescriptorResouce.setServiceDescName("testServiceDesc");
         applicationDescriptorResouce.setName("testAppDesc");
@@ -56,7 +44,7 @@ public class ApplicationDescriptorResourceTest extends TestCase {
         applicationDescriptorResouce.setUpdatedUser("testUser");
         applicationDescriptorResouce.save();
 
-        if(gatewayResource.isExists(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc") ){
+        if (gatewayResource.isExists(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc")) {
             assertTrue("application descriptor saved successfully", true);
         }
 
@@ -64,8 +52,7 @@ public class ApplicationDescriptorResourceTest extends TestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        initialize.stopDerbyServer();
-//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 }

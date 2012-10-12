@@ -21,30 +21,26 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
-import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 import java.sql.Date;
 import java.util.Calendar;
 
-public class ProjectResourceTest extends TestCase {
+public class ProjectResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
     private WorkerResource workerResource;
     private ProjectResource projectResource;
     private ExperimentResource experimentResource;
 
-    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
-        initialize = new Initialize();
-        initialize.initializeDB();
-        gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
-        workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "testUser");
-        projectResource =  workerResource.createProject("testProject");
+        super.setUp();
+        gatewayResource = super.getGatewayResource();
+        workerResource = super.getWorkerResource();
+        projectResource = workerResource.createProject("testProject");
         projectResource.setGateway(gatewayResource);
         projectResource.setWorker(workerResource);
         projectResource.save();
@@ -55,7 +51,7 @@ public class ProjectResourceTest extends TestCase {
         experimentResource.setGateway(gatewayResource);
         experimentResource.setWorker(workerResource);
         Calendar calender = Calendar.getInstance();
-        java.util.Date d =  calender.getTime();
+        java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
         experimentResource.setSubmittedDate(currentTime);
         experimentResource.setProject(projectResource);
@@ -68,14 +64,14 @@ public class ProjectResourceTest extends TestCase {
         assertNotNull("experiment resource retrieved successfully", experiment);
     }
 
-     public void testGetList() throws Exception {
-         assertNotNull("experiment resources retrieved successfully", projectResource.getExperiments());
-     }
+    public void testGetList() throws Exception {
+        assertNotNull("experiment resources retrieved successfully", projectResource.getExperiments());
+    }
 
     public void testSave() throws Exception {
         projectResource.save();
 
-        if(workerResource.isProjectExists("testProject")){
+        if (workerResource.isProjectExists("testProject")) {
             assertTrue("Project saved successfully", true);
         }
         //remove project
@@ -85,14 +81,13 @@ public class ProjectResourceTest extends TestCase {
 
     public void testRemove() throws Exception {
         projectResource.removeExperiment("testExpID");
-        if(!projectResource.isExperimentExists("testExpID")) {
+        if (!projectResource.isExperimentExists("testExpID")) {
             assertTrue("experiment removed successfully", true);
         }
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        initialize.stopDerbyServer();
-//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 }

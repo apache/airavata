@@ -21,52 +21,41 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
-import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 import java.sql.Date;
 import java.util.Calendar;
 
 
-public class GatewayResourceTest extends TestCase {
+public class GatewayResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
     private ProjectResource projectResource;
     private UserResource userResource;
     private WorkerResource workerResource;
 
-    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
-        initialize = new Initialize();
-        initialize.initializeDB();
-        gatewayResource = (GatewayResource)ResourceUtils.createGateway("gateway1");
-        if(gatewayResource == null){
-            gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
+        super.setUp();
+        gatewayResource = super.getGatewayResource();
+        workerResource = super.getWorkerResource();
+        userResource = super.getUserResource();
+        if (gatewayResource == null) {
+            gatewayResource = (GatewayResource) ResourceUtils.getGateway("gateway1");
         }
-        projectResource = (ProjectResource)gatewayResource.create(ResourceType.PROJECT);
-        userResource = (UserResource)gatewayResource.create(ResourceType.USER);
-        workerResource = (WorkerResource)gatewayResource.create(ResourceType.GATEWAY_WORKER);
-
-        userResource.setUserName("testUser");
-        userResource.setPassword("testUser");
-        userResource.save();
-
-        workerResource.setUser("testUser");
-        workerResource.save();
+        projectResource = (ProjectResource) gatewayResource.create(ResourceType.PROJECT);
 
         projectResource.setName("testProject");
         projectResource.setWorker(workerResource);
         projectResource.save();
     }
 
-     @org.junit.Test
+    @org.junit.Test
     public void testSave() throws Exception {
         gatewayResource.setOwner("owner1");
         gatewayResource.save();
 
         boolean gatewayExist = ResourceUtils.isGatewayExist("gateway1");
-        if(gatewayExist){
+        if (gatewayExist) {
             assertTrue("The gateway exisits", gatewayExist);
         }
 
@@ -75,12 +64,12 @@ public class GatewayResourceTest extends TestCase {
     @org.junit.Test
     public void testCreate() throws Exception {
 
-        PublishWorkflowResource publishWorkflowResource = (PublishWorkflowResource)gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
-        UserWorkflowResource userWorkflowResource = (UserWorkflowResource)gatewayResource.create(ResourceType.USER_WORKFLOW);
-        HostDescriptorResource hostDescriptorResource = (HostDescriptorResource)gatewayResource.create(ResourceType.HOST_DESCRIPTOR);
-        ServiceDescriptorResource serviceDescriptorResource = (ServiceDescriptorResource)gatewayResource.create(ResourceType.SERVICE_DESCRIPTOR);
-        ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource)gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
-        ExperimentResource experimentResource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
+        PublishWorkflowResource publishWorkflowResource = (PublishWorkflowResource) gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
+        UserWorkflowResource userWorkflowResource = (UserWorkflowResource) gatewayResource.create(ResourceType.USER_WORKFLOW);
+        HostDescriptorResource hostDescriptorResource = (HostDescriptorResource) gatewayResource.create(ResourceType.HOST_DESCRIPTOR);
+        ServiceDescriptorResource serviceDescriptorResource = (ServiceDescriptorResource) gatewayResource.create(ResourceType.SERVICE_DESCRIPTOR);
+        ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource) gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
+        ExperimentResource experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
 
         hostDescriptorResource.setUserName(workerResource.getUser());
         hostDescriptorResource.setHostDescName("testHostDesc");
@@ -100,7 +89,7 @@ public class GatewayResourceTest extends TestCase {
         applicationDescriptorResource.save();
 
         Calendar calender = Calendar.getInstance();
-        java.util.Date d =  calender.getTime();
+        java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
         userWorkflowResource.setName("workflow1");
         userWorkflowResource.setLastUpdateDate(currentTime);
@@ -112,7 +101,7 @@ public class GatewayResourceTest extends TestCase {
         publishWorkflowResource.setCreatedUser("testUser");
         publishWorkflowResource.setContent("testContent");
         Calendar c = Calendar.getInstance();
-        java.util.Date da =  c.getTime();
+        java.util.Date da = c.getTime();
         Date time = new Date(da.getTime());
         publishWorkflowResource.setPublishedDate(time);
         publishWorkflowResource.save();
@@ -184,11 +173,11 @@ public class GatewayResourceTest extends TestCase {
         gatewayResource.remove(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc");
         assertFalse(gatewayResource.isExists(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc"));
 
-        PublishWorkflowResource publishWorkflowResource = (PublishWorkflowResource)gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
-        HostDescriptorResource hostDescriptorResource = (HostDescriptorResource)gatewayResource.create(ResourceType.HOST_DESCRIPTOR);
-        ServiceDescriptorResource serviceDescriptorResource = (ServiceDescriptorResource)gatewayResource.create(ResourceType.SERVICE_DESCRIPTOR);
-        ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource)gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
-        ExperimentResource experimentResource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
+        PublishWorkflowResource publishWorkflowResource = (PublishWorkflowResource) gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
+        HostDescriptorResource hostDescriptorResource = (HostDescriptorResource) gatewayResource.create(ResourceType.HOST_DESCRIPTOR);
+        ServiceDescriptorResource serviceDescriptorResource = (ServiceDescriptorResource) gatewayResource.create(ResourceType.SERVICE_DESCRIPTOR);
+        ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource) gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
+        ExperimentResource experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
 
         hostDescriptorResource.setUserName(workerResource.getUser());
         hostDescriptorResource.setHostDescName("testHostDesc");
@@ -208,14 +197,14 @@ public class GatewayResourceTest extends TestCase {
         applicationDescriptorResource.save();
 
         Calendar calender = Calendar.getInstance();
-        java.util.Date d =  calender.getTime();
+        java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
 
         publishWorkflowResource.setName("pubworkflow1");
         publishWorkflowResource.setCreatedUser("testUser");
         publishWorkflowResource.setContent("testContent");
         Calendar c = Calendar.getInstance();
-        java.util.Date da =  c.getTime();
+        java.util.Date da = c.getTime();
         Date time = new Date(da.getTime());
         publishWorkflowResource.setPublishedDate(time);
         publishWorkflowResource.save();
@@ -229,8 +218,7 @@ public class GatewayResourceTest extends TestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        initialize.stopDerbyServer();
-//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 }

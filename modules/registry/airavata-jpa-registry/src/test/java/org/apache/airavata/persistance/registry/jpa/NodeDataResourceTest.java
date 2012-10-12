@@ -21,61 +21,54 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
-import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-public class NodeDataResourceTest extends TestCase {
+public class NodeDataResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
     private ExperimentResource experimentResource;
     private WorkerResource workerResource;
     private ExperimentDataResource experimentDataResource;
     private WorkflowDataResource workflowDataResource;
 
-    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
-        initialize = new Initialize();
-        initialize.initializeDB();
-        gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
-        workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "testUser");
+        super.setUp();
+        gatewayResource = super.getGatewayResource();
+        workerResource = super.getWorkerResource();
 
-        experimentResource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
+        experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
         experimentResource.setExpID("testExpID");
         experimentResource.setWorker(workerResource);
         experimentResource.setProject(new ProjectResource(workerResource, gatewayResource, "testProject"));
         experimentResource.save();
 
-        experimentDataResource = (ExperimentDataResource)experimentResource.create(ResourceType.EXPERIMENT_DATA);
+        experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
         experimentDataResource.setExpName("testExp");
         experimentDataResource.setUserName(workerResource.getUser());
         experimentDataResource.save();
 
-        workflowDataResource = (WorkflowDataResource)experimentDataResource.create(ResourceType.WORKFLOW_DATA);
+        workflowDataResource = (WorkflowDataResource) experimentDataResource.create(ResourceType.WORKFLOW_DATA);
         workflowDataResource.setWorkflowInstanceID("testWFInstance");
         workflowDataResource.setTemplateName("testTemplate");
         workflowDataResource.setExperimentID("testExpID");
         Calendar calender = Calendar.getInstance();
-        java.util.Date d =  calender.getTime();
+        java.util.Date d = calender.getTime();
         Timestamp timestamp = new Timestamp(d.getTime());
         workflowDataResource.setLastUpdatedTime(timestamp);
         workflowDataResource.save();
-
-//        super.setUp();
     }
 
     public void testSave() throws Exception {
         NodeDataResource nodeDataResource = workflowDataResource.createNodeData("testNodeID");
         nodeDataResource.setInputs("testInput");
 
-//        nodeDataResource.setWorkflowDataResource(workflowDataResource);
         nodeDataResource.setStatus("testStatus");
         nodeDataResource.save();
 
-        if(workflowDataResource.isNodeExists("testNodeID")){
+        if (workflowDataResource.isNodeExists("testNodeID")) {
             assertTrue("node data resource saved successfully", true);
         }
         //remove node data
@@ -83,9 +76,8 @@ public class NodeDataResourceTest extends TestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        initialize.stopDerbyServer();
-//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 
 }

@@ -21,37 +21,28 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
-import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 import java.sql.Date;
 import java.util.Calendar;
 
-public class WorkerResourceTest extends TestCase {
+public class WorkerResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
     private WorkerResource workerResource;
     private UserResource userResource;
 
-    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
-        initialize = new Initialize();
-        initialize.initializeDB();
-        gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
-        workerResource = new WorkerResource();
-        workerResource.setGateway(gatewayResource);
-        workerResource.setUser("testUser");
-        userResource = (UserResource)gatewayResource.create(ResourceType.USER);
-        userResource.setUserName("testUser");
-        userResource.setPassword("testPassword");
-        userResource.save();
+        super.setUp();
+        gatewayResource = super.getGatewayResource();
+        workerResource = super.getWorkerResource();
+        userResource = super.getUserResource();
     }
 
     public void testCreate() throws Exception {
         ProjectResource testProject = workerResource.createProject("testProject");
         UserWorkflowResource userWorkflowResource = workerResource.createWorkflowTemplate("workflow1");
-        ExperimentResource experimentResource = (ExperimentResource)workerResource.create(ResourceType.EXPERIMENT);
+        ExperimentResource experimentResource = (ExperimentResource) workerResource.create(ResourceType.EXPERIMENT);
 
         testProject.setGateway(gatewayResource);
         testProject.save();
@@ -64,7 +55,7 @@ public class WorkerResourceTest extends TestCase {
         experimentResource.setExpID("testExpID");
         experimentResource.setProject(testProject);
         Calendar calender = Calendar.getInstance();
-        java.util.Date d =  calender.getTime();
+        java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
         experimentResource.setSubmittedDate(currentTime);
         experimentResource.save();
@@ -74,13 +65,13 @@ public class WorkerResourceTest extends TestCase {
     }
 
     public void testGet() throws Exception {
-        assertNotNull("project resource retrieved successfully" ,workerResource.get(ResourceType.PROJECT, "testProject"));
+        assertNotNull("project resource retrieved successfully", workerResource.get(ResourceType.PROJECT, "testProject"));
         assertNotNull("user workflow retrieved successfully", workerResource.get(ResourceType.USER_WORKFLOW, "workflow1"));
         assertNotNull("experiment retrieved successfully", workerResource.get(ResourceType.EXPERIMENT, "testExpID"));
     }
 
     public void testGetList() throws Exception {
-        assertNotNull("project resources retrieved successfully" ,workerResource.get(ResourceType.PROJECT));
+        assertNotNull("project resources retrieved successfully", workerResource.get(ResourceType.PROJECT));
         assertNotNull("user workflows retrieved successfully", workerResource.get(ResourceType.USER_WORKFLOW));
         assertNotNull("experiments retrieved successfully", workerResource.get(ResourceType.EXPERIMENT));
 
@@ -88,7 +79,7 @@ public class WorkerResourceTest extends TestCase {
 
     public void testSave() throws Exception {
         workerResource.save();
-        if(gatewayResource.isExists(ResourceType.USER, "testUser")){
+        if (gatewayResource.isExists(ResourceType.USER, "testUser")) {
             assertTrue("worker resource saved successfully", true);
         }
         //remove
@@ -101,24 +92,23 @@ public class WorkerResourceTest extends TestCase {
         workerResource.removeWorkflowTemplate("workflow1");
         workerResource.removeExperiment("testExpID");
 
-        if(!workerResource.isProjectExists("testProject")){
+        if (!workerResource.isProjectExists("testProject")) {
             assertTrue("project has been removed successfully", true);
         }
 
-        if(!workerResource.isExperimentExists("testExpID")){
+        if (!workerResource.isExperimentExists("testExpID")) {
             assertTrue("experiment has been removed successfully", true);
         }
 
-        if(!workerResource.isWorkflowTemplateExists("workflow1")){
+        if (!workerResource.isWorkflowTemplateExists("workflow1")) {
             assertTrue("user workflow has been removed successfully", true);
         }
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        initialize.stopDerbyServer();
-//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 
 
-    }
+}
