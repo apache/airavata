@@ -24,18 +24,22 @@ package org.apache.airavata.persistance.registry.jpa;
 import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
+import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 public class UserResourceTest extends TestCase {
     private UserResource userResource;
     private GatewayResource gatewayResource;
 
+    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
+        initialize = new Initialize();
+        initialize.initializeDB();
         gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
         userResource = (UserResource)gatewayResource.create(ResourceType.USER);
         userResource.setUserName("testUser");
         userResource.setPassword("testPassword");
-        super.setUp();
+//        super.setUp();
     }
 
     public void testSave() throws Exception {
@@ -45,5 +49,11 @@ public class UserResourceTest extends TestCase {
         }
         //remove user
 //        gatewayResource.remove(ResourceType.USER, "testUser");
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        initialize.stopDerbyServer();
+//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
     }
 }

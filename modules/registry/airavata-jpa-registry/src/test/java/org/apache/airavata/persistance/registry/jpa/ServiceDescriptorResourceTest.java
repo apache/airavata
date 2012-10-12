@@ -24,14 +24,17 @@ package org.apache.airavata.persistance.registry.jpa;
 import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 public class ServiceDescriptorResourceTest extends TestCase {
     private GatewayResource gatewayResource;
     private ServiceDescriptorResource serviceDescriptorResource;
 
+    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
-        super.setUp();
+        initialize = new Initialize();
+        initialize.initializeDB();
         gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
         serviceDescriptorResource = gatewayResource.createServiceDescriptorResource("testServiceDesc");
         serviceDescriptorResource.setUserName("testUser");
@@ -49,5 +52,11 @@ public class ServiceDescriptorResourceTest extends TestCase {
         }
         //remove host descriptor
         gatewayResource.removeServiceDescriptor("testServiceDesc");
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        initialize.stopDerbyServer();
+//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
     }
 }

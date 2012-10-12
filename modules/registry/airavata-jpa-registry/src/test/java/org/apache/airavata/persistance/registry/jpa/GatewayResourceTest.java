@@ -23,6 +23,7 @@ package org.apache.airavata.persistance.registry.jpa;
 
 import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
+import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 import java.sql.Date;
 import java.util.Calendar;
@@ -34,8 +35,11 @@ public class GatewayResourceTest extends TestCase {
     private UserResource userResource;
     private WorkerResource workerResource;
 
+    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
+        initialize = new Initialize();
+        initialize.initializeDB();
         gatewayResource = (GatewayResource)ResourceUtils.createGateway("gateway1");
         if(gatewayResource == null){
             gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
@@ -222,5 +226,11 @@ public class GatewayResourceTest extends TestCase {
         experimentResource.setSubmittedDate(currentTime);
         experimentResource.save();
 
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        initialize.stopDerbyServer();
+//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
     }
 }

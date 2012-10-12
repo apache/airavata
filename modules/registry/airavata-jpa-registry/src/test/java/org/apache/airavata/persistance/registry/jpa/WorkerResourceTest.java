@@ -23,6 +23,7 @@ package org.apache.airavata.persistance.registry.jpa;
 
 import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
+import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 import java.sql.Date;
 import java.util.Calendar;
@@ -32,8 +33,11 @@ public class WorkerResourceTest extends TestCase {
     private WorkerResource workerResource;
     private UserResource userResource;
 
+    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
+        initialize = new Initialize();
+        initialize.initializeDB();
         gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
         workerResource = new WorkerResource();
         workerResource.setGateway(gatewayResource);
@@ -108,6 +112,12 @@ public class WorkerResourceTest extends TestCase {
         if(!workerResource.isWorkflowTemplateExists("workflow1")){
             assertTrue("user workflow has been removed successfully", true);
         }
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        initialize.stopDerbyServer();
+//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
     }
 
 

@@ -49,6 +49,7 @@ public class Initialize {
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
     private NetworkServerControl server;
     private static final String delimiter = ";";
+    public static final String PERSISTANT_DATA = "Configuration";
 
     public static boolean checkStringBufferEndsWith(StringBuffer buffer, String suffix) {
         if (suffix.length() > buffer.length()) {
@@ -89,19 +90,19 @@ public class Initialize {
         String jdbcPassword = properties.getProperty("registry.jdbc.password");
         jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
 
-
-        if (Utils.getDBType().equals("derby")) {
-            startDerbyInServerMode();
-//            startDerbyInEmbeddedMode();
-        }
-
+        startDerbyInServerMode();
+//      startDerbyInEmbeddedMode();
 
         Connection conn = null;
         try {
             Class.forName(Utils.getJDBCDriver()).newInstance();
             conn = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPassword);
-            executeSQLScript(conn);
-            System.out.println("New Database created for Registry");
+            if (!isDatabaseStructureCreated(PERSISTANT_DATA, conn)) {
+                executeSQLScript(conn);
+                System.out.println("New Database created for Registry");
+            } else {
+                System.out.println("Database already created for Registry!");
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RuntimeException("Database failure");
@@ -131,6 +132,33 @@ public class Initialize {
         workerResource.setUser(userResource.getUserName());
         workerResource.save();
 
+    }
+
+    public static boolean isDatabaseStructureCreated(String tableName, Connection conn) {
+        try {
+            System.out.println("Running a query to test the database tables existence.");
+            // check whether the tables are already created with a query
+            Statement statement = null;
+            try {
+                statement = conn.createStatement();
+                ResultSet rs = statement.executeQuery("select * from " + tableName);
+                if (rs != null) {
+                    rs.close();
+                }
+            } finally {
+                try {
+                    if (statement != null) {
+                        statement.close();
+                    }
+                } catch (SQLException e) {
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            return false;
+        }
+
+        return true;
     }
 
     private void executeSQLScript(Connection conn) throws Exception {
@@ -243,7 +271,7 @@ public class Initialize {
         try {
             System.setProperty(DERBY_SERVER_MODE_SYS_PROPERTY, "true");
             server = new NetworkServerControl(InetAddress.getByName(Utils.getHost()),
-                    Utils.getPort(),
+                    20000,
                     Utils.getJDBCUser(), Utils.getJDBCUser());
             java.io.PrintWriter consoleWriter = new java.io.PrintWriter(System.out, true);
             server.start(consoleWriter);
@@ -265,6 +293,14 @@ public class Initialize {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (SQLException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    public void stopDerbyServer() {
+        try {
+            server.shutdown();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

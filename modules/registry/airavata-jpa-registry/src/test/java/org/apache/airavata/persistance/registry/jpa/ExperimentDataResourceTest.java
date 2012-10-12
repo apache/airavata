@@ -37,8 +37,11 @@ public class ExperimentDataResourceTest extends TestCase {
     private WorkflowDataResource workflowDataResource;
     private ExperimentMetadataResource experimentMetadataResource;
 
+    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
+        initialize = new Initialize();
+        initialize.initializeDB();
         gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
         workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "testUser");
 
@@ -72,7 +75,7 @@ public class ExperimentDataResourceTest extends TestCase {
         workflowDataResource.setStartTime(currentTime);
         workflowDataResource.save();
 
-        super.setUp();
+//        super.setUp();
     }
 
     public void testCreate() throws Exception {
@@ -128,7 +131,11 @@ public class ExperimentDataResourceTest extends TestCase {
         }
     }
 
-
+    @Override
+    protected void tearDown() throws Exception {
+        initialize.stopDerbyServer();
+//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    }
 
 
 
