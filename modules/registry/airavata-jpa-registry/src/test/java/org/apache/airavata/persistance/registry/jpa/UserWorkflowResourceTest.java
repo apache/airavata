@@ -21,41 +21,36 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
-import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 import java.sql.Date;
 import java.util.Calendar;
 
-public class UserWorkflowResourceTest extends TestCase {
+public class UserWorkflowResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
     private WorkerResource workerResource;
     private UserWorkflowResource userWorkflowResource;
 
-    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
-        initialize = new Initialize();
-        initialize.initializeDB();
-        gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
-        workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "testUser");
+        super.setUp();
+        gatewayResource = super.getGatewayResource();
+        workerResource = super.getWorkerResource();
 
-        userWorkflowResource =  workerResource.createWorkflowTemplate("workflow1");
+        userWorkflowResource = workerResource.createWorkflowTemplate("workflow1");
         userWorkflowResource.setGateway(gatewayResource);
         userWorkflowResource.setContent("testContent");
         Calendar calender = Calendar.getInstance();
-        java.util.Date d =  calender.getTime();
+        java.util.Date d = calender.getTime();
         Date currentTime = new Date(d.getTime());
         userWorkflowResource.setLastUpdateDate(currentTime);
-//        super.setUp();
     }
 
     public void testSave() throws Exception {
         userWorkflowResource.save();
-        if(workerResource.isWorkflowTemplateExists("workflow1")){
+        if (workerResource.isWorkflowTemplateExists("workflow1")) {
             assertTrue("user workflow saved successfully", true);
         }
         //remove user workflow
@@ -63,8 +58,7 @@ public class UserWorkflowResourceTest extends TestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        initialize.stopDerbyServer();
-//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 }

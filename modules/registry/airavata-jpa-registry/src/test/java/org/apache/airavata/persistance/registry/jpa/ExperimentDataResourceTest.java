@@ -21,15 +21,12 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
-import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-public class ExperimentDataResourceTest extends TestCase {
+public class ExperimentDataResourceTest extends AbstractResourceTest {
     private ExperimentDataResource experimentDataResource;
     private GatewayResource gatewayResource;
     private ExperimentResource experimentResource;
@@ -37,21 +34,19 @@ public class ExperimentDataResourceTest extends TestCase {
     private WorkflowDataResource workflowDataResource;
     private ExperimentMetadataResource experimentMetadataResource;
 
-    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
-        initialize = new Initialize();
-        initialize.initializeDB();
-        gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
-        workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "testUser");
+        super.setUp();
+        gatewayResource = super.getGatewayResource();
+        workerResource = super.getWorkerResource();
 
-        experimentResource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
+        experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
         experimentResource.setExpID("testExpID");
         experimentResource.setWorker(workerResource);
         experimentResource.setProject(new ProjectResource(workerResource, gatewayResource, "testProject"));
         experimentResource.save();
 
-        experimentDataResource = (ExperimentDataResource)experimentResource.create(ResourceType.EXPERIMENT_DATA);
+        experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
         experimentDataResource.setExpName("exp1");
         experimentDataResource.setUserName(workerResource.getUser());
         experimentDataResource.save();
@@ -68,32 +63,20 @@ public class ExperimentDataResourceTest extends TestCase {
         workflowDataResource.setTemplateName("testWorkflowInstance");
 
         Calendar calender = Calendar.getInstance();
-        java.util.Date d =  calender.getTime();
+        java.util.Date d = calender.getTime();
         Timestamp currentTime = new Timestamp(d.getTime());
 
         workflowDataResource.setLastUpdatedTime(currentTime);
         workflowDataResource.setStartTime(currentTime);
         workflowDataResource.save();
-
-//        super.setUp();
     }
 
     public void testCreate() throws Exception {
-        WorkflowDataResource resource = (WorkflowDataResource)experimentDataResource.create(ResourceType.WORKFLOW_DATA);
-//        resource.setTemplateName("testTemplate");
-//        resource.setWorkflowInstanceID("testWFInstanceID");
-//        Calendar calender = Calendar.getInstance();
-//        java.util.Date d =  calender.getTime();
-//        Timestamp currentTime = new Timestamp(d.getTime());
-//        resource.setLastUpdatedTime(currentTime);
-//        resource.save();
-
-        ExperimentMetadataResource metadataResource = (ExperimentMetadataResource)experimentDataResource.create(ResourceType.EXPERIMENT_METADATA);
-//        metadataResource.setMetadata("testmetadata");
-//        metadataResource.save();
+        WorkflowDataResource resource = (WorkflowDataResource) experimentDataResource.create(ResourceType.WORKFLOW_DATA);
+        ExperimentMetadataResource metadataResource = (ExperimentMetadataResource) experimentDataResource.create(ResourceType.EXPERIMENT_METADATA);
 
         assertNotNull("workflowdata resource created", resource);
-        assertNotNull("experimemt metadata resource created" , metadataResource);
+        assertNotNull("experimemt metadata resource created", metadataResource);
     }
 
     public void testGet() throws Exception {
@@ -105,14 +88,14 @@ public class ExperimentDataResourceTest extends TestCase {
     }
 
     public void testGetList() throws Exception {
-        assertNotNull("workflow data retrieved successfully" ,experimentDataResource.get(ResourceType.WORKFLOW_DATA));
+        assertNotNull("workflow data retrieved successfully", experimentDataResource.get(ResourceType.WORKFLOW_DATA));
         assertNotNull("experiment meta data retrieved successfully", experimentDataResource.get(ResourceType.EXPERIMENT_METADATA));
     }
 
     public void testSave() throws Exception {
         experimentDataResource.save();
 
-        if (experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testExpID")){
+        if (experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testExpID")) {
             assertTrue("experiment data saved successfully", true);
         }
         //remove experiment data
@@ -121,22 +104,20 @@ public class ExperimentDataResourceTest extends TestCase {
 
     public void testRemove() throws Exception {
         experimentDataResource.remove(ResourceType.WORKFLOW_DATA, "testWFInstanceID");
-        if(!experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testWFInstanceID")) {
+        if (!experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testWFInstanceID")) {
             assertTrue("workflow data resource removed successfully", true);
         }
 
         experimentDataResource.remove(ResourceType.EXPERIMENT_METADATA, "testExpID");
-        if (! experimentDataResource.isExists(ResourceType.EXPERIMENT_METADATA, "testExpID")) {
+        if (!experimentDataResource.isExists(ResourceType.EXPERIMENT_METADATA, "testExpID")) {
             assertTrue("experiment meta data resource removed successfully", true);
         }
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        initialize.stopDerbyServer();
-//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
-
 
 
 }

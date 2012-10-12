@@ -21,33 +21,29 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorResource;
-import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
-public class ServiceDescriptorResourceTest extends TestCase {
+public class ServiceDescriptorResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
     private ServiceDescriptorResource serviceDescriptorResource;
 
-    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
-        initialize = new Initialize();
-        initialize.initializeDB();
-        gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
+        super.setUp();
+        gatewayResource = super.getGatewayResource();
         serviceDescriptorResource = gatewayResource.createServiceDescriptorResource("testServiceDesc");
         serviceDescriptorResource.setUserName("testUser");
         serviceDescriptorResource.setContent("testContent");
     }
 
-    public void testGetList() throws Exception{
-        assertNotNull("application data being retrieved successfully" ,serviceDescriptorResource.get(ResourceType.APPLICATION_DESCRIPTOR));
+    public void testGetList() throws Exception {
+        assertNotNull("application data being retrieved successfully", serviceDescriptorResource.get(ResourceType.APPLICATION_DESCRIPTOR));
     }
 
     public void testSave() throws Exception {
         serviceDescriptorResource.save();
-        if(gatewayResource.isServiceDescriptorExists("testServiceDesc")){
+        if (gatewayResource.isServiceDescriptorExists("testServiceDesc")) {
             assertTrue("service descriptor saved successfully", true);
         }
         //remove host descriptor
@@ -55,8 +51,8 @@ public class ServiceDescriptorResourceTest extends TestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        initialize.stopDerbyServer();
-//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    public void tearDown() throws Exception {
+        super.tearDown();
+
     }
 }

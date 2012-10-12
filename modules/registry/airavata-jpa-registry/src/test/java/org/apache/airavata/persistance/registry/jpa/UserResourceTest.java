@@ -21,30 +21,23 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
-import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
-public class UserResourceTest extends TestCase {
+public class UserResourceTest extends AbstractResourceTest {
     private UserResource userResource;
     private GatewayResource gatewayResource;
 
-    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
-        initialize = new Initialize();
-        initialize.initializeDB();
-        gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
-        userResource = (UserResource)gatewayResource.create(ResourceType.USER);
-        userResource.setUserName("testUser");
-        userResource.setPassword("testPassword");
-//        super.setUp();
+        super.setUp();
+        gatewayResource = super.getGatewayResource();
+        userResource = super.getUserResource();
     }
 
     public void testSave() throws Exception {
         userResource.save();
-        if(gatewayResource.isExists(ResourceType.USER, "testUser")) {
+        if (gatewayResource.isExists(ResourceType.USER, "testUser")) {
             assertTrue("user resource saved successfully", true);
         }
         //remove user
@@ -52,8 +45,7 @@ public class UserResourceTest extends TestCase {
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        initialize.stopDerbyServer();
-//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 }

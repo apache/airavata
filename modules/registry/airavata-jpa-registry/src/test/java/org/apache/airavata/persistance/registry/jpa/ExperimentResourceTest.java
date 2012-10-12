@@ -21,42 +21,36 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
-import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 import java.sql.Date;
 import java.util.Calendar;
 
-public class ExperimentResourceTest extends TestCase {
+public class ExperimentResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
     private ExperimentResource experimentResource;
     private WorkerResource workerResource;
     private ExperimentDataResource experimentDataResource;
 
-    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
-        initialize = new Initialize();
-        initialize.initializeDB();
-        gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
-        workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "testUser");
+        super.setUp();
+        gatewayResource = super.getGatewayResource();
+        workerResource = super.getWorkerResource();
 
-        experimentResource = (ExperimentResource)gatewayResource.create(ResourceType.EXPERIMENT);
+        experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
         experimentResource.setExpID("testExpID");
         experimentResource.setWorker(workerResource);
         experimentResource.setProject(new ProjectResource(workerResource, gatewayResource, "testProject"));
         Calendar calender = Calendar.getInstance();
-        java.util.Date d =  calender.getTime();
+        java.util.Date d = calender.getTime();
         Date currentDate = new Date(d.getTime());
         experimentResource.setSubmittedDate(currentDate);
         experimentResource.save();
-
-//        super.setUp();
     }
 
-    public void testCreate() throws Exception{
-        experimentDataResource = (ExperimentDataResource)experimentResource.create(ResourceType.EXPERIMENT_DATA);
+    public void testCreate() throws Exception {
+        experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
         experimentDataResource.setExpName("testExp");
         experimentDataResource.setUserName(workerResource.getUser());
         assertNotNull("experiment data resource has being created ", experimentDataResource);
@@ -71,23 +65,22 @@ public class ExperimentResourceTest extends TestCase {
         experimentResource.setProject(new ProjectResource(workerResource, gatewayResource, "testProject"));
         experimentResource.save();
 
-        if(gatewayResource.isExists(ResourceType.EXPERIMENT, "testExpID")){
+        if (gatewayResource.isExists(ResourceType.EXPERIMENT, "testExpID")) {
             assertTrue("experiment save successfully", true);
         }
         //remove experiment
         gatewayResource.remove(ResourceType.EXPERIMENT, "testExpID");
     }
 
-    public void testRemove () throws Exception {
-         experimentResource.remove(ResourceType.EXPERIMENT_DATA, "testExpID");
-        if(!experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testExpID")){
+    public void testRemove() throws Exception {
+        experimentResource.remove(ResourceType.EXPERIMENT_DATA, "testExpID");
+        if (!experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testExpID")) {
             assertTrue("experiment data removed successfully", true);
         }
     }
 
     @Override
-    protected void tearDown() throws Exception {
-        initialize.stopDerbyServer();
-//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 }
