@@ -30,10 +30,11 @@ import org.junit.*;
 
 public class ApplicationDescriptorResourceTest extends TestCase {
     private GatewayResource gatewayResource;
+    private Initialize initialize;
 
     @BeforeClass
     public void setUp() throws Exception {
-        Initialize initialize = new Initialize();
+        initialize = new Initialize();
         initialize.initializeDB();
         Class[] testClasses = { ConfigurationResourceTest.class,
                 GatewayResourceTest.class, UserResourceTest.class, WorkerResourceTest.class, ProjectResourceTest.class,
@@ -62,4 +63,9 @@ public class ApplicationDescriptorResourceTest extends TestCase {
         gatewayResource.remove(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc");
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        initialize.stopDerbyServer();
+//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
+    }
 }

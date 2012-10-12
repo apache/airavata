@@ -23,15 +23,19 @@ package org.apache.airavata.persistance.registry.jpa;
 
 import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
+import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 import java.sql.Date;
 import java.util.Calendar;
 
 public class ConfigurationResourceTest extends TestCase {
 
+    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
-        super.setUp();
+        initialize = new Initialize();
+        initialize.initializeDB();
+//        super.setUp();
     }
 
     public void testSave() throws Exception {
@@ -49,5 +53,11 @@ public class ConfigurationResourceTest extends TestCase {
 
         //remove test configuration
         ResourceUtils.removeConfiguration("testConfigKey");
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        initialize.stopDerbyServer();
+//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
     }
 }

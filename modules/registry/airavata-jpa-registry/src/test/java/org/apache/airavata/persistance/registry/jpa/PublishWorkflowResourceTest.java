@@ -24,6 +24,7 @@ package org.apache.airavata.persistance.registry.jpa;
 import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.PublishWorkflowResource;
+import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 import java.sql.Date;
 import java.util.Calendar;
@@ -32,9 +33,11 @@ public class PublishWorkflowResourceTest extends TestCase {
     private GatewayResource gatewayResource;
     private PublishWorkflowResource publishWorkflowResource;
 
+    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
-        super.setUp();
+        initialize = new Initialize();
+        initialize.initializeDB();
         gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
         publishWorkflowResource = gatewayResource.createPublishedWorkflow("workflow1");
         publishWorkflowResource.setCreatedUser("testUser");
@@ -52,5 +55,11 @@ public class PublishWorkflowResourceTest extends TestCase {
         }
         //remove workflow
         gatewayResource.removePublishedWorkflow("workflow1");
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        initialize.stopDerbyServer();
+//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
     }
 }

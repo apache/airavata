@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 import java.sql.Date;
 import java.util.Calendar;
@@ -34,8 +35,11 @@ public class UserWorkflowResourceTest extends TestCase {
     private WorkerResource workerResource;
     private UserWorkflowResource userWorkflowResource;
 
+    private Initialize initialize ;
     @Override
     public void setUp() throws Exception {
+        initialize = new Initialize();
+        initialize.initializeDB();
         gatewayResource = (GatewayResource)ResourceUtils.getGateway("gateway1");
         workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "testUser");
 
@@ -46,7 +50,7 @@ public class UserWorkflowResourceTest extends TestCase {
         java.util.Date d =  calender.getTime();
         Date currentTime = new Date(d.getTime());
         userWorkflowResource.setLastUpdateDate(currentTime);
-        super.setUp();
+//        super.setUp();
     }
 
     public void testSave() throws Exception {
@@ -56,5 +60,11 @@ public class UserWorkflowResourceTest extends TestCase {
         }
         //remove user workflow
         workerResource.removeWorkflowTemplate("workflow1");
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        initialize.stopDerbyServer();
+//        super.tearDown();    //To change body of overridden methods use File | Settings | File Templates.
     }
 }
