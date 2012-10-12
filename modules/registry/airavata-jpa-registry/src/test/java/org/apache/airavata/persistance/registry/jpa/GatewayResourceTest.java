@@ -32,6 +32,13 @@ public class GatewayResourceTest extends AbstractResourceTest {
     private ProjectResource projectResource;
     private UserResource userResource;
     private WorkerResource workerResource;
+    private PublishWorkflowResource publishWorkflowResource;
+    private UserWorkflowResource userWorkflowResource;
+    private HostDescriptorResource hostDescriptorResource;
+    private ServiceDescriptorResource serviceDescriptorResource;
+    private ApplicationDescriptorResource applicationDescriptorResource;
+    private ExperimentResource experimentResource;
+
 
     @Override
     public void setUp() throws Exception {
@@ -43,33 +50,16 @@ public class GatewayResourceTest extends AbstractResourceTest {
             gatewayResource = (GatewayResource) ResourceUtils.getGateway("gateway1");
         }
         projectResource = (ProjectResource) gatewayResource.create(ResourceType.PROJECT);
-
         projectResource.setName("testProject");
         projectResource.setWorker(workerResource);
         projectResource.save();
-    }
 
-    @org.junit.Test
-    public void testSave() throws Exception {
-        gatewayResource.setOwner("owner1");
-        gatewayResource.save();
-
-        boolean gatewayExist = ResourceUtils.isGatewayExist("gateway1");
-        if (gatewayExist) {
-            assertTrue("The gateway exisits", gatewayExist);
-        }
-
-    }
-
-    @org.junit.Test
-    public void testCreate() throws Exception {
-
-        PublishWorkflowResource publishWorkflowResource = (PublishWorkflowResource) gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
-        UserWorkflowResource userWorkflowResource = (UserWorkflowResource) gatewayResource.create(ResourceType.USER_WORKFLOW);
-        HostDescriptorResource hostDescriptorResource = (HostDescriptorResource) gatewayResource.create(ResourceType.HOST_DESCRIPTOR);
-        ServiceDescriptorResource serviceDescriptorResource = (ServiceDescriptorResource) gatewayResource.create(ResourceType.SERVICE_DESCRIPTOR);
-        ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource) gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
-        ExperimentResource experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
+        publishWorkflowResource = (PublishWorkflowResource) gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
+        userWorkflowResource = (UserWorkflowResource) gatewayResource.create(ResourceType.USER_WORKFLOW);
+        hostDescriptorResource = (HostDescriptorResource) gatewayResource.create(ResourceType.HOST_DESCRIPTOR);
+        serviceDescriptorResource = (ServiceDescriptorResource) gatewayResource.create(ResourceType.SERVICE_DESCRIPTOR);
+        applicationDescriptorResource = (ApplicationDescriptorResource) gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
+        experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
 
         hostDescriptorResource.setUserName(workerResource.getUser());
         hostDescriptorResource.setHostDescName("testHostDesc");
@@ -111,7 +101,22 @@ public class GatewayResourceTest extends AbstractResourceTest {
         experimentResource.setWorker(workerResource);
         experimentResource.setSubmittedDate(currentTime);
         experimentResource.save();
+    }
 
+    @org.junit.Test
+    public void testSave() throws Exception {
+        gatewayResource.setOwner("owner1");
+        gatewayResource.save();
+
+        boolean gatewayExist = ResourceUtils.isGatewayExist("gateway1");
+        if (gatewayExist) {
+            assertTrue("The gateway exisits", gatewayExist);
+        }
+
+    }
+
+    @org.junit.Test
+    public void testCreate() throws Exception {
         assertNotNull("project resource cannot be null", projectResource);
         assertNotNull("user resource cannot be null", userResource);
         assertNotNull("worker resource cannot be null", workerResource);
@@ -145,12 +150,12 @@ public class GatewayResourceTest extends AbstractResourceTest {
 
     public void testGetList() throws Exception {
         assertNotNull(gatewayResource.get(ResourceType.GATEWAY_WORKER));
+        assertNotNull(gatewayResource.get(ResourceType.PROJECT));
         assertNotNull(gatewayResource.get(ResourceType.PUBLISHED_WORKFLOW));
         assertNotNull(gatewayResource.get(ResourceType.HOST_DESCRIPTOR));
         assertNotNull(gatewayResource.get(ResourceType.SERVICE_DESCRIPTOR));
         assertNotNull(gatewayResource.get(ResourceType.APPLICATION_DESCRIPTOR));
         assertNotNull(gatewayResource.get(ResourceType.EXPERIMENT));
-        assertNotNull(gatewayResource.get(ResourceType.PROJECT));
     }
 
     @org.junit.Test
@@ -172,11 +177,11 @@ public class GatewayResourceTest extends AbstractResourceTest {
         gatewayResource.remove(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc");
         assertFalse(gatewayResource.isExists(ResourceType.APPLICATION_DESCRIPTOR, "testAppDesc"));
 
-        PublishWorkflowResource publishWorkflowResource = (PublishWorkflowResource) gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
-        HostDescriptorResource hostDescriptorResource = (HostDescriptorResource) gatewayResource.create(ResourceType.HOST_DESCRIPTOR);
-        ServiceDescriptorResource serviceDescriptorResource = (ServiceDescriptorResource) gatewayResource.create(ResourceType.SERVICE_DESCRIPTOR);
-        ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource) gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
-        ExperimentResource experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
+        publishWorkflowResource = (PublishWorkflowResource) gatewayResource.create(ResourceType.PUBLISHED_WORKFLOW);
+        hostDescriptorResource = (HostDescriptorResource) gatewayResource.create(ResourceType.HOST_DESCRIPTOR);
+        serviceDescriptorResource = (ServiceDescriptorResource) gatewayResource.create(ResourceType.SERVICE_DESCRIPTOR);
+        applicationDescriptorResource = (ApplicationDescriptorResource) gatewayResource.create(ResourceType.APPLICATION_DESCRIPTOR);
+        experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
 
         hostDescriptorResource.setUserName(workerResource.getUser());
         hostDescriptorResource.setHostDescName("testHostDesc");
