@@ -45,10 +45,7 @@ public class ConfigurationResourceTest extends AbstractResourceTest {
         configuration.setExpireDate(currentTime);
         configuration.save();
 
-        if (ResourceUtils.isConfigurationExist("testConfigKey")) {
-            assertTrue("Configuration Save succuessful", true);
-        }
-
+        assertTrue("Configuration Save succuessful", ResourceUtils.isConfigurationExist("testConfigKey"));
         //remove test configuration
         ResourceUtils.removeConfiguration("testConfigKey");
     }

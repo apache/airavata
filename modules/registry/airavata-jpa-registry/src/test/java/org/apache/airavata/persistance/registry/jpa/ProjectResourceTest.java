@@ -44,9 +44,7 @@ public class ProjectResourceTest extends AbstractResourceTest {
         projectResource.setGateway(gatewayResource);
         projectResource.setWorker(workerResource);
         projectResource.save();
-    }
 
-    public void testCreate() throws Exception {
         experimentResource = projectResource.createExperiment("testExpID");
         experimentResource.setGateway(gatewayResource);
         experimentResource.setWorker(workerResource);
@@ -56,6 +54,9 @@ public class ProjectResourceTest extends AbstractResourceTest {
         experimentResource.setSubmittedDate(currentTime);
         experimentResource.setProject(projectResource);
         experimentResource.save();
+    }
+
+    public void testCreate() throws Exception {
         assertNotNull("experiment resource created successfully", experimentResource);
     }
 
@@ -70,10 +71,7 @@ public class ProjectResourceTest extends AbstractResourceTest {
 
     public void testSave() throws Exception {
         projectResource.save();
-
-        if (workerResource.isProjectExists("testProject")) {
-            assertTrue("Project saved successfully", true);
-        }
+        assertTrue("Project saved successfully", workerResource.isProjectExists("testProject"));
         //remove project
         workerResource.removeProject("testProject");
     }
@@ -81,9 +79,17 @@ public class ProjectResourceTest extends AbstractResourceTest {
 
     public void testRemove() throws Exception {
         projectResource.removeExperiment("testExpID");
-        if (!projectResource.isExperimentExists("testExpID")) {
-            assertTrue("experiment removed successfully", true);
-        }
+        assertFalse("experiment removed successfully", projectResource.isExperimentExists("testExpID"));
+
+        experimentResource = projectResource.createExperiment("testExpID");
+        experimentResource.setGateway(gatewayResource);
+        experimentResource.setWorker(workerResource);
+        Calendar calender = Calendar.getInstance();
+        java.util.Date d = calender.getTime();
+        Date currentTime = new Date(d.getTime());
+        experimentResource.setSubmittedDate(currentTime);
+        experimentResource.setProject(projectResource);
+        experimentResource.save();
     }
 
     @Override

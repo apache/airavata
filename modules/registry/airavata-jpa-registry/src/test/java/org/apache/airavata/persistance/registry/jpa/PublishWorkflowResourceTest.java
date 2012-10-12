@@ -46,9 +46,7 @@ public class PublishWorkflowResourceTest extends AbstractResourceTest {
 
     public void testSave() throws Exception {
         publishWorkflowResource.save();
-        if (gatewayResource.isPublishedWorkflowExists("workflow1")) {
-            assertTrue("published workflow saved successfully", true);
-        }
+        assertTrue("published workflow saved successfully", gatewayResource.isPublishedWorkflowExists("workflow1"));
         //remove workflow
         gatewayResource.removePublishedWorkflow("workflow1");
     }

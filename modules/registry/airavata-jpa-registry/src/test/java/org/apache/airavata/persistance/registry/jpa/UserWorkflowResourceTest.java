@@ -50,9 +50,7 @@ public class UserWorkflowResourceTest extends AbstractResourceTest {
 
     public void testSave() throws Exception {
         userWorkflowResource.save();
-        if (workerResource.isWorkflowTemplateExists("workflow1")) {
-            assertTrue("user workflow saved successfully", true);
-        }
+        assertTrue("user workflow saved successfully", workerResource.isWorkflowTemplateExists("workflow1"));
         //remove user workflow
         workerResource.removeWorkflowTemplate("workflow1");
     }

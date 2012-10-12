@@ -62,9 +62,7 @@ public class ExperimentMetadataResourceTest extends AbstractResourceTest {
         experimentMetadataResource.setMetadata("testMetadata");
         experimentMetadataResource.save();
 
-        if (experimentDataResource.isExists(ResourceType.EXPERIMENT_METADATA, "testExpID")) {
-            assertTrue("experiment meta data saved successfully", true);
-        }
+        assertTrue("experiment meta data saved successfully", experimentDataResource.isExists(ResourceType.EXPERIMENT_METADATA, "testExpID"));
 
         //remove the metadata
         experimentDataResource.remove(ResourceType.EXPERIMENT_METADATA, "testExpID");

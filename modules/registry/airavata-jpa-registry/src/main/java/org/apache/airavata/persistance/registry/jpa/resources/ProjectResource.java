@@ -89,8 +89,6 @@ public class ProjectResource extends AbstractResource {
         em.getTransaction().begin();
         if (type == ResourceType.EXPERIMENT) {
         	QueryGenerator generator = new QueryGenerator(EXPERIMENT);
-        	generator.setParameter(ExperimentConstants.PROJECT_NAME, name);
-        	generator.setParameter(ExperimentConstants.USERNAME, getWorker().getUser());
         	generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
         	Query q = generator.deleteQuery(em);
         	q.executeUpdate();
