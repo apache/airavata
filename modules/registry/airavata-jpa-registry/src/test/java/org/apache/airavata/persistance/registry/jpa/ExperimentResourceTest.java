@@ -47,12 +47,14 @@ public class ExperimentResourceTest extends AbstractResourceTest {
         Date currentDate = new Date(d.getTime());
         experimentResource.setSubmittedDate(currentDate);
         experimentResource.save();
-    }
 
-    public void testCreate() throws Exception {
         experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
         experimentDataResource.setExpName("testExp");
         experimentDataResource.setUserName(workerResource.getUser());
+        experimentDataResource.save();
+    }
+
+    public void testCreate() throws Exception {
         assertNotNull("experiment data resource has being created ", experimentDataResource);
     }
 
@@ -61,22 +63,20 @@ public class ExperimentResourceTest extends AbstractResourceTest {
     }
 
     public void testSave() throws Exception {
-        experimentResource.setWorker(workerResource);
-        experimentResource.setProject(new ProjectResource(workerResource, gatewayResource, "testProject"));
         experimentResource.save();
-
-        if (gatewayResource.isExists(ResourceType.EXPERIMENT, "testExpID")) {
-            assertTrue("experiment save successfully", true);
-        }
+        assertTrue("experiment save successfully", gatewayResource.isExists(ResourceType.EXPERIMENT, "testExpID"));
         //remove experiment
         gatewayResource.remove(ResourceType.EXPERIMENT, "testExpID");
     }
 
     public void testRemove() throws Exception {
         experimentResource.remove(ResourceType.EXPERIMENT_DATA, "testExpID");
-        if (!experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testExpID")) {
-            assertTrue("experiment data removed successfully", true);
-        }
+        assertTrue("experiment data removed successfully", !experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testExpID"));
+
+        experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
+        experimentDataResource.setExpName("testExp");
+        experimentDataResource.setUserName(workerResource.getUser());
+        experimentDataResource.save();
     }
 
     @Override

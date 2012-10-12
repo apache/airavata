@@ -109,9 +109,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
         gatewayResource.save();
 
         boolean gatewayExist = ResourceUtils.isGatewayExist("gateway1");
-        if (gatewayExist) {
-            assertTrue("The gateway exisits", gatewayExist);
-        }
+        assertTrue("The gateway exisits", gatewayExist);
 
     }
 

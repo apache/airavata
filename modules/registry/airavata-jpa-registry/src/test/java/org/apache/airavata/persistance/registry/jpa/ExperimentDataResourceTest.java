@@ -72,19 +72,13 @@ public class ExperimentDataResourceTest extends AbstractResourceTest {
     }
 
     public void testCreate() throws Exception {
-        WorkflowDataResource resource = (WorkflowDataResource) experimentDataResource.create(ResourceType.WORKFLOW_DATA);
-        ExperimentMetadataResource metadataResource = (ExperimentMetadataResource) experimentDataResource.create(ResourceType.EXPERIMENT_METADATA);
-
-        assertNotNull("workflowdata resource created", resource);
-        assertNotNull("experimemt metadata resource created", metadataResource);
+        assertNotNull("workflowdata resource created", workflowDataResource);
+        assertNotNull("experimemt metadata resource created", experimentMetadataResource);
     }
 
     public void testGet() throws Exception {
-        WorkflowDataResource workflowDataResource = experimentDataResource.getWorkflowInstance("testWorkflowInstance");
-        assertNotNull("workflow data retrieved successfully", workflowDataResource);
-
-        ExperimentMetadataResource experimentMetadataResource = experimentDataResource.getExperimentMetadata();
-        assertNotNull("experiment meta data retrieved successfully", experimentMetadataResource);
+        assertNotNull("workflow data retrieved successfully", experimentDataResource.getWorkflowInstance("testWorkflowInstance"));
+        assertNotNull("experiment meta data retrieved successfully", experimentDataResource.getExperimentMetadata());
     }
 
     public void testGetList() throws Exception {
@@ -94,24 +88,33 @@ public class ExperimentDataResourceTest extends AbstractResourceTest {
 
     public void testSave() throws Exception {
         experimentDataResource.save();
-
-        if (experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testExpID")) {
-            assertTrue("experiment data saved successfully", true);
-        }
+        assertTrue("experiment data saved successfully", experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testExpID"));
         //remove experiment data
         experimentResource.remove(ResourceType.EXPERIMENT_DATA, "testExpID");
     }
 
     public void testRemove() throws Exception {
         experimentDataResource.remove(ResourceType.WORKFLOW_DATA, "testWFInstanceID");
-        if (!experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testWFInstanceID")) {
-            assertTrue("workflow data resource removed successfully", true);
-        }
+        assertTrue("workflow data resource removed successfully", !experimentResource.isExists(ResourceType.EXPERIMENT_DATA, "testWFInstanceID"));
 
         experimentDataResource.remove(ResourceType.EXPERIMENT_METADATA, "testExpID");
-        if (!experimentDataResource.isExists(ResourceType.EXPERIMENT_METADATA, "testExpID")) {
-            assertTrue("experiment meta data resource removed successfully", true);
-        }
+        assertTrue("experiment meta data resource removed successfully", !experimentDataResource.isExists(ResourceType.EXPERIMENT_METADATA, "testExpID"));
+
+        experimentMetadataResource.setExpID("testExpID");
+        experimentMetadataResource.setMetadata("testMetadata");
+        experimentMetadataResource.save();
+
+        workflowDataResource.setExperimentID("testExpID");
+        workflowDataResource.setStatus("testStatus");
+        workflowDataResource.setTemplateName("testWorkflowInstance");
+
+        Calendar calender = Calendar.getInstance();
+        java.util.Date d = calender.getTime();
+        Timestamp currentTime = new Timestamp(d.getTime());
+
+        workflowDataResource.setLastUpdatedTime(currentTime);
+        workflowDataResource.setStartTime(currentTime);
+        workflowDataResource.save();
     }
 
     @Override

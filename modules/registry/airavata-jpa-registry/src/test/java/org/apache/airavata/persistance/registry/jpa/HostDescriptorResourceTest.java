@@ -43,9 +43,7 @@ public class HostDescriptorResourceTest extends AbstractResourceTest {
 
     public void testSave() throws Exception {
         hostDescriptorResource.save();
-        if (gatewayResource.isHostDescriptorExists("testHostDesc")) {
-            assertTrue("host descriptor saved successfully", true);
-        }
+        assertTrue("host descriptor saved successfully", gatewayResource.isHostDescriptorExists("testHostDesc"));
         //remove host descriptor
         gatewayResource.removeHostDescriptor("testHostDesc");
     }

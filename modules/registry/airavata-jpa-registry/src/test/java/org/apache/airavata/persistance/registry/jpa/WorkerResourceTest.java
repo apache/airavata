@@ -30,6 +30,9 @@ public class WorkerResourceTest extends AbstractResourceTest {
     private GatewayResource gatewayResource;
     private WorkerResource workerResource;
     private UserResource userResource;
+    private ProjectResource testProject;
+    private UserWorkflowResource userWorkflowResource;
+    private ExperimentResource experimentResource;
 
     @Override
     public void setUp() throws Exception {
@@ -37,12 +40,10 @@ public class WorkerResourceTest extends AbstractResourceTest {
         gatewayResource = super.getGatewayResource();
         workerResource = super.getWorkerResource();
         userResource = super.getUserResource();
-    }
 
-    public void testCreate() throws Exception {
-        ProjectResource testProject = workerResource.createProject("testProject");
-        UserWorkflowResource userWorkflowResource = workerResource.createWorkflowTemplate("workflow1");
-        ExperimentResource experimentResource = (ExperimentResource) workerResource.create(ResourceType.EXPERIMENT);
+        testProject = workerResource.createProject("testProject");
+        userWorkflowResource = workerResource.createWorkflowTemplate("workflow1");
+        experimentResource = (ExperimentResource) workerResource.create(ResourceType.EXPERIMENT);
 
         testProject.setGateway(gatewayResource);
         testProject.save();
@@ -59,7 +60,9 @@ public class WorkerResourceTest extends AbstractResourceTest {
         Date currentTime = new Date(d.getTime());
         experimentResource.setSubmittedDate(currentTime);
         experimentResource.save();
+    }
 
+    public void testCreate() throws Exception {
         assertNotNull("project resource created successfully", testProject);
         assertNotNull("user workflow created successfully", userWorkflowResource);
     }
@@ -79,9 +82,7 @@ public class WorkerResourceTest extends AbstractResourceTest {
 
     public void testSave() throws Exception {
         workerResource.save();
-        if (gatewayResource.isExists(ResourceType.USER, "testUser")) {
-            assertTrue("worker resource saved successfully", true);
-        }
+        assertTrue("worker resource saved successfully", gatewayResource.isExists(ResourceType.USER, "testUser"));
         //remove
 //        ResourceUtils.removeGatewayWorker(gatewayResource, userResource);
 //        gatewayResource.remove(ResourceType.USER, "testUser");
@@ -92,17 +93,26 @@ public class WorkerResourceTest extends AbstractResourceTest {
         workerResource.removeWorkflowTemplate("workflow1");
         workerResource.removeExperiment("testExpID");
 
-        if (!workerResource.isProjectExists("testProject")) {
-            assertTrue("project has been removed successfully", true);
-        }
+        assertTrue("project has been removed successfully", !workerResource.isProjectExists("testProject"));
+        assertTrue("experiment has been removed successfully", !workerResource.isExperimentExists("testExpID"));
+        assertTrue("user workflow has been removed successfully", !workerResource.isWorkflowTemplateExists("workflow1"));
 
-        if (!workerResource.isExperimentExists("testExpID")) {
-            assertTrue("experiment has been removed successfully", true);
-        }
+        testProject.setGateway(gatewayResource);
+        testProject.save();
 
-        if (!workerResource.isWorkflowTemplateExists("workflow1")) {
-            assertTrue("user workflow has been removed successfully", true);
-        }
+        userWorkflowResource.setGateway(gatewayResource);
+        userWorkflowResource.setContent("testContent");
+        userWorkflowResource.save();
+
+        experimentResource.setGateway(gatewayResource);
+        experimentResource.setExpID("testExpID");
+        experimentResource.setProject(testProject);
+        Calendar calender = Calendar.getInstance();
+        java.util.Date d = calender.getTime();
+        Date currentTime = new Date(d.getTime());
+        experimentResource.setSubmittedDate(currentTime);
+        experimentResource.save();
+
     }
 
     @Override

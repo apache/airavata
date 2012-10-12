@@ -68,9 +68,7 @@ public class GramDataResourceTest extends AbstractResourceTest {
         gramDataResource.setRsl("testRSL");
         gramDataResource.save();
 
-        if (workflowDataResource.isGramDataExists("testNodeID")) {
-            assertTrue("gram data saved successfully", true);
-        }
+        assertTrue("gram data saved successfully", workflowDataResource.isGramDataExists("testNode"));
 
         //remove the gram data
         workflowDataResource.removeGramData("testNodeID");

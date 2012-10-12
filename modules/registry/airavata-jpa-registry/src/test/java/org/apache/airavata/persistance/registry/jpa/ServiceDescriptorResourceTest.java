@@ -43,9 +43,7 @@ public class ServiceDescriptorResourceTest extends AbstractResourceTest {
 
     public void testSave() throws Exception {
         serviceDescriptorResource.save();
-        if (gatewayResource.isServiceDescriptorExists("testServiceDesc")) {
-            assertTrue("service descriptor saved successfully", true);
-        }
+        assertTrue("service descriptor saved successfully", gatewayResource.isServiceDescriptorExists("testServiceDesc"));
         //remove host descriptor
         gatewayResource.removeServiceDescriptor("testServiceDesc");
     }

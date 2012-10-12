@@ -32,6 +32,8 @@ public class WorkflowDataResourceTest extends AbstractResourceTest {
     private WorkerResource workerResource;
     private ExperimentDataResource experimentDataResource;
     private WorkflowDataResource workflowDataResource;
+    private NodeDataResource nodeDataResource;
+    private GramDataResource gramDataResource;
 
     @Override
     public void setUp() throws Exception {
@@ -42,6 +44,8 @@ public class WorkflowDataResourceTest extends AbstractResourceTest {
         experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
         experimentResource.setExpID("testExpID");
         experimentResource.setWorker(workerResource);
+        experimentResource.setProject(new ProjectResource(workerResource, gatewayResource, "testProject"));
+        experimentResource.save();
 
         experimentDataResource = (ExperimentDataResource) experimentResource.create(ResourceType.EXPERIMENT_DATA);
         experimentDataResource.setExpName("testExp");
@@ -56,11 +60,10 @@ public class WorkflowDataResourceTest extends AbstractResourceTest {
         java.util.Date d = calender.getTime();
         Timestamp timestamp = new Timestamp(d.getTime());
         workflowDataResource.setLastUpdatedTime(timestamp);
-    }
+        workflowDataResource.save();
 
-    public void testCreate() throws Exception {
-        NodeDataResource nodeDataResource = workflowDataResource.createNodeData("testNodeID");
-        GramDataResource gramDataResource = workflowDataResource.createGramData("testNodeID");
+        nodeDataResource = workflowDataResource.createNodeData("testNodeID");
+        gramDataResource = workflowDataResource.createGramData("testNodeID");
 
         nodeDataResource.setWorkflowDataResource(workflowDataResource);
         nodeDataResource.setInputs("testInput");
@@ -71,7 +74,9 @@ public class WorkflowDataResourceTest extends AbstractResourceTest {
         gramDataResource.setRsl("testRSL");
         gramDataResource.setWorkflowDataResource(workflowDataResource);
         gramDataResource.save();
+    }
 
+    public void testCreate() throws Exception {
         assertNotNull("node data resource created successfully", nodeDataResource);
         assertNotNull("gram data resource created successfully", gramDataResource);
     }
@@ -89,19 +94,27 @@ public class WorkflowDataResourceTest extends AbstractResourceTest {
     public void testRemove() throws Exception {
         workflowDataResource.removeNodeData("testNodeID");
         workflowDataResource.removeGramData("testNodeID");
-        if (!workflowDataResource.isNodeExists("testNodeID")) {
-            assertTrue("node date removed successfully", true);
-        }
-        if (!workflowDataResource.isGramDataExists("testNodeID")) {
-            assertTrue("gram date removed successfully", true);
-        }
+
+        assertTrue("node date removed successfully", !workflowDataResource.isNodeExists("testNodeID"));
+        assertTrue("gram date removed successfully", !workflowDataResource.isGramDataExists("testNodeID"));
+
+        nodeDataResource = workflowDataResource.createNodeData("testNodeID");
+        gramDataResource = workflowDataResource.createGramData("testNodeID");
+
+        nodeDataResource.setWorkflowDataResource(workflowDataResource);
+        nodeDataResource.setInputs("testInput");
+        nodeDataResource.setOutputs("testOutput");
+        nodeDataResource.setStatus("testStatus");
+        nodeDataResource.save();
+
+        gramDataResource.setRsl("testRSL");
+        gramDataResource.setWorkflowDataResource(workflowDataResource);
+        gramDataResource.save();
     }
 
     public void testSave() throws Exception {
         workflowDataResource.save();
-        if (experimentDataResource.isWorkflowInstancePresent("testWFInstance")) {
-            assertTrue("workflow data saved successfully", true);
-        }
+        assertTrue("workflow data saved successfully", experimentDataResource.isWorkflowInstancePresent("testWFInstance"));
     }
 
     @Override
