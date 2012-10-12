@@ -151,7 +151,6 @@ public class GatewayResourceTest extends AbstractResourceTest {
         assertNotNull(gatewayResource.get(ResourceType.APPLICATION_DESCRIPTOR));
         assertNotNull(gatewayResource.get(ResourceType.EXPERIMENT));
         assertNotNull(gatewayResource.get(ResourceType.PROJECT));
-        assertNotNull(gatewayResource.get(ResourceType.GATEWAY_WORKER));
     }
 
     @org.junit.Test
