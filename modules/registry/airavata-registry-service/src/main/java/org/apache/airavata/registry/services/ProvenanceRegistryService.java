@@ -18,7 +18,7 @@ public interface ProvenanceRegistryService {
      */
     public Response isExperimentExists(String experimentId) throws RegistryException;
 
-    public Response isExperimentExists(String experimentId, boolean createIfNotPresent) throws RegistryException;
+    public Response isExperimentExistsThenCreate(String experimentId, boolean createIfNotPresent) throws RegistryException;
 
     /**
      * Save the username of the user who runs this experiment
@@ -93,7 +93,7 @@ public interface ProvenanceRegistryService {
 
     public Response isWorkflowInstanceExists(String instanceId) throws RegistryException;
 
-    public Response isWorkflowInstanceExists(String instanceId, boolean createIfNotPresent) throws RegistryException;
+    public Response isWorkflowInstanceExistsThenCreate(String instanceId, boolean createIfNotPresent) throws RegistryException;
 
     /**
      * Save a status for this workflow execution with the current time at the moment
@@ -102,7 +102,7 @@ public interface ProvenanceRegistryService {
      * @return
      * @throws org.apache.airavata.common.registry.api.exception.RegistryException
      */
-    public Response updateWorkflowInstanceStatus(String instanceId, String executionStatus)throws RegistryException;
+    public Response updateWorkflowInstanceStatusByInstance(String instanceId, String executionStatus)throws RegistryException;
 
     /**
      * Save a status for this workflow execution
@@ -113,7 +113,7 @@ public interface ProvenanceRegistryService {
      * @return
      * @throws org.apache.airavata.common.registry.api.exception.RegistryException
      */
-    public Response updateWorkflowInstanceStatus(String experimentID,
+    public Response updateWorkflowInstanceStatusByExperiment(String experimentID,
                                                  String workflowInstanceID,
                                                  String executionStatus,
                                                  Date statusUpdateTime)throws RegistryException;

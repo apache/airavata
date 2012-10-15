@@ -24,7 +24,7 @@ public interface ProjectsRegistryService {
     public Response addExperiment(String projectName, AiravataExperiment experiment) throws WorkspaceProjectDoesNotExistsException, ExperimentDoesNotExistsException, RegistryException;
     public Response removeExperiment(String experimentId) throws ExperimentDoesNotExistsException;
     public Response getExperiments() throws RegistryException;
-    public Response getExperiments(String projectName)throws RegistryException;
-    public Response getExperiments(Date from, Date to)throws RegistryException;
-    public Response getExperiments(String projectName, Date from, Date to) throws RegistryException;
+    public Response getExperimentsByProject(String projectName)throws RegistryException;
+    public Response getExperimentsByDate(Date from, Date to)throws RegistryException;
+    public Response getExperimentsByProjectDate(String projectName, Date from, Date to) throws RegistryException;
 }
