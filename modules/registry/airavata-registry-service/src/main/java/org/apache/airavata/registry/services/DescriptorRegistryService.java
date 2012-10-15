@@ -34,7 +34,7 @@ public interface DescriptorRegistryService{
     public Response isApplicationDescriptorExists(String serviceName, String hostName, String descriptorName)throws RegistryException;
     public Response addApplicationDescriptor(String serviceDescription, String hostDescriptor, String descriptor)throws DescriptorAlreadyExistsException, RegistryException;
     public Response addApplicationDesc(String serviceName, String hostName, String descriptor)throws DescriptorAlreadyExistsException, RegistryException;
-    public Response udpateApplicationDescriptor(String serviceDescription, String hostDescriptor, String descriptor)throws DescriptorDoesNotExistsException, RegistryException;
+    public Response udpateApplicationDescriptorByDescriptors(String serviceDescription, String hostDescriptor, String descriptor)throws DescriptorDoesNotExistsException, RegistryException;
     public Response updateApplicationDescriptor(String serviceName, String hostName, String descriptor)throws DescriptorDoesNotExistsException, RegistryException;
     public Response getApplicationDescriptor(String serviceName, String hostname, String applicationName)throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegistryException;
     public Response getApplicationDescriptors(String serviceName, String hostname)throws MalformedDescriptorException, RegistryException;

@@ -23,10 +23,10 @@ public interface ConfigurationRegistryService{
     public Response setEventingURI(URI uri);
     public Response setMessageBoxURI(URI uri);
 
-    public Response addGFacURI(URI uri, Date expire);
+    public Response addGFacURIByDate(URI uri, Date expire);
     public Response addWorkflowInterpreterURI(URI uri, Date expire);
-    public Response setEventingURI(URI uri, Date expire);
-    public Response setMessageBoxURI(URI uri, Date expire);
+    public Response setEventingURIByDate(URI uri, Date expire);
+    public Response setMessageBoxURIByDate(URI uri, Date expire);
 
     public Response removeGFacURI(URI uri);
     public Response removeAllGFacURI();
