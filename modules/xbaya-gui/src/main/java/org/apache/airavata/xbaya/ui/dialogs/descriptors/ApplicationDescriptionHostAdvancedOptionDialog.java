@@ -164,14 +164,14 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		panel.add(txtMaxWallTime);
         panel.add(lblCpuCount);
 		panel.add(txtCpuCount);
+        panel.add(lbNodeCount);
+        panel.add(txtNodeCount);
         panel.add(lblProcessorPerNode);
 		panel.add(txtProcessorsPerNode);
         panel.add(lblMinMemory);
 		panel.add(txtMinMemory);
         panel.add(lblMaxMemory);
         panel.add(txtMaxMemory);
-        panel.add(lbNodeCount);
-        panel.add(txtNodeCount);
 		panel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         buttonPane.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
@@ -308,6 +308,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		}
     	txtMaxWallTime.setText(getPropValue(gadType.getMaxWallTime()));
         txtCpuCount.setText(getPropValue(gadType.getCpuCount()));
+        txtNodeCount.setText(getPropValue(gadType.getNodeCount()));
         txtProcessorsPerNode.setText(getPropValue(gadType.getProcessorsPerNode()));
         txtMinMemory.setText(getPropValue(gadType.getMinMemory()));
         txtMaxMemory.setText(getPropValue(gadType.getMaxMemory()));
