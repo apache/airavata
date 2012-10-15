@@ -121,14 +121,18 @@ public class GramRSLGenerator {
                     currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray().length > 0) {
                 try {
                     int cpuCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getCpuCount();
-                    app.setCpuCount(cpuCount);
+                    if(cpuCount>0){
+                        app.setCpuCount(cpuCount);
+                    }
                 } catch (NullPointerException e) {
                     log.info("No Value sent in WorkflowContextHeader for CPU Count, value in the Deployment Descriptor will be used");
                     context.getExecutionContext().getNotifier().executionFail(context, e, "No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
                 }
                 try {
                     int nodeCount = currentContextHeader.getWorkflowSchedulingContext().getApplicationSchedulingContextArray()[0].getNodeCount();
-                    app.setNodeCount(nodeCount);
+                    if(nodeCount>0){
+                        app.setNodeCount(nodeCount);
+                    }
                 } catch (NullPointerException e) {
                     log.info("No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
                     context.getExecutionContext().getNotifier().executionFail(context, e, "No Value sent in WorkflowContextHeader for Node Count, value in the Deployment Descriptor will be used");
