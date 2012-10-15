@@ -311,6 +311,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         txtProcessorsPerNode.setText(getPropValue(gadType.getProcessorsPerNode()));
         txtMinMemory.setText(getPropValue(gadType.getMinMemory()));
         txtMaxMemory.setText(getPropValue(gadType.getMaxMemory()));
+        txtNodeCount.setText(getPropValue(gadType.getNodeCount()));
 		ProjectAccountType projectAccount = getProjectAccountType();
 
 		txtProjectAccountNumber.setText(projectAccount.getProjectAccountNumber()==null? "":projectAccount.getProjectAccountNumber());
