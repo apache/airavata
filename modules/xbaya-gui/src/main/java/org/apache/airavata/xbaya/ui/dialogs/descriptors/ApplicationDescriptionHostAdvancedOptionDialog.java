@@ -52,12 +52,14 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
     private XBayaTextField txtMinMemory = new XBayaTextField();
     private XBayaTextField txtMaxMemory = new XBayaTextField();
     private XBayaTextField txtCpuCount = new XBayaTextField();
+    private XBayaTextField txtNodeCount = new XBayaTextField();
     private XBayaTextField txtProcessorsPerNode = new XBayaTextField();
     private JButton okButton;
     private AiravataRegistry2 registry;
     private ApplicationDeploymentDescription descriptor;
 	private XBayaLabel lblCpuCount;
 	private XBayaLabel lblProcessorPerNode;
+    private XBayaLabel lbNodeCount;
 
     /**
      * Create the dialog.
@@ -122,6 +124,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
         txtMaxMemory = new XBayaTextField();
         txtCpuCount = new XBayaTextField();
         txtProcessorsPerNode = new XBayaTextField();
+        txtNodeCount = new XBayaTextField();
 
         DefaultComboBoxModel cmbModelJobType = new DefaultComboBoxModel(getJobTypesAsStrings());
 		cmbJobType = new XBayaComboBox(cmbModelJobType);
@@ -147,6 +150,7 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		lblProcessorPerNode = new XBayaLabel("Processor Per Node", txtProcessorsPerNode);
 		XBayaLabel lblMinMemory = new XBayaLabel("Min Memory",txtMinMemory);
 		XBayaLabel lblMaxMemory = new XBayaLabel("Max Memory",txtMaxMemory);
+        lbNodeCount = new XBayaLabel("Node Count", txtNodeCount);
 
 		panel.add(lbljobType);
 		panel.add(cmbJobType);
@@ -166,10 +170,12 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		panel.add(txtMinMemory);
         panel.add(lblMaxMemory);
         panel.add(txtMaxMemory);
+        panel.add(lbNodeCount);
+        panel.add(txtNodeCount);
 		panel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
         buttonPane.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
-        SwingUtil.layoutToGrid(panel.getSwingComponent(), 9, 2, SwingUtil.WEIGHT_NONE, 1);
+        SwingUtil.layoutToGrid(panel.getSwingComponent(), 10, 2, SwingUtil.WEIGHT_NONE, 1);
         
         buttonPane.add(okButton);
         buttonPane.add(cancelButton);
@@ -243,6 +249,10 @@ public class ApplicationDescriptionHostAdvancedOptionDialog extends JDialog {
 		if (isValueNotEmpty(txtProcessorsPerNode.getText())) {
 			getGramApplicationDescriptionType().setProcessorsPerNode(
 					Integer.parseInt(txtProcessorsPerNode.getText()));
+		}
+        if (isValueNotEmpty(txtNodeCount.getText())) {
+			getGramApplicationDescriptionType().setNodeCount(
+					Integer.parseInt(txtNodeCount.getText()));
 		}
 		if (isValueNotEmpty(txtMinMemory.getText())) {
 			getGramApplicationDescriptionType().setMinMemory(
