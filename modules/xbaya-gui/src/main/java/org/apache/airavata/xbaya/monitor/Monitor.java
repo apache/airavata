@@ -51,6 +51,8 @@ public class Monitor extends EventProducer {
     protected boolean print;
 
     protected long timeout = 20000L;
+
+    protected boolean status = false;
     
     /**
      * Constructs a Monitor.
@@ -63,6 +65,7 @@ public class Monitor extends EventProducer {
         // and
         // it does not have and filters
         this.eventDataMap.put(DEFAULT_MODEL_KEY, new MonitorEventData());
+
 
     }
 
@@ -207,6 +210,7 @@ public class Monitor extends EventProducer {
         this.wsmgClient.setTimeout(this.getTimeout());
         //Users can set the timeout and interval for the subscription using wsmg setter methods, here we use the default values
         this.wsmgClient.subscribe();
+        this.status = true;
 
         // Enable/disable some menu items and show the monitor panel.
         sendSafeEvent(new Event(Type.MONITOR_STARTED));
@@ -217,6 +221,7 @@ public class Monitor extends EventProducer {
         sendSafeEvent(new Event(Type.MONITOR_STOPED));
 
         client.unsubscribe();
+        this.status = false;
     }
 
     public void setPrint(boolean print) {
@@ -229,5 +234,13 @@ public class Monitor extends EventProducer {
 
     public void setTimeout(long timeout) {
         this.timeout = timeout;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 }

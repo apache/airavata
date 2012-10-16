@@ -49,7 +49,7 @@ public class ExperimentDataRetriever {
             Class.forName(Utils.getJDBCDriver()).newInstance();
             connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(), Utils.getJDBCPassword());
             statement = connection.createStatement();
-            String queryString = "SELECT ed.experiment_ID, ed.name, ed.username, em.metadata, " +
+            String queryString = "SELECT e.experiment_ID, ed.name, ed.username, em.metadata, " +
                     "wd.workflow_instanceID, wd.template_name, wd.status, wd.start_time," +
                     "wd.last_update_time, nd.node_id, nd.inputs, nd.outputs, " +
                     "e.project_name, e.submitted_date, nd.node_type, nd.status," +
