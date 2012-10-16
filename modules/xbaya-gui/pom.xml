@@ -405,5 +405,10 @@
             <artifactId>airavata-jpa-registry</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>${derby.version}</version>
+        </dependency>
     </dependencies>
 </project>
