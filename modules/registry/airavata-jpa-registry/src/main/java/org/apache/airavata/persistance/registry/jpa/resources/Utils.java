@@ -366,6 +366,7 @@ public class Utils {
         ProjectResource projectResource = (ProjectResource)createProject(o.getProject());
         experimentResource.setProject(projectResource);
         experimentResource.setExpID(o.getExperiment_ID());
+        experimentResource.setSubmittedDate(o.getSubmitted_date());
         return experimentResource;
     }
 
