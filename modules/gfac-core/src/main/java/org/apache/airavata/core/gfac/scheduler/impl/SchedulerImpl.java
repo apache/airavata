@@ -27,7 +27,7 @@ import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;

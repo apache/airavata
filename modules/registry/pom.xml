@@ -30,6 +30,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
+                <module>registry-api</module>
                 <module>airavata-jpa-registry</module>
                 <module>airavata-registry-service</module>
                 <module>airavata-registry-test</module>

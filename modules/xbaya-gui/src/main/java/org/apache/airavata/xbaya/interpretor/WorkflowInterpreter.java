@@ -43,7 +43,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.Pair;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;

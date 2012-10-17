@@ -28,7 +28,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.registry.RegistryAccesser;

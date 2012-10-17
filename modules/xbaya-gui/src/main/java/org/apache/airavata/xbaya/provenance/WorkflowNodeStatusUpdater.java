@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.xbaya.provenance;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;

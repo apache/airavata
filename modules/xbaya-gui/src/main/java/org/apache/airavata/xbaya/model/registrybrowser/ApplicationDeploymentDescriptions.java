@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistry2;

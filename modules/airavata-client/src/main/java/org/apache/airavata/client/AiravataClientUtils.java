@@ -29,7 +29,7 @@ import java.util.Map;
 import javax.jcr.RepositoryException;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 
 public class AiravataClientUtils {
 	public static AiravataAPI getAPI(URI registryURL, String username, String password) throws MalformedURLException, RepositoryException, RegistryException{

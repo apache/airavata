@@ -20,40 +20,6 @@
 */
 package org.apache.airavata.core.gfac.services.impl;
 
-import org.apache.airavata.common.utils.IOUtil;
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
-import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
-import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
-import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
-import org.apache.airavata.core.gfac.provider.Provider;
-import org.apache.airavata.core.gfac.provider.impl.GramProvider;
-import org.apache.airavata.core.gfac.provider.impl.LocalProvider;
-import org.apache.airavata.core.gfac.scheduler.Scheduler;
-import org.apache.airavata.core.gfac.scheduler.impl.SchedulerImpl;
-import org.apache.airavata.persistance.registry.jpa.impl.AiravataJPARegistry;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
-import org.apache.airavata.registry.api.util.RegistryUtils;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.StringParameterType;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.File;
-import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static org.junit.Assert.fail;
 
 public class SchedulerTest {

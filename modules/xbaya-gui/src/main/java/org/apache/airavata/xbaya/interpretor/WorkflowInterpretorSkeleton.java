@@ -40,7 +40,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -349,12 +349,12 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             /*
              * stop listener no matter what happens
              */
-            try {
-                if(listener != null)
-                listener.stop();
-            } catch (MonitorException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                if(listener != null)
+//                listener.stop();
+//            } catch (MonitorException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 

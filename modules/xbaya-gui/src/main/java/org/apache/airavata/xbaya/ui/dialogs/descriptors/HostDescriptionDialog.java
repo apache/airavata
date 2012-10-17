@@ -37,7 +37,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.registry.api.AiravataRegistry2;

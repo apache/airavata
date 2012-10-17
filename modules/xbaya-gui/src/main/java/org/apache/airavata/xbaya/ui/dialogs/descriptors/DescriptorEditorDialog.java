@@ -43,7 +43,7 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;

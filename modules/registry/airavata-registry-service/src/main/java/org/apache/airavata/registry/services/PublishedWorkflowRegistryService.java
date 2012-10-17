@@ -1,6 +1,6 @@
 package org.apache.airavata.registry.services;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.worker.UserWorkflowDoesNotExistsException;

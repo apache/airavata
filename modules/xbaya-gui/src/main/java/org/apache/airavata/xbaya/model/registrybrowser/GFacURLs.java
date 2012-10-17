@@ -21,12 +21,10 @@
 
 package org.apache.airavata.xbaya.model.registrybrowser;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class GFacURLs {

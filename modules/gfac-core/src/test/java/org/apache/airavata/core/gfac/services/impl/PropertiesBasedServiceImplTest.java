@@ -23,34 +23,6 @@ package org.apache.airavata.core.gfac.services.impl;
 
 import static org.junit.Assert.fail;
 
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.airavata.common.utils.IOUtil;
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
-import org.apache.airavata.core.gfac.context.invocation.impl.DefaultInvocationContext;
-import org.apache.airavata.core.gfac.context.message.impl.ParameterContextImpl;
-import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
-import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType.ApplicationName;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.StringParameterType;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.SystemUtils;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 public class PropertiesBasedServiceImplTest {
 //	@Before
 //	public void setUp() throws Exception {

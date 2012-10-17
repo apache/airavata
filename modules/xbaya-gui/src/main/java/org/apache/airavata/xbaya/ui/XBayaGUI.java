@@ -48,7 +48,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.Component;

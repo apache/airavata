@@ -131,8 +131,8 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
         try {
             if (this.pullMode) {
                 this.messagePuller.stopPulling();
-            } else {
-                this.wseClient.unSubscribe(this.subscriptionID);
+//            } else {
+//                this.wseClient.unSubscribe(this.subscriptionID);
             }
             this.wseClient.unSubscribe(this.subscriptionID);
         } catch (MsgBrokerClientException e) {

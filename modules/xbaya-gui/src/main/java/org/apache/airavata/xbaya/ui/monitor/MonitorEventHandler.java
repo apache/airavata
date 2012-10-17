@@ -22,9 +22,7 @@
 package org.apache.airavata.xbaya.ui.monitor;
 
 import java.awt.Color;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,12 +31,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.jcr.RepositoryException;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.workflow.model.graph.ControlPort;
 import org.apache.airavata.workflow.model.graph.EPRPort;
 import org.apache.airavata.workflow.model.graph.Edge;
@@ -53,17 +48,13 @@ import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.monitor.MonitorEvent;
 import org.apache.airavata.xbaya.monitor.MonitorEventData;
 import org.apache.airavata.xbaya.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.monitor.MonitorUtil.EventType;
-import org.apache.airavata.xbaya.provenance.WorkflowNodeStatusUpdater;
-import org.apache.airavata.xbaya.provenance.WorkflowStatusUpdater;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
-import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;

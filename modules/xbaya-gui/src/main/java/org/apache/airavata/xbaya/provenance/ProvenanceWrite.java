@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;

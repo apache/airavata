@@ -134,7 +134,6 @@ public class WseMsgBrokerClient extends CommonMsgBrokerClient implements Message
     }
 
     public boolean unSubscribe(String subscriptionId) throws MsgBrokerClientException {
-
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMElement message = WSEProtocolClient.createUnsubscribeMsg();
 

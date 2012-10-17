@@ -1,7 +1,7 @@
 package org.apache.airavata.registry.services;
 
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataExperiment;
 import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectAlreadyExistsException;

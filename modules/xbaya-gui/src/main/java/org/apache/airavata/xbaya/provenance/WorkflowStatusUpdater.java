@@ -22,7 +22,7 @@ package org.apache.airavata.xbaya.provenance;
 
 import java.sql.Timestamp;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;

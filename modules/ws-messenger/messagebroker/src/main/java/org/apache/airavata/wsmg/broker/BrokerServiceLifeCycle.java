@@ -29,11 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.common.registry.api.impl.JCRRegistry;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.registry.api.util.RegistryUtils;
 import org.apache.airavata.wsmg.broker.handler.PublishedMessageHandler;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionManager;

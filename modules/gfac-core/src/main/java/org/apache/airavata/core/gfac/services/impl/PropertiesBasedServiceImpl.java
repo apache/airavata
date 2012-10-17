@@ -27,8 +27,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.common.registry.api.impl.JCRRegistry;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.context.invocation.impl.DefaultExecutionContext;
@@ -43,7 +41,6 @@ import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.utils.LogUtils;
 import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.registry.api.util.RegistryUtils;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
