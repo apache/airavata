@@ -80,7 +80,7 @@ public class GFacMessageReciever implements MessageReceiver {
     public static final String MYPROXY_PASS = "myproxy.pass";
     public static final String MYPROXY_LIFE = "myproxy.life";
     public static final String GFAC_URL = "GFacURL";
-    public static final String REPOSITORY_PROPERTIES = "repository.properties";
+    public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
     private GFacConfiguration gfacContext;
     private GenericService service;
     private AiravataRegistry2 registry;

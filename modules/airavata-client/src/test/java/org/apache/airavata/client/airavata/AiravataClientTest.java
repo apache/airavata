@@ -27,7 +27,7 @@ public class AiravataClientTest {
     @Test
 	public void testInvokeWorkflowString() {
 //        try {
-//            AiravataClient airavataClient = new AiravataClient("xbaya.properties");
+//            AiravataClient airavataClient = new AiravataClient("airavata-client.properties");
 //            List<String> workflowTemplateIds = airavataClient.getWorkflowTemplateIds();
 //            for(String eachId:workflowTemplateIds){
 //                List<WorkflowInput> workflowInputs = airavataClient.getWorkflowInputs(eachId);

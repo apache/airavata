@@ -88,7 +88,7 @@ public class TestUtilServer {
         ServiceLifeCycle brokerLifeCycle = new BrokerServiceLifeCycle();
 
         final String configFileParam = "configuration.file.name";
-        final String configFileValue = "msgBroker.properties";
+        final String configFileValue = "airavata-server.properties";
 
         AxisService notificationService = getNotificationService();
         notificationService.addParameter(configFileParam, configFileValue);

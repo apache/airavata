@@ -16,13 +16,13 @@ public class AiravataRegistryConnectionDataProviderImpl implements AiravataRegis
 
     private final static Logger logger = LoggerFactory.getLogger(AiravataRegistryConnectionDataProviderImpl.class);
     public static Properties loadProperties(){
-        URL resource = Utils.class.getClassLoader().getResource("repository.properties");
+        URL resource = Utils.class.getClassLoader().getResource("airavata-server.properties");
         Properties properties = new Properties();
         try {
             properties.load(resource.openStream());
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("Unable to read repository properties " + e);
+            logger.error("Unable to read airavata-server.properties " + e);
 
         }
         return properties;

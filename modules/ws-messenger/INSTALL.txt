@@ -25,7 +25,7 @@ Maven (tested on v 3.0.2)
 Configure WS-Messenger messageBroker service.
 ----------------------------------------------
 Given below are the configurations for message broker service. configuration file should be named as
-"msgBroker.properties". This should be included in the class path (e.g. <BROKER_DISTRIBUTION_DIR>/standalone-server/conf) when broker starts.
+"airavata-server.properties". This should be included in the class path (e.g. <BROKER_DISTRIBUTION_DIR>/standalone-server/conf) when broker starts.
 
 Configuration	                Description
 =============================   ====================================
@@ -69,8 +69,7 @@ Run standalone version supplied with binary distribution
 2. Change default configurations if needed.
 
 - configuration files is located at:
- <extracted location>/standalone-server/conf/msgBroker.properties
- <extracted location>/standalone-server/conf/msgBox.properties
+ <extracted location>/standalone-server/conf/airavata-server.properties
 
         Run axis2 server by running the command:
             Linux -
@@ -83,14 +82,13 @@ Run Ws-messenger using axis2 servlet
 (Tested on tomcat v 6.0.20 & axis2 v1.5.1)
 1. Copy broker aar file to axis2 distribution accordingly.
 2. Create database tables (Scripts can be found <extracted location>/bin/database_scripts)
-3. Set configurations appropriately and copy configuration file ( named msgBroker.properties) to
+3. Set configurations appropriately and copy configuration file ( named airavata-server.properties) to
 
     <Axis-servlet>/webapps/axis2/WEB-INF/classes
 
 Note: a sample configuration file is located at:
 
-<extracted location>/standalone-server/conf/msgBroker.properties
-<extracted location>/standalone-server/conf/msgBox.properties
+<extracted location>/standalone-server/conf/airavata-server.properties
 
 4. Start tomcat server.
 
@@ -103,9 +101,9 @@ Run Ws-messenger using a external axis2 distribution
 1. Copy broker aar file to following location:
       <AXIS2_DIST_HOME>/repository/services
 
-2. Copy msgBroker.properties and msgBroker.properties file to <AXIS2_DIST_HOME>/conf
+2. Copy airavata-server.properties file to <AXIS2_DIST_HOME>/conf
 
-    Configure msgBroker.properties with broker.start.delivery=false
+    Configure the properties file with broker.start.delivery=false
 
 3. Start axis2 server.
 
@@ -117,8 +115,7 @@ Note: messenger servlet can be found at <extracted_location>/messenger directory
 
 6. Set configurations appropriately.
 
-             <TOMECAT_HOME>/webapps/messenger/WEB-INF/classes/msgBroker.properties
-             <TOMECAT_HOME>/webapps/messenger/WEB-INF/classes/msgBox.properties
+             <TOMECAT_HOME>/webapps/messenger/WEB-INF/classes/airavata-server.properties
 
 Note: Point to the correct database you want to pick the messages and do the message delivery, and check the
 property axis2.repository to the correct location.

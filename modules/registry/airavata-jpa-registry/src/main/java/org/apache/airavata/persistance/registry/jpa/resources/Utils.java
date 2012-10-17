@@ -55,12 +55,12 @@ public class Utils {
     private final static Logger logger = LoggerFactory.getLogger(Utils.class);
 
     public static Properties loadProperties(){
-        URL resource = Utils.class.getClassLoader().getResource("repository.properties");
+        URL resource = Utils.class.getClassLoader().getResource("airavata-server.properties");
         Properties properties = new Properties();
         try {
             properties.load(resource.openStream());
         } catch (IOException e) {
-            logger.error("Unable to read repository properties..", e);
+            logger.error("Unable to read airavata-server.properties ..", e);
         }
         return properties;
     }

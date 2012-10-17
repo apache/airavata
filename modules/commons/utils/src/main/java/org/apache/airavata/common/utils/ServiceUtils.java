@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 public class ServiceUtils {
     private static final Logger log = LoggerFactory.getLogger(ServiceUtils.class);
-    private static final String REPOSITORY_PROPERTIES = "repository.properties";
+    private static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
     public static final String IP = "ip";
     public static final String PORT = "port";
 

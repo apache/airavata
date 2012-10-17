@@ -123,11 +123,11 @@ public class MonitorEventHandler implements ChangeListener {
         this.triedWorkflowIDs = Collections.synchronizedSet(new HashSet<URI>());
         this.resourcePaintableMap = new HashMap<Node, LinkedList<ResourcePaintable>>();
 //        try {
-//            if (this.getClass().getClassLoader().getResource("xbaya.properties") != null) {
+//            if (this.getClass().getClassLoader().getResource("airavata-server.properties") != null) {
 //                this.workflowNodeStatusUpdater =
-//                        new WorkflowNodeStatusUpdater(XBayaUtil.getRegistry(this.getClass().getClassLoader().getResource("xbaya.properties")));
+//                        new WorkflowNodeStatusUpdater(XBayaUtil.getRegistry(this.getClass().getClassLoader().getResource("airavata-server.properties")));
 //                this.workflowStatusUpdater =
-//                        new WorkflowStatusUpdater(XBayaUtil.getRegistry(this.getClass().getClassLoader().getResource("xbaya.properties")));
+//                        new WorkflowStatusUpdater(XBayaUtil.getRegistry(this.getClass().getClassLoader().getResource("airavata-server.properties")));
 //            }
 //        } catch (IOException e) {
 //            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

@@ -36,7 +36,7 @@ public class XpathSubscribe {
 		Properties configurations = new Properties();
 
 		try {
-            InputStream ioStream = new FileInputStream("conf" + File.separator + ConfigKeys.CONFIG_FILE_NAME);
+            InputStream ioStream = new FileInputStream(ConfigKeys.CONFIG_FILE_NAME);
             configurations.load(ioStream);
 		} catch (IOException ioe) {
 

@@ -46,7 +46,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
 
     private static final Logger log = LoggerFactory.getLogger(JCRComponentRegistry.class);
     private static final String NAME = "Application Services";
-    public static final String REPOSITORY_PROPERTIES = "repository.properties";
+    public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
 
     private AiravataRegistry2 registry;
 

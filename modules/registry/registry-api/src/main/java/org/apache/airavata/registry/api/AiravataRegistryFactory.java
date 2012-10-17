@@ -33,7 +33,7 @@ import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedExcep
 
 public class AiravataRegistryFactory {
 
-	private static final String REPOSITORY_PROPERTIES = "repository.properties";
+	private static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
 	private static final String REGISTRY_ACCESSOR_CLASS = "class.registry.accessor";
 	private static AiravataRegistryConnectionDataProvider dataProvider;
 

@@ -86,7 +86,7 @@ public class WsmgCommonConstants {
     public static final String CONFIG_SENDING_BATCH_SIZE = "sending.batch.size";
     public static final String CONFIG_SENDING_THREAD_POOL_SIZE = "sending.thread.pool.size";
 
-    public static final String BROKER_CONFIGURATION_FILE_NAME = "msgBroker.properties";
+    public static final String BROKER_CONFIGURATION_FILE_NAME = "airavata-server.properties";
 
     public static final String DELIVERY_PROTOCOL = "broker.delivery.protocol";
 

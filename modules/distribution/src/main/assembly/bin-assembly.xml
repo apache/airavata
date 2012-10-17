@@ -153,14 +153,7 @@
             <directory>../distribution/src/main/resources/conf</directory>
             <outputDirectory>standalone-server/conf</outputDirectory>
             <includes>
-                <include>xbaya.properties</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>../distribution/src/main/resources/conf</directory>
-            <outputDirectory>standalone-server/conf</outputDirectory>
-            <includes>
-                <include>jcr.properties</include>
+                <include>airavata-server.properties</include>
             </includes>
         </fileSet>
         <fileSet>

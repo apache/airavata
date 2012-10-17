@@ -60,7 +60,7 @@ public class GFacService implements ServiceLifeCycle {
 
     public static final String SECURITY_CONTEXT = "security_context";
 
-    public static final String REPOSITORY_PROPERTIES = "repository.properties";
+    public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
 
     public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 

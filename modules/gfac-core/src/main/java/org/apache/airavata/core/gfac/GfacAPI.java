@@ -44,7 +44,7 @@ import java.net.URI;
 public class GfacAPI {
     private static final Logger log = LoggerFactory.getLogger(GfacAPI.class +
             "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());
-    public static final String REPOSITORY_PROPERTIES = "repository.properties";
+    public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
 
     public DefaultInvocationContext gridJobSubmit(JobContext jobContext,GFacConfiguration gfacConfig) throws Exception {
         String workflowNodeId = WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getWorkflowNodeId();

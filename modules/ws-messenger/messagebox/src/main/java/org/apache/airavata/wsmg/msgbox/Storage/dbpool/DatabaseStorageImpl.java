@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Database message Storage Implementation, if msgBox.properties configured to use database this will set as the storage
+ * Database message Storage Implementation, if airavata-server.properties configured to use database this will set as the storage
  * for MsgBoxSerivceSkeleton
  */
 public class DatabaseStorageImpl implements MsgBoxStorage {

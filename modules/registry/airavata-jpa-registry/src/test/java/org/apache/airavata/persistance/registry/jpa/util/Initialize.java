@@ -77,12 +77,12 @@ public class Initialize {
     public void initializeDB() {
         String jdbcUrl = null;
         String jdbcDriver = null;
-        URL resource = this.getClass().getClassLoader().getResource("repository.properties");
+        URL resource = this.getClass().getClassLoader().getResource("airavata-server.properties");
         Properties properties = new Properties();
         try {
             properties.load(resource.openStream());
         } catch (IOException e) {
-            System.out.println("Unable to read repository properties");
+            System.out.println("Unable to read airavata-server.properties");
         }
         jdbcDriver = properties.getProperty("registry.jdbc.driver");
         jdbcUrl = properties.getProperty("registry.jdbc.url");

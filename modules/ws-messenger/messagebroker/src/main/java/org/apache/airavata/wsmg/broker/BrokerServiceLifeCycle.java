@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
 public class BrokerServiceLifeCycle implements ServiceLifeCycle {
 
     private static final Logger log = LoggerFactory.getLogger(BrokerServiceLifeCycle.class);
-    public static final String REPOSITORY_PROPERTIES = "repository.properties";
+    public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
     public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 
     public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
@@ -175,8 +175,8 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
         WsmgConfigurationContext wsmgConfig = new WsmgConfigurationContext();
         configContext.setProperty(WsmgCommonConstants.BROKER_WSMGCONFIG, wsmgConfig);
 
-        ConfigurationManager configMan = new ConfigurationManager("conf" + File.separator
-                + WsmgCommonConstants.BROKER_CONFIGURATION_FILE_NAME);
+        ConfigurationManager configMan = new ConfigurationManager(
+                    WsmgCommonConstants.BROKER_CONFIGURATION_FILE_NAME);
 
         wsmgConfig.setConfigurationManager(configMan);
 

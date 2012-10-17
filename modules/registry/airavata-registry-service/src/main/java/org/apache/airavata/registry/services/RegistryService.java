@@ -87,7 +87,7 @@ public class RegistryService implements ServiceLifeCycle {
     private void initializeDB() {
         String jdbcUrl = null;
         String jdbcDriver = null;
-        URL resource = this.getClass().getClassLoader().getResource("repository.properties");
+        URL resource = this.getClass().getClassLoader().getResource("airavata-server.properties");
         Properties properties = new Properties();
         try {
             properties.load(resource.openStream());

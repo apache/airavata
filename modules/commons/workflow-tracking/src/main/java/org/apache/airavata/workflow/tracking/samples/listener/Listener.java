@@ -21,15 +21,11 @@
 
 package org.apache.airavata.workflow.tracking.samples.listener;
 
-import java.io.IOException;
 import java.io.StringReader;
-import java.net.URL;
-import java.util.Properties;
 
 import org.apache.airavata.commons.WorkFlowUtils;
 import org.apache.airavata.workflow.tracking.client.LeadNotificationManager;
 import org.apache.airavata.workflow.tracking.client.Subscription;
-import org.apache.airavata.workflow.tracking.util.ConfigKeys;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -73,13 +69,6 @@ public class Listener {
         // Inthis sample we emulate it by manually publishing notifications
 
         // created a publisher
-        URL configURL = ClassLoader.getSystemResource(ConfigKeys.CONFIG_FILE_NAME);
-        Properties configs = new Properties();
-        try {
-            configs.load(configURL.openStream());
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
 
         WseMsgBrokerClient publisher = new WseMsgBrokerClient();
         EndpointReference endpointRef = publisher.createEndpointReference(brokerLocation, topic);

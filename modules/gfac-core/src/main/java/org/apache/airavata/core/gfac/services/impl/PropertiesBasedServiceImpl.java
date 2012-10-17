@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
-    public static final String REPOSITORY_PROPERTIES = "repository.properties";
+    public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
 
     private static Logger log = LoggerFactory.getLogger(PropertiesBasedServiceImpl.class+
             "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());

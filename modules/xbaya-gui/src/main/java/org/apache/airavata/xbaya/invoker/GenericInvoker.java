@@ -249,7 +249,7 @@ public class GenericInvoker implements Invoker {
         builder.getWorkflowMonitoringContext().setWorkflowTimeStep(1);
         builder.setUserIdentifier("xbaya-user");
         //todo write a UI component to collect this information and pass it through Header
-//        builder.setGridMyProxyRepository("myproxy.nersc.gov","fangliu","Jdas7wph",14000);
+//        builder.setGridMyProxyRepository("myproxy.nersc.gov","$user","$passwd",14000);
         StickySoapHeaderHandler handler = new StickySoapHeaderHandler("use-workflowcontext-header", builder.getXml());
         // Create Invoker
         this.invoker = InvokerFactory.createInvoker(this.portTypeQName, definitions, this.gfacURL, this.messageBoxURL,
