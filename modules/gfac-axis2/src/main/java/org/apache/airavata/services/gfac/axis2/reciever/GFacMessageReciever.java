@@ -185,7 +185,7 @@ public class GFacMessageReciever implements MessageReceiver {
                 element = input.getFirstChildWithName(new QName(GFacSchemaConstants.GFAC_NAMESPACE,parameter.getParameterName().replaceAll(WSDLConstants.HYPHEN, WSDLConstants.HYPHEN_REPLACEMENT)));
             }
             if (element == null) {
-                throw new Exception("Parameter is not found in the message");
+                throw new Exception(parameter.getParameterName() + " Parameter is not found in the message or Parameter have wrong charactor in it");
             }
             //todo this implementation doesn't work when there are n number of nodes connecting .. need to fix
             actualParameters.put(parameter, GfacUtils.getInputActualParameter(parameter, element));
