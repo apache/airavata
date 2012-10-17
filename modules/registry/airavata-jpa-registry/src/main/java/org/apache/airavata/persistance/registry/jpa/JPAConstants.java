@@ -26,4 +26,5 @@ public class JPAConstants {
 	public static final String KEY_JDBC_USER = "registry.jdbc.user";
 	public static final String KEY_JDBC_PASSWORD = "registry.jdbc.password";
 	public static final String KEY_JDBC_DRIVER = "registry.jdbc.driver";
+	public static final String KEY_DERBY_START_ENABLE = "start.derby.server.mode";
 }
