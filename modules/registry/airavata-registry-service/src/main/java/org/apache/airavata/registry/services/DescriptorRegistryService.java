@@ -1,6 +1,6 @@
 package org.apache.airavata.registry.services;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.gateway.MalformedDescriptorException;

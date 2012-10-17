@@ -28,7 +28,7 @@ import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.TreeNode;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptionWrap;
 import org.apache.airavata.xbaya.model.registrybrowser.ApplicationDeploymentDescriptions;

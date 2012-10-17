@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.airavata.common.exception.AiravataConfigurationException;
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;

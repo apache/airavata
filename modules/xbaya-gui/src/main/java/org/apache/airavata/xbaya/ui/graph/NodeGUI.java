@@ -407,7 +407,7 @@ public abstract class NodeGUI implements GraphPieceGUI {
         g.setColor(TEXT_COLOR);
 
         Font oldFont = g.getFont();
-		g.setFont(new Font(oldFont.getFontName(),Font.BOLD,oldFont.getSize()));
+		g.setFont(new Font(oldFont.getFontName(),Font.PLAIN,oldFont.getSize()));
         Rectangle2D bounds = g.getFontMetrics().getStringBounds(headerText, g);
         g.drawString(headerText, (int)(shape.getBounds().getX() + (shape.getBounds().getWidth()-bounds.getWidth())/2), 
 		(int)(shape.getBounds().getY() + (shape.getBounds().getHeight()+bounds.getHeight())/2));

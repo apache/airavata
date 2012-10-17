@@ -27,7 +27,7 @@ import java.util.Map;
 import javax.jcr.RepositoryException;
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.registry.api.AiravataRegistry2;

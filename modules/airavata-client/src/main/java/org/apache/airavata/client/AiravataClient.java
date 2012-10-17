@@ -33,7 +33,6 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -47,8 +46,6 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
 import javax.jcr.ValueFormatException;
 import javax.xml.stream.XMLStreamException;
 
@@ -65,18 +62,12 @@ import org.apache.airavata.client.impl.ExecutionManagerImpl;
 import org.apache.airavata.client.impl.ProvenanceManagerImpl;
 import org.apache.airavata.client.impl.UserManagerImpl;
 import org.apache.airavata.client.impl.WorkflowManagerImpl;
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.impl.AiravataJCRRegistry;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstance;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
@@ -91,7 +82,6 @@ import org.apache.airavata.xbaya.interpretor.WorkflowInterpretorStub;
 import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorEventListener;
-import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axis2.AxisFault;
@@ -788,40 +778,40 @@ public class AiravataClient implements AiravataAPI {
 		}
 	}
 	
-	private static void migrateRespositoryData(
-			AiravataJCRRegistry sourceRegistry,
-			AiravataJCRRegistry targetRegistry) throws Exception {
-		Session session1 = null;
-		Session session2 = null;
-		try {
-			session1 = sourceRegistry.getRepository().login(new SimpleCredentials(sourceRegistry.getUsername(), new String(sourceRegistry.getPassword()).toCharArray()));
-			session2 = targetRegistry.getRepository().login(new SimpleCredentials(targetRegistry.getUsername(), new String(targetRegistry.getPassword()).toCharArray()));
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw e;
-		}
-		
-		
-		NodeIterator nodes = session1.getRootNode().getNodes();
-		Node rootNode = session2.getRootNode();
-		List<String> ignoreRoots=Arrays.asList(new String[]{"/AIRAVATA_CONFIGURATION_DATA"});
-		while(nodes.hasNext()){
-			Node nextNode = nodes.nextNode();
-			String path = nextNode.getPath();
-			if (!(path.equals("/jcr:system")||path.equals("/rep:policy") || ignoreRoots.contains(path))) {
-				addNode(rootNode,nextNode);
-				System.out.println();
-			}
-		}
-		System.out.print("Saving session.");
-		session1.logout();
-		System.out.print(".");
-		session2.save();
-		System.out.print(".");
-		session2.logout();
-		System.out.println(".done");
-	}
+//	private static void migrateRespositoryData(
+//			AiravataJCRRegistry sourceRegistry,
+//			AiravataJCRRegistry targetRegistry) throws Exception {
+//		Session session1 = null;
+//		Session session2 = null;
+//		try {
+//			session1 = sourceRegistry.getRepository().login(new SimpleCredentials(sourceRegistry.getUsername(), new String(sourceRegistry.getPassword()).toCharArray()));
+//			session2 = targetRegistry.getRepository().login(new SimpleCredentials(targetRegistry.getUsername(), new String(targetRegistry.getPassword()).toCharArray()));
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			throw e;
+//		}
+//
+//
+//		NodeIterator nodes = session1.getRootNode().getNodes();
+//		Node rootNode = session2.getRootNode();
+//		List<String> ignoreRoots=Arrays.asList(new String[]{"/AIRAVATA_CONFIGURATION_DATA"});
+//		while(nodes.hasNext()){
+//			Node nextNode = nodes.nextNode();
+//			String path = nextNode.getPath();
+//			if (!(path.equals("/jcr:system")||path.equals("/rep:policy") || ignoreRoots.contains(path))) {
+//				addNode(rootNode,nextNode);
+//				System.out.println();
+//			}
+//		}
+//		System.out.print("Saving session.");
+//		session1.logout();
+//		System.out.print(".");
+//		session2.save();
+//		System.out.print(".");
+//		session2.logout();
+//		System.out.println(".done");
+//	}
  		 	
 	public AiravataManager getAiravataManager() {
 		if (airavataManagerImpl==null) {

@@ -29,7 +29,7 @@ import java.util.List;
 import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.AiravataManager;
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 
 public class AiravataManagerImpl implements AiravataManager {
 	private AiravataClient client;

@@ -1,6 +1,6 @@
 package org.apache.airavata.registry.services;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNodeStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
 
@@ -14,7 +14,7 @@ public interface ProvenanceRegistryService {
      * Returns true if the experiment exists
      * @param experimentId
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response isExperimentExists(String experimentId) throws RegistryException;
 
@@ -25,7 +25,7 @@ public interface ProvenanceRegistryService {
      * @param experimentId
      * @param user
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response updateExperimentExecutionUser(String experimentId, String user) throws RegistryException;
 
@@ -33,7 +33,7 @@ public interface ProvenanceRegistryService {
      * Retrieve the user who is runing the experiment
      * @param experimentId
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response getExperimentExecutionUser(String experimentId) throws RegistryException;
 
@@ -41,7 +41,7 @@ public interface ProvenanceRegistryService {
      * Get the name of the workflow intance
      * @param experimentId
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response getExperimentName(String experimentId) throws RegistryException;
 
@@ -50,7 +50,7 @@ public interface ProvenanceRegistryService {
      * @param experimentId
      * @param experimentName
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response updateExperimentName(String experimentId, String experimentName)throws RegistryException;
 
@@ -58,7 +58,7 @@ public interface ProvenanceRegistryService {
      * Return the metadata information saved for the experiment
      * @param experimentId
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response getExperimentMetadata(String experimentId) throws RegistryException;
 
@@ -67,7 +67,7 @@ public interface ProvenanceRegistryService {
      * @param experimentId
      * @param metadata
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response updateExperimentMetadata(String experimentId, String metadata) throws RegistryException;
 
@@ -75,7 +75,7 @@ public interface ProvenanceRegistryService {
      * Return the template name of the workflow that this intance was created from
      * @param workflowInstanceId
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response getWorkflowExecutionTemplateName(String workflowInstanceId) throws RegistryException;
 
@@ -83,7 +83,7 @@ public interface ProvenanceRegistryService {
      * Save the template name of the workflow that this intance was created from
      * @param workflowInstanceId
      * @param templateName
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response setWorkflowInstanceTemplateName(String workflowInstanceId, String templateName) throws RegistryException;
 
@@ -100,7 +100,7 @@ public interface ProvenanceRegistryService {
      * @param instanceId
      * @param executionStatus - contains the status
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response updateWorkflowInstanceStatusByInstance(String instanceId, String executionStatus)throws RegistryException;
 
@@ -111,7 +111,7 @@ public interface ProvenanceRegistryService {
      * @param executionStatus
      * @param statusUpdateTime
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response updateWorkflowInstanceStatusByExperiment(String experimentID,
                                                  String workflowInstanceID,
@@ -123,7 +123,7 @@ public interface ProvenanceRegistryService {
      * Return the status of the execution
      * @param instanceId
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response getWorkflowInstanceStatus(String instanceId)throws RegistryException;
 
@@ -134,7 +134,7 @@ public interface ProvenanceRegistryService {
      * @param workflowInstanceID
      * @param data
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response updateWorkflowNodeInput(String experimentID, String nodeID, String workflowInstanceID, String data) throws RegistryException;
 
@@ -146,7 +146,7 @@ public interface ProvenanceRegistryService {
      * @param workflowInstanceID
      * @param data
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response updateWorkflowNodeOutput(String experimentID, String nodeID, String workflowInstanceID, String data)throws RegistryException;
 
@@ -156,7 +156,7 @@ public interface ProvenanceRegistryService {
      * @param workflowNameRegEx - this is the workflowName or workflow template Id of an experiment
      * @param nodeNameRegEx - nodeId
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response searchWorkflowInstanceNodeInput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
 
@@ -166,7 +166,7 @@ public interface ProvenanceRegistryService {
      * @param workflowNameRegEx - this is the workflowName or workflow template Id of an experiment
      * @param nodeNameRegEx - nodeId
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response searchWorkflowInstanceNodeOutput(String experimentIdRegEx, String workflowNameRegEx, String nodeNameRegEx)throws RegistryException;
 
@@ -180,7 +180,7 @@ public interface ProvenanceRegistryService {
      * Return workflow execution object fully populated with data currently avaialble for that experiment
      * @param experimentId
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response getExperiment(String experimentId) throws RegistryException;
 
@@ -188,7 +188,7 @@ public interface ProvenanceRegistryService {
      * Return experiment ids of experiments launched by the given user
      * @param user - a regex user id
      * @return - experiment id list
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response getExperimentIdByUser(String user) throws RegistryException;
 
@@ -196,7 +196,7 @@ public interface ProvenanceRegistryService {
      * Return experiments launched by the given user
      * @param user
      * @return experiment object list each populated by current data of that experiment
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response getExperimentByUser(String user) throws RegistryException;
 
@@ -206,7 +206,7 @@ public interface ProvenanceRegistryService {
      * @param pageSize
      * @param pageNo
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response getExperimentByUser(String user, int pageSize, int pageNo) throws RegistryException;
 
@@ -214,7 +214,7 @@ public interface ProvenanceRegistryService {
      * This will update the workflowStatus for given experimentID,workflowInstanceID combination.
      * @param workflowStatusNode
      * @return
-     * @throws org.apache.airavata.common.registry.api.exception.RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegistryException
      */
     public Response updateWorkflowNodeStatus(WorkflowInstanceNodeStatus workflowStatusNode)throws RegistryException;
 

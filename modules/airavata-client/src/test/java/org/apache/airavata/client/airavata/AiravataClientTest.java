@@ -20,23 +20,7 @@
 */
 package org.apache.airavata.client.airavata;
 
-import org.apache.airavata.common.registry.api.exception.RegistryException;
-import org.apache.airavata.common.registry.api.impl.JCRRegistry;
-import org.apache.airavata.xbaya.interpretor.NameValue;
-
 import org.junit.Test;
-
-import javax.jcr.ImportUUIDBehavior;
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
 
 public class AiravataClientTest {
 
