@@ -235,15 +235,19 @@ public abstract class NodeGUI implements GraphPieceGUI {
      * @param g
      */
     protected void calculatePositions(Graphics g) {
+        Font oldFont = g.getFont();
+        g.setFont(new Font(oldFont.getFontName(),Font.BOLD,oldFont.getSize()));
         FontMetrics fm = g.getFontMetrics();
+
         this.headHeight = fm.getHeight() + TEXT_GAP_Y * 2;
 
         int maxNumPort = Math.max(getNode().getOutputPorts().size(), getNode().getInputPorts().size());
         this.dimension.height = Math.max(this.headHeight + PORT_INITIAL_GAP + PORT_GAP * maxNumPort, MINIMUM_HEIGHT);
-        this.dimension.width = Math.max(MINIMUM_WIDTH, fm.stringWidth(getNode().getID()) + TEXT_GAP_X * 2);
+        this.dimension.width = Math.max(MINIMUM_WIDTH, fm.stringWidth(getNode().getID()) + TEXT_GAP_X * 5);
 
         /* Calculates the position of ports */
         setPortPositions();
+        g.setFont(oldFont);
     }
 
     /**
@@ -405,9 +409,8 @@ public abstract class NodeGUI implements GraphPieceGUI {
         
         // Text
         g.setColor(TEXT_COLOR);
-
         Font oldFont = g.getFont();
-		g.setFont(new Font(oldFont.getFontName(),Font.PLAIN,oldFont.getSize()));
+		g.setFont(new Font(oldFont.getFontName(),Font.BOLD,oldFont.getSize()));
         Rectangle2D bounds = g.getFontMetrics().getStringBounds(headerText, g);
         g.drawString(headerText, (int)(shape.getBounds().getX() + (shape.getBounds().getWidth()-bounds.getWidth())/2), 
 		(int)(shape.getBounds().getY() + (shape.getBounds().getHeight()+bounds.getHeight())/2));
@@ -454,7 +457,7 @@ public abstract class NodeGUI implements GraphPieceGUI {
 
     /**
      * @param workflowName
-     * @param failed
+     * @param state
      */
     public void setToken(String workflowName, NodeState state) {
         List<DataPort> inputPorts = getNode().getInputPorts();
