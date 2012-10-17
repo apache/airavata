@@ -100,7 +100,7 @@ public class RegistryService implements ServiceLifeCycle {
         String jdbcPassword = properties.getProperty("registry.jdbc.password");
         jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
 
-        if (Utils.getDBType().equals("derby")) {
+        if (Utils.getDBType().equals("derby") && Utils.isDerbyStartEnabled()) {
             startDerbyInServerMode();
         }
         db = new JdbcStorage(10, 50, jdbcUrl, jdbcDriver, true);

@@ -118,6 +118,19 @@ public class Utils {
         }
     }
 
+    public static boolean isDerbyStartEnabled(){
+        try {
+            String s = getProvider().getValue(JPAConstants.KEY_DERBY_START_ENABLE).toString();
+            if("true".equals(s)){
+                return true;
+            }
+        } catch (UnknownRegistryConnectionDataException e) {
+            logger.error(e.getMessage(), e);
+            return false;
+        }
+        return false;
+    }
+
 	private static AiravataRegistryConnectionDataProvider getProvider() {
 		return AiravataRegistryFactory.getRegistryConnectionDataProvider();
 	}
