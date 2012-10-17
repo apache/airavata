@@ -133,7 +133,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     }
 
 	private URL getXBayaPropertiesURL() {
-		return this.getClass().getClassLoader().getResource("xbaya.properties");
+		return this.getClass().getClassLoader().getResource("airavata-server.properties");
 	}
 
     public void startUp(final ConfigurationContext configctx, AxisService service) {

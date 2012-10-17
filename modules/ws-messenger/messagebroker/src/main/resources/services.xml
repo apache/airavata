@@ -120,6 +120,6 @@
 
     </service>
 
-    <parameter name="configuration.file.name" locked="false">msgBroker.properties</parameter>
+    <parameter name="configuration.file.name" locked="false">airavata-server.properties</parameter>
 
 </serviceGroup>

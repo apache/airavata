@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the in memory storage implementation for MsgBoxService, this will be initialized if msgBox.properties is
+ * This is the in memory storage implementation for MsgBoxService, this will be initialized if airavata-server.properties is
  * configured not to use database implementation.
  */
 public class InMemoryImpl implements MsgBoxStorage {
