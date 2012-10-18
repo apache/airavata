@@ -343,6 +343,40 @@ public class ExperimentDataRetriever {
         return experimentData;
     }
 
+    public boolean isExperimentNameExist(String experimentName){
+        String connectionURL =  Utils.getJDBCURL();
+        Connection connection = null;
+        ResultSet rs = null;
+        Statement statement;
+        try{
+            Class.forName(Utils.getJDBCDriver()).newInstance();
+            connection = DriverManager.getConnection(connectionURL, Utils.getJDBCUser(), Utils.getJDBCPassword());
+            statement = connection.createStatement();
+            String queryString = "SELECT name FROM Experiment_Data WHERE name='" + experimentName + "'";
+            rs = statement.executeQuery(queryString);
+            if(rs != null){
+                while (rs.next()) {
+                    return true;
+                }
+            }
+            if(rs != null){
+                rs.close();
+            }
+            statement.close();
+            connection.close();
+        } catch (ClassNotFoundException e) {
+            logger.error(e.getMessage(), e);
+        } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
+        } catch (InstantiationException e) {
+            logger.error(e.getMessage(), e);
+        } catch (IllegalAccessException e) {
+            logger.error(e.getMessage(), e);
+        }
+
+        return false;
+    }
+
     public List<ExperimentData> getAllExperimentMetaInformation(String user){
         String connectionURL =  Utils.getJDBCURL();
         Connection connection = null;

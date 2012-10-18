@@ -136,8 +136,8 @@ public class ExperimentResource extends AbstractResource {
                 generator = new QueryGenerator(EXPERIMENT_DATA);
                 generator.setParameter(ExperimentDataConstants.EXPERIMENT_ID, name);
                 q = generator.selectQuery(em);
-                Experiment_Data experimentwData = (Experiment_Data)q.getSingleResult();
-                ExperimentDataResource experimentDataResource = (ExperimentDataResource)Utils.getResource(ResourceType.EXPERIMENT_DATA, experimentwData);
+                Experiment_Data experimentData = (Experiment_Data)q.getSingleResult();
+                ExperimentDataResource experimentDataResource = (ExperimentDataResource)Utils.getResource(ResourceType.EXPERIMENT_DATA, experimentData);
                 em.getTransaction().commit();
                 em.close();
                 return experimentDataResource;

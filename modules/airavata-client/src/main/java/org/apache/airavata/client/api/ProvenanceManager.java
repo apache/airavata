@@ -208,6 +208,14 @@ public interface ProvenanceManager {
      */
 	public ExperimentMetadata getExperimentMetadata(String experimentId) throws AiravataAPIInvocationException;
 
+    /**
+     * check whether the experiment exists
+     * @param experimentName
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+    public boolean isExperimentNameExist(String experimentName) throws AiravataAPIInvocationException;
+
 	   /**
      * Update the instance name of the Workflow
      * @param experimentId
