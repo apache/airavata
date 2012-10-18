@@ -123,6 +123,21 @@ public class JdbcStorage {
         return rows;
     }
 
+    public int executeUpdateAndCloseWithPrintLogMessages(PreparedStatement stmt, boolean printLogs) throws SQLException {
+        int rows = 0;
+        try {
+            rows = stmt.executeUpdate();
+            if (rows == 0) {
+                if(printLogs){
+                    log.info("Problem: 0 rows affected by insert/update/delete statement.");
+                }
+            }
+        } finally {
+            stmt.close();
+        }
+        return rows;
+    }
+
     public int countRow(String tableName, String columnName) throws SQLException {
         String query = new String("SELECT COUNT(" + columnName + ") FROM " + tableName);
         int count = -1;

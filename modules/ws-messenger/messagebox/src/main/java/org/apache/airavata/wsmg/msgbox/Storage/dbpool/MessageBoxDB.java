@@ -52,6 +52,8 @@ public class MessageBoxDB {
     private static final String MSGBOXES_TABLENAME = "msgBoxes";
     private static final String    MSGBOX_TABLENAME = "msgbox";
 
+    private static final String    MSGBOX_TABLE_ID = "MSGBOXID";
+
     private static final Logger logger = LoggerFactory.getLogger(MessageBoxDB.class);
 
     private static Set<String> msgBoxids;
@@ -232,7 +234,7 @@ public class MessageBoxDB {
             connection = db.connect();
             PreparedStatement stmt = connection.prepareStatement(SQL_DELETE_ANCIENT_STATEMENT);
             stmt.setLong(1, this.time);
-            db.executeUpdateAndClose(stmt);
+            db.executeUpdateAndCloseWithPrintLogMessages(stmt, false);
             db.commitAndFree(connection);
         } catch (SQLException sql) {
             db.rollbackAndFree(connection);
