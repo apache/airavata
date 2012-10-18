@@ -55,7 +55,6 @@
             <directory>target/axis2-${used.axis2.release}/WEB-INF/classes</directory>
             <outputDirectory>standalone-server/conf</outputDirectory>
             <includes>
-                <include>log4j.properties</include>
                 <include>commons-logging.properties</include>
             </includes>
         </fileSet>
@@ -154,6 +153,13 @@
             <outputDirectory>standalone-server/conf</outputDirectory>
             <includes>
                 <include>airavata-server.properties</include>
+            </includes>
+        </fileSet>
+	<fileSet>
+            <directory>../distribution/src/main/resources/conf</directory>
+            <outputDirectory>standalone-server/conf</outputDirectory>
+            <includes>
+                <include>log4j.properties</include>
             </includes>
         </fileSet>
         <fileSet>
