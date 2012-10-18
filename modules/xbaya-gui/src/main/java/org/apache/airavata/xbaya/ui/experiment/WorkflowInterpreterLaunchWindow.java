@@ -39,6 +39,8 @@ import javax.xml.namespace.QName;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
@@ -250,9 +252,11 @@ public class WorkflowInterpreterLaunchWindow {
         		    JOptionPane.ERROR_MESSAGE);
         	return;
         }
-//        if (instanceName.equals("")){
-//        	instanceName=workflow.getName();
-//        }
+
+        //previous instance name
+        if (!instanceNameTextField.getText().equals("")){
+            this.instanceNameTextField.setText("");
+        }
         final String instanceNameFinal=instanceName;
         if (topic.length() == 0) {
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.TOPIC_EMPTY_ERROR);

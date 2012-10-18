@@ -68,7 +68,14 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @throws RegistryException
      */
 	public abstract String getExperimentExecutionUser(String experimentId) throws RegistryException;
-    
+
+    /**
+     * check whether the experiment name exists
+     * @param experimentName
+     * @return
+     * @throws RegistryException
+     */
+    public boolean isExperimentNameExist(String experimentName) throws  RegistryException;
     /**
      * Get the name of the workflow intance
      * @param experimentId

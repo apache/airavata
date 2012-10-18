@@ -228,7 +228,16 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
 		}
 	}
 
-	@Override
+    @Override
+    public boolean isExperimentNameExist(String experimentName) throws AiravataAPIInvocationException {
+        try {
+            return getClient().getRegistry().isExperimentNameExist(experimentName);
+        } catch (RegistryException e) {
+            throw new AiravataAPIInvocationException(e);
+        }
+    }
+
+    @Override
 	public List<String> getExperimentIdList(String owner) throws AiravataAPIInvocationException{
 		try {
 			return getClient().getRegistry().getExperimentIdByUser(owner);

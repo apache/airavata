@@ -843,8 +843,14 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		return experiment.getData().getUserName();
 	}
 
+    @Override
+    public boolean isExperimentNameExist(String experimentName) throws RegistryException {
+        ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
+        return experimentDataRetriever.isExperimentNameExist(experimentName);
+    }
 
-	@Override
+
+    @Override
 	public String getExperimentName(String experimentId)
 			throws RegistryException {
 		if (!isExperimentExists(experimentId)){
