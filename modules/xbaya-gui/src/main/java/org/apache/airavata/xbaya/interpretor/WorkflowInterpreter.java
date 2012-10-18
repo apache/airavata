@@ -230,16 +230,16 @@ public class WorkflowInterpreter {
 						// want
 						// recalculate the execution stack
 					}
-
-					boolean nodeOutputLoadedFromProvenance = false;
-					if (this.config.isActOnProvenance()) {
-						nodeOutputLoadedFromProvenance = readProvenance(node);
-						if (!nodeOutputLoadedFromProvenance) {
-							executeDynamically(node);
-						}
-					} else {
+//
+//					boolean nodeOutputLoadedFromProvenance = false;
+//					if (this.config.isActOnProvenance()) {
+//						nodeOutputLoadedFromProvenance = readProvenance(node);
+//						if (!nodeOutputLoadedFromProvenance) {
+//							executeDynamically(node);
+//						}
+//					} else {
 						executeDynamically(node);
-					}
+//					}
 					if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.STEP) {
 						this.getWorkflow().setExecutionState(WorkflowExecutionState.PAUSED);
 						break;
@@ -363,8 +363,14 @@ public class WorkflowInterpreter {
 			for (int i = 0; i < inputPorts.size(); ++i) {
 				String inputTagname = inputPorts.get(i).getName();
 				// cordinate return
+				if(node instanceof DoWhileNode){
+					inputs[i] = new Pair<String, String>(inputTagname, "<" + inputTagname + ">"
+							+ InterpreterUtil.findInputFromPort(inputPorts.get(i), this.invokerMap).toString() + "</" + inputTagname + ">");
+				break;
+				}else{
 				inputs[i] = new Pair<String, String>(inputTagname, "<" + inputTagname + ">"
 						+ InterpreterUtil.findInputFromPort(inputPorts.get(i), this.invokerMap).toString() + "</" + inputTagname + ">");
+				}
 			}
 
 			String output = ((String) new ProvenanceReader(node, this.config.getTopic(), this.config.getRegistry()).read());
@@ -1495,7 +1501,7 @@ public class WorkflowInterpreter {
 						controlDone = controlDone && (finishedNodes.contains(edge.getFromPort().getNode())
 						// amazon component use condition met to check
 						// whether the control port is done
-						// FIXME I changed the "||" to a "&&" in the following since thats the only this 
+						// FIXME I changed the "||" to a "&&" in the following since thats the only this
 						// that makes sense and if anyone found a scenario it should be otherwise pls fix
 								|| ((ControlPort) edge.getFromPort()).isConditionMet());
 					}
