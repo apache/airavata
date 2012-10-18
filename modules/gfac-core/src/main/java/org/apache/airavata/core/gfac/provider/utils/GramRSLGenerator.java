@@ -49,7 +49,7 @@ public class GramRSLGenerator {
     protected static final Logger log = LoggerFactory.getLogger(GramRSLGenerator.class);
 
     private enum JobType {
-        SINGLE, MPI, MULTIPLE, CONDOR
+        SERIAL, SINGLE, MPI, MULTIPLE, CONDOR
     }
 
     ;
@@ -187,6 +187,9 @@ public class GramRSLGenerator {
             jobType = app.getJobType().toString();
         }
         if (jobType.equalsIgnoreCase(JobType.SINGLE.toString())) {
+            log.info("Setting job type to single");
+            jobAttr.setJobType(GramAttributes.JOBTYPE_SINGLE);
+        } if (jobType.equalsIgnoreCase(JobType.SERIAL.toString())) {
             log.info("Setting job type to single");
             jobAttr.setJobType(GramAttributes.JOBTYPE_SINGLE);
         } else if (jobType.equalsIgnoreCase(JobType.MPI.toString())) {
