@@ -23,8 +23,10 @@ package org.apache.airavata.xbaya.ui.menues;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
@@ -34,7 +36,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -568,13 +569,8 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
         menuItem.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent event) {
-                try {
-                    XBayaMenuItem.this.engine.dispose();
-                } catch (WorkflowException e) {
-                    logger.error(e.getMessage(), e);
-                } finally {
-                    XBayaMenuItem.this.engine.getGUI().getFrame().dispose();
-                }
+            	JFrame frame = XBayaMenuItem.this.engine.getGUI().getFrame();
+				frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING)); 
             }
         });
         return menuItem;

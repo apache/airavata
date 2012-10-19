@@ -423,15 +423,19 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 //    	newGraphCanvas(true);
     }
 
-    public void closeAllGraphCanvas(){
+    public boolean closeAllGraphCanvas(){
     	while (graphTabbedPane.getTabCount()>0){
-    		removeGraphCanvasFromIndex(0);
+    		if (!removeGraphCanvasFromIndex(0)){
+    			return false;
+    		}
     	}
+		return true;
     	//I dont know why but aparently you have to have atleast one tab present
 //    	newGraphCanvas(true);
     }
     
-	private void removeGraphCanvasFromIndex(int index) {
+	private boolean removeGraphCanvasFromIndex(int index) {
+		boolean actionSuccess=true;
 		if ((graphTabbedPane.getTabCount()>0) && (index<this.graphTabbedPane.getTabCount())){
 			GraphCanvas graphCanvas = graphCanvases.get(index);
 			if (graphCanvas.isWorkflowChanged()){
@@ -441,20 +445,23 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 						graphFiler.saveWorkflow(graphCanvas);
 						if (graphCanvas.isWorkflowChanged()){
 							//if cancelled while trying to save
-							return;
+							actionSuccess=false;
 						}
-					}else if (result!=JOptionPane.NO_OPTION){
-						//if cancel clicked
-						return;
+					}else if (result==JOptionPane.CANCEL_OPTION){
+						actionSuccess=false;
 					}
+						
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-			graphCanvases.remove(index);
-			graphTabbedPane.removeTabAt(index);
-			activeTabChanged();
+			if (actionSuccess) {
+				graphCanvases.remove(index);
+				graphTabbedPane.removeTabAt(index);
+				activeTabChanged();
+			}
 		}
+		return actionSuccess;
 	}
     
     /**
@@ -711,6 +718,10 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
         this.frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent event) {
+            	int result = JOptionPane.showConfirmDialog(frame, "'Are you sure you want to exit?", "Exit XBaya", JOptionPane.YES_NO_OPTION);
+				if (result==JOptionPane.NO_OPTION || (!closeAllGraphCanvas())){
+					return;
+				}
                 logger.debug(event.toString());
                 XBayaGUI.this.frame.setVisible(false);
                 try {
