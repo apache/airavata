@@ -84,7 +84,7 @@ public class HostDescriptionsNode extends AbstractAiravataTreeNode {
             deleteHostDescription(tree);
             return true;
         } else if (action.equals(AddAction.ID)) {
-            HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getXBayaEngine().getConfiguration().getJcrComponentRegistry().getRegistry());
+            HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getXBayaEngine().getConfiguration().getJcrComponentRegistry().getRegistry(), null);
             hostDescriptionDialog.open();
             if (hostDescriptionDialog.isHostCreated()) {
                 refresh();

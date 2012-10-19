@@ -30,12 +30,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.SwingUtil;
@@ -93,8 +88,8 @@ public class HostDescriptionDialog extends JDialog {
 	private static final String REMOTE_PROTOCOL_STR_HADOOP="Hadoop";
 	
     
-    public HostDescriptionDialog(AiravataRegistry2 registry) {
-    	this(registry,true,null);
+    public HostDescriptionDialog(AiravataRegistry2 registry, JFrame parent) {
+    	this(registry,true,null, parent);
     }
 
     /**
@@ -103,7 +98,8 @@ public class HostDescriptionDialog extends JDialog {
      * @param newHost
      * @param originalHostDescription
      */
-    public HostDescriptionDialog(AiravataRegistry2 registry, boolean newHost, HostDescription originalHostDescription) {
+    public HostDescriptionDialog(AiravataRegistry2 registry, boolean newHost, HostDescription originalHostDescription, JFrame parent) {
+        super(parent);
         setNewHost(newHost);
         setOriginalHostDescription(originalHostDescription);
         addWindowListener(new WindowAdapter() {
@@ -132,6 +128,8 @@ public class HostDescriptionDialog extends JDialog {
      * Displays the dialog.
      */
     public void open() {
+        setModal(true);
+        setLocationRelativeTo(getOwner());
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setVisible(true);
     }

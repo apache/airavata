@@ -245,7 +245,7 @@ public class HostDeploymentDialog extends JDialog implements ActionListener {
             lnkNewHost.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getRegistry());
+                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(getRegistry(), null);
                         hostDescriptionDialog.setLocationRelativeTo(getContentPane());
                         hostDescriptionDialog.open();
 

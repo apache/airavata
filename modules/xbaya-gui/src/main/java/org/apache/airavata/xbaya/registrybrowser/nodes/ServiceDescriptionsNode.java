@@ -84,7 +84,7 @@ public class ServiceDescriptionsNode extends AbstractAiravataTreeNode {
             deleteServiceDescription(tree);
             return true;
         } else if (action.equals(AddAction.ID)) {
-        	DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(getRegistry());
+        	DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(null, getRegistry());
         	serviceDescriptionDialog.open();
 //            ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry());
 //            serviceDescriptionDialog.open();
