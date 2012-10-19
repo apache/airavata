@@ -42,12 +42,12 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class MessagePullerTest extends TestCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(MessagePullerTest.class);
+    private static final Log logger = LogFactory.getLog(MessagePullerTest.class);
     static Properties configs = new Properties();
     String BROKER_URL;
     String MESSAGEBOX_URL;

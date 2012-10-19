@@ -84,8 +84,8 @@ import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentSourceTransferable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlElement;
 
 
@@ -95,7 +95,7 @@ import org.xmlpull.infoset.XmlElement;
  */
 public class GraphCanvas implements XBayaExecutionModeListener{
 
-    private static final Logger logger = LoggerFactory.getLogger(GraphCanvas.class);
+    private static final Log logger = LogFactory.getLog(GraphCanvas.class);
 
     private XBayaEngine engine;
 

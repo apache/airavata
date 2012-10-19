@@ -47,8 +47,8 @@ import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaVersion;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 import org.python.util.PythonInterpreter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class loader loads jython related classes without counting on parent class loader. This is because jython
@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class JythonClassLoader extends SecureClassLoader {
 
-    private final static Logger logger = LoggerFactory.getLogger(JythonClassLoader.class);
+    private static final Log logger = LogFactory.getLog(JythonClassLoader.class);
 
     private ClassLoader parent;
 

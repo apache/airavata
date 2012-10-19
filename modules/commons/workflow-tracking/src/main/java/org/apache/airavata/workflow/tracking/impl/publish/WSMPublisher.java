@@ -35,8 +35,8 @@ import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.EndpointReferenceHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Publish WS-Eventing messages using WS-Messenger client API
@@ -48,7 +48,7 @@ public class WSMPublisher extends AbstractPublisher implements NotificationPubli
     protected final EndpointReference brokerEpr;
     protected Properties configs = new Properties();
 
-    private Logger log = LoggerFactory.getLogger(WSMPublisher.class);
+    private static final Log log = LogFactory.getLog(WSMPublisher.class);
 
     public WSMPublisher(WorkflowTrackingContext context) {
         this(10, context.isEnableAsyncPublishing(), context.getBrokerEpr());
@@ -103,7 +103,7 @@ public class WSMPublisher extends AbstractPublisher implements NotificationPubli
         if (isDeleted())
             throw new RuntimeException("Publisher has been deleted!");
         if (IS_LOG_FINEST) {
-            logger.debug("publishing notification to messenger broker: " + leadMessage);
+            log.debug("publishing notification to messenger broker: " + leadMessage);
         }
         try {
             OMElement msg = WorkFlowUtils.reader2OMElement(new StringReader(leadMessage));

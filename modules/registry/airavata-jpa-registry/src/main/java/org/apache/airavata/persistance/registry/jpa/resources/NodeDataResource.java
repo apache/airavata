@@ -28,15 +28,15 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Node_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Node_DataPK;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.persistence.EntityManager;
 import java.sql.Timestamp;
 import java.util.List;
 
 public class NodeDataResource extends AbstractResource{
-    private final static Logger logger = LoggerFactory.getLogger(NodeDataResource.class);
+    private static final Log logger = LogFactory.getLog(NodeDataResource.class);
     private WorkflowDataResource workflowDataResource;
     private String nodeID;
     private String nodeType;

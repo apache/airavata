@@ -27,8 +27,8 @@ import java.lang.reflect.Method;
 import java.net.URL;
 
 import org.apache.airavata.common.exception.UtilsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Opens URLs with the OS-specific browser.
@@ -37,7 +37,7 @@ public class BrowserLauncher {
 
     private static final String ERROR_MESSAGE = "Error while attempting to launch web browser";
 
-    private static Logger logger = LoggerFactory.getLogger(BrowserLauncher.class);
+    private static final Log logger = LogFactory.getLog(BrowserLauncher.class);
 
     /**
      * Opens a specified URL with the browser.

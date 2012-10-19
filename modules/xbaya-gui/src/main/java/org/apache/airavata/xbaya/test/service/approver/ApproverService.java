@@ -24,8 +24,8 @@ package org.apache.airavata.xbaya.test.service.approver;
 import java.io.File;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsdl.WsdlDefinitions;
@@ -42,7 +42,7 @@ public class ApproverService {
 
     private final static String OUTPUT_WSDL_LOCATION = "wsdls/sample/approver-wsdl.xml";
 
-    private final static Logger logger = LoggerFactory.getLogger(ApproverService.class);
+    private static final Log logger = LogFactory.getLog(ApproverService.class);
 
     private HttpBasedServices httpServices;
 

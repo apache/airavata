@@ -30,11 +30,11 @@ import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class XBayaClientTest {
-    final static Logger logger = LoggerFactory.getLogger(XBayaClientTest.class);
+    final private static final Log logger = LogFactory.getLog(XBayaClientTest.class);
 
     @Rule
     public MethodRule watchman = new TestWatchman() {

@@ -55,8 +55,8 @@ import org.apache.airavata.xbaya.ui.graph.NodeGUI;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.addressing.EndpointReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class WorkflowInterpretorEventListener implements NotificationHandler, ConsumerNotificationHandler {
@@ -73,7 +73,7 @@ public class WorkflowInterpretorEventListener implements NotificationHandler, Co
     private WorkflowNodeStatusUpdater workflowNodeStatusUpdater;
     private WorkflowInterpreterConfiguration workflowInterpreterConfiguration;
 
-    private static Logger logger = LoggerFactory.getLogger(WorkflowInterpretorEventListener.class);
+    private static final Log logger = LogFactory.getLog(WorkflowInterpretorEventListener.class);
 
     public WorkflowInterpretorEventListener(Workflow workflow, XBayaConfiguration configuration) {
         this.workflow = workflow;

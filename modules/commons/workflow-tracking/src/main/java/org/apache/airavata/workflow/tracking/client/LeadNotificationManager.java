@@ -34,12 +34,12 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.EndpointReferenceHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class LeadNotificationManager {
 
-    private final static Logger logger = LoggerFactory.getLogger(LeadNotificationManager.class);
+    private static final Log logger = LogFactory.getLog(LeadNotificationManager.class);
 
     /**
      * THis API call could be used if the user created a Subscription in an earlier run and now the service is being

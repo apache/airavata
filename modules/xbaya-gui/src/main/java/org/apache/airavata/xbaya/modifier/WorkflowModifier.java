@@ -51,8 +51,8 @@ import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.monitor.MonitorUtil;
 import org.apache.airavata.xbaya.monitor.MonitorUtil.EventType;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul.XmlConstants;
@@ -60,7 +60,7 @@ import xsul5.wsdl.WsdlPortTypeOperation;
 
 public class WorkflowModifier {
 
-    private static final Logger logger = LoggerFactory.getLogger(WorkflowModifier.class);
+    private static final Log logger = LogFactory.getLog(WorkflowModifier.class);
 
     private Workflow modifiedWorkflow;
 

@@ -39,14 +39,14 @@ import org.apache.airavata.schemas.gfac.QueueType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.globus.gram.GramAttributes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Utilities for generating GRAM RSL
  */
 public class GramRSLGenerator {
-    protected static final Logger log = LoggerFactory.getLogger(GramRSLGenerator.class);
+    private static final Log log = LogFactory.getLog(GramRSLGenerator.class);
 
     private enum JobType {
         SERIAL, SINGLE, MPI, MULTIPLE, CONDOR

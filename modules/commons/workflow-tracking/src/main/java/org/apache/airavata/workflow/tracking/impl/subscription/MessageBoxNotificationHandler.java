@@ -41,12 +41,12 @@ import org.apache.axis2.addressing.EndpointReferenceHelper;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class MessageBoxNotificationHandler implements NotificationHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(MessageBoxNotificationHandler.class);
+    private static final Log logger = LogFactory.getLog(MessageBoxNotificationHandler.class);
 
     private String messageBoxUrl;
 
@@ -110,7 +110,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
 
             logger.info("Unsubscribing the messagebox that was destroyed," + " SubscriptionID:" + this.subscriptionId);
 
-            msgboxHandler.deleteMsgBox(msgBoxEpr, 2000L);
+            msgboxHandler.deleteMsgBox(msgBoxEpr, 12000L);
 
         } catch (MsgBrokerClientException e) {
 

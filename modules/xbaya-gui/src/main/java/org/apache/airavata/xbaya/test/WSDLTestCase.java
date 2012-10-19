@@ -35,7 +35,7 @@ import org.apache.airavata.common.utils.IOUtil;
 
 public class WSDLTestCase extends XBayaTestCase {
 
-    // private static final Logger logger = LoggerFactory.getLogger();
+    // private static final Log logger = LogFactory.getLog();
 
     private WorkflowCreator graphCreater;
 

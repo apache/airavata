@@ -32,12 +32,12 @@ import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class SubWorkflowNodeGUI extends NodeGUI {
 
-    private final static Logger logger = LoggerFactory.getLogger(SubWorkflowNodeGUI.class);
+    private static final Log logger = LogFactory.getLog(SubWorkflowNodeGUI.class);
 
     private SubWorkflowNode node;
 

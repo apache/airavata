@@ -44,8 +44,8 @@ import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.system.OutputNode;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class MetadataTestCase extends TestCase {
@@ -64,7 +64,7 @@ public class MetadataTestCase extends TestCase {
 
     private static final String WRF_FORECASTING_MODEL_WSDL = "WRFForecastingModel.wsdl";
 
-    private static final Logger logger = LoggerFactory.getLogger(MetadataTestCase.class);
+    private static final Log logger = LogFactory.getLog(MetadataTestCase.class);
 
     /**
      * @throws ComponentException

@@ -43,12 +43,12 @@ import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentSelector;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 import org.apache.airavata.xbaya.workflow.WorkflowClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class XBayaEngine {
 
-    private static final Logger logger = LoggerFactory.getLogger(XBayaEngine.class);
+    private static final Log logger = LogFactory.getLog(XBayaEngine.class);
 
     private XBayaConfiguration configuration;
 

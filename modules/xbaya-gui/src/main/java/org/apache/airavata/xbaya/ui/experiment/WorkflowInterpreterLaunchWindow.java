@@ -64,8 +64,8 @@ import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
 
@@ -73,7 +73,7 @@ import xsul.XmlConstants;
 
 public class WorkflowInterpreterLaunchWindow {
 
-    private static final Logger logger = LoggerFactory.getLogger(WorkflowInterpreterLaunchWindow.class);
+    private static final Log logger = LogFactory.getLog(WorkflowInterpreterLaunchWindow.class);
 
     private XBayaEngine engine;
 

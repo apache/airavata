@@ -32,12 +32,12 @@ import org.apache.axis2.description.AxisService;
 import org.apache.axis2.dispatchers.AddressingBasedDispatcher;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.util.JavaUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class PublishedMessageHandler extends AddressingBasedDispatcher {
 
-    private static final Logger logger = LoggerFactory.getLogger(PublishedMessageHandler.class);
+    private static final Log logger = LogFactory.getLog(PublishedMessageHandler.class);
 
     private static final String ADDRESSING_VALIDATE_ACTION = "addressing.validateAction";
 

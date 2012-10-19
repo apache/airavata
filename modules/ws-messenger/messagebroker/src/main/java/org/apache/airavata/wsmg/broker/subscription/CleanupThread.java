@@ -27,12 +27,12 @@ import java.util.Set;
 import org.apache.airavata.wsmg.commons.CommonRoutines;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.axis2.AxisFault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 class CleanUpThread implements Runnable {
 
-    private static final Logger logger = LoggerFactory.getLogger(CleanUpThread.class);
+    private static final Log logger = LogFactory.getLog(CleanUpThread.class);
 
     private SubscriptionManager subMan;
 

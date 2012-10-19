@@ -33,12 +33,12 @@ import org.apache.airavata.wsmg.commons.OutGoingMessage;
 import org.apache.airavata.wsmg.messenger.Deliverable;
 import org.apache.airavata.wsmg.messenger.strategy.SendingStrategy;
 import org.apache.axiom.om.OMElement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class SerialSender implements SendingStrategy {
 
-    private static final Logger log = LoggerFactory.getLogger(SerialSender.class);
+    private static final Log log = LogFactory.getLog(SerialSender.class);
 
     public void init() {
     }

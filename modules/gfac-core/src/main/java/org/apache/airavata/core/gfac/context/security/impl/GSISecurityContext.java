@@ -26,12 +26,12 @@ import org.apache.airavata.core.gfac.context.security.impl.utils.MyProxyManager;
 import org.apache.airavata.core.gfac.exception.SecurityException;
 import org.globus.tools.MyProxy;
 import org.ietf.jgss.GSSCredential;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class GSISecurityContext implements SecurityContext {
 
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Log log = LogFactory.getLog(GSISecurityContext.class);
 
     private MyProxyManager proxyRenewer;
 

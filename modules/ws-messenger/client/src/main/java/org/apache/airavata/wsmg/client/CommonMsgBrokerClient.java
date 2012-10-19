@@ -28,15 +28,15 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axis2.addressing.EndpointReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 abstract class CommonMsgBrokerClient implements MessageBrokerClient {
 
     protected final static OMFactory factory = OMAbstractFactory.getOMFactory();
     private final static SOAPFactory soapfactory = OMAbstractFactory.getSOAP11Factory();
 
-    private final static Logger logger = LoggerFactory.getLogger(CommonMsgBrokerClient.class);
+    private static final Log logger = LogFactory.getLog(CommonMsgBrokerClient.class);
     protected ConsumerServer xs;
     private long socketTimeout = 200000L;
 

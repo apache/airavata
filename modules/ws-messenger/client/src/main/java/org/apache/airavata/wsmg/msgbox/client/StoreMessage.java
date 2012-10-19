@@ -29,15 +29,15 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class can be used to invoke destroyMsgBox operation of msgBoxService and returns the resultant operation status
  * as EndpointReference
  */
 public class StoreMessage {
-    private static final Logger logger = LoggerFactory.getLogger(StoreMessage.class);
+    private static final Log logger = LogFactory.getLog(StoreMessage.class);
 
     protected EndpointReference msgBoxEndPointReference;
     protected long timeoutInMilliSeconds;

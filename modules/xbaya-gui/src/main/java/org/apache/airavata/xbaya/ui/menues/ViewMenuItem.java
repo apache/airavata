@@ -31,8 +31,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class ViewMenuItem {
 
@@ -47,9 +47,6 @@ public class ViewMenuItem {
 	private JMenuItem monitoringView;
 
 	private JMenuItem parametersView;
-
-	private static final Logger logger = LoggerFactory
-			.getLogger(ViewMenuItem.class);
 
 	/**
 	 * Constructs a WorkflowMenu.

@@ -31,8 +31,8 @@ import org.junit.rules.TestWatchman;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.model.FrameworkMethod;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 @RunWith(Suite.class)
@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 public class XBayaConsolidatedTestSuite {
     private static ListenerManager manager = null;
 
-    final static Logger logger = LoggerFactory.getLogger(XBayaConsolidatedTestSuite.class);
+    final private static final Log logger = LogFactory.getLog(XBayaConsolidatedTestSuite.class);
 
     @Rule
     public MethodRule watchman = new TestWatchman() {

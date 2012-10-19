@@ -40,12 +40,12 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.EndpointReferenceHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class WSEProtocolSupport {
 
-    private static final Logger log = LoggerFactory.getLogger(WSEProtocolSupport.class);
+    private static final Log log = LogFactory.getLog(WSEProtocolSupport.class);
 
     public SubscriptionState createSubscriptionState(ProcessingContext ctx, OutGoingQueue outgoingQueue)
             throws AxisFault {

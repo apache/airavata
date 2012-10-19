@@ -43,8 +43,8 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * 
@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * Templates
  */
 public class WsrfResourceStub {
-    private final static Logger logger = LoggerFactory.getLogger(WsrfResourceStub.class);
+    private static final Log logger = LogFactory.getLog(WsrfResourceStub.class);
     private final static OMFactory factory = OMAbstractFactory.getOMFactory();
     private final static SOAPFactory soapfactory = OMAbstractFactory.getSOAP11Factory();
     protected Options opts;

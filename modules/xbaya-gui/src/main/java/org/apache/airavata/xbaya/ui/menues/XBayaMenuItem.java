@@ -55,12 +55,12 @@ import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
 import org.apache.airavata.xbaya.ui.widgets.ToolbarButton;
 import org.apache.airavata.xbaya.ui.widgets.XBayaToolBar;
 import org.apache.airavata.xbaya.util.XBayaUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class XBayaMenuItem implements XBayaExecutionModeListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(XBayaMenuItem.class);
+    private static final Log logger = LogFactory.getLog(XBayaMenuItem.class);
 
     private JMenu xbayaMenuItem;
 

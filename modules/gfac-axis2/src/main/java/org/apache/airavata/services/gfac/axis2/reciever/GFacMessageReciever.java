@@ -68,12 +68,12 @@ import org.apache.axis2.engine.MessageReceiver;
 import org.apache.axis2.util.MessageContextBuilder;
 import org.apache.axis2.util.Utils;
 import org.apache.xmlbeans.XmlException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class GFacMessageReciever implements MessageReceiver {
 
-    private static Logger log = LoggerFactory.getLogger(GFacMessageReciever.class);
+    private static  Log log = LogFactory.getLog(GFacMessageReciever.class);
     public static final String TRUSTED_CERT_LOCATION = "trusted.cert.location";
     public static final String MYPROXY_SERVER = "myproxy.server";
     public static final String MYPROXY_USER = "myproxy.user";
@@ -103,7 +103,7 @@ public class GFacMessageReciever implements MessageReceiver {
         case INVOKE:
             try {
                 ContextHeaderDocument document  = ContextHeaderDocument.Factory.parse(getHeader(axisRequestMsgCtx).toStringWithConsume());
-                log = LoggerFactory.getLogger(GFacMessageReciever.class + "." + document.getContextHeader().getWorkflowMonitoringContext().getExperimentId());
+                log = LogFactory.getLog(GFacMessageReciever.class + "." + document.getContextHeader().getWorkflowMonitoringContext().getExperimentId());
                 log.debug("invoking Invoke operation");
                 processInvokeOperation(axisRequestMsgCtx);
                 log.info(axisRequestMsgCtx.getEnvelope().getBody().getFirstElement().toString());

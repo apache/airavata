@@ -47,12 +47,12 @@ import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
 import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.exception.UnknownRegistryConnectionDataException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 public class Utils {
-    private final static Logger logger = LoggerFactory.getLogger(Utils.class);
+    private static final Log logger = LogFactory.getLog(Utils.class);
 
     public static Properties loadProperties(){
         URL resource = Utils.class.getClassLoader().getResource("airavata-server.properties");

@@ -23,8 +23,8 @@ package org.apache.airavata.core.gfac.factory;
 
 import org.apache.airavata.core.gfac.exception.GfacException;
 import org.apache.airavata.core.gfac.services.GenericService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Abstract Factory to create a generic service
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractServiceFactory {
 
-    protected final Logger log = LoggerFactory.getLogger(AbstractServiceFactory.class);
+    private static final Log log = LogFactory.getLog(AbstractServiceFactory.class);
 
     /**
      * Create and initialize a generic service

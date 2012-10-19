@@ -28,12 +28,12 @@ import org.apache.airavata.wsmg.client.NotificationHandler;
 import org.apache.airavata.wsmg.msgbox.client.MsgBoxClient;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class MessagePuller {
 
-    private final static Logger logger = LoggerFactory.getLogger(MessagePuller.class);
+    private static final Log logger = LogFactory.getLog(MessagePuller.class);
 
     MsgBoxClient msgBoxUser = null;
 

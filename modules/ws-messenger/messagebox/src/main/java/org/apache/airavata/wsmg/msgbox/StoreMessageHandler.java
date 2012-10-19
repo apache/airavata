@@ -32,14 +32,14 @@ import org.apache.axis2.description.AxisService;
 import org.apache.axis2.dispatchers.AddressingBasedDispatcher;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.util.JavaUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This Dispatcher is used to validate the incoming message, this is set to Handler list in MsgBoxServiceLifeCycle.
  */
 public class StoreMessageHandler extends AddressingBasedDispatcher {
-    private static final Logger logger = LoggerFactory.getLogger(StoreMessageHandler.class);
+    private static final Log logger = LogFactory.getLog(StoreMessageHandler.class);
     private static final String WSMG_MSGSTORE_SOAP_ACTION = MsgBoxQNameConstants.STOREMSG_QNAME.getNamespaceURI()
             + MsgBoxQNameConstants.STOREMSG_QNAME.getLocalPart();
     private static final String ADDRESSING_VALIDATE_ACTION = "addressing.validateAction";

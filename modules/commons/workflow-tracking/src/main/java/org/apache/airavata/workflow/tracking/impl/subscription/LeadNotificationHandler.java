@@ -37,8 +37,8 @@ import org.apache.axiom.soap.SOAPHeader;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Utility for clients to subscribe and receive Lead notifications using new message schema. The agent implements the
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LeadNotificationHandler implements ConsumerNotificationHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(LeadNotificationHandler.class);
+    private static final Log logger = LogFactory.getLog(LeadNotificationHandler.class);
 
     private String topic;
 

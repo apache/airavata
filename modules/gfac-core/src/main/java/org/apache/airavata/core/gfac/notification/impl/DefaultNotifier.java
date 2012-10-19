@@ -27,8 +27,8 @@ import java.util.List;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.notification.GFacNotifiable;
 import org.apache.airavata.core.gfac.notification.GFacNotifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * The default notifier which uses {@link ArrayList} to store
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultNotifier implements GFacNotifier {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultNotifier.class);
+    private static final Log logger = LogFactory.getLog(DefaultNotifier.class);
 
     private List<GFacNotifiable> notifiableObjects = new ArrayList<GFacNotifiable>();
 

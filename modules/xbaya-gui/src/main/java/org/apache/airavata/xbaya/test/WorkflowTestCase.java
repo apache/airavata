@@ -37,13 +37,13 @@ import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class WorkflowTestCase extends XBayaTestCase {
 
-    private static Logger logger = LoggerFactory.getLogger(WorkflowTestCase.class);
+    private static final Log logger = LogFactory.getLog(WorkflowTestCase.class);
 
     private WorkflowCreator workflowCreator;
 

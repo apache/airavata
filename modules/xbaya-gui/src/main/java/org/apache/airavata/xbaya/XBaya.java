@@ -28,12 +28,12 @@ import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistr
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class XBaya {
 
-    private static final Logger logger = LoggerFactory.getLogger(XBaya.class);
+    private static final Log logger = LogFactory.getLog(XBaya.class);
 
     private XBayaConfiguration config;
 

@@ -25,12 +25,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class ConsumerListManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConsumerListManager.class);
+    private static final Log logger = LogFactory.getLog(ConsumerListManager.class);
 
     protected Map<String, ConsumerList> token2ConsumerListMap = new HashMap<String, ConsumerList>();
 

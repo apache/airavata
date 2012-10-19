@@ -25,8 +25,8 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HostDescriptorResource extends AbstractResource {
-    private final static Logger logger = LoggerFactory.getLogger(HostDescriptorResource.class);
+    private static final Log logger = LogFactory.getLog(HostDescriptorResource.class);
     private String hostDescName;
     private String gatewayName;
     private String userName;

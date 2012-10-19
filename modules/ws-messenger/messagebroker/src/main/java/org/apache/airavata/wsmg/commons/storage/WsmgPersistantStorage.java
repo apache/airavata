@@ -50,11 +50,11 @@ import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.util.Counter;
 import org.apache.airavata.wsmg.util.TimerThread;
 import org.apache.axiom.om.OMElement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class WsmgPersistantStorage implements WsmgStorage, WsmgQueue {
-    private static final Logger logger = LoggerFactory.getLogger(WsmgPersistantStorage.class);
+    private static final Log logger = LogFactory.getLog(WsmgPersistantStorage.class);
 
     /*
      * Table name

@@ -37,12 +37,12 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class MultipleSubscriptionForMessageBoxTest extends TestCase implements ThreadMessagePassingCallback {
 
-    private static final Logger logger = LoggerFactory.getLogger(MultipleSubscriptionForMessageBoxTest.class);
+    private static final Log logger = LogFactory.getLog(MultipleSubscriptionForMessageBoxTest.class);
     static Properties configs = new Properties();
     String BROKER_URL;
     String MESSAGEBOX_URL;

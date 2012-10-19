@@ -49,8 +49,8 @@ import org.apache.airavata.schemas.gfac.MethodType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.PortTypeType;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
 import org.w3c.dom.DOMImplementation;
@@ -78,7 +78,7 @@ import com.ibm.wsdl.extensions.soap.SOAPOperationImpl;
 
 public class WSDLGenerator implements WSDLConstants {
     public static final String WSA_PREFIX = "wsa";
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    protected final Log log = LogFactory.getLog(this.getClass());
 
     public Hashtable generateWSDL(String serviceLocation, QName wsdlQName_, String security,
             ServiceDescriptionType serviceDesc, boolean abstractWSDL) throws GFacWSDLException {

@@ -28,12 +28,12 @@ import org.apache.airavata.wsmg.client.ConsumerServer;
 import org.apache.airavata.wsmg.client.MsgBrokerClientException;
 import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.axis2.addressing.EndpointReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class Subscription {
 
-    private static final Logger logger = LoggerFactory.getLogger(Subscription.class);
+    private static final Log logger = LogFactory.getLog(Subscription.class);
 
     private String subscriptionID;
 

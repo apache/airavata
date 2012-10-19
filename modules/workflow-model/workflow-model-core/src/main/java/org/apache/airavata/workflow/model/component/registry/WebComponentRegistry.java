@@ -44,12 +44,12 @@ import org.apache.airavata.workflow.model.component.ComponentReference;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class WebComponentRegistry extends ComponentRegistry {
 
-    private static final Logger logger = LoggerFactory.getLogger(WebComponentRegistry.class);
+    private static final Log logger = LogFactory.getLog(WebComponentRegistry.class);
 
     private URL url;
 

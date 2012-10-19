@@ -46,14 +46,14 @@ import javax.swing.border.Border;
 import org.apache.airavata.wsmg.client.ConsumerServer;
 import org.apache.airavata.wsmg.client.WsntMsgBrokerClient;
 import org.apache.axis2.AxisFault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class NotificationViewerFrame extends JFrame {
 
     private static final long serialVersionUID = -4924241323165353343L;
 
-    private static final Logger logger = LoggerFactory.getLogger(NotificationViewerFrame.class);
+    private static final Log logger = LogFactory.getLog(NotificationViewerFrame.class);
 
     JPanel contentPane;
 

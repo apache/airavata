@@ -80,8 +80,8 @@ import org.gpel.model.GpelReply;
 import org.gpel.model.GpelScope;
 import org.gpel.model.GpelSequence;
 import org.gpel.model.GpelVariable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlComment;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlInfosetBuilder;
@@ -145,7 +145,7 @@ public class BPELScript {
 
     private static final String FOREACH_VALUE_SUFFIX = "Value";
 
-    private static final Logger logger = LoggerFactory.getLogger(BPELScript.class);
+    private static final Log logger = LogFactory.getLog(BPELScript.class);
 
     private Workflow workflow;
 

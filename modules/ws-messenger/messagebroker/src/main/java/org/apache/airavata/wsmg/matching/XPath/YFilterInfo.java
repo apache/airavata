@@ -31,8 +31,8 @@ import org.apache.airavata.wsmg.broker.ConsumerList;
 import org.apache.airavata.wsmg.broker.ConsumerListManager;
 import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
 import org.apache.airavata.wsmg.config.WSMGParameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import edu.berkeley.cs.db.yfilter.filter.EXfilterBasic;
 import edu.berkeley.cs.db.yfilter.filter.SystemGlobals;
@@ -41,7 +41,7 @@ import edu.berkeley.cs.db.yfilterplus.queryparser.XPQuery;
 import edu.berkeley.cs.db.yfilterplus.xmltree.XMLTree;
 
 public class YFilterInfo {
-    private static final Logger logger = LoggerFactory.getLogger(YFilterInfo.class);
+    private static final Log logger = LogFactory.getLog(YFilterInfo.class);
 
     private EXfilterBasic yfilter = new EXfilterBasic();
     private HashMap<Integer, String> yFilterIdToXPath = new HashMap<Integer, String>();

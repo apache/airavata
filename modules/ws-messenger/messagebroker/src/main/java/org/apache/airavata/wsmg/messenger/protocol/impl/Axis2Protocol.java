@@ -43,12 +43,12 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.transport.http.HTTPConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class Axis2Protocol implements DeliveryProtocol {
 
-    private static final Logger logger = LoggerFactory.getLogger(Axis2Protocol.class);
+    private static final Log logger = LogFactory.getLog(Axis2Protocol.class);
 
     private static SOAPFactory soapfactory = OMAbstractFactory.getSOAP11Factory();
 
