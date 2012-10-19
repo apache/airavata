@@ -178,14 +178,6 @@ public class WorkflowInterpreter {
 			}
 
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.RUNNING);
-//			if (this.config.isActOnProvenance()) {
-//				try {
-//					this.getConfig().getConfiguration().getJcrComponentRegistry().getRegistry()
-//							.saveWorkflowExecutionStatus(this.config.getTopic(), ExecutionStatus.STARTED);
-//				} catch (Exception e) {
-//					throw new WorkflowException(e);
-//				}
-//			}
 			ArrayList<Node> inputNodes = this.getInputNodesDynamically();
 			Object[] values = new Object[inputNodes.size()];
 			String[] keywords = new String[inputNodes.size()];
@@ -200,13 +192,6 @@ public class WorkflowInterpreter {
 			while (this.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
 				if (getRemainNodesDynamically() == 0) {
 					notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
-					// if (this.config.getMode() ==
-					// WorkflowInterpreterConfiguration.GUI_MODE) {
-					// this.notifyPause();
-					// } else {
-					// this.getWorkflow().setExecutionState(
-					// WorkflowExecutionState.STOPPED);
-					// }
 				}
 				// ok we have paused sleep
 				while (this.getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED) {
@@ -291,35 +276,6 @@ public class WorkflowInterpreter {
 				}
 			}
 			this.config.getNotifier().workflowTerminated();
-			// if (this.config.getMode() ==
-			// WorkflowInterpreterConfiguration.GUI_MODE) {
-			// final WaitDialog waitDialog = new WaitDialog(new Cancelable() {
-			// @Override
-			// public void cancel() {
-			// // Do nothing
-			// }
-			// }, "Stop Workflow", "Cleaning up resources for Workflow",
-			// this.config.getGUI());
-			// new Thread(new Runnable() {
-			// @Override
-			// public void run() {
-			// waitDialog.show();
-			// }
-			// }).start();
-			// // Send Notification for output values
-			// finish();
-			// // Sleep to provide for notification delay
-			// try {
-			// Thread.sleep(1000);
-			// } catch (InterruptedException e) {
-			// e.printStackTrace();
-			// }
-			// cleanup();
-			// this.config.getNotifier().cleanup();
-			// waitDialog.hide();
-			// } else {
-			// finish();
-			// }
 			UUID uuid = UUID.randomUUID();
 			notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_TASK_START, new WorkflowInterpreterInteractor.TaskNotification("Stop Workflow",
 					"Cleaning up resources for Workflow", uuid.toString()));
@@ -685,17 +641,6 @@ public class WorkflowInterpreter {
 		} catch (Exception e) {
 			throw new WorkflowException(e);
 		}
-		// if (this.config.getMode() ==
-		// WorkflowInterpreterConfiguration.GUI_MODE) {
-		// new WorkflowInterpreter(getConfig(), this.topic, subWorkflow, true,
-		// false, new GUIWorkflowInterpreterInteractorImpl(engine,
-		// workflow)).scheduleDynamically();
-		// } else {
-		// new WorkflowInterpreter(this.getConfig(), this.topic,
-		// subWorkflow, this.getUsername(), this.getPassword(),new
-		// SSWorkflowInterpreterInteractorImpl(workflow))
-		// .scheduleDynamically();
-		// }
 	}
 
 	protected void handleWSComponent(Node node) throws WorkflowException {
@@ -713,37 +658,10 @@ public class WorkflowInterpreter {
 		if (null == wsdlLocation) {
 			if (gfacURLString.startsWith("https")) {
 				LeadContextHeader leadCtxHeader = null;
-				// try {
-				// leadCtxHeader =
-				// (LeadContextHeader)getInputViaInteractor(WorkflowExecutionMessage.INPUT_LEAD_CONTEXT_HEADER,
-				// wsNode);
-				// } catch (Exception e1) {
-				// throw new WorkflowException(e1);
-				// }
 				try {
 					leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.getWorkflow(), this.getConfig().getConfiguration(), new MonitorConfiguration(this
 							.getConfig().getConfiguration().getBrokerURL(), this.config.getTopic(), true, this.getConfig().getConfiguration()
 							.getMessageBoxURL()), wsNode.getID(), null);
-					// if (this.config.getMode() ==
-					// WorkflowInterpreterConfiguration.GUI_MODE) {
-					// leadCtxHeader = XBayaUtil.buildLeadContextHeader(
-					// this.getWorkflow(),
-					// this.getConfig().getConfiguration(),
-					// new
-					// MonitorConfiguration(this.getConfig().getConfiguration()
-					// .getBrokerURL(), this.config.getTopic(), true,
-					// this.getConfig().getConfiguration().getMessageBoxURL()),
-					// wsNode.getID(), null);
-					// } else {
-					// leadCtxHeader = XBayaUtil.buildLeadContextHeader(
-					// this.getWorkflow(),
-					// this.getConfig().getConfiguration(),
-					// new
-					// MonitorConfiguration(this.getConfig().getConfiguration()
-					// .getBrokerURL(), this.config.getTopic(), true,
-					// this.getConfig().getConfiguration().getMessageBoxURL()),
-					// wsNode.getID(), null);
-					// }
 				} catch (URISyntaxException e) {
 					throw new WorkflowException(e);
 				}
@@ -800,16 +718,6 @@ public class WorkflowInterpreter {
 						.toString(), leadCtxHeader, this.config.getNotifier().createServiceNotificationSender(node.getID()));
 
 			} else {
-				// invoker=(Invoker)getInputViaInteractor(WorkflowExecutionMessage.INPUT_GFAC_INVOKER,
-				// new GFacInvokerData(gfacEmbeddedMode,portTypeQName,
-				// WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode
-				// .getComponent().getWSDL()), node.getID(),
-				// this.engine.getMonitor().getConfiguration()
-				// .getMessageBoxURL().toASCIIString(),
-				// this.engine.getMonitor().getConfiguration().getBrokerURL().toASCIIString(),
-				// this.config.getNotifier(), this.config.getTopic(),
-				// this.engine.getConfiguration().getJcrComponentRegistry().getRegistry(),
-				// portTypeQName.getLocalPart(),this.engine.getConfiguration()));
 				if (this.config.isGfacEmbeddedMode()) {
 					invoker = new EmbeddedGFacInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(wsNode.getComponent().getWSDL()), node.getID(),
 							this.config.getMessageBoxURL().toASCIIString(), this.config.getMessageBrokerURL().toASCIIString(), this.config.getNotifier(),
