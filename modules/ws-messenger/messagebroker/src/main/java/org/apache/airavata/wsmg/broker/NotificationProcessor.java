@@ -45,12 +45,12 @@ import org.apache.axiom.om.OMException;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axis2.AxisFault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class NotificationProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(NotificationProcessor.class);
+    private static final Log logger = LogFactory.getLog(NotificationProcessor.class);
 
     private WsmgConfigurationContext wsmgConfigContext;
 

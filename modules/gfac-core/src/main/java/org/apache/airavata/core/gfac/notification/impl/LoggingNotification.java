@@ -23,8 +23,8 @@ package org.apache.airavata.core.gfac.notification.impl;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.notification.GFacNotifiable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * {@link org.apache.airavata.core.gfac.notification.GFacNotifiable} object as a SLF4J logger. Log out all the message
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LoggingNotification implements GFacNotifiable {
 
-    protected final Logger log = LoggerFactory.getLogger(LoggingNotification.class+
+    private static final Log log = LogFactory.getLog(LoggingNotification.class+
             "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());
 
     public void startSchedule(InvocationContext context) {

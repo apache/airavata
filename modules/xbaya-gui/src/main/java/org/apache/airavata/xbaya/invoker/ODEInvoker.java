@@ -40,8 +40,8 @@ import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.utils.Cancelable;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.util.XBayaUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import xsul.XmlConstants;
 import xsul.invoker.gsi.GsiInvoker;
@@ -53,7 +53,7 @@ public class ODEInvoker implements Cancelable {
 
     private XBayaEngine engine;
 
-    private static final Logger logger = LoggerFactory.getLogger(ODEInvoker.class);
+    private static final Log logger = LogFactory.getLog(ODEInvoker.class);
 
     private Thread invokeThread;
 

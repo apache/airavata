@@ -41,8 +41,8 @@ import org.apache.airavata.wsmg.msgbox.util.MsgBoxCommonConstants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.ServiceLifeCycle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class initialize the messageBox service by setting the messageStore based on the configuration done by the user
@@ -50,13 +50,13 @@ import org.slf4j.LoggerFactory;
  */
 public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
 
-    private static final Logger logger = LoggerFactory.getLogger(MsgBoxServiceLifeCycle.class);
+    private static final Log logger = LogFactory.getLog(MsgBoxServiceLifeCycle.class);
     private static final String CONFIGURATION_FILE_NAME = "airavata-server.properties";
     private static final String TRUE = Boolean.toString(true);
     public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
     public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 
-    public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
+    public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000;
     public static final String JCR_CLASS = "jcr.class";
     public static final String JCR_USER = "jcr.user";
     public static final String JCR_PASS = "jcr.pass";
@@ -187,13 +187,14 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
                 }
             }catch (Exception e){
                 try {
+                    logger.info("Thread is sleeping since registry database is not up");
                     Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     return;
                 }
-                logger.error(e.getMessage());
-                logger.error("Workflow Interpreter Service URL update thread is interrupted");
+//                logger.error(e.getMessage());
+//                logger.error("Workflow Interpreter Service URL update thread is interrupted");
             }
         }
     }

@@ -61,15 +61,15 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul5.wsdl.WsdlDefinitions;
 
 public class GridChemRunnerWindow {
 
-    private static final Logger logger = LoggerFactory.getLogger(GridChemRunnerWindow.class);
+    private static final Log logger = LogFactory.getLog(GridChemRunnerWindow.class);
 
     private XBayaEngine engine;
 

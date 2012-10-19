@@ -68,8 +68,8 @@ import org.apache.airavata.xbaya.test.util.WorkflowCreator;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.xmlbeans.XmlObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.view.XmlValidationException;
 import org.xmlpull.v1.builder.XmlElement;
 
@@ -87,7 +87,7 @@ import xsul5.wsdl.WsdlResolver;
 
 public class WorkflowModificationTestCase extends XBayaTestCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(WorkflowModificationTestCase.class);
+    private static final Log logger = LogFactory.getLog(WorkflowModificationTestCase.class);
 
     private boolean gui = false;
 

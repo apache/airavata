@@ -21,13 +21,13 @@
 
 package org.apache.airavata.core.gfac.provider.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
 
 public class InputStreamToFileWriter extends Thread {
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Log log = LogFactory.getLog(InputStreamToFileWriter.class);
 
     private BufferedReader in;
     private BufferedWriter out;

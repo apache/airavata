@@ -33,15 +33,15 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class can be used to invoke takeMessages operation of msgBoxService and returns the resultant operation status
  * 
  */
 public class TakeMessages {
-    private static final Logger logger = LoggerFactory.getLogger(TakeMessages.class);
+    private static final Log logger = LogFactory.getLog(TakeMessages.class);
     private final OMFactory factory = OMAbstractFactory.getOMFactory();
     protected EndpointReference msgBoxEndPointReference;
     protected long timeoutInMilliSeconds;

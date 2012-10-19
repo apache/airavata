@@ -33,8 +33,8 @@ import org.apache.airavata.xbaya.event.EventProducer;
 import org.apache.airavata.xbaya.security.UserX509Credential;
 import org.gpel.client.GcInstance;
 import org.gpel.client.GcSearchList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import xsul5.wsdl.WsdlDefinitions;
 
@@ -62,7 +62,7 @@ public abstract class WorkflowClient extends EventProducer {
 
     protected static final String GRAPH_MIME_TYPE = "application/x-xbaya+xml";
 
-    protected final static Logger logger = LoggerFactory.getLogger(WorkflowClient.class);
+    private static final Log logger = LogFactory.getLog(WorkflowClient.class);
 
     protected URI engineURL;
 

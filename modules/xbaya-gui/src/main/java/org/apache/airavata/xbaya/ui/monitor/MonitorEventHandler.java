@@ -55,8 +55,8 @@ import org.apache.airavata.xbaya.monitor.MonitorUtil.EventType;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class MonitorEventHandler implements ChangeListener {
@@ -97,7 +97,7 @@ public class MonitorEventHandler implements ChangeListener {
         }
     }
 
-    private static Logger logger = LoggerFactory.getLogger(MonitorEventHandler.class);
+    private static final Log logger = LogFactory.getLog(MonitorEventHandler.class);
 
     private XBayaGUI xbayaGUI;
 

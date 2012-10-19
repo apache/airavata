@@ -32,8 +32,8 @@ import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNamespace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Compare two OMElement with its namespace, attributes, children, and text. Current implementation supports ignore
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OMElementComparator {
 
-    private static final Logger log = LoggerFactory.getLogger(OMElementComparator.class);
+    private static final Log log = LogFactory.getLog(OMElementComparator.class);
 
     private static List<String> ignorableNamespaceList = new ArrayList<String>();
 

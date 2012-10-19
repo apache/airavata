@@ -39,12 +39,12 @@ import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.registry.api.util.RegistryConstants;
 import org.apache.airavata.registry.api.util.WebServiceUtil;
 import org.apache.airavata.workflow.model.component.ComponentReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class JCRComponentRegistry extends ComponentRegistry {
 
-    private static final Logger log = LoggerFactory.getLogger(JCRComponentRegistry.class);
+    private static final Log log = LogFactory.getLog(JCRComponentRegistry.class);
     private static final String NAME = "Application Services";
     public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
 

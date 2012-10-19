@@ -29,8 +29,8 @@ import org.apache.airavata.wsmg.config.WsmgConfigurationContext;
 import org.apache.airavata.wsmg.util.WsNotificationOperations;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * BrokerServiceMessageReceiverInOut message receiver
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 public class WSNotificationMsgReceiver extends AbstractBrokerMsgReceiver {
 
-    private static final Logger log = LoggerFactory.getLogger(WSNotificationMsgReceiver.class);
+    private static final Log log = LogFactory.getLog(WSNotificationMsgReceiver.class);
 
     WSNotificationProcessingContextBuilder builder = new WSNotificationProcessingContextBuilder();
 

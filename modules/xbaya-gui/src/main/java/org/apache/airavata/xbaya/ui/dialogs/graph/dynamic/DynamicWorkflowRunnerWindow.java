@@ -65,8 +65,8 @@ import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 import org.apache.airavata.xbaya.util.XBayaUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
 
@@ -75,7 +75,7 @@ import xsul.lead.LeadResourceMapping;
 
 public class DynamicWorkflowRunnerWindow {
 
-    private static final Logger logger = LoggerFactory.getLogger(DynamicWorkflowRunnerWindow.class);
+    private static final Log logger = LogFactory.getLog(DynamicWorkflowRunnerWindow.class);
 
     private XBayaEngine engine;
 

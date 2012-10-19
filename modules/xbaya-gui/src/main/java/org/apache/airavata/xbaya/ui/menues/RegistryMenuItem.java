@@ -36,8 +36,8 @@ import org.apache.airavata.xbaya.ui.dialogs.registry.JCRRegistryWindow;
 import org.apache.airavata.xbaya.ui.widgets.ToolbarButton;
 import org.apache.airavata.xbaya.ui.widgets.XBayaToolBar;
 import org.apache.airavata.xbaya.util.XBayaUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class RegistryMenuItem implements XBayaExecutionModeListener {
 
@@ -49,7 +49,7 @@ public class RegistryMenuItem implements XBayaExecutionModeListener {
 
     private JMenuItem jcrRegistryItem;
 
-    private static final Logger logger = LoggerFactory.getLogger(RegistryMenuItem.class);
+    private static final Log logger = LogFactory.getLog(RegistryMenuItem.class);
 
     private XBayaToolBar toolBar;
 

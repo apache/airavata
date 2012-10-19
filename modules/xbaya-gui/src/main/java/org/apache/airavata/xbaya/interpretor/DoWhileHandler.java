@@ -45,12 +45,12 @@ import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.invoker.Invoker;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.util.InterpreterUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class DoWhileHandler implements Callable<Boolean> {
-	private static Logger log = LoggerFactory.getLogger(DoWhileHandler.class);
+	private static final Log log = LogFactory.getLog(DoWhileHandler.class);
 	private DoWhileNode dowhilenode;
 	private Map<Node, Invoker> invokerMap;
 	private ArrayList<Node> waitingNode;

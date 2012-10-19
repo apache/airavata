@@ -44,8 +44,8 @@ import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.wsdl.WsdlDefinitions;
@@ -57,7 +57,7 @@ import xsul.xwsif_runtime.WSIFClient;
 
 public class GenericInvoker implements Invoker {
 
-    private static final Logger logger = LoggerFactory.getLogger(GenericInvoker.class);
+    private static final Log logger = LogFactory.getLog(GenericInvoker.class);
 
     private String nodeID;
 

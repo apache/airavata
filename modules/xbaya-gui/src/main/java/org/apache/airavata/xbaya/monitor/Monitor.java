@@ -32,13 +32,13 @@ import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.event.Event;
 import org.apache.airavata.xbaya.event.Event.Type;
 import org.apache.airavata.xbaya.event.EventProducer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class Monitor extends EventProducer {
 
-    protected static final Logger logger = LoggerFactory.getLogger(Monitor.class);
+    private static final Log logger = LogFactory.getLog(Monitor.class);
 
     protected MonitorConfiguration configuration;
 

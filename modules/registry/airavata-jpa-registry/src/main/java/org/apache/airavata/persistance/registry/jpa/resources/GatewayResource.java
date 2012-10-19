@@ -31,11 +31,11 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class GatewayResource extends AbstractResource {
-    private final static Logger logger = LoggerFactory.getLogger(GatewayResource.class);
+    private static final Log logger = LogFactory.getLog(GatewayResource.class);
     private String gatewayName;
     private String owner;
 

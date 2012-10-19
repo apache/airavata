@@ -41,11 +41,11 @@ import org.apache.airavata.workflow.tracking.util.XmlBeanUtils;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public abstract class AbstractNotifier {
-    protected static final Logger log = LoggerFactory.getLogger(AbstractNotifier.class);
+    private static final Log log = LogFactory.getLog(AbstractNotifier.class);
     private Map<EndpointReference, NotificationPublisher> publishermap = new ConcurrentHashMap<EndpointReference, NotificationPublisher>();
 
     protected Date activityTimestamp = null;

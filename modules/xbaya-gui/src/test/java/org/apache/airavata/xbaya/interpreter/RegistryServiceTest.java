@@ -34,8 +34,8 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 //FIXME: Add tests for new registry. Airavata-592
 public class RegistryServiceTest {
 	@Rule

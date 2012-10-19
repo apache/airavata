@@ -24,12 +24,12 @@ package org.apache.airavata.xbaya.lead;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.WSConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class LEADTypes {
 
-    private static final Logger logger = LoggerFactory.getLogger(LEADTypes.class);
+    private static final Log logger = LogFactory.getLog(LEADTypes.class);
 
     /**
      * http://www.extreme.indiana.edu/lead/xsd

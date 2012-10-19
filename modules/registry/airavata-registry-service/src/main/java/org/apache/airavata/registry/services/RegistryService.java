@@ -31,8 +31,8 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.ServiceLifeCycle;
 import org.apache.derby.drda.NetworkServerControl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -42,7 +42,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class RegistryService implements ServiceLifeCycle {
-    private static final Logger logger = LoggerFactory.getLogger(RegistryService.class);
+    private static final Log logger = LogFactory.getLog(RegistryService.class);
 
     public static final String PERSISTANT_DATA = "Configuration";
     public static final String GATEWAY_ID = "gateway.id";

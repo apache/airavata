@@ -40,8 +40,8 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.airavata.wsmg.commons.storage.JdbcStorage;
 import org.apache.axiom.om.OMElement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This is the core class which used by DatabaseStorageImpl to perform all the service operations, DatabaseStorageImpl
@@ -54,7 +54,7 @@ public class MessageBoxDB {
 
     private static final String    MSGBOX_TABLE_ID = "MSGBOXID";
 
-    private static final Logger logger = LoggerFactory.getLogger(MessageBoxDB.class);
+    private static final Log logger = LogFactory.getLog(MessageBoxDB.class);
 
     private static Set<String> msgBoxids;
 

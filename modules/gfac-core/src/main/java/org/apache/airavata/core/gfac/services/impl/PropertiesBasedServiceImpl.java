@@ -45,8 +45,8 @@ import org.apache.airavata.registry.api.util.RegistryUtils;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This generic service implementation will load Registry service and Data Catalog from property file using (Apache
@@ -57,7 +57,7 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
 
     public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
 
-    private static Logger log = LoggerFactory.getLogger(PropertiesBasedServiceImpl.class+
+    private static final Log log = LogFactory.getLog(PropertiesBasedServiceImpl.class+
             "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());
 
     /*

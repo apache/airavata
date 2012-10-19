@@ -24,14 +24,14 @@ package org.apache.airavata.commons.gfac.wsdl;
 import javax.wsdl.extensions.UnknownExtensibilityElement;
 import javax.xml.namespace.QName;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class WSPolicyGenerator implements WSDLConstants {
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+    private static final Log log = LogFactory.getLog(WSPolicyGenerator.class);
 
     public static UnknownExtensibilityElement createServiceLevelPolicy(DOMImplementation dImpl, String policyID) {
         Document doc = dImpl.createDocument(WSP_NAMESPACE, "wsp:Policy", null);

@@ -36,11 +36,11 @@ import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateExc
 import org.apache.airavata.registry.api.exception.RegistryAccessorInvalidException;
 import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundException;
 import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class RegistryUtils {
-    private static final Logger log = LoggerFactory.getLogger(RegistryUtils.class);
+    private static final Log log = LogFactory.getLog(RegistryUtils.class);
 
     public static final String GATEWAY_ID = "gateway.id";
 

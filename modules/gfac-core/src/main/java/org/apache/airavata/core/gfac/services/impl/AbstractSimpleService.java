@@ -35,8 +35,8 @@ import org.apache.airavata.core.gfac.extension.PreExecuteChain;
 import org.apache.airavata.core.gfac.provider.Provider;
 import org.apache.airavata.core.gfac.scheduler.Scheduler;
 import org.apache.airavata.core.gfac.services.GenericService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * The abstract service wraps up steps of execution for {@link GenericService}. Also, it adds input/output plug-ins
@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractSimpleService implements GenericService {
 
-    private static Logger log = LoggerFactory.getLogger(AbstractSimpleService.class);
+    private static final Log log = LogFactory.getLog(AbstractSimpleService.class);
 
     public abstract void preProcess(InvocationContext context) throws ServiceException;
 

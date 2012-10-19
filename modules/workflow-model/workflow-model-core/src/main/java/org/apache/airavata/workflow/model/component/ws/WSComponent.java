@@ -38,8 +38,8 @@ import org.apache.airavata.workflow.model.gpel.DSCUtil;
 import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlCharacters;
 import org.xmlpull.infoset.XmlElement;
 
@@ -54,7 +54,7 @@ import xsul5.wsdl.WsdlPortTypeOutput;
 
 public class WSComponent extends Component {
 
-    private static final Logger logger = LoggerFactory.getLogger(WSComponent.class);
+    private static final Log logger = LogFactory.getLog(WSComponent.class);
 
     protected WsdlDefinitions wsdl;
 

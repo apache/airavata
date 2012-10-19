@@ -31,12 +31,12 @@ import org.globus.myproxy.MyProxy;
 import org.globus.myproxy.MyProxyException;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class MyProxyClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(MyProxyClient.class);
+    private static final Log logger = LogFactory.getLog(MyProxyClient.class);
 
     private boolean initialized = false;
 

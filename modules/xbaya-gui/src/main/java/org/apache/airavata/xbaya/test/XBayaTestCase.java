@@ -28,7 +28,7 @@ import junit.framework.TestCase;
 
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.security.XBayaSecurity;
-import org.slf4j.Logger;
+import org.apache.commons.logging.Log;
 
 public abstract class XBayaTestCase extends TestCase {
 

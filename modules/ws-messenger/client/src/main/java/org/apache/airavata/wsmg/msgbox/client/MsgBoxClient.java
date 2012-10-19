@@ -26,8 +26,8 @@ import java.util.Iterator;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This is the client class to invoke MsgBoxService this is using four separate classes to invoke four methods
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class MsgBoxClient {
 
     int msgsAtOnce = 10;
-    static Logger logger = LoggerFactory.getLogger(MsgBoxClient.class);
+    private static final Log logger = LogFactory.getLog(MsgBoxClient.class);
 
     public MsgBoxClient() {
     }

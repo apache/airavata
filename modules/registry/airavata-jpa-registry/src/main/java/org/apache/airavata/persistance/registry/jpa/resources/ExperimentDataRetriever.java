@@ -25,8 +25,8 @@ import org.apache.airavata.registry.api.exception.worker.ExperimentLazyLoadedExc
 import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.workflow.*;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.sql.*;
 import java.text.DateFormat;
@@ -36,7 +36,7 @@ import java.util.*;
 import java.util.Date;
 
 public class ExperimentDataRetriever {
-    private static final Logger logger = LoggerFactory.getLogger(ExperimentDataRetriever.class);
+    private static final Log logger = LogFactory.getLog(ExperimentDataRetriever.class);
 
     public ExperimentData getExperiment(String experimentId){
         String connectionURL =  Utils.getJDBCURL();

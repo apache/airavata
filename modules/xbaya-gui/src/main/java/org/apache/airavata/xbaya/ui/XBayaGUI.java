@@ -86,13 +86,13 @@ import org.apache.airavata.xbaya.ui.widgets.ScrollPanel;
 import org.apache.airavata.xbaya.ui.widgets.TabLabelButton;
 import org.apache.airavata.xbaya.ui.widgets.XBayaToolBar;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentSelector;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(XBayaGUI.class);
+    private static final Log logger = LogFactory.getLog(XBayaGUI.class);
 
     private static final int STATIC_MENU_ITEMS = 4;
 

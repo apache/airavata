@@ -38,11 +38,11 @@ import java.util.UUID;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.schemas.gfac.*;
 import org.apache.axiom.om.OMElement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class GfacUtils {
-    private final static Logger log = LoggerFactory.getLogger(GfacUtils.class);
+    private static final Log log = LogFactory.getLog(GfacUtils.class);
 
     private GfacUtils() {
     }

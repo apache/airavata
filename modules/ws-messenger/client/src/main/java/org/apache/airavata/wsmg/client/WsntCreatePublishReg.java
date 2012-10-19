@@ -35,8 +35,8 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.EndpointReferenceHelper;
 import org.apache.axis2.client.ServiceClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * 
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * Templates
  */
 public class WsntCreatePublishReg extends WidgetStub {
-    private static final Logger logger = LoggerFactory.getLogger(WseCreateSubscription.class);
+    private static final Log logger = LogFactory.getLog(WseCreateSubscription.class);
     private OMFactory factory = OMAbstractFactory.getOMFactory();
     private final static SOAPFactory soapfactory = OMAbstractFactory.getSOAP11Factory();
 

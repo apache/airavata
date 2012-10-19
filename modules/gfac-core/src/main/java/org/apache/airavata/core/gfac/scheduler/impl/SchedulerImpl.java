@@ -48,15 +48,15 @@ import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.schemas.wec.SecurityContextDocument;
 import org.apache.axiom.om.OMElement;
 import org.apache.xmlbeans.XmlException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class selects {@link Provider} based on information in {@link AiravataRegistry2}
  */
 public class SchedulerImpl implements Scheduler {
 
-    private static Logger log = LoggerFactory.getLogger(SchedulerImpl.class+
+    private static final Log log = LogFactory.getLog(SchedulerImpl.class+
             "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());
 
     public Provider schedule(InvocationContext context) throws SchedulerException {

@@ -25,8 +25,8 @@ import java.util.Random;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.test.service.ServiceNotificationSender;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.v1.builder.XmlElement;
 import org.xmlpull.v1.builder.XmlNamespace;
 
@@ -34,7 +34,7 @@ import xsul.XmlConstants;
 
 public class ApproverImpl implements Approver {
 
-    private final static Logger logger = LoggerFactory.getLogger(ApproverImpl.class);
+    private static final Log logger = LogFactory.getLog(ApproverImpl.class);
 
     /**
      * @see org.apache.airavata.xbaya.test.service.approver.Approver#approve(org.xmlpull.v1.builder.XmlElement)

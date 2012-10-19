@@ -28,8 +28,8 @@ import org.apache.airavata.persistance.registry.jpa.model.User_Workflow;
 import org.apache.airavata.persistance.registry.jpa.model.User_Workflow_PK;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserWorkflowResource extends AbstractResource {
-    private final static Logger logger = LoggerFactory.getLogger(UserWorkflowResource.class);
+    private static final Log logger = LogFactory.getLog(UserWorkflowResource.class);
     private GatewayResource gateway;
     private WorkerResource worker;
     private String name;

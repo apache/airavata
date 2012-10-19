@@ -54,15 +54,15 @@ import org.globus.ftp.exception.ClientException;
 import org.globus.ftp.exception.ServerException;
 import org.globus.gsi.gssapi.auth.HostAuthorization;
 import org.ietf.jgss.GSSCredential;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * GridFTP tools
  */
 public class GridFtp {
 
-    public static final Logger log = LoggerFactory.getLogger(GridFtp.class);
+    private static final Log log = LogFactory.getLog(GridFtp.class);
 
     public static final String GSIFTP_SCHEME = "gsiftp";
     public static final String HOST = "host";

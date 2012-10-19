@@ -56,15 +56,15 @@ import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul5.wsdl.WsdlDefinitions;
 
 public class JythonRunnerWindow {
 
-    private static final Logger logger = LoggerFactory.getLogger(JythonRunnerWindow.class);
+    private static final Log logger = LogFactory.getLog(JythonRunnerWindow.class);
 
     private XBayaEngine engine;
 

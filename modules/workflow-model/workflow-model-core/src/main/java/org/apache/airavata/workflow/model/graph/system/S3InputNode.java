@@ -38,15 +38,15 @@ import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class S3InputNode extends InputNode {
 
     private static final String VALUE_TAG_NAME = "value";
 
-    private static final Logger logger = LoggerFactory.getLogger(S3InputNode.class);
+    private static final Log logger = LogFactory.getLog(S3InputNode.class);
 
     private Object defaultValue;
 

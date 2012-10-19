@@ -29,12 +29,12 @@ import org.apache.airavata.workflow.tracking.client.NotificationType;
 import org.apache.airavata.workflow.tracking.client.Subscription;
 import org.apache.airavata.test.suite.workflowtracking.tests.ThreadMessagePassingCallback;
 import org.apache.xmlbeans.XmlObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class SubscriberThread extends Thread {
 
-    private static final Logger logger = LoggerFactory.getLogger(SubscriberThread.class);
+    private static final Log logger = LogFactory.getLog(SubscriberThread.class);
     private ThreadMessagePassingCallback callback;
 
     private int subCount = 0;

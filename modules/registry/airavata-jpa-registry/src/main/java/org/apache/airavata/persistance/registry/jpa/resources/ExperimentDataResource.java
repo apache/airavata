@@ -28,8 +28,8 @@ import org.apache.airavata.persistance.registry.jpa.model.Experiment_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment_Metadata;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -38,7 +38,7 @@ import java.util.List;
 
 public class ExperimentDataResource extends AbstractResource{
 
-    private final static Logger logger = LoggerFactory.getLogger(ExperimentDataResource.class);
+    private static final Log logger = LogFactory.getLog(ExperimentDataResource.class);
     private String experimentID;
     private String expName;
     private String userName;

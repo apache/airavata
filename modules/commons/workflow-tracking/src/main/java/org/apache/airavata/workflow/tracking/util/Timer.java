@@ -21,15 +21,15 @@
 
 package org.apache.airavata.workflow.tracking.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * calculates simple timing information for instrumenting code
  */
 public class Timer {
 
-    private static final Logger logger = LoggerFactory.getLogger(Timer.class);
+    private static final Log logger = LogFactory.getLog(Timer.class);
 
     private long start, end, total = 0, deltaStart, delta = 0;
     private final String msg;

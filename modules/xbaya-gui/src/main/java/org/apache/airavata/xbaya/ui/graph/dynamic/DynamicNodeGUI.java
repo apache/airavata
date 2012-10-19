@@ -27,12 +27,12 @@ import org.apache.airavata.workflow.model.graph.dynamic.DynamicNode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.graph.dynamic.DynamicNodeWindow;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class DynamicNodeGUI extends NodeGUI {
 
-    private final static Logger logger = LoggerFactory.getLogger(DynamicNodeGUI.class);
+    private static final Log logger = LogFactory.getLog(DynamicNodeGUI.class);
 
     private DynamicNode node;
 

@@ -26,8 +26,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xmlpull.v1.builder.XmlElement;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
 
@@ -45,7 +45,7 @@ import xsul.xwsif_runtime.WSIFRuntime;
  */
 public class SimpleWSClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(SimpleWSClient.class);
+    private static final Log logger = LogFactory.getLog(SimpleWSClient.class);
 
     private static final XmlInfosetBuilder builder = XmlConstants.BUILDER;
 
