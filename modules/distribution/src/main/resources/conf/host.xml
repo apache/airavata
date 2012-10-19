@@ -49,22 +49,16 @@
      <server>
         <name>trestles</name>
         <host>trestles.sdsc.edu</host>
-        <gram.endpoint>trestles.sdsc.edu:2119/jobmanager-pbs</gram.endpoint>
-        <gridftp.endpoint>gsiftp://trestles-dm1.sdsc.xsede.org:2811/</gridftp.endpoint>
+        <gram.endpoint>trestles-login2.sdsc.edu:2119/jobmanager-pbstest2</gram.endpoint>
+        <gridftp.endpoint>gsiftp://trestles.sdsc.edu:2811/</gridftp.endpoint>
     </server>
     
-    <server>
-        <name>ember</name>
-        <host>ember.ncsa.teragrid.org</host>
-        <gram.endpoint>grid-ember.ncsa.teragrid.org:2811/</gram.endpoint>
-        <gridftp.endpoint>gsiftp://grid-ember.ncsa.teragrid.org:2811/</gridftp.endpoint>
-    </server>
-
-    <server>
+<!--     
+     <server>
         <name>kraken</name>
         <host>gsissh.kraken.nics.xsede.org</host>
         <gram.endpoint>grid.nics.xsede.org:2119/jobmanager-pbs</gram.endpoint>
         <gridftp.endpoint>gsiftp://gridftp.kraken.nics.xsede.org:2811/</gridftp.endpoint>
-    </server>
+    </server> -->
 
 </servers>
