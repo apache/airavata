@@ -21,12 +21,7 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.descriptors;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -41,19 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultCellEditor;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -111,7 +94,7 @@ public class DeploymentDescriptionDialog extends JDialog {
      */
     public static void main(String[] args) {
         try {
-            DeploymentDescriptionDialog dialog = new DeploymentDescriptionDialog(null,true,null);
+            DeploymentDescriptionDialog dialog = new DeploymentDescriptionDialog(null,true,null,null);
             dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
         } catch (Exception e) {
@@ -119,17 +102,23 @@ public class DeploymentDescriptionDialog extends JDialog {
         }
     }
 
-    public DeploymentDescriptionDialog(AiravataRegistry2 registry) {
-    	this(registry,true,null);
+    public DeploymentDescriptionDialog(JFrame parent, AiravataRegistry2 registry) {
+    	this(registry, true, null, parent);
     }
-    
+
+//    public DeploymentDescriptionDialog(Frame parent) {
+//        super(parent);
+//    }
+
     /**
      * Create the dialog.
      */
-    public DeploymentDescriptionDialog(AiravataRegistry2 registry, boolean newDescription, ServiceDescription serviceDescription) {
-    	setNewDescription(newDescription);
+    public DeploymentDescriptionDialog(AiravataRegistry2 registry, boolean newDescription, ServiceDescription serviceDescription, JFrame parent) {
+        super(parent);
+        setNewDescription(newDescription);
     	this.setOrginalServiceDescription(serviceDescription);
     	setSuggestedNamePrefix(suggestedNamePrefix);
+
     	if (isNewDescription()) {
 			setTitlePrefix("Register Application");
 		}else{
@@ -161,6 +150,10 @@ public class DeploymentDescriptionDialog extends JDialog {
     }
 
     public void open() {
+//        pack();
+//        setAlwaysOnTop(true);
+        setLocationRelativeTo(getOwner());
+        setModal(true);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setVisible(true);
     }
@@ -270,7 +263,6 @@ public class DeploymentDescriptionDialog extends JDialog {
                 cancelButton.setActionCommand("Cancel");
             }
         }
-        
         contentPanel.add(lblServiceName);
         contentPanel.add(txtApplicationServiceName);
         GridPanel pnlTables=new GridPanel();

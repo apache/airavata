@@ -214,7 +214,7 @@ public class DescriptorEditorDialog extends JDialog {
     	switch (descriptorType){
 	    	case HOST:
 	    		HostDescription h = (HostDescription) getSelected();
-	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry(),false,h);
+	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry(),false,h, null);
 	    		hostDescriptionDialog.setLocationRelativeTo(this.engine.getGUI().getFrame());
 	    		hostDescriptionDialog.open();
 	    		if (hostDescriptionDialog.isHostCreated()) {
@@ -223,7 +223,7 @@ public class DescriptorEditorDialog extends JDialog {
 	    		break;
 	    	case SERVICE:
 	    		ServiceDescription d = (ServiceDescription) getSelected();
-	    		DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(getRegistry(),false,d);
+	    		DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(getRegistry(),false,d, null);
 	        	serviceDescriptionDialog.open();
 //	    		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry(),false,d);
 //	    		serviceDescriptionDialog.open();
@@ -247,14 +247,14 @@ public class DescriptorEditorDialog extends JDialog {
     private void newDescriptor() throws MalformedDescriptorException, RegistryException {
     	switch (descriptorType){
 	    	case HOST:
-	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
+	    		HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry(), null);
 	    		hostDescriptionDialog.open();
 	    		if (hostDescriptionDialog.isHostCreated()){
 	    			loadDescriptors();
 	    		}
 	    		break;
 	    	case SERVICE:
-	    		DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(getRegistry());
+	    		DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(null, getRegistry());
 	        	serviceDescriptionDialog.open();
 //	    		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry());
 //	    		serviceDescriptionDialog.open();

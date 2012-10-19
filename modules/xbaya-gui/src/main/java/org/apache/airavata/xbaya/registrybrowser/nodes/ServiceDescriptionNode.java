@@ -93,7 +93,7 @@ public class ServiceDescriptionNode extends AbstractAiravataTreeNode {
     }
 
 	private boolean editServiceDescription(JTree tree) {
-		DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(getRegistry(),false,getServiceDescription());
+		DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(getRegistry(),false,getServiceDescription(), null);
     	serviceDescriptionDialog.open();
 //		ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(getRegistry(),false,getServiceDescription());
 //		serviceDescriptionDialog.open();

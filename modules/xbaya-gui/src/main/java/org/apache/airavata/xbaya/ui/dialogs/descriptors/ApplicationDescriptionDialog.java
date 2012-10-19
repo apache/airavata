@@ -354,7 +354,7 @@ public class ApplicationDescriptionDialog extends JDialog implements ActionListe
             lnkNewHost.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry());
+                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(engine.getConfiguration().getJcrComponentRegistry().getRegistry(), null);
                         hostDescriptionDialog.setLocationRelativeTo(getContentPane());
                         hostDescriptionDialog.open();
 
