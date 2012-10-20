@@ -139,16 +139,12 @@
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>log4j-over-slf4j</artifactId>
-            <version>${org.slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
+            <artifactId>slf4j-jcl</artifactId>
+            <version>${org.slf4j.version}</version>            
         </dependency>
         <dependency>
             <groupId>gpel</groupId>
