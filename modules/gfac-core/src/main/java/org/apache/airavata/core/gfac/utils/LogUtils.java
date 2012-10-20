@@ -24,7 +24,7 @@ package org.apache.airavata.core.gfac.utils;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 public class LogUtils {
 
@@ -38,7 +38,7 @@ public class LogUtils {
      * @param log
      * @param prop
      */
-    public static void displayProperties(Log log, Properties prop) {
+    public static void displayProperties(Logger log, Properties prop) {
         Enumeration em = prop.keys();
         while (em.hasMoreElements()) {
             String key = em.nextElement().toString();

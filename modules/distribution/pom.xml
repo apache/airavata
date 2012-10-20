@@ -138,6 +138,19 @@
             <version>1</version>
         </dependency>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>${org.slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+        </dependency>
+        <dependency>
             <groupId>gpel</groupId>
             <artifactId>gpel_client</artifactId>
             <version>1.0.7-BETA</version>
@@ -250,11 +263,6 @@
             <artifactId>commons-lang</artifactId>
             <version>2.4</version>
         </dependency>
-         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.1.1</version>
-        </dependency>
         <dependency>
             <groupId>globus</groupId>
             <artifactId>transfer-api-client</artifactId>
@@ -269,10 +277,6 @@
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
-        </dependency>
-        <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>

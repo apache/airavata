@@ -27,12 +27,12 @@ import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.utils.Cancelable;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.globus.myproxy.MyProxyException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MyProxyLoader implements Cancelable {
 
-    private static final Log logger = LogFactory.getLog(MyProxyLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(MyProxyLoader.class);
 
     private XBayaEngine engine;
 

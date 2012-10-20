@@ -60,8 +60,8 @@ import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.ui.dialogs.registry.JCRRegistryWindow;
 import org.apache.axis2.util.XMLUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.xmlpull.infoset.XmlElement;
@@ -72,7 +72,7 @@ import xsul5.XmlConstants;
 
 public class XBayaUtil {
 
-    private static final Log logger = LogFactory.getLog(XBayaUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(XBayaUtil.class);
     public static final String JCR_USER = "jcr.username";
     public static final String JCR_PASS = "jcr.password";
     public static final String JCR_URL = "jcr.url";

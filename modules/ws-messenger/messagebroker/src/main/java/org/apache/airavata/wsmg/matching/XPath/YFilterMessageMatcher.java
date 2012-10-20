@@ -35,12 +35,12 @@ import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.matching.AbstractMessageMatcher;
 import org.apache.airavata.wsmg.messenger.OutGoingQueue;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class YFilterMessageMatcher extends AbstractMessageMatcher {
 
-    private static final Log logger = LogFactory.getLog(YFilterMessageMatcher.class);
+    private static final Logger logger = LoggerFactory.getLogger(YFilterMessageMatcher.class);
 
     private OutGoingQueue outGoingQueue = null;
 

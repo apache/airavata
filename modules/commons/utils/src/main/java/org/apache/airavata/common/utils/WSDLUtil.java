@@ -33,8 +33,8 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.exception.UtilsException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlAttribute;
 import org.xmlpull.infoset.XmlBuilderException;
 import org.xmlpull.infoset.XmlElement;
@@ -49,7 +49,7 @@ import xsul5.wsdl.WsdlUtil;
 
 public class WSDLUtil {
 
-    private static final Log logger = LogFactory.getLog(WSDLUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(WSDLUtil.class);
 
     /**
      * @param wsdlString

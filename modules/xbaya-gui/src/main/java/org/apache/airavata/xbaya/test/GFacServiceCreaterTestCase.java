@@ -43,8 +43,8 @@ import org.apache.airavata.xbaya.jython.lib.GFacServiceCreator;
 import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.test.util.WorkflowCreator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GFacServiceCreaterTestCase extends XBayaTestCase {
 
@@ -53,7 +53,7 @@ public class GFacServiceCreaterTestCase extends XBayaTestCase {
     private static final String TEST_AWSDL = XBayaPathConstants.WSDL_DIRECTORY + File.separator
             + WorkflowCreator.GFAC_TEST_AWSDL;
 
-    private static final Log logger = LogFactory.getLog(GFacServiceCreaterTestCase.class);
+    private static final Logger logger = LoggerFactory.getLogger(GFacServiceCreaterTestCase.class);
 
     /**
      * @throws WorkflowException

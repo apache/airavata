@@ -28,8 +28,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.wsdl.WsdlDefinitions;
@@ -55,7 +55,7 @@ public class GFacServiceCreator {
 
     private static final String SECURITY_NONE = "None";
 
-    private static final Log logger = LogFactory.getLog(GFacServiceCreator.class);
+    private static final Logger logger = LoggerFactory.getLogger(GFacServiceCreator.class);
 
     private WSIFOperation gFacOperation;
 

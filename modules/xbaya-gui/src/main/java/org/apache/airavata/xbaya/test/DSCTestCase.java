@@ -30,8 +30,8 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.gpel.DSCUtil;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.lead.LeadContextHeader;
@@ -52,7 +52,7 @@ public class DSCTestCase extends XBayaTestCase {
 
     private static final String SAMPLE_AWSDL = XBayaPathConstants.WSDL_DIRECTORY + "/test/TestCMD_Example1_AWSDL.xml";
 
-    private static final Log logger = LogFactory.getLog(DSCTestCase.class);
+    private static final Logger logger = LoggerFactory.getLogger(DSCTestCase.class);
 
     /**
      * @param args

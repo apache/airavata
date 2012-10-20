@@ -26,11 +26,11 @@ import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WorkflowStatusUpdater {
-    private static final Log logger = LogFactory.getLog(WorkflowStatusUpdater.class);
+    private static Logger logger = LoggerFactory.getLogger(WorkflowStatusUpdater.class);
 
     private AiravataRegistry2 registry;
 

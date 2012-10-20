@@ -39,12 +39,12 @@ import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.gpel.model.GpelProcess;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BPELFiler {
 
-    private static final Log logger = LogFactory.getLog(BPELFiler.class);
+    private static Logger logger = LoggerFactory.getLogger(BPELFiler.class);
 
     private XBayaEngine engine;
 

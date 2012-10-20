@@ -43,8 +43,8 @@ import org.apache.airavata.xbaya.test.service.adder.Adder;
 import org.apache.airavata.xbaya.test.service.adder.AdderService;
 import org.globus.gsi.CertUtil;
 import org.ietf.jgss.GSSCredential;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlContainer;
 import org.xmlpull.v1.builder.XmlDocument;
 import org.xmlpull.v1.builder.XmlElement;
@@ -67,7 +67,7 @@ public class LEADWorkflowInvokerTestCase extends XBayaTestCase {
 
     private static final String SAMPLE_AWSDL = XBayaPathConstants.WSDL_DIRECTORY + File.separator + Adder.WSDL_PATH;
 
-    private static final Log logger = LogFactory.getLog(LEADWorkflowInvokerTestCase.class);
+    private static final Logger logger = LoggerFactory.getLogger(LEADWorkflowInvokerTestCase.class);
 
     /**
      * @param args

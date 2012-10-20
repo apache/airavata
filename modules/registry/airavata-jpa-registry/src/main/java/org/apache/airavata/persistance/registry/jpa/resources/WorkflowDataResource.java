@@ -29,8 +29,8 @@ import org.apache.airavata.persistance.registry.jpa.model.Gram_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Node_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorkflowDataResource extends AbstractResource{
-    private static final Log logger = LogFactory.getLog(WorkflowDataResource.class);
+    private final static Logger logger = LoggerFactory.getLogger(WorkflowDataResource.class);
     public static final String NODE_DATA = "Node_Data";
     public static final String GRAM_DATA = "Gram_Data";
     private String experimentID;

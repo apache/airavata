@@ -5,8 +5,8 @@ import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.registry.api.exception.UnknownRegistryConnectionDataException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
@@ -14,7 +14,7 @@ import java.util.Properties;
 
 public class AiravataRegistryConnectionDataProviderImpl implements AiravataRegistryConnectionDataProvider {
 
-    private static final Log logger = LogFactory.getLog(AiravataRegistryConnectionDataProviderImpl.class);
+    private final static Logger logger = LoggerFactory.getLogger(AiravataRegistryConnectionDataProviderImpl.class);
     public static Properties loadProperties(){
         URL resource = Utils.class.getClassLoader().getResource("airavata-server.properties");
         Properties properties = new Properties();

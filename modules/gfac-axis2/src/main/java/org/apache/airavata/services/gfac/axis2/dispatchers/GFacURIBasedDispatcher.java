@@ -34,13 +34,13 @@ import org.apache.axis2.dispatchers.AbstractServiceDispatcher;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.util.LoggingControl;
 import org.apache.axis2.util.Utils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GFacURIBasedDispatcher extends AbstractServiceDispatcher {
 
     public static final String NAME = "GFacURIBasedDispatcher";
-    private static final Log log = LogFactory.getLog(GFacURIBasedDispatcher.class);
+    private static final Logger log = LoggerFactory.getLogger(GFacURIBasedDispatcher.class);
 
     /*
      * (non-Javadoc)

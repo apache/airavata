@@ -38,8 +38,8 @@ import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class InputNode extends ParameterNode {
@@ -48,7 +48,7 @@ public class InputNode extends ParameterNode {
 
     private static final String VISIBILITY_TAG_NAME = "visibility";
 
-    private static final Log logger = LogFactory.getLog(InputNode.class);
+    private static final Logger logger = LoggerFactory.getLogger(InputNode.class);
 
     private Object defaultValue;
 

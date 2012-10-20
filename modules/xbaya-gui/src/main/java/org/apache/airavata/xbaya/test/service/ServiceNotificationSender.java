@@ -32,8 +32,8 @@ import org.apache.airavata.workflow.tracking.common.InvocationEntity;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlDocument;
 import org.xmlpull.v1.builder.XmlElement;
 
@@ -46,7 +46,7 @@ import xsul.xbeans_util.XBeansUtil;
 
 public class ServiceNotificationSender {
 
-    private static final Log logger = LogFactory.getLog(ServiceNotificationSender.class);
+    private final static Logger logger = LoggerFactory.getLogger(ServiceNotificationSender.class);
 
     private final static String INVOKED_MESSAGE = "Service is invoked";
 

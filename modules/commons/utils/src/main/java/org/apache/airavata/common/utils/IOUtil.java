@@ -33,12 +33,12 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IOUtil {
 
-    private static final Log logger = LogFactory.getLog(IOUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(IOUtil.class);
 
     /**
      * @param path

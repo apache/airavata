@@ -24,8 +24,8 @@ package org.apache.airavata.xbaya.test.service.adder;
 import java.io.File;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsdl.WsdlDefinitions;
@@ -42,7 +42,7 @@ public class AdderService {
 
     private final static String OUTPUT_WSDL_LOCATION = "wsdls/sample/adder.wsdl";
 
-    private static final Log logger = LogFactory.getLog(AdderService.class);
+    private final static Logger logger = LoggerFactory.getLogger(AdderService.class);
 
     private HttpBasedServices httpServices;
 

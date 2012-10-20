@@ -31,14 +31,14 @@ import java.util.concurrent.Semaphore;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class for preallocating, recycling, and managing JDBC connections.
  */
 public class ConnectionPool {
-    private static final Log logger = LogFactory.getLog(ConnectionPool.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConnectionPool.class);
 
     private long MAX_IDLE_TIME = 5 * 60 * 1000; // 5 minutes
 

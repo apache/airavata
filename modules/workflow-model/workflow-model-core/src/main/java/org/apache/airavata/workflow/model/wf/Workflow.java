@@ -69,8 +69,8 @@ import org.apache.airavata.workflow.model.utils.WorkflowConstants;
 import org.apache.commons.codec.binary.Base64;
 import org.gpel.GpelConstants;
 import org.gpel.model.GpelProcess;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlInfosetBuilder;
 import org.xmlpull.infoset.XmlNamespace;
@@ -114,7 +114,7 @@ public class Workflow implements Cloneable {
 
     private static final String ID_ATTRIBUTE = "id";
 
-    private static final Log logger = LogFactory.getLog(Workflow.class);
+    private static final Logger logger = LoggerFactory.getLogger(Workflow.class);
 
     private WSGraph graph;
 

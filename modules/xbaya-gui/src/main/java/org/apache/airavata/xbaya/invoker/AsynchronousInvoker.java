@@ -22,8 +22,8 @@
 package org.apache.airavata.xbaya.invoker;
 
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul.wsdl.WsdlDefinitions;
 import xsul.wsif.WSIFMessage;
@@ -33,7 +33,7 @@ import xsul.xwsif_runtime_async_http.XsulSoapHttpWsaResponsesCorrelator;
 
 public class AsynchronousInvoker extends SimpleInvoker {
 
-    private static final Log logger = LogFactory.getLog(AsynchronousInvoker.class);
+    private static final Logger logger = LoggerFactory.getLogger(AsynchronousInvoker.class);
 
     private String messageBoxURL;
 

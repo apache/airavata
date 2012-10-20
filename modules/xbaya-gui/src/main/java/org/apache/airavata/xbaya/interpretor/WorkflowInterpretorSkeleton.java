@@ -101,7 +101,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
     public static  JCRComponentRegistry jcrComponentRegistry = null;
     public static int provenanceWriterThreadPoolSize = 1;
     public static final String PROVENANCE_WRITER_THREAD_POOL_SIZE = "provenanceWriterThreadPoolSize";
-    public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000;
+    public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
     public static final String GFAC_EMBEDDED = "gfac.embedded";
     public static  ConfigurationContext configurationContext;
     public static final String OUTPUT_DATA_PATH = "outputDataPath";
@@ -452,12 +452,12 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                 }
             }catch (Exception e){
                 try {
-                    log.info("Thread is sleeping since registry database is not up");
                     Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     return;
                 }
+                log.severe("Workflow Interpreter Service URL update thread is interrupted");
             }
         }
     }

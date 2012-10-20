@@ -33,8 +33,8 @@ import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class creates the database tables required for messagebox and messagebroker with default configuration this
@@ -59,7 +59,7 @@ public class DatabaseCreator {
 
     private static DatabaseType[] supportedDatabase = new DatabaseType[] { DatabaseType.derby, DatabaseType.mysql };
 
-    private static final Log log = LogFactory.getLog(DatabaseCreator.class);
+    private static Logger log = LoggerFactory.getLogger(DatabaseCreator.class);
     private static final String delimiter = ";";
 
     /**

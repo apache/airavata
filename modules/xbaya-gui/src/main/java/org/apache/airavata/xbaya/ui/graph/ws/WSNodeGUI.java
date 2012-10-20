@@ -37,12 +37,12 @@ import org.apache.airavata.xbaya.ui.dialogs.graph.ws.ServiceInteractionWindow;
 import org.apache.airavata.xbaya.ui.dialogs.graph.ws.WSNodeWindow;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WSNodeGUI extends NodeGUI {
 
-    private static final Log logger = LogFactory.getLog(WSNodeGUI.class);
+    private final static Logger logger = LoggerFactory.getLogger(WSNodeGUI.class);
 
     private WSNode node;
 

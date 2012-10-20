@@ -34,8 +34,8 @@ import org.apache.airavata.xbaya.ui.dialogs.descriptors.DescriptorEditorDialog.D
 import org.apache.airavata.xbaya.ui.dialogs.workflow.ParameterPropertyWindow;
 import org.apache.airavata.xbaya.ui.dialogs.workflow.WorkflowPropertyWindow;
 import org.apache.airavata.xbaya.util.XBayaUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EditMenuItem {
 
@@ -53,7 +53,7 @@ public class EditMenuItem {
 
 	private JMenuItem editApplicationDescription;
 
-    private static final Log logger = LogFactory.getLog(EditMenuItem.class);
+    private static final Logger logger = LoggerFactory.getLogger(EditMenuItem.class);
 
     /**
      * Constructs a WorkflowMenu.

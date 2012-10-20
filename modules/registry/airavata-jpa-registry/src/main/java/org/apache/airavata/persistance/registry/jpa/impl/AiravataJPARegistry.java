@@ -72,11 +72,11 @@ import org.apache.airavata.registry.api.workflow.WorkflowNodeGramData;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
 import org.apache.xmlbeans.XmlException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AiravataJPARegistry extends AiravataRegistry2{
-    private static final Log logger = LogFactory.getLog(AiravataJPARegistry.class);
+    private final static Logger logger = LoggerFactory.getLogger(AiravataJPARegistry.class);
     private JPAResourceAccessor jpa;
     private boolean active=false;
     private static final String DEFAULT_PROJECT_NAME = "default";

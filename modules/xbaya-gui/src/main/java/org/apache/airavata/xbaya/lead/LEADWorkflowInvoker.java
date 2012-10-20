@@ -34,8 +34,8 @@ import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.XmlConstants;
@@ -59,7 +59,7 @@ import xsul5.wsdl.WsdlDefinitions;
 
 public class LEADWorkflowInvoker {
 
-    private static final Log logger = LogFactory.getLog(LEADWorkflowInvoker.class);
+    private static final Logger logger = LoggerFactory.getLogger(LEADWorkflowInvoker.class);
 
     private WsdlDefinitions definitions;
 

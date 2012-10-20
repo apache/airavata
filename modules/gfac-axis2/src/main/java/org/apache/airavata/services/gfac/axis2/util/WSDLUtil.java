@@ -48,8 +48,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.commons.gfac.wsdl.GFacWSDLException;
 import org.apache.airavata.commons.gfac.wsdl.WSDLConstants;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -61,7 +61,7 @@ import com.ibm.wsdl.extensions.soap.SOAPOperationImpl;
 
 public class WSDLUtil {
 
-    private static final Log logger = LogFactory.getLog(WSDLUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(WSDLUtil.class);
 
     private WSDLUtil() {
     }

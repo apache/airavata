@@ -363,7 +363,7 @@
             <artifactId>airavata-gfac-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${org.slf4j.version}</version>
@@ -379,7 +379,7 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>${org.slf4j.version}</version>
             <scope>runtime</scope>
-        </dependency-->
+        </dependency>
         <dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
@@ -410,9 +410,5 @@
             <artifactId>derbyclient</artifactId>
             <version>${derby.version}</version>
         </dependency>
-	<dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-	</dependency>
     </dependencies>
 </project>

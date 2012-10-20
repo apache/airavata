@@ -42,14 +42,14 @@ import org.apache.airavata.common.utils.BrowserLauncher;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul5.XmlConstants;
 
 public class TextWindow {
 
-    private static final Log logger = LogFactory.getLog(TextWindow.class);
+    private static final Logger logger = LoggerFactory.getLogger(TextWindow.class);
 
     private XBayaEngine engine;
 

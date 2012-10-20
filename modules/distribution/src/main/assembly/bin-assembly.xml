@@ -248,11 +248,13 @@
                 <!--<include>org.apache.derby:derbynet:jar</include>-->
                 <include>org.apache.jackrabbit:jackrabbit-core:jar</include>
                 <include>org.apache.jackrabbit:jackrabbit-jcr-rmi:jar</include>
+                <include>org.slf4j:log4j-over-slf4j:jar</include>
+                <include>org.slf4j:slf4j-api:jar</include>
+                <include>org.slf4j:slf4j-simple:jar</include>
                 <include>javax.jcr:jcr:jar</include>
                 <include>commons-collections:commons-collections</include>
                 <include>commons-configuration:commons-configuration</include>
                 <include>commons-lang:commons-lang</include>
-                <include>commons-logging:commons-logging</include>
                 <include>xpp3:xpp3</include>
                 <include>gpel:gpel_client</include>
                 <include>xpp5:xpp5</include>

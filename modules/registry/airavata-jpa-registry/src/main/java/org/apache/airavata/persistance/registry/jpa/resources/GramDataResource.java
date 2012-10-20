@@ -29,14 +29,14 @@ import org.apache.airavata.persistance.registry.jpa.model.Gram_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Gram_DataPK;
 import org.apache.airavata.persistance.registry.jpa.model.Node_Data;
 import org.apache.airavata.persistance.registry.jpa.model.Workflow_Data;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
 public class GramDataResource extends AbstractResource{
-    private static final Log logger = LogFactory.getLog(GramDataResource.class);
+    private final static Logger logger = LoggerFactory.getLogger(GramDataResource.class);
     private WorkflowDataResource workflowDataResource;
     private String nodeID;
     private String rsl;

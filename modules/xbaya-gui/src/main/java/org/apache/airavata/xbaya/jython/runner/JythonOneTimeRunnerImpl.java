@@ -30,12 +30,12 @@ import java.util.jar.JarFile;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JythonOneTimeRunnerImpl implements JythonOneTimeRunner {
 
-    private static final Log logger = LogFactory.getLog(JythonOneTimeRunnerImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(JythonOneTimeRunnerImpl.class);
 
     /**
      * @throws WorkflowException

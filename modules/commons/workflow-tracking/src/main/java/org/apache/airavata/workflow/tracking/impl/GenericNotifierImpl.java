@@ -34,8 +34,8 @@ import org.apache.airavata.workflow.tracking.types.LogExceptionDocument;
 import org.apache.airavata.workflow.tracking.types.LogInfoDocument;
 import org.apache.airavata.workflow.tracking.types.LogWarningDocument;
 import org.apache.airavata.workflow.tracking.types.PublishURLDocument;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * DOES NOT SUPPORT MULTI_THREADING -- PUBLISHER QUEUE, DATA CONSUMED/PRODUCED BATCHING
@@ -47,7 +47,7 @@ public class GenericNotifierImpl extends AbstractNotifier implements GenericNoti
 
     // private AnnotationProps globalAnnotations;
 
-    protected static final Log logger = LogFactory.getLog(GenericNotifierImpl.class);
+    protected static final Logger logger = LoggerFactory.getLogger(GenericNotifierImpl.class);
 
     public GenericNotifierImpl() throws WorkflowTrackingException {
         super();

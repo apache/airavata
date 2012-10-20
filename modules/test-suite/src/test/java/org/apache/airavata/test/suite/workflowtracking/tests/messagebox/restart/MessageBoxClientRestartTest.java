@@ -42,12 +42,12 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MessageBoxClientRestartTest extends TestCase {
 
-    private static final Log logger = LogFactory.getLog(MessageBoxClientRestartTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageBoxClientRestartTest.class);
     private static final String TOPIC = "RestartclientTopic2";
     private boolean wait = true;
     static Properties configs = new Properties();

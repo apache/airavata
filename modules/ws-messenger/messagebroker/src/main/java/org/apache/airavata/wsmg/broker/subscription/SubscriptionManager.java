@@ -54,8 +54,8 @@ import org.apache.airavata.wsmg.util.RunTimeStatistics;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axis2.AxisFault;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manages subscribers.
@@ -63,7 +63,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SubscriptionManager {
 
-    private static final Log log = LogFactory.getLog(SubscriptionManager.class);
+    private static final Logger log = LoggerFactory.getLogger(SubscriptionManager.class);
 
     private HashMap<String, SubscriptionState> subscriptions = new HashMap<String, SubscriptionState>();
 

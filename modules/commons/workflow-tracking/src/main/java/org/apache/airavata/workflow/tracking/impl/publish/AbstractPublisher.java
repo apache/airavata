@@ -28,8 +28,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.apache.airavata.workflow.tracking.util.LinkedMessageQueue;
 import org.apache.airavata.workflow.tracking.util.Timer;
 import org.apache.xmlbeans.XmlObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract method to publish messages in sync or async mode. In async mode, the messages are kept in an in-memory queue
@@ -38,7 +38,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class AbstractPublisher implements Runnable, NotificationPublisher {
 
-    private static final Log logger = LogFactory.getLog(AbstractPublisher.class);
+    protected static final Logger logger = LoggerFactory.getLogger(AbstractPublisher.class);
     protected static final boolean IS_LOG_FINEST = logger.isDebugEnabled();
     private final LinkedMessageQueue<BrokerEntry> messageQueue;
     protected static final boolean IS_TIMER = Boolean.getBoolean("ENABLE_TIMER");

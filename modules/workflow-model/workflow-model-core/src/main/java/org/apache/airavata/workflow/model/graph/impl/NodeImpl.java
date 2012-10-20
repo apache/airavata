@@ -40,8 +40,8 @@ import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.Port.Kind;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 /**
@@ -50,7 +50,7 @@ import org.xmlpull.infoset.XmlElement;
  */
 public abstract class NodeImpl implements Node {
 
-    private static final Log logger = LogFactory.getLog(NodeImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(NodeImpl.class);
 
     protected String id;
 

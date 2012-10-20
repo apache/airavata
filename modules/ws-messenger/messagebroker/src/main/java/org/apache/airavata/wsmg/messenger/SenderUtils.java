@@ -36,15 +36,15 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * this class is not thread safe
  * */
 public class SenderUtils implements Deliverable {
 
-    private static final Log logger = LogFactory.getLog(SenderUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(SenderUtils.class);
 
     private static OMFactory factory = OMAbstractFactory.getOMFactory();
 

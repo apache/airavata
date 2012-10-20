@@ -26,12 +26,12 @@ import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.utils.Cancelable;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MonitorStarter implements Cancelable {
 
-    private static final Log logger = LogFactory.getLog(MonitorStarter.class);
+    private static final Logger logger = LoggerFactory.getLogger(MonitorStarter.class);
 
     private XBayaEngine engine;
 

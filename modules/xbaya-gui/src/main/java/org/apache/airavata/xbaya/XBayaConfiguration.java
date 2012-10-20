@@ -31,14 +31,14 @@ import java.util.Observer;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul.lead.LeadDeploymentConfig;
 
 public class XBayaConfiguration extends Observable implements Observer {
 
-    private static final Log logger = LogFactory.getLog(XBayaConfiguration.class);
+    private static final Logger logger = LoggerFactory.getLogger(XBayaConfiguration.class);
 
     private String title = XBayaConstants.APPLICATION_NAME;
 

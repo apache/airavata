@@ -32,8 +32,8 @@ import org.apache.airavata.wsmg.broker.ConsumerInfo;
 import org.apache.airavata.wsmg.commons.OutGoingMessage;
 import org.apache.airavata.wsmg.messenger.Deliverable;
 import org.apache.airavata.wsmg.messenger.strategy.SendingStrategy;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Each subscriber (URL Endpoint) will have its own thread to send a message to
@@ -41,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ParallelSender implements SendingStrategy {
 
-    private static final Log log = LogFactory.getLog(ParallelSender.class);
+    private static final Logger log = LoggerFactory.getLogger(ParallelSender.class);
 
     private static final long TIME_TO_WAIT_FOR_SHUTDOWN_SECOND = 30;
 

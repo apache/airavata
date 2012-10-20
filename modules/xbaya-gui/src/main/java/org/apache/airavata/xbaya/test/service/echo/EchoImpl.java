@@ -25,8 +25,8 @@ import java.util.Random;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.xbaya.test.service.ServiceNotificationSender;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 import org.xmlpull.v1.builder.XmlNamespace;
 
@@ -34,7 +34,7 @@ import xsul.XmlConstants;
 
 public class EchoImpl implements Echo {
 
-    private static final Log logger = LogFactory.getLog(EchoImpl.class);
+    private final static Logger logger = LoggerFactory.getLogger(EchoImpl.class);
 
     /**
      * @see org.apache.airavata.xbaya.test.service.echo.Echo#echo(org.xmlpull.v1.builder.XmlElement)

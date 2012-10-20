@@ -31,7 +31,7 @@ import org.apache.airavata.common.utils.StringUtil;
 
 public class MonitorConfiguration extends EventProducer implements Cloneable{
 
-    // private static final Log logger = LogFactory.getLog();
+    // private static final Logger logger = LoggerFactory.getLogger();
 
     private URI brokerURL;
 

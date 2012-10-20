@@ -33,13 +33,13 @@ import org.apache.airavata.workflow.tracking.common.InvocationEntity;
 import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 import org.apache.axis2.addressing.EndpointReference;
 import org.python.core.PyObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class NotificationSender implements WorkflowNotifiable {
 
-    private static final Log logger = LogFactory.getLog(NotificationSender.class);
+    protected static final Logger logger = LoggerFactory.getLogger(NotificationSender.class);
 
     protected WorkflowNotifier notifier;
 

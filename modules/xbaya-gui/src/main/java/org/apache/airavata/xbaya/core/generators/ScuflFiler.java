@@ -36,12 +36,12 @@ import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.scufl.script.ScuflScript;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ScuflFiler {
 
-    private static final Log logger = LogFactory.getLog(ScuflFiler.class);
+    private static Logger logger = LoggerFactory.getLogger(ScuflFiler.class);
 
     private XBayaEngine engine;
 

@@ -32,12 +32,12 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ImageFiler {
 
-    private static final Log logger = LogFactory.getLog(ImageFiler.class);
+    private static Logger logger = LoggerFactory.getLogger(ImageFiler.class);
 
     private XBayaEngine engine;
 

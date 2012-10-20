@@ -27,8 +27,8 @@ import java.util.Date;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlNamespace;
 
@@ -39,7 +39,7 @@ import atomixmiser.DcDate;
  */
 public class MonitorUtil {
 
-    private static final Log logger = LogFactory.getLog(MonitorUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(MonitorUtil.class);
 
     /**
      * Workflow tracking namespace

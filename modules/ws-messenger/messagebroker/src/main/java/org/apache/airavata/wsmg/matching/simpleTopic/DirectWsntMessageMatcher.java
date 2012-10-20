@@ -33,12 +33,12 @@ import org.apache.airavata.wsmg.broker.subscription.SubscriptionState;
 import org.apache.airavata.wsmg.commons.WsmgCommonConstants;
 import org.apache.airavata.wsmg.matching.AbstractMessageMatcher;
 import org.apache.airavata.wsmg.messenger.OutGoingQueue;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DirectWsntMessageMatcher extends AbstractMessageMatcher {
 
-    private static final Log logger = LogFactory.getLog(DirectWsntMessageMatcher.class);
+    private static final Logger logger = LoggerFactory.getLogger(DirectWsntMessageMatcher.class);
 
     private ConsumerListManager consumerListmanager = new ConsumerListManager();
 

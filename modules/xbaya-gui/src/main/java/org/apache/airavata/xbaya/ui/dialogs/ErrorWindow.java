@@ -36,8 +36,8 @@ import javax.swing.SwingUtilities;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextArea;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ErrorWindow {
 
@@ -47,7 +47,7 @@ public class ErrorWindow {
 
     private static final String DEFAULT_INFORMATION_TITLE = "Information";
 
-    private static final Log logger = LogFactory.getLog(ErrorWindow.class);
+    private static final Logger logger = LoggerFactory.getLogger(ErrorWindow.class);
 
     private Component defaultParent;
 

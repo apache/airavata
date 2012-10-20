@@ -33,8 +33,8 @@ import org.apache.axiom.om.OMNamespace;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.EndpointReferenceHelper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LeadContextHeader {
 
@@ -286,7 +286,7 @@ public class LeadContextHeader {
         return lookupStringValue(NS, "OUTPUT_DATA_FILES_SUFFIX");
     }
 
-    private static final Log logger = LogFactory.getLog(LeadContextHeader.class);
+    private static final Logger logger = LoggerFactory.getLogger(LeadContextHeader.class);
     private static final OMFactory factory;
     public static final String GFAC_NAMESPACE = "http://org.apache.airavata/namespaces/2004/01/gFac";
     public static final QName TYPE;

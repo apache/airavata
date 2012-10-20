@@ -265,15 +265,10 @@
 
     <dependencyManagement>
         <dependencies>
-            <!--dependency>
+            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${org.slf4j.version}</version>
-            </dependency-->
-            <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>1.1.1</version>
             </dependency>
             <dependency>
                 <groupId>log4j</groupId>
@@ -285,11 +280,11 @@
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
             </dependency>
-            <!--dependency>
+            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${org.slf4j.version}</version>
-            </dependency-->
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <repositories>
