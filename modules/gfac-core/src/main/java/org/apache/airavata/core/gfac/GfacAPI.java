@@ -36,13 +36,13 @@ import org.apache.airavata.core.gfac.notification.impl.LoggingNotification;
 import org.apache.airavata.core.gfac.notification.impl.WorkflowTrackingNotification;
 import org.apache.airavata.core.gfac.services.GenericService;
 import org.apache.airavata.schemas.gfac.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
 public class GfacAPI {
-    private static final Log log = LogFactory.getLog(GfacAPI.class +
+    private static final Logger log = LoggerFactory.getLogger(GfacAPI.class +
             "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());
     public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
 

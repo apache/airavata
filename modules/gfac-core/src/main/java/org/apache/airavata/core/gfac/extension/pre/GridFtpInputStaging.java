@@ -43,15 +43,15 @@ import org.apache.airavata.schemas.gfac.FileParameterType;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.ietf.jgss.GSSCredential;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Input plugin to transfer file from GridFTP host to target GridFTP host
  */
 public class GridFtpInputStaging extends PreExecuteChain {
 
-    private static final Log log = LogFactory.getLog(GridFtpInputStaging.class);
+    public static final Logger log = LoggerFactory.getLogger(GridFtpInputStaging.class);
 
     public static final String MYPROXY_SECURITY_CONTEXT = "myproxy";
 

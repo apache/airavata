@@ -25,8 +25,8 @@ import java.util.Iterator;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.wsdl.WsdlDefinitions;
@@ -41,7 +41,7 @@ import xsul.xwsif_runtime.WSIFRuntime;
 
 public class SimpleInvoker implements Invoker {
 
-    private static final Log log = LogFactory.getLog(GenericInvoker.class);
+    private static final Logger log = LoggerFactory.getLogger(GenericInvoker.class);
 
     protected WSIFClient client;
 

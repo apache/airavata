@@ -64,8 +64,8 @@ import org.apache.airavata.xbaya.component.registry.ComponentController;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.XBayaComponent;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentSelectorEvent.ComponentSelectorEventType;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The ComponentTreeViewer class shows the selectedComponent tree.
@@ -78,7 +78,7 @@ public class ComponentSelector implements XBayaComponent {
      */
     public static final String TITLE = "Component List";
 
-    private static final Log logger = LogFactory.getLog(ComponentSelector.class);
+    private static final Logger logger = LoggerFactory.getLogger(ComponentSelector.class);
 
     private XBayaEngine engine;
 

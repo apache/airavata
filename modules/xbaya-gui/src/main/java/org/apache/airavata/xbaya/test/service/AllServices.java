@@ -48,7 +48,7 @@ import xsul.xservo_soap_http.HttpBasedServices;
 
 public class AllServices {
 
-    // private static final Log logger = LogFactory.getLog();
+    // private static final Logger logger = LoggerFactory.getLogger();
 
     private int port;
 

@@ -35,15 +35,15 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class can be used to invoke createMsgBox operation of msgBoxService and returns the resultant messageBoxId as
  * EndpointReference
  */
 public class CreateMsgBox {
-    private static final Log logger = LogFactory.getLog(CreateMsgBox.class);
+    private static final Logger logger = LoggerFactory.getLogger(CreateMsgBox.class);
     private final OMFactory factory = OMAbstractFactory.getOMFactory();
     protected String msgBoxEndPointReference;
     protected long timeoutInMilliSeconds;

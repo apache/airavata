@@ -34,15 +34,15 @@ import org.apache.airavata.core.gfac.exception.ExtensionException;
 import org.apache.airavata.core.gfac.extension.PostExecuteChain;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.DataRegistry;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Register output to Registry
  */
 public class OutputRegister extends PostExecuteChain {
 
-    private static final Log log = LogFactory.getLog(OutputRegister.class);
+    private static final Logger log = LoggerFactory.getLogger(OutputRegister.class);
 
     public boolean execute(InvocationContext context) throws ExtensionException {
         // output context

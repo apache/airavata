@@ -25,8 +25,8 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceDescriptorResource extends AbstractResource {
-    private static final Log logger = LogFactory.getLog(ServiceDescriptorResource.class);
+    private final static Logger logger = LoggerFactory.getLogger(ServiceDescriptorResource.class);
     private String serviceDescName;
     private String gatewayName;
     private String userName;

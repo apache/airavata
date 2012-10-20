@@ -36,8 +36,8 @@ import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.apache.airavata.workflow.model.graph.Port;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class ConstantNode extends SystemNode {
@@ -46,7 +46,7 @@ public class ConstantNode extends SystemNode {
 
     private static final String VALUE_TAG_NAME = "value";
 
-    private static final Log logger = LogFactory.getLog(ConstantNode.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConstantNode.class);
 
     private QName type;
 

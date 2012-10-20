@@ -36,11 +36,11 @@ import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Project;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExperimentResource extends AbstractResource {
-    private static final Log logger = LogFactory.getLog(ExperimentResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExperimentResource.class);
     private WorkerResource worker;
     private String expID;
     private Date submittedDate;

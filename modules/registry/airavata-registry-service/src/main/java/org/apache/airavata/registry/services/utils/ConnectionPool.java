@@ -40,8 +40,8 @@ package org.apache.airavata.registry.services.utils;
  *
  */
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -57,7 +57,7 @@ import java.util.concurrent.Semaphore;
  * A class for preallocating, recycling, and managing JDBC connections.
  */
 public class ConnectionPool {
-    private static final Log logger = LogFactory.getLog(ConnectionPool.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConnectionPool.class);
 
     private long MAX_IDLE_TIME = 5 * 60 * 1000; // 5 minutes
 

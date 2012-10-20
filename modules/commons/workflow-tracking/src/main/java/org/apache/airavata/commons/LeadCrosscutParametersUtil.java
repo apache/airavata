@@ -32,8 +32,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.xmlbeans.XmlObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LeadCrosscutParametersUtil {
     public LeadCrosscutParametersUtil(XmlObject xmlObjectToWrap) throws XMLStreamException {
@@ -280,7 +280,7 @@ public class LeadCrosscutParametersUtil {
             return Float.parseFloat(s);
     }
 
-    private static final Log logger = LogFactory.getLog(LeadCrosscutParametersUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(LeadCrosscutParametersUtil.class);
     public static final String FORECAST_TIME = "fcst_time";
     public static final String START_DATE = "start_date";
     public static final String START_HOUR = "start_hour";

@@ -30,11 +30,11 @@ import org.apache.airavata.wsmg.client.ConsumerNotificationHandler;
 import org.apache.airavata.wsmg.commons.NameSpaceConstants;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WsntViewerConsumerNotificationHandler implements ConsumerNotificationHandler {
-    private static final Log logger = LogFactory.getLog(WsntViewerConsumerNotificationHandler.class);
+    private final static Logger logger = LoggerFactory.getLogger(WsntViewerConsumerNotificationHandler.class);
 
     public NotificationViewerFrame frame = null;
 

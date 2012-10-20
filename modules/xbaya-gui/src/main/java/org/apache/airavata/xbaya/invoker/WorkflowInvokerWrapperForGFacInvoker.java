@@ -35,8 +35,8 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.lead.LeadContextHeader;
@@ -44,7 +44,7 @@ import xsul.wsif.WSIFMessage;
 
 public class WorkflowInvokerWrapperForGFacInvoker extends GFacInvoker {
 
-    private static final Log logger = LogFactory.getLog(WorkflowInvokerWrapperForGFacInvoker.class);
+    private static final Logger logger = LoggerFactory.getLogger(WorkflowInvokerWrapperForGFacInvoker.class);
 
     private ServiceNotifiable notifier;
 

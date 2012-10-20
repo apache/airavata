@@ -41,8 +41,8 @@ import org.apache.airavata.common.exception.UtilsException;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import org.xmlpull.infoset.XmlDocument;
@@ -65,7 +65,7 @@ public class XMLUtil {
     public static final org.xmlpull.v1.builder.XmlInfosetBuilder BUILDER3 = org.xmlpull.v1.builder.XmlInfosetBuilder
             .newInstance(new MXParserFactory());
 
-    private static final Log logger = LogFactory.getLog(XMLUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(XMLUtil.class);
 
     private final static String PROPERTY_SERIALIZER_INDENTATION = "http://xmlpull.org/v1/doc/properties.html#serializer-indentation";
 

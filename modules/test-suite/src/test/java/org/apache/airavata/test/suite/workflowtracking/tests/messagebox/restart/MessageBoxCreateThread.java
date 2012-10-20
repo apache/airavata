@@ -27,12 +27,12 @@ import org.apache.airavata.workflow.tracking.client.NotificationType;
 import org.apache.airavata.workflow.tracking.client.Subscription;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MessageBoxCreateThread extends Thread {
 
-    private static final Log logger = LogFactory.getLog(MessageBoxCreateThread.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageBoxCreateThread.class);
     private String brokerLocation;
     private String messageboxLocation;
     private String topic;

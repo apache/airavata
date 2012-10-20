@@ -27,8 +27,8 @@ import org.apache.airavata.common.workflow.execution.context.WorkflowContextHead
 import org.apache.airavata.core.gfac.context.invocation.InvocationContext;
 import org.apache.airavata.core.gfac.exception.*;
 import org.apache.airavata.core.gfac.notification.GFacNotifier;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * AbstractProvider wraps up steps of execution for Provider. <br/>
@@ -39,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
  * - retrieveOutput <br/>
  */
 public abstract class AbstractProvider implements Provider {
-    protected final Log log = LogFactory.getLog(this.getClass() +
+    protected final Logger log = LoggerFactory.getLogger(this.getClass() +
             "." + WorkflowContextHeaderBuilder.getCurrentContextHeader().getWorkflowMonitoringContext().getExperimentId());
     public void initialize(InvocationContext invocationContext) throws ProviderException {
         /*

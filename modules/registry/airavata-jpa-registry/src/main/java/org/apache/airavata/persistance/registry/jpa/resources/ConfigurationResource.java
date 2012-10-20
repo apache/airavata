@@ -34,11 +34,11 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Configuration;
 import org.apache.airavata.persistance.registry.jpa.model.Configuration_PK;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConfigurationResource extends AbstractResource {
-    private static final Log logger = LogFactory.getLog(ConfigurationResource.class);
+    private final static Logger logger = LoggerFactory.getLogger(ConfigurationResource.class);
     private String configKey;
     private String configVal;
     private Date expireDate;

@@ -21,15 +21,15 @@
 
 package org.apache.airavata.core.gfac.utils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class represents GridFTP Endpoint
  * 
  */
 public class GridFTPContactInfo {
-    private static final Log log = LogFactory.getLog(GridFTPContactInfo.class);
+    protected final static Logger log = LoggerFactory.getLogger(GridFTPContactInfo.class);
     public String hostName;
     public int port;
 

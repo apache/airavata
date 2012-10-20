@@ -31,12 +31,12 @@ import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.airavata.xbaya.test.service.adder.AdderService;
 import org.apache.airavata.xbaya.test.service.multiplier.MultiplierService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JythonLibraryTest extends TestCase {
 
-    private static final Log logger = LogFactory.getLog(JythonLibraryTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(JythonLibraryTest.class);
 
     /**
      * @throws WorkflowException

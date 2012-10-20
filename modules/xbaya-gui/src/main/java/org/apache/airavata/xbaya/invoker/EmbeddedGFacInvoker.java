@@ -62,8 +62,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
 
 import xsul.wsdl.WsdlDefinitions;
@@ -73,7 +73,7 @@ import xsul.xwsif_runtime.WSIFClient;
 
 public class EmbeddedGFacInvoker implements Invoker{
 
-      private static final Log logger = LogFactory.getLog(EmbeddedGFacInvoker.class);
+      private static final Logger logger = LoggerFactory.getLogger(EmbeddedGFacInvoker.class);
 
     private String nodeID;
 

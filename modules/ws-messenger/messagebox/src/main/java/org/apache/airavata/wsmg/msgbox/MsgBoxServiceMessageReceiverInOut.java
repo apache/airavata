@@ -31,8 +31,8 @@ import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.receivers.AbstractInOutMessageReceiver;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.axis2.util.JavaUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * MsgBoxServiceMessageReceiverInOut message receiver, this is the actual location where the service operations get
@@ -41,7 +41,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class MsgBoxServiceMessageReceiverInOut extends AbstractInOutMessageReceiver {
 
-    private static final Log logger = LogFactory.getLog(MsgBoxServiceMessageReceiverInOut.class);
+    private static Logger logger = LoggerFactory.getLogger(MsgBoxServiceMessageReceiverInOut.class);
 
     public void invokeBusinessLogic(MessageContext inMsgContext, MessageContext outMsgContext) throws AxisFault {
 

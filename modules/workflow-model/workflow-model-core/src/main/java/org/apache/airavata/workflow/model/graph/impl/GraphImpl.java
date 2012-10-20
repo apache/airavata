@@ -48,13 +48,13 @@ import org.apache.airavata.workflow.model.graph.system.SystemDataPort;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
 import org.apache.airavata.workflow.model.utils.ApplicationVersion;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public abstract class GraphImpl implements Graph {
 
-    private static final Log logger = LogFactory.getLog(GraphImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(GraphImpl.class);
 
     /**
      * Unique ID of this workflow

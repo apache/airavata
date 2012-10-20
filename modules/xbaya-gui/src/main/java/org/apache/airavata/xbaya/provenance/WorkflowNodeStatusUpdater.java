@@ -26,11 +26,11 @@ import org.apache.airavata.registry.api.workflow.WorkflowInstance;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceNode;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WorkflowNodeStatusUpdater {
-       private static final Log logger = LogFactory.getLog(WorkflowNodeStatusUpdater.class);
+       private static Logger logger = LoggerFactory.getLogger(WorkflowNodeStatusUpdater.class);
 
     private AiravataRegistry2 registry;
 

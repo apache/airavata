@@ -32,13 +32,13 @@ import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.wsmg.client.msgbox.MessagePuller;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class WsmgClient implements ConsumerNotificationHandler, NotificationHandler {
 
-    private static final Log logger = LogFactory.getLog(WsmgClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(WsmgClient.class);
 
     private Monitor monitor;
 

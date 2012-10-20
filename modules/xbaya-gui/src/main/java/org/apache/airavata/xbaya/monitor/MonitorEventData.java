@@ -32,8 +32,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class MonitorEventData implements TableModel, BoundedRangeModel {
@@ -73,7 +73,7 @@ public class MonitorEventData implements TableModel, BoundedRangeModel {
         }
     }
 
-    private static final Log logger = LogFactory.getLog(MonitorEventData.class);
+    private static final Logger logger = LoggerFactory.getLogger(MonitorEventData.class);
 
     private List<TableModelListener> tableModelListeners;
 

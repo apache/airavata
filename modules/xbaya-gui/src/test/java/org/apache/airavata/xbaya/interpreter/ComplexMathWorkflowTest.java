@@ -40,8 +40,8 @@ import org.junit.Test;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestWatchman;
 import org.junit.runners.model.FrameworkMethod;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ComplexMathWorkflowTest {
     final Logger logger = LoggerFactory.getLogger(ComplexMathWorkflowTest.class);

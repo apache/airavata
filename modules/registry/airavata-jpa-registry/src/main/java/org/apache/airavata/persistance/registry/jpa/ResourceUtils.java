@@ -23,8 +23,8 @@ package org.apache.airavata.persistance.registry.jpa;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ResourceUtils {
-    private static final Log logger = LogFactory.getLog(ResourceUtils.class);
+    private final static Logger logger = LoggerFactory.getLogger(ResourceUtils.class);
     private static final String PERSISTENCE_UNIT_NAME = "airavata_data";
     protected static EntityManagerFactory factory;
 

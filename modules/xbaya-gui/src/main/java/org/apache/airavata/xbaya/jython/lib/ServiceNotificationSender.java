@@ -34,15 +34,15 @@ import org.apache.airavata.workflow.tracking.impl.state.InvocationContextImpl;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul.wsif.WSIFMessage;
 
 public class ServiceNotificationSender implements ServiceNotifiable {
 
-    private static final Log logger = LogFactory.getLog(ServiceNotificationSender.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceNotificationSender.class);
 
     private WorkflowNotifier notifier;
 

@@ -26,15 +26,15 @@ import java.io.StringWriter;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
 
 public class XppTestCase extends TestCase {
 
-    private static final Log logger = LogFactory.getLog(XppTestCase.class);
+    private static final Logger logger = LoggerFactory.getLogger(XppTestCase.class);
 
     /*
      * @see TestCase#setUp()

@@ -28,8 +28,8 @@ import org.apache.airavata.persistance.registry.jpa.model.Published_Workflow;
 import org.apache.airavata.persistance.registry.jpa.model.Published_Workflow_PK;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PublishWorkflowResource extends AbstractResource {
-    private static final Log logger = LogFactory.getLog(PublishWorkflowResource.class);
+    private final static Logger logger = LoggerFactory.getLogger(PublishWorkflowResource.class);
     private String name;
     private String version;
     private Date publishedDate;

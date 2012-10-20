@@ -27,8 +27,8 @@ import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.Utils;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.derby.drda.NetworkServerControl;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,7 +41,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 public class Initialize {
-    private static final Log logger = LogFactory.getLog(Initialize.class);
+    private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
     public static final String GATEWAY_ID = "gateway.id";
     public static final String REGISTRY_USER = "registry.user";
     public static final String REGISTRY_PASSWORD = "registry.password";

@@ -29,15 +29,15 @@ import java.util.UUID;
 
 import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
 import org.apache.axiom.om.OMElement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the in memory storage implementation for MsgBoxService, this will be initialized if airavata-server.properties is
  * configured not to use database implementation.
  */
 public class InMemoryImpl implements MsgBoxStorage {
-    private static final Log logger = LogFactory.getLog(InMemoryImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(InMemoryImpl.class);
 
     private HashMap<String, List<Content>> map = new HashMap<String, List<Content>>();
 

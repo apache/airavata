@@ -35,12 +35,12 @@ import org.apache.airavata.wsmg.messenger.OutGoingQueue;
 import org.apache.airavata.wsmg.util.BrokerUtil;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SubscriptionState {
 
-    private static final Log logger = LogFactory.getLog(SubscriptionState.class);
+    private final Logger logger = LoggerFactory.getLogger(SubscriptionState.class);
 
     private long creationTime = 0;
     private long lastAvailableTime = 0;

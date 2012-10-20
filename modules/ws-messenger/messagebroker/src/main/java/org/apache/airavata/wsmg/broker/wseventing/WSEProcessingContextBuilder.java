@@ -39,12 +39,12 @@ import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReferenceHelper;
 import org.apache.axis2.context.MessageContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WSEProcessingContextBuilder extends ProcessingContextBuilder {
 
-    private static final Log logger = LogFactory.getLog(WSEProcessingContextBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(WSEProcessingContextBuilder.class);
 
     public ProcessingContext build(OMElement elem) {
 

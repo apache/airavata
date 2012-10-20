@@ -30,8 +30,8 @@ import org.apache.airavata.common.workflow.execution.context.WorkflowContextHead
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.invoker.factory.InvokerFactory;
 import org.apache.airavata.xbaya.lead.NotificationHandler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xsul.lead.LeadContextHeader;
 import xsul.wsdl.WsdlDefinitions;
@@ -42,7 +42,7 @@ import xsul.xwsif_runtime.WSIFClient;
 
 public class GFacInvoker implements Invoker {
 
-    private static final Log logger = LogFactory.getLog(GFacInvoker.class);
+    private final static Logger logger = LoggerFactory.getLogger(GFacInvoker.class);
 
     private String gfacURL;
 

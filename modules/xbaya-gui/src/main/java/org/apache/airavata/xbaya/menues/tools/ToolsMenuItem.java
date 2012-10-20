@@ -23,8 +23,8 @@ package org.apache.airavata.xbaya.menues.tools;
 
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.GlobusFileTransferWindow;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -38,7 +38,7 @@ public class ToolsMenuItem {
     
     private JMenuItem globusFileTransferItem;
     
-    private static final Log logger = LogFactory.getLog(ToolsMenuItem.class);
+    private static final Logger logger = LoggerFactory.getLogger(ToolsMenuItem.class);
 
     /**
      * Constructs a WorkflowMenu.

@@ -32,11 +32,11 @@ import java.util.Properties;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.TransportInDescription;
 import org.apache.axis2.util.Utils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServiceUtils {
-    private static final Log log = LogFactory.getLog(ServiceUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(ServiceUtils.class);
     private static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
     public static final String IP = "ip";
     public static final String PORT = "port";

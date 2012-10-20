@@ -34,11 +34,11 @@ import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Project;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProjectResource extends AbstractResource {
-    private static final Log logger = LogFactory.getLog(ProjectResource.class);
+    private final static Logger logger = LoggerFactory.getLogger(ProjectResource.class);
     private String name;
     private GatewayResource gateway;
     private WorkerResource worker;

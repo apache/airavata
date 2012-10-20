@@ -28,10 +28,12 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.axiom.om.OMElement;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XBeansUtil {
+
+    Logger logger = LoggerFactory.getLogger(XBeansUtil.class);
 
     public XBeansUtil() {
     }

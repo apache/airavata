@@ -55,15 +55,16 @@ import org.apache.airavata.wsmg.util.RunTimeStatistics;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.ServiceLifeCycle;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class BrokerServiceLifeCycle implements ServiceLifeCycle {
 
-    private static final Log log = LogFactory.getLog(BrokerServiceLifeCycle.class);
+    private static final Logger log = LoggerFactory.getLogger(BrokerServiceLifeCycle.class);
     public static final String REPOSITORY_PROPERTIES = "airavata-server.properties";
     public static final int GFAC_URL_UPDATE_INTERVAL = 1000 * 60 * 60 * 3;
 
-    public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000;
+    public static final int JCR_AVAIALABILITY_WAIT_INTERVAL = 1000 * 10;
     public static final String JCR_CLASS = "jcr.class";
     public static final String JCR_USER = "jcr.user";
     public static final String JCR_PASS = "jcr.pass";
@@ -319,14 +320,13 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
                 }
             } catch (Exception e) {
                 try {
-                    log.info("Thread is sleeping since registry database is not up");
                     Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     return;
                 }
-//                log.error(e.getMessage());
-//                log.error("Workflow Interpreter Service URL update thread is interrupted");
+                log.error(e.getMessage());
+                log.error("Workflow Interpreter Service URL update thread is interrupted");
             }
         }
 

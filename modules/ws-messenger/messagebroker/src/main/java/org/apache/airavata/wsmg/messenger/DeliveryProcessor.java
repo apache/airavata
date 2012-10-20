@@ -23,12 +23,12 @@ package org.apache.airavata.wsmg.messenger;
 import org.apache.airavata.wsmg.commons.OutGoingMessage;
 import org.apache.airavata.wsmg.config.WSMGParameter;
 import org.apache.airavata.wsmg.messenger.strategy.SendingStrategy;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DeliveryProcessor {
 
-    private static final Log logger = LogFactory.getLog(DeliveryProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(DeliveryProcessor.class);
 
     private SendingStrategy strategy;
     private Deliverable deliverable;

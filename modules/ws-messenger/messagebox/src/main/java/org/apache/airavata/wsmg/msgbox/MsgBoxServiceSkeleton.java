@@ -37,8 +37,8 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.service.Lifecycle;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sun.beans.editors.LongEditor;
 
 /**
@@ -46,7 +46,7 @@ import sun.beans.editors.LongEditor;
  */
 public class MsgBoxServiceSkeleton implements Lifecycle {
 
-    private static final Log logger = LogFactory.getLog(MsgBoxServiceSkeleton.class);
+    private static final Logger logger = LoggerFactory.getLogger(MsgBoxServiceSkeleton.class);
     private static final String TRUE = Boolean.toString(true);
     private static final String FALSE = Boolean.toString(false);
     private static OMFactory factory = OMAbstractFactory.getOMFactory();

@@ -25,12 +25,12 @@ import junit.framework.TestSuite;
 
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WSIFTestCase extends XBayaTestCase {
 
-    private static final Log logger = LogFactory.getLog(WSIFTestCase.class);
+    private static final Logger logger = LoggerFactory.getLogger(WSIFTestCase.class);
 
     private ComponentTreeNode resouceCatalogComponentTree;
 

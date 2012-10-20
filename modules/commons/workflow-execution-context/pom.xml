@@ -39,10 +39,7 @@
             <artifactId>airavata-common-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>

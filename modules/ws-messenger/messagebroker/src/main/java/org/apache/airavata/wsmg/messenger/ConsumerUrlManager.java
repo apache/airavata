@@ -34,12 +34,12 @@ import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
 import org.apache.airavata.wsmg.util.RunTimeStatistics;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConsumerUrlManager {
 
-    private static final Log logger = LogFactory.getLog(ConsumerUrlManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConsumerUrlManager.class);
 
     private ConcurrentHashMap<String, FailedConsumerInfo> failedConsumerUrls = new ConcurrentHashMap<String, FailedConsumerInfo>();
 

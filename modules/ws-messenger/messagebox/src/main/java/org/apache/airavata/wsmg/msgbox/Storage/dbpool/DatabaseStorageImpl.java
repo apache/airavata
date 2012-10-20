@@ -33,8 +33,8 @@ import org.apache.airavata.wsmg.commons.storage.DatabaseCreator;
 import org.apache.airavata.wsmg.commons.storage.JdbcStorage;
 import org.apache.airavata.wsmg.msgbox.Storage.MsgBoxStorage;
 import org.apache.axiom.om.OMElement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Database message Storage Implementation, if airavata-server.properties configured to use database this will set as the storage
@@ -42,7 +42,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class DatabaseStorageImpl implements MsgBoxStorage {
 
-    private static final Log logger = LogFactory.getLog(DatabaseStorageImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseStorageImpl.class);
 
     private static final String TABLE_NAME_TO_CHECK = "msgbox";
 

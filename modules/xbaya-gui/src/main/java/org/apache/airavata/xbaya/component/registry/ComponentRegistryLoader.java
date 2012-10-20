@@ -36,12 +36,12 @@ import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.utils.Cancelable;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ComponentRegistryLoader implements Cancelable, Observer {
 
-    private static final Log logger = LogFactory.getLog(ComponentRegistryLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(ComponentRegistryLoader.class);
 
     private XBayaEngine engine;
 

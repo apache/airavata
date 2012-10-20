@@ -32,12 +32,12 @@ import org.globus.gsi.gssapi.GlobusGSSCredentialImpl;
 import org.globus.myproxy.MyProxy;
 import org.globus.myproxy.MyProxyException;
 import org.ietf.jgss.GSSCredential;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MyProxyManager {
 
-    private static final Log log = LogFactory.getLog(MyProxyManager.class);
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final String username;
     private final String password;

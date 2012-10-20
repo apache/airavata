@@ -33,11 +33,11 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource.WorkflowDataConstants;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WorkerResource extends AbstractResource {
-    private static final Log logger = LogFactory.getLog(WorkerResource.class);
+    private final static Logger logger = LoggerFactory.getLogger(WorkerResource.class);
     private String user;
 	private GatewayResource gateway;
 

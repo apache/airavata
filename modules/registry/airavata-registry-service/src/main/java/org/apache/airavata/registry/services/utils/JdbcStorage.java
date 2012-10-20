@@ -25,11 +25,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JdbcStorage {
-    private static final Log log = LogFactory.getLog(JdbcStorage.class);
+    private static Logger log = LoggerFactory.getLogger(JdbcStorage.class);
 
     private ConnectionPool connectionPool;
 

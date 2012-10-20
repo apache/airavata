@@ -26,13 +26,13 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 
 public class UserResource extends AbstractResource {
-    private static final Log logger = LogFactory.getLog(UserResource.class);
+    private final static Logger logger = LoggerFactory.getLogger(UserResource.class);
     private String userName;
     private String password;
     private String gatewayName;

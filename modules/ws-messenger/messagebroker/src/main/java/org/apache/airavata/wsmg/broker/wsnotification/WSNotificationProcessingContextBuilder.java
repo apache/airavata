@@ -40,12 +40,12 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.EndpointReferenceHelper;
 import org.apache.axis2.context.MessageContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WSNotificationProcessingContextBuilder extends ProcessingContextBuilder {
 
-    private static final Log logger = LogFactory.getLog(WSNotificationProcessingContextBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(WSNotificationProcessingContextBuilder.class);
 
     public ProcessingContext build(OMElement elem) {
 

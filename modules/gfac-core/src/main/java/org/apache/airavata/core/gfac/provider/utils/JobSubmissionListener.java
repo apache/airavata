@@ -29,8 +29,8 @@ import org.globus.gram.GramJob;
 import org.globus.gram.GramJobListener;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Gram job listener to check for status changed in job submission
@@ -47,7 +47,7 @@ public class JobSubmissionListener implements GramJobListener {
     private int status;
     private InvocationContext context;
     private GramJob job;
-    private static final Log log = LogFactory.getLog(JobSubmissionListener.class);
+    private final Logger log = LoggerFactory.getLogger(JobSubmissionListener.class);
 
     public JobSubmissionListener(GramJob job, InvocationContext context) {
         this.job = job;

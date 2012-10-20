@@ -35,12 +35,12 @@ import javax.swing.WindowConstants;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.utils.Cancelable;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WaitDialog {
 
-    private static final Log logger = LogFactory.getLog(WaitDialog.class);
+    private static final Logger logger = LoggerFactory.getLogger(WaitDialog.class);
 
     private XBayaGUI xbayaGUI;
 
