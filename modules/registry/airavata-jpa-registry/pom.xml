@@ -50,11 +50,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-common-registry-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
         	<groupId>org.apache.openjpa</groupId>
         	<artifactId>openjpa-all</artifactId>
         	<version>2.2.0</version>

@@ -59,11 +59,6 @@
             <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-common-registry-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 
     </dependencies>
 
