@@ -124,12 +124,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-common-registry-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>j2ssh</groupId>
             <artifactId>j2ssh-core</artifactId>
             <version>0.2.9</version>
