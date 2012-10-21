@@ -297,7 +297,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         WorkflowInterpretorEventListener listener = null;
         WorkflowInterpreter interpreter = null;
         AiravataRegistry2 registry = getRegistry();
-		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,topic,conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null, null, null);
+		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,topic,conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null, null);
         workflowInterpreterConfiguration.setGfacEmbeddedMode(gfacEmbeddedMode);
         workflowInterpreterConfiguration.setActOnProvenance(provenance);
         // WorkflowInterpreter object should create prior creation of Listener, because listener needs the threadlocal variable

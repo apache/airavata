@@ -60,7 +60,7 @@ public class CrossProductWorkflowTest {
         Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
         XBayaConfiguration conf = WorkflowTestUtils.getConfiguration();
         AiravataRegistry2 registry = conf.getJcrComponentRegistry()==null? null:conf.getJcrComponentRegistry().getRegistry();
-		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow, UUID.randomUUID().toString(),conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null,null,null,true);
+		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow, UUID.randomUUID().toString(),conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null,null,true);
 		workflowInterpreterConfiguration.setNotifier(new StandaloneNotificationSender(workflowInterpreterConfiguration.getTopic(),workflowInterpreterConfiguration.getWorkflow()));
 
         WorkflowInterpreter interpretor = new WorkflowInterpreter(workflowInterpreterConfiguration,new SSWorkflowInterpreterInteractorImpl());

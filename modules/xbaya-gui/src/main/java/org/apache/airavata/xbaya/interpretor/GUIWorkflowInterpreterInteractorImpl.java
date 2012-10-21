@@ -37,7 +37,6 @@ import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.graph.subworkflow.SubWorkflowNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.system.DifferedInputHandler;
 import org.apache.airavata.xbaya.ui.utils.Cancelable;
-import org.apache.airavata.xbaya.ui.utils.MyProxyChecker;
 import org.apache.airavata.xbaya.util.InterpreterUtil;
 
 public class GUIWorkflowInterpreterInteractorImpl implements
@@ -143,7 +142,7 @@ public class GUIWorkflowInterpreterInteractorImpl implements
 		switch (messageType) {
 		case INPUT_WORKFLOWINTERPRETER_FOR_WORKFLOW:
 			Workflow subWorkflow= (Workflow) data;
-            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(subWorkflow,config.getTopic(),config.getMessageBoxURL(), config.getMessageBrokerURL(), config.getRegistry(), config.getConfiguration(), config.getGUI(), new MyProxyChecker(this.engine), this.engine.getMonitor());
+            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(subWorkflow,config.getTopic(),config.getMessageBoxURL(), config.getMessageBrokerURL(), config.getRegistry(), config.getConfiguration(), config.getGUI(), this.engine.getMonitor());
             workflowInterpreterConfiguration.setActOnProvenance(config.isActOnProvenance());
             workflowInterpreterConfiguration.setSubWorkflow(true);
             if (config.isTestMode()){

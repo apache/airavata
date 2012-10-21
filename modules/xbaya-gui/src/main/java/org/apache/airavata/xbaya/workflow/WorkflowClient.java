@@ -30,7 +30,6 @@ import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.event.EventProducer;
-import org.apache.airavata.xbaya.security.UserX509Credential;
 import org.gpel.client.GcInstance;
 import org.gpel.client.GcSearchList;
 import org.slf4j.Logger;
@@ -166,12 +165,6 @@ public abstract class WorkflowClient extends EventProducer {
     // ===========================================================================
     // Abstract Methods
     // ===========================================================================
-
-    /**
-     * @param userX509Credential
-     * @throws WorkflowEngineException
-     */
-    public abstract void setUserX509Credential(UserX509Credential userX509Credential) throws WorkflowEngineException;
 
     /**
      * @param workflow

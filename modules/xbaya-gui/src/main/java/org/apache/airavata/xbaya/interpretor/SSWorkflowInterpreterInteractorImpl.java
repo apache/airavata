@@ -60,7 +60,7 @@ public class SSWorkflowInterpreterInteractorImpl implements
 		switch (messageType) {
 		case INPUT_WORKFLOWINTERPRETER_FOR_WORKFLOW:
 			Workflow subWorkflow= (Workflow) data;
-            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(subWorkflow,config.getTopic(),config.getMessageBoxURL(), config.getMessageBrokerURL(), config.getRegistry(), config.getConfiguration(), config.getGUI(), config.getMyProxyChecker(), config.getMonitor());
+            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(subWorkflow,config.getTopic(),config.getMessageBoxURL(), config.getMessageBrokerURL(), config.getRegistry(), config.getConfiguration(), config.getGUI(), config.getMonitor());
             if (config.isTestMode()){
         		workflowInterpreterConfiguration.setNotifier(new StandaloneNotificationSender(workflowInterpreterConfiguration.getTopic(),workflowInterpreterConfiguration.getWorkflow()));
             }

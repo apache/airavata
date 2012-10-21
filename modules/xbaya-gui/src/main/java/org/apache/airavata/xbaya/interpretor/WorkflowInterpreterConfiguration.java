@@ -30,7 +30,6 @@ import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
 import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
-import org.apache.airavata.xbaya.ui.utils.MyProxyChecker;
 
 public class WorkflowInterpreterConfiguration {
 //	public static final int GUI_MODE = 1;
@@ -41,7 +40,6 @@ public class WorkflowInterpreterConfiguration {
 	private AiravataRegistry2 registry;
 	private XBayaConfiguration configuration;
 	private XBayaGUI gui;
-	private MyProxyChecker myProxyChecker;
 	private Monitor monitor;
 	private boolean offline=false;
 	private boolean runWithCrossProduct=false;
@@ -53,17 +51,16 @@ public class WorkflowInterpreterConfiguration {
 	private boolean subWorkflow;
 	private boolean testMode=false;
 	
-	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry2 registry,XBayaConfiguration configuration,XBayaGUI gui,MyProxyChecker myProxyChecker,Monitor monitor) {
-		this(workflow, topic, messageBoxURL,messageBrokerURL,registry,configuration,gui,myProxyChecker,monitor, true);
+	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry2 registry,XBayaConfiguration configuration,XBayaGUI gui,Monitor monitor) {
+		this(workflow, topic, messageBoxURL,messageBrokerURL,registry,configuration,gui,monitor, true);
 	}
 	
-	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry2 registry,XBayaConfiguration configuration,XBayaGUI gui,MyProxyChecker myProxyChecker,Monitor monitor, boolean offline) {
+	public WorkflowInterpreterConfiguration(Workflow workflow, String topic, URI messageBoxURL,URI messageBrokerURL,AiravataRegistry2 registry,XBayaConfiguration configuration,XBayaGUI gui,Monitor monitor, boolean offline) {
 		this.messageBoxURL = messageBoxURL;
 		this.messageBrokerURL = messageBrokerURL;
 		this.registry = registry;
 		this.configuration = configuration;
 		this.gui = gui;
-		this.myProxyChecker = myProxyChecker;
 		this.monitor = monitor;
 		this.offline = offline;
 		this.workflow = workflow;
@@ -99,12 +96,6 @@ public class WorkflowInterpreterConfiguration {
 	}
 	public void setGUI(XBayaGUI gui) {
 		this.gui = gui;
-	}
-	public MyProxyChecker getMyProxyChecker() {
-		return myProxyChecker;
-	}
-	public void setMyProxyChecker(MyProxyChecker myProxyChecker) {
-		this.myProxyChecker = myProxyChecker;
 	}
 	public Monitor getMonitor() {
 		return monitor;
