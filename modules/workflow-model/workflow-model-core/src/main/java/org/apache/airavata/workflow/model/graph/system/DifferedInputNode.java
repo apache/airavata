@@ -38,15 +38,15 @@ import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-
-import xsul5.MLogger;
 
 public class DifferedInputNode extends ParameterNode {
 
 	private static final String VALUE_TAG_NAME = "value";
 
-    private static final MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(DifferedInputNode.class);
 
     private Object defaultValue;
 
@@ -151,13 +151,13 @@ public class DifferedInputNode extends ParameterNode {
      *         otherwise
      */
     public boolean isInputValid(String input) {
-        logger.entering(new Object[] { input });
+        logger.info(input);
         // TODO type checks
         return true;
     }
 
     /**
-     * Called whan an Edge was added to the parameter port. Change the name of
+     * Called when an Edge was added to the parameter port. Change the name of
      * this node.
      * 
      * @throws GraphException

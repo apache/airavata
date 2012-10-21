@@ -67,14 +67,14 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.ServiceLifeCycle;
 import org.apache.xmlbeans.XmlException;
-
-import xsul5.MLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * WorkflowInterpretorSkeleton java skeleton for the axisService
  */
 public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
-    private static final MLogger log = MLogger.getLogger();
+    private static final Logger log = LoggerFactory.getLogger(WorkflowInterpretorSkeleton.class);
 
 	public static final String PROXYSERVER = "myproxy.url";
 	public static final String MSGBOX = "msgbox";
@@ -457,7 +457,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
                     e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     return;
                 }
-                log.severe("Workflow Interpreter Service URL update thread is interrupted");
+                log.error("Workflow Interpreter Service URL update thread is interrupted");
             }
         }
     }

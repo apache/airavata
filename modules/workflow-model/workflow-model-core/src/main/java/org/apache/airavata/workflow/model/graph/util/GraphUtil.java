@@ -54,7 +54,7 @@ import org.apache.airavata.workflow.model.graph.ws.WSPort;
 import org.apache.airavata.workflow.model.utils.MessageConstants;
 
 public class GraphUtil {
-	// private static final MLogger logger = MLogger.getLogger();
+	// private static final MLogger logger = MLoggerFactory.getLogger();
 
 	/**
 	 * Returns the WSNodes included in a specified graph.
