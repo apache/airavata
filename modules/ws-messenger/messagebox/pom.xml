@@ -91,23 +91,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.axis2</groupId>
-				<artifactId>axis2-aar-maven-plugin</artifactId>
-				<version>${axis2.version}</version>
-				<configuration>
-					<servicesXmlFile>src/main/resources/services.xml</servicesXmlFile>
-				</configuration>
-				<executions>
-					<execution>
-						<id>createAAR</id>
-						<phase>package</phase>
-						<goals>
-							<goal>aar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 </project>
