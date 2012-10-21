@@ -27,14 +27,10 @@ import java.net.URI;
 import junit.framework.TestCase;
 
 import org.apache.airavata.xbaya.XBayaConfiguration;
-import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.slf4j.Logger;
 
 public abstract class XBayaTestCase extends TestCase {
 
-    private static final String SAMPLE_MY_LEAD_USER = "/O=LEAD Project/OU=portal.leadproject.org/OU=cs.indiana.edu/CN=sshirasu/EMAIL=sshirasu@cs.indiana.edu";
-
-    private static final String SAMPLE_MY_LEAD_PROJECT = "Project1";
 
     protected XBayaConfiguration configuration;
 
@@ -76,9 +72,6 @@ public abstract class XBayaTestCase extends TestCase {
         if (myProxyPassphrase != null) {
             this.configuration.setMyProxyPassphrase(myProxyPassphrase);
         }
-
-        // Initializes security
-        XBayaSecurity.init();
 
     }
 }

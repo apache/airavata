@@ -316,11 +316,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>OW2</id>
-            <name>OW2 Repository</name>
-            <url>http://maven.ow2.org/maven2</url>
-        </repository>
     </repositories>
     <profiles>
         <profile>

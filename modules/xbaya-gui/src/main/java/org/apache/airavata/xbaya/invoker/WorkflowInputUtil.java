@@ -28,7 +28,7 @@ import org.apache.airavata.xbaya.lead.LEADTypes;
 
 import javax.xml.namespace.QName;
 
-public class ODEClientUtil {
+public class WorkflowInputUtil {
 
     public static String createInputForGFacService(WSComponentPort port,String input){
         String paramType = port.getType().getLocalPart();
@@ -70,7 +70,7 @@ public class ODEClientUtil {
         } else {
             try {
                 if(XBayaConstants.HTTP_SCHEMAS_AIRAVATA_APACHE_ORG_GFAC_TYPE.equals(input.getType().getNamespaceURI())){
-                    value = XMLUtil.stringToXmlElement3(ODEClientUtil.createInputForGFacService(input, valueString));
+                    value = XMLUtil.stringToXmlElement3(WorkflowInputUtil.createInputForGFacService(input, valueString));
                 }else {
                     throw new WorkflowRuntimeException("Input parameter, " + name + ", Unkown Type");
                 }

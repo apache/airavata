@@ -172,21 +172,6 @@
 			<version>1.1.4c</version>
 		</dependency>
 		<dependency>
-			<groupId>lead-security</groupId>
-			<artifactId>cryptix32</artifactId>
-			<version>versionless</version>
-		</dependency>
-		<dependency>
-			<groupId>lead-security</groupId>
-			<artifactId>cryptix-asn1</artifactId>
-			<version>versionless</version>
-		</dependency>
-		<dependency>
-			<groupId>lead-security</groupId>
-			<artifactId>puretls</artifactId>
-			<version>0.9b4-1</version>
-		</dependency>
-		<dependency>
 			<groupId>xutil</groupId>
 			<artifactId>xutil</artifactId>
 			<version>0.2</version>
@@ -213,11 +198,6 @@
 			<groupId>xmlbeans</groupId>
 			<artifactId>xbean</artifactId>
 			<version>2.5.0</version>
-		</dependency>
-		<dependency>
-			<groupId>xbaya</groupId>
-			<artifactId>pegasuswebservice</artifactId>
-			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.amazonaws</groupId>

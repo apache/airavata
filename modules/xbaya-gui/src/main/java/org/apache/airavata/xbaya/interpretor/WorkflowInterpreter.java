@@ -99,13 +99,12 @@ import org.apache.airavata.xbaya.invoker.DynamicInvoker;
 import org.apache.airavata.xbaya.invoker.EmbeddedGFacInvoker;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
 import org.apache.airavata.xbaya.invoker.Invoker;
-import org.apache.airavata.xbaya.invoker.ODEClientUtil;
+import org.apache.airavata.xbaya.invoker.WorkflowInputUtil;
 import org.apache.airavata.xbaya.invoker.WorkflowInvokerWrapperForGFacInvoker;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.airavata.xbaya.provenance.ProvenanceReader;
 import org.apache.airavata.xbaya.provenance.ProvenanceWrite;
-import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.ui.graph.NodeGUI;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.util.AmazonUtil;
@@ -675,8 +674,6 @@ public class WorkflowInterpreter {
 					// done
 					// rest of the loading should work.
 
-					XBayaSecurity.init();
-
 				} catch (URISyntaxException e) {
 					throw new WorkflowRuntimeException(e);
 				}
@@ -753,14 +750,14 @@ public class WorkflowInterpreter {
 			 * Need to override inputValue if it is odeClient
 			 */
 			if (port.getFromNode() instanceof InputNode) {
-				inputVal = ODEClientUtil.parseValue((WSComponentPort) port.getComponentPort(), (String) inputVal);
+				inputVal = WorkflowInputUtil.parseValue((WSComponentPort) port.getComponentPort(), (String) inputVal);
 			}
 
 			if (null == inputVal) {
 				throw new WorkFlowInterpreterException("Unable to find inputs for the node:" + node.getID());
 			}
 			if (port.getFromNode() instanceof EndForEachNode) {
-				inputVal = ODEClientUtil.parseValue((WSComponentPort) port.getComponentPort(), (String) inputVal);
+				inputVal = WorkflowInputUtil.parseValue((WSComponentPort) port.getComponentPort(), (String) inputVal);
 				// org.xmlpull.v1.builder.XmlElement inputElem = XMLUtil
 				// .stringToXmlElement3("<" + port.getName() + ">"
 				// + inputVal.toString() + "</" + port.getName()
@@ -1189,7 +1186,7 @@ public class WorkflowInterpreter {
 					 */
 					Node fromNode = port.getFromNode();
 					// if (fromNode instanceof ForEachNode) {
-					inputVal = ODEClientUtil.parseValue((WSComponentPort) port.getComponentPort(), input);
+					inputVal = WorkflowInputUtil.parseValue((WSComponentPort) port.getComponentPort(), input);
 					// }
 
 					if (null == inputVal) {

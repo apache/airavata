@@ -35,8 +35,6 @@ import org.apache.airavata.xbaya.component.registry.ComponentController;
 import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
 import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
-import org.apache.airavata.xbaya.myproxy.MyProxyClient;
-import org.apache.airavata.xbaya.security.XBayaSecurity;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.monitor.MonitorStarter;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
@@ -57,8 +55,6 @@ public class XBayaEngine {
     private WorkflowClient workflowClient;
 
     private Monitor monitor;
-
-    private MyProxyClient myProxyClient;
 
     private boolean exitOnClose = true;
 
@@ -144,13 +140,6 @@ public class XBayaEngine {
     }
 
     /**
-     * @return The MyProxyClient.
-     */
-    public MyProxyClient getMyProxyClient() {
-        return this.myProxyClient;
-    }
-
-    /**
      * Disposes on exit.
      *
      * @throws WorkflowException
@@ -164,22 +153,10 @@ public class XBayaEngine {
      */
     private void initAfterGUI() {
 
-        // Initialize security at the beginning.
-        initSecurity();
-
         initRegistry();
 
         initMonitor();
 
-    }
-
-    private void initSecurity() {
-        // Initializes XSUL invokers with SSL without client authentication.
-        try {
-            XBayaSecurity.init();
-        } catch (RuntimeException e) {
-            getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-        }
     }
 
     /**

@@ -46,8 +46,6 @@ import org.apache.airavata.xbaya.event.EventListener;
 import org.apache.airavata.xbaya.monitor.Monitor;
 import org.apache.airavata.xbaya.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.monitor.MonitorException;
-import org.apache.airavata.xbaya.ui.dialogs.GridChemRunnerWindow;
-import org.apache.airavata.xbaya.ui.dialogs.JythonRunnerWindow;
 import org.apache.airavata.xbaya.ui.dialogs.graph.dynamic.DynamicWorkflowRunnerWindow;
 import org.apache.airavata.xbaya.ui.dialogs.monitor.MonitorConfigurationWindow;
 import org.apache.airavata.xbaya.ui.experiment.WorkflowInterpreterLaunchWindow;
@@ -66,11 +64,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
     
     private JMenuItem launchDynamicWorkflowItem;
 
-    private JMenuItem launchGridChemWorkflowItem;
-
     private JMenuItem launchXBayaInterpreterItem;
-
-    private JMenuItem launchAndSaveInGridChemWorkflowItem;
 
     private JMenuItem configMonitorItem;
 
@@ -126,9 +120,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
      */
     private void createWorkflowMenu() {
         this.launchDynamicWorkflowItem = createLaunchDynamicWorkflowItem();
-        this.launchGridChemWorkflowItem = createLaunchGridChemWorkflowItem();
         createLaunchXBayaInterpreterItem();
-        createLaunchAndSaveGridChemWorkflowItem();
         this.configMonitorItem = createConfigMonitoring();
         this.resumeMonitoringItem = createResumeMonitoring();
         this.pauseMonitoringItem = createPauseMonitoring();
@@ -143,10 +135,6 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
         
         runMenu.addSeparator();
         runMenu.add(stopWorkflowItem);
-        
-        runMenu.addSeparator();
-        runMenu.add(launchGridChemWorkflowItem);
-        runMenu.add(launchAndSaveInGridChemWorkflowItem);
 
         runMenu.addSeparator();
         
@@ -184,8 +172,6 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
 						toolbarButtonRunWorkflow.setEnabled(runShouldBeActive);	
 						launchDynamicWorkflowItem.setEnabled(runShouldBeActive);
 						launchXBayaInterpreterItem.setEnabled(runShouldBeActive);
-                        launchGridChemWorkflowItem.setEnabled(false);
-                        launchAndSaveInGridChemWorkflowItem.setEnabled(false);
 					}
                 });
             }
@@ -276,23 +262,6 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
         toolbarButtonStopWorkflow.setEnabled(item.isEnabled());
         return item;
     }
-    
-    private JMenuItem createRunJythonWorkflowItem() {
-        JMenuItem menuItem = new JMenuItem("Run workflow as Jython...");
-        menuItem.setMnemonic(KeyEvent.VK_J);
-        menuItem.addActionListener(new AbstractAction() {
-            private JythonRunnerWindow window;
-
-            public void actionPerformed(ActionEvent event) {
-                if (this.window == null) {
-                    this.window = new JythonRunnerWindow(engine);
-                }
-                this.window.show();
-            }
-        });
-        menuItem.setEnabled(false);
-        return menuItem;
-    }
 
     private JMenuItem createLaunchDynamicWorkflowItem() {
         JMenuItem menuItem = new JMenuItem("Run workflow...");
@@ -338,22 +307,6 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
 		return engine.getGUI().getGraphCanvas() !=null;
 	}
     
-    private JMenuItem createLaunchGridChemWorkflowItem() {
-        JMenuItem menuItem = new JMenuItem("Run as GridChem Workflow...");
-        menuItem.addActionListener(new AbstractAction() {
-            private GridChemRunnerWindow window;
-
-            public void actionPerformed(ActionEvent event) {
-                if (this.window == null) {
-                    this.window = new GridChemRunnerWindow(engine);
-                }
-                this.window.show();
-            }
-        });
-        menuItem.setEnabled(false);
-        return menuItem;
-    }
-    
     private void createLaunchXBayaInterpreterItem() {
         this.launchXBayaInterpreterItem = new JMenuItem("Run on Interpreter Server...", MenuIcons.RUN_ICON);
         AbstractAction action = new AbstractAction() {
@@ -383,18 +336,6 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
         toolbarButtonRunWorkflow = getToolBar().addToolbarButton(EXECUTE_ACTIONS, launchXBayaInterpreterItem.getText(), MenuIcons.RUN_ICON, "Run workflow", action,1);
         toolbarButtonRunWorkflow.setEnabled(launchXBayaInterpreterItem.isEnabled());
         launchXBayaInterpreterItem.setEnabled(false);
-    }
-
-    /**
-	 * 
-	 */
-    private void createLaunchAndSaveGridChemWorkflowItem() {
-        launchAndSaveInGridChemWorkflowItem = new JMenuItem("Run & Register in GridChem...	");
-        // TODO Add the following operations
-        // First Call OGCE-GridChem-Bridge Service to register an experiment
-        // Set lead context header with all the required notifier context
-        // call launch workflow
-        launchAndSaveInGridChemWorkflowItem.setEnabled(false);
     }
     
     /**
