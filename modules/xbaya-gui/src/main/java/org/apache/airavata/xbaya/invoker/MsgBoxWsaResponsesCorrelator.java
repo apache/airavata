@@ -24,6 +24,8 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.wsmg.msgbox.client.MsgBoxClient;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlDocument;
 import org.xmlpull.v1.builder.XmlElement;
 import org.xmlpull.v1.builder.XmlInfosetBuilder;
@@ -50,7 +52,7 @@ import java.util.List;
 public class MsgBoxWsaResponsesCorrelator extends WSIFAsyncWsaResponsesCorrelatorBase
     implements WSIFAsyncResponsesCorrelator, Runnable
 {
-    private final static MLogger logger = MLogger.getLogger();
+    private static final Logger logger = LoggerFactory.getLogger(MsgBoxWsaResponsesCorrelator.class);
     private final static XmlInfosetBuilder builder = XmlConstants.BUILDER;
 
     private String msgBoxServiceLoc;
