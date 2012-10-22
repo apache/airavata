@@ -27,10 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -214,6 +211,8 @@ public class MessageBoxDB {
 
                 // commit
                 db.commit(connection);
+            } catch(SQLNonTransientConnectionException e){
+                logger.info("Database connection is interrupted");
             } catch (SQLException sql) {
                 db.rollback(connection);
                 throw sql;

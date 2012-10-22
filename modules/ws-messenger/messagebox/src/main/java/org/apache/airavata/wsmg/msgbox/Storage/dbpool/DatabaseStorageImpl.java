@@ -24,6 +24,7 @@ package org.apache.airavata.wsmg.msgbox.Storage.dbpool;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLNonTransientConnectionException;
 import java.util.List;
 import java.util.UUID;
 
@@ -95,6 +96,8 @@ public class DatabaseStorageImpl implements MsgBoxStorage {
         try {
             list = MessageBoxDB.getInstance().removeAllMessagesforClient(key);
 
+        }catch(SQLNonTransientConnectionException e){
+            logger.info("Database connection is interrupted");
         } catch (SQLException e) {
             throw new Exception("Error reading the message with the key " + key, e);
         } catch (IOException e) {
