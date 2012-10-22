@@ -212,7 +212,7 @@ public class MessageBoxDB {
                 // commit
                 db.commit(connection);
             } catch(SQLNonTransientConnectionException e){
-                logger.info("Database connection is interrupted");
+                logger.warn("Database connection is interrupted");
             } catch (SQLException sql) {
                 db.rollback(connection);
                 throw sql;
