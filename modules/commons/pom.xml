@@ -34,7 +34,6 @@
                 <module>gfac-schema</module>
                 <module>utils</module>
                 <module>workflow-execution-context</module>
-				<module>provenance-registry</module>
             </modules>
         </profile>
     </profiles>
