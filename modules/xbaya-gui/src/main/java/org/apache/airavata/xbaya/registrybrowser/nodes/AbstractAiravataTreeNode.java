@@ -35,6 +35,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -204,10 +205,10 @@ public abstract class AbstractAiravataTreeNode implements TreeNode {
     }
 
     protected void reloadTreeNode(JTree tree, TreeNode node) {
-//        TreePath selectionPath = tree.getSelectionPath();
-//        ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
-//        ((DefaultTreeModel) tree.getModel()).reload(node);
-//        tree.expandPath(selectionPath);
+        TreePath selectionPath = tree.getSelectionPath();
+        ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
+        ((DefaultTreeModel) tree.getModel()).reload(node);
+        tree.expandPath(selectionPath);
     }
 
     public abstract String getActionCaption(AbstractBrowserActionItem action);
