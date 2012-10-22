@@ -35,10 +35,7 @@ import java.util.Properties;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.utils.ServiceUtils;
 import org.apache.airavata.core.gfac.context.GFacConfiguration;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.AiravataRegistryFactory;
-import org.apache.airavata.registry.api.AiravataUser;
-import org.apache.airavata.registry.api.Gateway;
+import org.apache.airavata.registry.api.*;
 import org.apache.airavata.registry.api.util.RegistryUtils;
 import org.apache.airavata.services.gfac.axis2.dispatchers.GFacURIBasedDispatcher;
 import org.apache.airavata.services.gfac.axis2.handlers.AmazonSecurityHandler;
@@ -148,7 +145,7 @@ public class GFacService implements ServiceLifeCycle {
 					/*
 					 * Heart beat message to registry
 					 */
-					thread = new GFacThread(context);
+					thread = new GFacThread(registry, context);
 					thread.start();
     	        } catch (Exception e) {
     	            log.error(e.getMessage(), e);
@@ -178,36 +175,19 @@ public class GFacService implements ServiceLifeCycle {
         }
     }
 
-    class GFacThread extends Thread {
+    class GFacThread extends AbstractRegistryUpdaterThread {
         private ConfigurationContext context = null;
 
-        GFacThread(ConfigurationContext context) {
+        GFacThread(AiravataRegistry2 registry, ConfigurationContext context) {
+            super(registry);
             this.context = context;
         }
 
-         public void run() {
-            try{
-                while (true) {
-                    try {
-                        AiravataRegistry2 registry = ((GFacConfiguration)context.getProperty(GFAC_CONFIGURATION)).getRegistry();
-                        URI localAddress = new URI((String)this.context.getProperty(GFAC_URL));
-                        registry.addGFacURI(localAddress);
-                        log.info("Updated Workflow Interpreter service URL in to Repository");
-                        Thread.sleep(GFAC_URL_UPDATE_INTERVAL);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
-                }
-            }catch (Exception e){
-                try {
-                    Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    return;
-                }
-                log.error(e.getMessage());
-                log.error("Workflow Interpreter Service URL update thread is interrupted");
-            }
+        @Override
+        protected void updateRegistry(AiravataRegistry2 registry) throws Exception {
+            URI localAddress = new URI((String) this.context.getProperty(GFAC_URL));
+            registry.addGFacURI(localAddress);
+            log.info("Updated Workflow Interpreter service URL in to Repository");
         }
     }
 }

@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.airavata.common.utils.ServiceUtils;
+import org.apache.airavata.registry.api.AbstractRegistryUpdaterThread;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.util.RegistryUtils;
 import org.apache.airavata.wsmg.commons.config.ConfigurationManager;
@@ -113,7 +114,7 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
 					/*
 					 * Heart beat message to registry
 					 */
-					thread = new MsgBoxURLRegisterThread(context);
+					thread = new MsgBoxURLRegisterThread(registry, context);
 					thread.start();
     	        } catch (Exception e) {
     	            logger.error(e.getMessage(), e);
@@ -164,37 +165,19 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
         return interval;
     }
     
-    class MsgBoxURLRegisterThread extends Thread {
+    class MsgBoxURLRegisterThread extends AbstractRegistryUpdaterThread {
         private ConfigurationContext context = null;
 
-        MsgBoxURLRegisterThread(ConfigurationContext context) {
+        MsgBoxURLRegisterThread(AiravataRegistry2 registry, ConfigurationContext context) {
+            super(registry);
             this.context = context;
         }
 
-
-        public void run() {
-            try{
-                while (true) {
-                    try {
-                        AiravataRegistry2 registry = (AiravataRegistry2) context.getProperty(JCR_REGISTRY);
-                        URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
-                        registry.setMessageBoxURI(localAddress);
-                        logger.info("Updated Workflow Interpreter service URL in to Repository");
-                        Thread.sleep(GFAC_URL_UPDATE_INTERVAL);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
-                }
-            }catch (Exception e){
-                try {
-                    Thread.sleep(JCR_AVAIALABILITY_WAIT_INTERVAL);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    return;
-                }
-                logger.error(e.getMessage());
-                logger.error("Workflow Interpreter Service URL update thread is interrupted");
-            }
+        @Override
+        protected void updateRegistry(AiravataRegistry2 registry) throws Exception {
+            URI localAddress = (URI) this.context.getProperty(SERVICE_URL);
+            registry.setMessageBoxURI(localAddress);
+            logger.info("Updated Workflow Interpreter service URL in to Repository");
         }
     }
 

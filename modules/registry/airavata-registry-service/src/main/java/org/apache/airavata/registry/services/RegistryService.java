@@ -61,9 +61,9 @@ public class RegistryService implements ServiceLifeCycle {
     private void startDerbyInServerMode() {
         try {
             System.setProperty(DERBY_SERVER_MODE_SYS_PROPERTY, "true");
-            server = new NetworkServerControl(InetAddress.getByName(Utils.getHost()),
+            server = new NetworkServerControl(InetAddress.getByName("0.0.0.0"),
                     Utils.getPort(),
-                    Utils.getJDBCUser(), Utils.getJDBCUser());
+                    Utils.getJDBCUser(), Utils.getJDBCPassword());
             java.io.PrintWriter consoleWriter = new java.io.PrintWriter(System.out, true);
             server.start(consoleWriter);
         } catch (IOException e) {
