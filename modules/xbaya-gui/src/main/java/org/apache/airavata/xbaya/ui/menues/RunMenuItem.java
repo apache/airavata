@@ -62,7 +62,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
 
     private JMenu runMenu;
     
-    private JMenuItem launchDynamicWorkflowItem;
+//    private JMenuItem launchDynamicWorkflowItem;
 
     private JMenuItem launchXBayaInterpreterItem;
 
@@ -119,7 +119,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
      * Creates workflow menu.
      */
     private void createWorkflowMenu() {
-        this.launchDynamicWorkflowItem = createLaunchDynamicWorkflowItem();
+//        this.launchDynamicWorkflowItem = createLaunchDynamicWorkflowItem();
         createLaunchXBayaInterpreterItem();
         this.configMonitorItem = createConfigMonitoring();
         this.resumeMonitoringItem = createResumeMonitoring();
@@ -131,7 +131,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
         runMenu.setMnemonic(KeyEvent.VK_R);
 
         runMenu.add(launchXBayaInterpreterItem);
-        runMenu.add(launchDynamicWorkflowItem);
+//        runMenu.add(launchDynamicWorkflowItem);
         
         runMenu.addSeparator();
         runMenu.add(stopWorkflowItem);
@@ -170,7 +170,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
 					public void stateChanged(ChangeEvent event) {
 						boolean runShouldBeActive = isRunShouldBeActive();
 						toolbarButtonRunWorkflow.setEnabled(runShouldBeActive);	
-						launchDynamicWorkflowItem.setEnabled(runShouldBeActive);
+//						launchDynamicWorkflowItem.setEnabled(runShouldBeActive);
 						launchXBayaInterpreterItem.setEnabled(runShouldBeActive);
 					}
                 });
