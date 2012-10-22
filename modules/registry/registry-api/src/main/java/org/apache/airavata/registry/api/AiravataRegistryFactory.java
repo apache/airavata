@@ -115,7 +115,7 @@ public class AiravataRegistryFactory {
 			}
 		}else{
 			throw new AiravataConfigurationException(
-					"Error loading the configuration file", e);
+					"Error loading the configuration file");
 		}
 	}
 
