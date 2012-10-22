@@ -67,7 +67,7 @@ public class XBayaWorkflowTemplatesNode extends AbstractAiravataTreeNode {
 
     @Override
     public List<String> getSupportedActions() {
-        return Arrays.asList(AddAction.ID, RefreshAction.ID);
+        return Arrays.asList(RefreshAction.ID);
     }
 
     public boolean triggerAction(JTree tree, String action) throws Exception {
