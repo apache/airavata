@@ -158,18 +158,23 @@ public class GFacService implements ServiceLifeCycle {
     }
 
     public void shutDown(ConfigurationContext configctx, AxisService service) {
-        AiravataRegistry2 registry = ((GFacConfiguration) configctx.getProperty(GFAC_CONFIGURATION)).getRegistry();
-        String gfacURL = (String) configctx.getProperty(GFAC_URL);
-        try {
-            registry.removeGFacURI(new URI(gfacURL));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        //following nullchecks will avoid the exceptions when user press Ctrl-C before the server start properly
+        if (configctx.getProperty(GFAC_CONFIGURATION) != null) {
+            AiravataRegistry2 registry = ((GFacConfiguration) configctx.getProperty(GFAC_CONFIGURATION)).getRegistry();
+            String gfacURL = (String) configctx.getProperty(GFAC_URL);
+            try {
+                registry.removeGFacURI(new URI(gfacURL));
+            } catch (URISyntaxException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         }
-        thread.interrupt();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            log.info("GFacURL update thread is interrupted");
+        if (thread != null) {
+            thread.interrupt();
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                log.info("GFacURL update thread is interrupted");
+            }
         }
     }
 
