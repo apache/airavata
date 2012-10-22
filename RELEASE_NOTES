@@ -2,6 +2,58 @@ Apache Airavata Change Log
 
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
+Apache Airavata Version 0.5 Released on 2012-10-28
+=============================================================
+
+** New Feature
+    * [AIRAVATA-277] - Add do-while support to Xbaya and workflow engine
+    * [AIRAVATA-314] - Hide workflow experiment ID from the user and allow user to add a user friendly experiment ID
+    * [AIRAVATA-517] - Add XBaya JNLP generation to the Airavata Build
+    * [AIRAVATA-548] - Implement StringArray incase output parameters are coming multiple times in STDOUT
+    * [AIRAVATA-562] - Replacing existing Jackrabbit registry with MySQL
+
+** Improvement
+    * [AIRAVATA-57] - Consolidate XBaya Web Service Invoker Clients and Re-factor them to use Axis2
+    * [AIRAVATA-220] - XBaya not prompting Myproxy dialog for secure workflow invocation
+    * [AIRAVATA-229] - Managing Shutdown tasks using shutdown hooks
+    * [AIRAVATA-363] - Adding Embedded GFac feature in to ducumentation
+    * [AIRAVATA-476] - Add sample workflows to be shipped with Airavata to demonstrate grid job submissions
+    * [AIRAVATA-533] - Add scripts to run Airavata in Windows environment
+    * [AIRAVATA-541] - Some code is duplicated in AiravataJCRregistry
+    * [AIRAVATA-543] - Some improvements to "Airavata HowTo" doc 
+    * [AIRAVATA-546] - Implementing Persistency Data Storage for Airavata
+    * [AIRAVATA-589] - Need to remove jackrabbit dependency from 0.5 build
+    * [AIRAVATA-613] - Cleanup XBaya Invokers and remove legacy security calls
+    * [AIRAVATA-614] - Cleanup all myproxy and gsi dependencies from XBaya
+
+** Bug
+    * [AIRAVATA-232] - GridFTPFileTransferClient has file paths that refer to a local file paths need to generalize this
+    * [AIRAVATA-317] - After changing the username of jackrabbit still I can save service description
+    * [AIRAVATA-400] - ConcurrentModificationException during using RegistryAPI
+    * [AIRAVATA-497] - Deprecating xbaya engine running in the gui mode and make WorkflowInterpreter invocation by default
+    * [AIRAVATA-506] - No log file is creating during standalone mode run of Airavata server
+    * [AIRAVATA-516] - Input Output node data can not be retreived by using Airavata API's ProvananceManager
+    * [AIRAVATA-522] - Application Failed status is not updated in XBaya
+    * [AIRAVATA-527] - Monitor panel does not report final error when a node fails
+    * [AIRAVATA-534] - Error creating the database in Windows environment - When starting the Airavata Server
+    * [AIRAVATA-538] - getWorkflowExecutionByUser(...) method implementation is not correct
+    * [AIRAVATA-544] - Could not deploy WS-Messenger with MySQL
+    * [AIRAVATA-545] - 5 minutes tutorial fails when running WS-Messenger with MySQL
+    * [AIRAVATA-559] - Improvements to AiravataJCRRegistry class
+    * [AIRAVATA-564] - ForEach does not work if Array size is 1
+    * [AIRAVATA-575] - Data type of workflow_graph and workflow_content of User_Workflow table and Published_Workflow table should be BLOB datatype
+    * [AIRAVATA-581] - Supporting derby by default for airavata
+    * [AIRAVATA-582] - Make run button of Xbaya to go through interpreter server by default
+    * [AIRAVATA-584] - GridFTP transfer does not set type to Binary for binary data
+    * [AIRAVATA-586] - Node deletion is giving some issues
+    * [AIRAVATA-588] - Error when try to open a workflow from filesystem
+    * [AIRAVATA-594] - Improving data retrieval time in provenance data 
+    * [AIRAVATA-595] - Gram RSL generated is missing the jobtype parameter
+    * [AIRAVATA-597] - XBaya pom have Junit jar version but its not added to properties
+    * [AIRAVATA-598] - Warn user before closing XBaya
+    * [AIRAVATA-611] - Remove derby.sh and startNetworkServer scripts
+    * [AIRAVATA-612] - File transfer error getting masked to a general error
+
 Apache Airavata Version 0.4-INCUBATING Released on 2012-07-28
 =============================================================
 ** New Feature
