@@ -97,7 +97,7 @@ public class DatabaseStorageImpl implements MsgBoxStorage {
             list = MessageBoxDB.getInstance().removeAllMessagesforClient(key);
 
         }catch(SQLNonTransientConnectionException e){
-            logger.info("Database connection is interrupted");
+            logger.warn("Database connection is interrupted");
         } catch (SQLException e) {
             throw new Exception("Error reading the message with the key " + key, e);
         } catch (IOException e) {
