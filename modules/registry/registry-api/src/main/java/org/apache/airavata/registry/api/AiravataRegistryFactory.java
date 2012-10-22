@@ -40,7 +40,7 @@ public class AiravataRegistryFactory {
 	/***
 	 * Return a registry accessor object capable of handling all data in the
 	 * registry
-	 * 
+	 *
 	 * @param gateway
 	 * @param user
 	 * @return
@@ -69,7 +69,7 @@ public class AiravataRegistryFactory {
 	/***
 	 * Given the key in the <code>REPOSITORY_PROPERTIES</code> file it will
 	 * attempt to instantiate a class from the value of the property
-	 * 
+	 *
 	 * @param registryClassKey
 	 * @return
 	 * @throws RegistryAccessorNotFoundException
@@ -113,19 +113,20 @@ public class AiravataRegistryFactory {
 				throw new AiravataConfigurationException(
 						"Error reading the configuration file", e);
 			}
+		}else{
+			throw new AiravataConfigurationException(
+					"Error loading the configuration file", e);
 		}
-		return null;
-
 	}
-	
+
 	public static void registerRegistryConnectionDataProvider(AiravataRegistryConnectionDataProvider provider){
 		dataProvider=provider;
 	}
-	
+
 	public static void unregisterRegistryConnectionDataProvider(){
 		dataProvider=null;
 	}
-	
+
 	public static AiravataRegistryConnectionDataProvider getRegistryConnectionDataProvider(){
 		return dataProvider;
 	}
