@@ -142,8 +142,8 @@ public class PropertiesBasedServiceImpl extends AbstractSimpleService {
             if (this.config == null || this.config.isEmpty()) {
                 this.config = new PropertiesConfiguration(this.fileName);
 
-                log.info("Properties loaded");
-                LogUtils.displayProperties(log, getProperties());
+//                log.info("Properties loaded");
+//                LogUtils.displayProperties(log, getProperties());
             }
         } catch (ConfigurationException e) {
             throw new GfacException("Error initialize the PropertiesBasedServiceImpl", e);
