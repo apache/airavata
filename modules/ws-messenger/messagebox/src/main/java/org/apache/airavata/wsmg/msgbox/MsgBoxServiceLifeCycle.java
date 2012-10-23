@@ -70,12 +70,14 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
     public void shutDown(ConfigurationContext configurationcontext, AxisService axisservice) {
         logger.info("Message box shutting down");
         AiravataRegistry2 registry = (AiravataRegistry2) configurationcontext.getProperty(JCR_REGISTRY);
-        registry.unsetMessageBoxURI();
-        thread.interrupt();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            logger.info("Message box url update thread is interrupted");
+        if (registry != null && thread != null) {
+            registry.unsetMessageBoxURI();
+            thread.interrupt();
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                logger.info("Message box url update thread is interrupted");
+            }
         }
         if (configurationcontext.getProperty(MsgBoxCommonConstants.MSGBOX_STORAGE) != null) {
             MsgBoxStorage msgBoxStorage = (MsgBoxStorage) configurationcontext

@@ -98,6 +98,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
                 initialized = false;
                 AiravataRegistry2 registry = (AiravataRegistry2) configurationcontext
                         .getProperty(JCR_REGISTRY);
+                if(registry != null && thread != null){
                 registry.unsetEventingURI();
                 thread.interrupt();
                 try {
@@ -105,7 +106,7 @@ public class BrokerServiceLifeCycle implements ServiceLifeCycle {
                 } catch (InterruptedException e) {
                     log.info("Message box url update thread is interrupted");
                 }
-
+                }
             }
         }
         log.info("broker shut down");

@@ -144,5 +144,6 @@ public class RegistryService implements ServiceLifeCycle {
 
     @Override
     public void shutDown(ConfigurationContext configurationContext, AxisService axisService) {
+
     }
 }

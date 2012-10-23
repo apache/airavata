@@ -385,12 +385,14 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
      public void shutDown(ConfigurationContext configctx, AxisService service) {
          AiravataRegistry2 registry = jcrComponentRegistry.getRegistry();
          URI gfacURL = (URI) configctx.getProperty(SERVICE_URL);
+         if(registry != null && thread != null){
          registry.removeWorkflowInterpreterURI(gfacURL);
          thread.interrupt();
          try {
              thread.join();
          } catch (InterruptedException e) {
              log.info("GFacURL update thread is interrupted");
+         }
          }
          if (runner != null) {
              runner.shutDown();
