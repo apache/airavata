@@ -205,9 +205,9 @@ public class WorkflowInterpreter {
 				}
 				// get task list and execute them
 				ArrayList<Node> readyNodes = this.getReadyNodesDynamically();
-                if(readyNodes.size() == 0){
-                    this.getWorkflow().setExecutionState(WorkflowExecutionState.STOPPED);
-                }
+//                if(readyNodes.size() == 0){
+//                    this.getWorkflow().setExecutionState(WorkflowExecutionState.STOPPED);
+//                }
 				for (Node node : readyNodes) {
 					if (node.isBreak()) {
 						this.notifyPause();
