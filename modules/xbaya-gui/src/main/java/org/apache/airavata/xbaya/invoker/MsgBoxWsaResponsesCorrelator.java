@@ -112,13 +112,21 @@ public class MsgBoxWsaResponsesCorrelator extends WSIFAsyncWsaResponsesCorrelato
                 }
                 try {
                     Thread.currentThread().sleep(1000L); //do not overload msg box service ...
-                } catch (InterruptedException e) {}
+                } catch (InterruptedException e) {
+                    break;
+                }
             } catch (XsulException e) {
-                logger.info("could not retrieve messages", e);
+                logger.error("could not retrieve messages");
+                break;
             } catch (RemoteException e) {
-                logger.info("could not retrieve messages", e);
+                logger.error("could not retrieve messages");
+                break;
             } catch (XMLStreamException e) {
-                logger.info("could not retrieve messages", e);
+                logger.error("could not retrieve messages");
+                break;
+            } catch (Exception e){
+                logger.error("could not retrieve messages");
+                break;
             }
         }
     }
