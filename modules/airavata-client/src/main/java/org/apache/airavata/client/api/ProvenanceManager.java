@@ -187,7 +187,6 @@ public interface ProvenanceManager {
     /**
      * Update the metadata of the Workflow instance
      * @param experimentId
-     * @param workflowInstanceId
      * @param metadata
      * @throws AiravataAPIInvocationException
      */
@@ -295,9 +294,7 @@ public interface ProvenanceManager {
 	/**
      * Retrieve all the experiment data run by the given owner with paging
      * @deprecated
-     * @param user
-     * @param pageSize
-     * @param pageNo
+     * @param experimentId
      * @return
      * @throws AiravataAPIInvocationException
      */
