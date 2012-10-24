@@ -110,6 +110,8 @@ import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.airavata.xbaya.util.AmazonUtil;
 import org.apache.airavata.xbaya.util.InterpreterUtil;
 import org.apache.airavata.xbaya.util.XBayaUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul.lead.LeadContextHeader;
@@ -117,6 +119,7 @@ import xsul.lead.LeadResourceMapping;
 import xsul5.XmlConstants;
 
 public class WorkflowInterpreter {
+    private static final Logger log = LoggerFactory.getLogger(WorkflowInterpreter.class);
 
 	public static final String WORKFLOW_STARTED = "Workflow Running";
 	public static final String WORKFLOW_FINISHED = "Workflow Finished";
@@ -202,6 +205,9 @@ public class WorkflowInterpreter {
 				}
 				// get task list and execute them
 				ArrayList<Node> readyNodes = this.getReadyNodesDynamically();
+                if(readyNodes.size() == 0){
+                    this.getWorkflow().setExecutionState(WorkflowExecutionState.STOPPED);
+                }
 				for (Node node : readyNodes) {
 					if (node.isBreak()) {
 						this.notifyPause();
@@ -245,7 +251,8 @@ public class WorkflowInterpreter {
 					try {
 						Thread.sleep(400);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						log.error("Workflow Excecution is interrupted !");
+                        return;
 					}
 				}
 			}
