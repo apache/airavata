@@ -862,7 +862,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 
 	@Override
-	public boolean updateExperimentName(String experimentId,
+	public void updateExperimentName(String experimentId,
 			String experimentName) throws RegistryException {
 		if (!isExperimentExists(experimentId, true)){
 			throw new ExperimentDoesNotExistsException(experimentId);
@@ -871,7 +871,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		ExperimentDataResource data = experiment.getData();
 		data.setExpName(experimentName);
 		data.save();
-		return false;
 	}
 
 
@@ -977,7 +976,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 
 	@Override
-	public boolean updateWorkflowInstanceStatus(String instanceId,
+	public void updateWorkflowInstanceStatus(String instanceId,
 			ExecutionStatus status) throws RegistryException {
 		if (!isWorkflowInstanceExists(instanceId, true)){
 			throw new WorkflowInstanceDoesNotExistsException(instanceId);
@@ -990,12 +989,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		}
 		wi.setLastUpdatedTime(currentTime);
 		wi.save();
-		return true;
 	}
 
 
 	@Override
-	public boolean updateWorkflowInstanceStatus(WorkflowInstanceStatus status)
+	public void updateWorkflowInstanceStatus(WorkflowInstanceStatus status)
 			throws RegistryException {
 		if (!isWorkflowInstanceExists(status.getWorkflowInstance().getWorkflowInstanceId(), true)){
 			throw new WorkflowInstanceDoesNotExistsException(status.getWorkflowInstance().getWorkflowInstanceId());
@@ -1008,7 +1006,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		}
 		wi.setLastUpdatedTime(currentTime);
 		wi.save();
-		return true;
 	}
 
 
@@ -1024,7 +1021,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 
 	@Override
-	public boolean updateWorkflowNodeInput(WorkflowInstanceNode node, String data)
+	public void updateWorkflowNodeInput(WorkflowInstanceNode node, String data)
 			throws RegistryException {
 		if (!isWorkflowInstanceNodePresent(node.getWorkflowInstance().getWorkflowInstanceId(),node.getNodeId(),true)){
 			throw new WorkflowInstanceNodeDoesNotExistsException(node.getWorkflowInstance().getWorkflowInstanceId(), node.getNodeId());
@@ -1033,12 +1030,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		NodeDataResource nodeData = wi.getNodeData(node.getNodeId());
 		nodeData.setInputs(data);
 		nodeData.save();
-		return true;
 	}
 
 
 	@Override
-	public boolean updateWorkflowNodeOutput(WorkflowInstanceNode node, String data) throws RegistryException {
+	public void updateWorkflowNodeOutput(WorkflowInstanceNode node, String data) throws RegistryException {
 		try {
 			if (!isWorkflowInstanceNodePresent(node.getWorkflowInstance().getWorkflowInstanceId(),node.getNodeId(),true)){
 				throw new WorkflowInstanceNodeDoesNotExistsException(node.getWorkflowInstance().getWorkflowInstanceId(), node.getNodeId());
@@ -1051,7 +1047,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			e.printStackTrace();
 			throw e;
 		}
-		return true;
 	}
 
 
@@ -1089,17 +1084,14 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 	@Deprecated
 	@Override
-	public boolean saveWorkflowExecutionOutput(String experimentId,
+	public void saveWorkflowExecutionOutput(String experimentId,
 			String outputNodeName, String output) throws RegistryException {
-		return false;
 	}
 
 	@Deprecated
 	@Override
-	public boolean saveWorkflowExecutionOutput(String experimentId,
+	public void saveWorkflowExecutionOutput(String experimentId,
 			WorkflowIOData data) throws RegistryException {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 
@@ -1179,7 +1171,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 
 	@Override
-	public boolean updateWorkflowNodeStatus(
+	public void updateWorkflowNodeStatus(
 			WorkflowInstanceNodeStatus workflowStatusNode)
 			throws RegistryException {
 		WorkflowInstance workflowInstance = workflowStatusNode.getWorkflowInstanceNode().getWorkflowInstance();
@@ -1197,21 +1189,21 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		nodeData.save();
 		//Each time node status is updated the the time of update for the workflow status is going to be the same
 		WorkflowInstanceStatus currentWorkflowInstanceStatus = getWorkflowInstanceStatus(workflowInstance.getWorkflowInstanceId());
-		return updateWorkflowInstanceStatus(new WorkflowInstanceStatus(workflowInstance, currentWorkflowInstanceStatus.getExecutionStatus(),t));
+		updateWorkflowInstanceStatus(new WorkflowInstanceStatus(workflowInstance, currentWorkflowInstanceStatus.getExecutionStatus(),t));
 	}
 
 
 	@Override
-	public boolean updateWorkflowNodeStatus(String workflowInstanceId,
+	public void updateWorkflowNodeStatus(String workflowInstanceId,
 			String nodeId, ExecutionStatus status) throws RegistryException {
-		return updateWorkflowNodeStatus(new WorkflowInstanceNode(new WorkflowInstance(workflowInstanceId, workflowInstanceId), nodeId), status);
+		updateWorkflowNodeStatus(new WorkflowInstanceNode(new WorkflowInstance(workflowInstanceId, workflowInstanceId), nodeId), status);
 	}
 
 
 	@Override
-	public boolean updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode,
+	public void updateWorkflowNodeStatus(WorkflowInstanceNode workflowNode,
 			ExecutionStatus status) throws RegistryException {
-		return updateWorkflowNodeStatus(new WorkflowInstanceNodeStatus(workflowNode, status, Calendar.getInstance().getTime()));
+		updateWorkflowNodeStatus(new WorkflowInstanceNodeStatus(workflowNode, status, Calendar.getInstance().getTime()));
 	}
 
 
@@ -1255,7 +1247,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 
 	@Override
-	public boolean updateWorkflowNodeGramData(
+	public void updateWorkflowNodeGramData(
 			WorkflowNodeGramData workflowNodeGramData) throws RegistryException {
 		if (!isWorkflowInstanceNodePresent(workflowNodeGramData.getWorkflowInstanceId(),workflowNodeGramData.getNodeID(), true)){
 			throw new WorkflowInstanceNodeDoesNotExistsException(workflowNodeGramData.getWorkflowInstanceId(),workflowNodeGramData.getNodeID());
@@ -1271,7 +1263,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		gramData.setLocalJobID(workflowNodeGramData.getGramJobID());
 		gramData.setRsl(workflowNodeGramData.getRsl());
 		gramData.save();
-		return true;
 	}
 
 
@@ -1333,7 +1324,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 
 	@Override
-	public boolean addWorkflowInstance(String experimentId,
+	public void addWorkflowInstance(String experimentId,
 			String workflowInstanceId, String templateName) throws RegistryException {
 		if (!isExperimentExists(experimentId, true)){
 			throw new ExperimentDoesNotExistsException(experimentId);
@@ -1346,12 +1337,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		WorkflowDataResource workflowInstanceResource = data.createWorkflowInstanceResource(workflowInstanceId);
 		workflowInstanceResource.setTemplateName(templateName);
 		workflowInstanceResource.save();
-		return true;
 	}
 
 
 	@Override
-	public boolean updateWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type)
+	public void updateWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type)
 			throws RegistryException {
 		try {
 			if (!isWorkflowInstanceNodePresent(node.getWorkflowInstance().getWorkflowInstanceId(),node.getNodeId(), true)){
@@ -1364,19 +1354,17 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			e.printStackTrace();
 			throw e;
 		}
-		return true;
 	}
 
 
 	@Override
-	public boolean addWorkflowInstanceNode(String workflowInstanceId,
+	public void addWorkflowInstanceNode(String workflowInstanceId,
 			String nodeId) throws RegistryException {
 		if (isWorkflowInstanceNodePresent(workflowInstanceId, nodeId)){
 			throw new WorkflowInstanceNodeAlreadyExistsException(workflowInstanceId, nodeId);
 		}
 		NodeDataResource nodeData = jpa.getWorker().getWorkflowInstance(workflowInstanceId).createNodeData(nodeId);
 		nodeData.save();
-		return true;
 	}
 
 
