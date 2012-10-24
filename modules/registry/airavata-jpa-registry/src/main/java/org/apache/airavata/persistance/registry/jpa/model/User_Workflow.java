@@ -21,7 +21,7 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 @IdClass(User_Workflow_PK.class)
@@ -42,7 +42,7 @@ public class User_Workflow {
     private Users user;
 
     private String path;
-    private Date last_updated_date;
+    private Timestamp last_updated_date;
 
     @Lob
     private byte[] workflow_graph;
@@ -87,7 +87,7 @@ public class User_Workflow {
         return path;
     }
 
-    public Date getLast_updated_date() {
+    public Timestamp getLast_updated_date() {
         return last_updated_date;
     }
 
@@ -107,7 +107,7 @@ public class User_Workflow {
         this.workflow_graph = workflow_graph;
     }
 
-    public void setLast_updated_date(Date last_updated_date) {
+    public void setLast_updated_date(Timestamp last_updated_date) {
         this.last_updated_date = last_updated_date;
     }
 

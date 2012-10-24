@@ -21,7 +21,7 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 @IdClass(Published_Workflow_PK.class)
@@ -38,7 +38,7 @@ public class Published_Workflow {
     private Gateway gateway;
 
     private String version;
-    private Date published_date;
+    private Timestamp published_date;
 
     @Lob
     private byte[] workflow_content;
@@ -56,7 +56,7 @@ public class Published_Workflow {
         return version;
     }
 
-    public Date getPublished_date() {
+    public Timestamp getPublished_date() {
         return published_date;
     }
 
@@ -76,7 +76,7 @@ public class Published_Workflow {
         this.version = version;
     }
 
-    public void setPublished_date(Date published_date) {
+    public void setPublished_date(Timestamp published_date) {
         this.published_date = published_date;
     }
 

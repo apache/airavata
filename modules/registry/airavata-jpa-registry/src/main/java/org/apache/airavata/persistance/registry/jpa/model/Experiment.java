@@ -22,13 +22,13 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 public class Experiment {
     @Id
     private String experiment_ID;
-    private Date submitted_date;
+    private Timestamp submitted_date;
     private String user_name;
     private String gateway_name;
     private String project_name;
@@ -49,7 +49,7 @@ public class Experiment {
         return experiment_ID;
     }
 
-    public Date getSubmitted_date() {
+    public Timestamp getSubmitted_date() {
         return submitted_date;
     }
 
@@ -65,7 +65,7 @@ public class Experiment {
         this.experiment_ID = experiment_ID;
     }
 
-    public void setSubmitted_date(Date submitted_date) {
+    public void setSubmitted_date(Timestamp submitted_date) {
         this.submitted_date = submitted_date;
     }
 

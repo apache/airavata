@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,7 @@ public class UserWorkflowResource extends AbstractResource {
     private GatewayResource gateway;
     private WorkerResource worker;
     private String name;
-    private Date lastUpdateDate;
+    private Timestamp lastUpdateDate;
     private String content;
     private String path;
 
@@ -60,7 +59,7 @@ public class UserWorkflowResource extends AbstractResource {
         return name;
     }
 
-    public void setLastUpdateDate(Date lastUpdateDate) {
+    public void setLastUpdateDate(Timestamp lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 
@@ -68,7 +67,7 @@ public class UserWorkflowResource extends AbstractResource {
         this.content = content;
     }
 
-    public Date getLastUpdateDate() {
+    public Timestamp getLastUpdateDate() {
         return lastUpdateDate;
     }
 
@@ -142,7 +141,7 @@ public class UserWorkflowResource extends AbstractResource {
         userWorkflow.setTemplate_name(name);
         if(lastUpdateDate == null){
             java.util.Date date= new java.util.Date();
-            lastUpdateDate = new java.sql.Date(date.getTime());
+            lastUpdateDate = new Timestamp(date.getTime());
         }
         userWorkflow.setLast_updated_date(lastUpdateDate);
         byte[] bytes = content.getBytes();

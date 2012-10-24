@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.persistance.registry.jpa.resources;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class ExperimentResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentResource.class);
     private WorkerResource worker;
     private String expID;
-    private Date submittedDate;
+    private Timestamp submittedDate;
     private GatewayResource gateway;
     private ProjectResource project;
 
@@ -65,7 +65,7 @@ public class ExperimentResource extends AbstractResource {
      *
      * @return submitted date
      */
-    public Date getSubmittedDate() {
+    public Timestamp getSubmittedDate() {
         return submittedDate;
     }
 
@@ -73,7 +73,7 @@ public class ExperimentResource extends AbstractResource {
      *
      * @param submittedDate  submitted date
      */
-    public void setSubmittedDate(Date submittedDate) {
+    public void setSubmittedDate(Timestamp submittedDate) {
         this.submittedDate = submittedDate;
     }
 

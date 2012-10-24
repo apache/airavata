@@ -24,6 +24,7 @@ package org.apache.airavata.persistance.registry.jpa;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Calendar;
 
 
@@ -80,7 +81,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
 
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
-        Date currentTime = new Date(d.getTime());
+        Timestamp currentTime = new Timestamp(d.getTime());
         userWorkflowResource.setName("workflow1");
         userWorkflowResource.setLastUpdateDate(currentTime);
         userWorkflowResource.setWorker(workerResource);
@@ -92,7 +93,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
         publishWorkflowResource.setContent("testContent");
         Calendar c = Calendar.getInstance();
         java.util.Date da = c.getTime();
-        Date time = new Date(da.getTime());
+        Timestamp time = new Timestamp(da.getTime());
         publishWorkflowResource.setPublishedDate(time);
         publishWorkflowResource.save();
 
@@ -200,14 +201,14 @@ public class GatewayResourceTest extends AbstractResourceTest {
 
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
-        Date currentTime = new Date(d.getTime());
+        Timestamp currentTime = new Timestamp(d.getTime());
 
         publishWorkflowResource.setName("pubworkflow1");
         publishWorkflowResource.setCreatedUser("testUser");
         publishWorkflowResource.setContent("testContent");
         Calendar c = Calendar.getInstance();
         java.util.Date da = c.getTime();
-        Date time = new Date(da.getTime());
+        Timestamp time = new Timestamp(da.getTime());
         publishWorkflowResource.setPublishedDate(time);
         publishWorkflowResource.save();
 

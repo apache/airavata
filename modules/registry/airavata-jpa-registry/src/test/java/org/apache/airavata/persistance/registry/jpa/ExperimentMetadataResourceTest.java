@@ -25,6 +25,7 @@ package org.apache.airavata.persistance.registry.jpa;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class ExperimentMetadataResourceTest extends AbstractResourceTest {
@@ -46,7 +47,7 @@ public class ExperimentMetadataResourceTest extends AbstractResourceTest {
 
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
-        Date currentDate = new Date(d.getTime());
+        Timestamp currentDate = new Timestamp(d.getTime());
         experimentResource.setSubmittedDate(currentDate);
         experimentResource.save();
 

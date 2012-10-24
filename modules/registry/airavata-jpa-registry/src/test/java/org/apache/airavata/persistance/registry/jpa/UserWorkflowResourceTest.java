@@ -26,6 +26,7 @@ import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResour
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class UserWorkflowResourceTest extends AbstractResourceTest {
@@ -44,7 +45,7 @@ public class UserWorkflowResourceTest extends AbstractResourceTest {
         userWorkflowResource.setContent("testContent");
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
-        Date currentTime = new Date(d.getTime());
+        Timestamp currentTime = new Timestamp(d.getTime());
         userWorkflowResource.setLastUpdateDate(currentTime);
     }
 

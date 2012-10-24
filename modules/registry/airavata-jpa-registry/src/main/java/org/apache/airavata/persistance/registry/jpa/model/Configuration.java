@@ -22,7 +22,7 @@ package org.apache.airavata.persistance.registry.jpa.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 @IdClass(Configuration_PK.class)
@@ -31,7 +31,7 @@ public class Configuration implements Serializable {
     private String config_key;
     @Id
     private String config_val;
-    private Date expire_date;
+    private Timestamp expire_date;
 
     public String getConfig_key() {
         return config_key;
@@ -41,7 +41,7 @@ public class Configuration implements Serializable {
         return config_val;
     }
 
-    public Date getExpire_date() {
+    public Timestamp getExpire_date() {
         return expire_date;
     }
 
@@ -53,7 +53,7 @@ public class Configuration implements Serializable {
         this.config_val = config_val;
     }
 
-    public void setExpire_date(Date expire_date) {
+    public void setExpire_date(Timestamp expire_date) {
         this.expire_date = expire_date;
     }
 }
