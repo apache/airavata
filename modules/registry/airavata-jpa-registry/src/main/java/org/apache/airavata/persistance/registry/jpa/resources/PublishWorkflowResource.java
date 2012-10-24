@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class PublishWorkflowResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(PublishWorkflowResource.class);
     private String name;
     private String version;
-    private Date publishedDate;
+    private Timestamp publishedDate;
     private String content;
     private GatewayResource gateway;
     private String createdUser;
@@ -113,7 +113,7 @@ public class PublishWorkflowResource extends AbstractResource {
      *
      * @return published date
      */
-    public Date getPublishedDate() {
+    public Timestamp getPublishedDate() {
         return publishedDate;
     }
 
@@ -137,7 +137,7 @@ public class PublishWorkflowResource extends AbstractResource {
      *
      * @param publishedDate published date of the workflow
      */
-    public void setPublishedDate(Date publishedDate) {
+    public void setPublishedDate(Timestamp publishedDate) {
         this.publishedDate = publishedDate;
     }
 

@@ -31,7 +31,6 @@ public class Workflow_Data {
 	@JoinColumn(name="experiment_ID")
     private Experiment_Data experiment_data;
 
-//	private String experiment_ID;
 	@Id
 	private String workflow_instanceID;
 	private String template_name;
@@ -39,13 +38,6 @@ public class Workflow_Data {
 	private Timestamp start_time;
 	private Timestamp last_update_time;
 
-//	public String getExperiment_ID() {
-//		return experiment_ID;
-//	}
-//
-//	public void setExperiment_ID(String experiment_ID) {
-//		this.experiment_ID = experiment_ID;
-//	}
 
 	public String getWorkflow_instanceID() {
 		return workflow_instanceID;

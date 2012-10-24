@@ -25,6 +25,7 @@ import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.PublishWorkflowResource;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class PublishWorkflowResourceTest extends AbstractResourceTest {
@@ -40,7 +41,7 @@ public class PublishWorkflowResourceTest extends AbstractResourceTest {
         publishWorkflowResource.setContent("testContent");
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
-        Date currentTime = new Date(d.getTime());
+        Timestamp currentTime = new Timestamp(d.getTime());
         publishWorkflowResource.setPublishedDate(currentTime);
     }
 

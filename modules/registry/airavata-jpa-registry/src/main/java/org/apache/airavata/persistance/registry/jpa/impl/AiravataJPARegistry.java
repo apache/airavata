@@ -119,14 +119,14 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			config = ResourceUtils.createConfiguration(key);
 		}
     	config.setConfigVal(value);
-    	config.setExpireDate(new java.sql.Date(expire.getTime()));
+    	config.setExpireDate(new Timestamp(expire.getTime()));
     	config.save();
     }
 
     public void addConfiguration(String key, String value, Date expire) {
     	ConfigurationResource config = ResourceUtils.createConfiguration(key);
     	config.setConfigVal(value);
-    	config.setExpireDate(new java.sql.Date(expire.getTime()));
+    	config.setExpireDate(new Timestamp(expire.getTime()));
     	config.save();
     }
 
@@ -588,7 +588,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         }
 		ExperimentResource experimentResource = project.createExperiment(experimentId);
 		if (experiment.getSubmittedDate()!=null) {
-			experimentResource.setSubmittedDate(new java.sql.Date(experiment.getSubmittedDate().getTime()));
+			experimentResource.setSubmittedDate(new Timestamp(experiment.getSubmittedDate().getTime()));
 		}
 		experimentResource.save();
     }
@@ -675,7 +675,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     	PublishWorkflowResource publishedWorkflow = gateway.createPublishedWorkflow(publishWorkflowName);
     	publishedWorkflow.setCreatedUser(getUser().getUserName());
     	publishedWorkflow.setContent(workflowGraphXML);
-    	publishedWorkflow.setPublishedDate(new java.sql.Date(Calendar.getInstance().getTime().getTime()));
+    	publishedWorkflow.setPublishedDate(new Timestamp(Calendar.getInstance().getTime().getTime()));
     	publishedWorkflow.save();
     }
 
@@ -1189,7 +1189,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		nodeData.save();
 		//Each time node status is updated the the time of update for the workflow status is going to be the same
 		WorkflowInstanceStatus currentWorkflowInstanceStatus = getWorkflowInstanceStatus(workflowInstance.getWorkflowInstanceId());
-		updateWorkflowInstanceStatus(new WorkflowInstanceStatus(workflowInstance, currentWorkflowInstanceStatus.getExecutionStatus(),t));
+		updateWorkflowInstanceStatus(new WorkflowInstanceStatus(workflowInstance, currentWorkflowInstanceStatus.getExecutionStatus(), t));
 	}
 
 

@@ -25,6 +25,7 @@ import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResou
 import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class ConfigurationResourceTest extends AbstractResourceTest {
@@ -41,7 +42,7 @@ public class ConfigurationResourceTest extends AbstractResourceTest {
         configuration.setConfigVal("testConfigValue");
         Calendar calender = Calendar.getInstance();
         java.util.Date d = calender.getTime();
-        Date currentTime = new Date(d.getTime());
+        Timestamp currentTime = new Timestamp(d.getTime());
         configuration.setExpireDate(currentTime);
         configuration.save();
 

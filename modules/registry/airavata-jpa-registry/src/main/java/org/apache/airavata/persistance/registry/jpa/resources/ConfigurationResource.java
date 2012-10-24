@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.persistance.registry.jpa.resources;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -41,7 +41,7 @@ public class ConfigurationResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(ConfigurationResource.class);
     private String configKey;
     private String configVal;
-    private Date expireDate;
+    private Timestamp expireDate;
 
     /**
      *
@@ -142,7 +142,7 @@ public class ConfigurationResource extends AbstractResource {
      *
      * @param expireDate expire date of the configuration
      */
-    public void setExpireDate(Date expireDate) {
+    public void setExpireDate(Timestamp expireDate) {
         this.expireDate = expireDate;
     }
 
