@@ -18,5 +18,12 @@
 # under the License.
 
 . `dirname $0`/setenv.sh
+cd $AIRAVATA_HOME/bin
+LOGO_FILE="logo.txt"
+if [ -e $LOGO_FILE ]
+then
+	cat $LOGO_FILE
+fi
 cd $AIRAVATA_HOME/standalone-server/bin
+
 ./axis2server.sh $*
