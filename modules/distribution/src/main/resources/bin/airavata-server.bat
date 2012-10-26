@@ -18,6 +18,9 @@ rem under the License.
 
 setlocal EnableDelayedExpansion
 call "%~dp0"setenv.bat
+cd "%AIRAVATA_HOME%\bin"
+set LOGO_FILE="logo.txt"
+if exist "%LOGO_FILE%" type "%LOGO_FILE%"
 cd "%AIRAVATA_HOME%\standalone-server\bin"
 call axis2server.bat %*
 cd "%AIRAVATA_HOME%\bin"
