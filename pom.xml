@@ -587,6 +587,15 @@
                     <plugin>
                         <groupId>org.apache.rat</groupId>
                         <artifactId>apache-rat-plugin</artifactId>
+                                <configuration>
+          <excludes>
+            <exclude>**/target/**/*</exclude>
+            <exclude>**/.settings/**/*</exclude>
+            <exclude>**/.project</exclude>
+            <exclude>**/.classpath</exclude>
+            <exclude>**/logo.txt</exclude>
+          </excludes>
+        </configuration>
                         <executions>
                             <execution>
                                 <phase>verify</phase>
