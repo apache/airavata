@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata-ws-messenger</artifactId>
-        <version>0.5-SNAPSHOT</version>
+        <version>0.5</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -81,8 +81,7 @@
 						<phase>prepare-package</phase>
 						<configuration>
 							<tasks>
-								<copy file="${project.build.outputDirectory}/services.xml"
-									tofile="${project.build.outputDirectory}/META-INF/services.xml" />
+								<copy file="${project.build.outputDirectory}/services.xml" tofile="${project.build.outputDirectory}/META-INF/services.xml" />
 							</tasks>
 						</configuration>
 						<goals>
