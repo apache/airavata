@@ -33,9 +33,9 @@
     <inceptionYear>2011</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/airavata/trunk/</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/airavata/trunk/</developerConnection>
-        <url>http://svn.apache.org/viewvc/airavata/trunk/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/airavata/branches/0.5/</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/airavata/branches/0.5/</developerConnection>
+        <url>http://svn.apache.org/viewvc/airavata/branches/0.5/</url>
     </scm>
 
     <mailingLists>
@@ -587,6 +587,15 @@
                     <plugin>
                         <groupId>org.apache.rat</groupId>
                         <artifactId>apache-rat-plugin</artifactId>
+                                <configuration>
+          <excludes>
+            <exclude>**/target/**/*</exclude>
+            <exclude>**/.settings/**/*</exclude>
+            <exclude>**/.project</exclude>
+            <exclude>**/.classpath</exclude>
+            <exclude>**/logo.txt</exclude>
+          </excludes>
+        </configuration>
                         <executions>
                             <execution>
                                 <phase>verify</phase>
