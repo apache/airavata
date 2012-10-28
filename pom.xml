@@ -33,9 +33,9 @@
     <inceptionYear>2011</inceptionYear>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/airavata/trunk/</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/airavata/trunk/</developerConnection>
-        <url>http://svn.apache.org/viewvc/airavata/trunk/</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/airavata/branches/0.5/</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/airavata/branches/0.5/</developerConnection>
+        <url>http://svn.apache.org/viewvc/airavata/branches/0.5/</url>
     </scm>
 
     <mailingLists>
