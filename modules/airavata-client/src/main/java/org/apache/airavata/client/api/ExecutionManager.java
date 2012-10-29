@@ -32,7 +32,7 @@ import org.apache.airavata.xbaya.monitor.MonitorEventListener;
 
 public interface ExecutionManager {
     /**
-     * Run an experiment containing single workflow 
+     * Run an experiment containing single workflow
      * @param workflowTemplateId
      * @param inputs
      * @return
@@ -62,6 +62,18 @@ public interface ExecutionManager {
 	public abstract String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName)throws AiravataAPIInvocationException;
 
 	/**
+     * Run an experiment containing single workflow
+     * @param workflowTemplateId
+     * @param inputs
+     * @param user
+     * @param metadata
+     * @param workflowInstanceName
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
+	public abstract String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, String experimentName)throws AiravataAPIInvocationException;
+
+	/**
 	 * Run an experiment containing single workflow
 	 * @param workflowTemplateId
 	 * @param inputs
@@ -73,7 +85,7 @@ public interface ExecutionManager {
 	 * @throws AiravataAPIInvocationException
 	 */
 	public abstract String runExperiment(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)throws AiravataAPIInvocationException;
-	
+
     /**
      * Run an experiment containing single workflow
      * @param workflow
@@ -101,11 +113,11 @@ public interface ExecutionManager {
      * @throws AiravataAPIInvocationException
      */
 	public Monitor getExperimentMonitor(String experimentId, MonitorEventListener listener) throws AiravataAPIInvocationException;
-	
+
 	/**
 	 * Creates a WorkflowContextHeaderBuilder object that can be used to customize the scheduling of a workflow execution.
-	 * Once configured this object run the workflow using 
-	 *   <code>runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)</code>  
+	 * Once configured this object run the workflow using
+	 *   <code>runWorkflow(String workflowTemplateId,List<WorkflowInput> inputs, String user, String metadata, String workflowInstanceName, WorkflowContextHeaderBuilder builder)</code>
 	 * @return
 	 * @throws AiravataAPIInvocationException
 	 */
