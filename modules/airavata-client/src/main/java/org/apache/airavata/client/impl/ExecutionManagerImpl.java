@@ -38,11 +38,11 @@ import org.apache.airavata.xbaya.monitor.MonitorEventListener;
 
 public class ExecutionManagerImpl implements ExecutionManager {
 	private AiravataClient client;
-	
+
 	public ExecutionManagerImpl(AiravataClient client) {
 		setClient(client);
 	}
-	
+
 	@Override
 	public String runExperiment(String workflowTemplateId,
 			List<WorkflowInput> inputs) throws AiravataAPIInvocationException {
@@ -89,7 +89,7 @@ public class ExecutionManagerImpl implements ExecutionManager {
 			throws AiravataAPIInvocationException {
 		return getClient().getWorkflowExecutionMonitor(experimentId,listener);
 	}
-	
+
 	public AiravataClient getClient() {
 		return client;
 	}
@@ -133,5 +133,17 @@ public class ExecutionManagerImpl implements ExecutionManager {
         }
         return  ec;
     }
+
+	@Override
+	public String runExperiment(String workflowName,
+			List<WorkflowInput> inputs, String user, String metadata,
+			String workflowInstanceName, String experimentName)
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().runWorkflow(workflowName, inputs, user, metadata, workflowInstanceName,experimentName);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
 
 }

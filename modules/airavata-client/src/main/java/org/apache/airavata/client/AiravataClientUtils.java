@@ -35,18 +35,18 @@ public class AiravataClientUtils {
 	public static AiravataAPI getAPI(URI registryURL, String username, String password) throws MalformedURLException, RepositoryException, RegistryException{
 		return getAPI(registryURL, username, password, username);
 	}
-	
+
 	public static AiravataAPI getAPI(URI registryURL, String username, String password, String alternateUsername) throws MalformedURLException, RepositoryException, RegistryException{
-		AiravataClient apiObj = new AiravataClient(registryURL, username, password);
+		AiravataClient apiObj = new AiravataClient();
 		apiObj.setCurrentUser(alternateUsername);
 		return apiObj;
 	}
-	
+
 	public static AiravataAPI getAPI(Map<String,String> configuration) throws MalformedURLException{
 		AiravataClient apiObj = new AiravataClient(configuration);
 		return apiObj;
 	}
-	
+
 	public static AiravataAPI getAPI(String filename) throws MalformedURLException, RegistryException, IOException{
 		AiravataClient apiObj = new AiravataClient(filename);
 		return apiObj;
