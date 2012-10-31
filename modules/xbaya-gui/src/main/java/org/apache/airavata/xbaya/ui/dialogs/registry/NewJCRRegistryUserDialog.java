@@ -25,11 +25,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Properties;
 
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
+import javax.swing.*;
 
+import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
+import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
+import org.apache.airavata.persistance.registry.jpa.resources.Utils;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -44,7 +49,7 @@ public class NewJCRRegistryUserDialog {
 
     private XBayaDialog dialog;
 
-    private XBayaTextField urlTextField;
+//    private XBayaTextField urlTextField;
 
     private XBayaTextField usernameTextField;
 
@@ -63,6 +68,7 @@ public class NewJCRRegistryUserDialog {
     private JButton okButton;
 
     private boolean userCreated = false;
+//    public static final String GATEWAY_ID = "gateway.id";
 
     public NewJCRRegistryUserDialog(XBayaEngine engine) {
         this(engine, null, null);
@@ -94,12 +100,12 @@ public class NewJCRRegistryUserDialog {
     }
 
     private void hide() {
-        setUserCreated(false);
+//        setUserCreated(false);
         this.dialog.hide();
     }
 
     private void setData() {
-        updateURL();
+//        updateURL();
         updateUsername();
         updatePassword();
     }
@@ -109,21 +115,33 @@ public class NewJCRRegistryUserDialog {
         String status = updateStatus();
         if (status == null) {
             try {
-                JCRComponentRegistry registry = new JCRComponentRegistry(getUsername(),getPassword());
-            } catch (RegistryException e) {
+//                Properties properties = Utils.loadProperties();
+                GatewayResource gatewayResource = (GatewayResource)ResourceUtils.getGateway(getGatewayName());
+                UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
+                userResource.setUserName(getUsername());
+                userResource.setPassword(getPassword());
+                userResource.save();
+                WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
+                workerResource.setUser(userResource.getUserName());
+                workerResource.save();
+                setUserCreated(true);
+//                JCRComponentRegistry registry = new JCRComponentRegistry(getUsername(),getPassword());
+            } catch (Exception e) {
                 e.printStackTrace();
                 engine.getGUI().getErrorWindow().error(e.getMessage());
             }
         } else {
             engine.getGUI().getErrorWindow().error(status);
         }
+        close();
     }
 
     private String updateStatus() {
         String msg = null;
-        if (getUrl() == null) {
-            msg = "The url cannot be empty";
-        } else if (getUsername() == null || getUsername().equals("")) {
+//        if (getUrl() == null) {
+//            msg = "The url cannot be empty";
+//        } else
+        if (getUsername() == null || getUsername().equals("")) {
             msg = "Username cannot be empty";
         } else if (getPassword() == null || getPassword().equals("")) {
             msg = "Passwords must match or cannot be empty";
@@ -136,18 +154,18 @@ public class NewJCRRegistryUserDialog {
      * Initializes the GUI.
      */
     private void initGUI() {
-        this.urlTextField = new XBayaTextField();
+//        this.urlTextField = new XBayaTextField();
         this.usernameTextField = new XBayaTextField();
         this.passwordTextField = new JPasswordField();
         this.confirmPasswordTextField = new JPasswordField();
-        XBayaLabel urlLabel = new XBayaLabel("URL", this.urlTextField);
+//        XBayaLabel urlLabel = new XBayaLabel("URL", this.urlTextField);
         XBayaLabel userLabel = new XBayaLabel("Username", this.usernameTextField);
         XBayaLabel passLabel = new XBayaLabel("Password", this.passwordTextField);
         XBayaLabel confirmPassLabel = new XBayaLabel("Confirm Password", this.confirmPasswordTextField);
 
         GridPanel infoPanel = new GridPanel();
-        infoPanel.add(urlLabel);
-        infoPanel.add(this.urlTextField);
+//        infoPanel.add(urlLabel);
+//        infoPanel.add(this.urlTextField);
         infoPanel.add(userLabel);
         infoPanel.add(this.usernameTextField);
         infoPanel.add(passLabel);
@@ -155,15 +173,16 @@ public class NewJCRRegistryUserDialog {
         infoPanel.add(confirmPassLabel);
         infoPanel.add(this.confirmPasswordTextField);
 
-        infoPanel.layout(4, 2, GridPanel.WEIGHT_NONE, 1);
+//        infoPanel.layout(4, 2, GridPanel.WEIGHT_NONE, 1);
+        infoPanel.layout(3, 2, GridPanel.WEIGHT_NONE, 1);
 
-        urlTextField.getSwingComponent().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                updateURL();
-                updateStatus();
-            }
-
-        });
+//        urlTextField.getSwingComponent().addActionListener(new ActionListener() {
+//            public void actionPerformed(ActionEvent event) {
+//                updateURL();
+//                updateStatus();
+//            }
+//
+//        });
 
         usernameTextField.getSwingComponent().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
@@ -205,7 +224,7 @@ public class NewJCRRegistryUserDialog {
         buttonPanel.add(okButton);
         buttonPanel.add(cancelButton);
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "JCR Registry New User", infoPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Registry New User", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
         updateControlData();
     }
@@ -222,9 +241,9 @@ public class NewJCRRegistryUserDialog {
         if (usernameTextField != null && getUsername() != null) {
             usernameTextField.setText(getUsername());
         }
-        if (urlTextField != null && getUrl() != null) {
-            urlTextField.setText(getUrl().toString());
-        }
+//        if (urlTextField != null && getUrl() != null) {
+//            urlTextField.setText(getUrl().toString());
+//        }
     }
 
     public URL getUrl() {
@@ -243,15 +262,15 @@ public class NewJCRRegistryUserDialog {
         this.password = password;
     }
 
-    private void updateURL() {
-        URL specifiedURL = null;
-        try {
-            specifiedURL = new URL(urlTextField.getText());
-        } catch (MalformedURLException e) {
-            // erroneious url, ignore it
-        }
-        setUrl(specifiedURL);
-    }
+//    private void updateURL() {
+//        URL specifiedURL = null;
+//        try {
+//            specifiedURL = new URL(urlTextField.getText());
+//        } catch (MalformedURLException e) {
+//            // erroneious url, ignore it
+//        }
+//        setUrl(specifiedURL);
+//    }
 
     private void updateUsername() {
         setUsername(usernameTextField.getText());
@@ -282,4 +301,10 @@ public class NewJCRRegistryUserDialog {
     public void setGatewayName(String gatewayName) {
         this.gatewayName = gatewayName;
     }
+
+    public void close() {
+        hide();
+    }
+
+
 }

@@ -372,8 +372,10 @@ public class WorkflowInterpreterLaunchWindow {
                             configuration.getGFacURL().toASCIIString(),configuration.getRegistryURL().toASCIIString(),configuration.getTopic()
                             ,null,configuration.getMessageBoxURL().toASCIIString());
                     stub._getServiceClient().addHeader(AXIOMUtil.stringToOM(XMLUtil.xmlElementToString(builder.getXml())));
-                    stub.launchWorkflow(workflow.toXMLText(), topicString,inputNameVals);
-                    engine.getConfiguration().getJcrComponentRegistry().getRegistry().updateExperimentName(topicString, instanceNameFinal);
+                    stub.launchWorkflow(workflow.toXMLText(), topicString, inputNameVals);
+                    AiravataRegistry2 registry = engine.getConfiguration().getJcrComponentRegistry().getRegistry();
+                    registry.updateExperimentName(topicString, instanceNameFinal);
+                    registry.updateExperimentExecutionUser(topicString, registry.getUser().getUserName());
                 } catch (Exception e) {
                     WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e);
                 }
