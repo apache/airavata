@@ -127,13 +127,13 @@ public class JCRRegistryWindow {
         if (newUserWindow == null) {
             newUserWindow = new NewJCRRegistryUserDialog(engine);
         }
-        newUserWindow.setUrl(specifiedURL);
+//        newUserWindow.setUrl(specifiedURL);
         newUserWindow.setUsername(usernameTextField.getText());
         newUserWindow.updateControlData();
         newUserWindow.show();
         if (newUserWindow.isUserCreated()) {
-            urlTextField.setText(newUserWindow.getUrl().toString());
-            usernameTextField.setText(newUserWindow.getUrl().toString());
+//            urlTextField.setText(newUserWindow.getUrl().toString());
+            usernameTextField.setText(newUserWindow.getUsername());
             passwordTextField.setText(newUserWindow.getPassword());
         }
     }
@@ -171,7 +171,8 @@ public class JCRRegistryWindow {
         infoPanel.add(emptyLabel);
         infoPanel.add(this.newUserButton);
         infoPanel.layout(3, 2, GridPanel.WEIGHT_NONE, 1);
-        
+//        infoPanel.layout(2, 2, GridPanel.WEIGHT_NONE, 1);
+
         infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
         JButton okButton = new JButton("OK");
