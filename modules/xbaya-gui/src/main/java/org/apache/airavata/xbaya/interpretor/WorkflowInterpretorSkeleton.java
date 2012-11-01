@@ -353,7 +353,7 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
             try {
              //   if(listener != null)
              //   listener.stop();
-            } catch (MonitorException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
