@@ -190,11 +190,6 @@ public interface WorkflowManager {
     public List<String> getWorkflowServiceNodeIDs(String templateID) throws AiravataAPIInvocationException;
     
 
-    
-    
-    //---------------------------------------------------------------------------------
-    
-    
 	public boolean isPublishedWorkflowExists(String workflowName) throws AiravataAPIInvocationException;
 	public void publishWorkflow(String workflowName, String publishWorkflowName) throws AiravataAPIInvocationException;
 	public void publishWorkflow(String workflowName) throws AiravataAPIInvocationException;
