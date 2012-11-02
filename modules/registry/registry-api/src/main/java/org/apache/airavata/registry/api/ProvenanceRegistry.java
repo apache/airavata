@@ -262,6 +262,8 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
 	public ExperimentData getExperimentMetaInformation(String experimentId)throws RegistryException;
 	
 	public List<ExperimentData> getAllExperimentMetaInformation(String user)throws RegistryException;
+	
+	public List<ExperimentData> searchExperiments(String user, String experimentNameRegex)throws RegistryException;
     
     /**
      * Return experiment ids of experiments launched by the given user
@@ -326,4 +328,5 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
     public void updateWorkflowNodeType(WorkflowInstanceNode node, WorkflowNodeType type) throws RegistryException;
     
     public void addWorkflowInstanceNode(String workflowInstance, String nodeId) throws RegistryException;
+    
 }

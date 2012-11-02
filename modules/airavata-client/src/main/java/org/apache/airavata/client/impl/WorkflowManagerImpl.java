@@ -22,15 +22,18 @@
 package org.apache.airavata.client.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.WorkflowManager;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.workflow.model.wf.WorkflowData;
+import org.apache.airavata.workflow.model.wf.WorkflowInput;
 
 public class WorkflowManagerImpl implements WorkflowManager {
 	private AiravataClient client;
@@ -211,6 +214,119 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	@Override
 	public List<String> getWorkflowServiceNodeIDs(String templateID) throws AiravataAPIInvocationException{
         return getWorkflow(templateID).getWorkflowServiceNodeIDs();
+	}
+
+	@Override
+	public boolean isPublishedWorkflowExists(String workflowName)
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistry().isPublishedWorkflowExists(workflowName);
+		} catch (RegistryException e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public void publishWorkflow(String workflowName, String publishWorkflowName)
+			throws AiravataAPIInvocationException {
+		try {
+			getClient().getRegistry().publishWorkflow(workflowName, publishWorkflowName);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public void publishWorkflow(String workflowName)
+			throws AiravataAPIInvocationException {
+		try {
+			getClient().getRegistry().publishWorkflow(workflowName);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public String getPublishedWorkflowGraphXML(String workflowName)
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistry().getPublishedWorkflowGraphXML(workflowName);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+	
+	@Override
+	public Workflow getPublishedWorkflow(String workflowName)
+			throws AiravataAPIInvocationException {
+		return getWorkflowFromString(getPublishedWorkflowGraphXML(workflowName));
+	}
+
+	@Override
+	public List<String> getPublishedWorkflowNames()
+			throws AiravataAPIInvocationException {
+		try {
+			return getClient().getRegistry().getPublishedWorkflowNames();
+		} catch (RegistryException e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public Map<String, Workflow> getPublishedWorkflows()
+			throws AiravataAPIInvocationException {
+		try {
+			Map<String, Workflow> workflows=new HashMap<String, Workflow>();
+			Map<String, String> publishedWorkflows = getClient().getRegistry().getPublishedWorkflows();
+			for (String name : publishedWorkflows.keySet()) {
+				workflows.put(name, getWorkflowFromString(publishedWorkflows.get(name)));
+			}
+			return workflows;
+		} catch (RegistryException e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public void removePublishedWorkflow(String workflowName)
+			throws AiravataAPIInvocationException {
+		try {
+			getClient().getRegistry().removePublishedWorkflow(workflowName);
+		} catch (Exception e) {
+			throw new AiravataAPIInvocationException(e);
+		}
+	}
+
+	@Override
+	public List<WorkflowInput> getWorkflowInputs(String workflowName) throws AiravataAPIInvocationException, Exception {
+		return getWorkflow(workflowName).getWorkflowInputs();
+	}
+
+	@Override
+	public List<WorkflowInput> getWorkflowInputs(WorkflowData workflowData) throws AiravataAPIInvocationException, Exception {
+		if (workflowData.isPublished()){
+			return getWorkflowFromString(getClient().getRegistry().getPublishedWorkflowGraphXML(workflowData.getName())).getWorkflowInputs();
+		}else{
+			return getWorkflowInputs(workflowData.getName());
+		}
+	}
+
+	@Override
+	public List<WorkflowData> getAllWorkflows() throws AiravataAPIInvocationException {
+		List<WorkflowData> list = new ArrayList<WorkflowData>();
+		List<String> workflowTemplateIds = getWorkflowTemplateIds();
+		try {
+			for (String id : workflowTemplateIds) {
+				list.add(new WorkflowData(id,null,false));
+			}
+			List<String> publishedWorkflowNames = getClient().getRegistry().getPublishedWorkflowNames();
+			for (String id : publishedWorkflowNames) {
+				list.add(new WorkflowData(id,null,false));
+			}
+			return list;
+		} catch (RegistryException e) {
+			throw new AiravataAPIInvocationException(e);
+		}
 	}
 
 }

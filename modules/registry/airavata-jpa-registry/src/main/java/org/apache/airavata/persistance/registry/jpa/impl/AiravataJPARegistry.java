@@ -22,27 +22,43 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.sql.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.persistance.registry.jpa.JPAResourceAccessor;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.resources.*;
+import org.apache.airavata.persistance.registry.jpa.resources.ApplicationDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ConfigurationResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentDataResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentDataRetriever;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentMetadataResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
+import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.GramDataResource;
+import org.apache.airavata.persistance.registry.jpa.resources.HostDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.NodeDataResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
+import org.apache.airavata.persistance.registry.jpa.resources.PublishWorkflowResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ServiceDescriptorResource;
+import org.apache.airavata.persistance.registry.jpa.resources.UserWorkflowResource;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkflowDataResource;
 import org.apache.airavata.registry.api.AiravataExperiment;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.registry.api.ResourceMetadata;
 import org.apache.airavata.registry.api.WorkspaceProject;
+import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.gateway.DescriptorDoesNotExistsException;
@@ -1384,6 +1400,21 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			throws RegistryException {
         ExperimentDataRetriever experimentDataRetriever = new ExperimentDataRetriever();
         return experimentDataRetriever.getAllExperimentMetaInformation(user);
+	}
+
+
+	@Override
+	public List<ExperimentData> searchExperiments(String user, String experimentNameRegex)
+			throws RegistryException {
+		Pattern pattern = Pattern.compile(experimentNameRegex);
+		List<ExperimentData> filteredExperiments=new ArrayList<ExperimentData>();
+		List<ExperimentData> allExperimentMetaInformation = getAllExperimentMetaInformation(user);
+		for (ExperimentData experimentData : allExperimentMetaInformation) {
+			if (experimentData.getExperimentName()!=null && pattern.matcher(experimentData.getExperimentName()).find()){
+				filteredExperiments.add(experimentData);
+			}
+		}
+		return filteredExperiments;
 	}
 
 
