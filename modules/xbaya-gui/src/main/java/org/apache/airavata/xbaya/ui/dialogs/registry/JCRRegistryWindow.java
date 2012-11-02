@@ -57,7 +57,7 @@ public class JCRRegistryWindow {
 
     private JPasswordField passwordTextField;
 
-    private XBayaLinkButton newUserButton;
+//    private XBayaLinkButton newUserButton;
 
     private NewJCRRegistryUserDialog newUserWindow;
 
@@ -151,15 +151,15 @@ public class JCRRegistryWindow {
         XBayaLabel urlLabel = new XBayaLabel("URL", this.urlTextField);
         XBayaLabel nameLabel = new XBayaLabel("Username", this.usernameTextField);
         XBayaLabel passLabel = new XBayaLabel("Password", this.usernameTextField);
-        this.newUserButton = new XBayaLinkButton("Create new user...");
-        newUserButton.setHorizontalAlignment(XBayaLinkButton.RIGHT);
+//        this.newUserButton = new XBayaLinkButton("Create new user...");
+//        newUserButton.setHorizontalAlignment(XBayaLinkButton.RIGHT);
         JLabel emptyLabel = new JLabel("");
 
-        newUserButton.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                createNewUser();
-            }
-        });
+//        newUserButton.addActionListener(new AbstractAction() {
+//            public void actionPerformed(ActionEvent e) {
+//                createNewUser();
+//            }
+//        });
 
         GridPanel infoPanel = new GridPanel();
 //        infoPanel.add(urlLabel);
@@ -169,8 +169,8 @@ public class JCRRegistryWindow {
         infoPanel.add(passLabel);
         infoPanel.add(this.passwordTextField);
         infoPanel.add(emptyLabel);
-        infoPanel.add(this.newUserButton);
-        infoPanel.layout(3, 2, GridPanel.WEIGHT_NONE, 1);
+//        infoPanel.add(this.newUserButton);
+        infoPanel.layout(2, 2, GridPanel.WEIGHT_NONE, 1);
         
         infoPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
