@@ -22,8 +22,11 @@
 package org.apache.airavata.client.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.workflow.model.wf.WorkflowData;
+import org.apache.airavata.workflow.model.wf.WorkflowInput;
 
 public interface WorkflowManager {
 
@@ -184,6 +187,29 @@ public interface WorkflowManager {
      * @param templateID
      * @return
      */
-    public List<String> getWorkflowServiceNodeIDs(String templateID) throws AiravataAPIInvocationException;;
+    public List<String> getWorkflowServiceNodeIDs(String templateID) throws AiravataAPIInvocationException;
+    
 
+    
+    
+    //---------------------------------------------------------------------------------
+    
+    
+	public boolean isPublishedWorkflowExists(String workflowName) throws AiravataAPIInvocationException;
+	public void publishWorkflow(String workflowName, String publishWorkflowName) throws AiravataAPIInvocationException;
+	public void publishWorkflow(String workflowName) throws AiravataAPIInvocationException;
+	
+	public String getPublishedWorkflowGraphXML(String workflowName) throws AiravataAPIInvocationException;
+	public Workflow getPublishedWorkflow(String workflowName) throws AiravataAPIInvocationException;
+	public List<String> getPublishedWorkflowNames() throws AiravataAPIInvocationException;
+	public Map<String,Workflow> getPublishedWorkflows() throws AiravataAPIInvocationException;
+	
+	public void removePublishedWorkflow(String workflowName)throws AiravataAPIInvocationException;
+
+    public List<WorkflowInput> getWorkflowInputs(String workflowName) throws AiravataAPIInvocationException, Exception;
+    
+    public List<WorkflowInput> getWorkflowInputs(WorkflowData workflowData) throws AiravataAPIInvocationException, Exception;
+    
+    public List<WorkflowData> getAllWorkflows() throws AiravataAPIInvocationException;
+    
 }
