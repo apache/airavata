@@ -263,6 +263,13 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
 	
 	public List<ExperimentData> getAllExperimentMetaInformation(String user)throws RegistryException;
 	
+	/**
+	 * Retrieve experiments which their names match the regular expression experimentNameRegex
+	 * @param user
+	 * @param experimentNameRegex
+	 * @return
+	 * @throws RegistryException
+	 */
 	public List<ExperimentData> searchExperiments(String user, String experimentNameRegex)throws RegistryException;
     
     /**

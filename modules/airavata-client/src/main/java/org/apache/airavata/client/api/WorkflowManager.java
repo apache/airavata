@@ -189,22 +189,89 @@ public interface WorkflowManager {
      */
     public List<String> getWorkflowServiceNodeIDs(String templateID) throws AiravataAPIInvocationException;
     
-
+    /**
+     * Check if the workflow from the given name is published in the system
+     * @param workflowName
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
 	public boolean isPublishedWorkflowExists(String workflowName) throws AiravataAPIInvocationException;
+	
+	/**
+	 * Publish the workflow "workflowName" residing user space to the published space under name  publishWorkflowName
+	 * @param workflowName
+	 * @param publishWorkflowName
+	 * @throws AiravataAPIInvocationException
+	 */
 	public void publishWorkflow(String workflowName, String publishWorkflowName) throws AiravataAPIInvocationException;
+	
+	/**
+	 * Publish the workflow "workflowName" residing user space
+	 * @param workflowName
+	 * @throws AiravataAPIInvocationException
+	 */
 	public void publishWorkflow(String workflowName) throws AiravataAPIInvocationException;
 	
+	/**
+	 * Retrive published workflow
+	 * @param workflowName
+	 * @return
+	 * @throws AiravataAPIInvocationException
+	 */
 	public String getPublishedWorkflowGraphXML(String workflowName) throws AiravataAPIInvocationException;
+	
+	/**
+	 * Retrive published workflow
+	 * @param workflowName
+	 * @return
+	 * @throws AiravataAPIInvocationException
+	 */
 	public Workflow getPublishedWorkflow(String workflowName) throws AiravataAPIInvocationException;
+	
+	/**
+	 * Retrive published workflow names
+	 * @return
+	 * @throws AiravataAPIInvocationException
+	 */
 	public List<String> getPublishedWorkflowNames() throws AiravataAPIInvocationException;
+	
+	/**
+	 * Retrive published workflows
+	 * @return
+	 * @throws AiravataAPIInvocationException
+	 */
 	public Map<String,Workflow> getPublishedWorkflows() throws AiravataAPIInvocationException;
 	
+	/**
+	 * Remove published workflow from the system
+	 * @param workflowName
+	 * @throws AiravataAPIInvocationException
+	 */
 	public void removePublishedWorkflow(String workflowName)throws AiravataAPIInvocationException;
 
-    public List<WorkflowInput> getWorkflowInputs(String workflowName) throws AiravataAPIInvocationException, Exception;
+    /**
+     * get workflow inputs of the workflow
+     * @param workflowName
+     * @return
+     * @throws AiravataAPIInvocationException
+     * @throws Exception
+     */
+	public List<WorkflowInput> getWorkflowInputs(String workflowName) throws AiravataAPIInvocationException, Exception;
     
+    /**
+     * Retrieve the workflow inputs for a workflow
+     * @param workflowData
+     * @return
+     * @throws AiravataAPIInvocationException
+     * @throws Exception
+     */
     public List<WorkflowInput> getWorkflowInputs(WorkflowData workflowData) throws AiravataAPIInvocationException, Exception;
     
+    /**
+     * Retrieve all workflows in published space & user space accessible to the user. 
+     * @return
+     * @throws AiravataAPIInvocationException
+     */
     public List<WorkflowData> getAllWorkflows() throws AiravataAPIInvocationException;
     
 }
