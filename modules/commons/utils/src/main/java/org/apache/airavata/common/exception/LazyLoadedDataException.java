@@ -19,29 +19,12 @@
  *
  */
 
-package org.apache.airavata.registry.api;
+package org.apache.airavata.common.exception;
 
-import org.apache.airavata.common.utils.Version;
+public class LazyLoadedDataException extends AiravataException {
+	private static final long serialVersionUID = -3164776318582067936L;
+	public LazyLoadedDataException(String message) {
+		super(message);
+	}
 
-public interface AiravataSubRegistry {
-
-	public abstract void setAiravataRegistry(AiravataRegistry2 registry);
-
-	public abstract void setAiravataUser(AiravataUser user);
-
-	public abstract void setGateway(Gateway gateway);
-	
-	/**
-	 * Determines whether this registry is active. If true the registry is ready to do the 
-	 * transaction
-	 * @return
-	 */
-	public abstract boolean isActive();
-	
-	/**
-	 * Return the version of the Registry API
-	 * @return
-	 */
-	public Version getVersion();
-	
 }

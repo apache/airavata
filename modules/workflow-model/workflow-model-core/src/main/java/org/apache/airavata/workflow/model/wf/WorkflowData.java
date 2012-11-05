@@ -21,11 +21,22 @@
 
 package org.apache.airavata.workflow.model.wf;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.airavata.common.exception.LazyLoadedDataException;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public class WorkflowData {
 	private String graphXML;
 	private boolean published;
 	private String name;
 	private boolean lazyLoaded;
+	
+	public WorkflowData() {
+	}
 	
 	public WorkflowData(String name, String graphXml, boolean published) {
 		setName(name);
@@ -36,7 +47,7 @@ public class WorkflowData {
 	
 	public String getGraphXML() throws Exception {
 		if (isLazyLoaded()){
-			throw new Exception("This workflow data is lazy loaded. Please use the API to retrieve the workflow graph!!!");
+			throw new LazyLoadedDataException("This workflow data is lazy loaded. Please use the API to retrieve the workflow graph!!!");
 		}
 		return graphXML;
 	}
