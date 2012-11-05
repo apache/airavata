@@ -21,8 +21,14 @@
 
 package org.apache.airavata.common.utils;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public class Version {
-	public final String PROJECT_NAME;
+	public String PROJECT_NAME;
 	private Integer majorVersion=0;
 	private Integer minorVersion=0;
 	private Integer maintenanceVersion;
@@ -33,6 +39,9 @@ public class Version {
 		ALPHA,
 		BETA,
 		RC
+	}
+	
+	public Version() {
 	}
 	
 	public Version(String PROJECT_NAME,Integer majorVersion,Integer minorVersion,Integer maintenanceVersion,String versionData,BuildType buildType) {

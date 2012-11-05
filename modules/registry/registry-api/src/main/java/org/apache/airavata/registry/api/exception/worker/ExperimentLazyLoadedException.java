@@ -21,9 +21,9 @@
 
 package org.apache.airavata.registry.api.exception.worker;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.common.exception.LazyLoadedDataException;
 
-public class ExperimentLazyLoadedException extends RegistryException {
+public class ExperimentLazyLoadedException extends LazyLoadedDataException {
 
 	private static final long serialVersionUID = -8006347245307495767L;
 

@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.airavata.common.utils.Version;
 import org.apache.airavata.commons.gfac.type.ApplicationDeploymentDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
@@ -96,6 +97,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     private JPAResourceAccessor jpa;
     private boolean active=false;
     private static final String DEFAULT_PROJECT_NAME = "default";
+    private static final Version API_VERSION=new Version("Airavata Registry API",0,5,null,null,null);
     
     @Override
     protected void initialize() {
@@ -1417,5 +1419,9 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		return filteredExperiments;
 	}
 
+	@Override
+	public Version getVersion() {
+		return API_VERSION;
+	}
 
 }
