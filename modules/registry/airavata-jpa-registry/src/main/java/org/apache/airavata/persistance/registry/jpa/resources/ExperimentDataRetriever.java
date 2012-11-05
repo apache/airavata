@@ -115,7 +115,7 @@ public class ExperimentDataRetriever {
             workflowInstanceData = new WorkflowInstanceData(null,
                     workflowInstance, new WorkflowInstanceStatus(workflowInstance,
                     createExecutionStatus(wdStatus),lastUpdateDate), null);
-            workflowInstanceData.setExperimentData(experimentData);
+            workflowInstanceData.setExperimentData((ExperimentDataImpl)experimentData);
             experimentData.getWorkflowInstanceData().add(workflowInstanceData);
         }
         WorkflowInstanceNode workflowInstanceNode = new WorkflowInstanceNode(workflowInstanceData.getWorkflowInstance(), rs.getString(10));

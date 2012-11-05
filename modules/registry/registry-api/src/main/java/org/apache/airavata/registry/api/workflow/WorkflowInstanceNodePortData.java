@@ -21,12 +21,21 @@
 
 package org.apache.airavata.registry.api.workflow;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class WorkflowInstanceNodePortData {
 	private WorkflowInstanceNode workflowInstanceNode;
 	private String name;
 	private String value;
-	
-	public WorkflowInstanceNodePortData(WorkflowInstanceNode workflowInstanceNode, String portName, String portValue) {
+
+    public WorkflowInstanceNodePortData() {
+    }
+
+    public WorkflowInstanceNodePortData(WorkflowInstanceNode workflowInstanceNode, String portName, String portValue) {
 		setWorkflowInstanceNode(workflowInstanceNode);
 		setName(portName);
 		setValue(portValue);

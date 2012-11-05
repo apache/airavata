@@ -21,10 +21,18 @@
 
 package org.apache.airavata.registry.api.workflow;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Calendar;
 import java.util.Date;
 
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public class WorkflowInstanceStatus {
+    public WorkflowInstanceStatus() {
+    }
+
     public enum ExecutionStatus {
         STARTED {
             public String toString() {

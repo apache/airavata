@@ -21,11 +21,20 @@
 
 package org.apache.airavata.registry.api.workflow;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public class WorkflowInstanceNode{
 	private WorkflowInstance workflowInstance;
 	private String nodeId;
-	
-	public WorkflowInstanceNode(WorkflowInstance workflowInstance, String nodeId) {
+
+    public WorkflowInstanceNode() {
+    }
+
+    public WorkflowInstanceNode(WorkflowInstance workflowInstance, String nodeId) {
 		setWorkflowInstance(workflowInstance);
 		setNodeId(nodeId);
 	}

@@ -26,17 +26,30 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.airavata.registry.api.impl.ExperimentDataImpl;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public class WorkflowInstanceData {
 	private WorkflowInstance workflowInstance;
-	private ExperimentData experimentData;
+
+    @XmlTransient
+	private ExperimentDataImpl experimentData;
 	private WorkflowInstanceStatus workflowInstanceStatus;
 	
 	private List<WorkflowInstanceNodeData> nodeDataList;
-	
-	public WorkflowInstanceData(ExperimentData experimentData, WorkflowInstance workflowInstance,WorkflowInstanceStatus workflowInstanceStatus,List<WorkflowInstanceNodeData> nodeDataList) {
-		this.experimentData=experimentData;
+
+    public WorkflowInstanceData() {
+    }
+
+    public WorkflowInstanceData(ExperimentData experimentData, WorkflowInstance workflowInstance,WorkflowInstanceStatus workflowInstanceStatus,List<WorkflowInstanceNodeData> nodeDataList) {
+		this.experimentData= (ExperimentDataImpl)experimentData;
 		this.workflowInstance=workflowInstance;
 		this.workflowInstanceStatus=workflowInstanceStatus;
 		this.nodeDataList=nodeDataList;
@@ -102,11 +115,11 @@ public class WorkflowInstanceData {
 		return null;
 	}
 
-	public ExperimentData getExperimentData() {
+	public ExperimentDataImpl getExperimentData() {
 		return experimentData;
 	}
 
-	public void setExperimentData(ExperimentData experimentData) {
+	public void setExperimentData(ExperimentDataImpl experimentData) {
 		this.experimentData = experimentData;
 	}
 

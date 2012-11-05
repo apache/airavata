@@ -21,12 +21,18 @@
 
 package org.apache.airavata.registry.api.workflow;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class WorkflowInstance {
 	private String experimentId;
 	private String workflowInstanceId;
 	private String templateName;
-	
-	public WorkflowInstance(String experimentId,String instanceId) {
+
+    public WorkflowInstance() {
+    }
+
+    public WorkflowInstance(String experimentId,String instanceId) {
 		setExperimentId(experimentId);
 		setWorkflowInstanceId(instanceId);
 	}

@@ -21,19 +21,27 @@
 
 package org.apache.airavata.registry.api.workflow;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class    WorkflowInstanceNodeData{
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class WorkflowInstanceNodeData{
 	private WorkflowInstanceNode workflowInstanceNode;
 	private List<WorkflowInstanceNodePortData> inputData;
 	private List<WorkflowInstanceNodePortData> outputData;
 	private String input;
 	private String output;
     private WorkflowInstanceNodeStatus status;
-	
-	public WorkflowInstanceNodeData(WorkflowInstanceNode workflowInstanceNode) {
+
+    public WorkflowInstanceNodeData() {
+    }
+
+    public WorkflowInstanceNodeData(WorkflowInstanceNode workflowInstanceNode) {
 		setWorkflowInstanceNode(workflowInstanceNode);
 	}
 

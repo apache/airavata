@@ -20,12 +20,18 @@
 */
 package org.apache.airavata.registry.api.workflow;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class WorkflowNodeGramData {
     String NodeID;
     String rsl;
     String invokedHost;
     String gramJobID;
     private String workflowInstanceId;
+
+    public WorkflowNodeGramData() {
+    }
 
     public WorkflowNodeGramData(String workflowInstanceId, String nodeID, String rsl, String invokedHost, String gramJobID) {
         NodeID = nodeID;
