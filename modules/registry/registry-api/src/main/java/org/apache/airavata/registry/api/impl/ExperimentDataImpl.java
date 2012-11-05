@@ -31,6 +31,12 @@ import org.apache.airavata.registry.api.workflow.WorkflowInstanceData;
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus;
 import org.apache.airavata.registry.api.workflow.WorkflowNodeIOData;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public class ExperimentDataImpl implements ExperimentData{
 	private WorkflowInstanceStatus executionStatus;
 	private String user;

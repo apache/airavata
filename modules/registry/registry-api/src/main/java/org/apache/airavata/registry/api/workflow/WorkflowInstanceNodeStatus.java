@@ -26,10 +26,19 @@ import java.util.Date;
 
 import org.apache.airavata.registry.api.workflow.WorkflowInstanceStatus.ExecutionStatus;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public class WorkflowInstanceNodeStatus {
     private ExecutionStatus executionStatus;
     private Date statusUpdateTime = null;
     private WorkflowInstanceNode workflowInstanceNode;
+
+    public WorkflowInstanceNodeStatus() {
+    }
 
     public ExecutionStatus getExecutionStatus() {
         return executionStatus;
