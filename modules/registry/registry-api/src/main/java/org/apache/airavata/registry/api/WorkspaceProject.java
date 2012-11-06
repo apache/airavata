@@ -26,11 +26,21 @@ import java.util.List;
 
 import org.apache.airavata.registry.api.exception.RegistryException;
 
+import javax.xml.bind.annotation.*;
+
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public class WorkspaceProject{
 	private String projectName;
+
+    @XmlTransient
 	private ProjectsRegistry projectsRegistry;
-	
-	public WorkspaceProject(String projectName, ProjectsRegistry registry) {
+
+    public WorkspaceProject() {
+    }
+
+    public WorkspaceProject(String projectName, ProjectsRegistry registry) {
 		setProjectName(projectName);
 		setProjectsRegistry(registry);
 	}
@@ -43,11 +53,11 @@ public class WorkspaceProject{
 		this.projectName = projectName;
 	}
 
-	public ProjectsRegistry getProjectsRegistry() {
+	private ProjectsRegistry getProjectsRegistry() {
 		return projectsRegistry;
 	}
 
-	public void setProjectsRegistry(ProjectsRegistry projectsRegistry) {
+	private void setProjectsRegistry(ProjectsRegistry projectsRegistry) {
 		this.projectsRegistry = projectsRegistry;
 	}
 	

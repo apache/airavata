@@ -21,16 +21,26 @@
 
 package org.apache.airavata.registry.api;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public class AiravataExperiment {
 	private String experimentId;
 	private Date submittedDate;
 	private AiravataUser user;
+//    @XmlAnyElement
 	private WorkspaceProject project;
 	private Gateway gateway;
-	
-	public String getExperimentId() {
+
+    public AiravataExperiment() {
+    }
+
+    public String getExperimentId() {
 		return experimentId;
 	}
 	public void setExperimentId(String experimentId) {
