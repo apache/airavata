@@ -21,10 +21,19 @@
 
 package org.apache.airavata.registry.api;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public class Gateway {
 	private String gatewayName = "default";
-	
-	public Gateway(String gatewayName) {
+
+    public Gateway() {
+    }
+
+    public Gateway(String gatewayName) {
 		setGatewayName(gatewayName);
 	}
 	
