@@ -62,6 +62,7 @@ import org.apache.airavata.xbaya.concurrent.PredicatedTaskRunner;
 import org.apache.airavata.xbaya.monitor.MonitorException;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
@@ -226,6 +227,22 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
 
 	public java.lang.String launchWorkflow(java.lang.String workflowAsString, java.lang.String topic, NameValue[] inputs) throws XMLStreamException {
         OMElement workflowContext = getWorkflowContextHeader();
+        if(workflowContext == null){
+            workflowContext = AXIOMUtil.stringToOM("<wor:context-header xmlns:wor=\"http://schemas.airavata.apache.org/workflow-execution-context\">\n" +
+                "    <wor:soa-service-eprs>\n" +
+                "        <wor:gfac-url></wor:gfac-url>\n" +
+                "        <wor:registry-url></wor:registry-url>\n" +
+                "    </wor:soa-service-eprs>\n" +
+                "    <wor:workflow-monitoring-context>\n" +
+                "        <wor:experiment-id></wor:experiment-id>\n" +
+                "        <wor:workflow-instance-id xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\" />\n" +
+                "        <wor:event-publish-epr></wor:event-publish-epr>\n" +
+                "        <wor:msg-box-epr></wor:msg-box-epr>\n" +
+                "    </wor:workflow-monitoring-context>\n" +
+                "    <wor:workflow-scheduling-context />\n" +
+                "    <wor:security-context />\n" +
+                "</wor:context-header>");
+        }
         Map<String, String> configuration = new HashMap<String, String>();
         WorkflowContextHeaderBuilder workflowContextHeaderBuilder = parseContextHeader(workflowContext, configuration);
         String s = null;
@@ -242,16 +259,32 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         MessageContext currentMessageContext = MessageContext.getCurrentMessageContext();
         SOAPHeader header = currentMessageContext.getEnvelope().getHeader();
         Iterator childrenWithName = header.getChildrenWithName(new QName("http://schemas.airavata.apache.org/workflow-execution-context", "context-header"));
-        return (OMElement)childrenWithName.next();
+        if (childrenWithName.hasNext()) {
+            return (OMElement) childrenWithName.next();
+        } else {
+            return null;
+        }
     }
 
     private WorkflowContextHeaderBuilder parseContextHeader(OMElement workflowContext, Map<String, String> configuration) throws XMLStreamException {
         ContextHeaderDocument parse = null;
         try {
             parse = ContextHeaderDocument.Factory.parse(workflowContext.toStringWithConsume());
-            configuration.put(BROKER, parse.getContextHeader().getWorkflowMonitoringContext().getEventPublishEpr());
-            configuration.put(GFAC, parse.getContextHeader().getSoaServiceEprs().getGfacUrl());
-            configuration.put(MSGBOX, parse.getContextHeader().getWorkflowMonitoringContext().getMsgBoxEpr());
+            String msgBox = parse.getContextHeader().getWorkflowMonitoringContext().getEventPublishEpr();
+            if(msgBox == null || "".equals(msgBox)){
+                msgBox = jcrComponentRegistry.getRegistry().getMessageBoxURI().toASCIIString();
+            }
+            String msgBroker = parse.getContextHeader().getSoaServiceEprs().getGfacUrl();
+            if(msgBroker == null || "".equals(msgBroker)){
+                msgBroker = jcrComponentRegistry.getRegistry().getEventingServiceURI().toASCIIString();
+            }
+            String gfac =  parse.getContextHeader().getWorkflowMonitoringContext().getMsgBoxEpr();
+            if(gfac == null || "".equals(gfac)){
+                gfac = jcrComponentRegistry.getRegistry().getGFacURIs().get(0).toString();
+            }
+            configuration.put(BROKER, msgBroker);
+            configuration.put(GFAC, gfac);
+            configuration.put(MSGBOX, msgBox);
         } catch (XmlException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
