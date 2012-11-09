@@ -270,15 +270,15 @@ public class WorkflowInterpretorSkeleton implements ServiceLifeCycle {
         ContextHeaderDocument parse = null;
         try {
             parse = ContextHeaderDocument.Factory.parse(workflowContext.toStringWithConsume());
-            String msgBox = parse.getContextHeader().getWorkflowMonitoringContext().getEventPublishEpr();
+            String msgBox = parse.getContextHeader().getWorkflowMonitoringContext().getMsgBoxEpr();
             if(msgBox == null || "".equals(msgBox)){
                 msgBox = jcrComponentRegistry.getRegistry().getMessageBoxURI().toASCIIString();
             }
-            String msgBroker = parse.getContextHeader().getSoaServiceEprs().getGfacUrl();
+            String msgBroker = parse.getContextHeader().getWorkflowMonitoringContext().getEventPublishEpr();
             if(msgBroker == null || "".equals(msgBroker)){
                 msgBroker = jcrComponentRegistry.getRegistry().getEventingServiceURI().toASCIIString();
             }
-            String gfac =  parse.getContextHeader().getWorkflowMonitoringContext().getMsgBoxEpr();
+            String gfac =  parse.getContextHeader().getSoaServiceEprs().getGfacUrl();
             if(gfac == null || "".equals(gfac)){
                 gfac = jcrComponentRegistry.getRegistry().getGFacURIs().get(0).toString();
             }
