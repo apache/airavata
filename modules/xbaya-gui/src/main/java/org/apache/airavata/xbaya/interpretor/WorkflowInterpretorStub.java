@@ -267,7 +267,6 @@ public class WorkflowInterpretorStub extends org.apache.axis2.client.Stub {
                 .createClient(_operations[0].getName());
         _operationClient.getOptions().setAction("urn:launchWorkflow");
         _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
-        _operationClient.getOptions().setProperty(Constants.Configuration.ENABLE_REST, Constants.VALUE_TRUE);
 
         addPropertyToOperationClient(_operationClient,
                 org.apache.axis2.description.WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR, "&");
