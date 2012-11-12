@@ -838,7 +838,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 	}
 
 	@Override
-	public boolean updateExperimentExecutionUser(String experimentId,
+	public void updateExperimentExecutionUser(String experimentId,
 			String user) throws RegistryException {
 		if (!isExperimentExists(experimentId, true)){
 			throw new ExperimentDoesNotExistsException(experimentId);
@@ -847,7 +847,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 		ExperimentDataResource data = experiment.getData();
 		data.setUserName(user);
 		data.save();
-		return true;
 	}
 
 
@@ -908,7 +907,7 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 
 	@Override
-	public boolean updateExperimentMetadata(String experimentId, String metadata)
+	public void updateExperimentMetadata(String experimentId, String metadata)
 			throws RegistryException {
 		if (!isExperimentExists(experimentId, true)){
 			throw new ExperimentDoesNotExistsException(experimentId);
@@ -924,7 +923,6 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 			experimentMetadata.setMetadata(metadata);
 		}
 		experimentMetadata.save();
-		return true;
 	}
 
 

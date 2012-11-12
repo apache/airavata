@@ -59,7 +59,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-	public abstract boolean updateExperimentExecutionUser(String experimentId, String user) throws RegistryException;
+	public abstract void updateExperimentExecutionUser(String experimentId, String user) throws RegistryException;
     
     /**
      * Retrieve the user who is runing the experiment
@@ -108,7 +108,7 @@ public interface ProvenanceRegistry extends AiravataSubRegistry{
      * @return
      * @throws RegistryException
      */
-    public abstract boolean updateExperimentMetadata(String experimentId, String metadata) throws RegistryException;
+    public abstract void updateExperimentMetadata(String experimentId, String metadata) throws RegistryException;
     
     /**
      * Return the template name of the workflow that this intance was created from
