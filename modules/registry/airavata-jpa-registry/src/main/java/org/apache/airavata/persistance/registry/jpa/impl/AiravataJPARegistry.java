@@ -809,6 +809,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         setUser(user);
     }
 
+    @Override
+    public AiravataUser getAiravataUser() {
+        return getUser();
+    }
+
     /**---------------------------------Provenance Registry----------------------------------**/
 
 	@Override

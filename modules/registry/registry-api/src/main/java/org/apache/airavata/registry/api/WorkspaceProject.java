@@ -33,9 +33,11 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement
 public class WorkspaceProject{
 	private String projectName;
+    private Gateway gateway;
+    private AiravataUser airavataUser;
 
     @XmlTransient
-	private ProjectsRegistry projectsRegistry;
+    private ProjectsRegistry projectsRegistry;
 
     public WorkspaceProject() {
     }
@@ -43,6 +45,8 @@ public class WorkspaceProject{
     public WorkspaceProject(String projectName, ProjectsRegistry registry) {
 		setProjectName(projectName);
 		setProjectsRegistry(registry);
+        setGateway(registry.getGateway());
+        setAiravataUser(registry.getAiravataUser());
 	}
 	
 	public String getProjectName() {
@@ -53,11 +57,11 @@ public class WorkspaceProject{
 		this.projectName = projectName;
 	}
 
-	private ProjectsRegistry getProjectsRegistry() {
+	public ProjectsRegistry getProjectsRegistry() {
 		return projectsRegistry;
 	}
 
-	private void setProjectsRegistry(ProjectsRegistry projectsRegistry) {
+	public void setProjectsRegistry(ProjectsRegistry projectsRegistry) {
 		this.projectsRegistry = projectsRegistry;
 	}
 	
@@ -72,4 +76,20 @@ public class WorkspaceProject{
 	public List<AiravataExperiment> getExperiments(Date from, Date to) throws RegistryException{
 		return getProjectsRegistry().getExperiments(getProjectName(),from, to);
 	}
+
+    public Gateway getGateway() {
+        return gateway;
+    }
+
+    public AiravataUser getAiravataUser() {
+        return airavataUser;
+    }
+
+    public void setGateway(Gateway gateway) {
+        this.gateway = gateway;
+    }
+
+    public void setAiravataUser(AiravataUser airavataUser) {
+        this.airavataUser = airavataUser;
+    }
 }
