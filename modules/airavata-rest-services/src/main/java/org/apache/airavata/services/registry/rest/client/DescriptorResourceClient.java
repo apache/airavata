@@ -471,7 +471,7 @@ public class DescriptorResourceClient {
         return applicationDeploymentDescriptionMap;
     }
 
-    private List<String> getApplicationDescriptorNames (){
+    public List<String> getApplicationDescriptorNames (){
         webResource = getDescriptorRegistryBaseResource().path(ResourcePathConstants.DecResourcePathConstants.APP_DESC_NAMES);
         ClientResponse response = webResource.accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
