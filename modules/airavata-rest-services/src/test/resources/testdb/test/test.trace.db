@@ -1,0 +1,6 @@
+09-04 16:20:30 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "TABLE" not found; SQL statement:
+delete table session [42102-168]
+09-04 16:20:40 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "TABLE" not found; SQL statement:
+delete table session [42102-168]

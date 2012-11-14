@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<!--
+This file contains a sample authenticator configuration. We can define all authenticators in this file. Each authenticator
+configuration has to start with tag "authenticator". The name is the name given to the authenticator. The actual
+authenticator implementation is implemented in the class. There are configurations specific to authenticators.
+Those configurations are reside inside &lt;specificConfigurations&gt; tags.
+
+The "enabled parameter at root level will say whether authenticators are enabled or not.
+-->
+
+<authenticators enabled="true">
+    <authenticator name="sessionAuthenticator" class="org.apache.airavata.services.registry.rest.security.session.SessionAuthenticator"
+                   enabled="true" priority="6" userstore="org.apache.airavata.security.userstore.SessionDBUserStore">
+        <specificConfigurations>
+            <database>
+                <!--jdbcUrl>jdbc:h2:modules/commons/airavata-registry-rest/src/test/resources/testdb/test</jdbcUrl-->
+                <!-- Points to /Users/thejaka/development/apache/airavata/trunk/modules/commons/airavata-registry-rest/target/tomcat6x/. -->
+                <jdbcUrl>jdbc:h2:../../src/test/resources/testdb/test</jdbcUrl>
+                <userName>sa</userName>
+                <password>sa</password>
+                <databaseDriver>org.h2.Driver</databaseDriver>
+                <sessionTable>Persons</sessionTable>
+                <sessionColumn>sessionId</sessionColumn>
+                <comparingColumn>sessionId</comparingColumn>
+            </database>
+        </specificConfigurations>
+    </authenticator>
+
+    <authenticator name="basicAccessAuthenticator" class="org.apache.airavata.services.registry.rest.security.basic.BasicAccessAuthenticator"
+                   enabled="true" priority="7" userstore="org.apache.airavata.security.userstore.JDBCUserStore">
+        <specificConfigurations>
+            <database>
+                <!--jdbcUrl>jdbc:h2:modules/commons/airavata-registry-rest/src/test/resources/testdb/test</jdbcUrl-->
+                <jdbcUrl>jdbc:mysql://localhost/airavata</jdbcUrl>
+                <userName>root</userName>
+                <password>root123</password>
+                <databaseDriver>com.mysql.jdbc.Driver</databaseDriver>
+                <userTableName>AIRAVATA_USER</userTableName>
+                <userNameColumnName>USERID</userNameColumnName>
+                <passwordColumnName>PASSWORD</passwordColumnName>
+            </database>
+        </specificConfigurations>
+    </authenticator>
+
+    <authenticator name="basicAccessAuthenticatorLdap" class="org.apache.airavata.services.registry.rest.security.basic.BasicAccessAuthenticator"
+                   enabled="true" priority="8" userstore="org.apache.airavata.security.userstore.LDAPUserStore">
+        <specificConfigurations>
+            <ldap>
+                <!--
+                url - The URL which LDAP server is listening for requests
+                systemUser - The DN of the LDAP server connection user
+                systemUserPassword - The password of the LDAP server connection user
+                userDNTemplate - The DN structure of the users in LDAP
+            -->
+                <url>ldap://localhost:10389</url>
+                <systemUser>admin</systemUser>
+                <systemUserPassword>secret</systemUserPassword>
+                <userDNTemplate>uid={0},ou=users,ou=system</userDNTemplate>
+            </ldap>
+        </specificConfigurations>
+    </authenticator>
+
+</authenticators>
