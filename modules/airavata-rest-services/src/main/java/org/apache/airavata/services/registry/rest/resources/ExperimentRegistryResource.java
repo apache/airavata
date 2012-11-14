@@ -320,11 +320,11 @@ public class ExperimentRegistryResource {
      * @param createIfNotPresent  flag to check whether to create a new experiment or not
      * @return HTTP response
      */
-    @GET
+    @POST
     @Path(ResourcePathConstants.ExperimentResourcePathConstants.EXP_EXISTS_CREATE)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response isExperimentExistsThenCreate(@QueryParam("experimentId") String experimentId,
-                                                 @QueryParam("createIfNotPresent") String createIfNotPresent) {
+    public Response isExperimentExistsThenCreate(@FormParam("experimentId") String experimentId,
+                                                 @FormParam("createIfNotPresent") String createIfNotPresent) {
         boolean createIfNotPresentStatus = false;
         if (createIfNotPresent.equals("true")) {
             createIfNotPresentStatus = true;

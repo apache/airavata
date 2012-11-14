@@ -117,6 +117,7 @@ public class UserWorkflowRegistryResource {
      */
     @POST
     @Path(ResourcePathConstants.UserWFConstants.UPDATE_WORKFLOW)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_PLAIN)
     public Response updateWorkflow(@FormParam("workflowName") String workflowName,
                                    @FormParam("workflowGraphXml") String workflowGraphXml){
@@ -144,7 +145,7 @@ public class UserWorkflowRegistryResource {
      */
     @GET
     @Path(ResourcePathConstants.UserWFConstants.GET_WORKFLOWGRAPH)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getWorkflowGraphXML(@QueryParam("workflowName") String workflowName) {
         airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
         try{
@@ -175,7 +176,7 @@ public class UserWorkflowRegistryResource {
      */
     @GET
     @Path(ResourcePathConstants.UserWFConstants.GET_WORKFLOWS)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getWorkflows()  {
         airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
         try{
@@ -211,7 +212,7 @@ public class UserWorkflowRegistryResource {
      * @param workflowName user workflow name
      * @return HTTP response
      */
-    @GET
+    @DELETE
     @Path(ResourcePathConstants.UserWFConstants.REMOVE_WORKFLOW)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeWorkflow(@QueryParam("workflowName") String workflowName) {

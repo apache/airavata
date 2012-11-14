@@ -69,7 +69,7 @@ public class UserWorkflowResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -86,7 +86,7 @@ public class UserWorkflowResourceClient {
         ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -98,10 +98,10 @@ public class UserWorkflowResourceClient {
         formParams.add("workflowName", workflowName);
         formParams.add("workflowGraphXml", workflowGraphXml);
 
-        ClientResponse response = webResource.type(MediaType.APPLICATION_FORM_URLENCODED).accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
+        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -110,12 +110,12 @@ public class UserWorkflowResourceClient {
     public String getWorkflowGraphXML(String workflowName){
         webResource = getUserWFRegistryBaseResource().path(ResourcePathConstants.UserWFConstants.GET_WORKFLOWGRAPH);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
-        queryParams.add("workflowname", workflowName);
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        queryParams.add("workflowName", workflowName);
+        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_FORM_URLENCODED).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -130,7 +130,7 @@ public class UserWorkflowResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -149,12 +149,12 @@ public class UserWorkflowResourceClient {
     public void removeWorkflow(String workflowName){
         webResource = getUserWFRegistryBaseResource().path(ResourcePathConstants.UserWFConstants.REMOVE_WORKFLOW);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
-        queryParams.add("workflowname", workflowName);
+        queryParams.add("workflowName", workflowName);
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }

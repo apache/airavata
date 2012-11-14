@@ -76,7 +76,7 @@ public class ProvenanceResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -90,7 +90,7 @@ public class ProvenanceResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -106,7 +106,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -120,7 +120,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -138,7 +138,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -152,7 +152,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -170,7 +170,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -183,7 +183,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -201,7 +201,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -214,7 +214,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -237,7 +237,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -253,7 +253,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -269,7 +269,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -285,7 +285,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -298,7 +298,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -317,7 +317,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -333,7 +333,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -346,7 +346,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -362,7 +362,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -378,7 +378,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -400,7 +400,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -421,7 +421,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -438,7 +438,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -461,7 +461,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -477,7 +477,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -493,7 +493,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -507,7 +507,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -524,7 +524,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -547,7 +547,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -568,7 +568,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.type(MediaType.APPLICATION_JSON).accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, workflowNodeGramData);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -581,7 +581,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -598,7 +598,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -614,7 +614,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -629,7 +629,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -648,7 +648,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -664,7 +664,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -679,7 +679,7 @@ public class ProvenanceResourceClient {
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
