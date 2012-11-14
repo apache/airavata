@@ -111,8 +111,8 @@ public class PublishedWorkflowResourceClient {
     public String getPublishedWorkflowGraphXML(String workflowName){
         webResource = getPublishedWFRegistryBaseResource().path(ResourcePathConstants.PublishedWFConstants.GET_PUBLISHWORKFLOWGRAPH);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
-        queryParams.add("workflowname", workflowName);
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        queryParams.add("workflowName", workflowName);
+        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_FORM_URLENCODED).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != 200) {
@@ -167,7 +167,7 @@ public class PublishedWorkflowResourceClient {
     public void removePublishedWorkflow(String workflowName){
         webResource = getPublishedWFRegistryBaseResource().path(ResourcePathConstants.PublishedWFConstants.REMOVE_PUBLISHWORKFLOW);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
-        queryParams.add("workflowname", workflowName);
+        queryParams.add("workflowName", workflowName);
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).delete(ClientResponse.class);
         int status = response.getStatus();
 
