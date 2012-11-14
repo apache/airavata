@@ -5,10 +5,7 @@
     <listener>
       <listener-class>org.apache.airavata.services.registry.rest.utils.RegistryListener</listener-class>
     </listener>
-     <!--context-param>
-      <param-name>configFile</param-name>
-      <param-value>/WEB-INF/classes/service.properties</param-value>
-    </context-param-->
+
     <servlet>
         <servlet-name>Airavata Web Application</servlet-name>
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
@@ -16,12 +13,26 @@
             <param-name>com.sun.jersey.config.property.packages</param-name>
             <param-value>org.apache.airavata.services.registry.rest;org.codehaus.jackson.jaxrs</param-value>
         </init-param>
-        <!--init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-            <param-value>org.apache.airavata.services.registry.rest.security.AuthenticationFilter</param-value>
-        </init-param-->
         <load-on-startup>1</load-on-startup>
     </servlet>
+
+    <!-- ========================= Security Related Configurations go here ================================== -->
+    <filter>
+        <filter-name>AuthenticationFilter</filter-name>
+        <filter-class>org.apache.airavata.services.registry.rest.security.HttpAuthenticatorFilter</filter-class>
+        <init-param>
+            <param-name>authenticatorConfigurations</param-name>
+            <param-value>authenticators.xml</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>AuthenticationFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
+    <!-- ================================ End Security Related Configurations =============================== -->
+
     <servlet-mapping>
         <servlet-name>Airavata Web Application</servlet-name>
         <url-pattern>/*</url-pattern>
