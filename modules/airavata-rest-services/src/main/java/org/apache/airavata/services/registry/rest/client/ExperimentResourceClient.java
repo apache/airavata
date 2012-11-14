@@ -38,6 +38,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -62,17 +64,20 @@ public class ExperimentResourceClient {
     }
 
     public void addExperiment(String projectName, AiravataExperiment experiment){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = dateFormat.format(experiment.getSubmittedDate());
         webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.ADD_EXP);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("projectName", projectName);
         formParams.add("experimentID", experiment.getExperimentId());
-        formParams.add("submittedDate", experiment.getSubmittedDate().toString());
+        formParams.add("submittedDate", date);
 
-        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, formParams);
+        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            String errorMsg = response.getEntity(String.class);
+            logger.error(errorMsg);
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -86,7 +91,7 @@ public class ExperimentResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -98,7 +103,9 @@ public class ExperimentResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            String errorMsg = response.getEntity(String.class);
+            System.out.println(errorMsg);
+            logger.error(errorMsg);
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -121,7 +128,7 @@ public class ExperimentResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -137,16 +144,19 @@ public class ExperimentResourceClient {
     }
 
     public List<AiravataExperiment> getExperiments(Date from, Date to){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String fromDate = dateFormat.format(from);
+        String toDate = dateFormat.format(to);
         webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_BY_DATE);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
-        queryParams.add("fromDate", from.toString());
-        queryParams.add("toDate", to.toString());
+        queryParams.add("fromDate", fromDate);
+        queryParams.add("toDate", toDate);
 
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -162,17 +172,20 @@ public class ExperimentResourceClient {
     }
 
     public List<AiravataExperiment> getExperiments(String projectName, Date from, Date to){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String fromDate = dateFormat.format(from);
+        String toDate = dateFormat.format(to);
         webResource = getExperimentRegistryBaseResource().path(ResourcePathConstants.ExperimentResourcePathConstants.GET_EXPS_PER_PROJECT_BY_DATE);
         MultivaluedMap queryParams = new MultivaluedMapImpl();
         queryParams.add("projectName", projectName);
-        queryParams.add("fromDate", from.toString());
-        queryParams.add("toDate", to.toString());
+        queryParams.add("fromDate", fromDate);
+        queryParams.add("toDate", toDate);
 
         ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.APPLICATION_JSON).get(ClientResponse.class);
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -195,7 +208,7 @@ public class ExperimentResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else {
@@ -217,7 +230,7 @@ public class ExperimentResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else {

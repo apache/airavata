@@ -68,7 +68,7 @@ public class ProjectResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         } else {
@@ -90,7 +90,7 @@ public class ProjectResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }else {
@@ -107,7 +107,7 @@ public class ProjectResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -122,7 +122,7 @@ public class ProjectResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -136,7 +136,7 @@ public class ProjectResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -150,7 +150,7 @@ public class ProjectResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
@@ -165,7 +165,7 @@ public class ProjectResourceClient {
         int status = response.getStatus();
 
         if (status != 200) {
-            logger.error("Failed : HTTP error code : " + status);
+            logger.error(response.getEntity(String.class));
             throw new RuntimeException("Failed : HTTP error code : "
                     + status);
         }
