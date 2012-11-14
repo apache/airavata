@@ -151,7 +151,7 @@ public class PublishWorkflowRegistryResource {
      */
     @GET
     @Path(ResourcePathConstants.PublishedWFConstants.GET_PUBLISHWORKFLOWGRAPH)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_FORM_URLENCODED)
     public Response getPublishedWorkflowGraphXML(@QueryParam("workflowName") String workflowName) {
         airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
         try{
@@ -211,7 +211,7 @@ public class PublishWorkflowRegistryResource {
      */
     @GET
     @Path(ResourcePathConstants.PublishedWFConstants.GET_PUBLISHWORKFLOWS)
-    @Produces(MediaType.TEXT_PLAIN)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Response getPublishedWorkflows() {
         airavataRegistry = (AiravataRegistry2) context.getAttribute(RestServicesConstants.AIRAVATA_REGISTRY);
         try{
@@ -247,7 +247,7 @@ public class PublishWorkflowRegistryResource {
      * @param workflowName published workflow name
      * @return HTTP response
      */
-    @GET
+    @DELETE
     @Path(ResourcePathConstants.PublishedWFConstants.REMOVE_PUBLISHWORKFLOW)
     @Produces(MediaType.TEXT_PLAIN)
     public Response removePublishedWorkflow(@QueryParam("workflowName") String workflowName) {
