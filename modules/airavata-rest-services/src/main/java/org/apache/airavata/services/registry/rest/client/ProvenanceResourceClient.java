@@ -245,10 +245,10 @@ public class ProvenanceResourceClient {
     }
 
     public boolean isWorkflowInstanceExists(String instanceId, boolean createIfNotPresent){
-        webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_NODE_EXIST_CREATE);
+        webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_EXIST_CREATE);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("instanceId", instanceId);
-        formParams.add("createIfNotPresent", createIfNotPresent);
+        formParams.add("createIfNotPresent", String.valueOf(createIfNotPresent));
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
@@ -276,11 +276,13 @@ public class ProvenanceResourceClient {
     }
 
     public void updateWorkflowInstanceStatus(WorkflowInstanceStatus workflowInstanceStatus){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String statusUpdateDate = dateFormat.format(workflowInstanceStatus.getStatusUpdateTime());
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWINSTANCESTATUS);
         MultivaluedMap formParams = new MultivaluedMapImpl();
         formParams.add("workflowInstanceId", workflowInstanceStatus.getWorkflowInstance().getWorkflowInstanceId());
         formParams.add("executionStatus", workflowInstanceStatus.getExecutionStatus().name());
-        formParams.add("statusUpdateTime", workflowInstanceStatus.getStatusUpdateTime().toString());
+        formParams.add("statusUpdateTime", statusUpdateDate);
 
         ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
@@ -565,7 +567,7 @@ public class ProvenanceResourceClient {
 
     public void updateWorkflowNodeGramData(WorkflowNodeGramData workflowNodeGramData){
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.UPDATE_WORKFLOWNODE_GRAMDATA);
-        ClientResponse response = webResource.type(MediaType.APPLICATION_JSON).accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, workflowNodeGramData);
+        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).type(MediaType.APPLICATION_JSON).post(ClientResponse.class, workflowNodeGramData);
         int status = response.getStatus();
         if (status != 200) {
             logger.error(response.getEntity(String.class));
@@ -607,11 +609,11 @@ public class ProvenanceResourceClient {
 
     public boolean isWorkflowInstanceNodePresent(String workflowInstanceId, String nodeId, boolean createIfNotPresent){
         webResource = getProvenanceRegistryBaseResource().path(ResourcePathConstants.ProvenanceResourcePathConstants.WORKFLOWINSTANCE_NODE_EXIST_CREATE);
-        MultivaluedMap queryParams = new MultivaluedMapImpl();
-        queryParams.add("workflowInstanceId", workflowInstanceId);
-        queryParams.add("nodeId", nodeId);
-        queryParams.add("createIfNotPresent", createIfNotPresent);
-        ClientResponse response = webResource.queryParams(queryParams).accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        MultivaluedMap formParams = new MultivaluedMapImpl();
+        formParams.add("workflowInstanceId", workflowInstanceId);
+        formParams.add("nodeId", nodeId);
+        formParams.add("createIfNotPresent", String.valueOf(createIfNotPresent));
+        ClientResponse response = webResource.accept(MediaType.TEXT_PLAIN).post(ClientResponse.class, formParams);
         int status = response.getStatus();
         if (status != 200) {
             logger.error(response.getEntity(String.class));
